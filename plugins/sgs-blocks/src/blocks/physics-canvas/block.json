@@ -101,6 +101,7 @@
 					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
 				},
 				"svg-bg": {
+					"svg": true,
 					"surface": true,
 					"prefix": "",
 					"selector": ".sgs-container__svg-bg",

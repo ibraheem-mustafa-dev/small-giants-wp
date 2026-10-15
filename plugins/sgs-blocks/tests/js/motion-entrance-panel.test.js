@@ -268,13 +268,21 @@ describe( 'text effects', () => {
 		expect( H.latest().layers.layersOf( 'title', 'entrance.text' ) ).toHaveLength( 1 );
 	} );
 
-	it( 'offers Draw on a part with no other text effect and adds it', async () => {
-		mount( {} );
-		pick( 'Title' );
+	it( 'offers Draw on an SVG part and adds it, and offers no text effect there', async () => {
+		mount( { elements: { panel: { label: 'Panel' }, logo: { label: 'Logo', svg: true } } } );
+		pick( 'Logo' );
 		expect( buttonText( 'Draw' ).disabled ).toBe( false );
+		expect( buttonText( 'Split reveal' ) ).toBeFalsy();
 		await addEffect( 'Draw' );
 		expect(
-			H.latest().layers.layersOf( 'title', 'entrance.text' ).map( ( l ) => l.effect )
+			H.latest().layers.layersOf( 'logo', 'entrance.text' ).map( ( l ) => l.effect )
 		).toEqual( [ 'draw' ] );
+	} );
+
+	it( 'offers no Draw on a text part', () => {
+		mount( {} );
+		pick( 'Title' );
+		expect( buttonText( 'Draw' ) ).toBeFalsy();
+		expect( buttonText( 'Split reveal' ).disabled ).toBe( false );
 	} );
 } );

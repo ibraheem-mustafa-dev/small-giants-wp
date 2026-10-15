@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Mark the kind of every motion part in block.json (Spec 38A section 5.4, plan unit M3.6 part-kind markers).
 
-The Effects panel offers a surface-level effect (Ken Burns and the other surface rows) on the root, and on a part only
-when its declaration in `supports.sgs.elements` carries `"surface": true` (layers/refusal-match.js::levelsForTarget).
+The motion panels offer a surface-level effect (Ken Burns and the other surface rows) on the root, and on a part only
+when its declaration in `supports.sgs.elements` carries `"surface": true` (layers/refusal-match.js::levelsForTarget);
+an effect whose schema entry names `x-part-kinds` (split reveal and scramble `text`; draw, morph, motion path and the
+SVG loop `svg`) only on a part that carries `"text": true` or `"svg": true` (layers/refusal-match.js::kindsFit). The
+block root takes every kind: the block's registry row (`fx_effects` scope and requires) decides those effects there.
 
 EVIDENCE, read from the markup (a motion part = a part of a block with `supports.sgs.motion`, not the root, not
 `"motion": false`; its class = the last class of its `selector`, else `sgs-<slug>__<part>`). The detector finds where the
@@ -11,12 +14,16 @@ element's tag, or, for a class written into an array passed (directly or through
 only <img>/<picture>/<video>, treats the element as <img>.
   surface  printed only on media tags, or a background layer (key or class element bg/background/backdrop/-bg on a
            <div> or <span>); plus the hand-read CONFIRMED media parts, each pinned by patterns that must still match
-  svg      printed only on <svg>, or an svg-* holder; text  printed only on h1-h6, p, blockquote, figcaption, cite, q
+  svg      printed only on <svg>, or an svg-* holder
+  text     printed only on h1-h6, p, blockquote, figcaption, cite, q; or the framework DB says a text attribute is
+           printed into it: a `block_attributes` row of the block whose `role` is `text-content` or `content` (the
+           text roles of the `roles` table), whose `attr_type` is `string` or `rich-text` and whose `derived_selector`
+           names the part's class, on a part printed only on text-holding tags (TEXT_TAGS plus span, div, strong, em,
+           b, i, small, time, label, a, or through a helper the detector cannot follow)
 A part printed nowhere, on mixed tags, or through a helper this cannot follow has no evidence and stays unmarked.
+The DB is opened read-only (`file:...?mode=ro`); a missing DB fails every mode but --self-test.
 
-MARKERS: `"surface": true` is the only key a reader consumes today, so it is the only kind --fix writes and --check
-enforces. Text and SVG evidence is surveyed; the proposed keys are `"text": true` and `"svg": true`, to join ENFORCED
-once the Entrance panel reads them. FORMAT SAFETY: one member is inserted, first in the part object, in that object's
+MARKERS: `"surface": true`, `"text": true` and `"svg": true`; --fix writes and --check enforces all three. FORMAT SAFETY: one member is inserted, first in the part object, in that object's
 layout, and the result must parse to the original plus that key. A file with uncommitted changes (`git diff --quiet HEAD`
 non-zero, or untracked) is refused, never edited.
 
@@ -29,6 +36,7 @@ import re
 import shutil
 import subprocess
 import sys
+import sqlite3
 import tempfile
 
 sys.stdout.reconfigure(encoding='utf-8')
@@ -37,11 +45,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PLUGIN = os.path.dirname(HERE)
 BLOCKS_DIR = os.path.join(PLUGIN, 'src', 'blocks')
 INCLUDES_DIR = os.path.join(PLUGIN, 'includes')
+DB_PATH = os.environ.get('SGS_FRAMEWORK_DB') or os.path.join(os.path.expanduser('~'), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db')
 
-ENFORCED = ('surface',)            # the kinds a reader consumes today; --fix writes and --check gates exactly these
 ALL_KINDS = ('surface', 'svg', 'text')
+ENFORCED = ALL_KINDS              # every kind has a reader; --fix writes and --check gates all of them
 MEDIA_TAGS = {'img', 'video', 'picture'}
 TEXT_TAGS = {'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'blockquote', 'figcaption', 'cite', 'q'}
+# Tags that hold a text attribute's printed value; 'unknown' is a class printed through a helper.
+TEXT_HOLDER_TAGS = TEXT_TAGS | {'span', 'div', 'strong', 'em', 'b', 'i', 'small', 'time', 'label', 'a', 'unknown'}
+TEXT_ROLES = ('text-content', 'content')
+TEXT_ATTR_TYPES = ('string', 'rich-text')
 LAYER_TAGS = {'div', 'span'}
 BG_KEY = re.compile(r'(^|[-_])(bg|background|backdrop)($|[-_])')
 SVG_KEY = re.compile(r'(^|-)svg(-|$)')
@@ -60,6 +73,12 @@ CONFIRMED = {
                         'class added to the first <img>/<video> sgs_render_media returned'),
     'gallery:image': ((r"array\(\s*'sgs-gallery__img'\s*\)", r"wp_get_attachment_image\("),
                       'class on the <img> wp_get_attachment_image prints'),
+}
+# Text evidence the DB gives but the render source contradicts, each read by hand and pinned by patterns that must still
+# match the block's render source, or --check fails: `block:part` -> (patterns, reason).
+REFUTED_TEXT = {
+    'button:icon': ((r"'\$1<title>'\s*\.\s*\$icon_title",),
+                    'iconTitle is printed as the icon SVG <title>, not as visible text; the part holds the icon'),
 }
 
 
@@ -156,7 +175,28 @@ def tags_of(texts, cls, helpers=frozenset()):
     return found, tags
 
 
-def kinds_for(part, cls, found, tags):
+def text_selectors(db_path):
+    """{block slug: {class: attribute name}} for every text attribute the DB says is printed into one class."""
+    if not os.path.isfile(db_path):
+        raise SystemExit(f'migrate-motion-part-kinds: the framework DB is missing at {db_path}')
+    con = sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
+    try:
+        rows = con.execute(
+            'SELECT block_slug, attr_name, derived_selector FROM block_attributes WHERE role IN (%s) AND attr_type IN (%s) '
+            "AND derived_selector IS NOT NULL AND derived_selector != ''" % (','.join('?' * len(TEXT_ROLES)), ','.join('?' * len(TEXT_ATTR_TYPES))),
+            TEXT_ROLES + TEXT_ATTR_TYPES).fetchall()
+    finally:
+        con.close()
+    out = {}
+    for slug, attr, selector in rows:
+        for one in selector.split(','):
+            one = one.strip()
+            if re.match(r'^\.[A-Za-z][A-Za-z0-9_-]*$', one):
+                out.setdefault(slug.split('/', 1)[-1], {}).setdefault(one[1:], attr)
+    return out
+
+
+def kinds_for(part, cls, found, tags, text_attr=None):
     """The kinds the evidence supports, with the reason for each."""
     kinds = {}
     if not found:
@@ -172,6 +212,8 @@ def kinds_for(part, cls, found, tags):
         kinds['svg'] = f"svg holder <{'/'.join(sorted(tags))}> named {element}"
     if tags <= TEXT_TAGS:
         kinds['text'] = f"text element <{'/'.join(sorted(tags))}>"
+    elif text_attr and tags <= TEXT_HOLDER_TAGS:
+        kinds['text'] = f"prints the text attribute {text_attr} (DB derived_selector) in <{'/'.join(sorted(tags))}>"
     return kinds
 
 
@@ -183,8 +225,9 @@ def parts_of(data):
     return elements if isinstance(elements, dict) else {}
 
 
-def analyse(blocks_dir, includes_dir):
-    """One row per motion part: its class, tags, evidence kinds and the markers it carries."""
+def analyse(blocks_dir, includes_dir, texts):
+    """One row per motion part: its class, tags, evidence kinds and the markers it carries. `texts` is
+    `text_selectors()`'s map."""
     rows = []
     shared = shared_sources(includes_dir)
     helpers = media_helpers(shared)
@@ -208,11 +251,17 @@ def analyse(blocks_dir, includes_dir):
                 continue
             cls = class_for(slug, part, spec)
             found, tags = tags_of([own] + [s for s in shared if cls in s], cls, helpers)
-            kinds = kinds_for(part, cls, found, tags)
+            kinds = kinds_for(part, cls, found, tags, (texts.get(slug) or {}).get(cls))
             confirmed = CONFIRMED.get(f'{slug}:{part}')
             stale = bool(confirmed) and not all(re.search(pat, own) for pat in confirmed[0])
             if confirmed and not stale:
                 kinds['surface'] = confirmed[1]
+            refuted = REFUTED_TEXT.get(f'{slug}:{part}')
+            if refuted:
+                if all(re.search(pat, own) for pat in refuted[0]):
+                    kinds.pop('text', None)
+                else:
+                    stale = True
             rows.append({'block': entry, 'part': part, 'path': path, 'class': cls, 'tags': sorted(tags),
                          'kinds': kinds, 'found': found, 'stale_confirmation': stale,
                          'marked': sorted(k for k in ALL_KINDS if spec.get(k) is True),
@@ -283,8 +332,8 @@ def todo_by_file(rows):
     return todo
 
 
-def survey(blocks_dir, includes_dir, as_json):
-    rows = analyse(blocks_dir, includes_dir)
+def survey(blocks_dir, includes_dir, as_json, texts):
+    rows = analyse(blocks_dir, includes_dir, texts)
     parts = [r for r in rows if not r.get('unparsed')]
     if as_json:
         print(json.dumps(rows, indent=1))
@@ -298,7 +347,7 @@ def survey(blocks_dir, includes_dir, as_json):
     print(f'motion parts surveyed: {len(parts)} in {len({r["block"] for r in parts})} blocks')
     for kind in ALL_KINDS:
         hit = [r for r in parts if kind in r['kinds']]
-        enforced = 'enforced' if kind in ENFORCED else 'proposed key "%s": true, not enforced (no reader yet)' % kind
+        enforced = 'enforced' if kind in ENFORCED else 'surveyed only'
         per_block = {}
         for r in hit:
             per_block.setdefault(r['block'], []).append(r['part'])
@@ -313,8 +362,8 @@ def survey(blocks_dir, includes_dir, as_json):
     return rows
 
 
-def fix(blocks_dir, includes_dir, apply, git_guard):
-    rows = analyse(blocks_dir, includes_dir)
+def fix(blocks_dir, includes_dir, apply, git_guard, texts):
+    rows = analyse(blocks_dir, includes_dir, texts)
     refused, unrecognised, changed = [], [r['block'] for r in rows if r.get('unparsed')], []
     for path, wanted in sorted(todo_by_file(rows).items()):
         name = os.path.basename(os.path.dirname(path))
@@ -340,15 +389,15 @@ def fix(blocks_dir, includes_dir, apply, git_guard):
     return 1 if (refused or unrecognised) else 0
 
 
-def check(blocks_dir, includes_dir):
-    rows = analyse(blocks_dir, includes_dir)
+def check(blocks_dir, includes_dir, texts):
+    rows = analyse(blocks_dir, includes_dir, texts)
     problems = []
     for r in rows:
         if r.get('unparsed'):
             problems.append(f"{r['block']}: block.json does not parse")
             continue
         if r['stale_confirmation']:
-            problems.append(f"{r['block']}:{r['part']} is in CONFIRMED but its patterns no longer match the render source")
+            problems.append(f"{r['block']}:{r['part']} is in CONFIRMED or REFUTED_TEXT but its patterns no longer match the render source")
         for kind in ENFORCED:
             if kind in r['kinds'] and kind not in r['marked']:
                 problems.append(f"{r['block']}:{r['part']} renders as {kind} ({r['kinds'][kind]}) but has no \"{kind}\": true")
@@ -396,18 +445,23 @@ def self_test():
         os.makedirs(blocks)
         os.makedirs(includes)
         parts = ',\n'.join('\t\t\t\t"%s": { "label": "%s" }' % (k, k) for k in
-                           ('wrapper_x', 'bg', 'photo', 'clip', 'logo', 'title', 'plain', 'ghost', 'shared-bg', 'mixed'))
+                           ('wrapper_x', 'bg', 'photo', 'clip', 'logo', 'title', 'plain', 'ghost', 'shared-bg', 'mixed',
+                            'name', 'icon', 'figure'))
         parts = parts.replace('"wrapper_x": { "label": "wrapper_x" }', '"wrapper": { "label": "w", "isWrapper": true }')
         parts += ',\n\t\t\t\t"skipped": { "motion": false, "label": "s" },\n\t\t\t\t"holder": { "selector": ".sgs-demo__held", "label": "h" }'
         render = ('<div class="sgs-demo"><span class="sgs-demo__bg"></span>\n<img class="sgs-demo__photo" src="x">'
                   '<video class="sgs-demo__clip"></video><svg class="sgs-demo__logo"></svg><h2 class="sgs-demo__title">T</h2>'
                   '<div class="sgs-demo__plain"></div><div class="sgs-demo__held"></div><img class="sgs-demo__mixed"><p class="sgs-demo__mixed">'
+                  '<span class="sgs-demo__name">N</span><span class="sgs-demo__icon"></span><figure class="sgs-demo__figure"></figure>'
                   '<img class="sgs-demo__skipped">\n// <div class="sgs-demo__ghost">\n</div>')
+        # The DB says a text attribute is printed into name and figure; only name is a text holder.
+        texts = {'demo': {'sgs-demo__name': 'name', 'sgs-demo__figure': 'caption'}}
         write_block(blocks, 'demo', parts, render, '\r\n')
         with open(os.path.join(includes, 'shared.php'), 'w', encoding='utf-8') as fh:
             fh.write('<div class="sgs-demo__shared-bg"></div>')
-        rows = {r['part']: r for r in analyse(blocks, includes)}
-        expect('part set', sorted(rows), ['bg', 'clip', 'ghost', 'holder', 'logo', 'mixed', 'photo', 'plain', 'shared-bg', 'title'])
+        rows = {r['part']: r for r in analyse(blocks, includes, texts)}
+        expect('part set', sorted(rows), ['bg', 'clip', 'figure', 'ghost', 'holder', 'icon', 'logo', 'mixed', 'name', 'photo',
+                                          'plain', 'shared-bg', 'title'])
         expect('background layer is a surface', 'surface' in rows['bg']['kinds'], True)
         expect('img is a surface', 'surface' in rows['photo']['kinds'], True)
         expect('video is a surface', 'surface' in rows['clip']['kinds'], True)
@@ -418,32 +472,81 @@ def self_test():
         expect('mixed tags are ambiguous', ambiguous(rows['mixed']), True)
         expect('a bg layer printed in a shared include counts', 'surface' in rows['shared-bg']['kinds'], True)
         expect('a div with a declared selector is ambiguous', ambiguous(rows['holder']), True)
-        expect('planted evidence without markers fails the check', check(blocks, includes), 1)
-        expect('fix dry run changes nothing', (fix(blocks, includes, False, False), check(blocks, includes)), (0, 1))
-        expect('fix apply', fix(blocks, includes, True, False), 0)
-        expect('clean tree passes the check', check(blocks, includes), 0)
-        expect('fix is idempotent', fix(blocks, includes, True, False), 0)
+        expect('a span the DB prints a text attribute into is text', sorted(rows['name']['kinds']), ['text'])
+        expect('a span with no DB text attribute is ambiguous', ambiguous(rows['icon']), True)
+        expect('a DB text attribute on a non-text tag is not text', ambiguous(rows['figure']), True)
+        bare = {r['part']: r for r in analyse(blocks, includes, {})}
+        expect('without DB evidence the span is not text', 'text' in bare['name']['kinds'], False)
+        expect('planted evidence without markers fails the check', check(blocks, includes, texts), 1)
+        expect('fix dry run changes nothing', (fix(blocks, includes, False, False, texts), check(blocks, includes, texts)), (0, 1))
+        expect('fix apply', fix(blocks, includes, True, False, texts), 0)
+        expect('clean tree passes the check', check(blocks, includes, texts), 0)
+        expect('fix is idempotent', fix(blocks, includes, True, False, texts), 0)
         text = read_text(os.path.join(blocks, 'demo', 'block.json'))
         expect('CRLF kept', ('\r\n' in text, text.replace('\r\n', '').count('\n')), (True, 0))
         data = json.loads(text)['supports']['sgs']['elements']
         expect('markers written', sorted(k for k, v in data.items() if v.get('surface')), ['bg', 'clip', 'photo', 'shared-bg'])
-        expect('text and svg are never written', [k for k, v in data.items() if 'svg' in v or 'text' in v], [])
+        expect('text markers written', sorted(k for k, v in data.items() if v.get('text')), ['name', 'title'])
+        expect('svg markers written', sorted(k for k, v in data.items() if v.get('svg')), ['logo'])
         # Negative controls.
         data['plain']['surface'] = True
         with open(os.path.join(blocks, 'demo', 'block.json'), 'w', encoding='utf-8') as fh:
             fh.write(json.dumps({'name': 'sgs/demo', 'supports': {'sgs': {'motion': True, 'elements': data}}}))
-        expect('a marker without evidence fails the check', check(blocks, includes), 1)
+        expect('a marker without evidence fails the check', check(blocks, includes, texts), 1)
         data['plain'].pop('surface')
         data['bg'].pop('surface')
-        with open(os.path.join(blocks, 'demo', 'block.json'), 'w', encoding='utf-8') as fh:
-            fh.write(json.dumps({'name': 'sgs/demo', 'supports': {'sgs': {'motion': True, 'elements': data}}}))
-        expect('a removed marker fails the check', check(blocks, includes), 1)
-        expect('restore by fix', (fix(blocks, includes, True, False), check(blocks, includes)), (0, 0))
+        demo_json = os.path.join(blocks, 'demo', 'block.json')
+
+        def write_demo(elements):
+            with open(demo_json, 'w', encoding='utf-8') as fh:
+                fh.write(json.dumps({'name': 'sgs/demo', 'supports': {'sgs': {'motion': True, 'elements': elements}}}))
+
+        write_demo(data)
+        expect('a removed marker fails the check', check(blocks, includes, texts), 1)
+        expect('restore by fix', (fix(blocks, includes, True, False, texts), check(blocks, includes, texts)), (0, 0))
+        for kind, part in (('text', 'name'), ('svg', 'logo')):
+            data = json.loads(read_text(demo_json))['supports']['sgs']['elements']
+            data[part].pop(kind)
+            write_demo(data)
+            expect(f'a removed {kind} marker fails the check', check(blocks, includes, texts), 1)
+            expect(f'restore the {kind} marker by fix', (fix(blocks, includes, True, False, texts), check(blocks, includes, texts)), (0, 0))
+        data = json.loads(read_text(demo_json))['supports']['sgs']['elements']
+        data['icon']['text'] = True
+        write_demo(data)
+        expect('a text marker without evidence fails the check', check(blocks, includes, texts), 1)
+        data['icon'].pop('text')
+        write_demo(data)
+        # A refutation pin whose pattern no longer matches the render source fails the check.
+        REFUTED_TEXT['demo:name'] = ((r'no-such-pattern',), 'planted')
+        try:
+            expect('a stale refutation fails the check', check(blocks, includes, texts), 1)
+        finally:
+            REFUTED_TEXT.pop('demo:name')
+        REFUTED_TEXT['demo:name'] = ((r'sgs-demo__name',), 'planted')
+        try:
+            refuted = {r['part']: r for r in analyse(blocks, includes, texts)}
+            expect('a matching refutation removes the DB text evidence', 'text' in refuted['name']['kinds'], False)
+        finally:
+            REFUTED_TEXT.pop('demo:name')
+        # The DB reader: a real sqlite file in the shape of block_attributes, opened read-only.
+        db = os.path.join(root, 'fw.db')
+        con = sqlite3.connect(db)
+        con.execute('CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, role TEXT, derived_selector TEXT)')
+        con.executemany('INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)', [
+            ('sgs/demo', 'name', 'string', 'text-content', '.sgs-demo__name'),
+            ('sgs/demo', 'items', 'array', 'text-content', '.sgs-demo__items'),
+            ('sgs/demo', 'tone', 'string', 'behaviour', '.sgs-demo__tone'),
+            ('sgs/demo', 'pair', 'rich-text', 'content', '.sgs-demo__a, .sgs-demo__b'),
+        ])
+        con.commit()
+        con.close()
+        expect('the DB reader keeps string and rich-text text roles only', text_selectors(db),
+               {'demo': {'sgs-demo__name': 'name', 'sgs-demo__a': 'pair', 'sgs-demo__b': 'pair'}})
         # A block without the motion support is out of scope.
         write_block(blocks, 'quiet', '				"bg": { "label": "b" }', '<div class="sgs-quiet__bg"></div>')
         with open(os.path.join(blocks, 'quiet', 'block.json'), 'w', encoding='utf-8') as fh:
             fh.write('{ "name": "sgs/quiet", "supports": { "sgs": { "elements": { "bg": {} } } } }')
-        expect('a block without motion is not surveyed', 'quiet' in {r['block'] for r in analyse(blocks, includes)}, False)
+        expect('a block without motion is not surveyed', 'quiet' in {r['block'] for r in analyse(blocks, includes, texts)}, False)
         # The dirty-file guard, in a real throwaway repository.
         repo = os.path.join(root, 'repo')
         rb = os.path.join(repo, 'blocks')
@@ -457,7 +560,7 @@ def self_test():
         with open(dirty_path, 'a', encoding='utf-8', newline='') as fh:
             fh.write('\n')
         before = read_text(dirty_path)
-        expect('the guard refuses a dirty file and reports it', fix(rb, includes, True, True), 1)
+        expect('the guard refuses a dirty file and reports it', fix(rb, includes, True, True, {}), 1)
         expect('the dirty file is byte-identical', read_text(dirty_path), before)
         expect('the clean file got its marker', '"surface": true' in read_text(os.path.join(rb, 'clean', 'block.json')), True)
         expect('a staged change is dirty too', (git(repo, 'add', 'blocks/dirty/block.json').returncode, is_dirty(dirty_path)), (0, True))
@@ -482,12 +585,12 @@ def main():
     if args.self_test:
         return self_test()
     if args.survey:
-        survey(BLOCKS_DIR, INCLUDES_DIR, args.json)
+        survey(BLOCKS_DIR, INCLUDES_DIR, args.json, text_selectors(DB_PATH))
         return 0
     if args.fix:
-        return fix(BLOCKS_DIR, INCLUDES_DIR, args.apply, True)
+        return fix(BLOCKS_DIR, INCLUDES_DIR, args.apply, True, text_selectors(DB_PATH))
     if args.check:
-        return check(BLOCKS_DIR, INCLUDES_DIR)
+        return check(BLOCKS_DIR, INCLUDES_DIR, text_selectors(DB_PATH))
     parser.print_help()
     return 2
 

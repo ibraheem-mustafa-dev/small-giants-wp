@@ -32,6 +32,7 @@
 			"motion": true,
 			"elements": {
 				"heading": {
+					"text": true,
 					"label": "Heading",
 					"order": 1,
 					"clusters": [

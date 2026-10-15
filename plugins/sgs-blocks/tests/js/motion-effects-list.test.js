@@ -1,7 +1,8 @@
 /**
  * The effect list of the Effects panel (Spec 38A §5.3; FR-38A-9, FR-38A-11): the list for a block and target equals
  * the generated meta filtered by panels, scope and requires (the qualifying-blocks map) and target level, and never
- * offers a site-level row; and a part marked `"surface": true` takes surface effects.
+ * offers a site-level row; a part marked `"surface": true` takes surface effects; and an effect with `x-part-kinds`
+ * reaches a part only through its kind marker (motion-part-kinds.test.js covers the kinds).
  */
 const defs = require( '../../src/components/motion/generated-motion-defs.json' );
 const meta = require( '../../src/blocks/extensions/generated-fx-effect-meta.json' );
@@ -20,13 +21,15 @@ const DEFS = defs.$defs;
 const LEVELS = { root: [ 'block', 'surface', 'part' ], part: [ 'part' ] };
 
 // The oracle, written from the data and not from effect-options.js: the effects list's schema slugs whose meta row
-// lists the Effects panel, which the block qualifies for, and whose target level the target offers.
+// lists the Effects panel, which the block qualifies for, whose target level the target offers, and, on a part with no
+// kind marker, which name no part kind in the schema.
 const expectedList = ( blockName, levels ) =>
 	DEFS.EffectLayer.properties.effect.enum.filter(
 		( effect ) =>
 			meta[ effect ]?.panels.includes( 'effects' ) &&
 			( qualifying[ blockName ] || [] ).includes( effect ) &&
-			meta[ effect ].target_level.some( ( level ) => levels.includes( level ) )
+			meta[ effect ].target_level.some( ( level ) => levels.includes( level ) ) &&
+			( levels === LEVELS.root || ! schema[ 'x-sgs-effects' ][ effect ]?.[ 'x-part-kinds' ] )
 	);
 
 describe( 'the effect list for a block and target', () => {

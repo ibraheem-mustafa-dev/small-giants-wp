@@ -149,23 +149,26 @@ const {
 } = require( '../../src/blocks/extensions/motion/layers/use-motion-layers' );
 const { MOTION_ATTRIBUTE_NAME } = require( '../../src/blocks/extensions/motion/register' );
 
-const ELEMENTS = { panel: { label: 'Panel' }, title: { label: 'Title' } };
+// Title is a text part (its block.json kind marker), so the text effects reach it; a test passes `elements` for others.
+const ELEMENTS = { panel: { label: 'Panel' }, title: { label: 'Title', text: true } };
 const motionType = ( motion ) => ( { supports: { sgs: { motion } } } );
 
 let root;
 let container;
 let latest;
 
-function Harness( { initial, blockName = 'sgs/card' } ) {
+function Harness( { initial, blockName = 'sgs/card', elements = ELEMENTS } ) {
 	const [ motion, setMotion ] = React.useState( initial );
-	const layers = useMotionLayers( motion, ( attrs ) =>
-		setMotion( attrs[ MOTION_ATTRIBUTE_NAME ] )
+	const layers = useMotionLayers(
+		motion,
+		( attrs ) => setMotion( attrs[ MOTION_ATTRIBUTE_NAME ] ),
+		elements
 	);
 	latest = { motion, layers };
 	return React.createElement( EntrancePanel, {
 		blockName,
 		clientId: 'client-1',
-		elements: ELEMENTS,
+		elements,
 		motion,
 		layers,
 	} );

@@ -297,7 +297,7 @@ export function targetsWithLayers( motion, panel ) {
  * @param {Object|undefined} motion          The motion value.
  * @param {Function}         setAttributes   The block's `setAttributes`.
  * @param {Object|null}      [elements=null] The block's `supports.sgs.elements` (a part marked as a surface accepts
- *                                           surface-level effects).
+ *                                           surface-level effects, one marked as text or SVG that kind's effects).
  * @return {Object} `{ motion, layersOf, effectsFor, add, refusalFor, move, remove, swap, update }`; `effectsFor` lists
  *                  the effects a target's list may offer, `add`, `swap` and `update` return the operation's result, and
  *                  `refusalFor` the text that would refuse adding an effect (or null).

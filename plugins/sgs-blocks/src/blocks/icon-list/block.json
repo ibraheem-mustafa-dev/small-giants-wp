@@ -145,6 +145,7 @@
 					}
 				},
 				"heading": {
+					"text": true,
 					"label": "Heading",
 					"order": 5,
 					"clusters": [

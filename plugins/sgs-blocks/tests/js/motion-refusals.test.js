@@ -61,6 +61,8 @@ describe( 'one effect slug per element per list', () => {
 describe( 'split reveal and scramble on one part (§5.2)', () => {
 	const TEXT =
 		'Split reveal and Scramble both rewrite this text; keep one of them.';
+	// The parts' kind markers: text effects reach only text parts and draw only SVG parts (§5.4).
+	const elements = { title: { text: true }, subtitle: { text: true }, icon: { svg: true } };
 
 	it( 'quotes the spec text in the schema', () => {
 		expect( ruleText( 'text-rewrite-entrance' ) ).toBe( TEXT );
@@ -72,14 +74,16 @@ describe( 'split reveal and scramble on one part (§5.2)', () => {
 		let motion = ok(
 			addLayer( undefined, 'title', 'entrance.text', {
 				effect: 'split-reveal',
+				elements,
 			} )
 		);
 		motion = ok(
-			addLayer( motion, 'icon', 'entrance.text', { effect: 'draw' } )
+			addLayer( motion, 'icon', 'entrance.text', { effect: 'draw', elements } )
 		);
 		ok(
 			addLayer( motion, 'subtitle', 'entrance.text', {
 				effect: 'scramble',
+				elements,
 			} )
 		);
 	} );
@@ -88,10 +92,14 @@ describe( 'split reveal and scramble on one part (§5.2)', () => {
 		const motion = ok(
 			addLayer( undefined, 'title', 'entrance.text', {
 				effect: 'split-reveal',
+				elements,
 			} )
 		);
 		expect(
-			addLayer( motion, 'title', 'entrance.text', { effect: 'scramble' } )
+			addLayer( motion, 'title', 'entrance.text', {
+				effect: 'scramble',
+				elements,
+			} )
 		).toEqual( {
 			refusal: TEXT,
 		} );
@@ -101,12 +109,13 @@ describe( 'split reveal and scramble on one part (§5.2)', () => {
 		const motion = ok(
 			addLayer( undefined, 'title', 'entrance.text', {
 				effect: 'split-reveal',
+				elements,
 			} )
 		);
 		for ( const trigger of [ undefined, 'load', 'scroll', 'hover' ] ) {
 			const layer = trigger
-				? { effect: 'scramble', trigger }
-				: { effect: 'scramble' };
+				? { effect: 'scramble', trigger, elements }
+				: { effect: 'scramble', elements };
 			expect( addLayer( motion, 'title', 'effects', layer ) ).toEqual( {
 				refusal: TEXT,
 			} );
@@ -117,6 +126,7 @@ describe( 'split reveal and scramble on one part (§5.2)', () => {
 		const added = addLayer( undefined, 'title', 'effects', {
 			effect: 'scramble',
 			trigger: 'load',
+			elements,
 		} );
 		expect( added.motion ).toBeDefined();
 	} );

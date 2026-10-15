@@ -115,6 +115,7 @@
 					"_note": "Mirrors sgs/container's `inner` element (block.json). Added 2026-08-05 (Bean): gaps are GRID-element properties — they sit between a block's internal pieces, inside both the OUTER layer and the content-width layer, so they belong to neither. Before this, gap/gapTablet/gapMobile on this block resolved to NO css_property at all: the shared SGS_Container_Wrapper renders them (class-sgs-container-wrapper.php:166-169) but the emission scanner only reads each block's OWN render.php/style.css, and this block declared no explicit attrMap to fall back on. The prefix convention could not have covered it either — with an empty prefix the candidate is built as prefix + PascalCase suffix (\"\" + \"Gap\" = \"Gap\"), which never matches the real lowercase attribute name. That is the same limitation sgs/container's own inner `_note` documents. Explicit mapping is the established fix, not a workaround."
 				},
 				"star": {
+					"svg": true,
 					"label": "Star icon",
 					"order": 3,
 					"layer": "OUTER",
@@ -138,6 +139,7 @@
 					"_note": "The rating-stars SVG (sgs_render_stars_svg(), render.php:341-390) — full/half-fill stars carry an enum-modifier class on the wrapper (sgs-google-reviews--star-{slug}, render.php:222) that style.css keys off (.sgs-google-reviews--star-{slug} .sgs-google-reviews__star--full{fill:...}, style.css:168-176). starColour's PRIMARY, visible effect is this SVG fill — earlier classification derived background-color instead, because the same attribute ALSO feeds --sgs-gr-star-colour (render.php:230-232), a custom property with a SECOND, low-visibility consumer: .sgs-google-reviews__breakdown-fill (style.css:120, the ratings-breakdown bars, hidden unless showBreakdown is on) and .sgs-google-reviews__dot.is-active::before (style.css:579, the slider pagination dot). Same one-attribute-drives-two-unrelated-CSS-properties-on-two-unrelated-elements shape as product-search's `input` element note for inputBorderColour — declared on the primary, named node (the star SVG); the background-color consumer rides the same underlying value rather than getting a second manifest entry. Palette-coverage gap (style.css only recognises 2 legacy enum values against the full open-palette control) is a separate, unfixed client-facing bug — not addressed by this classification fix."
 				},
 				"star-empty": {
+					"svg": true,
 					"selector": ".sgs-google-reviews__star--empty",
 					"label": "Empty star",
 					"order": 23,
@@ -190,6 +192,7 @@
 					"_note": "The prev/next slider-arrow button (.sgs-google-reviews__arrow). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'arrow', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. arrowColourTextGradient/arrowColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true (with bg_layer_positioned=true, as .sgs-google-reviews__arrow already carries its own position:absolute in style.css) so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling."
 				},
 				"write-review": {
+					"text": true,
 					"label": "Write-review button",
 					"order": 5,
 					"layer": "OUTER",
@@ -242,6 +245,7 @@
 					"_note": "headerDividerColour / headerDividerWidth are the header row's bottom divider (the row draws one edge only, border-bottom); they register on the border-colour / border-width members because the vocabulary has no per-edge bottom member."
 				},
 				"source-label": {
+					"text": true,
 					"label": "Source caption",
 					"order": 8,
 					"layer": "OUTER",
@@ -368,6 +372,7 @@
 					}
 				},
 				"text": {
+					"text": true,
 					"label": "Review text",
 					"order": 17,
 					"layer": "OUTER",
@@ -394,6 +399,7 @@
 					}
 				},
 				"review-link": {
+					"text": true,
 					"label": "Read-full-review link",
 					"order": 19,
 					"layer": "OUTER",
@@ -406,6 +412,7 @@
 					}
 				},
 				"footnote": {
+					"text": true,
 					"label": "Footnote",
 					"order": 20,
 					"layer": "OUTER",
@@ -453,6 +460,7 @@
 					"_note": "scrollbarStyle / scrollbarColour are the rail's scrollbar settings; they do not start with this element's prefix and the vocabulary has no scrollbar member, so they are named in the DB override (css_property scrollbar-width / scrollbar-color, css_element list; they apply only when pagination is scrollbar) rather than here."
 				},
 				"see-all": {
+					"text": true,
 					"label": "See-all-reviews button",
 					"order": 22,
 					"layer": "OUTER",

@@ -358,6 +358,9 @@
 			"x-target-level": [
 				"part"
 			],
+			"x-part-kinds": [
+				"text"
+			],
 			"values": "#/$defs/SplitRevealValues",
 			"devices": "#/$defs/SplitRevealDeviceSet",
 			"slots": []
@@ -370,6 +373,9 @@
 			],
 			"x-target-level": [
 				"part"
+			],
+			"x-part-kinds": [
+				"text"
 			],
 			"values": "#/$defs/ScrambleValues",
 			"devices": "#/$defs/ScrambleDeviceSet",
@@ -408,6 +414,9 @@
 			"x-target-level": [
 				"part"
 			],
+			"x-part-kinds": [
+				"svg"
+			],
 			"values": "#/$defs/DrawValues",
 			"devices": "#/$defs/DrawDeviceSet",
 			"slots": []
@@ -420,6 +429,9 @@
 			"x-target-level": [
 				"part"
 			],
+			"x-part-kinds": [
+				"svg"
+			],
 			"values": "#/$defs/MorphValues",
 			"devices": "#/$defs/MorphDeviceSet",
 			"slots": []
@@ -431,6 +443,9 @@
 			],
 			"x-target-level": [
 				"part"
+			],
+			"x-part-kinds": [
+				"svg"
 			],
 			"values": "#/$defs/MotionPathValues",
 			"devices": "#/$defs/MotionPathDeviceSet",
@@ -715,6 +730,9 @@
 			"x-target-level": [
 				"part",
 				"surface"
+			],
+			"x-part-kinds": [
+				"svg"
 			],
 			"values": "#/$defs/SvgLoopValues",
 			"devices": "#/$defs/SvgLoopDeviceSet",

@@ -124,6 +124,7 @@
 					"_note": "`.sgs-icon__svg` / `__dashicon` / `__emoji`: the glyph, sized by iconSize (--sgs-icon-size, per device)."
 				},
 				"label": {
+					"text": true,
 					"label": "Label",
 					"order": 4,
 					"clusters": [

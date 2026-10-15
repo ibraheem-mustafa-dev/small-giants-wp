@@ -78,6 +78,7 @@
 					"_note": "selectors.typography targets .sgs-counter__number, so the block-level typography.fontSize/lineHeight supports serialise onto this element specifically, not the wrapper — unlike quote's root-level inherited-default case. numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism."
 				},
 				"label": {
+					"text": true,
 					"label": "Label",
 					"order": 3,
 					"clusters": [

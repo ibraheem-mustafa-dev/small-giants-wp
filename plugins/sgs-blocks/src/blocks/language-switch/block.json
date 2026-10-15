@@ -63,6 +63,7 @@
 					}
 				},
 				"separator": {
+					"text": true,
 					"label": "Separator",
 					"order": 3,
 					"clusters": [

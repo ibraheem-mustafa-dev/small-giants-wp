@@ -2,7 +2,8 @@
  * The effects the Effects panel offers for one block and target (Spec 38A §5.3, FR-38A-9): the `effects` list's
  * schema slugs, kept when the effect's generated meta row lists the Effects panel (`panels`, never `in_picker`, which
  * marks only the old `fx.js` picker), the block qualifies for it (`generated-fx-qualifying-blocks.json`, derived from
- * `fx_effects.scope` and `requires`), and its target level (`target_level`) fits the target. Site-level rows
+ * `fx_effects.scope` and `requires`), its target level (`target_level`) fits the target, and the target is of a part
+ * kind the effect needs (`layers/refusal-match.js::kindsFit`: text effects on text parts, SVG effects on SVG parts). Site-level rows
  * (`scroll-smoother`, `page-transitions`) list no panel and are never offered.
  *
  * @package
@@ -12,7 +13,7 @@ import qualifyingBlocks from '../generated-fx-qualifying-blocks.json';
 import effectMeta from '../generated-fx-effect-meta.json';
 import defs from '../../../components/motion/motion-defs';
 import { DEFS, effectsForList } from './layers/layer-lists';
-import { levelsForTarget } from './layers/refusal-match';
+import { kindsFit, levelsForTarget } from './layers/refusal-match';
 
 export const EFFECTS_LIST = 'effects';
 export const EFFECTS_PANEL = 'effects';
@@ -60,7 +61,7 @@ export function effectTriggers( effect, layerDef = EFFECT_LAYER_DEF ) {
  * @param {string}      blockName  The block's name.
  * @param {string}      target     `root`, a part key or a `custom:<n>` target.
  * @param {Object|null} [elements] The block's `supports.sgs.elements` (a part marked `"surface": true` takes
- *                                 surface-level effects).
+ *                                 surface-level effects; one marked `"text": true` or `"svg": true` takes that kind's effects).
  * @return {string[]} The slugs.
  */
 export function effectOptions( blockName, target, elements = null ) {
@@ -74,7 +75,8 @@ export function effectOptions( blockName, target, elements = null ) {
 			qualifying.includes( effect ) &&
 			( row.target_level || [] ).some( ( level ) =>
 				levels.includes( level )
-			)
+			) &&
+			kindsFit( effect, target, elements )
 		);
 	} );
 }

@@ -75,6 +75,7 @@
 					}
 				},
 				"heading": {
+					"text": true,
 					"label": "Headings",
 					"order": 4,
 					"clusters": [
@@ -113,6 +114,7 @@
 					"_note": "Card titles share the headings colour (headingColour); only their typography is separate."
 				},
 				"chip": {
+					"text": true,
 					"label": "Status chip",
 					"order": 7,
 					"clusters": [

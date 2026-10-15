@@ -328,6 +328,7 @@
 					"_note": "CROSS-BLOCK REUSE, same shape as the `icon` element above: the actual rendered selector is `.sgs-icon-list__item` (sgs/icon-list's own `<li>`), reused here as markup inside this panel's parent-paints-child model. M-21 (2026-09-23): itemPaddingShiftHover is emitted on `:hover, :focus-within` (the item is an `<li>` containing the focusable `<a class=\"sgs-icon-list__item-link\">`, so `:focus-within` is the correct pairing, matching the `group` element's own lift/border hover rule) across all THREE group styles (columns/cards/minimal), each reading its own existing resting padding literal as the base of the calc()."
 				},
 				"eyebrow": {
+					"text": true,
 					"label": "Brands eyebrow",
 					"layer": "CONTENT",
 					"order": 1.5,

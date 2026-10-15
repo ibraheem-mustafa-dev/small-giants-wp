@@ -379,6 +379,7 @@
 					"_note": "`.sgs-hero__bg-img`, the <img> hero prints for its standard background image (hero paints its own and nulls backgroundImage before the wrapper). A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
 				},
 				"svg-bg": {
+					"svg": true,
 					"surface": true,
 					"prefix": "",
 					"selector": ".sgs-container__svg-bg",

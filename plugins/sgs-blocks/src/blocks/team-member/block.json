@@ -116,6 +116,7 @@
 					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix) — imageZoomHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/card-grid, sgs/gallery and sgs/post-grid for this identical hover-effect pattern. The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover/grayscaleHover/imageZoomHover behaviour toggles — none are Text/Fill/Layout style-cluster members. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"name": {
+					"text": true,
 					"label": "Name",
 					"order": 3,
 					"clusters": [
@@ -137,6 +138,7 @@
 					"_note": "css:color resolves via the default convention (nameColour). No nameFontSize/nameFontWeight/etc attrs exist — honest gaps; only the card-root fontSize (typography.fontSize) governs name/role/bio text size uniformly. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:320, `.sgs-team-member__name`) but doesn't match the `name` prefix convention on its own. `nameColourGradient` (2026-09-03) is the text-colour gradient sibling to nameColour, same background-clip:text mechanism as sgs/counter's numberColourGradient."
 				},
 				"role": {
+					"text": true,
 					"label": "Role",
 					"order": 4,
 					"clusters": [
@@ -157,6 +159,7 @@
 					"_note": "css:color resolves via the default convention (roleColour, default 'text-muted'). No per-element font-size/weight — honest gaps. `roleColourGradient` (2026-09-03) is the text-colour gradient sibling to roleColour, same background-clip:text mechanism."
 				},
 				"bio": {
+					"text": true,
 					"label": "Bio",
 					"order": 5,
 					"clusters": [

@@ -266,6 +266,7 @@
 					}
 				},
 				"panelTitle": {
+					"text": true,
 					"selector": ".sgs-cart__panel-heading",
 					"label": "Panel heading",
 					"order": 11,
@@ -552,6 +553,7 @@
 					"_note": "Hover: checkoutBgHover / checkoutColourHover."
 				},
 				"panelNote": {
+					"text": true,
 					"selector": ".sgs-cart__panel-note",
 					"label": "Note under checkout",
 					"order": 31,

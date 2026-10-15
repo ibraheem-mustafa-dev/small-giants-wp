@@ -209,6 +209,7 @@
 					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names. `labelColourHover`/`labelColourHoverGradient` (2026-09-07) added the hover pair — this element declares no css:background-color of its own (that lives on the separate `wrapper` element/selector), so no bg-layer precondition applies."
 				},
 				"title": {
+					"text": true,
 					"label": "Title",
 					"order": 4,
 					"clusters": [
@@ -286,6 +287,7 @@
 					"_note": "`.sgs-container__image-bg`, the <img> SGS_Container_Wrapper prints for a plain background image. A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
 				},
 				"svg-bg": {
+					"svg": true,
 					"surface": true,
 					"prefix": "",
 					"selector": ".sgs-container__svg-bg",

@@ -217,6 +217,7 @@
 					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap."
 				},
 				"notifyHeading": {
+					"text": true,
 					"selector": ".sgs-buybox__notify-heading",
 					"label": "Notify heading",
 					"order": 10,
@@ -313,6 +314,7 @@
 					"_note": "The back-in-stock form submit button label (.sgs-buybox__notify-submit)."
 				},
 				"notifyStatus": {
+					"text": true,
 					"selector": ".sgs-buybox__notify-status",
 					"label": "Notify status message",
 					"order": 14,
@@ -360,6 +362,7 @@
 					"_note": "The saving badge over the gallery photo (.sgs-buybox__saving-badge)."
 				},
 				"stock": {
+					"text": true,
 					"selector": ".buybox__stock",
 					"label": "Stock line",
 					"order": 16,
@@ -408,6 +411,7 @@
 					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step."
 				},
 				"guidedGroupTitle": {
+					"text": true,
 					"selector": ".sgs-buybox-guided__group-title",
 					"label": "Guided group title",
 					"order": 18,

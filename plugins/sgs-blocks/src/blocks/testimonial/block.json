@@ -102,6 +102,7 @@
 					}
 				},
 				"quote-text": {
+					"text": true,
 					"selector": ".sgs-testimonial__quote",
 					"label": "Quote text",
 					"order": 2,
@@ -131,6 +132,7 @@
 					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix). quoteColourGradient (D636 Task 1b) is the text-colour gradient sibling to quoteColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member. quoteLinkColour/Hover/Gradient/HoverGradient (2026-09-07, colour-conformance TEXT closeout) route through sgs_link_colour_css(), scoped to `.sgs-testimonial__quote a` — same `css:color-link` convention as sgs/timeline's descriptionLinkColour."
 				},
 				"reviewer-name": {
+					"text": true,
 					"selector": ".sgs-testimonial__name",
 					"label": "Reviewer name",
 					"order": 3,
@@ -174,6 +176,7 @@
 					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"org-name": {
+					"text": true,
 					"selector": ".sgs-testimonial__org",
 					"label": "Organisation name",
 					"order": 5,
@@ -237,6 +240,7 @@
 					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"summary": {
+					"text": true,
 					"label": "Summary phrase",
 					"order": 10,
 					"clusters": [

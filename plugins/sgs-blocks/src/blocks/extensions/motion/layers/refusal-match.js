@@ -15,6 +15,7 @@ const EFFECTS = defs[ 'x-sgs-effects' ];
 const LAYER_LABELS = defs[ 'x-sgs-layer-labels' ];
 const PANELS = defs[ 'x-sgs-panels' ];
 const TARGET_LEVEL_KEY = 'x-target-level';
+const PART_KINDS_KEY = 'x-part-kinds';
 
 // The target levels each kind of target can hold (§5.4 "Targeting levels"). The root is the block, paints the block's
 // own background and is an element a part-level effect can attach to; a declared part holds part-level effects, and a
@@ -41,20 +42,41 @@ export function levelsForTarget( target, elements = null ) {
 }
 
 /**
+ * Whether a target is of a kind an effect needs (§5.4 "Part (text)", "Part (SVG)"). An effect whose schema entry names
+ * `x-part-kinds` fits a declared part only when that part's declaration carries one of those kinds as `true`
+ * (`"text": true`, `"svg": true`, written by `scripts/migrate-motion-part-kinds.py`); the root takes every kind (its
+ * block's registry row, through the qualifying-blocks map, decides those effects there), and an effect with no kinds
+ * fits any target.
+ *
+ * @param {string}      effect     Effect slug.
+ * @param {string}      target     `root`, a part key or a `custom:<n>` target.
+ * @param {Object|null} [elements] The block's `supports.sgs.elements`.
+ * @return {boolean} True when the target is of a kind the effect takes.
+ */
+export function kindsFit( effect, target, elements = null ) {
+	const kinds = EFFECTS[ effect ]?.[ PART_KINDS_KEY ];
+	if ( ! Array.isArray( kinds ) || target === 'root' ) {
+		return true;
+	}
+	return kinds.some( ( kind ) => elements?.[ target ]?.[ kind ] === true );
+}
+
+/**
  * The effect slugs a target may hold, keeping the given order: an effect whose `x-target-level` names a level the
- * target offers.
+ * target offers and whose part kinds the target fits (`kindsFit`).
  *
  * @param {string[]}    effects    The candidate slugs.
  * @param {string}      target     `root`, a part key or a `custom:<n>` target.
- * @param {Object|null} [elements] The block's `supports.sgs.elements` (see `levelsForTarget`).
+ * @param {Object|null} [elements] The block's `supports.sgs.elements` (see `levelsForTarget` and `kindsFit`).
  * @return {string[]} The slugs valid for the target.
  */
 export function effectsForTarget( effects, target, elements = null ) {
 	const levels = levelsForTarget( target, elements );
-	return effects.filter( ( effect ) =>
-		( EFFECTS[ effect ]?.[ TARGET_LEVEL_KEY ] || [] ).some( ( level ) =>
-			levels.includes( level )
-		)
+	return effects.filter(
+		( effect ) =>
+			( EFFECTS[ effect ]?.[ TARGET_LEVEL_KEY ] || [] ).some( ( level ) =>
+				levels.includes( level )
+			) && kindsFit( effect, target, elements )
 	);
 }
 

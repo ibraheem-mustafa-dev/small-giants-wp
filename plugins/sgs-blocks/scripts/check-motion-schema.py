@@ -21,7 +21,8 @@ WHAT --check ASSERTS
                    channel's one perspective) has a --sgs- name, an @property syntax and an initial value, each is
                    registered once, and the owner's x-sgs-writes entry lists that channel
   tokens           every token in the Spec 38A §7 table has a band, and the tokenReference enum equals the token list
-  effects          every x-sgs-effects entry names real panels, values and device nodes, and labels its slots
+  effects          every x-sgs-effects entry names real panels, values and device nodes, and labels its slots; an
+                   x-part-kinds list names only part kinds (text, svg) on an effect that targets the part level
   field-range      a field that narrows duration, distance or angle carries x-sgs-range {min, max, unit} equal to
                    its minimum/maximum in the base unit (ms, px, deg), so unit strings are held to the same range
   spec-*           refusal texts, §7 bands, §10 owner properties and identities, the injected-layer cap and the
@@ -52,6 +53,10 @@ REPO = PLUGIN.parents[1]
 SCHEMA = PLUGIN / "schemas" / "motion.schema.json"
 SPEC = REPO / ".claude" / "specs" / "38A-SGS-MOTION-MODEL.md"
 DEFS = "#/$defs/"
+
+# The part kinds a block.json part declares (`"text": true`, `"svg": true`, scripts/migrate-motion-part-kinds.py), which
+# an effect's x-part-kinds may require.
+PART_KINDS = {"text", "svg"}
 
 # FR-38A-55: the field types, by the names the schema gives them.
 FIELD_TYPES = {
@@ -346,6 +351,12 @@ def check_effects(schema: dict, defs: dict) -> list[str]:
             and all(isinstance(v, str) and re.fullmatch(r"--[a-z0-9-]+", v) for v in timing.values())
         ):
             errors.append(f"effects: {slug} runtimeTiming must be {{duration, easing}} custom property names")
+        # x-part-kinds: a declared part takes the effect only when it carries one of these kind markers.
+        kinds = e.get("x-part-kinds")
+        if kinds is not None and not (
+            isinstance(kinds, list) and kinds and set(kinds) <= PART_KINDS and "part" in (e.get("x-target-level") or [])
+        ):
+            errors.append(f"effects: {slug} x-part-kinds must be a non-empty list of {sorted(PART_KINDS)} on a part-level effect")
     return errors
 
 
@@ -438,6 +449,10 @@ def _plant_runtime_timing(s: dict) -> None:
     s["x-sgs-effects"]["magnet"]["runtimeTiming"] = {"duration": "sgs-mag-dur"}
 
 
+def _plant_part_kind(s: dict) -> None:
+    s["x-sgs-effects"]["split-reveal"]["x-part-kinds"] = ["image"]
+
+
 def cmd_self_test() -> int:
     original = json.loads(SCHEMA.read_text(encoding="utf-8"))
     # Each plant must be caught by its own rule, named by the error's prefix.
@@ -453,6 +468,7 @@ def cmd_self_test() -> int:
         ("a hover state trigger enum widened with click", _plant_hover_trigger, "spec-triggers:"),
         ("an x-sgs-range wider than its field's maximum", _plant_string_range, "field-range:"),
         ("a runtimeTiming without its easing property", _plant_runtime_timing, "effects:"),
+        ("an x-part-kinds naming an unknown kind", _plant_part_kind, "effects:"),
     ]
     ok = True
     with tempfile.TemporaryDirectory() as tmp:

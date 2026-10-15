@@ -99,6 +99,7 @@
 					}
 				},
 				"caption": {
+					"text": true,
 					"label": "Caption",
 					"order": 2,
 					"clusters": [

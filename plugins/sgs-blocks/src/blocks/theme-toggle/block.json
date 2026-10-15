@@ -34,6 +34,7 @@
 			},
 			"elements": {
 				"label": {
+					"text": true,
 					"label": "Label",
 					"order": 1,
 					"prefix": "label",
