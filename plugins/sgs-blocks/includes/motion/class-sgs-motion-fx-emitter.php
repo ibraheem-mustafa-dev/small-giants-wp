@@ -158,7 +158,7 @@ final class Sgs_Motion_Fx_Emitter {
 		}
 		$out     = array( 'data-sgs-fx' => $effect );
 		$trigger = $layer['trigger'] ?? null;
-		if ( is_string( $trigger ) && in_array( $trigger, Sgs_Motion_Fx_Grammar::RUNTIME_TRIGGERS, true ) ) {
+		if ( is_string( $trigger ) && in_array( $trigger, array_merge( Sgs_Motion_Fx_Grammar::RUNTIME_TRIGGERS, Sgs_Motion_Fx_Grammar::POINTER_TRIGGERS ), true ) ) {
 			$out['data-sgs-fx-trigger'] = $trigger;
 		}
 		foreach ( self::OFF_ATTRS as $tier => $attr ) {

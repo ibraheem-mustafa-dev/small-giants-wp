@@ -38,6 +38,12 @@ final class Sgs_Motion_Fx_Grammar {
 	 */
 	const RUNTIME_TRIGGERS = array( 'load', 'scroll', 'hover' );
 
+	/**
+	 * Pointer triggers an effect's own runtime reads from `data-sgs-fx-trigger` (the press effects, which the GSAP provider
+	 * never sees). Twin: `src/shared/effects/fx-ripple.js::triggerOf` (`click`, else `pointerdown`).
+	 */
+	const POINTER_TRIGGERS = array( 'pointerdown', 'click' );
+
 	/** The CSS easing keywords as the curves they name (CSS Easing Functions Level 1). */
 	const CSS_KEYWORD_CURVES = array(
 		'ease'        => 'cubic-bezier(0.25, 0.1, 0.25, 1)',

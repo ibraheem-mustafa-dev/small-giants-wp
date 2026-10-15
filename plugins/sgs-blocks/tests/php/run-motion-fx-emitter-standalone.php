@@ -144,6 +144,11 @@ namespace {
 	preg_match( '/export function resolveTrigger\b.*?\n\}/s', (string) file_get_contents( $src . 'shared/effects/gsap/provider.js' ), $m );
 	preg_match_all( "/'(load|scroll|hover|[a-z]+)'/", $m[0] ?? '', $words );
 	fx_check( array() === array_diff( Grammar::RUNTIME_TRIGGERS, $words[1] ) && array() === array_diff( array_unique( $words[1] ), Grammar::RUNTIME_TRIGGERS ), 'RUNTIME_TRIGGERS equals the words provider.js resolveTrigger reads: ' . json_encode( array_values( array_unique( $words[1] ) ) ) );
+	preg_match( '/export function triggerOf\b.*?\n\}/s', (string) file_get_contents( $src . 'shared/effects/fx-ripple.js' ), $m );
+	preg_match_all( "/'(pointerdown|click|[a-z]+)'/", $m[0] ?? '', $words );
+	fx_check( array() !== $words[1] && array() === array_diff( Grammar::POINTER_TRIGGERS, $words[1] ) && array() === array_diff( array_unique( $words[1] ), Grammar::POINTER_TRIGGERS ), 'POINTER_TRIGGERS equals the words fx-ripple.js triggerOf reads: ' . json_encode( array_values( array_unique( $words[1] ) ) ) );
+	$ripple = \SGS\Blocks\Motion\Sgs_Motion_Fx_Emitter::layer_attrs( array( 'id' => 'r1', 'effect' => 'ripple', 'trigger' => 'click', 'values' => array() ), 'sgs/button', 'root' );
+	fx_check( 'click' === ( $ripple['data-sgs-fx-trigger'] ?? null ), 'a click-trigger ripple layer writes data-sgs-fx-trigger="click": ' . json_encode( $ripple ) );
 	preg_match_all( "/values: \{ gsap: '([^']+)' \}/", (string) file_get_contents( $src . 'components/motion/easing-master-list.js' ), $m );
 	$gsap = array_keys( Grammar::gsap_curves() );
 	fx_check( count( $m[1] ) > 4 && array() === array_diff( $m[1], $gsap ) && array() === array_diff( $gsap, $m[1] ), 'gsap_curves() names every non-empty gsap ease of easing-master-list.js: ' . json_encode( $m[1] ) );
