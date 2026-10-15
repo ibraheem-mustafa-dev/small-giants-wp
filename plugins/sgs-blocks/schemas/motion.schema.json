@@ -8875,7 +8875,8 @@
 					"enum": [
 						"self",
 						"root",
-						"group"
+						"group",
+						"item"
 					]
 				},
 				"trigger": {
@@ -8931,7 +8932,8 @@
 					"enum": [
 						"self",
 						"root",
-						"group"
+						"group",
+						"item"
 					]
 				},
 				"trigger": {
