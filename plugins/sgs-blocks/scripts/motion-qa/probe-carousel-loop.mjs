@@ -272,7 +272,7 @@ check(
 const dragBound = await page.evaluate( () => {
 	const el = document.querySelector( '[data-sgs-loop]' );
 	return {
-		hasDrag: el.getAttribute( 'data-sgs-fx' ) === 'draggable',
+		hasDrag: ( el.getAttribute( 'data-sgs-fx' ) || '' ).split( /\s+/ ).includes( 'draggable' ),
 		scrollWidth: el.scrollWidth,
 		cursor: window.getComputedStyle( el ).cursor,
 	};

@@ -1123,15 +1123,11 @@ class SGS_Motion_Registry {
 	 * @return string[] Unique effect names.
 	 */
 	private static function extract_effects( string $block_content ): array {
-		if ( ! \preg_match_all(
-			'/data-sgs-fx="([a-z0-9-]+)"/i',
-			$block_content,
-			$matches
-		) ) {
+		// One element can list several effects, whitespace-separated (`Sgs_Motion_Fx_Emitter`).
+		if ( ! \preg_match_all( '/data-sgs-fx="\s*([a-z0-9-]+(?:\s+[a-z0-9-]+)*)\s*"/i', $block_content, $matches ) ) {
 			return array();
 		}
-
-		return \array_unique( $matches[1] );
+		return \array_values( \array_unique( \preg_split( '/\s+/', \implode( ' ', $matches[1] ) ) ) );
 	}
 
 	/**
