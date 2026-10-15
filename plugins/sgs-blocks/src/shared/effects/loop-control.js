@@ -2,12 +2,14 @@
  * SGS motion: the shared loop control (Spec 38A FR-38A-37).
  *
  * Registered as the script module `@sgs/loop-control` and externalised in webpack, so every looping effect (ambient
- * float now; ken-burns, svg-loop, lottie and marquee later) shares this one instance, one IntersectionObserver and
- * one reduced-motion listener.
+ * float, ken-burns, svg-loop, lottie and marquee) shares this one instance, one IntersectionObserver and one
+ * reduced-motion listener.
  *
- * A loop is an element whose animation runs by itself. `registerLoop( el, options )` pauses it by setting the
- * attribute `data-sgs-loop-paused` on the element; the effect's stylesheet reacts with
- * `animation-play-state: paused`, so this module never writes an animation or a style property. A loop is paused when:
+ * A loop is an element whose animation runs by itself. `animateLoop` runs it through the Web Animations API, and
+ * `registerLoop( el, options )` keeps the pause state: it sets the attribute `data-sgs-loop-paused` on the element as a
+ * state marker (`isPaused()` reads it back; no stylesheet reacts to it) and calls `onPausedChange` so the effect pauses
+ * or plays its own animation or player. This module never writes an animation or a style property itself. A loop is
+ * paused when:
  *
  *   - it is off screen (one shared IntersectionObserver);
  *   - keyboard focus is inside its block root (always on, WCAG 2.2.2);

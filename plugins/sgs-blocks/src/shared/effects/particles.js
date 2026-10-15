@@ -8,12 +8,8 @@
  * integrator and the rAF loop are shared code, never duplicated per preset.
  *
  * ── WHY TIER V ────────────────────────────────────────────────────────────
- * A particle pool this size is exactly the shape the 2026-08-02
- * motion-ecosystem survey already settled for `magnet.js`: cheap per-frame
- * arithmetic on a fixed pool, no physics solver, no GSAP plugin does this
- * more cheaply than a `Float32Array`-free plain loop. Canvas 2D, not WebGL —
- * 150 filled circles a frame is nowhere near what needs a GPU pass, and Tier
- * W (Spec 38 §1.2b) is reserved for effects that genuinely do.
+ * Cheap per-frame arithmetic on a fixed pool of 150 filled circles: Canvas 2D, no physics solver, no GPU pass (Tier W
+ * is reserved for effects that need one).
  *
  * ── DRIVER-AGNOSTIC CORE, LIKE `magnet.js` AND `webgl/wave-gradient.js` ────
  * This module owns the canvas, the pool and the loop. It attaches NO pointer
@@ -65,248 +61,23 @@
  * two OTHER reasons frames stop; both are created and disconnected inside
  * this same `createParticles`/`destroy` pair, never left as global state.
  *
- * ── PARAMETERS (Spec 38A M5.16c) ──────────────────────────────────────────
- * Five stored parameters reshape the presets. Each is `undefined` when unset,
- * and an unset parameter leaves the preset's own value in force:
- *
- *   life       ms. Above 0 it replaces the preset life (seconds = ms / 1000).
- *   speed      ratio. Multiplies the preset's launch speed.
- *   gravity    ratio. Acceleration in px/s² = ratio × 140 (the gravity-dots
- *              base). Negative pulls upward. A set 0 is a real zero, not unset.
- *   drag       0–1. Replaces the preset's per-step velocity multiplier.
- *   spawnRate  per second. Above 0 it limits emission by time: an accumulator
- *              adds spawnRate × elapsed seconds on each pointer event, carries
- *              the fraction to the next event, and is capped at one pool's
- *              worth. It replaces the preset's per-event count, so `density`
- *              does not apply on this path. Ripple's minIntervalMs becomes
- *              1000 / spawnRate.
- *
- * Ripple has no motion, so gravity, drag and speed do not affect it. Life and
- * spawnRate (through minIntervalMs) do. Every value is clamped to the schema
- * bounds in FIELD_RANGES. `MAX_PARTICLES` and `MAX_DPR` cap the engine whatever
- * the parameters say.
- *
- * `resolveParticleOptions()` parses raw values (a bare number or a numeric
- * string; `life` also takes an `ms` or `s` suffix) and returns the first valid
- * candidate per field. The caller states the precedence; this module only
- * parses, so it never reads the DOM.
+ * ── PARAMETERS ────────────────────────────────────────────────────────────
+ * Life, speed, gravity, drag and spawn rate reshape the presets; `particles-options.js` documents and resolves them,
+ * and `particles-presets.js` holds the preset table, the bounds and the `MAX_PARTICLES` and `MAX_DPR` caps.
  *
  * @package
  */
 
-/** Hard pool cap (§ CAP). Never exceeded, never resized. */
-const MAX_PARTICLES = 150;
+import { MAX_DPR, MAX_PARTICLES, PRESETS } from './particles-presets';
+import { deriveTuning, resolveParticleOptions } from './particles-options';
+import {
+	drawPool,
+	emptySlot,
+	stepPool,
+	writeParticle,
+} from './particles-engine';
 
-/** Device-pixel-ratio ceiling — same 1.5 precedent as `webgl/wave-gradient.js`. */
-const MAX_DPR = 1.5;
-
-/**
- * Gravity ratio base: a stored `gravity` ratio of 1 is this many px/s². It is
- * the gravity-dots preset's own gravity, so ratio 1 reproduces that preset.
- */
-const GRAVITY_RATIO_BASE = 140;
-
-/**
- * Schema bounds (`schemas/motion.schema.json` `$defs/ParticlesValues`) for
- * every stored parameter. A value outside its bound is clamped to it, never
- * rejected.
- */
-const FIELD_RANGES = {
-	density: [ 0.25, 3 ],
-	size: [ 0.25, 3 ],
-	life: [ 0, 20000 ],
-	speed: [ 0.1, 5 ],
-	gravity: [ -10, 10 ],
-	drag: [ 0, 1 ],
-	spawnRate: [ 0, 200 ],
-};
-
-/** The stored parameter names, in the order `resolveParticleOptions` reads them. */
-const PARTICLE_FIELDS = Object.keys( FIELD_RANGES );
-
-/**
- * Per-preset parameters. The engine above this table is 100% shared; every
- * behavioural difference between the three shipped presets lives here.
- *
- * `kind: 'trail'` particles are filled disks that move and fade.
- * `kind: 'ring'` particles are stroked, expanding circles (ripple only).
- *
- * @type {Object<string, Object>}
- */
-const PRESETS = {
-	sparks: {
-		kind: 'trail',
-		// Particles spawned per push() call — a "trail" needs several per
-		// pointer sample or it reads as a dotted line, not a spark shower.
-		count: 3,
-		life: 0.55,
-		speed: 60,
-		// No gravity: sparks fly outward and simply fade, they do not fall.
-		gravity: 0,
-		drag: 0.92,
-		radiusFactor: 0.4,
-	},
-	'gravity-dots': {
-		kind: 'trail',
-		count: 2,
-		life: 1.3,
-		speed: 25,
-		// px/s^2 downward acceleration — small, so a dot visibly drifts
-		// rather than dropping instantly.
-		gravity: GRAVITY_RATIO_BASE,
-		drag: 0.985,
-		radiusFactor: 0.55,
-		// Fraction of the emitter's own box height at which a falling dot
-		// SETTLES (velocity zeroed) rather than exiting the box. 0.92 keeps
-		// a visible resting layer above the very bottom edge.
-		settleAtBoxFraction: 0.92,
-	},
-	ripple: {
-		kind: 'ring',
-		count: 1,
-		life: 0.85,
-		// Max 2 rings/second/emitter (owner-approved limit) — enforced by
-		// gating spawns on elapsed time, not by dropping frames.
-		minIntervalMs: 500,
-		// Ring radius grows to (this factor * the coverage-derived max
-		// radius) over its life — see the coverage-ceiling arithmetic above.
-		ringRadiusFactor: 3,
-		ringLineWidth: 2,
-	},
-};
-
-/**
- * Clamp a value between a minimum and a maximum.
- *
- * @param {number} value The value to clamp.
- * @param {number} min   The minimum.
- * @param {number} max   The maximum.
- * @return {number} The clamped value.
- */
-function clamp( value, min, max ) {
-	return Math.min( max, Math.max( min, value ) );
-}
-
-/**
- * Parse one raw stored value. Accepts a bare number or a numeric string.
- * Only `life` takes a time unit (`ms` or `s`), so `speed: 1s` is rejected
- * rather than silently read as seconds. Anything unparsable is `undefined`,
- * which the caller reads as "unset".
- *
- * @param {string} field The parameter name.
- * @param {*}      raw   The raw value (number, string, null or undefined).
- * @return {number|undefined} The parsed number, or undefined when invalid.
- */
-function parseParticleValue( field, raw ) {
-	if ( 'number' === typeof raw ) {
-		return Number.isFinite( raw ) ? raw : undefined;
-	}
-	if ( 'string' !== typeof raw ) {
-		return undefined;
-	}
-	const pattern =
-		'life' === field
-			? /^([+-]?(?:\d+\.?\d*|\.\d+))(ms|s)?$/
-			: /^([+-]?(?:\d+\.?\d*|\.\d+))$/;
-	const match = pattern.exec( raw.trim() );
-	if ( ! match ) {
-		return undefined;
-	}
-	const value = Number( match[ 1 ] );
-	return 's' === match[ 2 ] ? value * 1000 : value;
-}
-
-/**
- * Resolve every stored parameter from its candidate raw values. Candidates
- * are listed in precedence order (the caller decides it: custom property,
- * then legacy attribute); the first one that parses wins. A field with no
- * valid candidate stays `undefined`, which the engine reads as "use the
- * preset". Pure: it never touches the DOM.
- *
- * @param {Object<string, Array<*>>} [candidates] Per-field candidate values.
- * @return {Object<string, number|undefined>} The resolved parameters.
- */
-export function resolveParticleOptions( candidates = {} ) {
-	const resolved = {};
-	PARTICLE_FIELDS.forEach( ( field ) => {
-		const list = Array.isArray( candidates[ field ] )
-			? candidates[ field ]
-			: [];
-		resolved[ field ] = undefined;
-		for ( const raw of list ) {
-			const value = parseParticleValue( field, raw );
-			if ( undefined !== value ) {
-				resolved[ field ] = value;
-				break;
-			}
-		}
-	} );
-	return resolved;
-}
-
-/**
- * Turn a preset and the resolved parameters into the numbers the engine uses.
- * Every rule is the one the module header states; an unset parameter yields
- * the preset's own value (or 1 for the multiplicative fields).
- *
- * @param {Object} base   The preset definition from PRESETS.
- * @param {Object} [opts] The resolved parameters (undefined = unset).
- * @return {Object} The effective tuning for one instance.
- */
-function deriveTuning( base, opts = {} ) {
-	const bounded = ( field ) => {
-		const value = opts[ field ];
-		if ( 'number' !== typeof value || ! Number.isFinite( value ) ) {
-			return undefined;
-		}
-		const [ min, max ] = FIELD_RANGES[ field ];
-		return clamp( value, min, max );
-	};
-	const density = bounded( 'density' );
-	const sizeScale = bounded( 'size' );
-	const lifeMs = bounded( 'life' );
-	const speed = bounded( 'speed' );
-	const gravity = bounded( 'gravity' );
-	const drag = bounded( 'drag' );
-	const spawnRate = bounded( 'spawnRate' );
-	const rateSet = undefined !== spawnRate && spawnRate > 0;
-
-	return {
-		density: undefined === density ? 1 : density,
-		sizeScale: undefined === sizeScale ? 1 : sizeScale,
-		life: undefined !== lifeMs && lifeMs > 0 ? lifeMs / 1000 : base.life,
-		speedScale: undefined === speed ? 1 : speed,
-		gravity:
-			undefined === gravity ? base.gravity : gravity * GRAVITY_RATIO_BASE,
-		drag: undefined === drag ? base.drag : drag,
-		spawnRate: rateSet ? spawnRate : 0,
-		minIntervalMs: rateSet ? 1000 / spawnRate : base.minIntervalMs,
-	};
-}
-
-/**
- * Build a fresh, empty particle slot. Every field is set on spawn; the
- * shape here just fixes the object's hidden class so the pool never
- * de-optimises from slot to slot.
- *
- * @return {Object} An inert pool slot.
- */
-function emptySlot() {
-	return {
-		alive: false,
-		x: 0,
-		y: 0,
-		vx: 0,
-		vy: 0,
-		age: 0,
-		maxAge: 0,
-		radius: 0,
-		alpha: 0,
-		isRing: false,
-		ringRadius: 0,
-		currentRingRadius: 0,
-	};
-}
+export { resolveParticleOptions };
 
 /**
  * The driver-agnostic engine. Attaches NO pointer listener.
@@ -420,52 +191,7 @@ export function createParticles( el, opts = {} ) {
 		if ( ! slot.alive ) {
 			liveCount++;
 		}
-		slot.alive = true;
-		slot.x = x;
-		slot.y = y;
-		slot.age = 0;
-		// +/-20% life jitter so a burst of particles does not fade in
-		// lock-step, which would read as a single flashing blob rather
-		// than a trail.
-		slot.maxAge = tuning.life * ( 0.8 + Math.random() * 0.4 );
-		slot.alpha = 1;
-		slot.isRing = !! ring;
-
-		if ( ring ) {
-			slot.vx = 0;
-			slot.vy = 0;
-			slot.radius = 0;
-			// A ring is STROKED, not filled, so it is not bounded by the
-			// filled-disc coverage ceiling that `maxRadius` encodes — its
-			// painted area is circumference x lineWidth, not pi*r^2. It may
-			// therefore exceed `maxRadius` deliberately.
-			//
-			// This was previously written as
-			// `Math.min( f * maxRadius, maxRadius * f )` — both arguments are
-			// the SAME value, so the clamp was VACUOUS: it read as a guard and
-			// guarded nothing. Assigning directly is honest about the intent.
-			// The coverage ceiling is still respected in fact: at the shipped
-			// numbers a 2px stroke at 3x a ~21px radius, capped at 2 rings
-			// alive by `minIntervalMs`, measures ~0.075% of the emitter box
-			// against SC 2.3.1's 25% threshold.
-			slot.ringRadius = preset.ringRadiusFactor * maxRadius;
-			slot.currentRingRadius = 0;
-		} else {
-			const angle = Math.random() * Math.PI * 2;
-			const speed =
-				preset.speed *
-				tuning.speedScale *
-				( 0.5 + Math.random() * 0.5 );
-			slot.vx = Math.cos( angle ) * speed;
-			slot.vy = Math.sin( angle ) * speed;
-			slot.radius = Math.min(
-				maxRadius,
-				maxRadius *
-					preset.radiusFactor *
-					tuning.sizeScale *
-					( 0.6 + Math.random() * 0.6 )
-			);
-		}
+		writeParticle( slot, x, y, ring, preset, tuning, maxRadius );
 	}
 
 	/**
@@ -532,86 +258,6 @@ export function createParticles( el, opts = {} ) {
 	}
 
 	/**
-	 * Advance every live particle by `dt` seconds.
-	 *
-	 * @param {number} dt Seconds since the previous frame.
-	 * @return {boolean} True while at least one particle is still alive.
-	 */
-	function step( dt ) {
-		for ( let i = 0; i < MAX_PARTICLES; i++ ) {
-			const p = pool[ i ];
-			if ( ! p.alive ) {
-				continue;
-			}
-			p.age += dt;
-			if ( p.age >= p.maxAge ) {
-				p.alive = false;
-				liveCount--;
-				continue;
-			}
-			// `t` only ever grows within a particle's life (age rises,
-			// maxAge is fixed), so `alpha = 1 - t` cannot rise — the flash
-			// ceiling holds by construction, not by a clamp.
-			const t = p.age / p.maxAge;
-			p.alpha = 1 - t;
-
-			if ( p.isRing ) {
-				p.currentRingRadius = p.ringRadius * t;
-				continue;
-			}
-
-			p.vy += tuning.gravity * dt;
-			p.vx *= tuning.drag;
-			p.vy *= tuning.drag;
-			p.x += p.vx * dt;
-			p.y += p.vy * dt;
-
-			if ( preset.settleAtBoxFraction && boxHeight > 0 ) {
-				const floor = boxHeight * preset.settleAtBoxFraction;
-				if ( p.y >= floor ) {
-					p.y = floor;
-					p.vy = 0;
-					p.vx *= 0.9;
-				}
-			}
-		}
-		return liveCount > 0;
-	}
-
-	/**
-	 * Paint every live particle for the current frame.
-	 */
-	function draw() {
-		ctx.clearRect( 0, 0, boxWidth, boxHeight );
-		for ( let i = 0; i < MAX_PARTICLES; i++ ) {
-			const p = pool[ i ];
-			if ( ! p.alive ) {
-				continue;
-			}
-			ctx.globalAlpha = clamp( p.alpha, 0, 1 );
-			if ( p.isRing ) {
-				ctx.strokeStyle = colour;
-				ctx.lineWidth = preset.ringLineWidth;
-				ctx.beginPath();
-				ctx.arc(
-					p.x,
-					p.y,
-					Math.max( 0, p.currentRingRadius ),
-					0,
-					Math.PI * 2
-				);
-				ctx.stroke();
-			} else {
-				ctx.fillStyle = colour;
-				ctx.beginPath();
-				ctx.arc( p.x, p.y, p.radius, 0, Math.PI * 2 );
-				ctx.fill();
-			}
-		}
-		ctx.globalAlpha = 1;
-	}
-
-	/**
 	 * The shared per-frame callback. Stops itself — see the module docblock
 	 * — the instant nothing is left alive.
 	 *
@@ -627,8 +273,9 @@ export function createParticles( el, opts = {} ) {
 		const dt = Math.min( 0.05, ( now - lastTick ) / 1000 );
 		lastTick = now;
 
-		const stillAlive = step( dt );
-		draw();
+		liveCount = stepPool( pool, preset, tuning, boxHeight, dt );
+		drawPool( ctx, pool, preset, colour, boxWidth, boxHeight );
+		const stillAlive = liveCount > 0;
 
 		if ( stillAlive ) {
 			rafHandle = requestAnimationFrame( tick );
@@ -724,23 +371,9 @@ export function createParticles( el, opts = {} ) {
 		},
 
 		/**
-		 * PROBE API — read-only, permanent, no side effects.
-		 *
-		 * Exists so the two claims FR-38-32 makes about itself can be measured
-		 * on the live page instead of trusted: that the pool CAP BINDS (`live`
-		 * never exceeds MAX_PARTICLES however fast the pointer sweeps) and that
-		 * the LOOP STOPS (`ticks` stops rising once the pointer rests). Both sat
-		 * "STILL UNMEASURED" in Spec 38 §3.3 because the first probe to attempt
-		 * them was unreliable.
-		 *
-		 * Kept in the shipped bundle deliberately (approved by Bean): a probe
-		 * that only exists in a debug build cannot verify the build that ships,
-		 * and this is two integers behind a closure — no listener, no timer, no
-		 * measurable cost.
-		 *
-		 * ⚠ Sample `live` DURING a pointer sweep, never after. Every particle
-		 * dies within its preset life, so a single reading taken afterwards is
-		 * 0 and reads as dead code.
+		 * PROBE API: read-only, permanent, no side effects. It lets the live page measure that the pool cap binds (`live`
+		 * never exceeds MAX_PARTICLES) and that the loop stops (`ticks` stops rising once the pointer rests). Sample
+		 * `live` DURING a pointer sweep, never after: every particle dies within its preset life.
 		 *
 		 * @return {{ live: number, ticks: number }} Live particles now, and
 		 *         frames drawn since this emitter was created.

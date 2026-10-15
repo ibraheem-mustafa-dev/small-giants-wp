@@ -189,7 +189,7 @@
 					"order": 6,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The scrolling marquee track (.sgs-brand-strip__track, render.php line 538). scrollSpeed drives --sgs-scroll-speed, but the CSS animation declaration that consumes it only applies on the compound .sgs-brand-strip__track--ready selector (style.css line 315-316) - a JS-toggled 'measurement complete' state (view.js line 91), not a CSS pseudo-class, so it has no home in the states taxonomy (hover-shaped only). The DB's css_element='track--ready' therefore remains a residual, undeclared drift finding after this fix: declaring a literal --ready-suffixed element key would be the first BEM-modifier-shaped top-level key anywhere in this framework (checked, no precedent), so this manifest declares the real container ('track') honestly instead of inventing one to force a clean audit pass. Accepted debt, not silently worked around."
+					"_note": "The marquee track (.sgs-brand-strip__track). The scrollSpeed attribute is kept only for the M6.5 migration: the marquee mapper (includes/motion/migrate/mappers/class-sgs-motion-map-marquee.php) reads it and writes the marquee effect layer, and the shared runtime (src/shared/effects/fx-marquee.js) runs the track. The track is declared as the real container; the attribute drives no CSS of its own."
 				},
 				"strip-spacing": {
 					"label": "Strip spacing",

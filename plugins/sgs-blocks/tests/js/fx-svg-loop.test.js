@@ -17,6 +17,7 @@ let animations;
 let observers;
 let queries;
 let reduced;
+let props;
 
 class FakeObserver {
 	constructor( callback ) {
@@ -89,10 +90,11 @@ beforeEach( () => {
 	observers = [];
 	queries = {};
 	reduced = false;
+	props = {};
 	window.IntersectionObserver = FakeObserver;
 	window.matchMedia = jest.fn( query );
 	window.getComputedStyle = jest.fn( () => ( {
-		getPropertyValue: () => '',
+		getPropertyValue: ( name ) => props[ name ] || '',
 	} ) );
 	document.body.innerHTML = '';
 } );
@@ -241,5 +243,43 @@ describe( 'selection', () => {
 		const { el } = mount( { fxToken: 'sheen svg-loop' } );
 		boot();
 		expect( el.animate ).toHaveBeenCalledTimes( 1 );
+	} );
+} );
+
+describe( 'per-device custom properties', () => {
+	test( 'computed custom properties beat the attributes', () => {
+		props = { '--sgs-svl-duration': '2s', '--sgs-svl-amplitude': '1.6' };
+		const { el } = mount( {
+			attrs: `${ ATTR }motion="pulse" ${ ATTR }duration="3000" ${ ATTR }amplitude="1"`,
+		} );
+		boot();
+		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
+		expect( options.duration ).toBe( 2000 );
+		expect( keyframes[ 1 ][ '--sgs-svl-op' ] ).toBe( '0.2' );
+	} );
+
+	test( 'an out-of-range custom property falls back to the attribute', () => {
+		props = { '--sgs-svl-amplitude': '9' };
+		const { el } = mount( {
+			attrs: `${ ATTR }motion="pulse" ${ ATTR }amplitude="1.6"`,
+		} );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ][ 1 ][ '--sgs-svl-op' ] ).toBe(
+			'0.2'
+		);
+	} );
+
+	test( 'a tier change rebuilds with the new value', () => {
+		const { el } = mount( {
+			attrs: `${ ATTR }motion="wave" ${ ATTR }duration="8000"`,
+		} );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 1 ].duration ).toBe( 8000 );
+		props = { '--sgs-svl-duration': '4000ms', '--sgs-svl-amplitude': '2' };
+		query( '(max-width: 767px)' ).fire();
+		expect( el.animate ).toHaveBeenCalledTimes( 2 );
+		const [ keyframes, options ] = el.animate.mock.calls[ 1 ];
+		expect( options.duration ).toBe( 4000 );
+		expect( keyframes[ 1 ][ '--sgs-svl-rot' ] ).toBe( '2deg' );
 	} );
 } );

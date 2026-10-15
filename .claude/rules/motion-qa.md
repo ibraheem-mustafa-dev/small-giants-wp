@@ -38,6 +38,7 @@ The runner registers only the FOUR probes that are standing checks with negative
 | 5252 | Spec 38A Gate 4b (M5.1): a layer-based copy of page 2103, made by `Sgs_Motion_Migrate_Runner::migrate_content`; its nine `data-sgs-fx` elements must match 2103's (`probe-good-by-default.mjs` with 2103 swapped for 5252) |
 | 5253 | Spec 38A M5.7 parallax: split hero media part at ratio -0.06 on the page basis, a 0.18 root, an image inside a still frame, a clamp and a control (`probe-parallax.mjs --page 5253`, tree `tests/fixtures/motion/pages/parallax.json`) |
 | 5255 | Spec 38A M5.6 Follow pointer and glare: an info-box card with hover scale, Follow pointer at 8deg and glare, and a control card (`probe-follow-pointer.mjs --page 5255`, tree `tests/fixtures/motion/pages/follow-pointer.json`) |
+| 5250 | Spec 38A FR-38A-36 scroll progress: page bar, counter and section bar (`probe-scroll-progress.mjs`, fixture `tests/fixtures/motion/pages/scroll-progress.json`) |
 
 Page 5196 (a draft, "Editor typing baseline (200 blocks)") is not a deploy-gate fixture: it is Spec 38A FR-38A-29's editor typing-latency page (`plugins/sgs-blocks/scripts/perf/editor-typing-baseline.json`), re-measured by M3.11. Never edit or delete it; its tree is `plugins/sgs-blocks/scripts/perf/fixtures/editor-200-blocks.json`.
 

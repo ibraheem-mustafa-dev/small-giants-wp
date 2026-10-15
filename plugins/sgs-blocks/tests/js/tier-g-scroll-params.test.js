@@ -445,6 +445,40 @@ describe( 'per-device scroll parameters', () => {
 		expect( timeline.to ).toHaveBeenCalledWith( {}, { duration: 1 } );
 	} );
 
+	test( 'a pin-scrub stagger custom property beats the attribute', () => {
+		const el = make( {
+			'data-sgs-fx': 'pin-scrub',
+			'data-sgs-fx-stagger': '0.4',
+		} );
+		el.style.setProperty( '--sgs-pin-scrub-stagger', '0.25' );
+		for ( let i = 0; i < 2; i++ ) {
+			const child = make();
+			Object.defineProperty( child, 'offsetWidth', { value: 100 } );
+			el.appendChild( child );
+		}
+		document.body.appendChild( el );
+		initPinScrub( el );
+		expect(
+			gsap.timelines[ 0 ].fromTo.mock.calls.map( ( call ) => call[ 3 ] )
+		).toEqual( [ 0, 0.25 ] );
+	} );
+
+	test( 'a pin-scrub pin top offset custom property beats the attribute', () => {
+		const el = make( {
+			'data-sgs-fx': 'pin-scrub',
+			'data-sgs-fx-pin-scrub-pin-top-offset': '96px',
+		} );
+		el.style.setProperty( '--sgs-pin-scrub-pin-top-offset', '40px' );
+		const child = make();
+		Object.defineProperty( child, 'offsetWidth', { value: 100 } );
+		el.appendChild( child );
+		document.body.appendChild( el );
+		initPinScrub( el );
+		expect( gsap.timelines[ 0 ].config.scrollTrigger.start() ).toBe(
+			'top top+=40'
+		);
+	} );
+
 	test( 'a numeric hold of 0.25 reaches the timeline, above 0.6 is clamped', () => {
 		const run = ( hold ) => {
 			gsap.timelines.length = 0;

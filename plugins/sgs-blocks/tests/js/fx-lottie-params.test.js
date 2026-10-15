@@ -218,14 +218,29 @@ describe( 'values', () => {
 		);
 	} );
 
-	test( 'a per-device speed replaces the base speed inside its breakpoint, mobile over tablet', async () => {
+	test( 'the computed --sgs-lottie-speed beats the attribute, so a tier value applies', async () => {
+		const { el } = layer(
+			'data-sgs-fx-trigger="load" data-sgs-fx-lottie-speed="2"'
+		);
+		const real = window.getComputedStyle;
+		window.getComputedStyle = ( node ) =>
+			node === el
+				? { getPropertyValue: ( n ) => ( n === '--sgs-lottie-speed' ? '0.5' : '' ) }
+				: real( node );
+		boot();
+		await settle();
+		window.getComputedStyle = real;
+		expect( mockInits[ 0 ].speed ).toBe( 0.5 );
+	} );
+
+	test( 'NEGATIVE CONTROL: the retired per-device speed attributes are not read', async () => {
 		widths = [ '(max-width: 1023px)', '(max-width: 767px)' ];
 		layer(
 			'data-sgs-fx-trigger="load" data-sgs-fx-lottie-speed="2" data-sgs-fx-lottie-speed-tablet="1.5" data-sgs-fx-lottie-speed-mobile="0.5"'
 		);
 		boot();
 		await settle();
-		expect( mockInits[ 0 ].speed ).toBe( 0.5 );
+		expect( mockInits[ 0 ].speed ).toBe( 2 );
 	} );
 
 	test( 'the layer element is given the overlay class; a legacy span is not', async () => {

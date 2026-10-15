@@ -1,0 +1,239 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "div",
+			"minHeight": {
+				"desktop": "8px",
+				"tablet": "8px",
+				"mobile": "8px"
+			},
+			"backgroundColour": "accent",
+			"className": "m58-bar",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"effects": [
+							{
+								"id": "pagebar",
+								"effect": "scroll-progress",
+								"values": {
+									"source": "page",
+									"output": "bar-x"
+								}
+							}
+						]
+					}
+				}
+			},
+			"pinEdge": {
+				"desktop": "top",
+				"tablet": "top",
+				"mobile": "top"
+			}
+		}
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m58-first"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Scroll progress",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "0%",
+					"className": "m58-counter",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "pagecount",
+										"effect": "scroll-progress",
+										"values": {
+											"source": "page",
+											"output": "counter",
+											"counterFormat": "percent"
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "700px",
+					"right": "700px",
+					"bottom": "700px",
+					"left": "700px"
+				},
+				"tablet": {
+					"top": "700px",
+					"right": "700px",
+					"bottom": "700px",
+					"left": "700px"
+				},
+				"mobile": {
+					"top": "700px",
+					"right": "700px",
+					"bottom": "700px",
+					"left": "700px"
+				}
+			},
+			"className": "m58-spacer"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space before the section."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "300px",
+					"right": "300px",
+					"bottom": "300px",
+					"left": "300px"
+				},
+				"tablet": {
+					"top": "300px",
+					"right": "300px",
+					"bottom": "300px",
+					"left": "300px"
+				},
+				"mobile": {
+					"top": "300px",
+					"right": "300px",
+					"bottom": "300px",
+					"left": "300px"
+				}
+			},
+			"className": "m58-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "The section bar below reads this section only."
+				}
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"tagName": "div",
+					"minHeight": {
+						"desktop": "8px",
+						"tablet": "8px",
+						"mobile": "8px"
+					},
+					"backgroundColour": "accent",
+					"className": "m58-section-bar",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "sectionbar",
+										"effect": "scroll-progress",
+										"values": {
+											"source": "section",
+											"output": "bar-x"
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "1000px",
+					"right": "1000px",
+					"bottom": "1000px",
+					"left": "1000px"
+				},
+				"tablet": {
+					"top": "1000px",
+					"right": "1000px",
+					"bottom": "1000px",
+					"left": "1000px"
+				},
+				"mobile": {
+					"top": "1000px",
+					"right": "1000px",
+					"bottom": "1000px",
+					"left": "1000px"
+				}
+			},
+			"className": "m58-spacer"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Scroll space after the section."
+				}
+			}
+		]
+	}
+]

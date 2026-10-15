@@ -1035,7 +1035,7 @@
 		{
 			"channel": "scale",
 			"composition": "product",
-			"formula": "scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s))",
+			"formula": "scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y))",
 			"owners": [
 				{
 					"owner": "entrance",
@@ -1080,7 +1080,18 @@
 				{
 					"owner": "scroll-progress",
 					"runtime": "stylesheet",
-					"properties": []
+					"properties": [
+						{
+							"name": "--sgs-sp-x",
+							"syntax": "<number>",
+							"initial": "1"
+						},
+						{
+							"name": "--sgs-sp-y",
+							"syntax": "<number>",
+							"initial": "1"
+						}
+					]
 				},
 				{
 					"owner": "svg-loop",
@@ -3650,7 +3661,7 @@
 					},
 					"x-sgs-field": {
 						"fieldType": "duration",
-						"cssProperty": null,
+						"cssProperty": "--sgs-pin-scrub-stagger",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-stagger",
@@ -3673,7 +3684,7 @@
 					"$ref": "#/$defs/distance",
 					"x-sgs-field": {
 						"fieldType": "distance",
-						"cssProperty": null,
+						"cssProperty": "--sgs-pin-scrub-pin-top-offset",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-pin-scrub-pin-top-offset",
@@ -7083,7 +7094,7 @@
 					"maximum": 5,
 					"x-sgs-field": {
 						"fieldType": "ratio",
-						"cssProperty": null,
+						"cssProperty": "--sgs-lottie-speed",
 						"state": "active",
 						"perDevice": true,
 						"unit": "x",

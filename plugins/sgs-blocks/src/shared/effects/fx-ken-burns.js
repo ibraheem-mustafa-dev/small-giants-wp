@@ -42,14 +42,38 @@ const LABEL = 'Pause background animation';
 
 let registered = [];
 
-function number( el, name, fallback ) {
-	const value = parseFloat( el.getAttribute( PREFIX + name ) );
-	return Number.isFinite( value ) ? value : fallback;
+/**
+ * One computed custom property's text (the emitter writes a tier's value there inside its media query), or ''.
+ *
+ * @param {HTMLElement} el   The element.
+ * @param {string}      name Custom property name.
+ * @return {string} The trimmed value.
+ */
+function custom( el, name ) {
+	return window.getComputedStyle( el ).getPropertyValue( name ).trim();
 }
 
+/**
+ * A zoom percentage: the computed custom property first, then the data attribute, then the fallback. A value outside
+ * 100 to 200 counts as unreadable.
+ *
+ * @param {HTMLElement} el       The element.
+ * @param {string}      name     `zoom-start` or `zoom-end`.
+ * @param {number}      fallback Default.
+ * @return {number} Percentage.
+ */
 function zoom( el, name, fallback ) {
-	const value = number( el, name, fallback );
-	return value >= 100 && value <= 200 ? value : fallback;
+	const sources = [
+		custom( el, `--sgs-kb-${ name }` ),
+		el.getAttribute( PREFIX + name ),
+	];
+	for ( const text of sources ) {
+		const value = parseFloat( text );
+		if ( Number.isFinite( value ) && value >= 100 && value <= 200 ) {
+			return value;
+		}
+	}
+	return fallback;
 }
 
 /**
@@ -74,7 +98,8 @@ function easing( el, fallback ) {
 }
 
 /**
- * The element's Ken Burns values from its data attributes.
+ * The element's Ken Burns values: the computed custom properties `--sgs-kb-zoom-start`, `-zoom-end` and `-duration`
+ * (which carry the tablet and mobile values), then the data attributes, then the defaults.
  *
  * @param {HTMLElement} el The Ken Burns element.
  * @return {Object} `mode`, `zoomStart` and `zoomEnd` (scale factors), `panX` and `panY` (px), and the loop timing
@@ -90,10 +115,11 @@ export function readKenBurns( el ) {
 	const share = Math.min( PAN_SHARE, spare );
 	const x = Math.round( ( el.offsetWidth || 0 ) * share * 100 ) / 100;
 	const y = Math.round( ( el.offsetHeight || 0 ) * share * 100 ) / 100;
-	const period = parseTime(
+	const attrPeriod = parseTime(
 		el.getAttribute( PREFIX + 'duration' ),
 		DEFAULT_DURATION
 	);
+	const period = parseTime( custom( el, '--sgs-kb-duration' ), attrPeriod );
 	return {
 		mode: once ? 'zoom-out-once' : 'loop',
 		zoomStart: start / 100,

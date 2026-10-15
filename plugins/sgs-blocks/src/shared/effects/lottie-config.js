@@ -7,15 +7,13 @@
  * wrapper background) prints `data-trigger`, `data-loop` and `data-speed` on its own `.sgs-lottie` span instead, so
  * both forms are read until that call is retired.
  *
- * Per-device speed: `data-sgs-fx-lottie-speed-tablet` (viewport 1023px and below) and `-speed-mobile` (767px and
- * below) override the base speed in their range.
+ * Speed: the computed custom property `--sgs-lottie-speed` (the emitter writes the tablet and mobile values there inside
+ * its media queries), then `data-sgs-fx-lottie-speed`, then `data-speed`.
  *
  * @package
  */
 
 const TRIGGERS = [ 'load', 'visible', 'hover', 'scroll' ];
-const TABLET = '(max-width: 1023px)';
-const MOBILE = '(max-width: 767px)';
 
 /**
  * @param {Element} el
@@ -40,26 +38,21 @@ export function isLayer( el ) {
 }
 
 /**
- * The playback speed for the current viewport.
+ * The playback speed.
  *
  * @param {Element} el
  * @return {number} Speed, 1 when nothing is stored.
  */
 function readSpeed( el ) {
-	const matches = ( query ) =>
-		'function' === typeof window.matchMedia &&
-		window.matchMedia( query ).matches;
-	let speed = numberAttr( el, 'data-sgs-fx-lottie-speed' );
+	const computed = parseFloat(
+		window.getComputedStyle( el ).getPropertyValue( '--sgs-lottie-speed' )
+	);
+	let speed = Number.isFinite( computed ) ? computed : null;
+	if ( null === speed ) {
+		speed = numberAttr( el, 'data-sgs-fx-lottie-speed' );
+	}
 	if ( null === speed ) {
 		speed = numberAttr( el, 'data-speed' );
-	}
-	const tablet = numberAttr( el, 'data-sgs-fx-lottie-speed-tablet' );
-	const mobile = numberAttr( el, 'data-sgs-fx-lottie-speed-mobile' );
-	if ( null !== tablet && matches( TABLET ) ) {
-		speed = tablet;
-	}
-	if ( null !== mobile && matches( MOBILE ) ) {
-		speed = mobile;
 	}
 	return speed && speed > 0 ? speed : 1;
 }

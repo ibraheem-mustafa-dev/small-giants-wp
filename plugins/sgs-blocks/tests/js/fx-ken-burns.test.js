@@ -351,3 +351,48 @@ describe( 'selection', () => {
 		} );
 	} );
 } );
+
+describe( 'per-device custom properties', () => {
+	test( 'computed custom properties beat the attributes for zoom and duration', () => {
+		props = {
+			'--sgs-kb-zoom-start': '120',
+			'--sgs-kb-zoom-end': '110',
+			'--sgs-kb-duration': '8s',
+		};
+		const { el } = mount( {
+			attrs: `${ ATTR }mode="loop" ${ ATTR }zoom-start="108" ${ ATTR }zoom-end="100" ${ ATTR }duration="20000"`,
+		} );
+		boot();
+		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
+		expect( keyframes ).toEqual( [
+			{ '--sgs-kb-s': '1.2' },
+			{ '--sgs-kb-s': '1.1' },
+		] );
+		expect( options.duration ).toBe( 8000 );
+	} );
+
+	test( 'an empty or out-of-range custom property falls back to the attribute', () => {
+		props = { '--sgs-kb-zoom-start': '900', '--sgs-kb-duration': 'soon' };
+		const { el } = mount( {
+			attrs: `${ ATTR }zoom-start="110" ${ ATTR }zoom-end="100" ${ ATTR }duration="12000"`,
+		} );
+		boot();
+		const [ keyframes, options ] = el.animate.mock.calls[ 0 ];
+		expect( keyframes[ 0 ] ).toEqual( { '--sgs-kb-s': '1.1' } );
+		expect( options.duration ).toBe( 12000 );
+	} );
+
+	test( 'a tier change rebuilds the loop with the new value', () => {
+		const { el } = mount( {
+			attrs: `${ ATTR }zoom-start="108" ${ ATTR }zoom-end="100" ${ ATTR }duration="20000"`,
+		} );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 1 ].duration ).toBe( 20000 );
+		props = { '--sgs-kb-duration': '10000ms', '--sgs-kb-zoom-start': '115' };
+		query( '(max-width: 1023px)' ).fire();
+		expect( el.animate ).toHaveBeenCalledTimes( 2 );
+		const [ keyframes, options ] = el.animate.mock.calls[ 1 ];
+		expect( options.duration ).toBe( 10000 );
+		expect( keyframes[ 0 ] ).toEqual( { '--sgs-kb-s': '1.15' } );
+	} );
+} );

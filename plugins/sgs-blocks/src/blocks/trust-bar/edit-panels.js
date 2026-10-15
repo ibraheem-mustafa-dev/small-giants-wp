@@ -10,7 +10,7 @@
  *   itemGap           -> gap on each badge item               (tier object)
  *   itemPadding       -> padding on each badge item           (tier box object)
  *   autoScrollBelow   -> data-auto-scroll-below + media query (0 / 768 / 1024)
- *   autoScrollDuration-> animation-duration on the track      (seconds, 0 = preset)
+ *   autoScrollDuration-> the marquee's seconds per cycle      (read by the shared marquee runtime, 0 = preset)
  *
  * @package SGS\Blocks
  */

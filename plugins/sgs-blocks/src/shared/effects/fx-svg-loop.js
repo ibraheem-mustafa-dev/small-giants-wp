@@ -39,7 +39,8 @@ const LABEL = 'Pause graphic animation';
 let registered = [];
 
 /**
- * The element's SVG loop values from its data attributes.
+ * The element's SVG loop values: the computed custom properties `--sgs-svl-duration` and `--sgs-svl-amplitude` (which
+ * carry the tablet and mobile values), then the data attributes, then the defaults.
  *
  * @param {HTMLElement} el The SVG loop element.
  * @return {Object} `motion`, `amplitude`, `segmentEasing`, and the loop timing (`period`, `phase`, `easing`,
@@ -49,19 +50,27 @@ let registered = [];
 export function readSvgLoop( el ) {
 	const name = el.getAttribute( PREFIX + 'motion' );
 	const motion = name === 'wave' ? 'wave' : 'pulse';
-	const amplitude = parseFloat( el.getAttribute( PREFIX + 'amplitude' ) );
-	const period = parseTime(
+	const style = window.getComputedStyle( el );
+	const amplitude = [
+		style.getPropertyValue( '--sgs-svl-amplitude' ),
+		el.getAttribute( PREFIX + 'amplitude' ),
+	]
+		.map( parseFloat )
+		.find(
+			( value ) =>
+				Number.isFinite( value ) && value >= 0 && value <= MAX_AMPLITUDE
+		);
+	const attrPeriod = parseTime(
 		el.getAttribute( PREFIX + 'duration' ),
 		MOTIONS[ motion ].duration
 	);
+	const period = parseTime(
+		style.getPropertyValue( '--sgs-svl-duration' ),
+		attrPeriod
+	);
 	return {
 		motion,
-		amplitude:
-			Number.isFinite( amplitude ) &&
-			amplitude >= 0 &&
-			amplitude <= MAX_AMPLITUDE
-				? amplitude
-				: 1,
+		amplitude: undefined === amplitude ? 1 : amplitude,
 		segmentEasing: MOTIONS[ motion ].easing,
 		period: period > 0 ? period : MOTIONS[ motion ].duration,
 		phase: 0,

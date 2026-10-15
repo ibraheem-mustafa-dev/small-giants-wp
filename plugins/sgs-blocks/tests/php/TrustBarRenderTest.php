@@ -1,8 +1,7 @@
 <?php
 /**
- * Tests: sgs/trust-bar bare-icon variant, stroke width, item gap and padding. The
- * marquee options are in TrustBarMarqueeTest; the shared render harness is in
- * TrustBarRenderTrait.
+ * Tests: sgs/trust-bar bare-icon variant, stroke width, item gap and padding, and the
+ * marquee track markup. The shared render harness is in TrustBarRenderTrait.
  *
  * The render tests run the REAL src/blocks/trust-bar/render.php through the QA harness
  * (scripts/qa/lib/render-css-harness.php) in a child PHP process, the same way

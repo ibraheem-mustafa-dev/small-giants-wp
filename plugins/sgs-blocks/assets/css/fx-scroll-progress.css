@@ -3,9 +3,10 @@
  *
  * The PAINTING half. `src/shared/effects/fx-scroll-progress.js` and the scroll
  * driver write custom-property VALUES only; every declaration lives here.
- * The individual `scale` property is used, never `transform`, which the motion
- * model reserves for its rotate owners. There is no transition: progress is
- * information and tracks the scroll exactly.
+ * The bar sets the scale-channel terms `--sgs-sp-x` (bar-x) and `--sgs-sp-y`
+ * (bar-y); `motion.css::[data-sgs-mc~="scale"]` composes them into the
+ * element's `scale`, so this file never declares `scale` or `transform`. There
+ * is no transition: progress is information and tracks the scroll exactly.
  *
  * Page and section bars read `--sgs-scroll-progress` (the scroll driver). Pin
  * bars read `--sgs-fx-progress`, written on the pin ancestor and inherited.
@@ -22,7 +23,7 @@
 
 /* bar-x is the default output. */
 :where( [data-sgs-fx~="scroll-progress"]:not( [data-sgs-fx-scroll-progress-output="bar-y"], [data-sgs-fx-scroll-progress-output="counter"] ) ) {
-	scale: var( --sgs-scroll-progress-value ) 1;
+	--sgs-sp-x: var( --sgs-scroll-progress-value );
 	transform-origin: 0 50%;
 }
 
@@ -31,6 +32,6 @@
 }
 
 :where( [data-sgs-fx~="scroll-progress"][data-sgs-fx-scroll-progress-output="bar-y"] ) {
-	scale: 1 var( --sgs-scroll-progress-value );
+	--sgs-sp-y: var( --sgs-scroll-progress-value );
 	transform-origin: 50% 0;
 }
