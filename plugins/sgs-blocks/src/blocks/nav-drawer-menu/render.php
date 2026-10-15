@@ -519,6 +519,19 @@ if ( '' === $items_html ) {
 	return '';
 }
 
+// Item stagger on the Entrance model (Spec 38A §8, FR-38A-51): the top-level
+// items come from the menu, not from inner blocks, so the menu's stored
+// `sgsMotion.stagger` settings become one scoped delay rule per item, found by
+// its `data-sgs-loop-i` index (never `:nth-child`). The item part's `open`
+// entrance (supports.sgs.motion.opens) reads the delay and plays when the
+// drawer opens. Null (no stagger) leaves the items untagged; the string is only
+// non-empty where the collector never flushes (the editor preview).
+$sgs_nm_loop_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $items_html, 'sgs-nav-drawer-menu__item' );
+$sgs_nm_loop_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', $uid, $attributes, $sgs_nm_loop_tagged['count'], '.sgs-nav-drawer-menu__item' );
+if ( null !== $sgs_nm_loop_style ) {
+	$items_html = $sgs_nm_loop_tagged['html'];
+}
+
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
 // The landmark ITSELF is this block's root: the final `printf()` at the end of
 // this file emits `<nav %s>` directly via get_block_wrapper_attributes(), so the
@@ -713,6 +726,9 @@ $inner_html = $bar_html;
 
 if ( '' !== $css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( $css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via the shared helpers + esc_attr/sanitize_html_class fragments above; wp_strip_all_tags guards </style>.
+}
+if ( null !== $sgs_nm_loop_style ) {
+	echo $sgs_nm_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays.
 }
 
 // STOP-21: the block's own scoped `<style>` targets `.$uid …`, so the SAME

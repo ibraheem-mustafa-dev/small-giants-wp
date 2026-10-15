@@ -19,7 +19,12 @@
 	"icon": "menu",
 	"supports": {
 		"sgs": {
-			"motion": true,
+			"motion": {
+				"opens": [
+					"root",
+					"body"
+				]
+			},
 			"shadowLift": false,
 			"colourExemptions": {
 				"drawerBg": {

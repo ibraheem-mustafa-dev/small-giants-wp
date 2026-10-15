@@ -33,7 +33,12 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"motion": true,
+			"motion": {
+				"opens": [
+					"root",
+					"item"
+				]
+			},
 			"separators": {
 				"separators": {
 					"axes": [

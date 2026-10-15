@@ -627,7 +627,10 @@
 /* ── Item stagger (Wave 3C U-5, family M-32). A contract with sgs/nav-drawer:
    the drawer adds `.sgs-nav-drawer--stagger` (and `--stagger-close`) and
    writes the timing as custom-property values (includes/helpers-nav-drawer-
-   motion.php); this stylesheet owns the item rules. An item is a TOP-LEVEL
+   motion.php) — only for a drawer not on the Entrance model (Spec 38A §8; on
+   it, items take stored delays and render.php writes the menu items' delays);
+   an item carrying an entrance (`data-sgs-me`) is excluded so the two never
+   stack. Deleted in M6.6-G5. An item is a TOP-LEVEL
    menu item only, so a nested accordion or drill-down list never restarts the
    count. Anything else in the drawer body (a logo, a button) arrives with the
    last item (--sgs-nd-last-i, counted with :has()). --sgs-i counts from 0; items past the 20th share the 20th delay,
@@ -809,7 +812,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
+	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:not([data-sgs-me]) {
 		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) both;
 		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
 	}
@@ -817,11 +820,18 @@
 	/* Drill mode: an entrance that holds its end state keeps `translate: 0` on the
 	   item, and any transform makes the item the containing block of the sliding
 	   panel (so only one row showed). The entrance fill stops at its delay. */
-	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item {
+	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item:not([data-sgs-me]) {
 		animation-fill-mode: backwards;
 	}
 
-	.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
+	/* The same for an item on the Entrance model: an `open` entrance holds its
+	   to-values (motion-triggers.css), and a held `translate` makes the item the
+	   drill panel's containing block, so in drill mode it fills backwards only. */
+	.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item[data-sgs-me~="open"] {
+		animation-fill-mode: backwards;
+	}
+
+	.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:not([data-sgs-me]) {
 		animation: sgs-nav-drawer-menu-item-out var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) forwards;
 		animation-delay: min(calc(var(--sgs-ri, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
 	}

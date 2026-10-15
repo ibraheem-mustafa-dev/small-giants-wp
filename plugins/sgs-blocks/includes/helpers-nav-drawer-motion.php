@@ -11,6 +11,10 @@
  *
  * Design: `.claude/reports/2026-09-24-u5-motion-design.md` section 3.
  *
+ * Applies only to a drawer NOT yet on the Entrance model (Spec 38A M4.5): render.php skips it for a drawer whose
+ * `sgsMotion` holds elements or stagger settings (`helpers-nav-drawer-motion-model.php`). Removed with the old
+ * attributes in M6.6-G5; the shape list and `sgs_nav_drawer_motion_auto_shape()` are also the migration mapper's input.
+ *
  * @package SGS\Blocks
  */
 
@@ -21,6 +25,7 @@ require_once __DIR__ . '/helpers-motion-easing.php';
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/class-sgs-breakpoints.php';
 require_once __DIR__ . '/helpers-nav-drawer-stagger-shape.php';
+require_once __DIR__ . '/helpers-nav-drawer-motion-model.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_motion_shapes' ) ) {
 	/**
@@ -30,6 +35,28 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_shapes' ) ) {
 	 */
 	function sgs_nav_drawer_motion_shapes(): array {
 		return array( 'auto', 'none', 'fade', 'slide-start', 'slide-end', 'slide-up', 'slide-down', 'wipe-down', 'wipe-down-skew', 'reveal-from-bar', 'curtain', 'scale', 'grow-from-anchor' );
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_drawer_motion_auto_shape' ) ) {
+	/**
+	 * The shape `auto` played for an anchor: `header` and `container` expand down from the header edge, a side panel
+	 * slides in from its own edge, `trigger` scales from its corner, `centred` scales up like a modal, and every other
+	 * anchor (`full-screen`, `header-box`) took the -8px nudge.
+	 *
+	 * @param string $anchor The drawer's anchor at one tier.
+	 * @return string One of `expand-down`, `slide-start`, `slide-end`, `corner-scale`, `modal-scale`, `nudge`.
+	 */
+	function sgs_nav_drawer_motion_auto_shape( string $anchor ): string {
+		$auto = array(
+			'header'     => 'expand-down',
+			'container'  => 'expand-down',
+			'side-start' => 'slide-start',
+			'side-end'   => 'slide-end',
+			'trigger'    => 'corner-scale',
+			'centred'    => 'modal-scale',
+		);
+		return $auto[ $anchor ] ?? 'nudge';
 	}
 }
 
@@ -48,15 +75,7 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_keyframes' ) ) {
 	 */
 	function sgs_nav_drawer_motion_keyframes( string $shape, string $anchor ): array {
 		if ( 'auto' === $shape ) {
-			$auto  = array(
-				'header'     => 'expand-down',
-				'container'  => 'expand-down',
-				'side-start' => 'slide-start',
-				'side-end'   => 'slide-end',
-				'trigger'    => 'corner-scale',
-				'centred'    => 'modal-scale',
-			);
-			$shape = $auto[ $anchor ] ?? 'nudge';
+			$shape = sgs_nav_drawer_motion_auto_shape( $anchor );
 		}
 		$map = array(
 			'nudge'            => array( 'sgs-nav-drawer-in', 'sgs-nav-drawer-out', 'center' ),

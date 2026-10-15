@@ -21,7 +21,11 @@
  *   then the `sgs_motion_loop_stagger` filter. Columns come from the template's own grid `layout.columnCount`, or the
  *   enclosing product collection's `displayLayout.columns`, the same count at every device.
  *
- * The delay is the item's `--sgs-me-delay`; the item's entrance (the card's `data-sgs-me`) reads it. The index is the
+ * The delay is the item's `--sgs-me-delay`; the item's entrance (the card's `data-sgs-me`) reads it. When the block's
+ * own entrance (on its root or a part) has the `open` trigger, each item's rule also carries its close delay,
+ * `--sgs-me-close-delay` (read by `assets/css/motion-triggers.css`), from `Sgs_Motion_Stagger::compute_close_delays` in
+ * the stored `closeOrder` (`same` when absent). The core and WooCommerce templates hold no `sgsMotion` of their own, so
+ * an `open` entrance never reaches their items and they write open delays only. The index is the
  * item's position among the items the server rendered in this response, so it restarts at the offset on every page.
  *
  * @package SGS\Blocks
@@ -157,7 +161,7 @@ final class Sgs_Motion_Loop_Delays {
 		if ( null === $delays ) {
 			return null;
 		}
-		return self::collect( self::rules( '.' . $uid . ' .sgs-post-grid__card', $delays, true ), $uid . '-loop' );
+		return self::collect( self::rules( '.' . $uid . ' .sgs-post-grid__card', $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' );
 	}
 
 	/**
@@ -188,7 +192,7 @@ final class Sgs_Motion_Loop_Delays {
 		if ( null === $delays ) {
 			return null;
 		}
-		return self::collect( self::rules( '.' . $uid . ' ' . $item_selector, $delays, true ), $uid . '-loop' );
+		return self::collect( self::rules( '.' . $uid . ' ' . $item_selector, $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' );
 	}
 
 	/**
@@ -268,7 +272,7 @@ final class Sgs_Motion_Loop_Delays {
 		if ( ! is_array( $stagger ) || array() === $stagger || false === ( $stagger['apply'] ?? true ) ) {
 			return null;
 		}
-		return array_intersect_key( $stagger, array_flip( array( 'offset', 'step', 'order', 'perRow', 'cap' ) ) );
+		return array_intersect_key( $stagger, array_flip( array( 'offset', 'step', 'order', 'perRow', 'cap', 'closeOrder' ) ) );
 	}
 
 	/**
@@ -315,24 +319,56 @@ final class Sgs_Motion_Loop_Delays {
 	}
 
 	/**
-	 * One scoped rule per item, tablet and mobile only where the delay differs from the tier above.
+	 * Each item's close delay at each device, when the block's own entrance plays on the `open` trigger.
 	 *
-	 * @param string              $prefix   Selector up to the item (ends with a space or `>`).
-	 * @param array<string,int[]> $delays   Delays per device.
-	 * @param bool                $compound Whether the attribute joins the prefix without a combinator.
+	 * @param array<string,mixed> $attributes The block's attributes.
+	 * @param array<string,mixed> $stagger    Normalised settings (`closeOrder` `same` or `reversed`).
+	 * @param array<string,int[]> $delays     Open delays per device.
+	 * @return array<string,int[]>|null Null when no entrance of the block has the `open` trigger.
+	 */
+	private static function close_delays( array $attributes, array $stagger, array $delays ): ?array {
+		$elements = $attributes['sgsMotion']['elements'] ?? null;
+		$open     = false;
+		foreach ( is_array( $elements ) ? $elements : array() as $element ) {
+			$open = $open || ( is_array( $element ) && 'open' === ( $element['entrance']['base']['trigger'] ?? '' ) );
+		}
+		if ( ! $open ) {
+			return null;
+		}
+		$order = 'reversed' === ( $stagger['closeOrder'] ?? 'same' ) ? 'reversed' : 'same';
+		$out   = array();
+		foreach ( $delays as $device => $list ) {
+			$out[ $device ] = Sgs_Motion_Stagger::compute_close_delays( $list, $order );
+		}
+		return $out;
+	}
+
+	/**
+	 * One scoped rule per item, tablet and mobile only where a delay differs from the tier above.
+	 *
+	 * @param string                   $prefix   Selector up to the item (ends with a space or `>`).
+	 * @param array<string,int[]>      $delays   Delays per device.
+	 * @param bool                     $compound Whether the attribute joins the prefix without a combinator.
+	 * @param array<string,int[]>|null $close    Close delays per device (`--sgs-me-close-delay`), or null for none.
 	 * @return string CSS.
 	 */
-	private static function rules( string $prefix, array $delays, bool $compound = false ): string {
-		$css = '';
-		foreach ( $delays['desktop'] as $i => $desktop ) {
-			$decls                              = array_fill_keys( Sgs_Motion_Emitter::TIERS, array() );
-			$effect                             = $desktop;
-			$decls['desktop']['--sgs-me-delay'] = $desktop . 'ms';
-			foreach ( array( 'tablet', 'mobile' ) as $device ) {
-				$value = $delays[ $device ][ $i ] ?? $effect;
-				if ( $value !== $effect ) {
-					$decls[ $device ]['--sgs-me-delay'] = $value . 'ms';
-					$effect                             = $value;
+	private static function rules( string $prefix, array $delays, bool $compound = false, ?array $close = null ): string {
+		$css   = '';
+		$props = array( '--sgs-me-delay' => $delays );
+		if ( null !== $close ) {
+			$props['--sgs-me-close-delay'] = $close;
+		}
+		foreach ( array_keys( $delays['desktop'] ) as $i ) {
+			$decls = array_fill_keys( Sgs_Motion_Emitter::TIERS, array() );
+			foreach ( $props as $prop => $by_device ) {
+				$effect                    = $by_device['desktop'][ $i ];
+				$decls['desktop'][ $prop ] = $effect . 'ms';
+				foreach ( array( 'tablet', 'mobile' ) as $device ) {
+					$value = $by_device[ $device ][ $i ] ?? $effect;
+					if ( $value !== $effect ) {
+						$decls[ $device ][ $prop ] = $value . 'ms';
+						$effect                    = $value;
+					}
 				}
 			}
 			$tail = '[' . self::ITEM_ATTR . '="' . (int) $i . '"]';

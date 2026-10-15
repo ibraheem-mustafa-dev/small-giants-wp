@@ -295,5 +295,61 @@ $reset( false );
 $editor_items = Sgs_Motion_Loop_Delays::item_array( 'sgs/timeline', 'sgs-tl-edit', $tl_attrs, 3, '.sgs-timeline__entry' );
 $check( 0 === strpos( (string) $editor_items, '<style id="sgs-tl-edit-loop">' ) && '' === $collected(), 'item array in the editor: rules returned as a style tag, collector untouched' );
 
+// Close delays (Spec 38A M4.5, FR-38A-51): a drawer menu whose item part opens on the `open` trigger writes each
+// item's --sgs-me-close-delay in the stored closeOrder, in the same one rule per index; a container whose entrance is
+// not `open` writes none.
+$close_of = static function ( string $css ): array {
+	$out  = array();
+	$base = preg_replace( '/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/', '', $css );
+	if ( preg_match_all( '/([^{}]+)\{([^{}]*)\}/', $base, $m, PREG_SET_ORDER ) ) {
+		foreach ( $m as $hit ) {
+			if ( preg_match( '/data-sgs-loop-i="(\d+)"/', $hit[1], $i ) && preg_match( '/--sgs-me-close-delay:(\d+)ms/', $hit[2], $d ) ) {
+				$out[ (int) $i[1] ] = (int) $d[1];
+			}
+		}
+	}
+	ksort( $out );
+	return array_values( $out );
+};
+$menu_attrs = static function ( ?string $order, string $trigger = 'open' ): array {
+	$stagger = array( 'offset' => 0, 'step' => 55, 'order' => 'row-first', 'perRow' => false, 'cap' => 320 );
+	if ( null !== $order ) {
+		$stagger['closeOrder'] = $order;
+	}
+	return array(
+		'sgsMotion' => array(
+			'v'        => 1,
+			'elements' => array( 'item' => array( 'entrance' => array( 'base' => array( 'trigger' => $trigger, 'values' => array( 'from' => array( 'opacity' => 0 ) ) ) ) ) ),
+			'stagger'  => $stagger,
+		),
+	);
+};
+$reset();
+Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', 'sgs-nav-drawer-menu-a1', $menu_attrs( 'reversed' ), 4, '.sgs-nav-drawer-menu__item' );
+$css_rev = $collected();
+list( $menu_rows, $menu_counts ) = $parse( $css_rev );
+$check( array( 0, 55, 110, 165 ) === $column( $menu_rows, 'desktop' ), 'drawer menu: open delays 0, 55, 110, 165' );
+$check( array( 165, 110, 55, 0 ) === $close_of( $css_rev ), 'drawer menu, closeOrder reversed: close delays 165, 110, 55, 0 (' . json_encode( $close_of( $css_rev ) ) . ')' );
+$check( array_fill( 0, 4, 1 ) === array_values( $menu_counts ), 'drawer menu: the close delay rides in the one rule per index' );
+$reset();
+Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', 'sgs-nav-drawer-menu-a1', $menu_attrs( 'same' ), 4, '.sgs-nav-drawer-menu__item' );
+$css_same = $collected();
+$check( array( 0, 55, 110, 165 ) === $close_of( $css_same ), 'drawer menu, closeOrder same: close delays 0, 55, 110, 165 (' . json_encode( $close_of( $css_same ) ) . ')' );
+$reset();
+Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', 'sgs-nav-drawer-menu-a1', $menu_attrs( null ), 4, '.sgs-nav-drawer-menu__item' );
+$check( array( 0, 55, 110, 165 ) === $close_of( $collected() ), 'drawer menu, no closeOrder: the same order' );
+$reset();
+Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', 'sgs-nav-drawer-menu-a1', $menu_attrs( 'reversed', 'scroll' ), 4, '.sgs-nav-drawer-menu__item' );
+$css_scroll = $collected();
+$check( false === strpos( $css_scroll, '--sgs-me-close-delay' ) && 4 === count( $parse( $css_scroll )[0] ), 'a container whose entrance is not `open` writes its open delays and no close rules' );
+$reset();
+$pg_open = $grid_attrs;
+$pg_open['sgsMotion'] = array(
+	'elements' => array( 'root' => array( 'entrance' => array( 'base' => array( 'trigger' => 'open', 'values' => array() ) ) ) ),
+	'stagger'  => array( 'step' => 80, 'closeOrder' => 'reversed' ),
+);
+Sgs_Motion_Loop_Delays::post_grid( 'sgs-post-grid-open1', $pg_open, 3 );
+$check( array( 160, 80, 0 ) === $close_of( $collected() ), 'post-grid with an `open` entrance: close delays reversed across its first row' );
+
 echo $failures ? "FAILED: $failures of $checks checks\n" : "PASS: $checks checks\n";
 exit( $failures ? 1 : 0 );

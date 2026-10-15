@@ -563,14 +563,28 @@ if ( $sgs_nd_geom_mobile !== $sgs_nd_geom_tablet ) {
 // HTML) when every tier's opacity/blur resolves to invisible, so an untouched
 // drawer paints only its default (black at 0.55, reproducing the previous
 // hardcoded rgba(0,0,0,0.55) exactly).
-// ── Entry and exit motion (Wave 3C U-5): the shape per tier, the open and
-// close durations, the easing, the curtain colour and the item stagger, all as
+// ── Entry and exit motion. One model per drawer during the Spec 38A overlap:
+// a drawer whose sgsMotion holds elements or stagger settings is on the
+// Entrance model (FR-38A-51) — the panel and its items are played by
+// assets/css/motion-triggers.css on this root's `data-sgs-motion-state` (set by
+// view.js through @sgs/motion-state), and the panel layer's timing only times
+// the scrim and the focus deferral (includes/helpers-nav-drawer-motion-model.php).
+// Any other drawer keeps the Wave 3C U-5 motion: the shape per tier, the open
+// and close durations, the easing, the curtain colour and the item stagger, as
 // custom-property values the keyframes in style.css and the item rules in
-// nav-drawer-menu/style.css read. includes/helpers-nav-drawer-motion.php.
-$sgs_nd_motion = sgs_nav_drawer_motion( $attributes, $root_sel, $anchor_attr_raw, $sgs_nd_allowed_anchors );
-$css          .= $sgs_nd_motion['css'];
+// nav-drawer-menu/style.css read (includes/helpers-nav-drawer-motion.php).
+$sgs_nd_motion_model = sgs_nav_drawer_uses_motion_model( $attributes );
+if ( $sgs_nd_motion_model ) {
+	$sgs_nd_motion            = sgs_nav_drawer_motion_timing( $attributes );
+	$sgs_nd_motion['classes'] = array();
+} else {
+	$sgs_nd_motion = sgs_nav_drawer_motion( $attributes, $root_sel, $anchor_attr_raw, $sgs_nd_allowed_anchors );
+	$css          .= $sgs_nd_motion['css'];
+}
 
-// The scrim fades with the drawer unless scrimFadeDuration sets its own time.
+// The scrim fades with the drawer unless scrimFadeDuration sets its own time; on
+// the Entrance model a null time or an empty easing (no panel layer, or a token
+// duration) leaves the scrim helper's own default.
 $sgs_nd_scrim_fade = sgs_flat_duration_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
 $css              .= sgs_scrim_render(
 	$attributes,
@@ -1090,6 +1104,12 @@ $wrapper_args = array(
 		? esc_attr( $attributes['ariaLabel'] )
 		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
 );
+if ( $sgs_nd_motion_model ) {
+	// The motion state host (Spec 38A §6.5): printed empty so it shields its
+	// subtree before the first open; view.js sets `open` and `close` on it. Its
+	// presence also switches off the old panel rules and ladders in style.css.
+	$wrapper_args['data-sgs-motion-state'] = '';
+}
 foreach ( $sgs_nd_motion['data'] as $sgs_nd_data_name => $sgs_nd_data_value ) {
 	$wrapper_args[ 'data-' . $sgs_nd_data_name ] = $sgs_nd_data_value;
 }

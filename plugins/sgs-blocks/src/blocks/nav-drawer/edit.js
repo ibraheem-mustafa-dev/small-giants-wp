@@ -39,7 +39,6 @@ import {
 	Button,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
-import MotionPanel from './MotionPanel';
 import ChromePanel from './ChromePanel';
 import chromeColourRows from './chrome-colour-rows';
 import ChromePreview from './ChromePreview';
@@ -165,11 +164,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		anchorOffset,
 	} = attributes;
 
-	// Desktop-tier anchor drives BOTH the editor preview shell shape and the
-	// "Automatic" animation hint below — the same resolution render.php's
-	// sgs_resolve_tier() performs server-side, kept in sync here so what an
-	// operator sees while editing matches what ships.
-	const anchorDesktop = anchor?.desktop || 'full-screen';
 	const [ palette ] = useSettings( 'color.palette' );
 	// The theme's gradient presets, normalised by flattenPresetSetting() —
 	// useSettings() returns a flat array or an origin-keyed object depending on
@@ -838,11 +832,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				</ToolsPanel>
 
 				<ChromePanel name={ name } attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } />
-				<MotionPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					anchorDesktop={ anchorDesktop }
-				/>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
@@ -937,6 +926,43 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 						/>
+						{ /* The scrim's own fade time (a block setting, not page motion);
+						   0 follows the panel's open and close durations
+						   (includes/helpers-nav-drawer-motion.php::sgs_nav_drawer_motion_timing). */ }
+						<ToolsPanelItem
+							label={ __(
+								'Background dim fade time',
+								'sgs-blocks'
+							) }
+							hasValue={ () =>
+								( attributes.scrimFadeDuration || 0 ) > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { scrimFadeDuration: 0 } )
+							}
+						>
+							<RangeControl
+								label={ __(
+									'Background dim fade time (ms)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'0 fades the dimmed page behind in step with the drawer panel.',
+									'sgs-blocks'
+								) }
+								value={ attributes.scrimFadeDuration ?? 0 }
+								onChange={ ( value ) =>
+									setAttributes( {
+										scrimFadeDuration: value ?? 0,
+									} )
+								}
+								min={ 0 }
+								max={ 3000 }
+								step={ 10 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
 					</ToolsPanel>
 
 					{ /* Layout */ }

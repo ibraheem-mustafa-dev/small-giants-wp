@@ -79,6 +79,7 @@ import {
 } from './close-control';
 import { isTouchInput } from '../effects/motion-utils';
 import { initDetachChips } from './detach-chip';
+import { announceDrawer, whenAnimationsSettle } from './drawer-lifecycle';
 
 /**
  * Canonical focusable-element selector. `a[href]` plus `:not([disabled])` on
@@ -560,47 +561,6 @@ function resolveScrim( drawerRef ) {
 }
 
 /**
- * Call `done` once every animation running on `el` or inside it has finished
- * (Wave 3C U-5). Covers the drawer's own keyframes, a `curtain` shape's
- * `::before` layer and a reversed item stagger, which end at different times.
- * A fail-safe timer set to the latest animation end (plus 50ms) guarantees
- * `done` still runs if a finish never settles; a stuck drawer is far worse
- * than a clipped animation.
- *
- * @param {HTMLElement} el   The element whose subtree animations to wait on.
- * @param {Function}    done Called exactly once.
- */
-function whenAnimationsSettle( el, done ) {
-	let called = false;
-	let timer = 0;
-	const finish = () => {
-		if ( called ) {
-			return;
-		}
-		called = true;
-		clearTimeout( timer );
-		done();
-	};
-
-	// getAnimations() flushes style, so the animations the class change just
-	// started are already in the list.
-	const animations =
-		'function' === typeof el.getAnimations ? el.getAnimations( { subtree: true } ) : [];
-	let latest = 0;
-	animations.forEach( ( animation ) => {
-		const end = animation.effect?.getComputedTiming?.().endTime;
-		if ( Number.isFinite( end ) && end > latest ) {
-			latest = end;
-		}
-	} );
-	timer = setTimeout( finish, latest + 50 );
-
-	if ( animations.length ) {
-		Promise.allSettled( animations.map( ( animation ) => animation.finished ) ).then( finish );
-	}
-}
-
-/**
  * Close the drawer (shared by closeDrawer, the ×, the scrim, and ESC). All
  * restoration runs in the single `close`-event handler wired in openDrawer, so
  * this only sets exit timing then triggers the native close.
@@ -637,6 +597,7 @@ function runClose( drawer, scrim ) {
 	 * curtain's ::before, a reversed item stagger), then close.
 	 */
 	drawer.classList.add( 'is-closing' );
+	announceDrawer( drawer, 'close' );
 
 	// `.is-closing` is removed by the native `close` handler, which is the
 	// single teardown point for aria/scroll/freeze/focus.
@@ -1194,6 +1155,7 @@ function openDrawerFor( ctx, trigger ) {
 	drawerBookkeeping.set( drawer, bookkeeping );
 	ctx.isOpen = true;
 	setOpenByRef( ctx.drawerRef, true );
+	announceDrawer( drawer, 'open' );
 	if ( drawer.hasAttribute( 'data-sgs-nd-focus-after-entry' ) && ! prefersReducedMotion() ) {
 		// A slow entry (over 500ms) still clips its first link, so its focus
 		// ring would be invisible: hold focus on the dialog itself, then move it
