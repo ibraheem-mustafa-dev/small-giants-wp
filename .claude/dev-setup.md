@@ -297,7 +297,19 @@ python plugins/sgs-blocks/scripts/build-deploy.py
 
 # Indus Foods test site
 python plugins/sgs-blocks/scripts/build-deploy.py --target indus-test
+
+# Several sites from one build and gate:full, deployed at the same time
+python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown,eye-care-test
+python plugins/sgs-blocks/scripts/build-deploy.py --target all
 ```
+
+**Several sites at once.** `--target` takes a comma list or `all`; naming a target there is its opt-in. The run checks every site's client `theme.json`, builds and runs `gate:full` once, then starts one child deploy per site from the same worktree (`deploy_multi.py`), all at the same time. Each child runs its site's own steps and writes `sgs-deploy-<target>-<pid>-<time>.log` in the temp folder; the parent prints one result line per site and fails if any site did not reach `[DONE]`. The build and gates were about 630s of a 671s single-site deploy, so two or five sites now take about one deploy's time.
+
+**A commit that already passed is not rebuilt.** After `gate:full` passes, `deploy_cache.py` stores the pass record, `build/` and every file the build left new or changed under the deploy roots in `~/.cache/sgs-deploy/<key>/`, keyed on the commit's tree hash plus the framework DB's sha256 (the full gates read the theme, `sites/`, specs, plans and the DB, so nothing narrower is safe). A later isolated deploy of the same commit with the same DB restores them and skips both steps, logging when the gates passed; a `--theme-only` deploy whose gates are cached skips the build entirely. Shared-checkout runs (`--no-isolate`, `--allow-dirty`, `--payload`) never use the cache; `--no-cache` forces a fresh build and gate run. The newest 5 entries are kept.
+
+**Packaging takes turns machine-wide.** Packaging swaps the shared `vendor/` autoloader to its no-dev form and back, so two deploys packaging at once could ship the dev autoloader (D849). It runs under the lock file `sgs-deploy-package.lock` in the temp folder; a waiting deploy logs `[package-lock]`. Packaging takes seconds.
+
+**Motion QA runs for sandybrown only.** `qa:motion` probes the canary's fixture pages, so a deploy to another target logs `[motion-qa] SKIPPED` rather than reporting the canary's result as its own.
 
 The script runs the pre-deploy `gate:full` tier, builds (from an isolated `git worktree` of `HEAD` by default, so a concurrent session's build or uncommitted files cannot collide with the deploy; the worktree links `plugins/sgs-blocks/node_modules`, `plugins/sgs-blocks/vendor` and `scripts/computed-route/node_modules`, the last because the prebuild's `validate-motion-presets.mjs` needs ajv 8; `--no-isolate` opts out), tars, scps, extracts, rotates the previous copy to `<dir>.bak`, cleans up, purges all three cache layers, runs any pending SGS framework migrations (`wp sgs migrations run` as the site's first administrator; reported, never fatal), then **GETs the site and fails the run if it is broken**. Deploy a framework change to the canary first. **Size guard:** a tarball over `TARBALL_MAX_MB` (45) is refused; the log's last line then says only `tar-failed (exit 2)` and the size message with the largest members is a few lines above it, so read the size first, not tar, and never raise the ceiling to pass. **From a git worktree:** run `composer install` in its `plugins/sgs-blocks` first, or `gate:full`'s PHPStan gates (`check-render-undefined-vars` and its self-test) fail closed; deploy from a worktree only when the shared checkout's HEAD is not your commit.
 
@@ -315,7 +327,7 @@ The deploy never touches `wp_global_styles` (the database user layer). `--self-t
 | `--skip-oldshape-audit` | The only check that catches a deploy whose schemas strand or delete stored content. |
 | `--skip-purge` | Cache purge — the deploy lands, but warm caches keep serving the previous version. |
 
-**Other flags (safe, not loss-of-safety):** `--payload <path>` (repeatable) deploys named uncommitted files without the blanket `--allow-dirty`; `--verify-url`, `--audit-scoped-page`, `--self-test`, `--theme-only`, `--blocks-only`, `--skip-build` exist for narrower workflows — read the script's `--help` for current usage.
+**Other flags (safe, not loss-of-safety):** `--payload <path>` (repeatable) deploys named uncommitted files without the blanket `--allow-dirty`; `--verify-url`, `--audit-scoped-page`, `--self-test`, `--theme-only`, `--blocks-only`, `--skip-build`, `--no-cache` exist for narrower workflows — read the script's `--help` for current usage.
 
 **`--dry-run`** prints the commands each step would run and executes none of them: every deploy step passes `args.dry_run` to `run()`, which returns without executing. It also skips the dirty-tree gate, so a dry run cannot warn you about uncommitted files the next real deploy would carry.
 

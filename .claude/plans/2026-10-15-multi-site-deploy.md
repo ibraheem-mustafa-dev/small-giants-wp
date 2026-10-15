@@ -32,6 +32,14 @@ A deploy measured 671s on 2026-10-15: build about 270s, `gate:full` 345s (11 gat
 - A real two-site theme deploy finishes in about one deploy's time; a repeat of the same commit restores from the cache and skips the gates; `probe-shop-filters.mjs` stays green on both sites.
 - Parallel gates: the verdict table matches the serial run, and a planted failure turns it red.
 
+## Status (2026-10-15)
+
+- Items 1-6 built (f1f5a1e76). `build-deploy.py --self-test` passes with cases 17-18, each proven red on a planted fault (a key that ignores the DB, a lock that does not lock).
+- Measured live: a two-site `--theme-only` deploy shipped both sites in 28-39s end to end, side by side, each with its own client `theme.json` (md5-verified) and HTTP 200; `probe-shop-filters.mjs` green on both.
+- The cache's live proof (a repeat deploy restoring from the cache) is open: every full deploy from `main` this afternoon aborted on in-flight motion work committed half-way (the `data-sgs-fx` list-match gate, fixed in 8d8b94849; then `generated-fx-effects.php` stale against the reseeded DB). Run it when `main` builds and gates green: `--target sandybrown,eye-care-test`, then the same command again, which must log `RESTORED` and `PASSED ... not re-run`.
+- Item 7 (`run-gates.py --jobs`) built with self-test cases; `gate:full` adopts it once a serial and a parallel run on the same tree return the same verdicts.
+- Follow-up: `build-deploy.py` grew 78 lines (2,456); split its self-tests and post-deploy steps into modules.
+
 ## Docs to update
 
 `CLAUDE.md` Build and deploy, `.claude/dev-setup.md` deploy section, `/wp-sgs-deploy` skill if it names the flags.

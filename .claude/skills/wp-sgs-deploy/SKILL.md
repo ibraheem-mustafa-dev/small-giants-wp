@@ -112,6 +112,8 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target eye-care-test
 | Flag | Effect | When |
 |---|---|---|
 | `--target sandybrown\|indus-test\|eye-care-test` | Picks the site. Hostnames + remote WP paths live in the script's `TARGETS` dict (R-31-9, universal) — never inline a host here. | Always |
+| `--target a,b` / `--target all` | Several sites: one build and `gate:full`, then every site deployed at the same time, one result line per site (`.claude/dev-setup.md` "Several sites at once"). Naming an opt-in target in the list is its opt-in. | A change that ships to more than one site |
+| `--no-cache` | Rebuilds and re-runs `gate:full` even when this commit and framework DB already passed them | When a cached pass is in doubt |
 | `--blocks-only` / `--theme-only` | Narrows scope (pick one — you can't pass both) | Scoped deploys |
 | `--skip-build` | Reuses existing `build/` | Only when you *just* built |
 | `--dry-run` | Prints commands, executes nothing | Rehearsal |
