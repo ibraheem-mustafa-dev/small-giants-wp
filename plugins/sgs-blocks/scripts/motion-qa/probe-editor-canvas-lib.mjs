@@ -29,11 +29,17 @@ export function loadSite( siteKey ) {
 	return site;
 }
 
-/** The verdict reporter: `verdict` for a check, `control` for its negative control (which must be red), `note` for information. */
+/**
+ * The reporter: `verdict` for a check, `control` for its negative control (which must be red), `unanswered` for a check
+ * that could not be measured (never a pass), `attempt` to run a step so a throw becomes an UNANSWERED row, `note` for
+ * information. `exitCode()` is 1 on any failure, 2 when only unanswered rows remain, else 0.
+ */
 export function makeReporter() {
 	const failures = [];
-	return {
+	const unansweredRows = [];
+	const out = {
 		failures,
+		unansweredRows,
 		verdict( ok, label, detail ) {
 			console.log( `${ ok ? 'PASS' : 'FAIL' }  ${ label }  ${ JSON.stringify( detail ) }` );
 			if ( ! ok ) failures.push( label );
@@ -42,22 +48,56 @@ export function makeReporter() {
 			console.log( `${ red ? 'CONTROL_RED' : 'CONTROL_PASSED' }  ${ label }  ${ JSON.stringify( detail ) }` );
 			if ( ! red ) failures.push( `${ label } (control stayed green)` );
 		},
+		unanswered( label, why, detail = {} ) {
+			console.log( `UNANSWERED  ${ label }  ${ JSON.stringify( { why, ...detail } ) }` );
+			unansweredRows.push( label );
+		},
 		note( label, detail ) {
 			console.log( `NOTE  ${ label }  ${ JSON.stringify( detail ) }` );
 		},
+		async attempt( label, step ) {
+			try {
+				return await step();
+			} catch ( error ) {
+				out.unanswered( label, String( error.message || error ).trim().slice( 0, 240 ) );
+				return undefined;
+			}
+		},
+		exitCode() {
+			if ( failures.length ) return 1;
+			return unansweredRows.length ? 2 : 0;
+		},
 	};
+	return out;
 }
 
-/** In page: the final-state rule `[data-sgs-me]:not([data-sgs-in])` with an important `--sgs-me-from-op`, if any sheet holds it. */
-export function findFinalStateRule() {
-	const walk = ( rules ) => [ ...rules ].some( ( r ) => ( r.cssRules ? walk( r.cssRules ) : r.selectorText === '[data-sgs-me]:not([data-sgs-in])' && r.style.getPropertyPriority( '--sgs-me-from-op' ) === 'important' ) );
-	return [ ...document.styleSheets ].some( ( sheet ) => {
-		try {
-			return walk( sheet.cssRules );
-		} catch ( e ) {
-			return false;
+/**
+ * In page: what the document's stylesheets hold, read from the rules (a host optimiser can combine and rename sheets, so
+ * link names prove nothing). `selectorText` is tested first and the walk recurses only into a non-empty `cssRules`;
+ * `rulesSeen` and `unreadable` let a silent zero be told from a real one.
+ */
+export function readSheetFacts() {
+	const facts = { sheets: 0, unreadable: 0, rulesSeen: 0, finalStateRule: false, motionRules: false, thumbRules: false };
+	const walk = ( rules ) => {
+		for ( const r of rules ) {
+			facts.rulesSeen++;
+			if ( typeof r.selectorText === 'string' ) {
+				if ( r.selectorText === '[data-sgs-me]:not([data-sgs-in])' && r.style.getPropertyPriority( '--sgs-me-from-op' ) === 'important' ) facts.finalStateRule = true;
+				if ( r.selectorText.includes( 'data-sgs-me' ) ) facts.motionRules = true;
+				if ( r.selectorText.includes( 'sgs-motion-thumb' ) ) facts.thumbRules = true;
+			}
+			if ( r.cssRules && r.cssRules.length ) walk( r.cssRules );
 		}
-	} );
+	};
+	for ( const sheet of document.styleSheets ) {
+		facts.sheets++;
+		try {
+			walk( sheet.cssRules );
+		} catch ( e ) {
+			facts.unreadable++;
+		}
+	}
+	return facts;
 }
 
 /** In page: the page's blocks, flattened, with what the probe needs to find each block's motion targets. */
@@ -78,7 +118,8 @@ export function readPlan() {
 	const scrollParts = ( b ) => entranceParts( b.attributes.sgsMotion ).filter( ( part ) => b.attributes.sgsMotion.elements[ part ].entrance?.base?.trigger === 'scroll' );
 	const describe = ( b, parts ) => ( { id: b.clientId, name: b.name, selectors: parts.map( ( part ) => selectorFor( b.name, part ) ) } );
 	const hover = flat.find( ( b ) => supports( b.name ) && JSON.stringify( b.attributes.sgsMotion || {} ).includes( '"hover"' ) );
-	const plain = flat.find( ( b ) => window.wp.blocks.getBlockType( b.name ) && ! supports( b.name ) );
+	const structural = [ 'core/template-part', 'core/post-content', 'core/group', 'core/column', 'core/columns' ];
+	const plain = flat.find( ( b ) => window.wp.blocks.getBlockType( b.name ) && ! supports( b.name ) && ! structural.includes( b.name ) );
 	return {
 		total: flat.length,
 		scrollBlocks: flat.filter( ( b ) => scrollParts( b ).length ).map( ( b ) => describe( b, scrollParts( b ) ) ),
@@ -100,11 +141,73 @@ export function readBlockState( [ clientId, selectors ] ) {
 	const targets = selectors.flatMap( ( s ) => ( s === 'ROOT' ? [ el ] : [ ...el.querySelectorAll( s ) ] ) );
 	const nodes = [ ...new Set( [ ...targets, ...el.querySelectorAll( '[data-sgs-me], p, h1, h2, h3, h4, h5, h6, li, a, span, img' ) ] ) ].filter( ( n ) => ! n.closest( '[aria-hidden="true"], .sgs-motion-layer, [data-sgs-fx]' ) );
 	const bad = nodes.filter( ( n ) => getComputedStyle( n ).opacity !== '1' ).length;
+	return { id: clientId, found: true, counted: nodes.length, notOne: bad, targets: targets.length };
+}
+
+/**
+ * In canvas: scroll a block to the centre, wait until its box stops moving, then sample an 9 x 9 grid over the part of it
+ * inside the viewport (a point test says nothing about a block that covers a small share, and `elementFromPoint` is null
+ * outside the viewport). Resolves { found, inView, size, insidePct, blockers, point } where `point` is a sampled point
+ * that hits the block, the one nearest its visible centre.
+ */
+export async function locateClick( [ clientId ] ) {
+	const el = document.getElementById( `block-${ clientId }` );
+	if ( ! el ) return { found: false };
+	el.scrollIntoView( { block: 'center' } );
+	let last = '';
+	for ( let i = 0; i < 20; i++ ) {
+		await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
+		const b = el.getBoundingClientRect();
+		const key = [ b.top, b.left, b.width, b.height ].join();
+		if ( key === last ) break;
+		last = key;
+	}
 	const r = el.getBoundingClientRect();
-	const x = r.left + r.width / 2;
-	const y = Math.min( Math.max( r.top + Math.min( r.height, window.innerHeight ) / 2, 4 ), window.innerHeight - 4 );
-	const hit = document.elementFromPoint( x, y );
-	return { id: clientId, found: true, counted: nodes.length, notOne: bad, targets: targets.length, x, y, hitInside: Boolean( hit && el.contains( hit ) ) };
+	const out = { found: true, size: [ Math.round( r.width ), Math.round( r.height ) ], viewport: [ innerWidth, innerHeight ] };
+	const x0 = Math.max( r.left, 0 );
+	const x1 = Math.min( r.right, innerWidth );
+	const y0 = Math.max( r.top, 0 );
+	const y1 = Math.min( r.bottom, innerHeight );
+	out.inView = r.width > 0 && r.height > 0 && x1 > x0 && y1 > y0;
+	if ( ! out.inView ) return out;
+	let inside = 0;
+	let best = null;
+	const blockers = {};
+	for ( let i = 1; i <= 9; i++ ) {
+		for ( let j = 1; j <= 9; j++ ) {
+			const x = x0 + ( ( x1 - x0 ) * i ) / 10;
+			const y = y0 + ( ( y1 - y0 ) * j ) / 10;
+			const hit = document.elementFromPoint( x, y );
+			if ( hit && el.contains( hit ) ) {
+				inside++;
+				const d = Math.hypot( x - ( x0 + x1 ) / 2, y - ( y0 + y1 ) / 2 );
+				if ( ! best || d < best.d ) best = { x, y, d };
+			} else {
+				const name = hit ? `${ hit.tagName.toLowerCase() }.${ String( hit.className ).slice( 0, 50 ) }` : 'null';
+				blockers[ name ] = ( blockers[ name ] || 0 ) + 1;
+			}
+		}
+	}
+	out.insidePct = Math.round( ( inside / 81 ) * 100 );
+	out.blockers = blockers;
+	out.point = best ? { x: best.x, y: best.y } : null;
+	return out;
+}
+
+/** In page: the accessible names of a motion panel's radios and buttons, to say what the panel really holds. */
+export function describePanel( panel ) {
+	const root = document.querySelector( `.sgs-motion-panel--${ panel }` );
+	if ( ! root ) return { mounted: false };
+	const names = ( selector ) => [ ...root.querySelectorAll( selector ) ].map( ( n ) => ( n.getAttribute( 'aria-label' ) || n.textContent || '' ).trim().slice( 0, 40 ) );
+	return {
+		mounted: true,
+		opened: root.classList.contains( 'is-opened' ),
+		radiogroups: root.querySelectorAll( '.sgs-motion-thumbs[role="radiogroup"]' ).length,
+		radios: names( '[role="radio"]' ),
+		thumbButtons: names( '.sgs-motion-thumbs__item' ),
+		pressedButtons: root.querySelectorAll( '.sgs-motion-thumbs [aria-pressed]' ).length,
+		thumbs: root.querySelectorAll( '.sgs-motion-thumb' ).length,
+	};
 }
 
 /** In page: running animations among the non-still thumbnails of a panel. */
@@ -117,7 +220,7 @@ export function readThumbs( panel ) {
 		checkedRunning: boxes.filter( ( b ) => b.closest( '[aria-checked="true"]' ) && running( b ) ).length,
 		checked: boxes.filter( ( b ) => b.closest( '[aria-checked="true"]' ) ).length,
 		inlineStyles: document.querySelectorAll( '.sgs-motion-thumb[style], .sgs-motion-thumb__box[style]' ).length,
-		radios: document.querySelectorAll( `.sgs-motion-panel--${ panel } [role="radiogroup"] [role="radio"]` ).length,
+		radios: document.querySelectorAll( `.sgs-motion-panel--${ panel } .sgs-motion-thumbs[role="radiogroup"] [role="radio"]` ).length,
 	};
 }
 
