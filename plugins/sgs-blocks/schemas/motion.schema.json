@@ -10142,7 +10142,8 @@
 					"$ref": "#/$defs/choice",
 					"enum": [
 						"same",
-						"reversed"
+						"reversed",
+						"together"
 					],
 					"x-sgs-field": {
 						"fieldType": "choice",

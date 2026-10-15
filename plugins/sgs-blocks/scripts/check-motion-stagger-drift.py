@@ -114,6 +114,8 @@ def compute_delays(settings: dict) -> list[int]:
 
 
 def compute_close_delays(delays: list[int], direction: str = "same") -> list[int]:
+    if direction == "together":
+        return [0] * len(delays)
     if direction != "reversed" or not delays:
         return list(delays)
     low, high = min(delays), max(delays)

@@ -93,11 +93,15 @@ final class Sgs_Motion_Stagger {
 	 * Close delays for an `open`-trigger entrance, from its open delays.
 	 *
 	 * @param int[]  $delays    The open delays.
-	 * @param string $direction `same` repeats them; `reversed` mirrors them inside their own range.
+	 * @param string $direction `same` repeats them; `reversed` mirrors them inside their own range; `together` is 0
+	 *                          for every child.
 	 * @return int[] The close delays, one per child.
 	 */
 	public static function compute_close_delays( array $delays, string $direction = 'same' ): array {
 		$delays = array_values( $delays );
+		if ( 'together' === $direction ) {
+			return array_fill( 0, count( $delays ), 0 );
+		}
 		if ( 'reversed' !== $direction || array() === $delays ) {
 			return $delays;
 		}

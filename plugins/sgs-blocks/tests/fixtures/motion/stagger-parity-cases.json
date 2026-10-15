@@ -1065,6 +1065,62 @@
 			"expected": []
 		},
 		{
+			"name": "close together ladder",
+			"kind": "close",
+			"delays": [
+				50,
+				100,
+				150,
+				200
+			],
+			"direction": "together",
+			"expected": [
+				0,
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "close together grid",
+			"kind": "close",
+			"delays": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			],
+			"direction": "together",
+			"expected": [
+				0,
+				0,
+				0,
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "close together single",
+			"kind": "close",
+			"delays": [
+				70
+			],
+			"direction": "together",
+			"expected": [
+				0
+			]
+		},
+		{
+			"name": "close together empty",
+			"kind": "close",
+			"delays": [],
+			"direction": "together",
+			"expected": []
+		},
+		{
 			"name": "close unknown direction repeats",
 			"kind": "close",
 			"delays": [

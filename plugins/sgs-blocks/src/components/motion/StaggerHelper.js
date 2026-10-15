@@ -46,6 +46,7 @@ const ORDER_LABELS = Object.freeze( {
 const CLOSE_ORDER_LABELS = Object.freeze( {
 	same: __( 'Same', 'sgs-blocks' ),
 	reversed: __( 'Reversed', 'sgs-blocks' ),
+	together: __( 'All at once', 'sgs-blocks' ),
 } );
 
 // An exact number of milliseconds: the stagger arithmetic needs a number, so unlike the Duration atom this offers no
@@ -188,7 +189,7 @@ export default function StaggerHelper( {
 				<ChoiceAtom
 					label={ __( 'Close order', 'sgs-blocks' ) }
 					help={ __(
-						'Whether the children close in the order they opened, or the last to open closes first.',
+						'Whether the children close in the order they opened, the last to open closes first, or all close at once.',
 						'sgs-blocks'
 					) }
 					options={ closeOrderOptions }

@@ -265,6 +265,21 @@ describe( 'the Close order choice', () => {
 		const updates = global.__update.mock.calls[ 0 ][ 1 ];
 		expect( [ 'a', 'b', 'c' ].map( ( id ) => layerIn( updates, id ).close.closeDelay ) ).toEqual( [ 200, 100, 0 ] );
 	} );
+
+	it( 'offers All at once, which stores together and writes every close delay as 0', async () => {
+		global.__children = [ 'a', 'b', 'c' ].map( ( id ) => card( id, ownBase( 'open' ) ) );
+		mount( { blockName: 'sgs/container', initial: staggered( 'open' ) } );
+		await click( radio( 'All at once' ) );
+		const choice = global.__update.mock.calls.at( -1 )[ 1 ][ MOTION_ATTRIBUTE_NAME ].stagger.closeOrder;
+		expect( choice ).toBe( 'together' );
+		expect( defs.$defs.Stagger.properties.closeOrder.enum ).toContain( choice );
+		global.__update.mockClear();
+		H.remount();
+		mount( { blockName: 'sgs/container', initial: staggered( 'open', { step: 100, closeOrder: 'together' } ) } );
+		await click( buttonText( 'Write delays' ) );
+		const updates = global.__update.mock.calls[ 0 ][ 1 ];
+		expect( [ 'a', 'b', 'c' ].map( ( id ) => layerIn( updates, id ).close.closeDelay ) ).toEqual( [ 0, 0, 0 ] );
+	} );
 } );
 
 describe( 'which blocks print their items on the server', () => {

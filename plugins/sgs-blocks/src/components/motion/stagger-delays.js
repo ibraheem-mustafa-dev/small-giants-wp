@@ -44,7 +44,7 @@
  *
  * `computeCloseDelays( delays, direction )` derives the close delays for an `open`-trigger entrance from the open
  * delays: `same` repeats them, `reversed` mirrors them inside their own range so the last child to open is the first
- * to close and the cap still holds.
+ * to close and the cap still holds, and `together` closes every child at once (every delay 0).
  *
  * @package
  */
@@ -152,10 +152,14 @@ export function computeStaggerDelays( {
  * Close delays for an `open`-trigger entrance, from its open delays.
  *
  * @param {number[]} delays    The open delays.
- * @param {string}   direction `same` repeats them; `reversed` mirrors them inside their own range.
+ * @param {string}   direction `same` repeats them; `reversed` mirrors them inside their own range; `together` is 0
+ *                             for every child.
  * @return {number[]} The close delays, one per child.
  */
 export function computeCloseDelays( delays, direction = 'same' ) {
+	if ( direction === 'together' ) {
+		return delays.map( () => 0 );
+	}
 	if ( direction !== 'reversed' || delays.length === 0 ) {
 		return delays.slice();
 	}

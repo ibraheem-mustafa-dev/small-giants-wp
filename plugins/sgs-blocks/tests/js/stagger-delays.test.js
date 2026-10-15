@@ -114,6 +114,7 @@ describe( 'close delays', () => {
 	it( 'reversed mirrors them inside their own range, so the cap still holds', () => {
 		expect( computeCloseDelays( [ 50, 100, 150, 200 ], 'reversed' ) ).toEqual( [ 200, 150, 100, 50 ] );
 		expect( computeCloseDelays( [], 'reversed' ) ).toEqual( [] );
+		expect( computeCloseDelays( [ 50, 100, 150, 200 ], 'together' ) ).toEqual( [ 0, 0, 0, 0 ] );
 	} );
 } );
 

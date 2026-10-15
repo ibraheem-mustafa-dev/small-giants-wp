@@ -76,7 +76,7 @@ export function delaysByTier( { count, columnsByTier, settings } ) {
  * The close delays at every tier, from the open delays.
  *
  * @param {Object<string,number[]>} delays     The open delays (`delaysByTier`).
- * @param {string}                  closeOrder `same` or `reversed`.
+ * @param {string}                  closeOrder `same`, `reversed` or `together`.
  * @return {Object<string,number[]>} `{ desktop, tablet, mobile }`, each one close delay per child.
  */
 export function closeDelaysByTier( delays, closeOrder ) {
