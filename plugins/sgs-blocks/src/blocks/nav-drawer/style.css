@@ -348,6 +348,12 @@
 		transform-origin: var(--sgs-nd-anim-origin, center);
 	}
 
+	/* On the Entrance model the panel's origin is the anchor's, written as --sgs-nd-anim-origin by
+	   sgs_nav_drawer_motion_origin_css(); the entrance scales and rotates around it. */
+	.wp-block-sgs-nav-drawer[data-sgs-motion-state] {
+		transform-origin: var(--sgs-nd-anim-origin, center);
+	}
+
 	.wp-block-sgs-nav-drawer:where(:not([data-sgs-motion-state])).is-closing {
 		animation-name: var(--sgs-nd-anim-out, sgs-nav-drawer-out);
 		animation-duration: var(--sgs-nd-exit-dur, 200ms);

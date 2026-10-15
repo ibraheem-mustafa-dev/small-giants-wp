@@ -87,6 +87,14 @@ function read_pre_m46( string $rel ): string {
 ", (string) $out );
 }
 
+/** A file at the last commit before the model path wrote the anchor-derived transform origin (Spec 38A M4.5 follow-up). */
+function read_pre_origin( string $rel ): string {
+	$out = shell_exec( 'git show e1f1aef42:plugins/sgs-blocks/' . $rel );
+	return str_replace( "
+", "
+", (string) $out );
+}
+
 $anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -195,8 +203,20 @@ ok( 900 === $t_same['exit_ms'] && 'var(--wp--custom--easing--ease-out)' === $t_s
 ok( null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 'token:duration.slow' ) ) )['enter_ms'] && null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 900 ), array(), 'scroll' ) )['enter_ms'], 'a token duration, or a root entrance that is not `open`, gives no scrim timing' );
 
 $nd_css_now = read_file( 'src/blocks/nav-drawer/style.css' );
-ok( has( $nd_css_now, '.wp-block-sgs-nav-drawer:where(:not([data-sgs-motion-state]))[open] {' ) && ! preg_match( '/^\t\.wp-block-sgs-nav-drawer(\.|\[)/m', substr( $nd_css_now, (int) strpos( $nd_css_now, '/* ── Entry and exit motion' ), (int) strpos( $nd_css_now, '/* interpolate-size' ) - (int) strpos( $nd_css_now, '/* ── Entry and exit motion' ) ) ), 'every old panel rule is gated off a drawer on the model, at zero added specificity' );
+ok( has( $nd_css_now, '.wp-block-sgs-nav-drawer:where(:not([data-sgs-motion-state]))[open] {' ) && ! preg_match( '/^\t\.wp-block-sgs-nav-drawer(\.|\[(?!data-sgs-motion-state\]))/m', substr( $nd_css_now, (int) strpos( $nd_css_now, '/* ── Entry and exit motion' ), (int) strpos( $nd_css_now, '/* interpolate-size' ) - (int) strpos( $nd_css_now, '/* ── Entry and exit motion' ) ) ), 'every old panel rule is gated off a drawer on the model, at zero added specificity' );
 ok( has( read_pre_m45( 'src/blocks/nav-drawer/style.css' ), "\t.wp-block-sgs-nav-drawer[open] {" ), 'negative control: before M4.5 the panel rule applied to every drawer' );
+// The panel's transform origin is anchor geometry, so a drawer on the model grows from its anchor's edge too.
+$origin_header = sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'header' ), $anchors );
+ok( $sel . '{--sgs-nd-anim-origin:top center;}' === $origin_header, 'a model-path drawer with a header anchor emits the top-edge origin (top center) and nothing else', $origin_header );
+ok( $sel . '{--sgs-nd-anim-origin:top center;}' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'container' ), $anchors ), 'a container anchor emits the same top-edge origin' );
+$origin_tiers = sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'header', 'mobile' => 'full-screen' ), $anchors );
+ok( $sel . '{--sgs-nd-anim-origin:top center;}@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $sel . '{--sgs-nd-anim-origin:center;}}' === $origin_tiers, 'the origin follows the anchor per tier: Tablet inherits Desktop, the full-screen phone is centred', $origin_tiers );
+ok( $sel . '{--sgs-nd-anim-origin:top right;}' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'trigger' ), $anchors ), 'a trigger anchor emits the corner origin (top right)' );
+ok( '' === sgs_nav_drawer_motion_origin_css( $sel, array(), $anchors ) && '' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'side-start', 'mobile' => 'centred' ), $anchors ) && '' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'nope;}body{' ), $anchors ), 'an unset, side, centred or off-list anchor is centred everywhere, so nothing is emitted (the stylesheet falls back to center)' );
+ok( sgs_nav_drawer_motion_keyframes( 'auto', 'header' )['origin'] === 'top center' && has( $origin_header, sgs_nav_drawer_motion_keyframes( 'auto', 'header' )['origin'] ), 'the model path writes the very value the old path resolves for the anchor (sgs_nav_drawer_motion_keyframes)' );
+ok( has( $nd_render, "\t\$css                     .= sgs_nav_drawer_motion_origin_css( \$root_sel, \$anchor_attr_raw, \$sgs_nd_allowed_anchors );\n} else {" ) && 1 === substr_count( $nd_render, 'sgs_nav_drawer_motion_origin_css' ), 'render.php writes the origin on the model branch only, so the old path\'s output is untouched' );
+ok( has( $nd_css_now, "\t.wp-block-sgs-nav-drawer[data-sgs-motion-state] {\n\t\ttransform-origin: var(--sgs-nd-anim-origin, center);" ) && has( substr( $nd_css_now, (int) strpos( $nd_css_now, '@media (prefers-reduced-motion: no-preference)' ) ), "[data-sgs-motion-state] {\n\t\ttransform-origin" ), 'the stylesheet applies the origin to a drawer carrying the motion state host, inside prefers-reduced-motion: no-preference' );
+ok( ! has( read_pre_origin( 'includes/helpers-nav-drawer-motion-model.php' ), 'sgs_nav_drawer_motion_origin_css' ) && ! has( read_pre_origin( 'src/blocks/nav-drawer/style.css' ), "[data-sgs-motion-state] {\n\t\ttransform-origin" ), 'negative control: before this change a model-path drawer wrote no origin, so a scale entrance grew from the centre' );
 $nd_edit = read_file( 'src/blocks/nav-drawer/edit.js' );
 ok( ! has( $nd_edit, '<MotionPanel' ) && has( read_pre_m45( 'src/blocks/nav-drawer/edit.js' ), '<MotionPanel' ) && has( $nd_edit, 'scrimFadeDuration: value ?? 0' ), 'the old Motion panel is unmounted (decision 11); the scrim fade time keeps its control' );
 ok( array( 'root', 'body' ) === ( json_decode( read_file( 'src/blocks/nav-drawer/block.json' ), true )['supports']['sgs']['motion']['opens'] ?? null ), 'the drawer offers Panel opens on its root and body' );

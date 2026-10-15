@@ -8,10 +8,12 @@
  *   easing, per-device from and to values where a tier differs, and the identity values on a `none` tier.
  * - ITEMS: `class-sgs-motion-legacy-nav-drawer-items.php`.
  *
+ * `expand-down` is the fade with a vertical scale from 0.85 (the entrance's `scaleY`; its top-edge origin is anchor
+ * geometry and is written by `helpers-nav-drawer-motion-model.php::sgs_nav_drawer_motion_origin_css`).
  * `wipe-down` and `reveal-from-bar` are the one-edge bottom clip (the second starting at the opener row) and `curtain`
  * the curtain layer with a delayed content fade (`class-sgs-motion-legacy-nav-drawer-curtain.php`). Reported, never
  * approximated: the shapes in `UNMAPPED` (two retired by Bean on 2026-10-15) and the clip item reveal. `corner-scale`
- * keeps its scale and fade; its top-right origin has no field.
+ * keeps its scale and fade; its top-right origin is the anchor-derived origin the model path writes for a trigger anchor.
  *
  * @package SGS\Blocks
  */
@@ -38,7 +40,6 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 
 	/** Shapes the model cannot express, with the reason. */
 	const UNMAPPED = array(
-		'expand-down'      => 'expand-down scales the panel vertically only (scaleY 0.85) and the entrance has one uniform scale field, so a mapped scale would also shrink the panel sideways; needs a scaleY field',
 		'wipe-down-skew'   => 'retired (Bean 2026-10-15): wipe-down-skew was a skewed polygon clip and is not rebuilt',
 		'grow-from-anchor' => 'retired (Bean 2026-10-15): grow-from-anchor animated the box height from a measured anchor and is not rebuilt',
 	);
@@ -49,6 +50,7 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 		'translateX'     => 0,
 		'translateY'     => 0,
 		'scale'          => 1,
+		'scaleY'         => 1,
 		'clip'           => 0,
 		'clipEdge'       => 'all',
 		'clipFromAnchor' => 'none',
@@ -159,6 +161,11 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 				return $fade_pair + array( 'translateY' => array( '100%', 0 ) );
 			case 'slide-down':
 				return $fade_pair + array( 'translateY' => array( '-100%', 0 ) );
+			case 'expand-down':
+				return array(
+					'opacity' => array( 0, 1 ),
+					'scaleY'  => array( 0.85, 1 ),
+				);
 			case 'scale':
 			case 'modal-scale':
 				return array(
@@ -246,9 +253,6 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 		$out['consumed'] = array_merge( $out['consumed'], array_values( array_intersect( array( 'entryAnimation', 'entryDuration', 'exitDuration', 'entryEasing', 'entryEasingCustom', 'entryFade' ), array_keys( $attrs ) ) ) );
 		if ( isset( $used['slide-start'] ) || isset( $used['slide-end'] ) ) {
 			$out['reported'][] = self::row( 'entryAnimation', $attrs['entryAnimation'] ?? 'auto', 'changed: the start and end slides no longer mirror in right-to-left languages (the model has no direction flip)', true );
-		}
-		if ( isset( $used['corner-scale'] ) ) {
-			$out['reported'][] = self::row( 'entryAnimation', $attrs['entryAnimation'] ?? 'auto', 'changed: the corner scale keeps its scale and fade; its top-right transform origin has no field', true );
 		}
 		if ( $curtain ) {
 			$pair            = Sgs_Motion_Legacy_Nav_Drawer_Curtain::layers( $attrs, $enter, $exit, $easing );

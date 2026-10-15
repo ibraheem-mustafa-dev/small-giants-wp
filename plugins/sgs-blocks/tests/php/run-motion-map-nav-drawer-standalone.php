@@ -17,9 +17,11 @@
  * - per-tier shapes become device overrides; `none` everywhere stores no panel; reversed closes store
  *   `min((count - 1 - i) x step, cap)`; wipe-down and reveal-from-bar are a bottom-edge clip on the root (the second
  *   anchored on the opener row), curtain is a curtain text layer plus a content fade on the body part delayed by half
- *   the time; the retired shapes (wipe-down-skew, grow-from-anchor), expand-down, a curtain the layer cannot take and
+ *   the time; the retired shapes (wipe-down-skew, grow-from-anchor), a curtain the layer cannot take and
  *   the clip item reveal are reported and left in place, never approximated; a child with no motion support or the
  *   drift class is not given an entrance;
+ * - expand-down (the `auto` shape of a header or container anchor, or chosen) is the fade with a scaleY entrance from
+ *   0.85, with the stored timings and close like the other shapes, per tier;
  * - every fragment is schema-valid, the runner migrates a whole post with no flag, and a second run changes nothing.
  *
  * Planted faults (each must turn the run red; the run then exits 1). The fault is written into a TEMPORARY COPY of the
@@ -82,6 +84,7 @@ namespace {
 			'anchor' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "array( 'opener-row', null )", "array( 'none', null )" ),
 			'delay'  => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-curtain.php', "'delay'    => \$half,", "'delay'    => 0," ),
 			'colour' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-curtain.php', "\$values['colour'] = \$colour;", "\$values['colour'] = 'primary';" ),
+			'expand' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "'scaleY'  => array( 0.85, 1 )", "'scaleY'  => array( 0.5, 1 )" ),
 			'retire' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "'retired (Bean 2026-10-15): wipe-down-skew", "'wipe-down-skew" ),
 		);
 		if ( ! isset( $faults[ $plant ] ) ) {
@@ -286,20 +289,44 @@ namespace SGS\Blocks\Motion {
 	$mixed = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'fade', 'mobile' => 'none' ) ) ) ) )['0'] );
 	ok( array( 'mobile' => array( 'from' => array( 'opacity' => 1 ) ) ) === ( $mixed['devices'] ?? null ), 'a `none` tier holds the identity values', json_encode( $mixed ) );
 
-	// 5. No destination: reported and left in place, never approximated. The two retired shapes say so; expand-down needs a scaleY field.
+	// 5. No destination: reported and left in place, never approximated. The two retired shapes say so.
 	foreach ( array( 'wipe-down-skew', 'grow-from-anchor' ) as $shape ) {
 		$u = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => $shape ), 'entryDuration' => 450 ) ) ) )['0'];
 		ok( array() === $u['motion'] && array() === $u['consumed'] && 2 === count( $u['reported'] ) && false === $u['reported'][0]['consumed'], "$shape: no panel stored, entryAnimation and entryDuration left in place and reported", reasons( $u ) );
 		ok( false !== strpos( $u['reported'][0]['reason'], 'retired (Bean 2026-10-15)' ), "$shape: the reason says retired (Bean 2026-10-15)", $u['reported'][0]['reason'] );
 	}
-	$h = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header' ), 'itemStagger' => 40 ) ) ) )['0'];
-	ok( ! isset( $h['motion']['elements'] ) && false !== strpos( reasons( $h ), 'expand-down' ) && false !== strpos( reasons( $h ), 'needs a scaleY field' ) && false === strpos( reasons( $h ), 'retired' ), 'auto on a header anchor is the vertical expand, reported with no panel stored: the entrance has no scaleY field (not retired)', reasons( $h ) );
 	$clip = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'itemStagger' => 50, 'itemStaggerReveal' => 'clip', 'itemStaggerDistance' => array( 'desktop' => 18 ) ), array( blk( 'sgs/button' ) ) ) ) );
 	ok( ! in_array( 'itemStaggerReveal', $clip['0']['consumed'], true ) && array( 'translateY' => 18 ) === base_of( $clip['0/0'] )['values']['from'], 'the clip reveal is reported and left in place; the items keep their travel without a fade' );
 	$inert = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'fade' ), 'curtainColour' => '#000', 'itemStaggerDistance' => array( 'desktop' => 9 ) ) ) ) )['0'];
 	ok( in_array( 'curtainColour', $inert['consumed'], true ) && in_array( 'itemStaggerDistance', $inert['consumed'], true ) && false !== strpos( reasons( $inert ), 'inert' ), 'a curtain colour with no curtain and an item distance with no step are inert: consumed and reported' );
 	$bad = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'fade' ), 'entryEasing' => 'custom', 'entryEasingCustom' => 'nope' ) ) ) )['0'];
 	ok( array() === $bad['motion'] && ! in_array( 'entryEasing', $bad['consumed'], true ), 'an easing with no exact value leaves the panel unmapped and reported' );
+
+	// 5a. expand-down (reachable only as the `auto` shape of a header or container anchor; the old keyframes: opacity 0 and scaleY(0.85) to rest, always faded whatever entryFade says): the
+	// root entrance from {opacity 0, scaleY 0.85}, with the stored timings and close like every other mapped shape.
+	$expand_layer = static fn( array $values, array $close, ?array $devices = null ): array => array_filter(
+		array(
+			'trigger' => 'open',
+			'values'  => $values,
+			'close'   => $close,
+			'devices' => $devices,
+		),
+		static fn( $v ) => null !== $v
+	);
+	$h  = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header' ), 'itemStagger' => 40 ) ) ) );
+	$hb = base_of( $h['0'] );
+	ok( $expand_layer( array( 'from' => array( 'opacity' => 0, 'scaleY' => 0.85 ), 'to' => array( 'opacity' => 1, 'scaleY' => 1 ), 'duration' => 250, 'easing' => 'ease-out' ), array( 'closeDuration' => 200, 'closeEasing' => 'ease-out' ) ) === $hb, 'auto on a header anchor is expand-down: the root fades from 0 and scales from scaleY 0.85, 250ms in and 200ms out, ease-out', json_encode( $hb ) );
+	ok( false === strpos( reasons( $h['0'] ), 'expand-down' ) && false === strpos( reasons( $h['0'] ), 'scaleY' ) && in_array( 'itemStagger', $h['0']['consumed'], true ) && patches_valid( $h ), 'expand-down reports nothing, consumes the old attributes and the fragment is schema-valid', reasons( $h['0'] ) );
+	$hc = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'container' ), 'entryDuration' => 250 ) ) ) )['0'] );
+	ok( array( 'opacity' => 0, 'scaleY' => 0.85 ) === ( $hc['values']['from'] ?? null ), 'auto on a container anchor is the same expand-down' );
+	$he = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header' ), 'entryDuration' => 400, 'exitDuration' => 350, 'entryEasing' => 'linear', 'entryFade' => false ) ) ) );
+	$heb = base_of( $he['0'] );
+	ok( $expand_layer( array( 'from' => array( 'opacity' => 0, 'scaleY' => 0.85 ), 'to' => array( 'opacity' => 1, 'scaleY' => 1 ), 'duration' => 400, 'easing' => 'linear' ), array( 'closeDuration' => 350, 'closeEasing' => 'linear' ) ) === $heb && array() === $he['0']['reported'] && patches_valid( $he ), 'expand-down (it is only ever the `auto` shape) takes the stored 400ms, 350ms and linear, and still fades (its keyframes ignore entryFade), nothing reported', json_encode( $heb ) );
+	$ht = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header' ), 'entryAnimation' => array( 'mobile' => 'none' ) ) ) ) )['0'] );
+	ok( array( 'mobile' => array( 'from' => array( 'opacity' => 1, 'scaleY' => 1 ) ) ) === ( $ht['devices'] ?? null ), 'a `none` mobile tier under expand-down holds the identity opacity and scaleY', json_encode( $ht ) );
+	$ha = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header', 'mobile' => 'full-screen' ), 'entryDuration' => 250 ) ) ) );
+	$hab = base_of( $ha['0'] );
+	ok( array( 'opacity' => 0, 'translateY' => 0, 'scaleY' => 0.85 ) === ( $hab['values']['from'] ?? null ) && array( 'mobile' => array( 'from' => array( 'translateY' => -8, 'scaleY' => 1 ) ) ) === ( $hab['devices'] ?? null ) && patches_valid( $ha ), 'auto per tier: a header anchor on Desktop expands down, the full-screen phone keeps the -8px nudge as one Mobile override', json_encode( $hab ) );
 
 	// 5b. The one-edge clip wipes (Bean 2026-10-15): wipe-down and reveal-from-bar are a bottom-edge clip on the root.
 	$wipe_attrs = array( 'entryAnimation' => array( 'desktop' => 'wipe-down' ), 'entryDuration' => 450, 'exitDuration' => 300 );

@@ -12,6 +12,10 @@
  * - the scrim, which fades with the panel unless `scrimFadeDuration` sets its own time;
  * - the store's focus deferral: a panel entrance over 500ms moves focus in when it ends (`data-sgs-nd-focus-after-entry`).
  *
+ * The panel's transform origin is anchor geometry, not a motion value: a header or container drawer grows from its top
+ * edge and a trigger drawer from its corner. `sgs_nav_drawer_motion_origin_css()` writes it per tier as
+ * `--sgs-nd-anim-origin`, and `nav-drawer/style.css` applies it to a drawer carrying `data-sgs-motion-state`.
+ *
  * @package SGS\Blocks
  */
 
@@ -102,5 +106,39 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_timing' ) ) {
 			$out['data']['sgs-nd-focus-after-entry'] = '';
 		}
 		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_drawer_motion_origin_css' ) ) {
+	/**
+	 * The panel's anchor-derived transform origin for a drawer on the Entrance model: `--sgs-nd-anim-origin` per tier,
+	 * the same value the old path wrote (`sgs_nav_drawer_motion_keyframes( 'auto', $anchor )['origin']`). A tier
+	 * follows the tier above it when its origin is the same, as the old path's tier rules did; a drawer whose every
+	 * tier is centred emits nothing, since the stylesheet's fallback is `center`.
+	 *
+	 * @param string $root_sel        The drawer's scoped root selector.
+	 * @param mixed  $anchor_raw      The raw `anchor` tier object.
+	 * @param array  $allowed_anchors The anchor allow-list.
+	 * @return string Rules (the base declaration and any tier media queries), '' when every tier is centred.
+	 */
+	function sgs_nav_drawer_motion_origin_css( string $root_sel, $anchor_raw, array $allowed_anchors ): string {
+		$origins = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+			$anchor = (string) sgs_resolve_tier( is_array( $anchor_raw ) ? $anchor_raw : array(), $tier, 'full-screen' )['value'];
+			$anchor = in_array( $anchor, $allowed_anchors, true ) ? $anchor : 'full-screen';
+
+			$origins[ $tier ] = sgs_nav_drawer_motion_keyframes( 'auto', $anchor )['origin'];
+		}
+		if ( array( 'center' ) === array_values( array_unique( $origins ) ) ) {
+			return '';
+		}
+		$css = $root_sel . '{--sgs-nd-anim-origin:' . $origins['desktop'] . ';}';
+		if ( $origins['tablet'] !== $origins['desktop'] ) {
+			$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{--sgs-nd-anim-origin:' . $origins['tablet'] . ';}}';
+		}
+		if ( $origins['mobile'] !== $origins['tablet'] ) {
+			$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{--sgs-nd-anim-origin:' . $origins['mobile'] . ';}}';
+		}
+		return $css;
 	}
 }

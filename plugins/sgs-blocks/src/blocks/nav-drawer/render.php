@@ -577,6 +577,7 @@ $sgs_nd_motion_model = sgs_nav_drawer_uses_motion_model( $attributes );
 if ( $sgs_nd_motion_model ) {
 	$sgs_nd_motion            = sgs_nav_drawer_motion_timing( $attributes );
 	$sgs_nd_motion['classes'] = array();
+	$css                     .= sgs_nav_drawer_motion_origin_css( $root_sel, $anchor_attr_raw, $sgs_nd_allowed_anchors );
 } else {
 	$sgs_nd_motion = sgs_nav_drawer_motion( $attributes, $root_sel, $anchor_attr_raw, $sgs_nd_allowed_anchors );
 	$css          .= $sgs_nd_motion['css'];
