@@ -40,7 +40,7 @@ CR6 (padding and margin longhands) is done, see `plans/archive/2026-10-07-cr6-bo
 
 | Ref | The feature |
 |---|---|
-| **53** | **Hero "drift" mode.** The photo moves at a set share of the scroll speed (draft 0.18), replacing the fixed-background parallax where the photo stands still. Off under reduced motion |
+| **53** | **Hero "drift" mode.** The photo moves at a set share of the scroll speed (draft 0.18), replacing the fixed-background parallax where the photo stands still. Off under reduced motion. Framework built 2026-10-15 (Spec 38A M5.7 `parallax`, `1da86bffa`; 0.18 reads 90px at scrollY 500 live); the Eye Care hero takes it on the M6.5 sweep |
 
 ### Footer and site furniture
 
