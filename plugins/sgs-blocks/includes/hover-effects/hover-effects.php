@@ -102,9 +102,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		? false
 		: (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
 	$hover_border_acc      = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
-	// The legacy tilt script yields to Follow pointer: an element whose motion document turns it on never gets both.
-	$hover_tilt_3d         = (bool) ( $attrs['sgsHoverTilt3D'] ?? false )
-		&& true !== ( $attrs['sgsMotion']['elements']['root']['hover']['state']['values']['followPointer'] ?? null );
+	$hover_tilt_3d         = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
 	$focus_ring            = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
 	// The typed link, or the page / Site Info link / back-to-top its source names.
 	$block_link_source     = is_string( $attrs['sgsBlockLinkSource'] ?? null ) ? $attrs['sgsBlockLinkSource'] : '';
@@ -133,6 +131,24 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	// nav "Item hover paint" shape, Spec 36). Its resting base is emitted per
 	// device from the block's own `padding` (build_hover_indent_base_css()).
 	$hover_indent = sgs_css_single_length_value( $attrs['sgsHoverIndent'] ?? '' );
+
+	// One model per block (Spec 38A plan, overlap rule): a block holding the new motion attribute moves through
+	// includes/motion/class-sgs-motion-renderer.php only, so the legacy movement outputs (scale, lift, image zoom,
+	// grayscale, opacity, indent, tilt), including the ones a block's own hover defaults switch on, stand down:
+	// their `.sgs-has-hover-*:hover` rules set `transform`, `filter` and `opacity` outright and would replace the
+	// model's composed channels. Shadow, border accent, focus ring, block link and the click ripple are not motion
+	// channels and stay.
+	if ( ! empty( $attrs['sgsMotion'] ) ) {
+		$hover_scale        = 0;
+		$hover_scale_preset = '';
+		$hover_lift         = 0;
+		$hover_img_zoom     = false;
+		$hover_zoom_spill   = false;
+		$hover_grayscale    = false;
+		$hover_opacity      = 0.0;
+		$hover_indent       = '';
+		$hover_tilt_3d      = false;
+	}
 
 	// 'custom' with no surviving sanitised value is inert — never counts as
 	// an active shadow (mirrors an out-of-list preset slug already being

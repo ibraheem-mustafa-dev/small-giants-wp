@@ -67,7 +67,9 @@
 								}
 							}
 						}
-					}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false
 				}
 			},
 			{
@@ -92,7 +94,9 @@
 								}
 							}
 						}
-					}
+					},
+					"effectHover": "none",
+					"shadowLiftOnHover": false
 				}
 			}
 		]
