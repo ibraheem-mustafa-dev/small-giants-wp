@@ -96,6 +96,13 @@ async function waitForEditor( page, timeout ) {
 			window.wp.blocks.getBlockTypes().length > 0,
 		{ timeout }
 	);
+	// The editor can open a page with its template shown (the user's "Show template" preference, rendering mode
+	// `template-locked`); the root blocks are then the template's, so `resetBlocks` would replace the template and the
+	// save would carry no post content. Post-only mode makes the root blocks the post's own.
+	await page.evaluate( () => {
+		const editor = window.wp.data.dispatch( 'core/editor' );
+		if ( typeof editor.setRenderingMode === 'function' ) editor.setRenderingMode( 'post-only' );
+	} );
 }
 
 /**
