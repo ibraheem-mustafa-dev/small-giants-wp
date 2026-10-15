@@ -24,6 +24,7 @@
 
 import { gsap } from 'gsap';
 import { chromeOffsetPx } from '../motion-utils.js';
+import { parseEase } from './bezier-ease.js';
 
 /**
  * Plugins already handed to `gsap.registerPlugin()` this page-load. GSAP
@@ -35,6 +36,35 @@ import { chromeOffsetPx } from '../motion-utils.js';
 const registeredPlugins = new Set();
 
 let defaultsApplied = false;
+
+/**
+ * Resolve an ease value into something GSAP accepts.
+ *
+ * A `cubic-bezier()` string, or an SGS easing token (`token:easing.<name>`,
+ * read from the `--wp--custom--easing--<name>` custom property) that resolves
+ * to one, becomes a bezier ease function. Anything else (GSAP names such as
+ * `power2.out`, `none`, empty or a function) passes through unchanged.
+ *
+ * @param {*} value An ease string or function.
+ * @return {*} A GSAP-compatible ease.
+ */
+export function resolveEase( value ) {
+	if ( 'string' !== typeof value ) {
+		return value;
+	}
+	let candidate = value.trim();
+	const token = /^token:easing\.([a-z0-9-]+)$/i.exec( candidate );
+	if ( token ) {
+		const root = document.documentElement;
+		candidate = root
+			? window
+					.getComputedStyle( root )
+					.getPropertyValue( `--wp--custom--easing--${ token[ 1 ] }` )
+					.trim()
+			: '';
+	}
+	return parseEase( candidate ) || value;
+}
 
 /**
  * Register Tier G plugins and return the shared GSAP instance.
