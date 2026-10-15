@@ -156,6 +156,9 @@ if ( moduleConfig ) {
 		// rAF queue for every block bundle, so it is externalised like the
 		// provider. PHP registers it as the script module `@sgs/scroll-driver`.
 		'@sgs/scroll-driver': '@sgs/scroll-driver',
+		// The shared loop control (Spec 38A FR-38A-37): one IntersectionObserver and one pause state per block root for
+		// every looping effect. PHP registers it as the script module `@sgs/loop-control`.
+		'@sgs/loop-control': '@sgs/loop-control',
 		// The `open` and `state` triggers' state helper (Spec 38A M4.4): one
 		// instance and one reduced-motion listener for every block bundle.
 		// PHP registers it as the script module `@sgs/motion-state`.
@@ -253,6 +256,13 @@ if ( moduleConfig ) {
 				'shared',
 				'effects',
 				'scroll-driver.js'
+			),
+			'shared/effects/loop-control': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'effects',
+				'loop-control.js'
 			),
 			'shared/effects/motion-state': path.resolve(
 				process.cwd(),

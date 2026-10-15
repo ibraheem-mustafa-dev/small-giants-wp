@@ -14,6 +14,7 @@ import { getBlockType } from '@wordpress/blocks';
 import { hasMotionSupport, MOTION_ATTRIBUTE_NAME } from './register';
 import MotionPanels from './MotionPanels';
 import './motion-panels.scss';
+import './layers/stamp-ambient-float';
 
 const supportByName = new Map();
 

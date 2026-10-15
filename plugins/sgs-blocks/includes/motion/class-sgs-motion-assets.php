@@ -39,11 +39,13 @@ final class Sgs_Motion_Assets {
 
 	const CSS_PATH       = 'assets/css/motion.css';
 	const REVEAL_PATH    = 'assets/js/motion-reveal.js';
+	const LOOP      = '@sgs/loop-control';
 	const KEYFRAMES_PATH = 'assets/js/motion-keyframes.js';
 	const DRIVER_PATH    = 'build/shared/effects/scroll-driver.js';
 
 	/**
 	 * Hook registration and the editor stylesheet.
+	const LOOP_PATH      = 'build/shared/effects/loop-control.js';
 	 *
 	 * @return void
 	 */
@@ -80,6 +82,9 @@ final class Sgs_Motion_Assets {
 	}
 
 	/**
+		if ( self::exists( self::LOOP_PATH ) ) {
+			wp_register_script_module( self::LOOP, SGS_BLOCKS_URL . self::LOOP_PATH, array(), self::version( self::LOOP_PATH ) );
+		}
 	 * Load `motion.css` in the editor iframe only.
 	 *
 	 * @return void

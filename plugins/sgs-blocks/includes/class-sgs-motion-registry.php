@@ -400,6 +400,15 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/fx-scroll-progress.js',
 			'deps' => array( '@sgs/scroll-driver' ),
 		),
+
+		/*
+		 * Ambient float (Tier V, Spec 38A FR-38A-37). The module reads the emitted custom properties and runs a WAAPI loop through the shared
+		 * loop control, the one owner of the off-screen, focus and visitor pauses. It ships no stylesheet.
+		 */
+		'@sgs/fx-ambient-float'    => array(
+			'path' => 'build/shared/effects/fx-ambient-float.js',
+			'deps' => array( '@sgs/loop-control' ),
+		),
 	);
 
 	/**
