@@ -1,0 +1,1081 @@
+{
+	"_comment": "Shared cases for the stagger parity tests: tests/js/motion-stagger-parity.test.js (JS) and tests/php/run-motion-stagger-parity-standalone.php (PHP). `expected` was produced by src/components/motion/stagger-delays.js; both implementations must reproduce it.",
+	"cases": [
+		{
+			"name": "row-first 3x6 step 80",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80
+			},
+			"expected": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			]
+		},
+		{
+			"name": "row-first offset 40",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"offset": 40
+			},
+			"expected": [
+				40,
+				120,
+				200,
+				40,
+				120,
+				200
+			]
+		},
+		{
+			"name": "single column of four offset 50 step 50",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"offset": 50,
+				"step": 50
+			},
+			"expected": [
+				50,
+				100,
+				150,
+				200
+			]
+		},
+		{
+			"name": "columns 1 explicit",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"columns": 1,
+				"step": 30
+			},
+			"expected": [
+				0,
+				30,
+				60,
+				90
+			]
+		},
+		{
+			"name": "row-first ragged last row",
+			"kind": "delays",
+			"settings": {
+				"count": 7,
+				"columns": 3,
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				20,
+				0,
+				10,
+				20,
+				0
+			]
+		},
+		{
+			"name": "row-first perRow false is one ladder",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"perRow": false
+			},
+			"expected": [
+				0,
+				80,
+				160,
+				240,
+				320,
+				400
+			]
+		},
+		{
+			"name": "perRow null still restarts",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"perRow": null
+			},
+			"expected": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			]
+		},
+		{
+			"name": "reverse 3x6",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"order": "reverse"
+			},
+			"expected": [
+				160,
+				80,
+				0,
+				160,
+				80,
+				0
+			]
+		},
+		{
+			"name": "reverse 3x6 offset",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"offset": 40,
+				"order": "reverse"
+			},
+			"expected": [
+				200,
+				120,
+				40,
+				200,
+				120,
+				40
+			]
+		},
+		{
+			"name": "reverse no columns",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"step": 100,
+				"order": "reverse"
+			},
+			"expected": [
+				300,
+				200,
+				100,
+				0
+			]
+		},
+		{
+			"name": "reverse perRow false",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 10,
+				"order": "reverse",
+				"perRow": false
+			},
+			"expected": [
+				50,
+				40,
+				30,
+				20,
+				10,
+				0
+			]
+		},
+		{
+			"name": "from-centre 5 in a line",
+			"kind": "delays",
+			"settings": {
+				"count": 5,
+				"columns": 5,
+				"step": 100,
+				"order": "from-centre"
+			},
+			"expected": [
+				200,
+				100,
+				0,
+				100,
+				200
+			]
+		},
+		{
+			"name": "from-centre 4 in a line",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"columns": 4,
+				"step": 100,
+				"order": "from-centre"
+			},
+			"expected": [
+				100,
+				0,
+				0,
+				100
+			]
+		},
+		{
+			"name": "from-centre no columns 5",
+			"kind": "delays",
+			"settings": {
+				"count": 5,
+				"step": 100,
+				"order": "from-centre"
+			},
+			"expected": [
+				200,
+				100,
+				0,
+				100,
+				200
+			]
+		},
+		{
+			"name": "from-centre 5 columns two rows",
+			"kind": "delays",
+			"settings": {
+				"count": 8,
+				"columns": 5,
+				"step": 100,
+				"order": "from-centre"
+			},
+			"expected": [
+				200,
+				100,
+				0,
+				100,
+				200,
+				200,
+				100,
+				0
+			]
+		},
+		{
+			"name": "from-centre perRow false",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 100,
+				"order": "from-centre",
+				"perRow": false
+			},
+			"expected": [
+				200,
+				100,
+				0,
+				0,
+				100,
+				200
+			]
+		},
+		{
+			"name": "column-first with perRow",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"order": "column-first"
+			},
+			"expected": [
+				0,
+				0,
+				0,
+				80,
+				80,
+				80
+			]
+		},
+		{
+			"name": "column-first without perRow",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"order": "column-first",
+				"perRow": false
+			},
+			"expected": [
+				0,
+				160,
+				320,
+				80,
+				240,
+				400
+			]
+		},
+		{
+			"name": "column-first without perRow ragged",
+			"kind": "delays",
+			"settings": {
+				"count": 7,
+				"columns": 3,
+				"step": 10,
+				"order": "column-first",
+				"perRow": false
+			},
+			"expected": [
+				0,
+				30,
+				60,
+				10,
+				40,
+				70,
+				20
+			]
+		},
+		{
+			"name": "column-first one column",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"columns": 1,
+				"step": 25,
+				"order": "column-first"
+			},
+			"expected": [
+				0,
+				25,
+				50,
+				75
+			]
+		},
+		{
+			"name": "column-first no columns",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"step": 25,
+				"order": "column-first"
+			},
+			"expected": [
+				0,
+				25,
+				50,
+				75
+			]
+		},
+		{
+			"name": "flatten ignores columns",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"order": "flatten"
+			},
+			"expected": [
+				0,
+				80,
+				160,
+				240,
+				320,
+				400
+			]
+		},
+		{
+			"name": "flatten with offset and perRow true",
+			"kind": "delays",
+			"settings": {
+				"count": 5,
+				"columns": 2,
+				"step": 20,
+				"offset": 10,
+				"order": "flatten",
+				"perRow": true
+			},
+			"expected": [
+				10,
+				30,
+				50,
+				70,
+				90
+			]
+		},
+		{
+			"name": "cap clips a long single column (cap includes offset)",
+			"kind": "delays",
+			"settings": {
+				"count": 10,
+				"offset": 100,
+				"step": 100,
+				"cap": 450
+			},
+			"expected": [
+				100,
+				200,
+				300,
+				400,
+				450,
+				450,
+				450,
+				450,
+				450,
+				450
+			]
+		},
+		{
+			"name": "cap equal to a delay",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"step": 100,
+				"cap": 200
+			},
+			"expected": [
+				0,
+				100,
+				200,
+				200
+			]
+		},
+		{
+			"name": "cap below offset gives every child the cap",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"offset": 300,
+				"step": 100,
+				"cap": 120
+			},
+			"expected": [
+				120,
+				120,
+				120,
+				120
+			]
+		},
+		{
+			"name": "cap zero",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": 40,
+				"step": 100,
+				"cap": 0
+			},
+			"expected": [
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "cap null is no cap",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"step": 100,
+				"cap": null
+			},
+			"expected": [
+				0,
+				100,
+				200
+			]
+		},
+		{
+			"name": "cap empty string is no cap",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"step": 100,
+				"cap": ""
+			},
+			"expected": [
+				0,
+				100,
+				200
+			]
+		},
+		{
+			"name": "cap negative clamps to 0",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": 5,
+				"step": 100,
+				"cap": -50
+			},
+			"expected": [
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "cap non-numeric string is no cap",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"step": 100,
+				"cap": "soon"
+			},
+			"expected": [
+				0,
+				100,
+				200
+			]
+		},
+		{
+			"name": "cap numeric string",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"step": 100,
+				"cap": "250"
+			},
+			"expected": [
+				0,
+				100,
+				200,
+				250
+			]
+		},
+		{
+			"name": "cap with grid",
+			"kind": "delays",
+			"settings": {
+				"count": 9,
+				"columns": 3,
+				"step": 100,
+				"order": "column-first",
+				"cap": 150
+			},
+			"expected": [
+				0,
+				0,
+				0,
+				100,
+				100,
+				100,
+				150,
+				150,
+				150
+			]
+		},
+		{
+			"name": "count 0",
+			"kind": "delays",
+			"settings": {
+				"count": 0,
+				"columns": 3,
+				"step": 80
+			},
+			"expected": []
+		},
+		{
+			"name": "count missing",
+			"kind": "delays",
+			"settings": {
+				"columns": 3,
+				"step": 80
+			},
+			"expected": []
+		},
+		{
+			"name": "count negative",
+			"kind": "delays",
+			"settings": {
+				"count": -4,
+				"columns": 3,
+				"step": 80
+			},
+			"expected": []
+		},
+		{
+			"name": "count fractional floors",
+			"kind": "delays",
+			"settings": {
+				"count": 3.9,
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				20
+			]
+		},
+		{
+			"name": "count string",
+			"kind": "delays",
+			"settings": {
+				"count": "4",
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				20,
+				30
+			]
+		},
+		{
+			"name": "count non-numeric string",
+			"kind": "delays",
+			"settings": {
+				"count": "many",
+				"step": 10
+			},
+			"expected": []
+		},
+		{
+			"name": "count null",
+			"kind": "delays",
+			"settings": {
+				"count": null,
+				"step": 10
+			},
+			"expected": []
+		},
+		{
+			"name": "count true",
+			"kind": "delays",
+			"settings": {
+				"count": true,
+				"step": 10
+			},
+			"expected": [
+				0
+			]
+		},
+		{
+			"name": "columns negative is single column",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"columns": -3,
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				20,
+				30
+			]
+		},
+		{
+			"name": "columns string",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": "3",
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				20,
+				0,
+				10,
+				20
+			]
+		},
+		{
+			"name": "columns non-numeric",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"columns": "wide",
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				20,
+				30
+			]
+		},
+		{
+			"name": "columns fractional floors",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 2.9,
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				0,
+				10,
+				0,
+				10
+			]
+		},
+		{
+			"name": "columns 0",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"columns": 0,
+				"step": 10
+			},
+			"expected": [
+				0,
+				10,
+				20,
+				30
+			]
+		},
+		{
+			"name": "columns larger than count",
+			"kind": "delays",
+			"settings": {
+				"count": 2,
+				"columns": 5,
+				"step": 10
+			},
+			"expected": [
+				0,
+				10
+			]
+		},
+		{
+			"name": "negative step clamps to 0",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"step": -50
+			},
+			"expected": [
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "negative offset clamps to 0",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": -40,
+				"step": 50
+			},
+			"expected": [
+				0,
+				50,
+				100
+			]
+		},
+		{
+			"name": "string offset and step",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": "20",
+				"step": "30"
+			},
+			"expected": [
+				20,
+				50,
+				80
+			]
+		},
+		{
+			"name": "non-numeric offset falls back to 0",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": "later",
+				"step": 30
+			},
+			"expected": [
+				0,
+				30,
+				60
+			]
+		},
+		{
+			"name": "non-numeric step falls back to 0",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": 10,
+				"step": "fast"
+			},
+			"expected": [
+				10,
+				10,
+				10
+			]
+		},
+		{
+			"name": "null offset and step",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": null,
+				"step": null
+			},
+			"expected": [
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "empty string step",
+			"kind": "delays",
+			"settings": {
+				"count": 3,
+				"offset": 10,
+				"step": ""
+			},
+			"expected": [
+				10,
+				10,
+				10
+			]
+		},
+		{
+			"name": "whitespace numeric strings",
+			"kind": "delays",
+			"settings": {
+				"count": " 3 ",
+				"offset": " 5 ",
+				"step": " 7 "
+			},
+			"expected": [
+				5,
+				12,
+				19
+			]
+		},
+		{
+			"name": "fractional ms round half up",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"offset": 0.5,
+				"step": 0.5
+			},
+			"expected": [
+				1,
+				1,
+				2,
+				2
+			]
+		},
+		{
+			"name": "fractional ms round",
+			"kind": "delays",
+			"settings": {
+				"count": 5,
+				"offset": 0.2,
+				"step": 33.4
+			},
+			"expected": [
+				0,
+				34,
+				67,
+				100,
+				134
+			]
+		},
+		{
+			"name": "unknown order falls back to row-first",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"order": "spiral"
+			},
+			"expected": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			]
+		},
+		{
+			"name": "numeric order falls back to row-first",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"order": 5
+			},
+			"expected": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			]
+		},
+		{
+			"name": "null order falls back to row-first",
+			"kind": "delays",
+			"settings": {
+				"count": 6,
+				"columns": 3,
+				"step": 80,
+				"order": null
+			},
+			"expected": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			]
+		},
+		{
+			"name": "inherited object key name falls back",
+			"kind": "delays",
+			"settings": {
+				"count": 4,
+				"columns": 2,
+				"step": 10,
+				"order": "constructor"
+			},
+			"expected": [
+				0,
+				10,
+				0,
+				10
+			]
+		},
+		{
+			"name": "all defaults",
+			"kind": "delays",
+			"settings": {
+				"count": 3
+			},
+			"expected": [
+				0,
+				0,
+				0
+			]
+		},
+		{
+			"name": "empty settings",
+			"kind": "delays",
+			"settings": {},
+			"expected": []
+		},
+		{
+			"name": "close same",
+			"kind": "close",
+			"delays": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			],
+			"direction": "same",
+			"expected": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			]
+		},
+		{
+			"name": "close default direction is same",
+			"kind": "close",
+			"delays": [
+				0,
+				80,
+				160
+			],
+			"expected": [
+				0,
+				80,
+				160
+			]
+		},
+		{
+			"name": "close reversed ladder",
+			"kind": "close",
+			"delays": [
+				50,
+				100,
+				150,
+				200
+			],
+			"direction": "reversed",
+			"expected": [
+				200,
+				150,
+				100,
+				50
+			]
+		},
+		{
+			"name": "close reversed grid",
+			"kind": "close",
+			"delays": [
+				0,
+				80,
+				160,
+				0,
+				80,
+				160
+			],
+			"direction": "reversed",
+			"expected": [
+				160,
+				80,
+				0,
+				160,
+				80,
+				0
+			]
+		},
+		{
+			"name": "close reversed single",
+			"kind": "close",
+			"delays": [
+				70
+			],
+			"direction": "reversed",
+			"expected": [
+				70
+			]
+		},
+		{
+			"name": "close reversed empty",
+			"kind": "close",
+			"delays": [],
+			"direction": "reversed",
+			"expected": []
+		},
+		{
+			"name": "close unknown direction repeats",
+			"kind": "close",
+			"delays": [
+				10,
+				20
+			],
+			"direction": "sideways",
+			"expected": [
+				10,
+				20
+			]
+		}
+	]
+}
