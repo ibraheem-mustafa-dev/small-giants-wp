@@ -55,6 +55,7 @@
 					"_note": "triggerColour/triggerBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule `.uid .sgs-modal__trigger{...}` (render.php:37-43,73-75), not inline. triggerBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan). triggerColourGradient's attrMap entry added D956 (778879732 rollout, Phase 3) -- text-colour gradient sibling to triggerColour, background-clip:text mechanism; the D942 comment in render.php already anticipated and freed this slot by cancelling the class default's background-color when no explicit triggerBackground is set. triggerBackgroundHover/triggerBackgroundHoverGradient (2026-09-06, colour-conformance closeout, Case C) -- the trigger is a genuinely interactive element whose static `.sgs-modal__trigger--primary:hover` class default (style.css) never adapted to a custom triggerBackground; migrated the fill to sgs_fill_states_css() (render.php), which out-specifies the class default via the same selector-compounding already proven for the normal state (D942 comment above)."
 				},
 				"dialog": {
+					"restingShadow": true,
 					"label": "Dialog",
 					"order": 2,
 					"clusters": [

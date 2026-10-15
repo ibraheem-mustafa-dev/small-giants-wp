@@ -10,8 +10,10 @@ const {
 	ringPaints,
 	ringRefused,
 	shadowAttributes,
+	ringDelegate,
 	shadowValues,
 	stripRing,
+	stylesheetShadow,
 	RING_REFUSAL,
 } = require( '../../src/blocks/extensions/motion/canvas/emit-ring' );
 const {
@@ -54,6 +56,29 @@ describe( 'which attributes paint a shadow on a target', () => {
 		expect(
 			shadowValues( ELEMENTS, { shadow: 'md', shadowHover: '', other: 1, style: { shadow: 'x', color: 'red' } } )
 		).toEqual( { shadow: 'md', shadowHover: '', style: { shadow: 'x' } } );
+	} );
+} );
+
+describe( 'a shadow the stylesheet paints', () => {
+	const STYLED = { box: { isWrapper: true, restingShadow: true }, title: {} };
+
+	it( 'refuses on the marked element, and on root through the marked wrapper, with no attribute set', () => {
+		expect( stylesheetShadow( STYLED, 'box' ) ).toBe( true );
+		expect( ringRefused( STYLED, 'box', {} ) ).toBe( true );
+		expect( ringRefused( STYLED, 'root', {} ) ).toBe( true );
+		expect( ringRefused( STYLED, 'title', {} ) ).toBe( false );
+		expect( ringRefused( { box: { isWrapper: true, restingShadow: false } }, 'root', {} ) ).toBe( false );
+	} );
+
+	it( 'refuses a delegating block where the child it prints is marked, and only in that mode', () => {
+		const own = { item: {}, title: {} };
+		const delegate = ringDelegate(
+			{ block: 'sgs/child', parts: { item: 'root', title: 'title' } },
+			() => ( { elements: STYLED, attributes: {} } )
+		);
+		expect( ringRefused( own, 'item', {}, delegate ) ).toBe( true );
+		expect( ringRefused( own, 'title', {}, delegate ) ).toBe( false );
+		expect( ringRefused( own, 'item', {}, ringDelegate( null, () => ( {} ) ) ) ).toBe( false );
 	} );
 } );
 

@@ -122,6 +122,9 @@ namespace {
 			}
 			public function get_registered( $name ) {
 				if ( ! array_key_exists( $name, $this->types ) ) {
+					if ( isset( $GLOBALS['sgs_test_block_types'][ $name ] ) ) {
+						return (object) $GLOBALS['sgs_test_block_types'][ $name ];
+					}
 					$slug = substr( (string) $name, strpos( (string) $name, '/' ) + 1 );
 					$file = dirname( __DIR__, 3 ) . '/src/blocks/' . $slug . '/block.json';
 					$json = is_readable( $file ) ? json_decode( (string) file_get_contents( $file ), true ) : null;

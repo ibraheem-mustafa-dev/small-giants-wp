@@ -44,6 +44,7 @@
 			},
 			"elements": {
 				"button": {
+					"restingShadow": true,
 					"label": "Button",
 					"order": 1,
 					"clusters": [

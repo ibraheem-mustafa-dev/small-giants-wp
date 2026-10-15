@@ -157,6 +157,7 @@
 					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1. Gradient siblings: badgeColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — the badge is already position:absolute, which that helper would silently override), freeing the element's own background-image for badgeTextColourGradient's background-clip:text. badgeTextColourHover/badgeTextColourHoverGradient are safe to paint directly on .sgs-cart__badge because the badge's own background always lives on its ::after layer, never on the badge element itself — background-clip:text on hover cannot clip a background that isn't there."
 				},
 				"panel": {
+					"restingShadow": true,
 					"label": "Mini-cart panel",
 					"order": 4,
 					"clusters": [ "fill", "text" ],
@@ -233,6 +234,7 @@
 					"_note": "Wave B — the filled portion of the free-delivery progress bar, width driven live by a --sgs-cart-free-delivery-pct custom property (panel-render.js element.style.setProperty()) — a custom-property VALUE, never a raw style=\"width:...\" declaration (Spec 32 FR-32-4; mirrors sgs/audio's --sgs-progress and sgs/before-after's --sgs-before-after-position)."
 				},
 				"panelFrame": {
+					"restingShadow": true,
 					"selector": ".sgs-cart__panel",
 					"label": "Panel frame",
 					"order": 9,

@@ -1830,6 +1830,178 @@
 					"shadow": "var(--wp--preset--shadow--natural)"
 				}
 			}
+		},
+		{
+			"name": "stagger apply moves the container entrance to the children",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400
+								}
+							}
+						},
+						"hover": {
+							"state": {
+								"values": {
+									"translateY": -4
+								}
+							}
+						}
+					},
+					"title": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0
+									},
+									"to": {},
+									"duration": 300
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "stagger apply off keeps the container entrance",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": false,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring refused by a stylesheet shadow with no attribute (product card root)",
+			"block": "sgs/product-card",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"translateY": -4
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring refused by a stylesheet shadow on the card's declared wrapper part",
+			"block": "sgs/product-card",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"box": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"translateY": -4
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring kept on a product card part with no shadow",
+			"block": "sgs/product-card",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"title": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"translateY": -4
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "hover ring refused on a delegating grid's item in a delegating mode",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"item": {
+						"hover": {
+							"state": {
+								"values": {
+									"ringSpread": 4,
+									"ringColour": "#0A7EA8",
+									"translateY": -4
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"source": "wc-product"
+			}
 		}
 	]
 }

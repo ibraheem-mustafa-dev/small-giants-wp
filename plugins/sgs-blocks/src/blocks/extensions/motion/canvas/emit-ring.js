@@ -7,7 +7,10 @@
  * (`supports.sgs.elements.<element>.attrMap["css:box-shadow"]`, and the same key under each of the element's `states`;
  * `native:shadow` is the native `style.shadow`). An element is shadowed when any of them holds a value (an empty string
  * and `none` are not a shadow; `attributes` are the editor's, so a `block.json` default is already in them). The `root`
- * target covers the elements flagged `isWrapper`.
+ * target covers the elements flagged `isWrapper`. A shadow the block's own stylesheet paints with no attribute behind it
+ * is declared on the element as `"restingShadow": true` (written and gated by
+ * `scripts/migrate-motion-resting-shadows.py`) and counts in every variant. A delegating block in a delegating mode is
+ * also refused where the child block it prints is (`delegate`: the child's elements, attribute defaults and part map).
  *
  * @package SGS\Blocks
  */
@@ -21,12 +24,22 @@ export const RING_REFUSAL = 'ring-resting-shadow';
 export const RING_KEYS = Object.freeze( [ 'ringSpread', 'ringColour' ] );
 
 const SHADOW_KEY = 'css:box-shadow';
+const STYLE_KEY = 'restingShadow';
 const NATIVE = 'native:shadow';
 const ROOT = 'root';
 const HOVER = 'HoverStateValues';
 
 const plain = ( v ) =>
 	v && typeof v === 'object' && ! Array.isArray( v ) ? v : {};
+
+// The element declarations that stand for a target: the part itself, or every `isWrapper` part for `root`.
+function elementsFor( elements, target ) {
+	return Object.entries( plain( elements ) )
+		.filter( ( [ key, element ] ) =>
+			target === ROOT ? plain( element ).isWrapper === true : key === target
+		)
+		.map( ( [ , element ] ) => plain( element ) );
+}
 
 /**
  * The attribute names a block declares as painting a `box-shadow` on a target, in every state.
@@ -37,11 +50,7 @@ const plain = ( v ) =>
  */
 export function shadowAttributes( elements, target ) {
 	const names = [];
-	Object.entries( plain( elements ) ).forEach( ( [ key, element ] ) => {
-		const el = plain( element );
-		if ( target === ROOT ? el.isWrapper !== true : key !== target ) {
-			return;
-		}
+	elementsFor( elements, target ).forEach( ( el ) => {
 		[
 			plain( el.attrMap ),
 			...Object.values( plain( el.states ) ).map( ( s ) =>
@@ -101,18 +110,57 @@ function isSet( value ) {
 }
 
 /**
+ * Whether the block's stylesheet paints a resting shadow on a target (the element's `restingShadow` marker).
+ *
+ * @param {Object} elements The block's `supports.sgs.elements`.
+ * @param {string} target   Target.
+ * @return {boolean} True when the element is marked.
+ */
+export function stylesheetShadow( elements, target ) {
+	return elementsFor( elements, target ).some( ( el ) => el[ STYLE_KEY ] === true );
+}
+
+/**
  * Whether a target's element has a shadow set, so the hover ring is refused there.
  *
- * @param {Object} elements   The block's `supports.sgs.elements`.
- * @param {string} target     Target.
- * @param {Object} attributes The block's attributes (defaults included).
+ * @param {Object}  elements   The block's `supports.sgs.elements`.
+ * @param {string}  target     Target.
+ * @param {Object}  attributes The block's attributes (defaults included).
+ * @param {?Object} delegate   The child block a delegating mode prints: `{ elements, attributes, parts }` (`ringDelegate`).
  * @return {boolean} True when the ring is refused.
  */
-export function ringRefused( elements, target, attributes ) {
+export function ringRefused( elements, target, attributes, delegate = null ) {
 	const attrs = plain( attributes );
-	return shadowAttributes( elements, target ).some( ( name ) =>
-		isSet( name === NATIVE ? plain( attrs.style ).shadow : attrs[ name ] )
-	);
+	if (
+		stylesheetShadow( elements, target ) ||
+		shadowAttributes( elements, target ).some( ( name ) =>
+			isSet( name === NATIVE ? plain( attrs.style ).shadow : attrs[ name ] )
+		)
+	) {
+		return true;
+	}
+	const to = plain( delegate?.parts )[ target ];
+	return typeof to === 'string' && ringRefused( delegate.elements, to, delegate.attributes );
+}
+
+/**
+ * The child block a delegating block prints in its current mode, in the shape `ringRefused` reads, or null.
+ *
+ * @param {?Object}  delegation `activeDelegation()` of the block: `{ block, parts }`.
+ * @param {Function} childOf    Takes the child block name; returns `{ elements, attributes }` (its `supports.sgs.elements`
+ *                              and its attribute defaults).
+ * @return {?Object} `{ elements, attributes, parts }`.
+ */
+export function ringDelegate( delegation, childOf ) {
+	if ( ! delegation ) {
+		return null;
+	}
+	const child = childOf( delegation.block ) || {};
+	return {
+		elements: child.elements || {},
+		attributes: child.attributes || {},
+		parts: delegation.parts,
+	};
 }
 
 const tierValues = ( state ) => [

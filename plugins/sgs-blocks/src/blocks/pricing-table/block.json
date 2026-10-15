@@ -243,6 +243,7 @@
 					"_note": "`ribbonColour`/`ribbonText` vary PER PLAN INSTANCE inside the `plans` repeater array (not flat block attributes), so they cannot resolve via the block-attribute convention this manifest checks. Rendered per-instance as a `--sgs-pt-ribbon-bg` CSS custom-property VALUE (no-inline contract compliant), consumed by a single static scoped rule."
 				},
 				"plan-card": {
+					"restingShadow": true,
 					"selector": ".sgs-pricing-table__plan",
 					"label": "Plan card (repeater item)",
 					"order": 9,

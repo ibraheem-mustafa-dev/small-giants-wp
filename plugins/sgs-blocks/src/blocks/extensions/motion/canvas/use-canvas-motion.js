@@ -28,7 +28,9 @@ import {
 	writeStyle,
 } from './canvas-dom';
 import { declaredStates } from './trigger-rules';
-import { shadowValues } from './emit-ring';
+import { ringDelegate, shadowValues } from './emit-ring';
+import { activeDelegation } from '../delegate-parts';
+import { childOf } from '../hover/use-ring-refused';
 import { registry } from './replay';
 
 export { replay, canReplay, REPLAY_REDUCED_NOTICE } from './replay';
@@ -53,6 +55,9 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 	const shadows = JSON.stringify(
 		shadowValues( getBlockType( name )?.supports?.sgs?.elements, attributes )
 	);
+	const delegate = JSON.stringify(
+		ringDelegate( activeDelegation( getBlockType( name )?.supports?.sgs, attributes ), childOf )
+	);
 	const options = useMemo( () => {
 		const sgs = getBlockType( name )?.supports?.sgs || {};
 		return {
@@ -62,8 +67,9 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			states: declaredStates( sgs.motion ),
 			root: canvasRootSelector( clientId ),
 			attributes: JSON.parse( shadows ),
+			ringDelegate: JSON.parse( delegate ),
 		};
-	}, [ name, clientId, shadows ] );
+	}, [ name, clientId, shadows, delegate ] );
 
 	useEffect( () => {
 		if ( preview || ( ! motion && ! linked ) ) {

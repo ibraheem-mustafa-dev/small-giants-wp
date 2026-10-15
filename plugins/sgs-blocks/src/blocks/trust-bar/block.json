@@ -141,6 +141,7 @@
 					"_note": "gridTemplateColumns/Rows, gap, justify-*/align-content/flex-* are consumed by SGS_Container_Wrapper via the universal wrapper mechanism (render.php:214-220 comment). No alignItems/display/overflow/aspect-ratio/width/height/max-height attrs exist — honest gaps."
 				},
 				"icon-badge": {
+					"restingShadow": true,
 					"selector": ".sgs-trust-bar__circle",
 					"label": "Icon badge (icon-circle variant)",
 					"order": 2,

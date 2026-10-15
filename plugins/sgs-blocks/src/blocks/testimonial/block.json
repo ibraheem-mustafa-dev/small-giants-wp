@@ -58,6 +58,7 @@
 			],
 			"elements": {
 				"quote-box": {
+					"restingShadow": true,
 					"label": "Quote box",
 					"order": 1,
 					"clusters": [

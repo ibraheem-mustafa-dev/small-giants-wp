@@ -9,6 +9,10 @@
  * element's `states`; `native:shadow` is the block's native `style.shadow`). An element is "shadowed" when any of
  * those attributes holds a value (a stored value, else the attribute's `block.json` default; an empty string and
  * `none` are not a shadow). A hover or scrolled shadow counts too: it is a `box-shadow` the ring would clash with.
+ * A shadow the block's own stylesheet paints with no attribute behind it (a card's boundary shadow) is declared on the
+ * element as `"restingShadow": true`, written and gated by `scripts/migrate-motion-resting-shadows.py`; it counts in
+ * every variant, since the guard cannot tell which stylesheet variant the block's attributes switch on. A delegating
+ * block (`supports.sgs.motionDelegate`) in a delegating mode is also refused where the child block it prints is.
  *
  * The `root` target covers the elements flagged `isWrapper`, the block's outer element. Where a stored hover state
  * holds ring values on a shadowed element the emitter drops them (`strip`) and reports the refusal
@@ -36,11 +40,37 @@ final class Sgs_Motion_Ring_Guard {
 	/** The `attrMap` key of the attribute that paints an element's `box-shadow`. */
 	const SHADOW_KEY = 'css:box-shadow';
 
+	/** The element marker for a shadow the block's own stylesheet paints. */
+	const STYLE_KEY = 'restingShadow';
+
 	/** The `attrMap` value that names the block's native `style.shadow`. */
 	const NATIVE = 'native:shadow';
 
 	/** The target the guard maps onto the block's wrapper elements. */
 	const ROOT = 'root';
+
+	/**
+	 * The element declarations of a block that stand for a target: the part itself, or every `isWrapper` part for `root`.
+	 *
+	 * @param string $block  Block name.
+	 * @param string $target Target (a declared part, or `root`).
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function elements_for( string $block, string $target ): array {
+		$type     = \WP_Block_Type_Registry::get_instance()->get_registered( $block );
+		$elements = is_object( $type ) && is_array( $type->supports['sgs']['elements'] ?? null ) ? $type->supports['sgs']['elements'] : array();
+		$found    = array();
+		foreach ( $elements as $key => $element ) {
+			$element = is_object( $element ) ? (array) $element : $element;
+			if ( ! is_array( $element ) ) {
+				continue;
+			}
+			if ( self::ROOT === $target ? true === ( $element['isWrapper'] ?? false ) : (string) $key === $target ) {
+				$found[] = $element;
+			}
+		}
+		return $found;
+	}
 
 	/**
 	 * The attribute names a block declares as painting a `box-shadow` on a target, in every state.
@@ -50,16 +80,8 @@ final class Sgs_Motion_Ring_Guard {
 	 * @return string[]
 	 */
 	public static function shadow_attributes( string $block, string $target ): array {
-		$type     = \WP_Block_Type_Registry::get_instance()->get_registered( $block );
-		$elements = is_object( $type ) && is_array( $type->supports['sgs']['elements'] ?? null ) ? $type->supports['sgs']['elements'] : array();
-		$names    = array();
-		foreach ( $elements as $key => $element ) {
-			if ( ! is_array( $element ) ) {
-				continue;
-			}
-			if ( self::ROOT === $target ? true !== ( $element['isWrapper'] ?? false ) : (string) $key !== $target ) {
-				continue;
-			}
+		$names = array();
+		foreach ( self::elements_for( $block, $target ) as $element ) {
 			$maps = array( $element['attrMap'] ?? array() );
 			foreach ( is_array( $element['states'] ?? null ) ? $element['states'] : array() as $state ) {
 				$maps[] = is_array( $state ) ? ( $state['attrMap'] ?? array() ) : array();
@@ -74,6 +96,22 @@ final class Sgs_Motion_Ring_Guard {
 	}
 
 	/**
+	 * Whether the block's stylesheet paints a resting shadow on a target (the element's `restingShadow` marker).
+	 *
+	 * @param string $block  Block name.
+	 * @param string $target Target.
+	 * @return bool
+	 */
+	public static function stylesheet_shadow( string $block, string $target ): bool {
+		foreach ( self::elements_for( $block, $target ) as $element ) {
+			if ( true === ( $element[ self::STYLE_KEY ] ?? false ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Whether a target's element has a shadow set, so the hover ring is refused there.
 	 *
 	 * @param string              $block      Block name.
@@ -82,6 +120,9 @@ final class Sgs_Motion_Ring_Guard {
 	 * @return bool
 	 */
 	public static function refused( string $block, string $target, array $attributes ): bool {
+		if ( self::stylesheet_shadow( $block, $target ) ) {
+			return true;
+		}
 		$type = \WP_Block_Type_Registry::get_instance()->get_registered( $block );
 		foreach ( self::shadow_attributes( $block, $target ) as $name ) {
 			if ( self::NATIVE === $name ) {
@@ -95,7 +136,8 @@ final class Sgs_Motion_Ring_Guard {
 				return true;
 			}
 		}
-		return false;
+		$delegation = Sgs_Motion_Delegate::active( $block, $attributes );
+		return null !== $delegation && isset( $delegation['parts'][ $target ] ) && self::refused( $delegation['block'], $delegation['parts'][ $target ], array() );
 	}
 
 	/**

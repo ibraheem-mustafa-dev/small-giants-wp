@@ -63,6 +63,7 @@
 			},
 			"elements": {
 				"box": {
+					"restingShadow": true,
 					"label": "Card box",
 					"order": 1,
 					"clusters": [

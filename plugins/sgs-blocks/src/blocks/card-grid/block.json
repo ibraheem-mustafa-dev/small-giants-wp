@@ -137,6 +137,7 @@
           "_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
         },
         "item": {
+          "restingShadow": true,
           "label": "Card",
           "order": 4,
           "clusters": [],

@@ -120,6 +120,7 @@
 					]
 				},
 				"divider-line": {
+					"restingShadow": true,
 					"selector": ".wp-block-sgs-before-after__divider-line",
 					"label": "Divider line",
 					"order": 4,
@@ -143,6 +144,7 @@
 					"_note": "The visible divider stroke rendered inside the divider assembly (`.wp-block-sgs-before-after__divider-line`, render.php line 558) — a child of the `divider` element's positioning wrapper, NOT the same node. dividerColour/dividerWidth were previously misattributed as orphans under `divider` by simple prefix-string matching (both names literally start with 'divider'); this explicit attrMap claims them on their real owning element instead, clearing both from the conformance style-defect count. css:width is used for the line's thickness (DB records the underlying CSS as a height+width shorthand); no dedicated stroke-thickness member exists in the taxonomy, so css:width/layout is the nearest honest mapping. Found live 2026-08-15: DB tagged 2 attrs css_element='divider-line', undeclared until now. dividerColourHover/dividerColourHoverGradient (2026-09-06, FILL closeout) added the divider line's own hover state — mirrors the handle's hover-state shape on the sibling `handle` element below."
 				},
 				"handle": {
+					"restingShadow": true,
 					"selector": ".wp-block-sgs-before-after__handle",
 					"label": "Handle",
 					"order": 5,

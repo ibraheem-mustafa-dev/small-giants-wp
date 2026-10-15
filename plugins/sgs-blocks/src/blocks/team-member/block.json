@@ -55,6 +55,7 @@
 			},
 			"elements": {
 				"card": {
+					"restingShadow": true,
 					"label": "Card",
 					"order": 1,
 					"clusters": [

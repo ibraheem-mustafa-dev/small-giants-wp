@@ -117,6 +117,7 @@
 					"_note": "The search <input class=\"sgs-product-search__input\" role=\"combobox\"> inputBorderColour resolves to border-color on this element; declaring the element keeps it out of the ROOT routing domain, where it would misroute on a clone. ⚠ KNOWN MODELLING LIMIT: --sgs-ps-input-border has TWO consumers — this input's border AND the listbox border. One attribute paints two nodes; the manifest models attribute->element ownership one-to-one, so it is declared on the input (the primary, named node) and the listbox border rides the same variable. Splitting them would need a second attribute, which is a client-facing control decision, not a mapping one."
 				},
 				"results": {
+					"restingShadow": true,
 					"label": "Results listbox",
 					"order": 3,
 					"clusters": [

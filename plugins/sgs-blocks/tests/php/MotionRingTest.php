@@ -166,12 +166,49 @@ final class MotionRingTest extends TestCase {
 	public function test_a_hover_shadow_and_the_native_shadow_support_count_as_a_shadow(): void {
 		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/text', 'text', array( 'boxShadowHover' => 'lg' ) ), 'a hover shadow clashes with the ring' );
 		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/info-box', 'box', array( 'style' => array( 'shadow' => 'var(--wp--preset--shadow--natural)' ) ) ), 'native style.shadow' );
-		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/info-box', 'box', array() ) );
+		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/info-box', 'box', array() ), 'its elevated variant paints a stylesheet shadow, so the box is refused in every variant' );
+		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/info-box', 'title', array() ) );
 	}
 
 	public function test_root_target_is_refused_through_the_blocks_wrapper_element(): void {
 		$this->assertContains( 'shadow', Sgs_Motion_Ring_Guard::shadow_attributes( 'sgs/hero', 'root' ) );
 		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/hero', 'root', array( 'shadow' => 'md' ) ) );
 		$this->assertSame( array(), Sgs_Motion_Ring_Guard::shadow_attributes( 'sgs/hero', 'media' ), 'an element with no box-shadow attribute is never refused' );
+	}
+
+	public function test_a_stylesheet_shadow_with_no_attribute_refuses_the_ring_on_product_card(): void {
+		// The card's boundary shadow comes from style.css (`.product-card`, WCAG 1.4.11) and no attribute names it, so the
+		// attrMap alone cannot see it; the element's `restingShadow` marker (migrate-motion-resting-shadows.py) does.
+		$this->assertSame( array(), Sgs_Motion_Ring_Guard::shadow_attributes( 'sgs/product-card', 'root' ), 'no attribute paints it' );
+		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/product-card', 'root', array() ) );
+		$out = $this->render( 'sgs/product-card', self::ring_motion( array( 'ringSpread' => 4, 'ringColour' => '#0A7EA8', 'translateY' => -4 ) ), '<div class="wp-block-sgs-product-card product-card"><p>Card</p></div>' );
+		$this->assertStringNotContainsString( '--sgs-mh-to-ring', $this->css() );
+		$this->assertDoesNotMatchRegularExpression( '/data-sgs-mc="[^"]*\bbox-shadow\b/', $out );
+		$this->assertStringContainsString( '--sgs-mh-to-ty:', $this->css(), 'the lift is still written' );
+		$this->assertCount( 1, $this->drops() );
+	}
+
+	public function test_a_part_with_no_resting_shadow_still_gets_the_ring_on_a_block_that_has_one_elsewhere(): void {
+		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/product-card', 'title', array() ) );
+		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/product-card', 'box', array() ), 'the marked wrapper part' );
+	}
+
+	public function test_a_delegating_block_is_refused_when_the_child_it_prints_has_a_shadow(): void {
+		$GLOBALS['sgs_test_block_types']['sgs/fake-grid'] = array(
+			'supports' => array(
+				'sgs' => array(
+					'elements'       => array( 'item' => new \stdClass() ),
+					'motionDelegate' => array(
+						'attribute' => 'source',
+						'values'    => array( 'cards' ),
+						'block'     => 'sgs/product-card',
+						'parts'     => array( 'item' => 'root', 'title' => 'title' ),
+					),
+				),
+			),
+		);
+		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/fake-grid', 'item', array( 'source' => 'cards' ) ), 'its item is the product card root' );
+		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/fake-grid', 'item', array( 'source' => 'manual' ) ), 'not delegating: its own item has no shadow' );
+		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/fake-grid', 'title', array( 'source' => 'cards' ) ), 'a mapped part with no shadow' );
 	}
 }

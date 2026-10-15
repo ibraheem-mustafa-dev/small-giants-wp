@@ -1212,5 +1212,121 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "stagger apply moves the container entrance to the children",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}.sgs-m-0123456789 .sgs-card-grid__title{--sgs-me-from-op:0;--sgs-me-dur:300ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			},
+			{
+				"target": "title",
+				"selector": ".sgs-m-0123456789 .sgs-card-grid__title",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "scroll opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply off keeps the container entrance",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:28px;--sgs-me-dur:400ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring refused by a stylesheet shadow with no attribute (product card root)",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring refused by a stylesheet shadow on the card's declared wrapper part",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "box",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring kept on a product card part with no shadow",
+		"css": ".sgs-m-0123456789 .sgs-product-card__title{--sgs-mh-to-ring:4px;--sgs-mh-to-ring-c:#0A7EA8;--sgs-mh-to-ty:-4px;transition:--sgs-mh-ring var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ring-c var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "title",
+				"selector": ".sgs-m-0123456789 .sgs-product-card__title",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate box-shadow"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "hover ring refused on a delegating grid's item in a delegating mode",
+		"css": ".sgs-m-0123456789 .sgs-card-grid__item{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
+		"plans": [
+			{
+				"target": "item",
+				"selector": ".sgs-m-0123456789 .sgs-card-grid__item",
+				"root": false,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "translate"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]

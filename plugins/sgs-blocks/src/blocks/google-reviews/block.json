@@ -294,6 +294,7 @@
 					}
 				},
 				"review": {
+					"restingShadow": true,
 					"label": "Review card",
 					"order": 12,
 					"layer": "OUTER",

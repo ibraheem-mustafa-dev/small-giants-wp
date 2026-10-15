@@ -92,6 +92,7 @@
 			},
 			"elements": {
 				"box": {
+					"restingShadow": true,
 					"label": "Card",
 					"order": 1,
 					"clusters": [
@@ -276,6 +277,7 @@
 					"_note": "The \"From\" label owns a full typography surface (priceFromLabel*), painted on .price-from-label by sgs_typography_css_rule( $attributes, 'priceFromLabel', … ). No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually."
 				},
 				"tag": {
+					"restingShadow": true,
 					"label": "Tag (trial/featured badge)",
 					"order": 9,
 					"clusters": [

@@ -47,6 +47,7 @@
 			},
 			"elements": {
 				"wrapper": {
+					"restingShadow": true,
 					"label": "Timer box",
 					"order": 1,
 					"clusters": [

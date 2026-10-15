@@ -69,7 +69,7 @@ export const HIDDEN_KEYS = Object.freeze( [ 'perspectiveOn' ] );
 
 /** The Hover panel's message in place of the ring fields on an element whose block sets a shadow (FR-38A-42). */
 export const RING_REFUSAL_MESSAGE = __(
-	'This element already has a shadow, and a hover ring would replace it, so the ring is not offered here. Clear the shadow to use a ring.',
+	'This element has a shadow of its own (or its style can add one), and a hover ring would replace it, so the ring is not offered here. Clear the shadow to use a ring, or put the ring on a different part.',
 	'sgs-blocks'
 );
 

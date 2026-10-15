@@ -292,11 +292,11 @@ function usesSource( targets, source ) {
  *                         `context` (`lcp`, `suppressEntrance`) for every target, and `animationItems` (the block's
  *                         `supports.sgs.animationItems`, which with the `item` part names its repeated items) and
  *                         `attributes` (the block's attributes, so a shadowed element drops the hover ring; without them
- *                         no ring is refused).
+ *                         no ring is refused) and `ringDelegate` (the child block a delegating mode prints, `emit-ring.js::ringDelegate`).
  * @return {{css:string,plans:Array,rootAttrs:Object,dropped:Array,itemMatches?:Array}} Empty for an absent or invalid
  *         attribute; `itemMatches` (the elements to mark `data-sgs-mitem`) only when a hover layer uses source item.
  */
-export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes } ) {
+export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes, ringDelegate } ) {
 	const out = { css: '', plans: [], rootAttrs: {}, dropped: [] };
 	const doc = sanitiseDocument( motion );
 	const targets = doc.elements;
@@ -328,7 +328,7 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		const state = element?.hover?.state;
 		if ( state && typeof state === 'object' && ! Array.isArray( state ) && hasRing( state ) ) {
 			// The ring is a `box-shadow`: a shadowed element drops it (FR-38A-42); an invisible ring is dropped too.
-			const refused = Boolean( attributes ) && ringRefused( elements, target, attributes );
+			const refused = Boolean( attributes ) && ringRefused( elements, target, attributes, ringDelegate );
 			if ( refused || ! ringPaints( state ) ) {
 				element = { ...element, hover: { ...element.hover, state: stripRing( state ) } };
 			}

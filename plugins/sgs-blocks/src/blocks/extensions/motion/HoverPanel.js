@@ -52,7 +52,7 @@ const HOVER_CHOICES = hoverPresetChoices().filter(
  */
 export default function HoverPanel( { blockName, clientId, elements, motion, layers } ) {
 	const [ target, setTarget ] = useState( ROOT_TARGET );
-	const ringRefused = useRingRefused( clientId, elements, target );
+	const ringRefused = useRingRefused( clientId, blockName, elements, target );
 	const [ notice, setNotice ] = useState( null );
 	const flow = useRestamp( layers );
 	const drive = useDrivenBy( layers, target, setNotice );
