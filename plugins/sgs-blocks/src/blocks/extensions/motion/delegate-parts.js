@@ -5,10 +5,12 @@
  * `cpt-collection` prints one `sgs/product-card` per result) never prints its own parts in that mode. The block
  * declares the hand-off in `supports.sgs.motionDelegate` (`{ attribute, values, block, parts }`, `parts` mapping each
  * handed-over part to the child block's target); in a delegating mode only the wrapper parts and the mapped parts are
- * offered as motion targets, and the server moves the mapped parts' layers onto each child.
+ * offered as motion targets, and the server moves the mapped parts' layers onto each child. A part left out that still
+ * holds a stored layer stays offered, marked `notInMode`, so the client can find the layer and remove it.
  */
 
 import { getBlockType } from '@wordpress/blocks';
+import { targetsWithLayers } from './layers/use-motion-layers';
 
 /**
  * The block's declared delegation, validated, or null.
@@ -62,26 +64,50 @@ export function activeDelegation( supportsSgs, attributes ) {
 }
 
 /**
+ * The targets that hold at least one stored layer in any panel.
+ *
+ * @param {Object|undefined} motion The block's motion value.
+ * @return {string[]} The target keys.
+ */
+export function heldTargets( motion ) {
+	return [
+		...new Set(
+			[ 'hover', 'entrance', 'effects' ].flatMap( ( panel ) =>
+				targetsWithLayers( motion, panel )
+			)
+		),
+	];
+}
+
+/**
  * The block's `supports.sgs.elements` with the parts its current source mode does not print left out: in a
- * delegating mode only the wrapper parts and the parts the delegation maps stay. Outside a delegating mode (or for a
- * block that declares none) the elements come back unchanged.
+ * delegating mode only the wrapper parts and the parts the delegation maps stay, plus any part that holds a stored
+ * layer, marked `notInMode: true` (its layer does not reach the page in this mode, and the Target row says so). Outside
+ * a delegating mode (or for a block that declares none) the elements come back unchanged.
  *
  * @param {Object|undefined} supportsSgs The block type's `supports.sgs`.
  * @param {Object|undefined} attributes  The block's attributes.
+ * @param {string[]}         [held]      Targets that hold a stored layer (`heldTargets`).
  * @return {Object|undefined} The elements to offer.
  */
-export function elementsForSourceMode( supportsSgs, attributes ) {
+export function elementsForSourceMode( supportsSgs, attributes, held = [] ) {
 	const elements = supportsSgs?.elements;
 	const delegation = activeDelegation( supportsSgs, attributes );
 	if ( ! delegation || ! elements || typeof elements !== 'object' ) {
 		return elements;
 	}
 	return Object.fromEntries(
-		Object.entries( elements ).filter(
-			( [ key, spec ] ) =>
+		Object.entries( elements ).flatMap( ( [ key, spec ] ) => {
+			if (
 				spec?.isWrapper === true ||
 				Object.prototype.hasOwnProperty.call( delegation.parts, key )
-		)
+			) {
+				return [ [ key, spec ] ];
+			}
+			return held.includes( key )
+				? [ [ key, { ...spec, notInMode: true } ] ]
+				: [];
+		} )
 	);
 }
 
@@ -95,6 +121,7 @@ export function elementsForSourceMode( supportsSgs, attributes ) {
 export function blockElementsForSourceMode( blockName, attributes ) {
 	return elementsForSourceMode(
 		getBlockType( blockName )?.supports?.sgs,
-		attributes
+		attributes,
+		heldTargets( attributes?.sgsMotion )
 	);
 }

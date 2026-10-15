@@ -3,12 +3,14 @@
  * selector). The options are the whole block (`root`) plus every part the block declares in `supports.sgs.elements`,
  * in the order the block declares, except a part marked `"motion": false` (an element the block does not print itself,
  * §6.2) and a part marked `isWrapper` (the renderer and the canvas resolve it to the root, so it is the whole block under
- * another name) unless it already holds a stored layer. M3.3's Target row composes this atom.
+ * another name) unless it already holds a stored layer. A part marked `notInMode` (it holds a stored layer but the
+ * block's current source mode does not print it, `delegate-parts.js`) is labelled as not shown, so its layer can still
+ * be found and removed. M3.3's Target row composes this atom.
  *
  * @package
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { getBlockType } from '@wordpress/blocks';
 import ChoiceAtom from './ChoiceAtom';
 
@@ -31,7 +33,13 @@ export function targetOptions( elements, held = [] ) {
 	const parts = Object.entries( elements || {} )
 		.map( ( [ key, part ], index ) => ( {
 			value: key,
-			label: part?.label || humanise( key ),
+			label: part?.notInMode
+				? sprintf(
+						/* translators: %s: the part's name. */
+						__( '%s (not shown in this mode)', 'sgs-blocks' ),
+						part?.label || humanise( key )
+				  )
+				: part?.label || humanise( key ),
 			order: Number.isFinite( part?.order ) ? part.order : index + 1,
 		} ) )
 		.filter(

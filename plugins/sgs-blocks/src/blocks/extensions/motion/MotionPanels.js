@@ -11,7 +11,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { getBlockType } from '@wordpress/blocks';
 import { getMotionPanels } from './panel-slots';
 import { useMotionLayers } from './layers/use-motion-layers';
-import { delegateConfig, elementsForSourceMode } from './delegate-parts';
+import { delegateConfig, elementsForSourceMode, heldTargets } from './delegate-parts';
 
 /**
  * @param {Object}           props
@@ -21,17 +21,24 @@ import { delegateConfig, elementsForSourceMode } from './delegate-parts';
  * @param {Function}         props.setAttributes The block's `setAttributes`.
  * @param {*}                props.delegateValue The value of the attribute that switches the block's source mode, so a
  *                                               mode that prints its items as another block offers only the parts
- *                                               that reach them (`supports.sgs.motionDelegate`).
+ *                                               that reach them (`supports.sgs.motionDelegate`), plus any part that
+ *                                               still holds a layer, marked as not shown in that mode.
  * @return {Element|null} The panels, or null when none is registered.
  */
 function MotionPanels( { blockName, clientId, motion, setAttributes, delegateValue } ) {
+	// Only which targets hold a layer reaches the memo, so editing a layer's values re-renders no panel.
+	const held = heldTargets( motion ).sort().join( ' ' );
 	const elements = useMemo( () => {
 		const supportsSgs = getBlockType( blockName )?.supports?.sgs;
 		const config = delegateConfig( supportsSgs );
 		return config
-			? elementsForSourceMode( supportsSgs, { [ config.attribute ]: delegateValue } )
+			? elementsForSourceMode(
+					supportsSgs,
+					{ [ config.attribute ]: delegateValue },
+					held ? held.split( ' ' ) : []
+			  )
 			: supportsSgs?.elements ?? null;
-	}, [ blockName, delegateValue ] );
+	}, [ blockName, delegateValue, held ] );
 	const layers = useMotionLayers( motion, setAttributes, elements );
 	const panels = getMotionPanels();
 	if ( ! panels.length ) {
