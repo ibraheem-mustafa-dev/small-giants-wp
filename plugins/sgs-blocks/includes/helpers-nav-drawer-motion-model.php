@@ -97,7 +97,8 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_timing' ) ) {
 		if ( '' !== $easing && class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Field_Types' ) ) {
 			$easing = \SGS\Blocks\Motion\Sgs_Motion_Field_Types::css( 'easing', $easing );
 			$easing = $easing['ok'] && is_string( $easing['css'] ?? null ) ? $easing['css'] : '';
-		} elseif ( 0 === strpos( $easing, 'token:' ) ) {
+		} else {
+			// No field-type validator to vet the stored string: fail closed rather than pass it to CSS.
 			$easing = '';
 		}
 		$out['easing'] = $easing;

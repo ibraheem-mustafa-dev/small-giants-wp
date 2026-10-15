@@ -303,8 +303,9 @@
 	box-shadow: var(--sgs-hover-shadow, none);
 }
 
-/* Stagger delay (#93) */
-.sgs-gallery.sgs-has-stagger .sgs-gallery__item {
+/* Stagger delay (#93), for tiles the motion model has not tagged: a tile carrying data-sgs-loop-i takes its delay
+   from the model's per-tile rule (Spec 38A overlap rule), at unchanged specificity. */
+.sgs-gallery.sgs-has-stagger .sgs-gallery__item:where(:not([data-sgs-loop-i])) {
 	animation-delay: calc(var(--sgs-stagger, 0ms) * var(--sgs-item-index, 0));
 }
 
