@@ -51,6 +51,9 @@ import tempfile
 import time
 from pathlib import Path
 
+import deploy_cache  # a commit's build and gate:full, done once (sibling module)
+import deploy_multi  # several sites from one build (sibling module)
+
 
 def urlopen_tls(req, tag, timeout=20):
     """Open `req` through the shared trust-store fallback (scripts/tls_urlopen.py), logging via log()."""
@@ -1041,6 +1044,8 @@ def self_test() -> int:
             )
 
     failures.extend(self_test_theme_json())
+    failures.extend(deploy_cache.self_test())
+    failures.extend(deploy_multi.self_test())
 
     if failures:
         print("[SELF-TEST FAIL]")
@@ -1066,6 +1071,10 @@ def self_test() -> int:
     print(" 14. pre-upload guard: aborts only when an UNCOMMITTED pushed snapshot is live")
     print(" 15. post-deploy verify: a live theme.json that is not the payload FAILS")
     print(" 16. every real TARGETS entry names a client whose snapshot prepares")
+    print(" 17. deploy_cache: the key follows the tree and the DB, non-isolated runs get none, "
+          "a pass restores build/ and its generated files, the packaging lock has one holder")
+    print(" 18. deploy_multi: `all` and comma lists resolve canary-first, unknown names are "
+          "refused, each child gets only its own --target")
     return 0
 
 
@@ -1112,6 +1121,57 @@ def step_gate_full(dry_run: bool) -> int:
         return 0
     log("[gate:full] running the pre-deploy heavyweight gate tier")
     return run([resolve_exe("npm"), "run", "gate:full"], dry_run=False, cwd=PLUGIN_DIR)
+
+
+def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
+    """[1/5] the build and the pre-deploy gate:full, once per commit.
+
+    A commit that already built and passed gate:full against the same framework DB
+    is restored from deploy_cache instead (isolated runs only), and a multi-site
+    child skips both because its parent ran them for every site. gate:full reads
+    the plugin build (check-motion-bundle-budget refuses a missing build/), so a
+    --theme-only deploy builds when the gates run; once they are cached, it does not.
+    """
+    if args.built_by_parent:
+        log("[1/5] build + gate:full: done once by the multi-site parent for every site")
+        return 0
+    key = deploy_cache.run_key(
+        REPO_ROOT, no_cache=args.no_cache or args.dry_run,
+        isolated=os.environ.get(deploy_cache.ISOLATED_ENV) == "1",
+    )
+    passed = None if args.skip_gate_full else deploy_cache.gate_pass(key)
+    if passed:
+        log(f"[gate:full] PASSED for this commit ({passed['commit'][:9]}) and framework DB "
+            f"at {passed['passed_at']}; not re-run (--no-cache re-runs it)")
+
+    if args.skip_build:
+        log("[1/5] npm run build: SKIPPED (--skip-build)")
+        if deploy_blocks and not args.dry_run and not BUILD_DIR.exists():
+            err(f"--skip-build but build dir missing: {BUILD_DIR}")
+            print("[ABORTED] reason: build-dir-missing", flush=True)
+            return 1
+    elif not deploy_blocks and (args.skip_gate_full or passed):
+        log("[1/5] npm run build: SKIPPED (--theme-only, and gate:full needs no build)")
+    elif passed and deploy_cache.restore_build(key, REPO_ROOT, BUILD_DIR):
+        log("[1/5] npm run build: RESTORED this commit's build from the deploy cache")
+    else:
+        rc = step_build(args.dry_run)
+        if rc != 0:
+            print(f"[ABORTED] reason: build-failed (exit {rc})", flush=True)
+            return 1
+
+    # Before tar, so an abort costs nothing; see step_gate_full() for why it is not optional.
+    if args.skip_gate_full:
+        log("[gate:full] SKIPPED (--skip-gate-full) — four gates did NOT run")
+    elif not passed:
+        began = time.time()
+        rc = step_gate_full(args.dry_run)
+        if rc != 0:
+            print(f"[ABORTED] reason: gate-full-failed (exit {rc}). Nothing was "
+                  "uploaded.", flush=True)
+            return 1
+        deploy_cache.record_pass(key, REPO_ROOT, BUILD_DIR, time.time() - began)
+    return 0
 
 
 def step_tar(dry_run: bool, theme: bool, blocks: bool,
@@ -1424,7 +1484,9 @@ def run_isolated(args: "argparse.Namespace") -> int:
         log(f"[isolate] re-exec: {fmt_cmd(child_argv)}")
         # The child's REPO_ROOT is the worktree; step_theme_json_guard needs the SHARED
         # checkout's working copy of the client snapshot (where an uncommitted push came from).
-        child_env = dict(os.environ, SGS_DEPLOY_SHARED_ROOT=str(REPO_ROOT))
+        # SGS_DEPLOY_ISOLATED: the child's tree is exactly HEAD, so deploy_cache may serve it.
+        child_env = dict(os.environ, SGS_DEPLOY_SHARED_ROOT=str(REPO_ROOT),
+                         **{deploy_cache.ISOLATED_ENV: "1"})
         proc = subprocess.run(child_argv, check=False, env=child_env)
         return proc.returncode
     finally:
@@ -2049,8 +2111,15 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="Build, tar, scp, extract, and cleanup SGS deploy artefacts.",
     )
-    p.add_argument("--target", choices=sorted(TARGETS.keys()), default="sandybrown",
-                   help="Deploy target (default: sandybrown — the canary).")
+    p.add_argument("--target", default="sandybrown",
+                   help="Deploy target, a comma list of targets, or `all` (default: "
+                        f"sandybrown, the canary). Known: {', '.join(sorted(TARGETS))}. "
+                        "Several targets build and gate once, then deploy to every site "
+                        "at the same time (deploy_multi.py).")
+    p.add_argument("--no-cache", action="store_true",
+                   help="Build and run gate:full even when this exact commit and framework "
+                        "DB already passed them (deploy_cache.py).")
+    p.add_argument("--built-by-parent", action="store_true", help=argparse.SUPPRESS)
     p.add_argument("--skip-gate-full", action="store_true",
                    help="Skip the pre-deploy heavyweight gate tier (gate:full). "
                         "This DISABLES four real gates for this deploy.")
@@ -2119,14 +2188,22 @@ def main() -> int:
         return self_test()
     t0 = time.time()
 
-    target_key = args.target
+    try:
+        target_keys = deploy_multi.resolve_targets(args.target, TARGETS)
+    except ValueError as exc:
+        err(str(exc))
+        print("[ABORTED] reason: unknown-target", flush=True)
+        return 1
+    target_key = target_keys[0]
     target = TARGETS[target_key]
 
-    # Explicit opt-in guard for protected targets
-    if target["explicit_opt_in_required"] and "--target" not in sys.argv:
-        err(f"target {target_key} requires explicit --target {target_key} opt-in")
-        print(f"[ABORTED] reason: explicit-opt-in-required ({target_key})", flush=True)
-        return 1
+    # Explicit opt-in guard for protected targets: naming one in --target is the opt-in.
+    explicit = any(a == "--target" or a.startswith("--target=") for a in sys.argv)
+    for key in target_keys:
+        if TARGETS[key]["explicit_opt_in_required"] and not explicit:
+            err(f"target {key} requires explicit --target {key} opt-in")
+            print(f"[ABORTED] reason: explicit-opt-in-required ({key})", flush=True)
+            return 1
 
     # Resolve scope
     deploy_theme = not args.blocks_only
@@ -2140,18 +2217,21 @@ def main() -> int:
     # default when the target names no client). Resolved BEFORE anything runs so a
     # missing/broken client snapshot aborts with nothing uploaded — see
     # resolve_theme_json_payload(). A --blocks-only deploy never touches the theme.
+    # Every named site is checked before anything is built.
     theme_json_payload: bytes | None = None
     theme_json_label = ""
-    if deploy_theme:
-        theme_json_payload, theme_json_label = resolve_theme_json_payload(target)
+    for key in (target_keys if deploy_theme else []):
+        theme_json_payload, theme_json_label = resolve_theme_json_payload(TARGETS[key])
         if theme_json_payload is None:
-            err(f"[theme-json] {theme_json_label}")
+            err(f"[theme-json] {key}: {theme_json_label}")
             err("[theme-json] refusing to deploy the theme: it would replace this target's "
                 "theme.json with the framework default. Fix the snapshot or the TARGETS "
                 "'client' entry. Nothing was uploaded.")
             print("[ABORTED] reason: client-theme-json-unavailable", flush=True)
             return 1
-        log(f"[theme-json] this deploy ships: {theme_json_label}")
+        log(f"[theme-json] {key}: this deploy ships: {theme_json_label}")
+    if deploy_theme:
+        theme_json_payload, theme_json_label = resolve_theme_json_payload(target)
 
     # Git cleanliness guard — scoped to files that ship AND execute on the site.
     # Computed once, unconditionally (also feeds the isolation decision below).
@@ -2201,6 +2281,22 @@ def main() -> int:
             print("[ABORTED] reason: deployed-files-dirty", flush=True)
             return 1
 
+    if len(target_keys) > 1:
+        log(f"[multi] {len(target_keys)} sites: {', '.join(target_keys)}; one build and "
+            "gate:full, then every site at the same time")
+        rc = build_and_gate(args, deploy_blocks)
+        if rc != 0:
+            return rc
+        if args.dry_run:
+            for key in target_keys:
+                log(f"[multi] would deploy {key}: {fmt_cmd(deploy_multi.child_argv(sys.argv[1:], key))}")
+            return 0
+        rc = deploy_multi.run_children(Path(__file__).resolve(), sys.argv[1:], target_keys, log)
+        if rc == 0:
+            print(f"[DONE] sgs-deploy completed for {len(target_keys)} sites in "
+                  f"{int(time.time() - t0)}s", flush=True)
+        return rc
+
     use_alias = ssh_has_alias(SSH_ALIAS)
     host_label = target["host"]
     log(f"[plan] target={target_key} host={host_label} theme={deploy_theme} "
@@ -2222,36 +2318,9 @@ def main() -> int:
                   flush=True)
             return 1
 
-    # [1/5] Build
-    if args.skip_build:
-        log("[1/5] npm run build: SKIPPED (--skip-build)")
-        if deploy_blocks and not args.dry_run and not BUILD_DIR.exists():
-            err(f"--skip-build but build dir missing: {BUILD_DIR}")
-            print("[ABORTED] reason: build-dir-missing", flush=True)
-            return 1
-    else:
-        # gate:full reads the plugin build (check-motion-bundle-budget refuses a
-        # missing build/), so a --theme-only deploy still builds when it runs;
-        # only the upload is scoped to the theme.
-        if deploy_blocks or not args.skip_gate_full:
-            rc = step_build(args.dry_run)
-            if rc != 0:
-                print(f"[ABORTED] reason: build-failed (exit {rc})", flush=True)
-                return 1
-        else:
-            log("[1/5] npm run build: SKIPPED (--theme-only --skip-gate-full)")
-
-    # Pre-deploy heavyweight gate tier. Runs before tar so an abort costs
-    # nothing. See step_gate_full()'s docstring for why omitting it would
-    # silently disable four gates.
-    if args.skip_gate_full:
-        log("[gate:full] SKIPPED (--skip-gate-full) — four gates did NOT run")
-    else:
-        rc = step_gate_full(args.dry_run)
-        if rc != 0:
-            print(f"[ABORTED] reason: gate-full-failed (exit {rc}). Nothing was "
-                  "uploaded.", flush=True)
-            return 1
+    rc = build_and_gate(args, deploy_blocks)
+    if rc != 0:
+        return rc
 
     # [2/5] Tar
     # Pre-deploy ownership gate: would this deploy clobber work that is live and
@@ -2271,8 +2340,13 @@ def main() -> int:
                   "pushed snapshot, or could not be read). Nothing was uploaded.", flush=True)
             return 1
 
-    rc = step_tar(args.dry_run, theme=deploy_theme, blocks=deploy_blocks,
-                  theme_json_payload=theme_json_payload)
+    try:
+        with deploy_cache.package_lock(log):
+            rc = step_tar(args.dry_run, theme=deploy_theme, blocks=deploy_blocks,
+                          theme_json_payload=theme_json_payload)
+    except TimeoutError as exc:
+        err(f"[package-lock] {exc}")
+        rc = 1
     if rc != 0:
         print(f"[ABORTED] reason: tar-failed (exit {rc})", flush=True)
         return 1
@@ -2351,7 +2425,11 @@ def main() -> int:
 
     # Post-deploy LIVE motion gate: do the shipped scroll effects still work?
     # Runs after the payload gate so a STALE payload is reported before motion is blamed.
-    if deploy_blocks and not args.skip_motion_qa and not args.dry_run:
+    # The probes measure the sandybrown canary's fixture pages, so on any other target
+    # a pass would say nothing about the site just deployed.
+    if deploy_blocks and not args.skip_motion_qa and not args.dry_run and target_key != "sandybrown":
+        log(f"[motion-qa] SKIPPED: the probes measure the sandybrown canary, not {target_key}")
+    elif deploy_blocks and not args.skip_motion_qa and not args.dry_run:
         rc = step_motion_qa(args.dry_run)
         if rc != 0:
             print("[DEPLOYED-BUT-MOTION-REGRESSED] the deploy completed, the site "
