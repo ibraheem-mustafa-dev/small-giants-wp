@@ -65,6 +65,32 @@
  * two OTHER reasons frames stop; both are created and disconnected inside
  * this same `createParticles`/`destroy` pair, never left as global state.
  *
+ * ── PARAMETERS (Spec 38A M5.16c) ──────────────────────────────────────────
+ * Five stored parameters reshape the presets. Each is `undefined` when unset,
+ * and an unset parameter leaves the preset's own value in force:
+ *
+ *   life       ms. Above 0 it replaces the preset life (seconds = ms / 1000).
+ *   speed      ratio. Multiplies the preset's launch speed.
+ *   gravity    ratio. Acceleration in px/s² = ratio × 140 (the gravity-dots
+ *              base). Negative pulls upward. A set 0 is a real zero, not unset.
+ *   drag       0–1. Replaces the preset's per-step velocity multiplier.
+ *   spawnRate  per second. Above 0 it limits emission by time: an accumulator
+ *              adds spawnRate × elapsed seconds on each pointer event, carries
+ *              the fraction to the next event, and is capped at one pool's
+ *              worth. It replaces the preset's per-event count, so `density`
+ *              does not apply on this path. Ripple's minIntervalMs becomes
+ *              1000 / spawnRate.
+ *
+ * Ripple has no motion, so gravity, drag and speed do not affect it. Life and
+ * spawnRate (through minIntervalMs) do. Every value is clamped to the schema
+ * bounds in FIELD_RANGES. `MAX_PARTICLES` and `MAX_DPR` cap the engine whatever
+ * the parameters say.
+ *
+ * `resolveParticleOptions()` parses raw values (a bare number or a numeric
+ * string; `life` also takes an `ms` or `s` suffix) and returns the first valid
+ * candidate per field. The caller states the precedence; this module only
+ * parses, so it never reads the DOM.
+ *
  * @package
  */
 
@@ -73,6 +99,30 @@ const MAX_PARTICLES = 150;
 
 /** Device-pixel-ratio ceiling — same 1.5 precedent as `webgl/wave-gradient.js`. */
 const MAX_DPR = 1.5;
+
+/**
+ * Gravity ratio base: a stored `gravity` ratio of 1 is this many px/s². It is
+ * the gravity-dots preset's own gravity, so ratio 1 reproduces that preset.
+ */
+const GRAVITY_RATIO_BASE = 140;
+
+/**
+ * Schema bounds (`schemas/motion.schema.json` `$defs/ParticlesValues`) for
+ * every stored parameter. A value outside its bound is clamped to it, never
+ * rejected.
+ */
+const FIELD_RANGES = {
+	density: [ 0.25, 3 ],
+	size: [ 0.25, 3 ],
+	life: [ 0, 20000 ],
+	speed: [ 0.1, 5 ],
+	gravity: [ -10, 10 ],
+	drag: [ 0, 1 ],
+	spawnRate: [ 0, 200 ],
+};
+
+/** The stored parameter names, in the order `resolveParticleOptions` reads them. */
+const PARTICLE_FIELDS = Object.keys( FIELD_RANGES );
 
 /**
  * Per-preset parameters. The engine above this table is 100% shared; every
@@ -103,7 +153,7 @@ const PRESETS = {
 		speed: 25,
 		// px/s^2 downward acceleration — small, so a dot visibly drifts
 		// rather than dropping instantly.
-		gravity: 140,
+		gravity: GRAVITY_RATIO_BASE,
 		drag: 0.985,
 		radiusFactor: 0.55,
 		// Fraction of the emitter's own box height at which a falling dot
@@ -138,6 +188,103 @@ function clamp( value, min, max ) {
 }
 
 /**
+ * Parse one raw stored value. Accepts a bare number or a numeric string.
+ * Only `life` takes a time unit (`ms` or `s`), so `speed: 1s` is rejected
+ * rather than silently read as seconds. Anything unparsable is `undefined`,
+ * which the caller reads as "unset".
+ *
+ * @param {string} field The parameter name.
+ * @param {*}      raw   The raw value (number, string, null or undefined).
+ * @return {number|undefined} The parsed number, or undefined when invalid.
+ */
+function parseParticleValue( field, raw ) {
+	if ( 'number' === typeof raw ) {
+		return Number.isFinite( raw ) ? raw : undefined;
+	}
+	if ( 'string' !== typeof raw ) {
+		return undefined;
+	}
+	const pattern =
+		'life' === field
+			? /^([+-]?(?:\d+\.?\d*|\.\d+))(ms|s)?$/
+			: /^([+-]?(?:\d+\.?\d*|\.\d+))$/;
+	const match = pattern.exec( raw.trim() );
+	if ( ! match ) {
+		return undefined;
+	}
+	const value = Number( match[ 1 ] );
+	return 's' === match[ 2 ] ? value * 1000 : value;
+}
+
+/**
+ * Resolve every stored parameter from its candidate raw values. Candidates
+ * are listed in precedence order (the caller decides it: custom property,
+ * then legacy attribute); the first one that parses wins. A field with no
+ * valid candidate stays `undefined`, which the engine reads as "use the
+ * preset". Pure: it never touches the DOM.
+ *
+ * @param {Object<string, Array<*>>} [candidates] Per-field candidate values.
+ * @return {Object<string, number|undefined>} The resolved parameters.
+ */
+export function resolveParticleOptions( candidates = {} ) {
+	const resolved = {};
+	PARTICLE_FIELDS.forEach( ( field ) => {
+		const list = Array.isArray( candidates[ field ] )
+			? candidates[ field ]
+			: [];
+		resolved[ field ] = undefined;
+		for ( const raw of list ) {
+			const value = parseParticleValue( field, raw );
+			if ( undefined !== value ) {
+				resolved[ field ] = value;
+				break;
+			}
+		}
+	} );
+	return resolved;
+}
+
+/**
+ * Turn a preset and the resolved parameters into the numbers the engine uses.
+ * Every rule is the one the module header states; an unset parameter yields
+ * the preset's own value (or 1 for the multiplicative fields).
+ *
+ * @param {Object} base   The preset definition from PRESETS.
+ * @param {Object} [opts] The resolved parameters (undefined = unset).
+ * @return {Object} The effective tuning for one instance.
+ */
+function deriveTuning( base, opts = {} ) {
+	const bounded = ( field ) => {
+		const value = opts[ field ];
+		if ( 'number' !== typeof value || ! Number.isFinite( value ) ) {
+			return undefined;
+		}
+		const [ min, max ] = FIELD_RANGES[ field ];
+		return clamp( value, min, max );
+	};
+	const density = bounded( 'density' );
+	const sizeScale = bounded( 'size' );
+	const lifeMs = bounded( 'life' );
+	const speed = bounded( 'speed' );
+	const gravity = bounded( 'gravity' );
+	const drag = bounded( 'drag' );
+	const spawnRate = bounded( 'spawnRate' );
+	const rateSet = undefined !== spawnRate && spawnRate > 0;
+
+	return {
+		density: undefined === density ? 1 : density,
+		sizeScale: undefined === sizeScale ? 1 : sizeScale,
+		life: undefined !== lifeMs && lifeMs > 0 ? lifeMs / 1000 : base.life,
+		speedScale: undefined === speed ? 1 : speed,
+		gravity:
+			undefined === gravity ? base.gravity : gravity * GRAVITY_RATIO_BASE,
+		drag: undefined === drag ? base.drag : drag,
+		spawnRate: rateSet ? spawnRate : 0,
+		minIntervalMs: rateSet ? 1000 / spawnRate : base.minIntervalMs,
+	};
+}
+
+/**
  * Build a fresh, empty particle slot. Every field is set on spawn; the
  * shape here just fixes the object's hidden class so the pool never
  * de-optimises from slot to slot.
@@ -164,20 +311,26 @@ function emptySlot() {
 /**
  * The driver-agnostic engine. Attaches NO pointer listener.
  *
- * @param {HTMLElement} el             The emitter element. Must be
- *                                     `position: relative` (or similar) —
- *                                     `assets/css/fx-particles.css` sets
- *                                     this on every `[data-sgs-fx="particles"]`.
- * @param {Object}      [opts]         Options.
- * @param {string}      [opts.preset]  'sparks' (default) | 'gravity-dots' | 'ripple'.
- * @param {number}      [opts.density] 0.25-3, multiplies the preset's spawn count.
- * @param {number}      [opts.size]    0.25-3, multiplies the preset's radius.
- * @return {{push: Function, destroy: Function}} The driver.
+ * @param {HTMLElement} el               The emitter element. Must be
+ *                                       `position: relative` (or similar) —
+ *                                       `assets/css/fx-particles.css` sets
+ *                                       this on every `[data-sgs-fx="particles"]`.
+ * @param {Object}      [opts]           Options.
+ * @param {string}      [opts.preset]    'sparks' (default) | 'gravity-dots' | 'ripple'.
+ * @param {number}      [opts.density]   0.25-3, multiplies the preset's spawn count.
+ * @param {number}      [opts.size]      0.25-3, multiplies the preset's radius.
+ * @param {number}      [opts.life]      ms, above 0 replaces the preset life.
+ * @param {number}      [opts.speed]     ratio, multiplies the preset speed.
+ * @param {number}      [opts.gravity]   ratio, px/s² = ratio × 140.
+ * @param {number}      [opts.drag]      0-1, replaces the preset drag.
+ * @param {number}      [opts.spawnRate] per second, above 0 limits emission by time.
+ * @return {{push: Function, configure: Function, stats: Function, destroy: Function}}
+ *         The driver.
  */
 export function createParticles( el, opts = {} ) {
 	const preset = PRESETS[ opts.preset ] || PRESETS.sparks;
-	const density = clamp( Number( opts.density ) || 1, 0.25, 3 );
-	const sizeScale = clamp( Number( opts.size ) || 1, 0.25, 3 );
+	// The effective numbers for this instance. `configure()` replaces them.
+	let tuning = deriveTuning( preset, opts );
 
 	const canvas = document.createElement( 'canvas' );
 	canvas.className = 'sgs-particles__canvas';
@@ -218,6 +371,11 @@ export function createParticles( el, opts = {} ) {
 	let lastRingAt = 0;
 	let rafHandle = null;
 	let lastTick = 0;
+	// Spawn-rate accumulator (spawnRate above 0 only). It carries the fractional
+	// particle between pointer events and is capped at one pool's worth, so an
+	// idle gap cannot bank an unbounded burst.
+	let spawnBudget = 0;
+	let lastSpawnAt = null;
 
 	/**
 	 * Recompute canvas buffer size + the coverage-derived radius ceiling.
@@ -269,7 +427,7 @@ export function createParticles( el, opts = {} ) {
 		// +/-20% life jitter so a burst of particles does not fade in
 		// lock-step, which would read as a single flashing blob rather
 		// than a trail.
-		slot.maxAge = preset.life * ( 0.8 + Math.random() * 0.4 );
+		slot.maxAge = tuning.life * ( 0.8 + Math.random() * 0.4 );
 		slot.alpha = 1;
 		slot.isRing = !! ring;
 
@@ -294,14 +452,41 @@ export function createParticles( el, opts = {} ) {
 			slot.currentRingRadius = 0;
 		} else {
 			const angle = Math.random() * Math.PI * 2;
-			const speed = preset.speed * ( 0.5 + Math.random() * 0.5 );
+			const speed =
+				preset.speed *
+				tuning.speedScale *
+				( 0.5 + Math.random() * 0.5 );
 			slot.vx = Math.cos( angle ) * speed;
 			slot.vy = Math.sin( angle ) * speed;
 			slot.radius = Math.min(
 				maxRadius,
-				maxRadius * preset.radiusFactor * sizeScale * ( 0.6 + Math.random() * 0.6 )
+				maxRadius *
+					preset.radiusFactor *
+					tuning.sizeScale *
+					( 0.6 + Math.random() * 0.6 )
 			);
 		}
+	}
+
+	/**
+	 * How many particles the spawn-rate budget allows at this pointer event.
+	 * Adds spawnRate × elapsed seconds since the previous event, keeps the
+	 * fraction for the next event, and never exceeds one pool's worth.
+	 *
+	 * @param {number} now Current time in ms (performance.now()).
+	 * @return {number} Whole particles to spawn at this event.
+	 */
+	function takeSpawnBudget( now ) {
+		const elapsedSeconds =
+			null === lastSpawnAt ? 0 : Math.max( 0, now - lastSpawnAt ) / 1000;
+		lastSpawnAt = now;
+		spawnBudget = Math.min(
+			MAX_PARTICLES,
+			spawnBudget + tuning.spawnRate * elapsedSeconds
+		);
+		const count = Math.floor( spawnBudget );
+		spawnBudget -= count;
+		return count;
 	}
 
 	/**
@@ -321,7 +506,7 @@ export function createParticles( el, opts = {} ) {
 			// FLASH CEILING (ripple-specific): max 2 rings/second/emitter,
 			// enforced by refusing a spawn rather than dropping a drawn
 			// frame — the rate limit is on CREATION, not on paint.
-			if ( now - lastRingAt < preset.minIntervalMs ) {
+			if ( now - lastRingAt < tuning.minIntervalMs ) {
 				return;
 			}
 			lastRingAt = now;
@@ -329,7 +514,18 @@ export function createParticles( el, opts = {} ) {
 			return;
 		}
 
-		const count = Math.max( 1, Math.round( preset.count * density ) );
+		if ( tuning.spawnRate > 0 ) {
+			const budgetCount = takeSpawnBudget( performance.now() );
+			for ( let i = 0; i < budgetCount; i++ ) {
+				spawnOne( localX, localY, false );
+			}
+			return;
+		}
+
+		const count = Math.max(
+			1,
+			Math.round( preset.count * tuning.density )
+		);
 		for ( let i = 0; i < count; i++ ) {
 			spawnOne( localX, localY, false );
 		}
@@ -364,9 +560,9 @@ export function createParticles( el, opts = {} ) {
 				continue;
 			}
 
-			p.vy += preset.gravity * dt;
-			p.vx *= preset.drag;
-			p.vy *= preset.drag;
+			p.vy += tuning.gravity * dt;
+			p.vx *= tuning.drag;
+			p.vy *= tuning.drag;
 			p.x += p.vx * dt;
 			p.y += p.vy * dt;
 
@@ -397,7 +593,13 @@ export function createParticles( el, opts = {} ) {
 				ctx.strokeStyle = colour;
 				ctx.lineWidth = preset.ringLineWidth;
 				ctx.beginPath();
-				ctx.arc( p.x, p.y, Math.max( 0, p.currentRingRadius ), 0, Math.PI * 2 );
+				ctx.arc(
+					p.x,
+					p.y,
+					Math.max( 0, p.currentRingRadius ),
+					0,
+					Math.PI * 2
+				);
 				ctx.stroke();
 			} else {
 				ctx.fillStyle = colour;
@@ -510,6 +712,18 @@ export function createParticles( el, opts = {} ) {
 		},
 
 		/**
+		 * Replace the parameters without re-creating the canvas, the pool or the
+		 * observers. `fx-particles.js` calls this on window resize, when a
+		 * per-device custom property may have changed. Particles already in
+		 * flight keep their current state; new ones use the new values.
+		 *
+		 * @param {Object} [next] The resolved parameters, as for createParticles().
+		 */
+		configure: ( next = {} ) => {
+			tuning = deriveTuning( preset, next );
+		},
+
+		/**
 		 * PROBE API — read-only, permanent, no side effects.
 		 *
 		 * Exists so the two claims FR-38-32 makes about itself can be measured
@@ -541,7 +755,10 @@ export function createParticles( el, opts = {} ) {
 			stopLoop();
 			intersectionObserver.disconnect();
 			resizeObserver.disconnect();
-			document.removeEventListener( 'visibilitychange', onVisibilityChange );
+			document.removeEventListener(
+				'visibilitychange',
+				onVisibilityChange
+			);
 			canvas.remove();
 		},
 	};

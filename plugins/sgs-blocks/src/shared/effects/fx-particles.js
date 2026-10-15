@@ -37,7 +37,7 @@
  * @package
  */
 
-import { createParticles } from './particles';
+import { createParticles, resolveParticleOptions } from './particles';
 import {
 	prefersReducedMotion,
 	rafThrottle,
@@ -50,6 +50,32 @@ const SELECTOR = '[data-sgs-fx~="particles"]';
 
 /** The only three shipped presets — anything else falls back to 'sparks'. */
 const VALID_PRESETS = [ 'sparks', 'gravity-dots', 'ripple' ];
+
+/**
+ * The per-device custom property the PHP emitter writes for each stored
+ * parameter (tablet and mobile through @media). Read with getComputedStyle.
+ */
+const PROPERTY_NAMES = {
+	density: '--sgs-particles-density',
+	size: '--sgs-particles-size',
+	life: '--sgs-particles-life',
+	speed: '--sgs-particles-speed',
+	gravity: '--sgs-particles-gravity',
+	drag: '--sgs-particles-drag',
+	spawnRate: '--sgs-particles-spawn-rate',
+};
+
+/**
+ * The legacy data attributes, the fallback behind the custom property. Only
+ * density and size have one; the five newer parameters have none.
+ */
+const LEGACY_ATTRIBUTES = {
+	density: 'data-sgs-fx-particle-density',
+	size: 'data-sgs-fx-particle-size',
+};
+
+/** The shared window-resize driver, or null when nothing is registered. */
+let onResize = null;
 
 /** Live instances, so a bfcache restore can tear down before re-init. */
 let instances = [];
@@ -80,27 +106,36 @@ if ( typeof window !== 'undefined' ) {
 let onPointerMove = null;
 
 /**
- * Read one instance's options off its own attributes.
+ * Read one instance's options. Called at boot and again on window resize.
  *
- * Values are bounded rather than trusted, same reasoning `fx-magnet.js`'s
- * `readOptions()` documents: an absent attribute falls back to the preset's
- * own default (`undefined` passed through), never to a hand-picked
- * fallback number here that could drift from `particles.js`'s own table.
+ * Each stored parameter takes its first valid value from this order: the
+ * element's custom property (`--sgs-particles-*`), then its legacy data
+ * attribute (density and size only), then the preset's own value. An empty
+ * or invalid value counts as unset. The precedence and parsing live in
+ * `resolveParticleOptions()` in `particles.js`; this function only gathers
+ * the candidates from the element.
  *
  * @param {HTMLElement} el The marked element.
  * @return {Object} Options for {@link createParticles}.
  */
 function readOptions( el ) {
 	const preset = el.getAttribute( 'data-sgs-fx-particle-preset' );
-	const density = parseFloat(
-		el.getAttribute( 'data-sgs-fx-particle-density' )
-	);
-	const size = parseFloat( el.getAttribute( 'data-sgs-fx-particle-size' ) );
+	const computed = window.getComputedStyle( el );
+	const candidates = {};
+	Object.keys( PROPERTY_NAMES ).forEach( ( field ) => {
+		candidates[ field ] = [
+			computed.getPropertyValue( PROPERTY_NAMES[ field ] ),
+		];
+		if ( LEGACY_ATTRIBUTES[ field ] ) {
+			candidates[ field ].push(
+				el.getAttribute( LEGACY_ATTRIBUTES[ field ] )
+			);
+		}
+	} );
 
 	return {
 		preset: VALID_PRESETS.includes( preset ) ? preset : 'sparks',
-		density: Number.isNaN( density ) ? undefined : density,
-		size: Number.isNaN( size ) ? undefined : size,
+		...resolveParticleOptions( candidates ),
 	};
 }
 
@@ -148,7 +183,10 @@ function boot() {
 	}
 
 	els.forEach( ( el ) => {
-		instances.push( { el, particles: createParticles( el, readOptions( el ) ) } );
+		instances.push( {
+			el,
+			particles: createParticles( el, readOptions( el ) ),
+		} );
 	} );
 
 	onPointerMove = rafThrottle( ( event ) => {
@@ -162,6 +200,15 @@ function boot() {
 		} );
 	} );
 	document.addEventListener( 'mousemove', onPointerMove );
+
+	// Per-device values change at the breakpoints, so re-read them on resize.
+	// Re-reads only: `configure()` keeps the canvas, pool and observers.
+	onResize = rafThrottle( () => {
+		instances.forEach( ( { el, particles } ) => {
+			particles.configure( readOptions( el ) );
+		} );
+	} );
+	window.addEventListener( 'resize', onResize );
 }
 
 /**
@@ -174,6 +221,11 @@ function teardown() {
 		onPointerMove.cancel();
 		document.removeEventListener( 'mousemove', onPointerMove );
 		onPointerMove = null;
+	}
+	if ( onResize ) {
+		onResize.cancel();
+		window.removeEventListener( 'resize', onResize );
+		onResize = null;
 	}
 	instances.forEach( ( { particles } ) => particles.destroy() );
 	instances = [];
