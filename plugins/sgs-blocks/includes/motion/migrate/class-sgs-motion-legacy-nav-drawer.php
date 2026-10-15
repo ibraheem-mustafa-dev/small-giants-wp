@@ -6,12 +6,12 @@
  * - PANEL: `entryAnimation` per tier (`auto` resolved from the tier's `anchor`), `entryDuration`, `exitDuration`,
  *   `entryEasing`/`entryEasingCustom` and `entryFade` become the root's `open` entrance with its close duration and
  *   easing, per-device from and to values where a tier differs, and the identity values on a `none` tier.
- * - ITEMS: `itemStagger`, `itemStaggerMax`, `itemStaggerDuration`, `itemStaggerDistance` and `itemStaggerAxis` (the
- *   multipliers of `sgs_nav_drawer_stagger_axes()`) become the item entrance; `itemStaggerOnClose` gives the items
- *   their own close, and without it they hold their resting values while the panel closes, as they did.
+ * - ITEMS: `class-sgs-motion-legacy-nav-drawer-items.php`.
  *
- * Reported, never approximated: the shapes in `UNMAPPED` and the clip item reveal. `corner-scale` keeps its scale and
- * fade; its top-right origin has no field.
+ * `wipe-down` and `reveal-from-bar` are the one-edge bottom clip (the second starting at the opener row) and `curtain`
+ * the curtain layer with a delayed content fade (`class-sgs-motion-legacy-nav-drawer-curtain.php`). Reported, never
+ * approximated: the shapes in `UNMAPPED` (two retired by Bean on 2026-10-15) and the clip item reveal. `corner-scale`
+ * keeps its scale and fade; its top-right origin has no field.
  *
  * @package SGS\Blocks
  */
@@ -23,6 +23,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 2 ) . '/helpers-nav-drawer-motion.php';
 require_once dirname( __DIR__, 2 ) . '/helpers-nav-drawer-stagger-shape.php';
 require_once __DIR__ . '/class-sgs-motion-legacy-hover-value.php';
+require_once __DIR__ . '/class-sgs-motion-legacy-nav-drawer-curtain.php';
 
 /**
  * Class Sgs_Motion_Legacy_Nav_Drawer
@@ -30,27 +31,31 @@ require_once __DIR__ . '/class-sgs-motion-legacy-hover-value.php';
 final class Sgs_Motion_Legacy_Nav_Drawer {
 
 	/** The panel attributes. */
-	const PANEL_ATTRS = array( 'entryAnimation', 'entryDuration', 'exitDuration', 'entryEasing', 'entryEasingCustom', 'entryFade', 'curtainColour' );
+	const PANEL_ATTRS = array( 'entryAnimation', 'entryDuration', 'exitDuration', 'entryEasing', 'entryEasingCustom', 'entryFade', 'curtainColour', 'curtainColourGradient' );
 
 	/** The item attributes. */
 	const ITEM_ATTRS = array( 'itemStagger', 'itemStaggerAxis', 'itemStaggerDistance', 'itemStaggerDuration', 'itemStaggerMax', 'itemStaggerOnClose', 'itemStaggerReveal', 'staggerInsideGroups' );
 
 	/** Shapes the model cannot express, with the reason. */
 	const UNMAPPED = array(
-		'expand-down'      => 'expand-down scales the panel vertically only (scaleY 0.85) and the model has one uniform scale',
-		'wipe-down'        => 'wipe-down clips from the bottom edge only (inset(0 0 100% 0)) and the model clip insets every edge equally; needs a directional clip preset',
-		'wipe-down-skew'   => 'wipe-down-skew is a skewed polygon clip; needs a polygon clip preset',
-		'reveal-from-bar'  => 'reveal-from-bar clips from the measured opener row (--sgs-drawer-opener-row-bottom); needs a directional clip preset fed by the store',
-		'curtain'          => 'curtain sweeps a colour layer on the panel ::before, which is not a motion target; needs a curtain preset with its own layer',
-		'grow-from-anchor' => 'grow-from-anchor animates the box height from its anchor (measured by script), and height is not a motion channel',
+		'expand-down'      => 'expand-down scales the panel vertically only (scaleY 0.85) and the entrance has one uniform scale field, so a mapped scale would also shrink the panel sideways; needs a scaleY field',
+		'wipe-down-skew'   => 'retired (Bean 2026-10-15): wipe-down-skew was a skewed polygon clip and is not rebuilt',
+		'grow-from-anchor' => 'retired (Bean 2026-10-15): grow-from-anchor animated the box height from a measured anchor and is not rebuilt',
 	);
 
+	/** The identity value of each channel, for a tier that does not move it. */
 	const IDENTITY = array(
-		'opacity'    => 1,
-		'translateX' => 0,
-		'translateY' => 0,
-		'scale'      => 1,
+		'opacity'        => 1,
+		'translateX'     => 0,
+		'translateY'     => 0,
+		'scale'          => 1,
+		'clip'           => 0,
+		'clipEdge'       => 'all',
+		'clipFromAnchor' => 'none',
 	);
+
+	/** Channels written on the `from` end only (the clip wipe rests at no clip, which is the schema default). */
+	const FROM_ONLY = array( 'clip', 'clipEdge', 'clipFromAnchor' );
 
 	const TIERS = array( 'desktop', 'tablet', 'mobile' );
 
@@ -116,7 +121,7 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 	 *
 	 * @param string $shape The tier's shape.
 	 * @param bool   $fade  `entryFade`.
-	 * @return array<string,array{0:mixed,1:mixed}>|null
+	 * @return array<string,array{0:mixed,1:mixed}>|null A `from`-only channel has a null `to`.
 	 */
 	public static function panel_channels( string $shape, bool $fade ): ?array {
 		if ( isset( self::UNMAPPED[ $shape ] ) ) {
@@ -133,6 +138,19 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 					'opacity'    => array( 0, 1 ),
 					'translateY' => array( -8, 0 ),
 				);
+			case 'wipe-down':
+				return $fade_pair + array(
+					'clip'     => array( 100, null ),
+					'clipEdge' => array( 'bottom', null ),
+				);
+			case 'reveal-from-bar':
+				return array(
+					'clip'           => array( 100, null ),
+					'clipEdge'       => array( 'bottom', null ),
+					'clipFromAnchor' => array( 'opener-row', null ),
+				);
+			case 'curtain':
+				return array();
 			case 'slide-start':
 				return $fade_pair + array( 'translateX' => array( '-100%', 0 ) );
 			case 'slide-end':
@@ -160,11 +178,14 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 	 * The drawer panel's entrance.
 	 *
 	 * @param array<string,mixed> $attrs Stored drawer attributes.
-	 * @return array{layer:?array<string,mixed>,consumed:string[],reported:array<int,array<string,mixed>>}
+	 * @return array{layer:?array<string,mixed>,text:?array<string,mixed>,body:?array<string,mixed>,consumed:string[],reported:array<int,array<string,mixed>>}
+	 *         `layer` is the root's base entrance, `text` the curtain layer on the root, `body` the content fade the curtain pairs with.
 	 */
 	public static function panel( array $attrs ): array {
 		$out    = array(
 			'layer'    => null,
+			'text'     => null,
+			'body'     => null,
 			'consumed' => array(),
 			'reported' => array(),
 		);
@@ -173,6 +194,7 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 		$tiers  = array();
 		$bad    = array();
 		$used   = array();
+		$plays  = array();
 		foreach ( self::TIERS as $tier ) {
 			$shape = (string) self::tier( $attrs['entryAnimation'] ?? array(), $tier, 'auto' );
 			$shape = in_array( $shape, $shapes, true ) ? $shape : 'auto';
@@ -180,29 +202,31 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 				$shape = sgs_nav_drawer_motion_auto_shape( (string) self::tier( $attrs['anchor'] ?? array(), $tier, 'full-screen' ) );
 			}
 			$used[ $shape ] = true;
-			$channels       = self::panel_channels( $shape, $fade );
+			if ( 'curtain' === $shape ) {
+				$plays[] = $tier;
+			}
+			$channels = self::panel_channels( $shape, $fade );
 			if ( null === $channels ) {
-				$bad[ $tier ] = $shape;
+				$bad[ $tier ] = self::UNMAPPED[ $shape ];
 				continue;
 			}
 			$tiers[ $tier ] = $channels;
 		}
 		$curtain = isset( $used['curtain'] );
+		$refusal = $curtain ? Sgs_Motion_Legacy_Nav_Drawer_Curtain::refusal( $attrs, $plays ) : null;
+		foreach ( null === $refusal ? array() : $plays as $tier ) {
+			$bad[ $tier ] = $refusal;
+		}
 		if ( array() !== $bad ) {
-			$reasons = array();
-			foreach ( array_unique( $bad ) as $shape ) {
-				$reasons[] = self::UNMAPPED[ $shape ];
-			}
-			$out['reported'][] = self::row( 'entryAnimation', $attrs['entryAnimation'] ?? 'auto', 'no destination at ' . implode( ', ', array_keys( $bad ) ) . ': ' . implode( '; ', $reasons ) . '. The panel is left unmapped and its timing attributes stay', false );
+			$out['reported'][] = self::row( 'entryAnimation', $attrs['entryAnimation'] ?? 'auto', 'no destination at ' . implode( ', ', array_keys( $bad ) ) . ': ' . implode( '; ', array_unique( $bad ) ) . '. The panel is left unmapped and its timing attributes stay', false );
 			foreach ( array( 'entryDuration', 'exitDuration', 'entryEasing', 'entryEasingCustom', 'entryFade' ) as $key ) {
 				if ( array_key_exists( $key, $attrs ) ) {
 					$out['reported'][] = self::row( $key, $attrs[ $key ], 'left in place with the unmapped panel shape', false );
 				}
 			}
-			self::curtain_rows( $attrs, $curtain, $out );
+			self::curtain_rows( $attrs, $curtain ? 'left' : 'inert', $out );
 			return $out;
 		}
-		self::curtain_rows( $attrs, $curtain, $out );
 
 		$enter  = self::ms( $attrs, 'entryDuration', 250 );
 		$exit   = self::ms( $attrs, 'exitDuration', 200 );
@@ -214,15 +238,23 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 		) as $key => $value ) {
 			if ( null === $value ) {
 				$out['reported'][] = self::row( $key, $attrs[ $key ] ?? null, 'not a value the old renderer accepted exactly; the panel is left unmapped', false );
+				self::curtain_rows( $attrs, $curtain ? 'left' : 'inert', $out );
 				return $out;
 			}
 		}
+		self::curtain_rows( $attrs, $curtain ? 'mapped' : 'inert', $out );
 		$out['consumed'] = array_merge( $out['consumed'], array_values( array_intersect( array( 'entryAnimation', 'entryDuration', 'exitDuration', 'entryEasing', 'entryEasingCustom', 'entryFade' ), array_keys( $attrs ) ) ) );
 		if ( isset( $used['slide-start'] ) || isset( $used['slide-end'] ) ) {
 			$out['reported'][] = self::row( 'entryAnimation', $attrs['entryAnimation'] ?? 'auto', 'changed: the start and end slides no longer mirror in right-to-left languages (the model has no direction flip)', true );
 		}
 		if ( isset( $used['corner-scale'] ) ) {
 			$out['reported'][] = self::row( 'entryAnimation', $attrs['entryAnimation'] ?? 'auto', 'changed: the corner scale keeps its scale and fade; its top-right transform origin has no field', true );
+		}
+		if ( $curtain ) {
+			$pair            = Sgs_Motion_Legacy_Nav_Drawer_Curtain::layers( $attrs, $enter, $exit, $easing );
+			$out['text']     = $pair['text'];
+			$out['body']     = $pair['body'];
+			$out['reported'] = array_merge( $out['reported'], $pair['reported'] );
 		}
 		$moves = self::tiered_moves( $tiers );
 		if ( null === $moves ) {
@@ -250,22 +282,27 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 	}
 
 	/**
-	 * Report the curtain colour: inert without a curtain shape, left in place with one.
+	 * Report the curtain colour and gradient: inert without a curtain shape, left in place with an unmapped curtain,
+	 * consumed once the curtain layer carries the colour.
 	 *
-	 * @param array<string,mixed> $attrs   Stored attributes.
-	 * @param bool                $curtain Whether any tier plays the curtain.
-	 * @param array<string,mixed> $out     Accumulator.
+	 * @param array<string,mixed> $attrs Stored attributes.
+	 * @param string              $state `mapped`, `left` (a curtain left unmapped) or `inert` (no curtain shape).
+	 * @param array<string,mixed> $out   Accumulator.
 	 */
-	private static function curtain_rows( array $attrs, bool $curtain, array &$out ): void {
-		if ( ! array_key_exists( 'curtainColour', $attrs ) ) {
-			return;
+	private static function curtain_rows( array $attrs, string $state, array &$out ): void {
+		foreach ( array( 'curtainColour', 'curtainColourGradient' ) as $key ) {
+			if ( ! array_key_exists( $key, $attrs ) ) {
+				continue;
+			}
+			if ( 'left' === $state ) {
+				$out['reported'][] = self::row( $key, $attrs[ $key ], 'left in place with the unmapped curtain shape', false );
+				continue;
+			}
+			$out['consumed'][] = $key;
+			if ( 'inert' === $state ) {
+				$out['reported'][] = self::row( $key, $attrs[ $key ], 'inert: a curtain colour with no curtain shape', true );
+			}
 		}
-		if ( $curtain ) {
-			$out['reported'][] = self::row( 'curtainColour', $attrs['curtainColour'], 'left in place with the unmapped curtain shape', false );
-			return;
-		}
-		$out['consumed'][] = 'curtainColour';
-		$out['reported'][] = self::row( 'curtainColour', $attrs['curtainColour'], 'inert: a curtain colour with no curtain shape', true );
 	}
 
 	/**
@@ -295,9 +332,12 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 				if ( ! isset( $channels[ $channel ] ) ) {
 					continue;
 				}
-				$pair                              = $tiers[ $tier ][ $channel ] ?? array( self::IDENTITY[ $channel ], self::IDENTITY[ $channel ] );
+				$from_only                         = in_array( $channel, self::FROM_ONLY, true );
+				$pair                              = $tiers[ $tier ][ $channel ] ?? array( self::IDENTITY[ $channel ], $from_only ? null : self::IDENTITY[ $channel ] );
 				$full[ $tier ]['from'][ $channel ] = $pair[0];
-				$full[ $tier ]['to'][ $channel ]   = $pair[1];
+				if ( ! $from_only ) {
+					$full[ $tier ]['to'][ $channel ] = $pair[1];
+				}
 			}
 		}
 		$devices = array();
@@ -320,163 +360,14 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 			}
 			$above = $tier;
 		}
+		$values = $full['desktop'];
+		if ( array() === $values['to'] ) {
+			unset( $values['to'] );
+		}
 		return array(
-			'values'  => $full['desktop'],
+			'values'  => $values,
 			'devices' => $devices,
 		);
-	}
-
-	/**
-	 * The item entrance and the stagger settings, without delays (the caller places each item's delay).
-	 *
-	 * @param array<string,mixed> $attrs Stored drawer attributes.
-	 * @return array{layer:?array<string,mixed>,step:int,cap:int,dur:int,easing:string,reversed:bool,groups:bool,consumed:string[],reported:array<int,array<string,mixed>>}
-	 */
-	public static function items( array $attrs ): array {
-		$out  = array(
-			'layer'    => null,
-			'step'     => 0,
-			'cap'      => 0,
-			'dur'      => 0,
-			'easing'   => '',
-			'reversed' => ! empty( $attrs['itemStaggerOnClose'] ),
-			'groups'   => ! empty( $attrs['staggerInsideGroups'] ),
-			'consumed' => array(),
-			'reported' => array(),
-		);
-		$step = self::ms( $attrs, 'itemStagger', 0, 1000 );
-		$cap  = self::ms( $attrs, 'itemStaggerMax', 0, 10000 );
-		$own  = self::ms( $attrs, 'itemStaggerDuration', 0 );
-		$open = self::ms( $attrs, 'entryDuration', 250 );
-		foreach ( array(
-			'itemStagger'         => $step,
-			'itemStaggerMax'      => $cap,
-			'itemStaggerDuration' => $own,
-			'entryDuration'       => $open,
-		) as $key => $value ) {
-			if ( null === $value ) {
-				$out['reported'][] = self::row( $key, $attrs[ $key ], 'not a number; the item stagger is left unmapped', false );
-				return $out;
-			}
-		}
-		$present = array_values( array_intersect( self::ITEM_ATTRS, array_keys( $attrs ) ) );
-		if ( 0 === $step ) {
-			$out['consumed'] = $present;
-			foreach ( array_diff( $present, array( 'itemStagger' ) ) as $key ) {
-				$out['reported'][] = self::row( $key, $attrs[ $key ], 'inert: an item setting with no stagger step', true );
-			}
-			return $out;
-		}
-		$chosen = is_string( $attrs['entryEasing'] ?? null ) && '' !== $attrs['entryEasing'] && 'ease-out-css' !== $attrs['entryEasing'];
-		$easing = $chosen ? self::easing( $attrs ) : 'token:entrance.easing';
-		if ( null === $easing ) {
-			$out['reported'][] = self::row( 'entryEasing', $attrs['entryEasing'], 'no exact easing for the items; the item stagger is left unmapped', false );
-			return $out;
-		}
-		$clip  = 'clip' === ( $attrs['itemStaggerReveal'] ?? 'translate' );
-		$axes  = sgs_nav_drawer_stagger_axes();
-		$tiers = array();
-		foreach ( self::TIERS as $tier ) {
-			$axis = (string) self::tier( $attrs['itemStaggerAxis'] ?? array(), $tier, 'vertical' );
-			$axis = isset( $axes[ $axis ] ) ? $axis : 'vertical';
-			$dist = self::tier( $attrs['itemStaggerDistance'] ?? array(), $tier, null );
-			$pair = array();
-			if ( ! $clip ) {
-				$pair['opacity'] = array( 0, 1 );
-			}
-			foreach ( array(
-				'translateX' => $axes[ $axis ][0],
-				'translateY' => $axes[ $axis ][1],
-			) as $channel => $sign ) {
-				if ( 0 !== $sign ) {
-					$pair[ $channel ] = array( self::travel( $dist, $sign ), 0 );
-				}
-			}
-			$tiers[ $tier ] = $pair;
-		}
-		$moves = self::tiered_moves( $tiers );
-		if ( null === $moves ) {
-			return $out;
-		}
-		$dur   = $own > 0 ? $own : $open;
-		$layer = array(
-			'trigger' => 'open',
-			'values'  => array_merge(
-				$moves['values'],
-				array(
-					'duration' => $dur,
-					'easing'   => $easing,
-				)
-			),
-		);
-		if ( array() !== $moves['devices'] ) {
-			$layer['devices'] = $moves['devices'];
-		}
-		$out['layer']    = $layer;
-		$out['step']     = $step;
-		$out['cap']      = $cap;
-		$out['dur']      = $dur;
-		$out['easing']   = $easing;
-		$out['consumed'] = $clip ? array_values( array_diff( $present, array( 'itemStaggerReveal' ) ) ) : $present;
-		if ( $clip ) {
-			$out['reported'][] = self::row( 'itemStaggerReveal', 'clip', 'no destination: the clip reveal uncovers each item from its top edge only (inset(0 0 100% 0)) and the model clip insets every edge equally; the items keep their travel without a fade, as the clip reveal did', false );
-		}
-		$axis_raw = $attrs['itemStaggerAxis'] ?? array();
-		foreach ( self::TIERS as $tier ) {
-			if ( 'vertical' !== self::tier( $axis_raw, $tier, 'vertical' ) ) {
-				$out['reported'][] = self::row( 'itemStaggerAxis', $axis_raw, 'changed: a start or end item travel no longer mirrors in right-to-left languages', true );
-				break;
-			}
-		}
-		return $out;
-	}
-
-	/**
-	 * One tier's item travel: a stored number of pixels (negative falls from above), or the entrance distance token.
-	 *
-	 * @param mixed $dist Stored tier value, or null when unset.
-	 * @param int   $sign The axis multiplier, 1 or -1.
-	 * @return int|string
-	 */
-	private static function travel( $dist, int $sign ) {
-		if ( is_numeric( $dist ) ) {
-			return $sign * max( -2000, min( 2000, (int) round( (float) $dist ) ) );
-		}
-		return $sign < 0 ? '-token:entrance.distance' : 'token:entrance.distance';
-	}
-
-	/**
-	 * An item's layer with its delays and its close.
-	 *
-	 * @param array<string,mixed> $items       The `items()` result.
-	 * @param int                 $delay       Open delay (ms).
-	 * @param int|null            $close_delay Close delay (ms) when the items close in order; null holds them still.
-	 * @param bool                $customised  Whether the delays are not the helper's positional values.
-	 * @return array<string,mixed>
-	 */
-	public static function item_layer( array $items, int $delay, ?int $close_delay, bool $customised ): array {
-		$layer                    = $items['layer'];
-		$layer['values']['delay'] = $delay;
-		if ( null === $close_delay ) {
-			$hold = array();
-			foreach ( array_keys( $layer['values']['to'] ?? array() ) as $channel ) {
-				$hold[ $channel ] = self::IDENTITY[ $channel ];
-			}
-			$layer['close'] = array(
-				'to'            => $hold,
-				'closeDuration' => 0,
-			);
-		} else {
-			$layer['close'] = array(
-				'closeDuration' => $items['dur'],
-				'closeEasing'   => $items['easing'],
-				'closeDelay'    => $close_delay,
-			);
-		}
-		if ( $customised ) {
-			$layer['customised'] = null === $close_delay ? array( 'values.delay' ) : array( 'values.delay', 'close.closeDelay' );
-		}
-		return $layer;
 	}
 
 	/**

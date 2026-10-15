@@ -7,17 +7,17 @@
  *   nothing), `submenuAnimationDuration`, `submenuExitDuration` and `submenuAnimationEasing`/`...Custom` become the
  *   `panel` part's `open` entrance with its close duration and easing. The values are the old stylesheet's
  *   (`nav-bar-menu/style.css`, the panel rules): every shape but `grow` fades from 0; `fade-lift` and `slide-down`
- *   travel 8px down from -8px; `fade-lift` also scales from 0.99. Close returns to the from-values, as the old
- *   transition did.
+ *   travel 8px down from -8px; `fade-lift` also scales from 0.99; `grow` holds full opacity and uncovers the panel
+ *   from its top edge (`clip-path: inset(0 0 100% 0)` to `inset(0)`), the bottom-edge clip wipe with no fade. Close
+ *   returns to the from-values, as the old transition did.
  * - ITEMS: `submenuItemStagger`, `submenuItemStaggerMax`, `submenuItemStaggerDuration` and `submenuItemStaggerDistance`
  *   become the item entrance (opacity from 0 and an 8px rise by default, the item's own time or the panel's opening
  *   time, the panel's easing) and the bar's stagger settings; `submenuItemStaggerScope` chooses the mega panel level
  *   the old ladder animated (its columns or each column's rows; dropdown items always). The items held still while a
  *   panel closed, so they hold their resting values on close.
  *
- * Reported, never approximated: `grow` (a bottom-edge clip the model's uniform clip cannot express), an easing name or
- * curve the old renderer did not accept exactly, a stored value that is not a number, and a scope that is neither
- * `columns` nor `rows`.
+ * Reported, never approximated: an easing name or curve the old renderer did not accept exactly, a stored value that is
+ * not a number, and a scope that is neither `columns` nor `rows`.
  *
  * @package SGS\Blocks
  */
@@ -43,11 +43,6 @@ final class Sgs_Motion_Legacy_Nav_Bar {
 	/** The shapes the old renderer accepted (`nav-bar-menu/render.php`); any other value played nothing. */
 	const SHAPES = array( 'fade', 'fade-lift', 'slide-down', 'grow' );
 
-	/** Shapes the model cannot express, with the reason. */
-	const UNMAPPED = array(
-		'grow' => 'grow uncovers the panel from its top edge only (clip-path inset(0 0 100% 0)) and the model clip insets every edge equally; needs a directional clip preset',
-	);
-
 	/** The old item travel when no distance is stored (px). */
 	const DEFAULT_DISTANCE = 8;
 
@@ -66,16 +61,19 @@ final class Sgs_Motion_Legacy_Nav_Bar {
 	}
 
 	/**
-	 * One shape's panel motion: channel => [from, to]; empty for `none`, null for a shape with no destination.
+	 * One shape's panel motion: channel => [from, to]; empty for `none`. A `from`-only channel (the clip wipe, which
+	 * rests at no clip) has a null `to`.
 	 *
 	 * @param string $shape The shape.
-	 * @return array<string,array{0:mixed,1:mixed}>|null
+	 * @return array<string,array{0:mixed,1:mixed}>
 	 */
-	public static function panel_channels( string $shape ): ?array {
-		if ( isset( self::UNMAPPED[ $shape ] ) ) {
-			return null;
-		}
+	public static function panel_channels( string $shape ): array {
 		switch ( $shape ) {
+			case 'grow':
+				return array(
+					'clip'     => array( 100, null ),
+					'clipEdge' => array( 'bottom', null ),
+				);
 			case 'fade':
 				return array( 'opacity' => array( 0, 1 ) );
 			case 'fade-lift':
@@ -130,9 +128,6 @@ final class Sgs_Motion_Legacy_Nav_Bar {
 			'scope'    => 'columns',
 			'reported' => array(),
 		);
-		if ( null === self::panel_channels( $out['shape'] ) ) {
-			$out['reported'][] = self::row( 'submenuAnimation', $attrs['submenuAnimation'] ?? 'fade', 'no destination: ' . self::UNMAPPED[ $out['shape'] ], false );
-		}
 		$numbers = array(
 			'in'   => array( 'submenuAnimationDuration', 180, 3000 ),
 			'out'  => array( 'submenuExitDuration', 150, 3000 ),
@@ -182,22 +177,29 @@ final class Sgs_Motion_Legacy_Nav_Bar {
 	 */
 	public static function panel_layer( array $read ): ?array {
 		$channels = self::panel_channels( $read['shape'] );
-		if ( null === $channels || array() === $channels ) {
+		if ( array() === $channels ) {
 			return null;
 		}
 		$from = array();
 		$to   = array();
 		foreach ( $channels as $channel => $pair ) {
 			$from[ $channel ] = $pair[0];
-			$to[ $channel ]   = $pair[1];
+			if ( null !== $pair[1] ) {
+				$to[ $channel ] = $pair[1];
+			}
+		}
+		$values = array( 'from' => $from );
+		if ( array() !== $to ) {
+			$values['to'] = $to;
 		}
 		return array(
 			'trigger' => 'open',
-			'values'  => array(
-				'from'     => $from,
-				'to'       => $to,
-				'duration' => $read['in'],
-				'easing'   => $read['easing'],
+			'values'  => array_merge(
+				$values,
+				array(
+					'duration' => $read['in'],
+					'easing'   => $read['easing'],
+				)
 			),
 			'close'   => array(
 				'closeDuration' => $read['out'],

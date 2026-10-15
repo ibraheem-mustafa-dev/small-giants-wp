@@ -15,8 +15,9 @@
  *   are 0, 26 ... 312, 320, 320 in each panel, the old ladder's min(i x step, max);
  * - `rows` moves the mega item entrance to `mega-row`; a bar storing only a step still gets the default 180ms fade with
  *   its 150ms close; the item distance (default 8px, 0 for none, negative falls) and the item's own time;
- * - `grow`, an easing with no exact value, a non-number and an unknown scope leave the whole bar unmapped and reported;
- *   `none` with no step keeps `submenuAnimation` (reported) and consumes the inert timings;
+ * - `grow` is the bottom-edge clip wipe (clip 100% on the bottom edge, no fade, the panel's times and easing, closing back
+ *   to the same clip), with the items and stagger alongside; an easing with no exact value, a non-number and an
+ *   unknown scope leave the whole bar unmapped and reported; `none` with no step keeps `submenuAnimation` (reported) and consumes the inert timings;
  * - every fragment is schema-valid, the runner migrates a whole post with no flag, and a second run changes nothing.
  *
  * Planted faults (each must turn the run red; the run then exits 1). The fault is written into a TEMPORARY COPY of the
@@ -25,6 +26,8 @@
  *   SGS_MOTION_NAV_BAR_PLANT=step   the step ceiling 1000 becomes 20
  *   SGS_MOTION_NAV_BAR_PLANT=lift   fade-lift scales from 0.95 instead of 0.99
  *   SGS_MOTION_NAV_BAR_PLANT=rows   the rows scope is ignored (mega items stay on the columns)
+ *   SGS_MOTION_NAV_BAR_PLANT=edge   grow clips the top edge instead of the bottom
+ *   SGS_MOTION_NAV_BAR_PLANT=fade   grow also fades from 0, which the old grow did not
  *
  * @package SGS\Blocks\Tests
  */
@@ -72,6 +75,13 @@ namespace {
 			'step' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-bar.php', "array( 'submenuItemStagger', 0, 1000 )", "array( 'submenuItemStagger', 0, 20 )" ),
 			'lift' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-bar.php', "'scale'      => array( 0.99, 1 ),", "'scale'      => array( 0.95, 1 )," ),
 			'rows' => array( '/includes/motion/migrate/mappers/class-sgs-motion-map-nav-bar.php', "'rows' === \$read['scope'] ? 'mega-row' : 'mega-item'", "'mega-item'" ),
+			'edge' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-bar.php', "'clipEdge' => array( 'bottom', null ),", "'clipEdge' => array( 'top', null )," ),
+			'fade' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-bar.php', "case 'grow':
+				return array(
+					'clip'", "case 'grow':
+				return array(
+					'opacity'  => array( 0, 1 ),
+					'clip'" ),
 		);
 		if ( ! isset( $faults[ $plant ] ) ) {
 			echo "Unknown plant '$plant'\n";
@@ -243,7 +253,6 @@ namespace SGS\Blocks\Motion {
 
 	// 3. Values with no exact destination leave the whole bar unmapped.
 	foreach ( array(
-		'grow'   => array( 'submenuAnimation' => 'grow', 'submenuItemStagger' => 26 ),
 		'easing' => array( 'submenuAnimationEasing' => 'custom', 'submenuAnimationEasingCustom' => 'bouncy', 'submenuItemStagger' => 26 ),
 		'number' => array( 'submenuAnimationDuration' => 'fast', 'submenuItemStagger' => 26 ),
 		'scope'  => array( 'submenuItemStaggerScope' => 'cards', 'submenuItemStagger' => 26 ),
@@ -252,7 +261,12 @@ namespace SGS\Blocks\Motion {
 		$row_attrs = array_unique( array_column( $bad['reported'], 'attr' ) );
 		ok( array() === $bad['motion'] && array() === $bad['consumed'] && 0 === count( array_diff( array_keys( $attrs ), $row_attrs ) ) && ! in_array( true, array_column( $bad['reported'], 'consumed' ), true ), "unmapped ($case): no fragment, nothing consumed, every present attribute reported", reasons( $bad ) );
 	}
-	ok( false !== strpos( reasons( $mapper->map( 'sgs/nav-bar-menu', array( 'submenuAnimation' => 'grow' ) ) ), 'directional clip preset' ), 'grow is reported with its reason' );
+	// 3b. grow: the old stylesheet held opacity 1 and clipped inset(0 0 100% 0) to inset(0) with the panel's times and easing.
+	$grow_p = $mapper->map( 'sgs/nav-bar-menu', array( 'submenuAnimation' => 'grow', 'submenuAnimationDuration' => 220, 'submenuExitDuration' => 160, 'submenuItemStagger' => 26 ) );
+	ok( array( 'trigger' => 'open', 'values' => array( 'from' => array( 'clip' => 100, 'clipEdge' => 'bottom' ), 'duration' => 220, 'easing' => 'ease-out' ), 'close' => array( 'closeDuration' => 160, 'closeEasing' => 'ease-out' ) ) === base_of( $grow_p, 'panel' ), 'grow: a bottom-edge clip from 100% with no fade and no to-value, the stored 220ms in and 160ms out (it closes back to the clip, as the old transition did)', json_encode( base_of( $grow_p, 'panel' ) ) );
+	ok( null !== base_of( $grow_p, 'subitem' ) && 26 === ( $grow_p['motion']['stagger']['step'] ?? null ) && in_array( 'submenuAnimation', $grow_p['consumed'], true ) && array() === $grow_p['reported'] && patches_valid( array( $grow_p ) ), 'grow: the item stagger sits alongside, every old attribute is consumed, nothing is reported and the fragment is schema-valid', reasons( $grow_p ) );
+	$grow_only = $mapper->map( 'sgs/nav-bar-menu', array( 'submenuAnimation' => 'grow' ) );
+	ok( array( 'clip' => 100, 'clipEdge' => 'bottom' ) === ( base_of( $grow_only, 'panel' )['values']['from'] ?? null ) && 180 === base_of( $grow_only, 'panel' )['values']['duration'] && array( 'submenuAnimation' ) === $grow_only['consumed'], 'grow alone takes the default 180ms and 150ms and is consumed' );
 
 	// 4. Panels that play nothing.
 	$none = $mapper->map( 'sgs/nav-bar-menu', array( 'submenuAnimation' => 'none', 'submenuAnimationDuration' => 200, 'submenuItemStaggerMax' => 300 ) );

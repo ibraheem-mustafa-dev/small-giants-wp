@@ -15,8 +15,11 @@
  * - the grouped 50ms drawer (staggerInsideGroups, no menu) stores 0, 50, 100, 150 on a container's four children, the
  *   container keeps the helper settings, and the panel takes the anchor's `auto` nudge;
  * - per-tier shapes become device overrides; `none` everywhere stores no panel; reversed closes store
- *   `min((count - 1 - i) x step, cap)`; every shape and the clip reveal with no destination are reported and left in
- *   place, never approximated; a child with no motion support or the drift class is not given an entrance;
+ *   `min((count - 1 - i) x step, cap)`; wipe-down and reveal-from-bar are a bottom-edge clip on the root (the second
+ *   anchored on the opener row), curtain is a curtain text layer plus a content fade on the body part delayed by half
+ *   the time; the retired shapes (wipe-down-skew, grow-from-anchor), expand-down, a curtain the layer cannot take and
+ *   the clip item reveal are reported and left in place, never approximated; a child with no motion support or the
+ *   drift class is not given an entrance;
  * - every fragment is schema-valid, the runner migrates a whole post with no flag, and a second run changes nothing.
  *
  * Planted faults (each must turn the run red; the run then exits 1). The fault is written into a TEMPORARY COPY of the
@@ -24,6 +27,11 @@
  *   SGS_MOTION_NAV_DRAWER_PLANT=cap    the helper cap is never stored
  *   SGS_MOTION_NAV_DRAWER_PLANT=step   the step ceiling 1000 becomes 50
  *   SGS_MOTION_NAV_DRAWER_PLANT=slide  slide-start travels -50% instead of -100%
+ *   SGS_MOTION_NAV_DRAWER_PLANT=edge   the wipes clip the top edge instead of the bottom
+ *   SGS_MOTION_NAV_DRAWER_PLANT=anchor reveal-from-bar loses its opener-row anchor
+ *   SGS_MOTION_NAV_DRAWER_PLANT=delay  the curtain's content fade is not delayed by half the time
+ *   SGS_MOTION_NAV_DRAWER_PLANT=colour the curtain ignores the stored colour
+ *   SGS_MOTION_NAV_DRAWER_PLANT=retire wipe-down-skew loses its retirement reason
  *
  * @package SGS\Blocks\Tests
  */
@@ -68,8 +76,13 @@ namespace {
 		$copy( __FILE__, $tmp . '/tests/php/run-motion-map-nav-drawer-standalone.php' );
 		$faults = array(
 			'cap'   => array( '/includes/motion/migrate/mappers/class-sgs-motion-map-nav-drawer.php', "if ( \$items['cap'] > 0 ) {\n\t\t\t\$settings['cap']", "if ( \$items['cap'] > 100000 ) {\n\t\t\t\$settings['cap']" ),
-			'step'  => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "self::ms( \$attrs, 'itemStagger', 0, 1000 )", "self::ms( \$attrs, 'itemStagger', 0, 50 )" ),
+			'step'  => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-items.php', "Sgs_Motion_Legacy_Nav_Drawer::ms( \$attrs, 'itemStagger', 0, 1000 )", "Sgs_Motion_Legacy_Nav_Drawer::ms( \$attrs, 'itemStagger', 0, 50 )" ),
 			'slide' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "array( 'translateX' => array( '-100%', 0 ) )", "array( 'translateX' => array( '-50%', 0 ) )" ),
+			'edge'   => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "array( 'bottom', null )", "array( 'top', null )" ),
+			'anchor' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "array( 'opener-row', null )", "array( 'none', null )" ),
+			'delay'  => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-curtain.php', "'delay'    => \$half,", "'delay'    => 0," ),
+			'colour' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-curtain.php', "\$values['colour'] = \$colour;", "\$values['colour'] = 'primary';" ),
+			'retire' => array( '/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php', "'retired (Bean 2026-10-15): wipe-down-skew", "'wipe-down-skew" ),
 		);
 		if ( ! isset( $faults[ $plant ] ) ) {
 			echo "Unknown plant '$plant'\n";
@@ -273,21 +286,66 @@ namespace SGS\Blocks\Motion {
 	$mixed = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'fade', 'mobile' => 'none' ) ) ) ) )['0'] );
 	ok( array( 'mobile' => array( 'from' => array( 'opacity' => 1 ) ) ) === ( $mixed['devices'] ?? null ), 'a `none` tier holds the identity values', json_encode( $mixed ) );
 
-	// 5. No destination: reported and left in place, never approximated.
-	foreach ( array( 'wipe-down', 'wipe-down-skew', 'reveal-from-bar', 'grow-from-anchor' ) as $shape ) {
+	// 5. No destination: reported and left in place, never approximated. The two retired shapes say so; expand-down needs a scaleY field.
+	foreach ( array( 'wipe-down-skew', 'grow-from-anchor' ) as $shape ) {
 		$u = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => $shape ), 'entryDuration' => 450 ) ) ) )['0'];
 		ok( array() === $u['motion'] && array() === $u['consumed'] && 2 === count( $u['reported'] ) && false === $u['reported'][0]['consumed'], "$shape: no panel stored, entryAnimation and entryDuration left in place and reported", reasons( $u ) );
+		ok( false !== strpos( $u['reported'][0]['reason'], 'retired (Bean 2026-10-15)' ), "$shape: the reason says retired (Bean 2026-10-15)", $u['reported'][0]['reason'] );
 	}
-	$c = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => '#131419' ) ) ) )['0'];
-	ok( array() === $c['consumed'] && false !== strpos( reasons( $c ), 'curtainColour: left in place' ), 'curtain: the shape and its colour are left in place and reported' );
 	$h = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'anchor' => array( 'desktop' => 'header' ), 'itemStagger' => 40 ) ) ) )['0'];
-	ok( ! isset( $h['motion']['elements'] ) && false !== strpos( reasons( $h ), 'expand-down' ), 'auto on a header anchor is the vertical expand, reported with no panel stored' );
+	ok( ! isset( $h['motion']['elements'] ) && false !== strpos( reasons( $h ), 'expand-down' ) && false !== strpos( reasons( $h ), 'needs a scaleY field' ) && false === strpos( reasons( $h ), 'retired' ), 'auto on a header anchor is the vertical expand, reported with no panel stored: the entrance has no scaleY field (not retired)', reasons( $h ) );
 	$clip = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'itemStagger' => 50, 'itemStaggerReveal' => 'clip', 'itemStaggerDistance' => array( 'desktop' => 18 ) ), array( blk( 'sgs/button' ) ) ) ) );
 	ok( ! in_array( 'itemStaggerReveal', $clip['0']['consumed'], true ) && array( 'translateY' => 18 ) === base_of( $clip['0/0'] )['values']['from'], 'the clip reveal is reported and left in place; the items keep their travel without a fade' );
 	$inert = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'fade' ), 'curtainColour' => '#000', 'itemStaggerDistance' => array( 'desktop' => 9 ) ) ) ) )['0'];
 	ok( in_array( 'curtainColour', $inert['consumed'], true ) && in_array( 'itemStaggerDistance', $inert['consumed'], true ) && false !== strpos( reasons( $inert ), 'inert' ), 'a curtain colour with no curtain and an item distance with no step are inert: consumed and reported' );
 	$bad = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'fade' ), 'entryEasing' => 'custom', 'entryEasingCustom' => 'nope' ) ) ) )['0'];
 	ok( array() === $bad['motion'] && ! in_array( 'entryEasing', $bad['consumed'], true ), 'an easing with no exact value leaves the panel unmapped and reported' );
+
+	// 5b. The one-edge clip wipes (Bean 2026-10-15): wipe-down and reveal-from-bar are a bottom-edge clip on the root.
+	$wipe_attrs = array( 'entryAnimation' => array( 'desktop' => 'wipe-down' ), 'entryDuration' => 450, 'exitDuration' => 300 );
+	$w          = $mapper->map_groups( array( blk( 'sgs/nav-drawer', $wipe_attrs ) ) );
+	ok( array( 'trigger' => 'open', 'values' => array( 'from' => array( 'opacity' => 0, 'clip' => 100, 'clipEdge' => 'bottom' ), 'to' => array( 'opacity' => 1 ), 'duration' => 450, 'easing' => 'ease-out' ), 'close' => array( 'closeDuration' => 300, 'closeEasing' => 'ease-out' ) ) === base_of( $w['0'] ), 'wipe-down: a bottom-edge clip from 100% with the fade, the stored 450ms in and 300ms out, and no clip to-value (it rests unclipped)', json_encode( base_of( $w['0'] ) ) );
+	$wc = $w['0']['consumed'];
+	sort( $wc );
+	ok( array( 'entryAnimation', 'entryDuration', 'exitDuration' ) === $wc && array() === $w['0']['reported'] && patches_valid( $w ), 'wipe-down: the old attributes are consumed, nothing is reported and the fragment is schema-valid', json_encode( $w['0']['reported'] ) );
+	$wn = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'wipe-down' ), 'entryFade' => false ) ) ) )['0'] );
+	ok( array( 'clip' => 100, 'clipEdge' => 'bottom' ) === $wn['values']['from'], 'wipe-down with entryFade off has no opacity (the old wipe faded from --sgs-nd-from-opacity)', json_encode( $wn ) );
+	$rb = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'reveal-from-bar' ), 'entryDuration' => 600, 'entryEasing' => 'linear' ) ) ) );
+	ok( array( 'clip' => 100, 'clipEdge' => 'bottom', 'clipFromAnchor' => 'opener-row' ) === ( base_of( $rb['0'] )['values']['from'] ?? null ) && 600 === base_of( $rb['0'] )['values']['duration'] && 'linear' === base_of( $rb['0'] )['values']['easing'] && patches_valid( $rb ), 'reveal-from-bar: the same bottom-edge clip anchored on the opener row (no fade, as the old keyframes had none), 600ms linear, schema-valid', json_encode( base_of( $rb['0'] ) ) );
+	$tw = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'wipe-down', 'mobile' => 'reveal-from-bar' ), 'entryFade' => false ) ) ) )['0'] );
+	ok( array( 'clip' => 100, 'clipEdge' => 'bottom', 'clipFromAnchor' => 'none' ) === $tw['values']['from'] && array( 'mobile' => array( 'from' => array( 'clipFromAnchor' => 'opener-row' ) ) ) === ( $tw['devices'] ?? null ), 'per tier: Desktop wipe-down, Mobile reveal-from-bar is one Mobile override of the anchor (Tablet inherits Desktop)', json_encode( $tw ) );
+	$tm  = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'reveal-from-bar', 'mobile' => 'slide-up' ), 'entryFade' => false ) ) ) );
+	$tmb = base_of( $tm['0'] );
+	ok( array( 'translateY' => '100%', 'clip' => 0, 'clipEdge' => 'all', 'clipFromAnchor' => 'none' ) === array_intersect_key( $tmb['devices']['mobile']['from'] ?? array(), array_flip( array( 'clip', 'clipEdge', 'clipFromAnchor', 'translateY' ) ) ) && patches_valid( $tm ), 'per tier: Mobile slide-up under a Desktop reveal-from-bar cancels the clip and the anchor (identity values), schema-valid', json_encode( $tmb ) );
+	$tn = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'wipe-down', 'tablet' => 'none', 'mobile' => 'none' ), 'entryFade' => false ) ) ) )['0'] );
+	ok( array( 'tablet' => array( 'from' => array( 'clip' => 0, 'clipEdge' => 'all' ) ) ) === ( $tn['devices'] ?? null ), 'per tier: a `none` tier under a wipe-down holds the identity clip (Mobile inherits Tablet)', json_encode( $tn ) );
+
+	// 5c. The curtain: a curtain layer on the root, the content fade on the body part delayed by half the time.
+	$cur_attrs = array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => '#131419', 'entryDuration' => 500, 'exitDuration' => 500 );
+	$cu        = $mapper->map_groups( array( blk( 'sgs/nav-drawer', $cur_attrs ) ) );
+	$cu_text   = $cu['0']['motion']['elements']['root']['entrance']['text'][0] ?? null;
+	$cu_body   = base_of( $cu['0'], 'body' );
+	ok( array( 'id' => 'curtain', 'effect' => 'curtain', 'trigger' => 'open', 'values' => array( 'direction' => 'right', 'colour' => '#131419', 'duration' => 500, 'easing' => 'ease-out' ) ) === $cu_text && ! isset( $cu['0']['motion']['elements']['root']['entrance']['base'] ), 'curtain: a curtain text layer on the root sweeping right in the stored colour, 500ms, the opening easing, and no base entrance on the root', json_encode( $cu_text ) );
+	ok( array( 'trigger' => 'open', 'values' => array( 'from' => array( 'opacity' => 0 ), 'to' => array( 'opacity' => 1 ), 'duration' => 250, 'delay' => 250, 'easing' => 'ease' ), 'close' => array( 'closeDuration' => 250, 'closeEasing' => 'ease' ) ) === $cu_body, 'curtain: the content part is hidden for the first half (delay 250) and fades in over the second half (250ms, ease); it fades out over half the time on close', json_encode( $cu_body ) );
+	$cc = $cu['0']['consumed'];
+	sort( $cc );
+	ok( array( 'curtainColour', 'entryAnimation', 'entryDuration', 'exitDuration' ) === $cc && array() === $cu['0']['reported'] && patches_valid( $cu ), 'curtain: the colour and the timing are consumed, nothing is reported and both fragments are schema-valid', json_encode( $cu['0']['reported'] ) );
+	$cx = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => 'Primary', 'entryDuration' => 300, 'exitDuration' => 180 ) ) ) )['0'];
+	ok( 'primary' === ( $cx['motion']['elements']['root']['entrance']['text'][0]['values']['colour'] ?? null ) && 150 === base_of( $cx, 'body' )['values']['duration'] && 150 === base_of( $cx, 'body' )['close']['closeDuration'] && false !== strpos( reasons( $cx ), 'closes over the opening 300ms (it was 180ms)' ), 'curtain: a palette slug is the colour; a closing time that differs from the opening is reported as the curtain closing over the opening time', reasons( $cx ) );
+	$cd = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ) ) ) ) )['0'];
+	ok( ! array_key_exists( 'colour', $cd['motion']['elements']['root']['entrance']['text'][0]['values'] ) && 250 === $cd['motion']['elements']['root']['entrance']['text'][0]['values']['duration'], 'curtain: with no stored colour the layer takes none (the text colour, as the old layer did) and the 250ms default' );
+	$cf = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => 'rgb(19, 20, 25)' ) ) ) )['0'];
+	ok( '#131419' === ( $cf['motion']['elements']['root']['entrance']['text'][0]['values']['colour'] ?? null ), 'curtain: a functional colour is the hex the old renderer normalised it to' );
+	$cg = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => '#131419', 'curtainColourGradient' => 'linear-gradient(90deg, #000, #fff)' ) ) ) )['0'];
+	ok( array() === $cg['motion'] && array() === $cg['consumed'] && false !== strpos( reasons( $cg ), 'curtainColourGradient is a gradient' ) && false !== strpos( reasons( $cg ), 'curtainColourGradient: left in place' ), 'curtain: a gradient (which won in the old renderer) cannot be taken by the curtain layer: the panel is left unmapped, both colour attributes stay, reported', reasons( $cg ) );
+	$cn = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => 'white' ) ) ) )['0'];
+	ok( array() === $cn['motion'] && false !== strpos( reasons( $cn ), 'not a palette slug or a hex colour' ), 'curtain: a CSS colour name is not a palette reference, so the curtain is reported rather than guessed', reasons( $cn ) );
+	$ci = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'fade', 'tablet' => 'curtain', 'mobile' => 'curtain' ), 'curtainColour' => '#131419' ) ) ) )['0'];
+	ok( array() === $ci['motion'] && array() === $ci['consumed'] && false !== strpos( reasons( $ci ), 'plays at tablet, mobile only' ), 'curtain: a curtain at some tiers only has no per-device switch, so it is reported and the panel left unmapped', reasons( $ci ) );
+	$cp = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain', 'tablet' => 'curtain', 'mobile' => 'curtain' ), 'curtainColourGradient' => 'not a gradient' ) ) ) )['0'];
+	ok( isset( $cp['motion']['elements']['root']['entrance']['text'] ) && in_array( 'curtainColourGradient', $cp['consumed'], true ), 'curtain: a stored gradient that is not valid CSS was ignored by the old renderer, so it is consumed and the curtain maps' );
+	$cs = $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'itemStagger' => 50, 'curtainColour' => '#131419' ), array( blk( 'sgs/nav-drawer-menu', array( 'ref' => 0 ) ) ) ) ) );
+	ok( isset( $cs['0']['motion']['elements']['root']['entrance']['text'] ) && isset( $cs['0']['motion']['elements']['body'] ) && 50 === ( $cs['0']['motion']['stagger']['step'] ?? null ) && isset( $cs['0/0']['motion']['elements']['item'] ) && patches_valid( $cs ), 'curtain: the item stagger and the menu entrance sit alongside the curtain on the same drawer, schema-valid' );
 
 	// 6. Axis and the beside-the-menu rules.
 	$ax = base_of( $mapper->map_groups( array( blk( 'sgs/nav-drawer', array( 'itemStagger' => 55, 'itemStaggerAxis' => array( 'desktop' => 'end' ), 'itemStaggerDistance' => array( 'desktop' => 24 ) ), array( blk( 'sgs/button' ) ) ) ) )['0/0'] );
@@ -316,6 +374,21 @@ namespace SGS\Blocks\Motion {
 	ok( 55 === ( $blocks[0]['innerBlocks'][0]['attrs']['sgsMotion']['stagger']['step'] ?? null ) && 'open' === ( $blocks[0]['innerBlocks'][0]['attrs']['sgsMotion']['elements']['item']['entrance']['base']['trigger'] ?? null ) && 140 === $blocks[0]['innerBlocks'][1]['attrs']['width'], 'the stored menu carries its stagger and open item entrance; the logo keeps its width' );
 	$second = $runner->migrate_content( $first['content'] );
 	ok( ! $second['changed'] && $second['content'] === $first['content'], 'idempotent: a second run changes nothing' );
+
+	// 9. The new shapes through the real runner: stored on the block, old attributes gone, a second run changes nothing.
+	foreach ( array( 'wipe-down' => '"clipEdge":"bottom"', 'reveal-from-bar' => '"clipFromAnchor":"opener-row"', 'curtain' => '"effect":"curtain"' ) as $shape => $needle ) {
+		$post  = render_tree( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => $shape ), 'entryDuration' => 400, 'curtainColour' => '#131419', 'anchor' => array( 'desktop' => 'header' ) ) ) ) );
+		$one   = $runner->migrate_content( $post );
+		$two   = $runner->migrate_content( $one['content'] );
+		$saved = parse_blocks( $one['content'] )[0]['attrs'] ?? array();
+		ok( $one['changed'] && array() === $one['flags'] && false !== strpos( json_encode( $saved['sgsMotion'] ?? array() ), $needle ), "$shape: the runner stores the layer (" . $needle . ")", json_encode( $one['flags'] ) );
+		ok( ! isset( $saved['entryAnimation'] ) && ! isset( $saved['entryDuration'] ) && ! isset( $saved['curtainColour'] ) && isset( $saved['anchor'] ), "$shape: the old motion attributes are removed, the anchor stays" );
+		ok( ! $two['changed'] && $two['content'] === $one['content'], "$shape: idempotent, a second run changes nothing" );
+	}
+	{
+		$cmo = parse_blocks( $runner->migrate_content( render_tree( array( blk( 'sgs/nav-drawer', array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => '#131419' ) ) ) ) )['content'] )[0]['attrs']['sgsMotion'] ?? array();
+		ok( 'curtain' === ( $cmo['elements']['root']['entrance']['text'][0]['effect'] ?? null ) && 125 === ( $cmo['elements']['body']['entrance']['base']['values']['delay'] ?? null ), 'curtain: the stored motion holds the curtain layer on the root and the fade on the body part delayed by half the default 250ms', json_encode( $cmo ) );
+	}
 
 	Sgs_Motion_Map_Nav_Drawer::set_supports_provider( null );
 	echo "\nRESULT  $pass passed, $fail failed\n";

@@ -7,8 +7,9 @@
  * browser worked out each child's delay from its position. `map_groups()` runs over a post's whole tree first and, for
  * every `sgs/nav-drawer` holding an old attribute, returns:
  *
- * - on the drawer: the panel's `entrance.base` on `root` (`Sgs_Motion_Legacy_Nav_Drawer::panel`) and the stagger
- *   helper's last settings (`offset` 0, the old step, `order` row-first, `perRow` false, the old maximum as `cap`, and
+ * - on the drawer: the panel's `entrance.base` on `root` (`Sgs_Motion_Legacy_Nav_Drawer::panel`; for `curtain` the
+ *   curtain layer in `entrance.text` on `root` and the delayed content fade on the `body` part, `wipe-down` and
+ *   `reveal-from-bar` the bottom-edge clip) and the stagger helper's last settings (`offset` 0, the old step, `order` row-first, `perRow` false, the old maximum as `cap`, and
  *   `apply` false, since each child carries its own entrance);
  * - on each `sgs/nav-drawer-menu` child: the item entrance on its `item` part plus its own `stagger` settings, which
  *   the menu's render.php turns into one stored open and close delay per menu item
@@ -38,6 +39,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__ ) . '/interface-sgs-motion-mapper.php';
 require_once dirname( __DIR__ ) . '/interface-sgs-motion-group-mapper.php';
 require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-nav-drawer.php';
+require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-nav-drawer-items.php';
 require_once dirname( __DIR__, 2 ) . '/class-sgs-motion-stagger.php';
 
 /**
@@ -109,7 +111,7 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 			}
 		}
 		return array(
-			'motion'   => self::panel_motion( $panel['layer'], null ),
+			'motion'   => self::panel_motion( $panel, null ),
 			'consumed' => $panel['consumed'],
 			'reported' => $reported,
 		);
@@ -157,7 +159,7 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 	 */
 	private function drawer( string $path, array $attrs, array $children, array &$patches ): void {
 		$panel    = Sgs_Motion_Legacy_Nav_Drawer::panel( $attrs );
-		$items    = Sgs_Motion_Legacy_Nav_Drawer::items( $attrs );
+		$items    = Sgs_Motion_Legacy_Nav_Drawer_Items::items( $attrs );
 		$reported = array_merge( $panel['reported'], $items['reported'] );
 		$settings = null;
 		if ( null !== $items['layer'] ) {
@@ -165,31 +167,35 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 			$this->children( $path, $children, $items, $patches, $reported );
 		}
 		$patches[ $path ] = array(
-			'motion'   => self::panel_motion( $panel['layer'], $settings ),
+			'motion'   => self::panel_motion( $panel, $settings ),
 			'consumed' => array_values( array_unique( array_merge( $panel['consumed'], $items['consumed'] ) ) ),
 			'reported' => $reported,
 		);
 	}
 
 	/**
-	 * The drawer's motion fragment: the panel entrance and the helper settings.
+	 * The drawer's motion fragment: the panel entrance on the root, the curtain layer on the root and its content fade
+	 * on the body part (a curtain), and the helper settings.
 	 *
-	 * @param array<string,mixed>|null $layer    The panel layer.
+	 * @param array<string,mixed>      $panel    The `Sgs_Motion_Legacy_Nav_Drawer::panel()` result.
 	 * @param array<string,mixed>|null $settings The helper settings.
 	 * @return array<string,mixed>
 	 */
-	private static function panel_motion( ?array $layer, ?array $settings ): array {
-		if ( null === $layer && null === $settings ) {
-			return array();
-		}
+	private static function panel_motion( array $panel, ?array $settings ): array {
 		$motion = array( 'v' => 1 );
-		if ( null !== $layer ) {
-			$motion['elements'] = array( 'root' => array( 'entrance' => array( 'base' => $layer ) ) );
+		if ( null !== $panel['layer'] ) {
+			$motion['elements']['root']['entrance']['base'] = $panel['layer'];
+		}
+		if ( null !== $panel['text'] ) {
+			$motion['elements']['root']['entrance']['text'] = array( $panel['text'] );
+		}
+		if ( null !== $panel['body'] ) {
+			$motion['elements']['body']['entrance']['base'] = $panel['body'];
 		}
 		if ( null !== $settings ) {
 			$motion['stagger'] = $settings;
 		}
-		return $motion;
+		return array( 'v' => 1 ) === $motion ? array() : $motion;
 	}
 
 	/**
@@ -240,7 +246,7 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 			}
 			if ( self::MENU === $name ) {
 				// The menu's render writes each item's open and close delay from these settings (closeOrder included).
-				$layer = Sgs_Motion_Legacy_Nav_Drawer::item_layer( $items, 0, $items['reversed'] ? 0 : null, false );
+				$layer = Sgs_Motion_Legacy_Nav_Drawer_Items::item_layer( $items, 0, $items['reversed'] ? 0 : null, false );
 				unset( $layer['values']['delay'], $layer['close']['closeDelay'] );
 				$patches[ $here ] = self::patch( array( 'item' => $layer ), self::helper_settings( $items ) );
 				continue;
@@ -258,7 +264,7 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 				continue;
 			}
 			$beside          += $has_menu ? 1 : 0;
-			$patches[ $here ] = self::patch( array( 'root' => Sgs_Motion_Legacy_Nav_Drawer::item_layer( $items, $has_menu ? $cap : 0, null, true ) ), null );
+			$patches[ $here ] = self::patch( array( 'root' => Sgs_Motion_Legacy_Nav_Drawer_Items::item_layer( $items, $has_menu ? $cap : 0, null, true ) ), null );
 		}
 		if ( $beside > 0 ) {
 			$reported[] = Sgs_Motion_Legacy_Nav_Drawer::row( 'itemStagger', $items['step'], 'changed: ' . $beside . ' block(s) beside the menu arrived with the last menu item, which depends on the live menu\'s length; each stores the maximum, ' . $cap . 'ms (exact once the menu reaches it)', true );
@@ -321,7 +327,7 @@ final class Sgs_Motion_Map_Nav_Drawer implements Sgs_Motion_Mapper_Interface, Sg
 				$close = $cap > 0 ? min( $close, $cap ) : $close;
 			}
 			$beside += $has_menu ? 1 : 0;
-			$layer   = Sgs_Motion_Legacy_Nav_Drawer::item_layer( $items, $has_menu ? $cap : $delays[ $index ], $close, $has_menu );
+			$layer   = Sgs_Motion_Legacy_Nav_Drawer_Items::item_layer( $items, $has_menu ? $cap : $delays[ $index ], $close, $has_menu );
 			// The helper mirrors the open delays for a reversed close; the old ladder counted from the end before its
 			// cap, so where the two differ the stored close delay is marked customised and a helper re-run keeps it.
 			if ( null !== $close && $close !== $mirror[ $index ] && ! in_array( 'close.closeDelay', $layer['customised'] ?? array(), true ) ) {
