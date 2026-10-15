@@ -844,7 +844,10 @@ dialog.sgs-shop-filters {
 		/* No top rounding at full height - a rounded corner against the very top
 		   of the viewport reads as a rendering fault, not a sheet. */
 		border-radius: 0;
-		padding: var(--wp--preset--spacing--40, 1.5rem) var(--wp--preset--spacing--40, 1.5rem) 0;
+		/* The sheet's side inset, as a property so the scroll region can bleed
+		   through it (below) and the plain variant can change it in one place. */
+		--sgs-sheet-pad-x: var(--wp--preset--spacing--40, 1.5rem);
+		padding: var(--wp--preset--spacing--40, 1.5rem) var(--sgs-sheet-pad-x) 0;
 	}
 
 	/* ── Sheet motion: enter AND exit (Tier V — CSS only, no JS, no library) ──
@@ -904,10 +907,16 @@ dialog.sgs-shop-filters {
 		}
 	}
 
+	/* The scroll region bleeds through the sheet's side inset and puts it back
+	   as its own padding, so its scrollbar sits on the sheet's right edge, where
+	   the page's scrollbar was (the page's is hidden while the sheet is open),
+	   instead of inset against the group chevrons. */
 	dialog.sgs-shop-filters:modal .sgs-shop-filters__scroll {
 		flex: 1 1 auto;
 		overflow-y: auto;
 		overscroll-behavior: contain;
+		margin-inline: calc(-1 * var(--sgs-sheet-pad-x));
+		padding-inline: var(--sgs-sheet-pad-x);
 		padding-bottom: var(--wp--preset--spacing--30, 1rem);
 	}
 
@@ -1056,8 +1065,13 @@ dialog.sgs-shop-filters {
 	}
 }
 
-/* Scroll lock — applied to body by JS when drawer is open */
-body.sgs-scroll-locked {
+/* Scroll lock: while any filter panel is open as a modal sheet, the page
+   behind it does not scroll and its scrollbar is hidden. Keyed on the dialog's
+   own `:modal` state, so it needs no script, no smooth-scroll library and no
+   per-site setup, and every filter panel the framework renders gets it. It
+   sits on the root because a body-level `overflow: hidden` is overridden by the
+   body's own `overflow: auto`. */
+:root:has( dialog.sgs-shop-filters:modal ) {
 	overflow: hidden;
 }
 
@@ -1911,6 +1925,17 @@ body.woocommerce-cart .with-empty-cart-icon,
 	padding: 0;
 }
 
+/* The filter block fills the panel at every width. WooCommerce ships
+ * `:where(.wc-block-product-filters) { display: inline-flex }` below 782px, a
+ * shrink-to-fit row, so the panel took the width of its longest label: a site
+ * with short labels got groups 164px wide in a 375px sheet while one with long
+ * labels happened to fill it. A column flex stretches every child to the full
+ * width whatever the content. */
+.sgs-shop-filters .wc-block-product-filters {
+	display: flex;
+	flex-direction: column;
+}
+
 .sgs-shop-filters .wc-block-product-filters__overlay,
 .sgs-shop-filters .wc-block-product-filters__overlay-dialog {
 	pointer-events: auto;
@@ -2698,7 +2723,8 @@ body.sgs-shop-drawer-caps .sgs-shop-filters__sheet-footer .sgs-shop-filters__cle
 /* The drawer's side margin matches the rows' own 20px inset. */
 body.sgs-shop-filters-plain #sgs-shop-filters:modal,
 body.sgs-shop-filters-plain .sgs-shop-filters:modal {
-	padding-inline: 20px;
+	--sgs-sheet-pad-x: 20px;
+	padding-inline: var(--sgs-sheet-pad-x);
 	padding-top: 0;
 }
 
@@ -2754,11 +2780,9 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 }
 
 /* ── The panel's scrollbar ──
- * Brand-derived like the rest of the panel: mixed from the client's own primary,
- * so a navy palette gets a navy thumb without a line of per-client CSS. Styled
- * rather than hidden — this is a scroll region a shopper needs to know is
- * scrollable, unlike the carousels elsewhere in the framework, which hide theirs
- * precisely because they have their own arrows and snap points. */
+ * The browser's own scrollbar, the same as the page's, so the sheet's bar reads
+ * as the page scrollbar it replaces while the sheet is open (8d), not a second,
+ * fainter control. */
 .sgs-shop-filters__scroll {
 	/* A 2px horizontal overflow (scrollWidth 342 vs clientWidth 340, measured
 	   live) was enough to paint a full-width horizontal scrollbar across the
@@ -2767,29 +2791,6 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 	   "fix" upstream. A filter panel never scrolls sideways by design, so the
 	   axis is simply turned off. */
 	overflow-x: hidden;
-	scrollbar-width: thin;
-	scrollbar-color: var(--sgs-filter-line, var(--wp--preset--color--border)) transparent;
-}
-
-.sgs-shop-filters__scroll::-webkit-scrollbar {
-	width: 8px;
-}
-
-.sgs-shop-filters__scroll::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.sgs-shop-filters__scroll::-webkit-scrollbar-thumb {
-	background: var(--sgs-filter-line, var(--wp--preset--color--border));
-	border-radius: var(--wp--custom--border-radius--pill, 9999px);
-	/* Inset the thumb from the track edge without a second element. */
-	border: 2px solid transparent;
-	background-clip: padding-box;
-}
-
-.sgs-shop-filters__scroll::-webkit-scrollbar-thumb:hover {
-	background: var(--wp--preset--color--primary, currentColor);
-	background-clip: padding-box;
 }
 
 /* ── 8h. Two things WooCommerce paints that the panel must own ──

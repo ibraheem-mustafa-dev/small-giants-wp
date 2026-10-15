@@ -331,38 +331,19 @@
 			heading.setAttribute( 'tabindex', '-1' );
 			heading.setAttribute( 'autofocus', '' );
 
-			/* Lenis (the smooth-scroll layer, exposed as window.lenis) is stopped
-			   for the duration of the modal. This is the REAL background-scroll
-			   lock: the `sgs-scroll-locked` body class alone does not lock
-			   anything - body still computes `overflow: auto` (measured live). */
-			lenisStop();
+			/* The page behind the sheet is locked by CSS keyed on this dialog's
+			   `:modal` state (woocommerce.css, "Scroll lock"), so opening it is
+			   all the lock needs. */
 			dialog.showModal();
 
 			toggle.setAttribute( 'aria-expanded', 'true' );
 			stickyTrigger.hidden = true;
-			document.body.classList.add( 'sgs-scroll-locked' );
 
 			/* Belt-and-braces only: `autofocus` above already lands focus on the
 			   heading (verified), but a browser that ignores autofocus inside a
 			   dialog would otherwise leave focus on the scroll container. */
 			if ( heading && document.activeElement !== heading ) {
 				heading.focus( { preventScroll: true } );
-			}
-		}
-
-		/* Restores the page's scroll position if something moved it. Called after
-		   showModal() and again after the focus lands, because the browser can
-		   scroll at either point. Written as an absolute restore rather than a
-		   delta so a second call is harmless. */
-		function lenisStop() {
-			if ( window.lenis && 'function' === typeof window.lenis.stop ) {
-				window.lenis.stop();
-			}
-		}
-
-		function lenisStart() {
-			if ( window.lenis && 'function' === typeof window.lenis.start ) {
-				window.lenis.start();
 			}
 		}
 
@@ -375,13 +356,11 @@
 
 		function finishClose() {
 			modalOpen = false;
-			lenisStart();
 			if ( heading ) {
 				heading.removeAttribute( 'tabindex' );
 				heading.removeAttribute( 'autofocus' );
 			}
 			toggle.setAttribute( 'aria-expanded', 'false' );
-			document.body.classList.remove( 'sgs-scroll-locked' );
 			toggle.focus( { preventScroll: true } );
 			onScroll(); // Re-evaluate whether the sticky trigger should show again.
 		}
@@ -436,7 +415,6 @@
 					}
 				}
 				stickyTrigger.hidden = true;
-				document.body.classList.remove( 'sgs-scroll-locked' );
 			} else if ( dialog.open && ! modalOpen ) {
 				// Was the desktop static sidebar; mobile default is CLOSED.
 				dialog.close();
