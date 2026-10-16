@@ -22,10 +22,35 @@ let layout;
 let resizeObservers;
 let originalRect;
 
-class FakeObserver {
-	observe() {}
+let intersections;
 
-	unobserve() {}
+class FakeObserver {
+	constructor( callback ) {
+		this.callback = callback;
+		this.watched = new Set();
+		intersections.push( this );
+	}
+
+	observe( el ) {
+		this.watched.add( el );
+	}
+
+	unobserve( el ) {
+		this.watched.delete( el );
+	}
+}
+
+/**
+ * Report an element in or out of view to every observer watching it.
+ * @param el
+ * @param isIntersecting
+ */
+function report( el, isIntersecting ) {
+	intersections.forEach( ( io ) => {
+		if ( io.watched.has( el ) ) {
+			io.callback( [ { target: el, isIntersecting } ] );
+		}
+	} );
 }
 
 class FakeResize {
@@ -131,6 +156,7 @@ function pointer( target, type, pointerType = 'mouse' ) {
 
 beforeEach( () => {
 	animations = [];
+	intersections = [];
 	queries = {};
 	reduced = false;
 	matching = {};
@@ -398,6 +424,26 @@ describe( 'marquee hover rate', () => {
 			expect( a.updatePlaybackRate ).not.toHaveBeenCalled();
 			expect( a.playState ).toBe( 'running' );
 		} );
+	} );
+} );
+
+describe( 'marquee visibility', () => {
+	test( 'every copy is watched through the block root, so the copies pause and run together', async () => {
+		const { root } = mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
+		await boot();
+		const watched = new Set( intersections.flatMap( ( io ) => [ ...io.watched ] ) );
+		expect( [ ...watched ] ).toEqual( [ root ] );
+		report( root, false );
+		expect( live().every( ( a ) => a.playState === 'paused' ) ).toBe( true );
+		report( root, true );
+		expect( live().every( ( a ) => a.playState === 'running' ) ).toBe( true );
+	} );
+
+	test( 'NEGATIVE CONTROL: a clone reported out of view on its own pauses nothing, since no copy watches itself', async () => {
+		const { root } = mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
+		await boot();
+		report( root.querySelector( '[data-sgs-marquee-clone]' ), false );
+		expect( live().every( ( a ) => a.playState === 'running' ) ).toBe( true );
 	} );
 } );
 

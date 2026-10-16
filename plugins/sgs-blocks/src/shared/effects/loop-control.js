@@ -35,6 +35,9 @@
  *                   rate) and leaving (with 1). Default: hover does nothing.
  *   onRateChange    called with the playback rate the loop should run at.
  *   pauseOnTouch    a touch tap on the block root pauses the loop, and the next tap resumes it. Default false.
+ *   observe         the element whose visibility decides the off-screen pause. Default the loop element itself. A
+ *                   marquee passes its block root: each copy slides past the root's clipped edge in turn, and a copy
+ *                   observed on its own would pause there while the others ran, so the copies fell out of step.
  *
  * `animateLoop( el, { keyframes, read } )` is `registerLoop` plus the animation itself, run through the Web
  * Animations API so a loop never competes with the entrance rules in the CSS cascade (a CSS `animation-name` list
@@ -57,7 +60,7 @@ const BREAKPOINTS = [ '(max-width: 1023px)', '(max-width: 767px)' ];
 
 /** The root's shared state, kept for the life of the page so a root registered again reuses its listeners. */
 const groups = new WeakMap();
-/** Every live loop by element, for the shared IntersectionObserver. */
+/** Every live loop by the element its visibility is read from, for the shared IntersectionObserver. */
 const loops = new Map();
 
 let observer = null;
@@ -107,11 +110,10 @@ function sharedObserver() {
 	if ( ! observer && typeof window.IntersectionObserver === 'function' ) {
 		observer = new window.IntersectionObserver( ( entries ) => {
 			entries.forEach( ( entry ) => {
-				const loop = loops.get( entry.target );
-				if ( loop ) {
+				( loops.get( entry.target ) || [] ).forEach( ( loop ) => {
 					loop.visible = entry.isIntersecting;
 					loop.apply();
-				}
+				} );
 			} );
 		} );
 	}
@@ -191,7 +193,15 @@ export function registerLoop( el, options = {} ) {
 		},
 	};
 	group.loops.add( loop );
-	loops.set( el, loop );
+	const watched =
+		options.observe && options.observe.nodeType === 1
+			? options.observe
+			: el;
+	if ( ! loops.has( watched ) ) {
+		loops.set( watched, new Set() );
+	}
+	loops.get( watched ).add( loop );
+	let destroyed = false;
 
 	// Hover and touch are read on the block root, like the focus pause. Entries are (event, handler) pairs so
 	// `destroy()` removes exactly what was added.
@@ -235,7 +245,7 @@ export function registerLoop( el, options = {} ) {
 
 	const io = sharedObserver();
 	if ( io ) {
-		io.observe( el );
+		io.observe( watched );
 	}
 	loop.apply();
 
@@ -254,13 +264,18 @@ export function registerLoop( el, options = {} ) {
 		},
 		isPaused: () => el.hasAttribute( PAUSED_ATTR ),
 		destroy() {
-			if ( ! loops.has( el ) ) {
+			if ( destroyed ) {
 				return;
 			}
-			if ( observer ) {
-				observer.unobserve( el );
+			destroyed = true;
+			const sharing = loops.get( watched );
+			sharing.delete( loop );
+			if ( 0 === sharing.size ) {
+				loops.delete( watched );
+				if ( observer ) {
+					observer.unobserve( watched );
+				}
 			}
-			loops.delete( el );
 			group.loops.delete( loop );
 			listeners.forEach( ( [ type, handler ] ) =>
 				root.removeEventListener( type, handler )
@@ -288,6 +303,7 @@ export function registerLoop( el, options = {} ) {
  * @param {string}      [config.label]        As `registerLoop`.
  * @param {number}      [config.hoverRate]    As `registerLoop`; applied to the animation's playback rate.
  * @param {boolean}     [config.pauseOnTouch] As `registerLoop`.
+ * @param {HTMLElement} [config.observe]      As `registerLoop`.
  * @return {{pause: Function, play: Function, isPaused: Function, destroy: Function}} Controller.
  */
 export function animateLoop( el, config ) {
@@ -326,6 +342,7 @@ export function animateLoop( el, config ) {
 	};
 
 	loop = registerLoop( el, {
+		observe: config.observe,
 		pauseControl: config.pauseControl,
 		label: config.label,
 		hoverRate: config.hoverRate,

@@ -241,6 +241,8 @@ export function createMarquee( root ) {
 						{ [ prop ]: `-${ state.distance }px` },
 					];
 				},
+				// Every copy takes its visibility from the block root, so the copies pause and run together.
+				observe: root,
 				...loopOptions,
 			} )
 		);
