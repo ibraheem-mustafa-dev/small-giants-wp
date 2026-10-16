@@ -11,6 +11,7 @@
  *   --sgs-me-close-to-<x>              the close to-values (renderer, per device; each falls back to the from-value)
  *   --sgs-me-close-dur, --sgs-me-close-delay, --sgs-me-close-ease
  *                                      the close timing (renderer, per device; the close delay is per item)
+ *   --sgs-me-loop-close-delay          a loop item's close delay, inheriting, for the entrances inside the item
  *   --sgs-mt-on                        1 while a named state is on, set by the renderer's per-instance rule
  *                                      `<target>:is([data-sgs-motion-state~="<name>"], [data-sgs-motion-state~="<name>"] *)`
  *   data-sgs-dir="forward|back"        the direction of a step change, set by the owning block's script on the state
@@ -24,6 +25,40 @@
  * open drawer does not play. Under reduced motion nothing plays and every delay is zero: each state shows its final
  * values at once.
  */
+
+/* ── Per-element inputs (Spec 38A §10): the close values and timing, the named-state flag and the held values belong to
+   the element that carries them and never inherit, the same rule as motion.css's entrance inputs; the universal syntax
+   with no initial value keeps each var() fallback below. A loop item's close delay reaches the entrances inside the item
+   through the inheriting carrier --sgs-me-loop-close-delay. ── */
+@property --sgs-me-close-to-tx { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-ty { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-rot { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-rx { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-ry { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-s { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-sx { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-sy { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-op { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-blur { syntax: '*'; inherits: false; }
+@property --sgs-me-close-to-clip { syntax: '*'; inherits: false; }
+@property --sgs-me-close-dur { syntax: '*'; inherits: false; }
+@property --sgs-me-close-delay { syntax: '*'; inherits: false; }
+@property --sgs-me-close-ease { syntax: '*'; inherits: false; }
+@property --sgs-mt-on { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-tx { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-ty { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-rot { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-rx { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-ry { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-s { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-sx { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-sy { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-op { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-blur { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-clip-t { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-clip-r { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-clip-b { syntax: '*'; inherits: false; }
+@property --sgs-mt-op-clip-l { syntax: '*'; inherits: false; }
 
 /* ── Keyframes: close, from the open to-values to the close to-values (each falling back to the from-value). Every
    keyframe declares its channel with the full §10 composite formula, as the entrance keyframes in motion.css do. ── */
@@ -166,7 +201,7 @@
 		animation-name: var(--sgs-mt-out, none);
 		animation-duration: var(--sgs-me-close-dur, var(--sgs-me-dur, var(--wp--custom--duration--slow, 450ms)));
 		animation-timing-function: var(--sgs-me-close-ease, var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out)));
-		animation-delay: var(--sgs-me-close-delay, 0ms);
+		animation-delay: var(--sgs-me-close-delay, var(--sgs-me-loop-close-delay, 0ms));
 	}
 }
 

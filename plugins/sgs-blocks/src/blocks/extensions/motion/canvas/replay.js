@@ -17,6 +17,7 @@
 import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { ENTRANCE_ATTRS, planElements } from './canvas-dom';
+import { ITEM_ATTR } from './loop-delays';
 
 /** The one-line notice Replay shows under reduced motion (§11). */
 export const REPLAY_REDUCED_NOTICE = __(
@@ -62,6 +63,22 @@ function playOn( el, attrs ) {
 	} );
 }
 
+// While Replay plays, give each of a block's printed items its index (`data-sgs-loop-i`, in document order, as the
+// server tags them), so the stagger's per-item delay rules (`loop-delays.js`) apply; an item that already carries one
+// (a server-rendered preview) keeps it. Returns the items it indexed, so the index comes off again when Replay ends.
+function indexLoopItems( rootEl, loopItems ) {
+	if ( ! loopItems ) {
+		return [];
+	}
+	return planElements( rootEl, loopItems ).filter( ( el, i ) => {
+		if ( el.hasAttribute( ITEM_ATTR ) ) {
+			return false;
+		}
+		el.setAttribute( ITEM_ATTR, String( i ) );
+		return true;
+	} );
+}
+
 // A plan Replay plays for a target: the target's own entrance, or the entrance its children inherited from it (the
 // stagger's "Apply entrance to children", `stagger-apply.js`), which plays on the items.
 function playsFrom( plan, target ) {
@@ -91,10 +108,11 @@ export function replay( clientId, target = 'root' ) {
 		return Promise.resolve( { played: false, reduced: true } );
 	}
 	const pairs = plans.flatMap( ( plan ) => planElements( rootEl, plan ).map( ( el ) => [ el, plan.attrs ] ) );
-	return Promise.all( pairs.map( ( [ el, attrs ] ) => playOn( el, attrs ) ) ).then( () => ( {
-		played: pairs.length > 0,
-		reduced: false,
-	} ) );
+	const indexed = indexLoopItems( rootEl, entry.emitted.loopItems );
+	return Promise.all( pairs.map( ( [ el, attrs ] ) => playOn( el, attrs ) ) ).then( () => {
+		indexed.forEach( ( el ) => el.removeAttribute( ITEM_ATTR ) );
+		return { played: pairs.length > 0, reduced: false };
+	} );
 }
 
 /**

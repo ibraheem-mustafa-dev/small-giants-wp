@@ -32,6 +32,8 @@ import { ringDelegate, shadowValues } from './emit-ring';
 import { activeDelegation } from '../delegate-parts';
 import { childOf } from '../hover/use-ring-refused';
 import { registry } from './replay';
+import { TIERS } from './motion-schema';
+import { columnsAt } from '../entrance/entrance-facts';
 
 export { replay, canReplay, REPLAY_REDUCED_NOTICE } from './replay';
 
@@ -63,6 +65,8 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 	);
 	const delegation = JSON.stringify( activeDelegation( getBlockType( name )?.supports?.sgs, attributes ) );
 	const delegate = JSON.stringify( ringDelegate( JSON.parse( delegation ), childOf ) );
+	// The grid columns per tier, which decide the stagger's per-item delays of a block that prints its items itself.
+	const loopColumns = JSON.stringify( Object.fromEntries( TIERS.map( ( tier ) => [ tier, columnsAt( name, attributes, tier ) ] ) ) );
 	const options = useMemo( () => {
 		const sgs = getBlockType( name )?.supports?.sgs || {};
 		return {
@@ -76,8 +80,9 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			motionItems: sgs.motionItems,
 			delegation: JSON.parse( delegation ),
 			hasInnerBlocks,
+			loopColumns: JSON.parse( loopColumns ),
 		};
-	}, [ name, clientId, shadows, delegate, delegation, hasInnerBlocks ] );
+	}, [ name, clientId, shadows, delegate, delegation, hasInnerBlocks, loopColumns ] );
 
 	useEffect( () => {
 		if ( preview || ( ! motion && ! linked ) ) {

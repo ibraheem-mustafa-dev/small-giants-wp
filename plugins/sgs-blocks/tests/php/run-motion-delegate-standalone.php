@@ -214,7 +214,7 @@ namespace {
 		// 2. Stagger delays per card.
 		$check( 3 === $count_attr( $html, 'data-sgs-loop-i=' ), "$mode: every delegated card carries its loop index" );
 		foreach ( array( 0 => 0, 1 => 80, 2 => 160 ) as $i => $ms ) {
-			$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="' . $i . '"\]\{--sgs-me-delay:' . $ms . 'ms;\}/', $all ), "$mode: card $i has its own delay rule ($ms ms)" );
+			$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="' . $i . '"\]\{--sgs-me-delay:' . $ms . 'ms;--sgs-me-loop-delay:' . $ms . 'ms;\}/', $all ), "$mode: card $i has its own delay rule ($ms ms)" );
 		}
 		$check( 0 === preg_match( '/\sstyle\s*=/i', $html ), "$mode: no style attribute" );
 	}
@@ -226,7 +226,7 @@ namespace {
 	$root  = $GLOBALS['sgs_test_card_attrs'][0]['sgsMotion']['elements']['root']['entrance']['base'] ?? null;
 	$check( 2 === $cards_with( $html, 'data-sgs-me="scroll translate opacity"' ), 'apply on: every delegated card root carries the grid entrance' );
 	$check( is_array( $root ) && ! isset( $root['values']['delay'] ) && 400 === ( $root['values']['duration'] ?? null ), 'apply on: the inherited layer is the grid entrance with its delay removed' );
-	$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="1"\]\{--sgs-me-delay:80ms;\}/', $all ), 'apply on: the stagger delay still reaches each card' );
+	$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="1"\]\{--sgs-me-delay:80ms;--sgs-me-loop-delay:80ms;\}/', $all ), 'apply on: the stagger delay still reaches each card' );
 
 	// 3b. Editor preview: the delegated cards share one scope (their motion is identical), so its style tag is printed
 	// once, never once per card with the same id; each card's delay still comes from its own loop rule.
@@ -239,7 +239,7 @@ namespace {
 	$check( 1 === count( array_unique( $ids[1] ) ), 'editor: the delegated cards share one scope (identical motion): ' . json_encode( array_unique( $ids[1] ) ) );
 	$check( 3 === preg_match_all( '/<div [^>]*class="[^"]*wp-block-sgs-product-card[^"]*sgs-m-[0-9a-f]{10}/', $html ), 'editor: every card carries the shared scope class' );
 	foreach ( array( 0 => 0, 1 => 80, 2 => 160 ) as $i => $ms ) {
-		$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="' . $i . '"\]\{--sgs-me-delay:' . $ms . 'ms;\}/', $html ), "editor: card $i keeps its own stagger delay ($ms ms), never another card's" );
+		$check( 1 === preg_match( '/\.sgs-cg-test1234 \.wp-block-sgs-product-card\[data-sgs-loop-i="' . $i . '"\]\{--sgs-me-delay:' . $ms . 'ms;--sgs-me-loop-delay:' . $ms . 'ms;\}/', $html ), "editor: card $i keeps its own stagger delay ($ms ms), never another card's" );
 	}
 	$GLOBALS['sgs_test_is_admin'] = false;
 
@@ -323,7 +323,7 @@ namespace {
 	Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', 'sgs-cg-d1', $bare, 3, '.sgs-card-grid__item' );
 	$bare_css = $css();
 	foreach ( array( 0 => 0, 1 => 80, 2 => 160 ) as $i => $ms ) {
-		$check( false !== strpos( $bare_css, '.sgs-cg-d1 .sgs-card-grid__item[data-sgs-loop-i="' . $i . '"]{--sgs-me-delay:' . $ms . 'ms;}' ), "defaults: {apply:true} alone gives item $i {$ms}ms" );
+		$check( false !== strpos( $bare_css, '.sgs-cg-d1 .sgs-card-grid__item[data-sgs-loop-i="' . $i . '"]{--sgs-me-delay:' . $ms . 'ms;--sgs-me-loop-delay:' . $ms . 'ms;}' ), "defaults: {apply:true} alone gives item $i {$ms}ms" );
 	}
 	$reset();
 	Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', 'sgs-cg-d2', array( 'columns' => 1, 'sgsMotion' => array( 'stagger' => array( 'step' => 0 ) ) ), 3, '.sgs-card-grid__item' );

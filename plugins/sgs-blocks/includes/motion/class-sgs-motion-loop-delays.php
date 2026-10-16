@@ -21,9 +21,12 @@
  *   then the `sgs_motion_loop_stagger` filter. Columns come from the template's own grid `layout.columnCount`, or the
  *   enclosing product collection's `displayLayout.columns`, the same count at every device.
  *
- * The delay is the item's `--sgs-me-delay`; the item's entrance (the card's `data-sgs-me`) reads it. When the block's
+ * The delay is the item's `--sgs-me-delay`, which the item's own entrance (the card's `data-sgs-me`) reads; it never
+ * inherits (`assets/css/motion.css`), so each rule also writes the inheriting carrier `--sgs-me-loop-delay`, which an
+ * entrance inside the item with no delay of its own reads instead (a post template's `<li>` holds no entrance; the
+ * blocks inside it do). When the block's
  * own entrance (on its root or a part) has the `open` trigger, each item's rule also carries its close delay,
- * `--sgs-me-close-delay` (read by `assets/css/motion-triggers.css`), from `Sgs_Motion_Stagger::compute_close_delays` in
+ * `--sgs-me-close-delay` and its carrier `--sgs-me-loop-close-delay` (read by `assets/css/motion-triggers.css`), from `Sgs_Motion_Stagger::compute_close_delays` in
  * the stored `closeOrder` (`same` when absent). The core and WooCommerce templates hold no `sgsMotion` of their own, so
  * an `open` entrance never reaches their items and they write open delays only. The index is the
  * item's position among the items the server rendered in this response, so it restarts at the offset on every page.
@@ -377,9 +380,13 @@ final class Sgs_Motion_Loop_Delays {
 	 */
 	private static function rules( string $prefix, array $delays, bool $compound = false, ?array $close = null ): string {
 		$css   = '';
-		$props = array( '--sgs-me-delay' => $delays );
+		$props = array(
+			'--sgs-me-delay'      => $delays,
+			'--sgs-me-loop-delay' => $delays,
+		);
 		if ( null !== $close ) {
-			$props['--sgs-me-close-delay'] = $close;
+			$props['--sgs-me-close-delay']      = $close;
+			$props['--sgs-me-loop-close-delay'] = $close;
 		}
 		foreach ( array_keys( $delays['desktop'] ) as $i ) {
 			$decls = array_fill_keys( Sgs_Motion_Emitter::TIERS, array() );

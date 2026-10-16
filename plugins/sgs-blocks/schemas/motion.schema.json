@@ -1424,7 +1424,7 @@
 			"inputs": [
 				{
 					"name": "--sgs-me-clip",
-					"description": "The uniform clip amount a clip field names (clipEdge all). Plain and unregistered: the stylesheet gives it to all four edge owners through their from, to and close holders; a clipEdge other than all writes the four edge holders instead (Sgs_Motion_Clip_Edge)."
+					"description": "The uniform clip amount a clip field names (clipEdge all). Never an owner of its own: the stylesheet gives it to all four edge owners through its from, to and close holders (--sgs-me-from-clip, --sgs-me-to-clip, --sgs-me-close-to-clip, registered non-inheriting like every per-element input, so a nested element never takes an ancestor's clip); a clipEdge other than all writes the four edge holders instead (Sgs_Motion_Clip_Edge)."
 				}
 			]
 		},

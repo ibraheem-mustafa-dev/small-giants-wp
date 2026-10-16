@@ -6,7 +6,7 @@
  *
  *   data-sgs-mh="self|root|group|item"    the target holds a hover state; the value is its source (§6.2)
  *   --sgs-mh-to-<tx|ty|rot|rx|ry|s|op|blur|gray|bright|indent|ring|ring-c|accent|accent-c>
- *                                     the hover state's to-values (plain, unregistered; per device). Each rotate
+ *                                     the hover state's to-values (per device; registered non-inheriting). Each rotate
  *                                     to-value (Z, X, Y) is the hover angle minus its rest angle, and the grayscale
  *                                     to-value the hover amount minus the rest grayscale (§10)
  *   --sgs-pad-start-rest              the resting inline-start padding an indent hover adds to (default 0px)
@@ -24,7 +24,9 @@
  *   --sgs-me-from-<x>, --sgs-me-to-<x>, --sgs-me-dur, --sgs-me-delay, --sgs-me-ease
  *                                     the entrance's values and timing (to-values default to the identity); the clip
  *                                     reveal's holders are per edge (--sgs-me-from-clip-<t|r|b|l>) over the uniform
- *                                     --sgs-me-from-clip
+ *                                     --sgs-me-from-clip. Registered non-inheriting, so each element reads only its own
+ *   --sgs-me-loop-delay               a loop item's stagger delay (Sgs_Motion_Loop_Delays), inheriting, so it reaches
+ *                                     the entrances inside the item; an entrance's own --sgs-me-delay wins over it
  *   data-sgs-in                       set by the reveal module (scroll) or the owning block (open, state)
  *   .sgs-motion-ready                 added by the reveal module; the only gate on a hidden start state
  *   span.sgs-motion-layer             an injected paint layer (aria-hidden), at most two per element
@@ -98,6 +100,63 @@
 @property --sgs-ring-x { syntax: '<length>'; inherits: true; initial-value: 0px; }
 @property --sgs-ring-y { syntax: '<length>'; inherits: true; initial-value: 0px; }
 @property --sgs-ring-s { syntax: '<number>'; inherits: true; initial-value: 0; }
+
+/* ── Per-element inputs (§10): the renderer writes each element's entrance from, to and timing values, its reveal start
+   line, its hover to-values and its resting indent on that element's own scoped selector. They never inherit, so a
+   nested element never takes an ancestor's value for an input it does not set (an X-only item entrance inside a grid
+   entrance would otherwise drift by the grid's Y distance). The universal syntax with no initial value keeps an unset
+   input guaranteed-invalid, so each var() below still falls back to the stylesheet's own default. A loop item's stagger
+   delay reaches the entrances inside the item through the inheriting carrier --sgs-me-loop-delay instead. ── */
+@property --sgs-me-from-tx { syntax: '*'; inherits: false; }
+@property --sgs-me-from-ty { syntax: '*'; inherits: false; }
+@property --sgs-me-from-rot { syntax: '*'; inherits: false; }
+@property --sgs-me-from-rx { syntax: '*'; inherits: false; }
+@property --sgs-me-from-ry { syntax: '*'; inherits: false; }
+@property --sgs-me-from-s { syntax: '*'; inherits: false; }
+@property --sgs-me-from-sx { syntax: '*'; inherits: false; }
+@property --sgs-me-from-sy { syntax: '*'; inherits: false; }
+@property --sgs-me-from-op { syntax: '*'; inherits: false; }
+@property --sgs-me-from-blur { syntax: '*'; inherits: false; }
+@property --sgs-me-from-clip { syntax: '*'; inherits: false; }
+@property --sgs-me-from-clip-t { syntax: '*'; inherits: false; }
+@property --sgs-me-from-clip-r { syntax: '*'; inherits: false; }
+@property --sgs-me-from-clip-b { syntax: '*'; inherits: false; }
+@property --sgs-me-from-clip-l { syntax: '*'; inherits: false; }
+@property --sgs-me-to-tx { syntax: '*'; inherits: false; }
+@property --sgs-me-to-ty { syntax: '*'; inherits: false; }
+@property --sgs-me-to-rot { syntax: '*'; inherits: false; }
+@property --sgs-me-to-rx { syntax: '*'; inherits: false; }
+@property --sgs-me-to-ry { syntax: '*'; inherits: false; }
+@property --sgs-me-to-s { syntax: '*'; inherits: false; }
+@property --sgs-me-to-sx { syntax: '*'; inherits: false; }
+@property --sgs-me-to-sy { syntax: '*'; inherits: false; }
+@property --sgs-me-to-op { syntax: '*'; inherits: false; }
+@property --sgs-me-to-blur { syntax: '*'; inherits: false; }
+@property --sgs-me-to-clip { syntax: '*'; inherits: false; }
+@property --sgs-me-to-clip-t { syntax: '*'; inherits: false; }
+@property --sgs-me-to-clip-r { syntax: '*'; inherits: false; }
+@property --sgs-me-to-clip-b { syntax: '*'; inherits: false; }
+@property --sgs-me-to-clip-l { syntax: '*'; inherits: false; }
+@property --sgs-me-dur { syntax: '*'; inherits: false; }
+@property --sgs-me-delay { syntax: '*'; inherits: false; }
+@property --sgs-me-ease { syntax: '*'; inherits: false; }
+@property --sgs-me-start { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-tx { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-ty { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-rot { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-rx { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-ry { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-s { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-op { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-blur { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-gray { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-bright { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-indent { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-ring { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-ring-c { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-accent { syntax: '*'; inherits: false; }
+@property --sgs-mh-to-accent-c { syntax: '*'; inherits: false; }
+@property --sgs-pad-start-rest { syntax: '*'; inherits: false; }
 
 /* ── Persistent channels (§10): declared only where a non-entrance owner writes that channel, so an element
    with nothing but an entrance never holds a transform, a filter or a containing block. ── */
@@ -277,7 +336,7 @@
 		--sgs-me-a-clip-path: none;
 		animation-duration: var(--sgs-me-dur, var(--wp--custom--entrance--duration, 750ms));
 		animation-timing-function: var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out));
-		animation-delay: var(--sgs-me-delay, 0ms);
+		animation-delay: var(--sgs-me-delay, var(--sgs-me-loop-delay, 0ms));
 		animation-fill-mode: backwards;
 	}
 	/* A disclosure panel's entrance defaults to the panel open-and-close duration (§7). */

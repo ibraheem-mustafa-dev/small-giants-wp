@@ -15,6 +15,9 @@
 
 import { emitScopedCss } from './emit-scoped-css';
 import { sharedLosers } from './shared-element';
+import { loopDelayCss } from './loop-delays';
+import { resolveTarget } from './resolve-target';
+import { declaredItemPart } from './stagger-apply';
 
 /** Attributes the canvas writes only while Replay plays. */
 export const ENTRANCE_ATTRS = Object.freeze( [
@@ -179,10 +182,51 @@ export function planElements( rootEl, plan ) {
  *
  * @param {Element|null} rootEl  Block element, or null before it mounts.
  * @param {Object}       motion  Stored motion attribute.
+ * @param {Object}       options `emitScopedCss()` options, plus `loopColumns` (the block's grid columns per tier).
+ * @return {Object} `emitScopedCss()` output plus `losers`, and the stagger's per-item delay rules with `loopItems` when
+ *                  the block prints its items itself (`withLoopDelays`).
+ */
+export function planCanvas( rootEl, motion, options ) {
+	return withLoopDelays( rootEl, motion, options, planTargets( rootEl, motion, options ) );
+}
+
+/**
+ * The stagger's per-item delay rules for a block that prints its items itself (`loop-delays.js`, the twin of
+ * `Sgs_Motion_Loop_Delays::item_array`), added to the emission with `loopItems`, the item plan Replay gives each item its
+ * index on. A block holding inner blocks (each child stores its own delay) or delegating its items gets none.
+ *
+ * @param {Element|null} rootEl  Block element.
+ * @param {Object}       motion  Stored motion attribute.
+ * @param {Object}       options `emitScopedCss()` options plus `loopColumns` (the grid columns per tier).
+ * @param {Object}       out     The emission.
+ * @return {Object} The emission, with the rules and `loopItems` when the block staggers its items.
+ */
+function withLoopDelays( rootEl, motion, options, out ) {
+	const part = declaredItemPart( options.elements, options.motionItems );
+	if ( ! rootEl || ! part || options.hasInnerBlocks || options.delegation ) {
+		return out;
+	}
+	const items = resolveTarget( options.blockName, options.elements, options.root, part, {} );
+	if ( ! items ) {
+		return out;
+	}
+	const css = loopDelayCss( motion, {
+		itemSelector: items.selector,
+		count: planElements( rootEl, items ).length,
+		columnsByTier: options.loopColumns || {},
+	} );
+	return css === '' ? out : { ...out, css: out.css + css, loopItems: items };
+}
+
+/**
+ * The targets' emission, re-emitted without the shared-element losers' hover state and entrance (`planCanvas`).
+ *
+ * @param {Element|null} rootEl  Block element.
+ * @param {Object}       motion  Stored motion attribute.
  * @param {Object}       options `emitScopedCss()` options.
  * @return {Object} `emitScopedCss()` output plus `losers`.
  */
-export function planCanvas( rootEl, motion, options ) {
+function planTargets( rootEl, motion, options ) {
 	let first = emitScopedCss( motion, options );
 	const inherited = first.plans.find( ( plan ) => plan.inheritedFrom );
 	if ( rootEl && inherited && planElements( rootEl, inherited ).length === 0 ) {

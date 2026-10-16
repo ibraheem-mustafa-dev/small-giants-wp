@@ -54,6 +54,17 @@ describe( 'motion-keyframes', () => {
 		expect( options ).toEqual( { duration: 900, delay: 120, easing: 'ease-in', fill: 'backwards' } );
 	} );
 
+	it( "takes a loop item's stagger delay (--sgs-me-loop-delay) when the entrance has no delay of its own", () => {
+		document.head.innerHTML =
+			'<style>[data-sgs-me] { --sgs-me-dur: 0.9s; --sgs-me-loop-delay: 160ms; } .own { --sgs-me-delay: 40ms; }</style>';
+		const { play } = load();
+		play( target( {} ) );
+		const own = target( {} );
+		own.className = 'own';
+		play( own );
+		expect( animate.mock.calls.map( ( call ) => call[ 1 ].delay ) ).toEqual( [ 160, 40 ] );
+	} );
+
 	it( 'declares each touched channel with its composite formula in every frame', () => {
 		const { play, CHANNEL_FORMULA } = load();
 		play( target( {} ) );

@@ -4,7 +4,8 @@
  * The renderer (includes/motion/class-sgs-motion-emitter.php) marks an entrance target with
  * `data-sgs-me="<trigger> <channels>"` and, when the entrance stores more than two keyframes,
  * `data-sgs-me-keyframes`: a JSON array of frames, each `{ offset?: 0-1, "--sgs-me-<x>": "<css value>", … }`.
- * Duration, delay and easing sit in the scoped rule as `--sgs-me-dur`, `--sgs-me-delay` and `--sgs-me-ease`.
+ * Duration, delay and easing sit in the scoped rule as `--sgs-me-dur`, `--sgs-me-delay` and `--sgs-me-ease`; an
+ * entrance with no delay of its own takes its loop item's stagger delay (`--sgs-me-loop-delay`), as motion.css does.
  *
  * Each frame animates the entrance's registered `--sgs-me-*` custom properties and also declares every channel
  * those properties feed with that channel's full composite formula (the same formulas as the `@keyframes
@@ -158,6 +159,10 @@
 			duration = timeMs( read( '--wp--custom--entrance--duration' ) );
 		}
 		var delay = timeMs( read( '--sgs-me-delay' ) );
+		if ( null === delay ) {
+			// A loop item's stagger delay, the inheriting carrier the stylesheet reads as the delay's fallback.
+			delay = timeMs( read( '--sgs-me-loop-delay' ) );
+		}
 		return {
 			duration: null === duration ? DEFAULT_DURATION_MS : Math.max( 0, duration ),
 			delay: null === delay ? 0 : delay,
