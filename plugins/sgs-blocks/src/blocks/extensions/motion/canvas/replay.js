@@ -36,19 +36,21 @@ function prefersReduced( el ) {
 	return Boolean( win.matchMedia && win.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
 }
 
+// Play one element's entrance: write the plan's entrance attributes, set `data-sgs-in`, and when the play ends take off
+// `data-sgs-in` and the attributes it wrote. An entrance the server already printed on the element (a delegating
+// block's children in its preview) plays from those attributes, which stay.
 function playOn( el, attrs ) {
 	const win = el.ownerDocument.defaultView || window;
-	ENTRANCE_ATTRS.forEach( ( name ) => {
-		if ( attrs[ name ] !== undefined ) {
-			el.setAttribute( name, attrs[ name ] );
-		}
-	} );
+	const written = ENTRANCE_ATTRS.filter(
+		( name ) => attrs[ name ] !== undefined
+	);
+	written.forEach( ( name ) => el.setAttribute( name, attrs[ name ] ) );
 	el.removeAttribute( 'data-sgs-me-kf' );
 	el.removeAttribute( 'data-sgs-in' );
 	el.getBoundingClientRect();
 	el.setAttribute( 'data-sgs-in', '' );
 	const keyframes = win.sgsMotionKeyframes;
-	if ( attrs[ 'data-sgs-me-keyframes' ] && keyframes?.play ) {
+	if ( el.hasAttribute( 'data-sgs-me-keyframes' ) && keyframes?.play ) {
 		keyframes.play( el );
 	}
 	const running = typeof el.getAnimations === 'function' ? el.getAnimations() : [];
@@ -59,7 +61,9 @@ function playOn( el, attrs ) {
 	} );
 	return Promise.race( [ done, cap ] ).then( () => {
 		win.clearTimeout( timer );
-		[ ...ENTRANCE_ATTRS, 'data-sgs-in', 'data-sgs-me-kf' ].forEach( ( name ) => el.removeAttribute( name ) );
+		[ ...written, 'data-sgs-in', 'data-sgs-me-kf' ].forEach( ( name ) =>
+			el.removeAttribute( name )
+		);
 	} );
 }
 
@@ -80,7 +84,8 @@ function indexLoopItems( rootEl, loopItems ) {
 }
 
 // A plan Replay plays for a target: the target's own entrance, or the entrance its children inherited from it (the
-// stagger's "Apply entrance to children", `stagger-apply.js`), which plays on the items.
+// stagger's "Apply entrance to children", `stagger-apply.js`), which plays on the items, or a delegating block's
+// children that play it (`delegated-children.js`).
 function playsFrom( plan, target ) {
 	return Boolean( plan.entrance ) && ( plan.target === target || plan.inheritedFrom === target );
 }

@@ -16,6 +16,7 @@
 import { emitScopedCss } from './emit-scoped-css';
 import { sharedLosers } from './shared-element';
 import { loopDelayCss } from './loop-delays';
+import { delegatedChildPlans } from './delegated-children';
 import { resolveTarget } from './resolve-target';
 import { declaredItemPart } from './stagger-apply';
 
@@ -184,10 +185,26 @@ export function planElements( rootEl, plan ) {
  * @param {Object}       motion  Stored motion attribute.
  * @param {Object}       options `emitScopedCss()` options, plus `loopColumns` (the block's grid columns per tier).
  * @return {Object} `emitScopedCss()` output plus `losers`, and the stagger's per-item delay rules with `loopItems` when
- *                  the block prints its items itself (`withLoopDelays`).
+ *                  the block prints its items itself (`withLoopDelays`); in a delegating mode, a Replay plan on the
+ *                  children this DOM shows (`delegated-children.js`).
  */
 export function planCanvas( rootEl, motion, options ) {
-	return withLoopDelays( rootEl, motion, options, planTargets( rootEl, motion, options ) );
+	const out = withLoopDelays(
+		rootEl,
+		motion,
+		options,
+		planTargets( rootEl, motion, options )
+	);
+	if ( ! rootEl || ! options.delegation ) {
+		return out;
+	}
+	// A delegating block's children are the server's preview, which carries their delays (`delegated-children.js`).
+	const children = delegatedChildPlans( motion, options ).filter(
+		( plan ) => planElements( rootEl, plan ).length > 0
+	);
+	return children.length === 0
+		? out
+		: { ...out, plans: [ ...out.plans, ...children ] };
 }
 
 /**
