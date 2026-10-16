@@ -172,6 +172,9 @@ async function pinRange( page ) {
 	return { start, end: lo };
 }
 
+/** The per-device custom property a stored attribute also owns: the runtime reads it before the attribute, so a variant must set both. */
+const PROPERTY_OF = { 'data-sgs-fx-scrub': '--sgs-horizontal-panel-smoothing', 'data-sgs-fx-hold': '--sgs-horizontal-panel-hold' };
+
 /** Open the fixture, optionally rewriting its host's stored attributes in the response. */
 async function open( browser, url, width, attrs = {} ) {
 	const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
@@ -188,6 +191,9 @@ async function open( browser, url, width, attrs = {} ) {
 				}
 				return next;
 			} );
+			// The fixture stores smoothing and hold, which the emitter writes as custom properties that win over the attribute: set them too.
+			const rules = Object.entries( attrs ).filter( ( [ name ] ) => PROPERTY_OF[ name ] ).map( ( [ name, value ] ) => `${ PROPERTY_OF[ name ] }:${ value } !important` ).join( ';' );
+			if ( rules ) html = html.replace( '</head>', `<style>[data-sgs-fx="horizontal-panel"]{${ rules }}</style></head>` );
 			await route.fulfill( { response, body: html } );
 		} );
 	}
