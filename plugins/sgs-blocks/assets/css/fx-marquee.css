@@ -42,6 +42,12 @@
 	translate: var(--sgs-marquee-x) var(--sgs-marquee-y);
 }
 
+/* A per-item entrance does not apply to a running marquee: fx-marquee.js shows every item before it clones the set, and no
+   entrance animation plays inside the lane, so an item neither fades in under the moving strip nor replays on a copy. */
+[data-sgs-marquee-lane="on"] [data-sgs-me] {
+	animation: none !important;
+}
+
 /* Edge fade: a mask, so the fade needs no background colour and works over an image or a gradient. */
 [data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"] {
 	--sgs-marquee-fade-axis: to right;

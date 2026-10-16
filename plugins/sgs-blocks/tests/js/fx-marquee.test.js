@@ -124,8 +124,8 @@ function query( text ) {
 
 const ITEMS = '<a href="#one" id="one">One</a><a href="#two">Two</a>';
 
-function mount( { fx = 'marquee', attrs = '', rootClass = 'wp-block-sgs-brand-strip' } = {} ) {
-	document.body.innerHTML = `<div class="${ rootClass }" data-sgs-fx="${ fx }" ${ attrs }><div class="track"><div class="set" data-sgs-marquee-set>${ ITEMS }</div></div></div>`;
+function mount( { fx = 'marquee', attrs = '', rootClass = 'wp-block-sgs-brand-strip', items = ITEMS } = {} ) {
+	document.body.innerHTML = `<div class="${ rootClass }" data-sgs-fx="${ fx }" ${ attrs }><div class="track"><div class="set" data-sgs-marquee-set>${ items }</div></div></div>`;
 	const root = document.body.firstElementChild;
 	const set = root.querySelector( '[data-sgs-marquee-set]' );
 	const track = root.querySelector( '.track' );
@@ -294,6 +294,38 @@ describe( 'a set with no box until the marquee runs', () => {
 		expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
 		expect( track.hasAttribute( 'data-sgs-marquee-lane' ) ).toBe( false );
 		expect( live() ).toHaveLength( 0 );
+	} );
+} );
+
+describe( 'per-item entrances on a running marquee', () => {
+	const PENDING = '<a href="#one" data-sgs-me="scroll opacity">One</a><a href="#two" data-sgs-me="scroll opacity">Two</a>';
+	const hidden = ( root ) =>
+		Array.from( root.querySelectorAll( '[data-sgs-me~="scroll"]' ) ).filter(
+			( el ) => ! el.hasAttribute( 'data-sgs-in' )
+		);
+
+	test( 'every item, in the set and in each copy, is revealed once the marquee runs', async () => {
+		const { root } = mount( { items: PENDING } );
+		await boot();
+		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ).length ).toBeGreaterThan( 0 );
+		expect( root.querySelectorAll( '[data-sgs-me~="scroll"]' ) ).toHaveLength( 2 * ( 1 + root.querySelectorAll( '[data-sgs-marquee-clone]' ).length ) );
+		expect( hidden( root ) ).toHaveLength( 0 );
+	} );
+
+	test( 'NEGATIVE CONTROL: a marquee that does not run (reduced motion) leaves the items for the reveal module', async () => {
+		reduced = true;
+		const { root } = mount( { items: PENDING } );
+		await boot();
+		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ) ).toHaveLength( 0 );
+		expect( hidden( root ) ).toHaveLength( 2 );
+	} );
+
+	test( 'a set that is itself waiting for its entrance is revealed too', async () => {
+		const { root, set } = mount();
+		set.setAttribute( 'data-sgs-me', 'scroll opacity' );
+		await boot();
+		expect( set.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+		expect( hidden( root ) ).toHaveLength( 0 );
 	} );
 } );
 

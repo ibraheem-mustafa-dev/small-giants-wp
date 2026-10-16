@@ -103,6 +103,23 @@ export function readMarquee( root ) {
 	};
 }
 
+/**
+ * A running marquee carries its items past continuously, so a per-item scroll entrance has no meaning there: an item
+ * still waiting for the reveal module is shown now. The copies are cloned from this state; the reveal module never
+ * sees them, so a copy that kept the hidden start state would stay invisible. `fx-marquee.css` stops any entrance
+ * animation inside the running lane.
+ *
+ * @param {Element} set The marquee set.
+ */
+function settleEntrances( set ) {
+	const pending = '[data-sgs-me~="scroll"]:not([data-sgs-in])';
+	const items = Array.from( set.querySelectorAll( pending ) );
+	if ( set.matches( pending ) ) {
+		items.push( set );
+	}
+	items.forEach( ( el ) => el.setAttribute( 'data-sgs-in', '' ) );
+}
+
 function makeClone( set ) {
 	const clone = set.cloneNode( true );
 	clone.removeAttribute( 'data-sgs-marquee-set' );
@@ -262,6 +279,7 @@ export function createMarquee( root ) {
 		// marquee runs (the trust bar's track is `display: contents` until then), so the marks go on first.
 		root.setAttribute( 'data-sgs-marquee', 'on' );
 		lane.setAttribute( 'data-sgs-marquee-lane', 'on' );
+		settleEntrances( original );
 		const { size, view } = measure( vertical );
 		if ( size <= 0 ) {
 			// Not laid out yet (a hidden ancestor, an image still loading); the resize observer calls back in. A block

@@ -64,6 +64,8 @@ const CONTROL = '.m515-control';
 /** A trust bar with a title and a marquee at every width, edge fade 8%: the title must stay outside the moving strip. */
 const TITLED = '.m515-titled';
 const TITLED_FADE = 8;
+/** A trust bar whose badges carry a scroll entrance and which also runs a marquee: no badge or copy may stay hidden. */
+const ENTRANCE = '.m515-entrance';
 
 // ---- Pure judges -----------------------------------------------------------------------------------------------
 
@@ -135,6 +137,11 @@ export function judgeTitle( samples ) {
 		const cut = s.clips ? [ Math.max( b[ 0 ], s.lane[ 0 ] ), Math.max( b[ 1 ], s.lane[ 1 ] ), Math.min( b[ 2 ], s.lane[ 2 ] ), Math.min( b[ 3 ], s.lane[ 3 ] ) ] : b;
 		return overlap( s.title, cut ) < 1;
 	} ) );
+}
+
+/** True when a marquee with per-item entrances shows every badge: it runs, has copies, and no badge is hidden. */
+export function judgeEntrances( r ) {
+	return Boolean( r ) && r.on && r.clones > 0 && r.total > 0 && r.pending > 0 && 0 === r.hidden;
 }
 
 /** Whether a marquee should run at a viewport width. */
@@ -244,6 +251,22 @@ const TITLED_MEASURE = ( [ sel, n, gap ] ) => new Promise( ( resolve ) => {
 	take();
 } );
 
+/** The entrance bar's badges: the copies, how many wait for an entrance, and how many are painted hidden. */
+const ENTRANCE_MEASURE = ( [ sel, unreveal ] ) => {
+	const root = document.querySelector( sel );
+	if ( unreveal ) {
+		root.querySelectorAll( '[data-sgs-marquee-clone] [data-sgs-in]' ).forEach( ( el ) => el.removeAttribute( 'data-sgs-in' ) );
+	}
+	const badges = Array.from( root.querySelectorAll( '.sgs-trust-bar__badge' ) );
+	return {
+		on: 'on' === root.getAttribute( 'data-sgs-marquee' ),
+		clones: root.querySelectorAll( '[data-sgs-marquee-clone]' ).length,
+		total: badges.length,
+		pending: badges.filter( ( el ) => /scroll/.test( el.getAttribute( 'data-sgs-me' ) || '' ) ).length,
+		hidden: badges.filter( ( el ) => parseFloat( getComputedStyle( el ).opacity ) < 0.99 ).length,
+	};
+};
+
 const titledReading = ( page ) => page.evaluate( TITLED_MEASURE, [ TITLED, 6, 350 ] );
 
 const pauseButton = ( page, sel ) => page.locator( `${ sel } .sgs-motion-pause, ${ sel } + .sgs-motion-pause` ).first();
@@ -351,6 +374,12 @@ async function liveChecks( ctx ) {
 	rep.check( 'marquee-title-fade', { selector: TITLED, property: 'mask-image on the block root and on the lane', measured: { root: last.rootMask, lane: last.laneMask }, expected: `no mask on the root; transparent at both ends of the lane over ${ TITLED_FADE }%`, pass: ! /gradient/.test( last.rootMask ) && judgeFade( last.laneMask, TITLED_FADE ) } );
 	rep.control( 'marquee-title', { selector: TITLED, property: 'the same judge on the unclipped badge boxes', measured: { overlapPx2: Math.round( Math.max( ...tr.flatMap( ( s ) => s.badges.map( ( b ) => overlap( s.title, b ) ) ) ) ) }, expected: 'rejected (the strip does travel under the title)', red: ! judgeTitle( tr.map( ( s ) => ( { ...s, clips: false } ) ) ) } );
 	rep.control( 'marquee-title-fade', { selector: TITLED, property: 'the fade judge on the block root', measured: last.rootMask, expected: 'rejected', red: ! judgeFade( last.rootMask, TITLED_FADE ) } );
+	await bringIntoView( page, ENTRANCE );
+	await page.waitForTimeout( 800 );
+	const en = await page.evaluate( ENTRANCE_MEASURE, [ ENTRANCE, false ] );
+	rep.check( 'marquee-entrance', { selector: ENTRANCE, property: 'badges (originals and copies) painted hidden while each carries a scroll entrance', measured: en, expected: 'running, copies present, entrances stored, none hidden', pass: judgeEntrances( en ) } );
+	const planted = await page.evaluate( ENTRANCE_MEASURE, [ ENTRANCE, true ] );
+	rep.control( 'marquee-entrance', { selector: ENTRANCE, property: 'the copies planted back into their unrevealed state (read back)', measured: planted, expected: 'rejected (the copies are hidden)', red: planted.hidden > 0 && ! judgeEntrances( planted ) } );
 	await live.close();
 
 	const unclipped = await open( ctx );
@@ -439,6 +468,11 @@ function selfTest() {
 	need( 'title unclipped fails', ! judgeTitle( [ sample( { clips: false } ) ] ) );
 	need( 'title lane is the root fails', ! judgeTitle( [ sample( { laneIsRoot: true } ) ] ) && ! judgeTitle( [ sample( { laneHoldsTitle: true } ) ] ) );
 	need( 'title no lane or samples fails', ! judgeTitle( [ sample( { lane: null } ) ] ) && ! judgeTitle( [] ) );
+	const ok = { on: true, clones: 2, total: 18, pending: 18, hidden: 0 };
+	need( 'entrances visible', judgeEntrances( ok ) );
+	need( 'entrances hidden fails', ! judgeEntrances( { ...ok, hidden: 6 } ) );
+	need( 'entrances not running fails', ! judgeEntrances( { ...ok, on: false } ) && ! judgeEntrances( { ...ok, clones: 0 } ) );
+	need( 'entrances vacuous without a stored entrance fails', ! judgeEntrances( { ...ok, pending: 0 } ) );
 	console.log( JSON.stringify( { selfTest: true, failures } ) );
 	return failures.length ? 1 : 0;
 }
@@ -462,7 +496,7 @@ async function main() {
 			const rep = new Reporter( { engine, width, site: args.site } );
 			const ctx = { browser, width, url, rep };
 			const probe = await open( ctx );
-			const missing = await probe.page.evaluate( ( sels ) => sels.filter( ( s ) => ! document.querySelector( s ) ), [ ...Object.keys( DRAFTS ), CONTROL, TITLED ] );
+			const missing = await probe.page.evaluate( ( sels ) => sels.filter( ( s ) => ! document.querySelector( s ) ), [ ...Object.keys( DRAFTS ), CONTROL, TITLED, ENTRANCE ] );
 			await probe.close();
 			if ( missing.length ) {
 				rep.check( 'marquee-fixture', { selector: url, measured: missing, expected: 'every marker present', pass: null, why: `markers missing from page ${ pageId }: ${ missing.join( ', ' ) }` } );

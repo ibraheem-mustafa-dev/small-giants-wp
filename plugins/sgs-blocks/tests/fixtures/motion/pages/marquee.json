@@ -601,5 +601,105 @@
 				}
 			}
 		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-entrance-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Marquee with a per-badge entrance: every badge and every copy stays visible",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/trust-bar",
+				"attributes": {
+					"className": "m515-entrance",
+					"items": [
+						{
+							"icon": "check",
+							"label": "Baked fresh when you order"
+						},
+						{
+							"icon": "check",
+							"label": "Handmade in Birmingham"
+						},
+						{
+							"icon": "check",
+							"label": "Registered food business"
+						},
+						{
+							"icon": "check",
+							"label": "Free UK delivery over £35"
+						},
+						{
+							"icon": "check",
+							"label": "Allergen information on every box"
+						},
+						{
+							"icon": "check",
+							"label": "Five-star hygiene rating"
+						}
+					],
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "mqe",
+										"effect": "marquee",
+										"values": {
+											"speed": 60
+										}
+									}
+								]
+							},
+							"item": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": 24
+											},
+											"duration": 600,
+											"easing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		]
 	}
 ]
