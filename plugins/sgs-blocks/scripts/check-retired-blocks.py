@@ -86,7 +86,7 @@ BARE_SLUGS = {"cta-section"}
 def pattern() -> re.Pattern:
     prefixed = "|".join(re.escape(n) for n in sorted(RETIRED))
     bare = "|".join(re.escape(n) for n in sorted(BARE_SLUGS))
-    return re.compile(rf"(?<![A-Za-z0-9_-])(?:sgs[/-](?:{prefixed})|{bare})(?![A-Za-z0-9]|-[A-Za-z0-9])")
+    return re.compile(rf"(?<![A-Za-z0-9_-])(?:sgs(?:\\?/|-)(?:{prefixed})|{bare})(?![A-Za-z0-9]|-[A-Za-z0-9])")
 
 
 def scan_text(text: str, rx: re.Pattern) -> list[int]:
@@ -162,6 +162,7 @@ def self_test() -> int:
     need("does not match a longer name", scan_text("whatsapp-cta-section-x and my-cta-section", rx) == [])
     need("does not match another slug", scan_text("sgs/cta-banner", rx) == [])
     need("matches a prefixed slug", scan_text("block sgs/divider here", rx) == [1])
+    need("matches a JSON-escaped block name", scan_text(r'"name": "sgs\/divider"', rx) == [1])
     need("matches a class root with an element", scan_text(".sgs-nav-menu__link", rx) == [1])
     need("does not match a bare ordinary word", scan_text("a divider and a nav-menu and mobile-nav", rx) == [])
     need("does not match a live longer name", scan_text("sgs-nav-menu-panels and sgs/divider-x", rx) == [])
