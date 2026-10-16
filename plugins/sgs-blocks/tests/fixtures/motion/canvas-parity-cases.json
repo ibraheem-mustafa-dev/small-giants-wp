@@ -1099,6 +1099,50 @@
 			}
 		},
 		{
+			"name": "open trigger one-edge clip close",
+			"block": "sgs/accordion-item",
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "open",
+								"values": {
+									"from": {
+										"clip": 100,
+										"clipEdge": "bottom"
+									},
+									"to": {
+										"clip": 0
+									}
+								},
+								"close": {
+									"to": {
+										"clip": 100
+									}
+								},
+								"devices": {
+									"mobile": {
+										"from": {
+											"clipEdge": "left"
+										},
+										"close": {
+											"to": {
+												"clip": 60
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
 			"name": "shared element: item and current, two entrances and two hover sources",
 			"block": "sgs/breadcrumbs",
 			"root": ".sgs-m-0123456789",

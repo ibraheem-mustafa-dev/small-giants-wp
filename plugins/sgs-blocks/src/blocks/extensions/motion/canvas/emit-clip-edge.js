@@ -5,6 +5,8 @@
  * holders `--sgs-me-<end>-clip-<t|r|b|l>`: the amount on the chosen edge and 0% elsewhere (all four on `all`). An
  * anchor (`x-sgs-clip-anchors`) starts the edge on its measured side at `var(<property>, <amount>)` and on the opposite
  * side at `calc(100% - var(<property>, <100 - amount>%))`; on any other edge it is not written and is reported.
+ * An `open` entrance's close amount follows the same edge (`applyCloseClipEdge`): `--sgs-me-close-to-clip` becomes the
+ * four `--sgs-me-close-to-clip-<t|r|b|l>`, so a one-edge wipe closes only its edge.
  *
  * @package SGS\Blocks
  */
@@ -92,6 +94,59 @@ export function applyClipEdge( tiers, decls, report = () => {} ) {
 			Object.entries( edges( def, a, e, n, report ) ).forEach( ( [ suffix, css ] ) => {
 				decls[ tier ][ `${ uniform }-${ suffix }` ] = css;
 			} );
+		} );
+	} );
+}
+
+/**
+ * Rewrite an `open` entrance's close clip holder for a single edge (the twin of `Sgs_Motion_Clip_Edge::close`).
+ *
+ * The close amount closes the edge the entrance insets: the from-value's `clipEdge`, else the to-value's. When any tier
+ * resolves to a single edge, every tier that sets a close amount or an entrance edge gets the four holders
+ * `--sgs-me-close-to-clip-<t|r|b|l>` in place of the uniform one; a tier inherits the wider tier's amount and edges.
+ *
+ * @param {Object} base  The entrance base layer (`values`, `close`, `devices`).
+ * @param {Object} decls Per-tier close declarations (mutated).
+ */
+export function applyCloseClipEdge( base, decls ) {
+	const plain = ( v ) => ( v && typeof v === 'object' && ! Array.isArray( v ) ? v : {} );
+	let amount = null;
+	const ends = { from: 'all', to: 'all' };
+	let single = false;
+	const settings = {};
+	TIERS.forEach( ( tier ) => {
+		const source = tier === 'desktop' ? plain( base ) : plain( base?.devices?.[ tier ] );
+		const values = tier === 'desktop' ? plain( base?.values ) : source;
+		const close = plain( plain( source.close ).to );
+		let set = false;
+		if ( has( close, 'clip' ) && valueCss( 'EntranceCloseTo', 'clip', close.clip ) !== null ) {
+			amount = close.clip;
+			set = true;
+		}
+		[
+			[ 'from', 'EntranceFrom' ],
+			[ 'to', 'EntranceTo' ],
+		].forEach( ( [ end, def ] ) => {
+			const endValues = plain( values[ end ] );
+			if ( has( endValues, 'clipEdge' ) && valueCss( def, 'clipEdge', endValues.clipEdge ) !== null ) {
+				ends[ end ] = String( endValues.clipEdge );
+				set = true;
+			}
+		} );
+		const edge = ends.from !== 'all' ? ends.from : ends.to;
+		if ( set && amount !== null ) {
+			settings[ tier ] = [ amount, edge ];
+			single = single || edge !== 'all';
+		}
+	} );
+	if ( ! single ) {
+		return;
+	}
+	const uniform = `${ ME_PREFIX }close-to-clip`;
+	Object.entries( settings ).forEach( ( [ tier, [ a, e ] ] ) => {
+		delete decls[ tier ][ uniform ];
+		Object.entries( edges( 'EntranceCloseTo', a, e, 'none', () => {} ) ).forEach( ( [ suffix, css ] ) => {
+			decls[ tier ][ `${ uniform }-${ suffix }` ] = css;
 		} );
 	} );
 }

@@ -11,7 +11,8 @@
  * end's uniform holder, in every tier that sets a clip value, with the four edge holders `--sgs-me-<end>-clip-<t|r|b|l>`:
  * the amount on the chosen edge and 0% on the other three (a tier left on `all` gets the amount on all four, so a wider
  * tier's single edge never leaks into it through the cascade). A tier inherits the wider tier's amount, edge and anchor
- * for whatever it leaves blank.
+ * for whatever it leaves blank. An `open` entrance's close amount follows the same edge (`close()`): its uniform holder
+ * `--sgs-me-close-to-clip` becomes the four `--sgs-me-close-to-clip-<t|r|b|l>`, so a one-edge wipe closes only its edge.
  *
  * `clipFromAnchor` names a row of the schema's `x-sgs-clip-anchors` (data, so a new anchor is one schema row): a custom
  * property holding a length measured from one side of the element (`measuredFrom`). The clipped edge on that side starts
@@ -73,6 +74,64 @@ final class Sgs_Motion_Clip_Edge {
 				foreach ( $edges as $suffix => $css ) {
 					$decls[ $tier ][ $uniform . '-' . $suffix ] = $css;
 				}
+			}
+		}
+	}
+
+	/**
+	 * Rewrite an `open` entrance's close clip holder for a single edge (called by `Sgs_Motion_Trigger_Open_State`).
+	 *
+	 * The close amount (`EntranceCloseTo.clip`) is one number with no edge of its own; it closes the edge the entrance
+	 * insets: the from-value's `clipEdge`, else the to-value's. When any tier resolves to a single edge, every tier that
+	 * sets a close amount or an entrance edge gets the four holders `--sgs-me-close-to-clip-<t|r|b|l>` in place of the
+	 * uniform `--sgs-me-close-to-clip`: the amount on that edge and 0% on the others (all four on `all`). A tier inherits
+	 * the wider tier's amount and edges for whatever it leaves blank. The entrance's anchor does not apply to the close.
+	 *
+	 * @param array<string,mixed>                $base  The entrance base layer (`values`, `close`, `devices`).
+	 * @param array<string,array<string,string>> $decls Per-tier close declarations (by reference).
+	 * @return void
+	 */
+	public static function close( array $base, array &$decls ): void {
+		$amount   = null;
+		$ends     = array(
+			'from' => 'all',
+			'to'   => 'all',
+		);
+		$single   = false;
+		$settings = array();
+		foreach ( Sgs_Motion_Emitter::TIERS as $tier ) {
+			$source = 'desktop' === $tier ? $base : ( is_array( $base['devices'][ $tier ] ?? null ) ? $base['devices'][ $tier ] : array() );
+			$values = 'desktop' === $tier ? ( is_array( $base['values'] ?? null ) ? $base['values'] : array() ) : $source;
+			$close  = is_array( $source['close']['to'] ?? null ) ? $source['close']['to'] : array();
+			$set    = false;
+			if ( array_key_exists( 'clip', $close ) && null !== Sgs_Motion_Emitter::value_css( 'EntranceCloseTo', 'clip', $close['clip'] ) ) {
+				$amount = $close['clip'];
+				$set    = true;
+			}
+			foreach ( array(
+				'from' => 'EntranceFrom',
+				'to'   => 'EntranceTo',
+			) as $end => $def ) {
+				$end_values = is_array( $values[ $end ] ?? null ) ? $values[ $end ] : array();
+				if ( array_key_exists( 'clipEdge', $end_values ) && null !== Sgs_Motion_Emitter::value_css( $def, 'clipEdge', $end_values['clipEdge'] ) ) {
+					$ends[ $end ] = (string) $end_values['clipEdge'];
+					$set          = true;
+				}
+			}
+			$edge = 'all' !== $ends['from'] ? $ends['from'] : $ends['to'];
+			if ( $set && null !== $amount ) {
+				$settings[ $tier ] = array( $amount, $edge );
+				$single            = $single || 'all' !== $edge;
+			}
+		}
+		if ( ! $single ) {
+			return;
+		}
+		$uniform = Sgs_Motion_Emitter::ME_PREFIX . 'close-to-' . self::UNIFORM;
+		foreach ( $settings as $tier => $setting ) {
+			unset( $decls[ $tier ][ $uniform ] );
+			foreach ( self::edges( 'EntranceCloseTo', $setting[0], $setting[1], 'none', 'close', $tier, array() ) as $suffix => $css ) {
+				$decls[ $tier ][ $uniform . '-' . $suffix ] = $css;
 			}
 		}
 	}

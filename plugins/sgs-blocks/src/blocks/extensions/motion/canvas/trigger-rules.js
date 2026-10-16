@@ -5,7 +5,8 @@
  *
  * - A `state` entrance must name a state its block declares in `supports.sgs.motion.states`; any other is dropped.
  * - `open` adds the close values per device: `--sgs-me-close-to-<suffix>`, `--sgs-me-close-dur`,
- *   `--sgs-me-close-delay` and, desktop only, `--sgs-me-close-ease`.
+ *   `--sgs-me-close-delay` and, desktop only, `--sgs-me-close-ease`. When the entrance insets one clip edge,
+ *   `applyCloseClipEdge` writes the close clip amount on that edge's holder in place of the uniform one.
  * - `state` adds one rule keyed to the named state on the host, with the animation name unless the WAAPI module plays
  *   a multi-keyframe entrance.
  *
@@ -13,6 +14,7 @@
  */
 
 import { fields, ME_PREFIX, rules, TIERS, valueCss } from './motion-schema';
+import { applyCloseClipEdge } from './emit-clip-edge';
 
 const STATE_PATTERN = /^[a-z][a-z0-9-]{0,63}$/;
 const STATE_ATTR = 'data-sgs-motion-state';
@@ -78,6 +80,7 @@ function closeRules( base, selector ) {
 			}
 		} );
 	} );
+	applyCloseClipEdge( base, decls );
 	return rules( selector, decls );
 }
 

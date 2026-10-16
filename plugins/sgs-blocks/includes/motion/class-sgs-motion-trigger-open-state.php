@@ -11,7 +11,8 @@
  *   - `open`: the close values `--sgs-me-close-to-<suffix>` (the suffix of the field's `--sgs-me-*` owner property),
  *     `--sgs-me-close-dur`, `--sgs-me-close-delay` (per device, so each item keeps its own stored close delay) and
  *     `--sgs-me-close-ease` (desktop only, as the schema stores it). Desktop reads the layer's `close`, Tablet and
- *     Mobile read `devices.<tier>.close`.
+ *     Mobile read `devices.<tier>.close`. When the entrance insets one clip edge, `Sgs_Motion_Clip_Edge::close` writes
+ *     the close clip amount on that edge's holder (`--sgs-me-close-to-clip-<t|r|b|l>`) in place of the uniform one.
  *   - `state`: one rule keyed to the named state on the host:
  *     `<target>:is([data-sgs-motion-state~="<name>"],[data-sgs-motion-state~="<name>"] *){--sgs-mt-on:1;animation-name:var(--sgs-mt-in,none);}`.
  *     A multi-keyframe entrance gets only the on flag, because the WAAPI module plays it, not a CSS animation, plus
@@ -217,6 +218,7 @@ final class Sgs_Motion_Trigger_Open_State {
 				}
 			}
 		}
+		Sgs_Motion_Clip_Edge::close( $base, $decls );
 		return Sgs_Motion_Emitter::rules( $selector, $decls );
 	}
 

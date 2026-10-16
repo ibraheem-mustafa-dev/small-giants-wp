@@ -689,6 +689,23 @@
 		"losers": {}
 	},
 	{
+		"name": "open trigger one-edge clip close",
+		"css": ".sgs-m-0123456789{--sgs-me-to-clip:0%;--sgs-me-from-clip-t:0%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:100%;--sgs-me-from-clip-l:0%;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-clip-t:0%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:100%;}}.sgs-m-0123456789{--sgs-me-close-to-clip-t:0%;--sgs-me-close-to-clip-r:0%;--sgs-me-close-to-clip-b:100%;--sgs-me-close-to-clip-l:0%;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-close-to-clip-t:0%;--sgs-me-close-to-clip-r:0%;--sgs-me-close-to-clip-b:0%;--sgs-me-close-to-clip-l:60%;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "open clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
 		"name": "shared element: item and current, two entrances and two hover sources",
 		"css": ".sgs-m-0123456789 .sgs-breadcrumbs__item{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:12px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
 		"plans": [

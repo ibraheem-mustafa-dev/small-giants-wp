@@ -1424,7 +1424,7 @@
 			"inputs": [
 				{
 					"name": "--sgs-me-clip",
-					"description": "The uniform clip amount a clip field names (clipEdge all). Never an owner of its own: the stylesheet gives it to all four edge owners through its from, to and close holders (--sgs-me-from-clip, --sgs-me-to-clip, --sgs-me-close-to-clip, registered non-inheriting like every per-element input, so a nested element never takes an ancestor's clip); a clipEdge other than all writes the four edge holders instead (Sgs_Motion_Clip_Edge)."
+					"description": "The uniform clip amount a clip field names (clipEdge all). Never an owner of its own: the stylesheet gives it to all four edge owners through its from, to and close holders (--sgs-me-from-clip, --sgs-me-to-clip, --sgs-me-close-to-clip, registered non-inheriting like every per-element input, so a nested element never takes an ancestor's clip); a clipEdge other than all writes the four edge holders instead (--sgs-me-from-clip-t/-r/-b/-l, --sgs-me-to-clip-t/-r/-b/-l, and for an open entrance's close amount --sgs-me-close-to-clip-t/-r/-b/-l, on the entrance's edge with 0% on the others; Sgs_Motion_Clip_Edge)."
 				}
 			]
 		},
@@ -2441,7 +2441,7 @@
 		"offTiers": {
 			"x-sgs-kind": "meta",
 			"type": "array",
-			"description": "The device tiers on which this effect does not run (written as data-sgs-fx-disable-tablet / -mobile, which the runtimes read).",
+			"description": "The device tiers on which this effect does not run (written as the effect's own slug in data-sgs-fx-off-tablet / -mobile, which the Tier G boot gate reads).",
 			"items": {
 				"type": "string",
 				"enum": [
