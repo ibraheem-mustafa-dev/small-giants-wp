@@ -75,14 +75,14 @@ Open owed items:
 ### Front M: Clone coverage foundation and the motion model (Spec 38A)
 
 **State (2026-10-15):** S1 to S3b and Gate 4 (2026-10-13) are done; wave 11's detail is in the build plan. Wave 12 (S4) runs as four tracks; each track's bullet in `plans/2026-10-12-spec38a-motion-build.md` holds its commits and open items.
-- **Track L: closed** (handoff `36a319bb0`). Built M5.8 (closed; the scroll-progress probe runs in every deploy, `4885fbca6`), M5.12 to M5.15, M5.16a-c and M6.3, with council fixes `dd5abde72` and `b98ddd044`. Open: live fixtures for FR-38A-37, 44 and 52; a `bgLottie` mapper (needed before M6.5).
+- **Track L: closed** (`221929133`). Built M5.8, M5.12 to M5.15, M5.16a-c and M6.3; the live fixtures for FR-38A-36, 37, 44 and 52 pass on sandybrown (pages 5250, 5297, 5303, 5305) in Chromium and Firefox, and their probes run in every deploy. sandybrown runs `1d4185dbc` (the later commits are probe-only). Open: four items in its plan bullet (container-wrapper containment, unproven; the trust-bar title beside a marquee, for Bean; stored marquees static until M6.5; Lottie speed per tier).
 - **Track S: closed.** Built all nine units (M4.1 to M4.6, M6.2, M6.4, M5.17; the `@sgs/motion-state-loader` makes open and state motion play live) with council fixes `a62541995`, `7640bcd95`, `f5d5ccc10` and `94f12c84d`. sandybrown runs `9ec0b8064` (drawer probe 5276: 15 pass, 12 controls red); indus-test runs `fb5145ee9`, where Gate 5b measured stored timings in three engines. Open: 15 items in its plan bullet (chiefly the `closeOrder` `together` schema value, the `tag_children` raw-text depth bug, form-states live acceptance, the buybox `main-photo` part). Next: a Track S follow-up session (prompt with Bean) closes items 1, 14 and 9, then M6.5's prerequisites.
 - **Track E: code done**, with open items in its plan bullet, chiefly recalibrating six live probes for Lenis smooth scroll. Its QC council's fixes 1, 2, 3 and 5 are on main (`44372db1c`, whose message mislabels them as Track S's); fix 4 (magnet transition timing) landed with Track I's canvas twin in `daf70362f`, parity green.
 - **Track I: panels built, Gate 5 not yet passed.** On main: M3.2 to M3.8 and M3.12 (all three motion panels, canvas preview, final state and thumbnails; FR-38A-28 built); M3.9 frontend live (page 5244); Bean's first Gate 5 run found defects, fixed in `daf70362f` (Target row, product-card grid delegation, Apply entrance to children, Card hovered). Open: the Gate 5 re-check, M3.9's editor round trip, M3.10 (page 5287 empty), M3.11, the hover ring: the plan's "Track I carried to the next session (2026-10-15)" bullet.
 
 **Blockers:** none. **Bean decisions:** none open. Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
 
-**Resume from:** the Track S follow-up prompt, `prompts/2026-10-15-spec38a-track-s-follow-up.md`; Track L's next prompt, `prompts/2026-10-15-spec38a-track-l-live-fixtures.md`; Track I's carried-items bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with an agent-run Gate 5 re-check.
+**Resume from:** Track I's carried-items bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with an agent-run Gate 5 re-check.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
