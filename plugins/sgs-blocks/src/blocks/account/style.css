@@ -13,15 +13,18 @@
 .sgs-account {
 	container-type: inline-size;
 	container-name: sgs-account;
-	/* Size containment leaves the element no content width, so where a parent gives it auto margins (a constrained
-	 * layout inside a flex column) it would shrink to 0px. A stretch width fills the parent less the element's own
-	 * margins (width: 100% would overflow by a set margin). */
+	max-width: var(--sgs-account-content-max-width, 100%);
+	margin-inline: auto;
+}
+
+/* Size containment leaves the root no content width, so where a parent gives it auto margins (a constrained layout
+ * inside a flex column) it would shrink to 0px. A stretch width fills the parent less the root's own margins
+ * (width: 100% would overflow by a set margin). Zero specificity, so any width setting overrides it. */
+:where(.sgs-account) {
 	width: -webkit-fill-available;
 	width: -moz-available;
 	width: stretch;
 	box-sizing: border-box;
-	max-width: var(--sgs-account-content-max-width, 100%);
-	margin-inline: auto;
 }
 
 /* -- WooCommerce's own notices ------------------------------------------ */

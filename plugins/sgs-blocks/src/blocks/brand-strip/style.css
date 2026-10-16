@@ -6,13 +6,6 @@
 	/* Query container so `100cqw` (used in the tile sizing below) resolves to
 	 * THIS strip's own width — not the marquee track's, which is far wider. */
 	container-type: inline-size;
-	/* Size containment leaves the element no content width, so where a parent gives it auto margins (a constrained
-	 * layout inside a flex column) it would shrink to 0px. A stretch width fills the parent less the element's own
-	 * margins (width: 100% would overflow by a set margin). */
-	width: -webkit-fill-available;
-	width: -moz-available;
-	width: stretch;
-	box-sizing: border-box;
 
 	/* Columns-per-device (operator control). Desktop value by default; the
 	 * tablet/mobile media queries at the foot of this file switch
@@ -39,6 +32,16 @@
 	 * that width the strip fills the band normally (100% < this max). */
 	max-width: calc(var(--sgs-columns) * var(--sgs-tile-cap) + (var(--sgs-columns) - 1) * var(--sgs-logo-gap, 0px));
 	margin-inline: auto;
+}
+
+/* Size containment leaves the root no content width, so where a parent gives it auto margins (a constrained layout
+ * inside a flex column) it would shrink to 0px. A stretch width fills the parent less the root's own margins
+ * (width: 100% would overflow by a set margin). Zero specificity, so any width setting overrides it. */
+:where(.sgs-brand-strip) {
+	width: -webkit-fill-available;
+	width: -moz-available;
+	width: stretch;
+	box-sizing: border-box;
 }
 
 /* While the shared marquee runs (assets/css/fx-marquee.css clips the strip and lays the lane out as one row) the strip

@@ -26,13 +26,6 @@
 .sgs-form {
 	container-type: inline-size;
 	container-name: sgs-form;
-	/* Size containment leaves the element no content width, so where a parent gives it auto margins (a constrained
-	 * layout inside a flex column) it would shrink to 0px. A stretch width fills the parent less the element's own
-	 * margins (width: 100% would overflow by a set margin). */
-	width: -webkit-fill-available;
-	width: -moz-available;
-	width: stretch;
-	box-sizing: border-box;
 }
 
 /* Universal box-sizing for all form elements — prevents inputs/buttons/textareas
@@ -40,6 +33,16 @@
 .sgs-form *,
 .sgs-form *::before,
 .sgs-form *::after {
+	box-sizing: border-box;
+}
+
+/* Size containment leaves the root no content width, so where a parent gives it auto margins (a constrained layout
+ * inside a flex column) it would shrink to 0px. A stretch width fills the parent less the root's own margins
+ * (width: 100% would overflow by a set margin). Zero specificity, so any width setting overrides it. */
+:where(.sgs-form) {
+	width: -webkit-fill-available;
+	width: -moz-available;
+	width: stretch;
 	box-sizing: border-box;
 }
 
