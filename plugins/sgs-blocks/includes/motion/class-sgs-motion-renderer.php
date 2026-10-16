@@ -395,7 +395,9 @@ final class Sgs_Motion_Renderer {
 			if ( null === $resolved ) {
 				continue;
 			}
-			$result = Sgs_Motion_Layer_Drops::resolve( (array) $element );
+			$fitted = Sgs_Motion_Layer_Drops::drop_level_misfits( (array) $element, Sgs_Motion_Layer_Drops::levels_for_target( $name, $target ) );
+			$result = Sgs_Motion_Layer_Drops::resolve( $fitted['element'] );
+			$result['dropped'] = array_merge( $fitted['dropped'], $result['dropped'] );
 			foreach ( $result['dropped'] as $drop ) {
 				do_action( 'sgs_motion_layer_dropped', $name, $target, $drop );
 			}

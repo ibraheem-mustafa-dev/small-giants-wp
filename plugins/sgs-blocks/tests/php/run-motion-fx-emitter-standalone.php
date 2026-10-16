@@ -209,7 +209,7 @@ namespace {
 	fx_check( 'image-sequence scrub' === ( $cv['data-sgs-fx'] ?? '' ) && 'top top' === ( $cv['data-sgs-fx-start'] ?? '' ), 'a canvas already marked image-sequence keeps it and gains scrub: ' . json_encode( $cv ) );
 
 	// 8. Two scroll-driven Tier G layers on one element: the later is refused, not merged into the earlier's settings.
-	$out  = fx_render( 'sgs/team-member', fx_doc( 'image', array( 'effects' => array( array( 'id' => 'scrub', 'effect' => 'scrub', 'values' => array( 'smoothing' => 500 ) ), array( 'id' => 'image-sequence', 'effect' => 'image-sequence', 'values' => array( 'startElement' => 'bottom', 'startViewport' => 20 ) ) ) ) ), $card );
+	$out  = fx_render( 'sgs/team-member', fx_doc( 'image', array( 'effects' => array( array( 'id' => 'scrub', 'effect' => 'scrub', 'values' => array( 'smoothing' => 500 ) ), array( 'id' => 'draw', 'effect' => 'draw' ) ) ) ), $card );
 	$img  = fx_attrs( fx_tag( $out, 'sgs-team-member__photo' ) );
 	fx_check( 'scrub' === ( $img['data-sgs-fx'] ?? '' ) && ! isset( $img['data-sgs-fx-start'] ) && in_array( 'tier-g-shared-scroll-settings', fx_drops(), true ), 'a second Tier G layer on one element is refused through the refusal table: ' . json_encode( $img ) . ' drops ' . json_encode( fx_drops() ) );
 

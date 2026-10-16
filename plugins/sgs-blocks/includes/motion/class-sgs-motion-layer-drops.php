@@ -32,6 +32,63 @@ final class Sgs_Motion_Layer_Drops {
 	/** Limit kinds that clear one value from the later layer instead of dropping the layer. */
 	const VALUE_KINDS = array( 'same-value', 'refused-value' );
 
+	/** The target levels the root offers: it is the block, paints its own background and holds part-level effects (§5.4). */
+	const ROOT_LEVELS = array( 'block', 'surface', 'part' );
+
+	/**
+	 * The target levels one target offers (the PHP twin of `refusal-match.js::levelsForTarget`): the root all three; a
+	 * declared part `part`, and also `surface` when its declaration is marked `"surface": true`; the part marked
+	 * `isWrapper` is the root element itself, so it offers the root's levels; a custom target `part`.
+	 *
+	 * @param string $block_name Block name.
+	 * @param string $target     `root`, a declared part key or a `custom:<n>` target.
+	 * @return array<int,string>
+	 */
+	public static function levels_for_target( string $block_name, string $target ): array {
+		if ( 'root' === $target ) {
+			return self::ROOT_LEVELS;
+		}
+		$type = class_exists( '\WP_Block_Type_Registry' ) ? \WP_Block_Type_Registry::get_instance()->get_registered( $block_name ) : null;
+		$spec = is_object( $type ) && isset( $type->supports['sgs']['elements'][ $target ] ) ? $type->supports['sgs']['elements'][ $target ] : null;
+		if ( is_array( $spec ) && ! empty( $spec['isWrapper'] ) ) {
+			return self::ROOT_LEVELS;
+		}
+		return is_array( $spec ) && ! empty( $spec['surface'] ) ? array( 'surface', 'part' ) : array( 'part' );
+	}
+
+	/**
+	 * Drop every effect layer whose schema `x-target-level` names none of the levels its target offers (a block-level
+	 * effect on a part, a surface effect on a part that is not a surface). The editor never offers such a layer; a
+	 * hand-built or cloned tree can store one, and the effect would attach to an element it cannot drive. An effect that
+	 * pairs two elements (`paired`) or has no level is left alone.
+	 *
+	 * @param array<string,mixed> $element A sanitised element.
+	 * @param array<int,string>   $levels  The levels its target offers (`levels_for_target`).
+	 * @return array{element:array<string,mixed>,dropped:array<int,array{path:string,id:string,text:string}>}
+	 */
+	public static function drop_level_misfits( array $element, array $levels ): array {
+		$dropped = array();
+		$effects = Sgs_Motion_Layers::schema()['x-sgs-effects'] ?? array();
+		$layers  = isset( $element['effects'] ) && is_array( $element['effects'] ) ? $element['effects'] : array();
+		foreach ( array_reverse( array_keys( $layers ), false ) as $index ) {
+			$slug  = (string) ( $layers[ $index ]['effect'] ?? '' );
+			$level = (array) ( $effects[ $slug ]['x-target-level'] ?? array() );
+			if ( array() === $level || in_array( 'paired', $level, true ) || array() !== array_intersect( $level, $levels ) ) {
+				continue;
+			}
+			$dropped[] = array(
+				'path' => 'effects[' . $index . ']',
+				'id'   => 'target-level',
+				'text' => sprintf( '%s is a %s-level effect and cannot sit on this element.', $slug, implode( ' or ', $level ) ),
+			);
+			$element   = self::remove_path( $element, 'effects[' . $index . ']' );
+		}
+		return array(
+			'element' => $element,
+			'dropped' => $dropped,
+		);
+	}
+
 	/**
 	 * Drop the later of each refused pair (and every layer past a limit) until the element has no refusal.
 	 *
