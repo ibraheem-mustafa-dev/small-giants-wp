@@ -291,6 +291,16 @@ foreach ( $tiles as $i => $tile ) {
 }
 $tiles_inner_html = ob_get_clean();
 
+// Tile stagger (Spec 38A FR-38A-26): the tiles are array data, so the field's stored `sgsMotion.stagger` becomes one
+// scoped delay rule per tile, found by its `data-sgs-loop-i` index. Null (no stagger) leaves the tiles untagged; the
+// string is only non-empty where the collector never flushes (the editor preview).
+$sgs_ft_loop_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $tiles_inner_html, 'sgs-form-tile' );
+$sgs_ft_loop_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/form-field-tiles', $sgs_ft_uid, $attributes, $sgs_ft_loop_tagged['count'], '.sgs-form-tile' );
+if ( null !== $sgs_ft_loop_style ) {
+	$tiles_inner_html = $sgs_ft_loop_tagged['html'];
+	echo $sgs_ft_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rules built by the collector.
+}
+
 // ── WS-4: tile grid via shared wrapper helper (kind='layout') ─────────────────
 // extra_classes carries 'sgs-form-tiles' so existing CSS selectors are unchanged.
 // The helper provides grid-template-columns / align/maxWidth / gap controls.

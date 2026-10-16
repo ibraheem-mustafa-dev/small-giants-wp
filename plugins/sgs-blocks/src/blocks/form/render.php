@@ -681,6 +681,15 @@ $focus_ring_css_vars = '--sgs-focus-ring-width:' . absint( $focus_ring_width ) .
 // Capture the form interior (progress bar + <form> + messages) as a string
 // so it can be passed to SGS_Container_Wrapper::render() as $inner_html.
 
+// Field stagger (Spec 38A FR-38A-26): the fields are inner blocks printed straight into the form, so the container's stored
+// `sgsMotion.stagger` becomes one scoped delay rule per field (`.sgs-form-field`), found by its `data-sgs-loop-i` index.
+// Null (no stagger) leaves the fields untagged; the string is only non-empty where the collector never flushes (the editor preview).
+$sgs_form_loop_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( (string) $content, 'sgs-form-field' );
+$sgs_form_loop_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/form', $sgs_form_uid, $attributes, $sgs_form_loop_tagged['count'], '.sgs-form-field' );
+if ( null !== $sgs_form_loop_style ) {
+	$content = $sgs_form_loop_tagged['html'];
+}
+
 ob_start();
 
 if ( $is_multi_step ) :
@@ -863,6 +872,7 @@ if ( '' !== $sgs_form_supports_css ) {
 	// un-sanitised survives here.
 	$sgs_form_output = '<style>' . wp_strip_all_tags( $sgs_form_supports_css ) . '</style>' . $sgs_form_output;
 }
+$sgs_form_output = (string) $sgs_form_loop_style . $sgs_form_output;
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() output is pre-sanitised; the prepended <style> is pre-sanitised above.
 echo $sgs_form_output;

@@ -293,6 +293,24 @@ $check( range( 0, 1100, 100 ) === $column( $tl_rows, 'desktop' ), 'timeline desk
 $check( false !== strpos( $css_tl, '.sgs-tl-abc12345 .sgs-timeline__entry[data-sgs-loop-i="11"]' ), 'timeline: rule scoped to the uid and the entry by its index' );
 $check( ' data-sgs-loop-i="3"' === Sgs_Motion_Loop_Delays::item_attr( 3 ), 'item_attr writes the index attribute' );
 
+// Form fields, choice-flow options and form tiles (Spec 38A FR-38A-26): three more blocks that print their items themselves.
+$reset();
+$items_attrs = array( 'sgsMotion' => array( 'stagger' => array( 'step' => 100, 'order' => 'row-first', 'perRow' => false ) ) );
+$item_cases  = array(
+	array( 'sgs/form', 'sgs-form-ab12cd34', 'sgs-form-field', '<div class="sgs-form-field"><input></div><div class="sgs-form-field sgs-form-field--tiles"></div><div class="sgs-form-field__group"></div><div class="sgs-form-field"></div>', 3 ),
+	array( 'sgs/choice-flow-question', 'sgs-cfq-ab12cd34', 'sgs-choice-flow-question__option', '<ul><li class="sgs-choice-flow-question__option"><button></button></li><li class="sgs-choice-flow-question__option"></li></ul>', 2 ),
+	array( 'sgs/form-field-tiles', 'sgs-ft-ab12cd34', 'sgs-form-tile', '<label class="sgs-form-tile"></label><label class="sgs-form-tile"></label><label class="sgs-form-tile"></label><label class="sgs-form-tile"></label>', 4 ),
+);
+foreach ( $item_cases as list( $slug, $uid, $class, $html, $expected ) ) {
+	$reset();
+	$tagged = Sgs_Motion_Loop_Delays::tag_by_class( $html, $class );
+	$check( $expected === $tagged['count'] && false !== strpos( $tagged['html'], 'data-sgs-loop-i="' . ( $expected - 1 ) . '"' ), "$slug: every item carries its index and a BEM child of the class is not an item" );
+	$check( null === Sgs_Motion_Loop_Delays::item_array( $slug, $uid, array(), $tagged['count'], '.' . $class ), "$slug: no stagger settings, the items stay untagged" );
+	Sgs_Motion_Loop_Delays::item_array( $slug, $uid, $items_attrs, $tagged['count'], '.' . $class );
+	$css_items = $collected();
+	$check( false !== strpos( $css_items, '.' . $uid . ' .' . $class . '[data-sgs-loop-i="' . ( $expected - 1 ) . '"]' ), "$slug: one delay rule per item, scoped to the block uid and the index" );
+}
+
 // No settings, a switched-off stagger, an unusable selector or no items: nothing returned, nothing collected.
 $reset();
 foreach ( array( 'sgs/card-grid', 'sgs/gallery', 'sgs/timeline' ) as $slug ) {

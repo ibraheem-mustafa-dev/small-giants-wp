@@ -104,6 +104,9 @@
 	},
 	"serverItems": [
 		"sgs/card-grid",
+		"sgs/choice-flow-question",
+		"sgs/form",
+		"sgs/form-field-tiles",
 		"sgs/gallery",
 		"sgs/nav-bar-menu",
 		"sgs/nav-drawer-menu",

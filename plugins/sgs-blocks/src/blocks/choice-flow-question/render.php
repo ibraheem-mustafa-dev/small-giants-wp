@@ -85,13 +85,18 @@ if ( '' !== $product_attribute && function_exists( 'wc_get_product' ) ) {
 }
 $is_product_attribute_step = '' !== $product_attribute && '' !== $attribute_mode && ! empty( $generated_options );
 
-$wrapper_args = array_merge( array( 'class' => 'sgs-choice-flow-question' ), sgs_choice_flow_question_data_attrs( $attributes ) );
+// Option stagger (Spec 38A FR-38A-26): the options are array data (or generated from the product attribute), so the
+// container's stored `sgsMotion.stagger` becomes one scoped delay rule per option, found by its `data-sgs-loop-i` index.
+$sgs_cfq_uid = 'sgs-cfq-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+
+$wrapper_args = array_merge( array( 'class' => 'sgs-choice-flow-question ' . $sgs_cfq_uid ), sgs_choice_flow_question_data_attrs( $attributes ) );
 if ( $is_product_attribute_step ) {
 	$wrapper_args['data-product-attribute'] = $product_attribute;
 	$wrapper_args['data-attribute-mode']    = $attribute_mode;
 }
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
+ob_start();
 echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup.
 
 if ( '' !== $question ) {
@@ -298,3 +303,10 @@ if ( $is_product_attribute_step ) {
 }
 
 echo '</div>';
+
+$sgs_cfq_html   = ob_get_clean();
+$sgs_cfq_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $sgs_cfq_html, 'sgs-choice-flow-question__option' );
+$sgs_cfq_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/choice-flow-question', $sgs_cfq_uid, $attributes, $sgs_cfq_tagged['count'], '.sgs-choice-flow-question__option' );
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- the block's own markup, escaped where it was printed; the rules come from the collector.
+echo (string) $sgs_cfq_style . ( null === $sgs_cfq_style ? $sgs_cfq_html : $sgs_cfq_tagged['html'] );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

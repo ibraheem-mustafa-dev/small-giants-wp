@@ -30,6 +30,7 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"motionItems": "formField",
 			"motion": {
 				"states": [
 					"invalid",
@@ -65,6 +66,13 @@
 				]
 			},
 			"elements": {
+				"formField": {
+					"label": "Each field",
+					"layer": "CONTENT",
+					"order": 1,
+					"selector": ".sgs-form-field",
+					"clusters": []
+				},
 				"wrapper": {
 					"label": "Wrapper",
 					"layer": "OUTER",

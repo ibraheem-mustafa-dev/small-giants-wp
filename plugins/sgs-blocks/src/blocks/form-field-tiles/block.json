@@ -20,12 +20,21 @@
 	],
 	"supports": {
 		"sgs": {
+			"motionItems": "tile",
+			"motion": true,
 			"iconPicker": true,
 			"imageControls": false,
 			"hideExtensions": [
 				"animation"
 			],
 			"elements": {
+				"tile": {
+					"label": "Each tile",
+					"layer": "CONTENT",
+					"order": 1,
+					"selector": ".sgs-form-tile",
+					"clusters": []
+				},
 				"wrapper": {
 					"label": "Wrapper",
 					"layer": "OUTER",

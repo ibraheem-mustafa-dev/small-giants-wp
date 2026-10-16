@@ -22,16 +22,25 @@
 	"supports": {
 		"html": false,
 		"sgs": {
+			"motionItems": "option",
+			"motion": true,
 			"hideExtensions": [
 				"animation",
 				"clickEffects",
 				"parallax"
 			],
 			"elements": {
+				"option": {
+					"label": "Each option",
+					"layer": "CONTENT",
+					"order": 1,
+					"selector": ".sgs-choice-flow-question__option",
+					"clusters": []
+				},
 				"question": {
 					"label": "Question text",
 					"layer": "CONTENT",
-					"order": 1,
+					"order": 2,
 					"clusters": [
 						"text"
 					],
@@ -43,7 +52,7 @@
 				"intro": {
 					"label": "Intro paragraph",
 					"layer": "CONTENT",
-					"order": 3,
+					"order": 4,
 					"clusters": [
 						"layout"
 					],
@@ -55,7 +64,7 @@
 				"options": {
 					"label": "Options list",
 					"layer": "CONTENT",
-					"order": 2,
+					"order": 3,
 					"clusters": [
 						"layout"
 					],
