@@ -193,7 +193,7 @@ async function open( browser, url, width, attrs = {} ) {
 			} );
 			// The fixture stores smoothing and hold, which the emitter writes as custom properties that win over the attribute: set them too.
 			const rules = Object.entries( attrs ).filter( ( [ name ] ) => PROPERTY_OF[ name ] ).map( ( [ name, value ] ) => `${ PROPERTY_OF[ name ] }:${ value } !important` ).join( ';' );
-			if ( rules ) html = html.replace( '</head>', `<style>[data-sgs-fx="horizontal-panel"]{${ rules }}</style></head>` );
+			if ( rules ) html = html.replace( '</head>', `<style>[data-sgs-fx~="horizontal-panel"]{${ rules }}</style></head>` );
 			await route.fulfill( { response, body: html } );
 		} );
 	}
