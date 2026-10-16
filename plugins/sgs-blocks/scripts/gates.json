@@ -1648,7 +1648,7 @@
   },
   {
     "id": "check-retired-blocks",
-    "cmd": "python scripts/check-retired-blocks.py --check",
+    "cmd": "python scripts/check-retired-blocks.py --check --with-db",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
