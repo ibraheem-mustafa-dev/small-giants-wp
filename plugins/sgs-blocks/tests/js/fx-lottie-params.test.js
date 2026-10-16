@@ -330,10 +330,11 @@ describe( 'values', () => {
 			followTier( el );
 			boot();
 			await settle();
+			expect( query( '(max-width: 1023px)' ).listeners ).toHaveLength( 1 );
+			expect( query( '(max-width: 767px)' ).listeners ).toHaveLength( 1 );
 			window.dispatchEvent( new Event( 'pagehide' ) );
-			tierSpeed = '0.5';
-			crossBreakpoint();
-			expect( lastPlayer().setSpeed ).not.toHaveBeenCalled();
+			expect( query( '(max-width: 1023px)' ).listeners ).toHaveLength( 0 );
+			expect( query( '(max-width: 767px)' ).listeners ).toHaveLength( 0 );
 		} );
 	} );
 
