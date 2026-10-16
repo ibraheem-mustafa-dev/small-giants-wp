@@ -35,6 +35,13 @@
  *   Live negative control: the off-effect-skipped judge fed .mlo-b's reading as if it listed this tier must go red, so
  *                        a pass on .mlo-a or .mlo-c is not read off a marker that never appears.
  *
+ * RESIZE (one page load per engine, `runResize`): open at 1440, narrow to the row's off tier (.mlo-a at 375, .mlo-c at
+ * 768), widen back to 1440. `bootEffect` re-checks the gate on every tier change, so:
+ *   resize-stops-on-off-tier     after narrowing the row has no SplitText fragments and its text is the pre-split text.
+ *   resize-restarts-on-leaving   after widening the row has fragments again.
+ *   Negative control: the stopped judge fed the control (still booted) must go red, and the self-test feeds both judges
+ *                        the pre-change reading (fragments kept after narrowing, none after widening).
+ *
  * Usage:
  *   node plugins/sgs-blocks/scripts/motion-qa/probe-layer-off-per-effect.mjs --page <id> [--site sandybrown]
  *        [--engine chromium|firefox|webkit ...]      (SGS_HEADED=1 runs real Chrome headed for Chromium)
@@ -94,6 +101,18 @@ export function judgeRow( row, control, tier ) {
 	const check = off ? 'off-effect-skipped' : 'boots-off-tier';
 	if ( ! booted( control ) ) return { check, pass: null };
 	return { check, pass: off ? ! booted( row ) : booted( row ) };
+}
+
+/**
+ * One row after a viewport resize across a tier: { check, pass }. `expect` is 'stopped' (the row's off tier was just
+ * entered: no SplitText fragments and the text as it was before the split) or 'restarted' (the off tier was just left:
+ * fragments again). pass is null when the control is not booted (nothing to compare against).
+ */
+export function judgeResize( row, control, expect, originalText ) {
+	const check = 'stopped' === expect ? 'resize-stops-on-off-tier' : 'resize-restarts-on-leaving';
+	if ( ! booted( control ) ) return { check, pass: null };
+	if ( 'stopped' === expect ) return { check, pass: ! booted( row ) && row.text === originalText };
+	return { check, pass: booted( row ) };
 }
 
 // ---- Static placement check (target level, part kinds, block qualification) ------------------------------------
@@ -214,6 +233,20 @@ export async function selfTest() {
 	const noControl = judgeRow( good.a, read( { splitFragments: 0 } ), 'mobile' );
 	rep.check( 'unanswered-without-control', { measured: noControl, pass: null === noControl.pass } );
 
+	const T = 'Step one Step two';
+	const stopped = judgeResize( read( { splitFragments: 0, text: T } ), good.b, 'stopped', T );
+	rep.check( 'resize-stops-on-off-tier', { measured: stopped, pass: 'resize-stops-on-off-tier' === stopped.check && true === stopped.pass } );
+	const stillRunning = judgeResize( read( { splitFragments: 12, text: T } ), good.b, 'stopped', T );
+	rep.control( 'resize-stops-on-off-tier', { why: 'the pre-change behaviour: a booted effect keeps its fragments after the resize', measured: stillRunning, red: false === stillRunning.pass } );
+	const textLeft = judgeResize( read( { splitFragments: 0, text: 'Step' } ), good.b, 'stopped', T );
+	rep.control( 'resize-stops-on-off-tier', { why: 'fragments gone but the original text not restored', measured: textLeft, red: false === textLeft.pass } );
+	const restarted = judgeResize( read( { splitFragments: 12, text: T } ), good.b, 'restarted', T );
+	rep.check( 'resize-restarts-on-leaving', { measured: restarted, pass: true === restarted.pass } );
+	const neverRestarted = judgeResize( read( { splitFragments: 0, text: T } ), good.b, 'restarted', T );
+	rep.control( 'resize-restarts-on-leaving', { why: 'the pre-change behaviour: nothing restarts the effect on leaving the off tier', measured: neverRestarted, red: false === neverRestarted.pass } );
+	const resizeNoControl = judgeResize( read( { splitFragments: 0, text: T } ), read( { splitFragments: 0 } ), 'restarted', T );
+	rep.check( 'resize-unanswered-without-control', { measured: resizeNoControl, pass: null === resizeNoControl.pass } );
+
 	await fixtureChecks( rep );
 	return rep.summary();
 }
@@ -248,6 +281,7 @@ async function reading( page, selector ) {
 			disableMobile: el.hasAttribute( 'data-sgs-fx-disable-mobile' ),
 			disableTablet: el.hasAttribute( 'data-sgs-fx-disable-tablet' ),
 			splitFragments: fragments.length,
+			text: ( el.textContent || '' ).replace( /\s+/g, ' ' ).trim(),
 			ariaLabel: el.getAttribute( 'aria-label' ),
 		};
 	}, selector );
@@ -325,6 +359,80 @@ async function runWidth( browserType, engine, width, url, rep ) {
 	}
 }
 
+/**
+ * Resize across a tier on one page load (FR-38A-23: `bootEffect` re-checks the gate on a tier change). Opens at 1440,
+ * narrows to the row's off tier (.mlo-a at 375, .mlo-c at 768) and reads that split-reveal has torn down with the
+ * original text, then widens to 1440 and reads that it has restarted. .mlo-b (no off) is the control and must stay
+ * booted throughout. Each wait is for the expected state, so a build without the re-check times out and reads red.
+ */
+async function runResize( browserType, engine, url, rep ) {
+	const browser = await browserType.launch( launchOptions( engine ) );
+	try {
+		const context = await browser.newContext( { viewport: { width: 1440, height: HEIGHT }, reducedMotion: 'no-preference' } );
+		const page = await context.newPage();
+		if ( ! ( await gotoThroughCheck( page, url ) ) ) {
+			rep.check( 'page', { pass: null, why: 'the host answered with its browser check every time (rerun with SGS_HEADED=1)' } );
+			return;
+		}
+		const sel = ( k ) => `${ ROWS[ k ] }[data-sgs-fx]`;
+		for ( const k of Object.keys( ROWS ) ) {
+			if ( ! ( await page.$( sel( k ) ) ) ) {
+				rep.check( 'emitted', { pass: null, measured: sel( k ), why: 'rows missing (build tests/fixtures/motion/pages/layer-off-per-effect.json)' } );
+				return;
+			}
+		}
+		const fragmentCount = ( s ) => page.evaluate( ( q ) => Array.from( document.querySelector( q ).querySelectorAll( 'div[aria-hidden="true"]' ) )
+			.filter( ( d ) => 'relative' === d.style.position && 'inline-block' === d.style.display ).length, s );
+		const waitFor = async ( k, want ) => {
+			const end = Date.now() + BOOT_TIMEOUT;
+			while ( Date.now() < end ) {
+				if ( ( ( await fragmentCount( sel( k ) ) ) > 0 ) === want ) break;
+				await page.waitForTimeout( 100 );
+			}
+			await page.waitForTimeout( 300 );
+		};
+		await settleInView( page, ROWS.b );
+		await waitFor( 'b', true );
+		for ( const [ k, narrow ] of [ [ 'a', 375 ], [ 'c', 768 ] ] ) {
+			const tier = 375 === narrow ? 'mobile' : 'tablet';
+			const before = await reading( page, sel( k ) );
+			const ctx = { tier, row: k, widths: `1440 > ${ narrow } > 1440` };
+			if ( ! booted( before ) ) {
+				rep.check( 'resize-start', { ...ctx, selector: sel( k ), measured: before, pass: null, why: 'the row did not boot split-reveal at 1440, so the resize has nothing to stop' } );
+				continue;
+			}
+			// The fragments hold the same text, so the pre-split text is read from the control-free source of truth: the
+			// text content before and after must agree once the split is reverted.
+			const originalText = before.text;
+			await page.setViewportSize( { width: narrow, height: HEIGHT } );
+			await waitFor( k, false );
+			const control = await reading( page, sel( 'b' ) );
+			const stoppedRow = await reading( page, sel( k ) );
+			const stopped = judgeResize( stoppedRow, control, 'stopped', originalText );
+			rep.check( stopped.check, {
+				...ctx, selector: sel( k ), property: 'SplitText fragments gone and original text restored after entering the off tier', measured: { fragments: stoppedRow.splitFragments, text: stoppedRow.text, controlBooted: booted( control ) },
+				expected: 'no fragments, text unchanged, control still booted', pass: stopped.pass, why: null === stopped.pass ? 'the control did not stay booted' : '',
+			} );
+			rep.control( stopped.check, {
+				...ctx, selector: sel( 'b' ), property: 'the stopped judge fed the control row (still booted)', measured: { fragments: control.splitFragments },
+				expected: 'red: a row that is still running reads as not stopped', red: null === stopped.pass ? null : false === judgeResize( control, control, 'stopped', originalText ).pass,
+			} );
+			await page.setViewportSize( { width: 1440, height: HEIGHT } );
+			await waitFor( k, true );
+			const restartedRow = await reading( page, sel( k ) );
+			const restarted = judgeResize( restartedRow, await reading( page, sel( 'b' ) ), 'restarted', originalText );
+			rep.check( restarted.check, {
+				...ctx, selector: sel( k ), property: 'SplitText fragments present again after leaving the off tier', measured: { fragments: restartedRow.splitFragments },
+				expected: 'split-reveal booted again', pass: restarted.pass, why: null === restarted.pass ? 'the control is not booted' : '',
+			} );
+		}
+	} catch ( e ) {
+		rep.check( 'error', { pass: false, why: String( e && e.message ? e.message : e ) } );
+	} finally {
+		await browser.close();
+	}
+}
+
 export async function main( argv ) {
 	const args = parseArgs( argv );
 	if ( ! args.pages.length ) {
@@ -340,6 +448,9 @@ export async function main( argv ) {
 			await runWidth( playwright[ engine ], engine, width, url, rep );
 			all.push( ...rep.rows );
 		}
+		const resizeRep = new Reporter( { engine, width: 'resize', mode: 'live' } );
+		await runResize( playwright[ engine ], engine, url, resizeRep );
+		all.push( ...resizeRep.rows );
 	}
 	const finish = new Reporter( {} );
 	finish.rows = all;

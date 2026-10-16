@@ -141,11 +141,20 @@ export function initScrub( el ) {
 
 			const unbind = isHover ? bindHoverReplay( el, played ) : undefined;
 
+			/*
+			 * revert(), not kill(): it restores the inline values the tween
+			 * found and then kills it. A build made by rebuildOnTierChange
+			 * after a tier change runs outside the withMotionAllowed context,
+			 * so nothing else reverts this tween; kill() alone would leave a
+			 * hover replay stranded part-way through its from-state. Reverting
+			 * a tween the context already reverted, or a hover tween that never
+			 * played, writes nothing new (gsap 3.15.0 Animation.revert).
+			 */
 			return () => {
 				if ( unbind ) {
 					unbind();
 				}
-				played.kill();
+				played.revert();
 			};
 		}
 
