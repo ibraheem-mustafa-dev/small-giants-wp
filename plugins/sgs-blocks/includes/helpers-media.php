@@ -88,7 +88,8 @@ function sgs_responsive_image( int $id, string $url, string $alt = '', string $s
  *
  * A PHP `static` local persists for the lifetime of the current request only
  * (WordPress does not share it across requests), which is exactly the scope
- * needed: "first background image THIS PAGE LOAD rendered."
+ * needed: "first background image THIS PAGE LOAD rendered." Content images
+ * claim the same slot through sgs_content_image_claims_priority().
  *
  * @return int 1 on the first call in this request, 2 on the second, etc.
  */
@@ -96,6 +97,29 @@ function sgs_next_background_image_index(): int {
 	static $sgs_bg_image_index = 0;
 	++$sgs_bg_image_index;
 	return $sgs_bg_image_index;
+}
+
+/**
+ * Whether the content image about to print is the page's likely LCP image, so it takes `loading="eager"` and
+ * `fetchpriority="high"`; every other content image takes `loading="lazy"` and `fetchpriority="auto"`.
+ *
+ * A content image (a product card's photo, a grid item's photo) claims the priority only when it renders inside the
+ * page's first top-level section (`Sgs_Motion_Renderer::in_first_section()`, the same first-section test the Spec 38A
+ * §9 LCP rule reads) AND no earlier image on the page has taken the one page-wide priority slot
+ * (`sgs_next_background_image_index()`, shared with sgs/hero and SGS_Container_Wrapper's background images). So a
+ * repeating grid outside the first section claims nothing, a first-section grid claims it for its first photo only,
+ * and the editor's block-renderer preview (no first section) claims nothing. The slot is consumed only by a claim made
+ * inside the first section, so refused claims never move it.
+ *
+ * Call it once per image, only when the image will actually print.
+ *
+ * @return bool True when this image takes the page's priority slot.
+ */
+function sgs_content_image_claims_priority(): bool {
+	if ( ! class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Renderer' ) || ! \SGS\Blocks\Motion\Sgs_Motion_Renderer::in_first_section() ) {
+		return false;
+	}
+	return 1 === sgs_next_background_image_index();
 }
 
 /**

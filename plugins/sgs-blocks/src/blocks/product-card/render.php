@@ -1508,14 +1508,16 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php if ( '' !== $card_permalink ) : ?>
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 				<?php endif; ?>
+				<?php // Only the page's likely LCP image loads eagerly at high priority (helpers-media.php). ?>
+				<?php $sgs_pc_img_priority = sgs_content_image_claims_priority(); ?>
 				<img
 					class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 					src="<?php echo esc_url( $image_src ); ?>"
 					alt="<?php echo esc_attr( $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'] ); ?>"
 					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
 					<?php echo $def_img_h > 0 ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
-					loading="eager"
-					fetchpriority="high"
+					loading="<?php echo $sgs_pc_img_priority ? 'eager' : 'lazy'; ?>"
+					fetchpriority="<?php echo $sgs_pc_img_priority ? 'high' : 'auto'; ?>"
 					decoding="async"
 					<?php // FP-H FINAL-FORM: binds stay under an image override — the override is the DEFAULT image; variation photos still swap in. ?>
 					data-wp-bind--src="context.imageSrc"
@@ -1932,12 +1934,14 @@ ob_start();
 	<?php if ( '' !== $card_permalink ) : ?>
 	<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 	<?php endif; ?>
+	<?php // Only the page's likely LCP image loads eagerly at high priority (helpers-media.php). ?>
+	<?php $sgs_pc_img_priority = sgs_content_image_claims_priority(); ?>
 	<img
 		class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 		src="<?php echo esc_url( $sgs_resolved_img ); ?>"
 		alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"
-		loading="eager"
-		fetchpriority="high"
+		loading="<?php echo $sgs_pc_img_priority ? 'eager' : 'lazy'; ?>"
+		fetchpriority="<?php echo $sgs_pc_img_priority ? 'high' : 'auto'; ?>"
 		decoding="async"
 		<?php if ( ! $sgs_img_override ) : // FP-H: a typed override image is STATIC — no reactive swap binds. ?>
 		data-wp-bind--src="context.imageSrc"

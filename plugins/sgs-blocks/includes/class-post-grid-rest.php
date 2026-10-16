@@ -422,23 +422,20 @@ class Post_Grid_REST {
 		$permalink = esc_url( get_permalink( $post_id ) );
 		$title     = esc_html( get_the_title( $post_id ) );
 
-		// Performance: first card gets priority loading hints; rest are lazy.
-		$img_loading  = 0 === $card_index ? 'eager' : 'lazy';
-		$img_priority = 0 === $card_index ? ' fetchpriority="high"' : '';
-
 		// Build card HTML.
 		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . '">';
 
 		// --- Image section -----------------------------------------------
 		if ( $show_image ) {
-			$img_attrs = [
-				'class'   => 'sgs-post-grid__img',
-				'loading' => $img_loading,
+			// Performance: only the page's likely LCP image (the first card of a grid in the first section, and only
+			// when no earlier image took the page's slot) loads eagerly at high priority; every other card, and every
+			// page this endpoint fetches later, loads lazily (helpers-media.php::sgs_content_image_claims_priority).
+			$img_claims = 0 === $card_index && has_post_thumbnail( $post_id ) && \sgs_content_image_claims_priority();
+			$img_attrs  = [
+				'class'         => 'sgs-post-grid__img',
+				'loading'       => $img_claims ? 'eager' : 'lazy',
+				'fetchpriority' => $img_claims ? 'high' : 'auto',
 			];
-
-			if ( 0 === $card_index ) {
-				$img_attrs['fetchpriority'] = 'high';
-			}
 
 			// 37-media-no-handroll: media-atom marker classes (see the $sgs_pg_uid
 			// comment above). Appended to the same `class` attr `get_the_post_

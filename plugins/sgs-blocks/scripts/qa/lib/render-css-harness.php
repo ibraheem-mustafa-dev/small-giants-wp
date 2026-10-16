@@ -52,6 +52,7 @@
  *   --product-file product.json   a minimal WooCommerce product (wc-product-stub.php)
  *   --post-file post.json         the global post get_post() returns (an object: ID, post_type, ...)
  *   --attachments-file a.json     attachment ID => image URL (the harness has no media library)
+ *   --first-section               the block sits in the page's first top-level section (first-section-stub.php)
  *
  * @package SGS\Blocks\QA
  */
@@ -313,6 +314,11 @@ if ( isset( $args['product-file'] ) ) {
 	}
 	$GLOBALS['sgs_qa_product'] = $product_tree;
 	require_once __DIR__ . '/wc-product-stub.php';
+}
+
+// --first-section: the block renders inside the page's first top-level section (first-section-stub.php).
+if ( isset( $args['first-section'] ) ) {
+	require_once __DIR__ . '/first-section-stub.php';
 }
 
 // --attachments-file: attachment ID => image URL, what wp_get_attachment_image_url() answers (wp-stubs.php).

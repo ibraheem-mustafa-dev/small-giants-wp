@@ -344,6 +344,29 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
+	 * The targets whose element is, or contains, an `<img fetchpriority="high">` (the LCP rule's image clause), in
+	 * document order. A target's match does not depend on the scope class, so a placeholder scope resolves it.
+	 *
+	 * @param string              $name     Block name.
+	 * @param string              $html     Rendered HTML.
+	 * @param array<string,mixed> $elements The document's elements.
+	 * @return array<string,true> Target => true.
+	 */
+	private static function priority_targets( string $name, string $html, array $elements ): array {
+		$out = array();
+		if ( false === stripos( $html, 'fetchpriority' ) ) {
+			return $out;
+		}
+		foreach ( $elements as $target => $element ) {
+			$resolved = Sgs_Motion_Targets::resolve( $name, 'sgs-m-0000000000', (string) $target, (array) $element );
+			if ( null !== $resolved && Sgs_Motion_Markup::is_priority_image( $html, $resolved['match'] ) ) {
+				$out[ (string) $target ] = true;
+			}
+		}
+		return $out;
+	}
+
+	/**
 	 * Emit the block's motion (render_block, priority 20).
 	 *
 	 * @param mixed $block_content Rendered HTML.
@@ -380,7 +403,10 @@ final class Sgs_Motion_Renderer {
 			do_action( 'sgs_motion_layer_dropped', $name, 'root', $refusal );
 		}
 
-		$scope = 'sgs-m-' . substr( md5( $name . '|' . wp_json_encode( $doc ) . '|' . ( $frame['first'] ? '1' : '0' ) ), 0, 10 );
+		// The targets holding an `<img fetchpriority="high">` change what the LCP rule emits, so they are part of the scope:
+		// two blocks with one document (the cards a delegating grid prints) share a scope only when their CSS is the same.
+		$priority = self::priority_targets( $name, $block_content, $doc['elements'] );
+		$scope    = 'sgs-m-' . substr( md5( $name . '|' . wp_json_encode( $doc ) . '|' . ( $frame['first'] ? '1' : '0' ) . ( array() === $priority ? '' : '|' . implode( ',', array_keys( $priority ) ) ) ), 0, 10 );
 		if ( self::uses_source( $doc, 'root' ) ) {
 			$root_attrs['data-sgs-mroot'] = '';
 		}
@@ -409,7 +435,7 @@ final class Sgs_Motion_Renderer {
 			foreach ( $element['effects'] ?? array() as $layer ) {
 				$suppress = $suppress || sgs_effect_owns_scroll_transform( (string) $layer['effect'] );
 			}
-			$lcp_image = Sgs_Motion_Markup::is_priority_image( $block_content, $resolved['match'] );
+			$lcp_image = isset( $priority[ $target ] );
 			$emitted   = Sgs_Motion_Emitter::emit(
 				$element,
 				$resolved['selector'],
