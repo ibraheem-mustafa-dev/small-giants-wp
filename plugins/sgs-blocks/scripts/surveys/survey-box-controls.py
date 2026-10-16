@@ -327,7 +327,7 @@ def _shared_control_files():
     panel was reported as "NO CONTROL INSTANCE FOUND BY STATIC SCAN" — declared
     and rendered but apparently unreachable.
 
-    Measured consequence: `gridItemBorderRadius` on container / cta-section /
+    Measured consequence: `gridItemBorderRadius` on container /
     hero / trust-bar was reported as 4 of the 6 no-control findings and carried
     into contract §14 field 6 as real. It HAS a canonical
     `ResponsiveBorderRadiusControl`, in `GridItemDefaultsPanel`

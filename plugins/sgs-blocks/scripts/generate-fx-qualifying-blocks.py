@@ -265,11 +265,10 @@ comment someone could forget to keep true.
 A KNOWN DB-VS-BLOCK.JSON GAP (flagged, not silently patched over)
 ----------------------------------------------------------------------------
 `block_composition.container_kind` (DB) has MORE 'section'/'layout' rows than
-block.json's `containerKind` support declares (verified: sgs/cta-section had
-container_kind='section' in the DB, `is_section_root: true` in block.json,
-but NO `containerKind` key at all — the same gap hero/trust-bar do NOT have.
-FIXED for cta-section as part of this task, since it is directly the
-task's own acceptance check. NOT fixed for the ~12 other DB-only 'layout'
+block.json's `containerKind` support declares (a section block can have
+container_kind='section' in the DB and `is_section_root: true` in block.json
+but NO `containerKind` key at all — the gap hero/trust-bar do NOT have).
+NOT fixed for the ~12 other DB-only 'layout'
 blocks (card-grid, gallery, accordion, tabs, pricing-table, google-reviews,
 post-grid, multi-button, form-field-tiles, trustpilot-reviews,
 content-collection, adaptive-nav) — none of the current 'block'/'element'-

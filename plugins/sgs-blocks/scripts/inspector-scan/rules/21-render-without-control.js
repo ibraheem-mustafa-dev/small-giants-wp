@@ -156,16 +156,15 @@ function extensionOwnedAttrs() {
 // (typography.php:184,246-247) — the `style` object, NOT a named `textAlign`
 // attribute. So a block declaring its own top-level `textAlign` attribute has a
 // DIFFERENT thing from what core's control writes, and flagging it is correct.
-// sgs/cta-section is exactly that case: render.php:278-279 reads
-// $attributes['textAlign'] while core's control writes style.typography.textAlign,
-// so no control reaches the value the block actually paints. A 4-rater council
+// A block whose render.php reads $attributes['textAlign'] while core's control writes
+// style.typography.textAlign is exactly that case: no control reaches the value the
+// block actually paints. A 4-rater council
 // challenged this entry and BOTH the council's reason ("not a real support key")
 // and the original mapping were wrong; core source settled it. Do not re-add it
 // without re-reading typography.php.
 //
-// MEASURED: five findings are the core-control shape — sgs/heading.anchor,
-// sgs/button.anchor, sgs/responsive-logo.align, sgs/cta-section.backgroundColor
-// and .textColor. Verified by reading each block.json's supports AND confirming
+// MEASURED: three findings are the core-control shape — sgs/heading.anchor,
+// sgs/button.anchor and sgs/responsive-logo.align. Verified by reading each block.json's supports AND confirming
 // edit.js never mentions the attribute — i.e. the control is core's, not a
 // missed local one.
 //
@@ -797,7 +796,7 @@ function controlCorpus( ctx, block ) {
 
 	// TRANSITIVE, not one level. MEASURED 2026-08-08 (QC council rater C): a
 	// single level of expansion produced 20 false positives across the 4 blocks
-	// that render <BackgroundPanel> (container, cta-section, hero, trust-bar).
+	// that render <BackgroundPanel> (container, hero, trust-bar).
 	// Cause: ContainerWrapperControls.js:935 renders <GradientOverlayControl>,
 	// and THAT file is where backgroundOverlayColour / overlayGradient /
 	// overlayGradientAngle / overlayGradientFrom / overlayGradientTo are

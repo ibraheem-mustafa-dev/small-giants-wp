@@ -881,7 +881,7 @@ function loadBlockOwnSrc( blockDir ) {
 	// Measured: `GradientOverlayControl` drives attrs through a computed-key
 	// setAttributes and is mounted only by `BackgroundPanel` / `ShapeDividersPanel`
 	// / `hero`. SEVEN blocks mount BackgroundPanel without mounting
-	// GradientOverlayControl themselves — cta-section, multi-button, nav-drawer,
+	// GradientOverlayControl themselves — multi-button, nav-drawer,
 	// physics-canvas, site-footer, site-header, trust-bar — so for all seven its
 	// source was never folded in and any attr it controls read as DEAD.
 	// Now iterated to a FIXED POINT. Each file is read at most once (tracked by

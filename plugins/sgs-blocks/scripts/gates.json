@@ -1645,5 +1645,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 184
+  },
+  {
+    "id": "check-retired-blocks",
+    "cmd": "python scripts/check-retired-blocks.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 185
   }
 ]

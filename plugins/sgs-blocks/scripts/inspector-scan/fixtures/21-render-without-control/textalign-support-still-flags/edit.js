@@ -13,8 +13,7 @@
  * excluded, while `textAlign` must be reported — one fixture proving both the
  * inclusion and the exclusion side of the same `typography` branch.
  *
- * The live case this came from is sgs/cta-section, whose render.php:278-279
- * paints $attributes['textAlign'] with no control anywhere.
+ * The case this guards: a block whose render.php paints $attributes['textAlign'] with no control anywhere.
  */
 export default function Edit() {
 	return (

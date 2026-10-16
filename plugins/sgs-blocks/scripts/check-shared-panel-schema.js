@@ -941,7 +941,7 @@ function runSelfTest() {
 	// a mount. This is the project's own recorded false-positive class
 	// (`a-grep-for-a-class-name-is-not-a-usage-census`).
 	//
-	// Re-pointed 2026-08-12: the original control used cta-section's
+	// Re-pointed 2026-08-12: the original control used a retired block's
 	// ContentBandPanel comments, which would go VACUOUS the moment
 	// ContentBandPanel left PANEL_NAMES — findMounts() only ever searches for
 	// names in that list, so the assertion could no longer fail for any

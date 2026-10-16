@@ -24,7 +24,7 @@
 // CLAUDE.md), that generated rule sits at specificity (0,2,0) and cannot beat
 // the child block's own inline typography styles at (1,0,0,0). Spec 35A F.1:
 // "a composite's selectors.typography targets its own ROOT, never a child's
-// dead BEM class." cta-section/info-box/notice-banner were fixed for this;
+// dead BEM class." info-box/notice-banner were fixed for this;
 // hero never was. Its 7 declared native typography controls (fontSize,
 // fontFamily, fontWeight, lineHeight, letterSpacing, textTransform,
 // textDecoration) are silent no-ops.
@@ -83,7 +83,7 @@
 // rules.json _meta.zeroIsAClaim: 25 blocks declare native
 // `supports.typography`. Of those, 11 resolve to the WP-generated root class
 // (case c, skipped): accordion, breadcrumbs, business-info, container,
-// countdown-timer, cta-section, form, info-box, product-faq, quote,
+// countdown-timer, form, info-box, product-faq, quote,
 // social-icons. Of the remaining 14, this rule is PREDICTED to flag exactly
 // 3: sgs/hero (case b — the worked example), sgs/pricing-table and
 // sgs/testimonial-slider (both case a — testimonial-slider's own render.php

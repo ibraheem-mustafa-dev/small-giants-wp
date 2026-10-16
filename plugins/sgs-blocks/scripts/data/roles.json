@@ -30,7 +30,7 @@
       "excludes_attr_types": [
         "boolean"
       ],
-      "excludes_reason": "The contract's value IS the raw url()/gradient() string -- a boolean cannot hold it. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/container|cta-section|hero|trust-bar.overlayGradient is a plain ON/OFF toggle (its sibling overlayGradientFrom/To strings carry the actual colour-gradient value) -- the role belonged on the siblings, not the toggle. See assign-canonical.py TIER 3.7."
+      "excludes_reason": "The contract's value IS the raw url()/gradient() string -- a boolean cannot hold it. Found live 2026-08-05 (D497 follow-up, TIER 3.7): sgs/container|hero|trust-bar.overlayGradient is a plain ON/OFF toggle (its sibling overlayGradientFrom/To strings carry the actual colour-gradient value) -- the role belonged on the siblings, not the toggle. See assign-canonical.py TIER 3.7."
     }
   ],
   "colour-text": [

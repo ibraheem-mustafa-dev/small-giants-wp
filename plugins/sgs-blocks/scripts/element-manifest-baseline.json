@@ -1,6 +1,6 @@
 {
 	"_doc": "Accepted debt for check-element-manifest-conformance.js --check. These numbers may only ever go DOWN. A rise fails the build. Raising one requires a written reason in _accepted below and Bean's sign-off (a new baseline entry is stop-the-line, per Spec 35 / the plan's verification bar).",
-	"_promoted": "2026-08-15 — the checker ran WARN-ONLY from its creation. It was promoted to a real gate the same day the D533/D537 placement resolver's last 7 contested attributes were cleared (alignItems, grid-vs-wrapper, on container/cta-section/form/form-field-tiles/hero/pricing-table/tabs). An advisory placement rule is exactly why D537 and D609 drifted into contradicting each other on the record.",
+	"_promoted": "2026-08-15 — the checker ran WARN-ONLY from its creation. It was promoted to a real gate the same day the D533/D537 placement resolver's last 7 contested attributes were cleared (alignItems, grid-vs-wrapper, on container/form/form-field-tiles/hero/pricing-table/tabs). An advisory placement rule is exactly why D537 and D609 drifted into contradicting each other on the record.",
 	"_not_gated": "total_gap (3363 live) is deliberately NOT gated. A GAP means an element's declared cluster names a CSS property the element has no attribute for — e.g. a container's `fill` cluster naming css:object-fit. That is COVERAGE, not a defect. Gating it would fail every build forever while measuring the wrong thing.",
 	"orphan_style_defect": 0,
 	"total_state_without_base": 4,

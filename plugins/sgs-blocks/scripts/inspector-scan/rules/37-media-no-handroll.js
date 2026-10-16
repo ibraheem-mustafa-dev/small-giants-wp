@@ -94,7 +94,7 @@
 //     `sgs_media_element_style(` (render.php) or whose matched value starts
 //     `var(--sgs-media` (style.css). Measured: **46 direct-write findings
 //     across 25 unique blocks** (before-after, brand-strip, business-info,
-//     buybox, card-grid, cart, container, cta-section, form, gallery,
+//     buybox, card-grid, cart, container, form, gallery,
 //     google-reviews, hero, image-sequence, info-box, media, mega-aside,
 //     mega-panel, nav-drawer, option-picker, post-grid, product-card,
 //     product-search, team-member, testimonial, trust-bar).
@@ -235,7 +235,7 @@
 // `sgs/container`'s own `object-fit` finding (`.sgs-container__video-bg` /
 // `.sgs-container__image-bg`) is untouched by this and still fires, so the
 // block itself is not silenced. All 5 of the brief's named real findings
-// (sgs/cta-section, sgs/container, sgs/team-member, sgs/testimonial,
+// (sgs/container, sgs/team-member, sgs/testimonial,
 // sgs/gallery) were re-verified live after the change and still fire. No
 // other rule's finding count changed (verified via full before/after
 // `--json` diff — only rule 37's own array differs).
@@ -298,18 +298,17 @@ const MEDIA_CSS_PROPERTIES = [
 // (`backgroundOverlayColour`, `backgroundSize`, `bgParallax`, `bgKenBurns`)
 // with no element name in front of it. Verified live across all 7 blocks
 // this rule flagged for the bare-`backgroundOverlay*` shape (sgs/container,
-// sgs/cta-section, sgs/multi-button, sgs/physics-canvas, sgs/site-footer,
+// sgs/multi-button, sgs/physics-canvas, sgs/site-footer,
 // sgs/site-header) plus sgs/nav-drawer's direct-css-write shape — every one
 // is bare-prefixed; no element-prefixed occurrence of this attribute family
 // exists anywhere in the tree.
 const BG_PANEL_ATTR_REGEX = /^(background|bg)[A-Z]/;
 
 // Condition-2 exclusion: literal PHP variable/class markers of the shared
-// background-panel implementation, read directly off the three affected
+// background-panel implementation, read directly off the two affected
 // blocks' render.php/style.css (not guessed) — `sgs/container`
 // (`bg_video`/`bg_svg`/`--ken-burns`/`--parallax`/`sgs_overlay_decls`),
-// `sgs/cta-section` (`has_image_bg`/`has_video_bg`/`has_bg_image`/
-// `resolved_media`/`background_image`/`--has-bg-image`), `sgs/nav-drawer`
+// `sgs/nav-drawer`
 // (`has_bg_image`/`bg_image`/`bg_size`/`bg_position`/`sgs_nd_media_decls`).
 // A match inside a window/selector carrying one of these markers is the
 // shared background panel, not a media element — even when a generic

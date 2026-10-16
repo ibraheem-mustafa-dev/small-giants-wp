@@ -13,7 +13,7 @@
 // Independently cross-checked the same day two ways: (1) a standalone
 // Python read of scripts/consistency/roster.json found 21 blocks with
 // `surfaces.animation === true` (sgs/card-grid, container, content-
-// collection, cta-section, decorative-image, gallery, google-reviews,
+// collection, decorative-image, gallery, google-reviews,
 // hero, info-box, media, physics-canvas, post-grid, pricing-table,
 // process-steps, responsive-logo, site-footer, site-header, team-member,
 // testimonial, trust-bar, trustpilot-reviews); of those, exactly 3 have NO

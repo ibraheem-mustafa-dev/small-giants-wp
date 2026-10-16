@@ -36,13 +36,13 @@
 //   | "type":"object" base, NO siblings             | ResponsiveOverride                        |
 // For the second row, `ResponsiveOverride` itself renders a PLAIN `<BoxControl>` as its child —
 // every in-repo instance carries an identical comment explaining this (e.g. `container/edit.js:
-// 366-380`, `cta-section/edit.js:388-397`, `hero/edit.js:1453-1462`): "ResponsiveOverride, which
+// 366-380`, `hero/edit.js:1453-1462`): "ResponsiveOverride, which
 // reads and writes the object, NOT a plain BoxControl writing one flat attr... core's BoxControl
 // ignores the label-hiding prop, so keep BoxControl's own label; BaseControl associates it with the
 // inputs." That raw `<BoxControl>`, nested inside `<ResponsiveOverride>`, IS the canonical shape for
 // an object-typed attribute — flagging it would tell an agent to delete a correct, documented,
-// spec-mandated pairing. Verified live for all 7 `contentBandPadding` sites (`container`,
-// `cta-section`, `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` — each
+// spec-mandated pairing. Verified live for all 6 `contentBandPadding` sites (`container`,
+// `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` — each
 // `block.json` declares `contentBandPadding` as `{"type":"object","default":{"desktop":{}}}`, the
 // tiered-object shape) and the 1 `gridItemPadding` site
 // (`container/components/GridItemDefaultsPanel.js:128`, same object shape) — 8 sites total, matches

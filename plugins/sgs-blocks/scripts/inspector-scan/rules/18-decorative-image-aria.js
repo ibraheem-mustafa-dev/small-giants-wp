@@ -34,7 +34,7 @@ const DECORATIVE_ATTR_RE = /decorative|arialabel|alttext/i;
 // `tag === 'nav' || 'aside'`, never to any <img>. It coincidentally matched
 // the /arialabel/i branch of DECORATIVE_ATTR_RE, false-clearing 3 blocks that
 // genuinely render an <img> with no real decorative/alt mechanism of their
-// own (hero, cta-section, trust-bar — each confirmed via a literal `<img` or
+// own (hero, trust-bar — each confirmed via a literal `<img` or
 // `<MediaPicker` in edit.js). `container` also carries this exact attr but
 // renders no <img> in edit.js at all, so excluding it here is a no-op for
 // container specifically (moot, not a 4th real case). A DIFFERENTLY-NAMED

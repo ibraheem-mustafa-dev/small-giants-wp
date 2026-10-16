@@ -54,7 +54,7 @@ these paths (each mirrored from check-dead-controls.js's own hard-won rules):
     set derived from the block's OWN declared `supports` (compute_support_
     injected_attrs()) — e.g. a block declaring `supports.typography.textAlign`
     legitimately gets a flat top-level `textAlign` attribute WP injects itself
-    (5 blocks — countdown-timer, cta-section, hero, notice-banner, team-member
+    (5 blocks — countdown-timer, hero, notice-banner, team-member
     — were false-flagged `undeclared_render_ref` on this before the map was
     added).
   * Theme pattern / part markup — an attr set as block markup in
@@ -984,7 +984,7 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
             # Deliberate JSON-comment convention (block.json has no native comment
             # syntax): a fake "attribute" whose sole purpose is inline documentation.
             # Confirmed live across 9 block.json files (brand-strip, card-grid,
-            # cta-section, decorative-image, feature-grid, hero, info-box,
+            # decorative-image, feature-grid, hero, info-box,
             # responsive-logo, testimonial) — never meant to be read by any file.
             continue
         if attr in controlled or attr in read_in_edit:

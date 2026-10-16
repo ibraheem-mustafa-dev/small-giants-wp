@@ -10,7 +10,7 @@
  * A resolver that expands one level lands on a file naming neither and reports
  * two false defects. That is exactly what happened on the live tree: a QC
  * council measured 20 such findings across the four blocks rendering
- * <BackgroundPanel> (container, cta-section, hero, trust-bar).
+ * <BackgroundPanel> (container, hero, trust-bar).
  *
  * ⛔ NARROWED 2026-08-19 (C0), and this is why — it is the whole point of the
  * fixture. It previously declared FIVE attributes, asserting GradientOverlayControl

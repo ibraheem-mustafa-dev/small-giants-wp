@@ -1220,7 +1220,7 @@
       "shared_component": null,
       "spec_ref": "Part H (focal point -> FocalPointPicker is the closest analogue, but that component positions an IMAGE crop point, not a CSS background-position keyword pair)",
       "current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
-      "divergence": "backgroundPosition exists on container/cta-section/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
+      "divergence": "backgroundPosition exists on container/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
       "divergence_severity": "medium",
       "notes": "Bean-verified 2026-07-19: not exposed on sgs/container or sgs/hero. ACTION (do with the background-overlay work): first verify backgroundPosition is actually consumed in render.php (dead-control check per check-dead-controls.js). If consumed → expose FocalPointPicker; if not → delete the attr. RESOLVED as a missing/verify item, not a wrong-control one."
     },

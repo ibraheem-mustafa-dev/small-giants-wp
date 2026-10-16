@@ -157,7 +157,7 @@ class SourceCache {
 			// merely MENTIONING an attribute name (e.g. "// FR-22-6: scalar attrs
 			// are intentionally NOT read here") does not count as a live render
 			// reference — proven false positive on 3 baselined rule-21 findings
-			// (cta-section headline/body, hero subHeadline). Only a FULL-LINE `//`
+			// (hero subHeadline). Only a FULL-LINE `//`
 			// comment (the first non-whitespace token on its line) is stripped —
 			// deliberately not a trailing inline `//` after real code, since that
 			// risks truncating a same-line string containing "//" (e.g. a URL).

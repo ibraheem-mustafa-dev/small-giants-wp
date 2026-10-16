@@ -64,10 +64,6 @@ ENTRIES = [
     ("sgs/container", "shapeDividerTopInvert", "styling", None),
     ("sgs/container", "shapeDividerBottomFlip", "styling", None),
     ("sgs/container", "shapeDividerBottomInvert", "styling", None),
-    ("sgs/cta-section", "shapeDividerTopFlip", "styling", None),
-    ("sgs/cta-section", "shapeDividerTopInvert", "styling", None),
-    ("sgs/cta-section", "shapeDividerBottomFlip", "styling", None),
-    ("sgs/cta-section", "shapeDividerBottomInvert", "styling", None),
     ("sgs/hero", "shapeDividerTopFlip", "styling", None),
     ("sgs/hero", "shapeDividerTopInvert", "styling", None),
     ("sgs/hero", "shapeDividerBottomFlip", "styling", None),
@@ -95,7 +91,6 @@ ENTRIES = [
     # --- E2 Shape 2: overlayGradientAngle -> styling (same TIER 2.4 wrapper-only-read
     # class as shapeDivider; class-sgs-container-wrapper.php:293) ---
     ("sgs/container", "overlayGradientAngle", "styling", None),
-    ("sgs/cta-section", "overlayGradientAngle", "styling", None),
     ("sgs/site-footer", "overlayGradientAngle", "styling", None),
     ("sgs/site-header", "overlayGradientAngle", "styling", None),
     ("sgs/trust-bar", "overlayGradientAngle", "styling", None),
@@ -135,8 +130,6 @@ ENTRIES = [
 
     # --- E2 Shape 4: repeater/option arrays -> content (client-authored data, not
     # config) ---
-    ("sgs/cta-section", "buttons", "content", None),
-    ("sgs/cta-section", "stats", "content", None),
     ("sgs/form-field-address", "fields", "content", None),
     ("sgs/form-field-checkbox", "options", "content", None),
     ("sgs/form-field-file", "allowedTypes", "content", None),

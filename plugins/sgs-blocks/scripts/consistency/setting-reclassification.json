@@ -1,12 +1,12 @@
 {
   "summary": {
-    "non_css_attrs_examined": 662,
+    "non_css_attrs_examined": 655,
     "input_type_groups_count": 12,
     "behaviour_families_count": 11,
     "genuinely_unique_count": 19,
     "true_unique_semantic_settings": 31,
-    "collapse_ratio": "282 attrs Phase 1b called 'block-specific, do NOT standardise' (content_text=53 + behaviour_toggles=56 + enum_select=26 + media_urls=28 + unclassified=123, ~4 short of the 286 total non-property attrs it examined) -> 12 true semantic INPUT-TYPES across all 662 non-CSS-property attrs in this re-classification (515, a wider net than Phase 1b's 282 since it also re-examined the slot:/role: groups Phase 1b didn't bucket), further split into 11 named BEHAVIOUR FAMILIES for the recurring boolean/enum toggles.",
-    "note": "Phase 1b bucketed by NAME (content_text_attributes=53, behaviour_toggles=56, enum_select_controls=26, media_urls_assets=28, other_unclassified=123) and called all of it 'block-specific, do not standardise' without ever testing what INPUT each attr represents. Re-classifying by SEMANTIC INPUT TYPE (text-content / rich-text / media-source / colour-value / url-link / icon / number / enum-select / boolean-toggle / code-svg / json-config / date / system-internal) collapses all 662 non-CSS-property attrs into just 12 input patterns. The boolean/enum members of those further collapse into 11 named recurring BEHAVIOUR FAMILIES (slider-carousel, disclosure, visibility-responsive, media-playback, scroll-reveal-animation, hover-effect, form-validation-conditional, dismissible, link-target-behaviour, sticky-header-nav-behaviour, show-hide-display-toggle). Only 19 attrs resisted every pattern (see `genuinely_unique`) \u2014 every one of Bean's 4 example challenges (decorMedia / placeholder / carouselShowDots / 'the 123 unclassified') is answered directly in `answers_to_bean` below."
+    "collapse_ratio": "282 attrs Phase 1b called 'block-specific, do NOT standardise' (content_text=53 + behaviour_toggles=56 + enum_select=26 + media_urls=28 + unclassified=123, ~4 short of the 286 total non-property attrs it examined) -> 12 true semantic INPUT-TYPES across all 655 non-CSS-property attrs in this re-classification (515, a wider net than Phase 1b's 282 since it also re-examined the slot:/role: groups Phase 1b didn't bucket), further split into 11 named BEHAVIOUR FAMILIES for the recurring boolean/enum toggles.",
+    "note": "Phase 1b bucketed by NAME (content_text_attributes=53, behaviour_toggles=56, enum_select_controls=26, media_urls_assets=28, other_unclassified=123) and called all of it 'block-specific, do not standardise' without ever testing what INPUT each attr represents. Re-classifying by SEMANTIC INPUT TYPE (text-content / rich-text / media-source / colour-value / url-link / icon / number / enum-select / boolean-toggle / code-svg / json-config / date / system-internal) collapses all 655 non-CSS-property attrs into just 12 input patterns. The boolean/enum members of those further collapse into 11 named recurring BEHAVIOUR FAMILIES (slider-carousel, disclosure, visibility-responsive, media-playback, scroll-reveal-animation, hover-effect, form-validation-conditional, dismissible, link-target-behaviour, sticky-header-nav-behaviour, show-hide-display-toggle). Only 19 attrs resisted every pattern (see `genuinely_unique`) \u2014 every one of Bean's 4 example challenges (decorMedia / placeholder / carouselShowDots / 'the 123 unclassified') is answered directly in `answers_to_bean` below."
   },
   "input_type_groups": [
     {
@@ -168,7 +168,6 @@
         "sgs/container",
         "sgs/countdown-timer",
         "sgs/counter",
-        "sgs/cta-section",
         "sgs/decorative-image",
         "sgs/form",
         "sgs/form-field-address",
@@ -272,7 +271,6 @@
         "emptyState",
         "filterTaxonomy",
         "framingMode",
-        "gradientPreset",
         "gridItemBorder",
         "headerTransparentDirection",
         "headingLevel",
@@ -363,7 +361,6 @@
         "sgs/cart",
         "sgs/container",
         "sgs/countdown-timer",
-        "sgs/cta-section",
         "sgs/feature-grid",
         "sgs/form",
         "sgs/form-field-address",
@@ -425,7 +422,7 @@
         "sgs/trustpilot-reviews",
         "sgs/whatsapp-cta"
       ],
-      "count": 128
+      "count": 127
     },
     {
       "type": "media-source",
@@ -450,7 +447,6 @@
         "backgroundImage",
         "backgroundImageMobile",
         "backgroundImageTablet",
-        "backgroundMedia",
         "badgeImageSize",
         "beforeImageAlt",
         "beforeImageId",
@@ -535,7 +531,6 @@
         "sgs/before-after",
         "sgs/brand-strip",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/decorative-image",
         "sgs/gallery",
         "sgs/hero",
@@ -553,7 +548,7 @@
         "sgs/testimonial",
         "sgs/trust-bar"
       ],
-      "count": 99
+      "count": 98
     },
     {
       "type": "text-content",
@@ -569,7 +564,6 @@
         "billingToggleYearlyLabel",
         "bio",
         "blockLabel",
-        "body",
         "brandsEyebrow",
         "buttonLabel",
         "caption",
@@ -597,7 +591,6 @@
         "fxEnd",
         "fxStart",
         "heading",
-        "headline",
         "helpText",
         "homeLabel",
         "label",
@@ -625,7 +618,6 @@
         "rel",
         "reviewerName",
         "reviewerRole",
-        "ribbon",
         "role",
         "schemaItemName",
         "soldOutLabel",
@@ -660,7 +652,6 @@
         "sgs/container",
         "sgs/countdown-timer",
         "sgs/counter",
-        "sgs/cta-section",
         "sgs/filter-search",
         "sgs/form",
         "sgs/form-field-address",
@@ -714,7 +705,7 @@
         "sgs/trustpilot-reviews",
         "sgs/whatsapp-cta"
       ],
-      "count": 88
+      "count": 85
     },
     {
       "type": "number",
@@ -882,7 +873,6 @@
         "sgs/card-grid",
         "sgs/collapsible-text",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/feature-grid",
         "sgs/form-field-tiles",
         "sgs/form-step",
@@ -924,7 +914,6 @@
     {
       "type": "json-config",
       "member_attrs": [
-        "buttons",
         "categories",
         "entries",
         "featuredItemIds",
@@ -952,7 +941,6 @@
         "shapeDividerBottomScale",
         "shapeDividerTopScale",
         "socialLinks",
-        "stats",
         "steps",
         "tags",
         "testimonials",
@@ -963,7 +951,6 @@
       "blocks": [
         "sgs/card-grid",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/form-field-address",
         "sgs/form-field-checkbox",
         "sgs/form-field-radio",
@@ -990,7 +977,7 @@
         "sgs/trust-bar",
         "sgs/trustpilot-reviews"
       ],
-      "count": 35
+      "count": 33
     },
     {
       "type": "icon",
@@ -1083,7 +1070,6 @@
       ],
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/media",
         "sgs/multi-button",
@@ -1190,7 +1176,6 @@
         "sgs/brand-strip",
         "sgs/card-grid",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/decorative-image",
         "sgs/gallery",
         "sgs/hero",
@@ -1927,80 +1912,6 @@
       ],
       "shapeDividerTop": [
         "shapeDividerTopScale"
-      ]
-    },
-    "sgs/cta-section": {
-      "ariaLabel": [
-        "ariaLabel"
-      ],
-      "background": [
-        "backgroundColourHover",
-        "backgroundMedia",
-        "backgroundOverlayBlendMode",
-        "backgroundOverlayColourHover"
-      ],
-      "background-image": [
-        "backgroundImage",
-        "backgroundImageMobile",
-        "backgroundImageTablet"
-      ],
-      "scroll-reveal-animation": [
-        "bgKenBurns",
-        "bgParallax",
-        "bgSvgAnimation",
-        "bgSvgAnimationSpeed"
-      ],
-      "bgSvg": [
-        "bgSvgContent"
-      ],
-      "background-svg": [
-        "bgSvgPosition"
-      ],
-      "background-video": [
-        "bgVideo"
-      ],
-      "bg": [
-        "bgVideoMobile",
-        "bgVideoTablet"
-      ],
-      "text": [
-        "body"
-      ],
-      "root": [
-        "borderColourHover",
-        "gradientPreset",
-        "tagName",
-        "textColourHover"
-      ],
-      "button-group": [
-        "buttons"
-      ],
-      "heading": [
-        "headline"
-      ],
-      "overlay": [
-        "overlayGradientHover"
-      ],
-      "ribbon": [
-        "ribbon"
-      ],
-      "shadow": [
-        "shadowColourHover"
-      ],
-      "separator": [
-        "shapeDividerBottomFlip",
-        "shapeDividerBottomInvert",
-        "shapeDividerTopFlip",
-        "shapeDividerTopInvert"
-      ],
-      "shapeDividerBottom": [
-        "shapeDividerBottomScale"
-      ],
-      "shapeDividerTop": [
-        "shapeDividerTopScale"
-      ],
-      "number": [
-        "stats"
       ]
     },
     "sgs/icon": {
@@ -3727,7 +3638,7 @@
     },
     {
       "attr": "overlayGradientHover",
-      "why_unique": "blocks=['sgs/container', 'sgs/cta-section', 'sgs/hero', 'sgs/media', 'sgs/multi-button', 'sgs/physics-canvas', 'sgs/site-footer', 'sgs/site-header', 'sgs/trust-bar']; attr_type=['string']; control=[]; role=['colour-gradient'] \u2014 matches no input-type pattern (not text/media/icon/url/number/enum/boolean/date/svg/json-config)"
+      "why_unique": "blocks=['sgs/container', 'sgs/hero', 'sgs/media', 'sgs/multi-button', 'sgs/physics-canvas', 'sgs/site-footer', 'sgs/site-header', 'sgs/trust-bar']; attr_type=['string']; control=[]; role=['colour-gradient'] \u2014 matches no input-type pattern (not text/media/icon/url/number/enum/boolean/date/svg/json-config)"
     },
     {
       "attr": "rowShrinkHideTarget",
@@ -4021,13 +3932,12 @@
         "sgs/button",
         "sgs/cart",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/icon",
         "sgs/nav-drawer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
     },
     "asideFormat": {
@@ -4275,7 +4185,6 @@
         "sgs/card-grid",
         "sgs/collapsible-text",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/feature-grid",
         "sgs/form-field-tiles",
         "sgs/form-step",
@@ -4303,7 +4212,7 @@
         "sgs/trust-bar",
         "sgs/trustpilot-reviews"
       ],
-      "n_blocks": 33,
+      "n_blocks": 32,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
     },
     "backgroundColourScrolled": {
@@ -4322,7 +4231,6 @@
       "element": "background-image",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/nav-drawer",
@@ -4331,7 +4239,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 9,
+      "n_blocks": 8,
       "why": "role=image-object or media/logo/avatar/video attr name"
     },
     "backgroundImageMobile": {
@@ -4340,7 +4248,6 @@
       "element": "background-image",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4348,7 +4255,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "role=image-object or media/logo/avatar/video attr name"
     },
     "backgroundImageTablet": {
@@ -4357,7 +4264,6 @@
       "element": "background-image",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4365,17 +4271,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
-      "why": "role=image-object or media/logo/avatar/video attr name"
-    },
-    "backgroundMedia": {
-      "input_type": "media-source",
-      "behaviour_family": null,
-      "element": "background",
-      "blocks": [
-        "sgs/cta-section"
-      ],
-      "n_blocks": 1,
+      "n_blocks": 7,
       "why": "role=image-object or media/logo/avatar/video attr name"
     },
     "backgroundOverlayBlendMode": {
@@ -4384,7 +4280,6 @@
       "element": "background",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4392,7 +4287,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
     },
     "backgroundOverlayColourHover": {
@@ -4401,7 +4296,6 @@
       "element": "background",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4409,7 +4303,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
     },
     "backgroundShape": {
@@ -4598,7 +4492,6 @@
       "element": "animation",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4606,7 +4499,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "attr_type=boolean"
     },
     "bgParallax": {
@@ -4615,7 +4508,6 @@
       "element": "parallax",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4623,7 +4515,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "attr_type=boolean"
     },
     "bgSvgAnimation": {
@@ -4632,7 +4524,6 @@
       "element": "background-svg",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4640,7 +4531,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
     },
     "bgSvgAnimationSpeed": {
@@ -4649,7 +4540,6 @@
       "element": "bgSvg",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4657,7 +4547,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
     },
     "bgSvgContent": {
@@ -4666,7 +4556,6 @@
       "element": "bgSvg",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4674,7 +4563,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "raw SVG markup string"
     },
     "bgSvgPosition": {
@@ -4683,7 +4572,6 @@
       "element": "background-svg",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4691,7 +4579,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
     },
     "bgVideo": {
@@ -4700,7 +4588,6 @@
       "element": "background-video",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4708,7 +4595,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "role=image-object or media/logo/avatar/video attr name"
     },
     "bgVideoMobile": {
@@ -4717,7 +4604,6 @@
       "element": "bg",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4725,7 +4611,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "role=image-object or media/logo/avatar/video attr name"
     },
     "bgVideoTablet": {
@@ -4734,7 +4620,6 @@
       "element": "bg",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/multi-button",
         "sgs/physics-canvas",
@@ -4742,7 +4627,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 8,
+      "n_blocks": 7,
       "why": "role=image-object or media/logo/avatar/video attr name"
     },
     "billingToggle": {
@@ -4795,16 +4680,6 @@
       "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
     },
-    "body": {
-      "input_type": "text-content",
-      "behaviour_family": null,
-      "element": "text",
-      "blocks": [
-        "sgs/cta-section"
-      ],
-      "n_blocks": 1,
-      "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
-    },
     "borderColourHover": {
       "input_type": "colour-value",
       "behaviour_family": null,
@@ -4813,7 +4688,6 @@
         "sgs/button",
         "sgs/card-grid",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/info-box",
         "sgs/post-grid",
@@ -4823,7 +4697,7 @@
         "sgs/testimonial-slider",
         "sgs/text"
       ],
-      "n_blocks": 12,
+      "n_blocks": 11,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
     },
     "boxShadowColourHover": {
@@ -4889,16 +4763,6 @@
       ],
       "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
-    },
-    "buttons": {
-      "input_type": "json-config",
-      "behaviour_family": null,
-      "element": "button-group",
-      "blocks": [
-        "sgs/cta-section"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type array/object holding structured repeater/config data, not a media object"
     },
     "caption": {
       "input_type": "text-content",
@@ -6229,16 +6093,6 @@
       "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
     },
-    "gradientPreset": {
-      "input_type": "enum-select",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/cta-section"
-      ],
-      "n_blocks": 1,
-      "why": "named gradient preset picker"
-    },
     "grayscaleHover": {
       "input_type": "boolean-toggle",
       "behaviour_family": "hover-effect",
@@ -6433,16 +6287,6 @@
       ],
       "n_blocks": 1,
       "why": "attr_type=boolean"
-    },
-    "headline": {
-      "input_type": "text-content",
-      "behaviour_family": null,
-      "element": "heading",
-      "blocks": [
-        "sgs/cta-section"
-      ],
-      "n_blocks": 1,
-      "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
     },
     "helpText": {
       "input_type": "text-content",
@@ -7709,7 +7553,6 @@
       "element": "overlay",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/media",
         "sgs/multi-button",
@@ -7718,7 +7561,7 @@
         "sgs/site-header",
         "sgs/trust-bar"
       ],
-      "n_blocks": 9,
+      "n_blocks": 8,
       "why": null
     },
     "overlayHover": {
@@ -8546,16 +8389,6 @@
       "n_blocks": 1,
       "why": "attr_type number/integer or Range/NumberControl"
     },
-    "ribbon": {
-      "input_type": "text-content",
-      "behaviour_family": null,
-      "element": "ribbon",
-      "blocks": [
-        "sgs/cta-section"
-      ],
-      "n_blocks": 1,
-      "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
-    },
     "role": {
       "input_type": "text-content",
       "behaviour_family": null,
@@ -8869,12 +8702,11 @@
       "element": "shadow",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/physics-canvas",
         "sgs/trust-bar"
       ],
-      "n_blocks": 5,
+      "n_blocks": 4,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
     },
     "shadowHover": {
@@ -8908,12 +8740,11 @@
       "element": "separator",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/site-footer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 5,
+      "n_blocks": 4,
       "why": "attr_type=boolean"
     },
     "shapeDividerBottomInvert": {
@@ -8922,12 +8753,11 @@
       "element": "separator",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/site-footer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 5,
+      "n_blocks": 4,
       "why": "attr_type=boolean"
     },
     "shapeDividerBottomScale": {
@@ -8936,12 +8766,11 @@
       "element": "shapeDividerBottom",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/site-footer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 5,
+      "n_blocks": 4,
       "why": "attr_type array/object holding structured repeater/config data, not a media object"
     },
     "shapeDividerTopFlip": {
@@ -8950,12 +8779,11 @@
       "element": "separator",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/site-footer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 5,
+      "n_blocks": 4,
       "why": "attr_type=boolean"
     },
     "shapeDividerTopInvert": {
@@ -8964,12 +8792,11 @@
       "element": "separator",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/site-footer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 5,
+      "n_blocks": 4,
       "why": "attr_type=boolean"
     },
     "shapeDividerTopScale": {
@@ -8978,12 +8805,11 @@
       "element": "shapeDividerTop",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/site-footer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 5,
+      "n_blocks": 4,
       "why": "attr_type array/object holding structured repeater/config data, not a media object"
     },
     "showAggregate": {
@@ -9721,16 +9547,6 @@
       "n_blocks": 1,
       "why": "attr_type number/integer or Range/NumberControl"
     },
-    "stats": {
-      "input_type": "json-config",
-      "behaviour_family": null,
-      "element": "number",
-      "blocks": [
-        "sgs/cta-section"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type array/object holding structured repeater/config data, not a media object"
-    },
     "step": {
       "input_type": "text-content",
       "behaviour_family": null,
@@ -10027,13 +9843,12 @@
       "element": "root",
       "blocks": [
         "sgs/container",
-        "sgs/cta-section",
         "sgs/hero",
         "sgs/physics-canvas",
         "sgs/site-footer",
         "sgs/trust-bar"
       ],
-      "n_blocks": 6,
+      "n_blocks": 5,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
     },
     "tags": {
@@ -10098,7 +9913,6 @@
         "sgs/buybox",
         "sgs/card-grid",
         "sgs/container",
-        "sgs/cta-section",
         "sgs/heading",
         "sgs/hero",
         "sgs/icon-list",
@@ -10115,7 +9929,7 @@
         "sgs/text",
         "sgs/trust-bar"
       ],
-      "n_blocks": 20,
+      "n_blocks": 19,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
     },
     "textColourScrolled": {

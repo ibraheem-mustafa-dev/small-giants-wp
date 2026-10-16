@@ -77,7 +77,7 @@ function classifyMount( body, declared ) {
 		// fallback. That fallback is a VERIFIED no-op, not an assumed one: parseShadow()
 		// opens with `if ( ! value ) return null`, and every other use of `value` in the
 		// component is a falsy check, so undefined and empty-string are indistinguishable
-		// to it. Five mounts (container, cta-section, hero, physics-canvas, one trust-bar)
+		// to it. Five mounts (container, hero, physics-canvas, one trust-bar)
 		// were refused on this alone - a defensive idiom, not a different binding.
 		// Strip the fallback BEFORE matching rather than widening the pattern to
 		// tolerate it. Encoding a quoted empty-string inside a character class inside a

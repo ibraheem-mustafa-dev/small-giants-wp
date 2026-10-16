@@ -262,7 +262,7 @@ const CHECK_B_BLOCKS_BUILD = true;
 // targeted findings.
 // LOWERED 156 -> 128 (2026-09-05, Phase-2 close — commit daddbbb1). 28 of the
 // 31 targeted layout/box findings closed across gallery (8), site-footer-row
-// + site-header-row (3 each), cta-section (8) and trust-bar (4); hero closes
+// + site-header-row (3 each) and trust-bar (4); hero closes
 // only 2 of its 5 (backgroundRepeat/backgroundAttachment) — its
 // justifyItems/alignContent/gridAutoRows are genuinely dead attributes on
 // the frontend today (hero's split-grid never sets layout='grid', so the

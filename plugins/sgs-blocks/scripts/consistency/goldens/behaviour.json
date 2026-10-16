@@ -248,11 +248,11 @@
     "blockOwnBackgroundMotion": {
      "component": "BackgroundPanel",
      "shape": "a SHARED component, not per-block hand-rolled",
-     "componentResolutionNote2026_08_20": "Verified via resolveComponentFiles() -> true, and confirmed as a real one-hop reach: 8 blocks (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) import BackgroundPanel directly in their own edit.js. This is the one animation sub-mechanism the canonical/reach axis can actually measure.",
+     "componentResolutionNote2026_08_20": "Verified via resolveComponentFiles() -> true, and confirmed as a real one-hop reach: 7 blocks (container, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) import BackgroundPanel directly in their own edit.js. This is the one animation sub-mechanism the canonical/reach axis can actually measure.",
      "path": "src/blocks/container/components/BackgroundPanel.js",
      "mechanism": "one Ken-burns/Parallax mutually-exclusive toggle pair (bgKenBurns/bgParallax), scoped to whichever background image/video is active",
      "verifiedLive": true,
-     "correction2026_08_19": "The FIRST pass of this row wrongly claimed 5 blocks (hero, container, cta-section, trust-bar, site-header) each independently hand-roll this pair with 'ZERO shared component' — that was never verified, only inferred from seeing the same attribute names appear in each block's live editor. Grepping which files actually IMPORT BackgroundPanel shows 8 blocks (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) all mount the ONE shared component — this is already the correct, working, reachable implementation, not a duplication finding. The bannedLookalikes entry this correction replaces was itself wrong and has been removed.",
+     "correction2026_08_19": "The FIRST pass of this row wrongly claimed 4 blocks (hero, container, trust-bar, site-header) each independently hand-roll this pair with 'ZERO shared component' — that was never verified, only inferred from seeing the same attribute names appear in each block's live editor. Grepping which files actually IMPORT BackgroundPanel shows 7 blocks (container, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) all mount the ONE shared component — this is already the correct, working, reachable implementation, not a duplication finding. The bannedLookalikes entry this correction replaces was itself wrong and has been removed.",
      "independentlySufficient": false,
      "independentlySufficientWhy": "MEASURED 2026-08-20: declaring this alone scored 24 blocks CONFORMANT for `animation`. BackgroundPanel is ONE of this row's FOUR declared mechanisms (background motion) — the other three are extension-injected and structurally invisible to a one-hop reach scan. A block with a background Ken-Burns/parallax pair and no scroll-trigger animation at all would read 'conformant on animation', which is a false pass. Measurable, but not independently sufficient. Closing this properly needs PER-MECHANISM axes, not one OR'd verdict per type — recorded as the named gap."
     }
@@ -272,7 +272,7 @@
     "blockOwnBackgroundMotion": "a block importing BackgroundPanel and rendering a background image/video element or a split-media element (the same surface the media row's paintsOwnSurface evidence establishes)"
    },
    "scope": {
-    "eligible": "no dedicated roster.json surface — scrollTriggerReveal/gsapScrollEffects apply near-universally via opt-out; elementParallaxToggle applies near-universally too; blockOwnBackgroundMotion scopes to the 8 blocks importing BackgroundPanel (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar)"
+    "eligible": "no dedicated roster.json surface — scrollTriggerReveal/gsapScrollEffects apply near-universally via opt-out; elementParallaxToggle applies near-universally too; blockOwnBackgroundMotion scopes to the 7 blocks importing BackgroundPanel (container, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar)"
    }
   },
   "angle-position": {

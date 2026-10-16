@@ -5977,6 +5977,19 @@ def _prune_orphans_on_conn(
                 "WHERE block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')"
             )
 
+    # ---- (f) Per-block rows in the composition, array-item and markup-example tables ----
+    # Their seeders only write rows for blocks that exist, so a retired sgs/* block's rows would otherwise outlive it
+    # (these three tables held rows for a block removed on 2026-10-09). Core blocks share these tables, so only sgs/* slugs
+    # are considered.
+    orphan_block_child_rows = 0
+    for child_table in ("block_composition", "array_item_schema", "markup_examples"):
+        if not c.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (child_table,)).fetchone():
+            continue
+        child_where = "block_slug LIKE 'sgs/%' AND block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')"
+        orphan_block_child_rows += c.execute(f"SELECT COUNT(*) FROM {child_table} WHERE {child_where}").fetchone()[0]
+        if not dry_run:
+            c.execute(f"DELETE FROM {child_table} WHERE {child_where}")
+
     if not dry_run:
         conn.commit()
 
@@ -5988,7 +6001,8 @@ def _prune_orphans_on_conn(
         f"orphan_attributes_deleted={len(orphan_attr_ids)}, "
         f"stale_supports_{stale_verb}={len(stale_support_ids)}, "
         f"orphan_attributes_deleted_attr_level={len(ghost_attr_ids)}, "
-        f"orphan_motion_targets_deleted={orphan_motion_targets}"
+        f"orphan_motion_targets_deleted={orphan_motion_targets}, "
+        f"orphan_block_child_rows_deleted={orphan_block_child_rows}"
         + (" [DRY-RUN — no writes]" if dry_run else "")
     )
 
@@ -6001,6 +6015,7 @@ def _prune_orphans_on_conn(
         "stale_supports_actioned": len(stale_support_ids),
         "orphan_attributes_deleted_attr_level": len(ghost_attr_ids),
         "orphan_motion_targets_deleted": orphan_motion_targets,
+        "orphan_block_child_rows_deleted": orphan_block_child_rows,
         f"orphan_blocks_{stale_d_verb}": len(retired_block_slugs),
         "orphan_blocks_actioned": len(retired_block_slugs),
         "prune_mode": prune_mode,

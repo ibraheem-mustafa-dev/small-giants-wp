@@ -33,7 +33,7 @@ live against the render side, not assumed from the name):
     11 different blocks' render.php call sites (heading, info-box,
     brand-strip, tabs, social-icons, option-picker, button, card-grid,
     mega-aside, mega-panel, hero, quote, timeline, text, process-steps,
-    cta-section/container's shared class-sgs-container-wrapper.php). Same
+    container's shared class-sgs-container-wrapper.php). Same
     real property: `background-image`.
 
 ONE NAMED EXCEPTION, found by reading every border-gradient call site rather

@@ -592,7 +592,7 @@
 			],
 			"shared_component": "BUILD: ScrollRevealControls (grows AnimationControl)",
 			"spec_ref": "Spec 35 Part C Motion/animation ('entrance P · scroll-triggered P · parallax P · prefers-reduced-motion gating on ALL animation T'), Part E5, Spec 35A Part I ('Reduced-motion gate — verify on animation ext')",
-			"current_state": "22 attrs across 12 blocks. A universal AnimationPanel/AnimationControl already exists (sgsAnimation/sgsAnimationDelay/sgsAnimationDuration/sgsAnimationEasing, wired globally to nearly all sgs/* blocks via editor.BlockEdit filter) but it is a NARROWER shape — plain entrance fade/slide only. The scroll-reveal-animation family's 22 attrs (bgKenBurns, bgParallax+parallaxStrength, bgSvgAnimation+Speed, svgAnimation+Source+Speed, revealOnScroll+revealStagger, staggerDelay, captionReveal, fadeOnScroll, flipX, pathDrawOnScroll+DurationMs+TriggerOffset, scrollDirection/Offset/Spy, smoothScroll, animationStyle) are ALL block-private, not routed through the universal AnimationControl at all — every block (container, cta-section, hero, trust-bar, decorative-image, gallery, timeline, table-of-contents, media, card-grid, post-grid, team-member, testimonial, google-reviews, trustpilot-reviews, responsive-logo, brand-strip) reinvents its own subset with its own naming.",
+			"current_state": "A universal AnimationPanel/AnimationControl already exists (sgsAnimation/sgsAnimationDelay/sgsAnimationDuration/sgsAnimationEasing, wired globally to nearly all sgs/* blocks via editor.BlockEdit filter) but it is a NARROWER shape — plain entrance fade/slide only. The scroll-reveal-animation family's attrs (bgKenBurns, bgParallax+parallaxStrength, bgSvgAnimation+Speed, svgAnimation+Source+Speed, revealOnScroll+revealStagger, staggerDelay, captionReveal, fadeOnScroll, flipX, pathDrawOnScroll+DurationMs+TriggerOffset, scrollDirection/Offset/Spy, smoothScroll, animationStyle) are ALL block-private, not routed through the universal AnimationControl at all — every block (container, hero, trust-bar, decorative-image, gallery, timeline, table-of-contents, media, card-grid, post-grid, team-member, testimonial, google-reviews, trustpilot-reviews, responsive-logo, brand-strip) reinvents its own subset with its own naming.",
 			"divergence": "22 scroll/motion attrs are all block-private and bypass the existing universal AnimationControl, each block reinventing its own subset under its own names; and a per-block prefers-reduced-motion gate must be confirmed applied framework-wide (WCAG 2.3.3) before any consolidation.",
 			"divergence_severity": "high",
 			"notes": "MANDATORY: no member attr in setting-reclassification.json currently represents a per-block prefers-reduced-motion override — verify (per Spec 35A Part I 'ensure every animation is gated') whether the CSS gate is applied automatically at the framework/animation.js level (cause-agnostic, no client control needed) rather than exposing a toggle; if it is NOT applied framework-wide today, that is the #1 gap to close before any other scroll-reveal work, ahead of consolidating the 22 attrs. Do not add a client-facing 'disable animation' toggle as a substitute for the automatic CSS media-query gate — WCAG 2.3.3 requires it to fire without the client knowing to ask."
@@ -1021,7 +1021,7 @@
 			"shared_component": null,
 			"spec_ref": "Part H (focal point -> FocalPointPicker is the closest analogue, but that component positions an IMAGE crop point, not a CSS background-position keyword pair)",
 			"current_state": "1 distinct attr names / 4 instances across 4 blocks; observed_control_types: none captured; observed_roles: none; conformance: unknown (dedup_confidence: high)",
-			"divergence": "backgroundPosition exists on container/cta-section/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
+			"divergence": "backgroundPosition exists on container/hero/trust-bar but has NO inspector control today (Bean confirmed it is not findable). Either expose a FocalPointPicker for the background layer, OR delete it if it is dead-control debt.",
 			"divergence_severity": "medium",
 			"notes": "Bean-verified 2026-07-19: not exposed on sgs/container or sgs/hero. ACTION (do with the background-overlay work): first verify backgroundPosition is actually consumed in render.php (dead-control check per check-dead-controls.js). If consumed → expose FocalPointPicker; if not → delete the attr. RESOLVED as a missing/verify item, not a wrong-control one. | v2 (2026-07-19): if exposed (after the dead-control check), use FocalPointPicker with keyboard X/Y inputs; verify-if-dead first per Bean ruling 3."
 		},
@@ -2765,8 +2765,8 @@
 			},
 			"shared_component": null,
 			"spec_ref": "Part C Media 'SVG sanitise-on-upload (security — never raw) T' (table-stakes, explicitly named security requirement) — TextareaControl itself is not a separate Part B/H line but is the correct WP-native raw-markup editing component given the value is genuinely code, not prose",
-			"current_state": "2 attrs across 5 blocks: bgSvgContent (sgs/container, sgs/cta-section, sgs/hero) and svgContent (sgs/hero, sgs/media). full_classification labels both 'raw SVG markup string' with no sanitisation detail visible from source.",
-			"divergence": "SECURITY GAP, not just a UX gap — Part C names SVG sanitise-on-upload as table-stakes (never trust raw markup) and there is no evidence in the source data that either attr passes through a sanitiser before being stored or rendered (both are used as background decoration, i.e. rendered inline into the page, which is exactly the XSS-risk path the CLAUDE.md security non-negotiables and Part C both flag). This must be verified against render.php for sgs/container, sgs/cta-section, sgs/hero, sgs/media directly, not assumed safe.",
+			"current_state": "2 attrs across 3 blocks: bgSvgContent (sgs/container, sgs/hero) and svgContent (sgs/hero, sgs/media). full_classification labels both 'raw SVG markup string' with no sanitisation detail visible from source.",
+			"divergence": "SECURITY GAP, not just a UX gap — Part C names SVG sanitise-on-upload as table-stakes (never trust raw markup) and there is no evidence in the source data that either attr passes through a sanitiser before being stored or rendered (both are used as background decoration, i.e. rendered inline into the page, which is exactly the XSS-risk path the CLAUDE.md security non-negotiables and Part C both flag). This must be verified against render.php for sgs/container, sgs/hero, sgs/media directly, not assumed safe.",
 			"divergence_severity": "high",
 			"notes": "Smallest member count (2 attrs) but flagged HIGH severity purely on security grounds per CLAUDE.md's non-negotiable 'no OWASP top 10' + Part C's explicit sanitise-on-upload requirement — raw SVG rendered inline is a known XSS vector (embedded <script>/event-handler attributes) regardless of how polished the editor control is. Verifying/adding server-side sanitisation (e.g. wp_kses with an SVG-safe tag allowlist, or a dedicated SVG sanitiser library) should be treated as a P0 fix independent of the Phase-3 lint rollout."
 		},
@@ -3071,7 +3071,7 @@
 			},
 			"shared_component": "ScrollRevealControls",
 			"spec_ref": "Spec 35 FR-35-6 (animation cluster member 1) + Part C Motion/animation (scroll-triggered P · entrance P) + Part I Reduced-motion gate",
-			"current_state": "10 instances across 10 blocks (sgsAnimation attrs on card-grid, cta-section, decorative-image, gallery, hero, post-grid, timeline, trust-bar, trustpilot-reviews, video-embed) with no shared component — every block uses its own naming or subset",
+			"current_state": "9 instances across 9 blocks (sgsAnimation attrs on card-grid, decorative-image, gallery, hero, post-grid, timeline, trust-bar, trustpilot-reviews, video-embed) with no shared component — every block uses its own naming or subset",
 			"divergence": "sgsAnimation* attrs bypass the existing universal AnimationPanel and each block-privately names/controls them; should consolidate into ScrollRevealControls",
 			"divergence_severity": "high",
 			"notes": "FR-35-6 establishes this cluster for the first time; 10 blocks carry sgsAnimation* today. The naming pattern (sgsAnimation, sgsAnimationDuration, sgsAnimationEasing with identical suffixes across 10 blocks) suggests a ready-to-extract common control set, but they are currently all block-private. Animation JS files (scroll observers, keyframe runners) live per-block; centralizing ScrollRevealControls is a future consolidation, not part of this build."
@@ -3102,7 +3102,7 @@
 			},
 			"shared_component": "ScrollRevealControls",
 			"spec_ref": "Spec 35 FR-35-6 (animation cluster member 2) + Part B RangeControl (ms unit, bounds, input field, reset)",
-			"current_state": "10 instances across 10 blocks as sgsAnimationDuration (card-grid, cta-section, decorative-image, gallery, hero, post-grid, timeline, trust-bar, trustpilot-reviews, video-embed) — all block-private",
+			"current_state": "9 instances across 9 blocks as sgsAnimationDuration (card-grid, decorative-image, gallery, hero, post-grid, timeline, trust-bar, trustpilot-reviews, video-embed) — all block-private",
 			"divergence": "All 10 use identical attr names (sgsAnimationDuration suffix) and should consolidate into one RangeControl inside ScrollRevealControls",
 			"divergence_severity": "high",
 			"notes": "Identical naming across all 10 blocks makes this the clearest consolidation candidate in the animation family."
@@ -3182,7 +3182,7 @@
 			},
 			"shared_component": "ScrollRevealControls",
 			"spec_ref": "Spec 35 FR-35-6 (animation cluster member 5) + Part C Motion (parallax P)",
-			"current_state": "4 instances: bgParallax (4 blocks: cta-section, hero, trust-bar, gallery), parallaxStrength (on gallery), hasParallax (on decorative-image) — inconsistent naming and toggling",
+			"current_state": "bgParallax (3 blocks: hero, trust-bar, gallery), parallaxStrength (on gallery), hasParallax (on decorative-image) — inconsistent naming and toggling",
 			"divergence": "Four different attr naming patterns (bgParallax bool, parallaxStrength number, hasParallax bool) across 4 blocks should consolidate into one parallax enable/strength pair",
 			"divergence_severity": "medium",
 			"notes": "Includes both enable and strength members; consolidate via ScrollRevealControls and route both through the anim:parallax member."
@@ -3207,7 +3207,7 @@
 			},
 			"shared_component": "ScrollRevealControls",
 			"spec_ref": "Spec 35 FR-35-6 (animation cluster member 6) + Part C Motion (scroll-triggered P)",
-			"current_state": "6 instances: revealOnScroll (gallery, cta-section, post-grid, media, decorative-image, timeline), fadeOnScroll (hero), pathDrawOnScroll (timeline), pathDrawTriggerOffset (timeline) — varied naming across 6 blocks, some combined with unrelated attributes",
+			"current_state": "revealOnScroll (gallery, post-grid, media, decorative-image, timeline), fadeOnScroll (hero), pathDrawOnScroll (timeline), pathDrawTriggerOffset (timeline) — varied naming across blocks, some combined with unrelated attributes",
 			"divergence": "Consolidate multiple scroll-trigger patterns (revealOnScroll bool, fadeOnScroll bool, pathDraw* attrs) into one anim:trigger member pair (triggerOnScroll bool + triggerOffset range)",
 			"divergence_severity": "medium",
 			"notes": "Highest variety in naming (revealOnScroll vs fadeOnScroll vs pathDrawOnScroll); triggerOffset appears only on pathDraw context, but the generic concept (fire animation at X pixels before viewport entry) applies universally."
