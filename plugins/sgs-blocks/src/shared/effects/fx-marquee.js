@@ -106,8 +106,9 @@ export function readMarquee( root ) {
 /**
  * A running marquee carries its items past continuously, so a per-item scroll entrance has no meaning there: an item
  * still waiting for the reveal module is shown now. The copies are cloned from this state; the reveal module never
- * sees them, so a copy that kept the hidden start state would stay invisible. `fx-marquee.css` stops any entrance
- * animation inside the running lane.
+ * sees them, so a copy that kept the hidden start state would stay invisible. `fx-marquee.css` stops the stylesheet
+ * entrance animation inside the running lane; a multi-keyframe entrance is played by `assets/js/motion-keyframes.js`
+ * once `data-sgs-in` appears, so its target is also marked played (`data-sgs-me-kf`), which that module skips.
  *
  * @param {Element} set The marquee set.
  */
@@ -117,7 +118,12 @@ function settleEntrances( set ) {
 	if ( set.matches( pending ) ) {
 		items.push( set );
 	}
-	items.forEach( ( el ) => el.setAttribute( 'data-sgs-in', '' ) );
+	items.forEach( ( el ) => {
+		el.setAttribute( 'data-sgs-in', '' );
+		if ( el.hasAttribute( 'data-sgs-me-keyframes' ) ) {
+			el.setAttribute( 'data-sgs-me-kf', 'played' );
+		}
+	} );
 }
 
 function makeClone( set ) {

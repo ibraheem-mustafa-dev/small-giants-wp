@@ -43,6 +43,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = ROOT / "src" / "blocks"
 WHOLE = "Whole "
+ITEM_ARRAY_CALL = re.compile(r"Sgs_Motion_Loop_Delays::item_array\(\s*'(sgs/[a-z0-9-]+)'")
 
 # Corpus blocks whose items are not revealed units. Reason is mandatory.
 EXEMPT = {
@@ -51,6 +52,7 @@ EXEMPT = {
     "sgs/choice-flow-question": "options belong to a question; the question is the unit",
     "sgs/form-field-tiles": "tiles are form inputs, not revealed items",
     "sgs/nav-drawer-menu": "nav items follow the navigation motion model (Spec 36)",
+    "sgs/nav-bar-menu": "nav items follow the navigation motion model (Spec 36)",
 }
 
 # The part --fix renames, per block. Used once to bring the existing blocks to the rule; the check never reads it.
@@ -95,6 +97,9 @@ def corpus() -> list[str]:
             if "Sgs_Motion_Loop_Delays::" in php.read_text(encoding="utf-8", errors="replace"):
                 slugs.add(f"sgs/{folder.name}")
                 break
+    # A shared helper under includes/ can make the server stagger call for a block (the nav bar's motion model).
+    for php in (ROOT / "includes").glob("*.php"):
+        slugs.update(ITEM_ARRAY_CALL.findall(php.read_text(encoding="utf-8", errors="replace")))
     return sorted(s for s in slugs if (BLOCKS_DIR / s.split("/", 1)[1] / "block.json").exists())
 
 
@@ -107,7 +112,8 @@ def evaluate(elements: dict[str, dict]) -> list[str]:
     """Findings for one block's elements. Pure, so the self-test can feed it fixtures."""
     parts = []
     for index, (key, spec) in enumerate(elements.items()):
-        if spec.get("isWrapper"):
+        # A wrapper is the whole block under another name, and a `motion: false` part never reaches the Target picker.
+        if spec.get("isWrapper") or spec.get("motion") is False:
             continue
         order = spec.get("order")
         parts.append((key, str(spec.get("label", "")), order if isinstance(order, (int, float)) else index + 1))
@@ -237,7 +243,10 @@ def self_test() -> int:
     need("whole part buried", evaluate({"title": {"label": "Title", "order": 2}, "item": {"label": "Whole card", "order": 4}}) == ["whole-not-first"])
     need("a tie is not first", evaluate({"title": {"label": "Title", "order": 2}, "item": {"label": "Whole card", "order": 2}}) == ["whole-not-first"])
     need("a wrapper never counts", evaluate({"w": {"isWrapper": True, "label": "Whole wrapper", "order": 1}, "x": {"label": "X", "order": 2}}) == ["no-whole-part"])
-    need("missing order falls back to position", evaluate({"a": {"label": "Whole a"}, "b": {"label": "B"}}) == [])
+    need("a motion:false part never counts as the whole part", evaluate({"a": {"label": "Whole a", "order": 2, "motion": False}, "b": {"label": "B", "order": 3}}) == ["no-whole-part"])
+    need("a motion:false part never blocks the whole part", evaluate({"a": {"label": "Whole a", "order": 3}, "b": {"label": "B", "order": 2, "motion": False}}) == [])
+    need("includes/ callers are in the corpus pattern", ITEM_ARRAY_CALL.findall("Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-bar-menu', $uid") == ["sgs/nav-bar-menu"])
+    need("missing order falls back to position",evaluate({"a": {"label": "Whole a"}, "b": {"label": "B"}}) == [])
     need("label wording", new_label("Plan card (repeater item)") == "Whole plan card" and new_label("Card") == "Whole card")
     need("every ITEM_PART entry is a real block", all((BLOCKS_DIR / s.split("/", 1)[1] / "block.json").exists() for s in ITEM_PART))
     need("every EXEMPT entry has a reason", all(EXEMPT.values()))

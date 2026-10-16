@@ -1636,5 +1636,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 183
+  },
+  {
+    "id": "generate-motion-stagger-columns",
+    "cmd": "python scripts/generate-motion-stagger-columns.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 184
   }
 ]

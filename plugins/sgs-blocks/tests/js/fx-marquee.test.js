@@ -320,6 +320,19 @@ describe( 'per-item entrances on a running marquee', () => {
 		expect( hidden( root ) ).toHaveLength( 2 );
 	} );
 
+	test( 'a multi-keyframe entrance is marked played, so the keyframes module never plays it in the lane', async () => {
+		const keyed = '<a href="#one" data-sgs-me="scroll opacity" data-sgs-me-keyframes="[]">One</a><a href="#two" data-sgs-me="scroll opacity">Two</a>';
+		const { root } = mount( { items: keyed } );
+		await boot();
+		const keyframed = Array.from( root.querySelectorAll( '[data-sgs-me-keyframes]' ) );
+		expect( keyframed.length ).toBeGreaterThan( 1 );
+		keyframed.forEach( ( el ) => expect( el.getAttribute( 'data-sgs-me-kf' ) ).toBe( 'played' ) );
+		// NEGATIVE CONTROL: a plain two-state entrance carries no played marker (the stylesheet animation is what the lane stops).
+		const plain = Array.from( root.querySelectorAll( '[data-sgs-me]:not([data-sgs-me-keyframes])' ) );
+		expect( plain.length ).toBeGreaterThan( 0 );
+		plain.forEach( ( el ) => expect( el.hasAttribute( 'data-sgs-me-kf' ) ).toBe( false ) );
+	} );
+
 	test( 'a set that is itself waiting for its entrance is revealed too', async () => {
 		const { root, set } = mount();
 		set.setAttribute( 'data-sgs-me', 'scroll opacity' );
