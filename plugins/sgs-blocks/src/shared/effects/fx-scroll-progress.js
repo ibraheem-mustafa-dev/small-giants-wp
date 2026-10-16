@@ -34,11 +34,19 @@
  * Progress is information, so it keeps tracking under reduced motion
  * (`information: true` on the driver).
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`, Spec 38A FR-38A-23)
+ * is honoured through `bootGated`: at a tier where scroll progress is off the element is not handed to the driver and
+ * is not a pin counter; crossing into that tier releases it and puts a counter's server-rendered text back, and
+ * leaving the tier binds it again. The shared scroll and resize listener attaches with the first pin counter and is
+ * removed with the last. A pin bar needs no script (it reads the inherited `--sgs-fx-progress` in CSS), so the off
+ * switch has nothing to stop on it.
+ *
  * @package
  */
 
 // eslint-disable-next-line import/no-unresolved -- a webpack external (script module `@sgs/scroll-driver`).
 import { observe, unobserve } from '@sgs/scroll-driver';
+import { bootGated } from './off-switch';
 
 const SELECTOR = '[data-sgs-fx~="scroll-progress"]';
 const PIN_SELECTOR = '[data-sgs-fx~="horizontal-panel"]';
@@ -50,10 +58,10 @@ const FORMATS = [ 'index-of-total', 'padded-index-of-total', 'percent' ];
 
 /** Pin counters driven by the shared scroll listener. */
 let pinCounters = [];
-/** Elements handed to the driver, for teardown. */
-let driven = [];
 let frame = 0;
 let listening = false;
+/** Stops the tier-gated binding of every element. */
+let stopGated = () => {};
 
 function choose( el, name, allowed, fallback ) {
 	const value = el.getAttribute( PREFIX + name );
@@ -134,44 +142,7 @@ function listenPin() {
 	}
 }
 
-function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
-		let source = choose( el, 'source', SOURCES, 'page' );
-		const output = choose( el, 'output', OUTPUTS, 'bar-x' );
-		const format = choose( el, 'counter-format', FORMATS, 'percent' );
-		const pin = 'pin' === source ? el.closest( PIN_SELECTOR ) : null;
-
-		if ( 'pin' === source && ! pin ) {
-			source = 'page';
-			el.setAttribute( PREFIX + 'source', 'page' );
-		}
-
-		if ( pin ) {
-			// Bars read the pin's inherited property in CSS; only a counter
-			// needs a script.
-			if ( 'counter' === output ) {
-				pinCounters.push( { el, pin, format } );
-				listenPin();
-				renderPinCounters();
-			}
-			return;
-		}
-
-		const options = { basis: source, information: true };
-		if ( 'counter' === output ) {
-			// No panel total exists off a pin, so every format reads as percent.
-			options.onUpdate = ( target, progress ) =>
-				setText( target, formatCounter( progress, 'percent', null ) );
-		}
-		observe( el, options );
-		driven.push( el );
-	} );
-}
-
-function teardown() {
-	driven.forEach( ( el ) => unobserve( el ) );
-	driven = [];
-	pinCounters = [];
+function unlistenPin() {
 	if ( frame ) {
 		window.cancelAnimationFrame( frame );
 		frame = 0;
@@ -181,6 +152,72 @@ function teardown() {
 		window.removeEventListener( 'scroll', schedulePin );
 		window.removeEventListener( 'resize', schedulePin );
 	}
+}
+
+/**
+ * Bind one element.
+ *
+ * @param {Element} el A `[data-sgs-fx~="scroll-progress"]` element.
+ * @return {Function|undefined} Release: stops the element and restores a counter's server-rendered text.
+ */
+function bindElement( el ) {
+	let source = choose( el, 'source', SOURCES, 'page' );
+	const output = choose( el, 'output', OUTPUTS, 'bar-x' );
+	const format = choose( el, 'counter-format', FORMATS, 'percent' );
+	const pin = 'pin' === source ? el.closest( PIN_SELECTOR ) : null;
+	const original = el.textContent;
+	const restore = () => {
+		if ( 'counter' === output ) {
+			setText( el, original );
+		}
+	};
+
+	if ( 'pin' === source && ! pin ) {
+		source = 'page';
+		el.setAttribute( PREFIX + 'source', 'page' );
+	}
+
+	if ( pin ) {
+		// Bars read the pin's inherited property in CSS; only a counter
+		// needs a script.
+		if ( 'counter' !== output ) {
+			return undefined;
+		}
+		const entry = { el, pin, format };
+		pinCounters.push( entry );
+		listenPin();
+		renderPinCounters();
+		return () => {
+			pinCounters = pinCounters.filter( ( item ) => item !== entry );
+			if ( 0 === pinCounters.length ) {
+				unlistenPin();
+			}
+			restore();
+		};
+	}
+
+	const options = { basis: source, information: true };
+	if ( 'counter' === output ) {
+		// No panel total exists off a pin, so every format reads as percent.
+		options.onUpdate = ( target, progress ) =>
+			setText( target, formatCounter( progress, 'percent', null ) );
+	}
+	observe( el, options );
+	return () => {
+		unobserve( el );
+		restore();
+	};
+}
+
+function boot() {
+	stopGated = bootGated( 'scroll-progress', SELECTOR, bindElement );
+}
+
+function teardown() {
+	stopGated();
+	stopGated = () => {};
+	pinCounters = [];
+	unlistenPin();
 }
 
 if ( 'loading' === document.readyState ) {

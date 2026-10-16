@@ -65,3 +65,17 @@
 		--sgs-fx-plx-offset: 0px;
 	}
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the offset is pinned to 0px, so the part sits at its natural position. Beats the :where() definitions above. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="parallax"][data-sgs-fx-off-mobile~="parallax"],
+	[data-sgs-fx~="parallax"][data-sgs-fx-disable-mobile] {
+		--sgs-fx-plx-offset: 0px;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="parallax"][data-sgs-fx-off-tablet~="parallax"],
+	[data-sgs-fx~="parallax"][data-sgs-fx-disable-tablet] {
+		--sgs-fx-plx-offset: 0px;
+	}
+}

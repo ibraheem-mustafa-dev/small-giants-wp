@@ -91,3 +91,17 @@
 		display: none;
 	}
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the injected curtain layer paints nothing. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="curtain"][data-sgs-fx-off-mobile~="curtain"] > .sgs-motion-layer[data-sgs-layer="curtain"],
+	[data-sgs-fx~="curtain"][data-sgs-fx-disable-mobile] > .sgs-motion-layer[data-sgs-layer="curtain"] {
+		display: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="curtain"][data-sgs-fx-off-tablet~="curtain"] > .sgs-motion-layer[data-sgs-layer="curtain"],
+	[data-sgs-fx~="curtain"][data-sgs-fx-disable-tablet] > .sgs-motion-layer[data-sgs-layer="curtain"] {
+		display: none;
+	}
+}

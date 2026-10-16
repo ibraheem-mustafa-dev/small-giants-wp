@@ -24,7 +24,7 @@
  *   belowBreakpoint always, tablet (1023px and below) or mobile (767px and below); static outside the range.
  *   pauseControl   the pause button.
  *
- * When the marquee cannot run (reduced motion, outside the range, no Web Animations) nothing is cloned or animated and
+ * When the marquee cannot run (reduced motion, off at this device tier, outside the range, no Web Animations) nothing is cloned or animated and
  * the block keeps its static layout, so every item stays visible.
  *
  * @package
@@ -38,6 +38,7 @@ import {
 	prefersReducedMotion,
 } from '@sgs/loop-control';
 /* eslint-enable import/no-unresolved */
+import { isEffectOffAtThisTier } from './off-switch';
 
 const SELECTOR = '[data-sgs-fx~="marquee"]';
 const SET = '[data-sgs-marquee-set]';
@@ -193,8 +194,11 @@ export function createMarquee( root ) {
 		const query = BELOW[ settings.below ];
 		return ! query || window.matchMedia( query ).matches;
 	};
+	// A motion layer's per-device off switch (Spec 38A FR-38A-23) is read live. The `below` range listeners above sit at
+	// 767/768 and 1023/1024, the same edges as the device tiers, so a tier change always re-runs `layout`.
 	const canRun = () =>
 		! prefersReducedMotion() &&
+		! isEffectOffAtThisTier( root, 'marquee' ) &&
 		typeof original.animate === 'function' &&
 		rangeMatches();
 

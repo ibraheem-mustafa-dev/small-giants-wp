@@ -60,3 +60,17 @@
  * design rules forbid. Do not add the gate back without re-litigating this
  * comment and the matching one in the JS module.
  */
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the WebGL canvas is not shown, so the plain image underneath paints. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="surface-treatment"][data-sgs-fx-off-mobile~="surface-treatment"] .sgs-webgl-surface,
+	[data-sgs-fx~="surface-treatment"][data-sgs-fx-disable-mobile] .sgs-webgl-surface {
+		display: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="surface-treatment"][data-sgs-fx-off-tablet~="surface-treatment"] .sgs-webgl-surface,
+	[data-sgs-fx~="surface-treatment"][data-sgs-fx-disable-tablet] .sgs-webgl-surface {
+		display: none;
+	}
+}

@@ -19,10 +19,15 @@
  * An amplitude of 1 is the shape the retired `bgSvgAnimation` and `svgAnimation` classes drew. The float motion is the
  * `ambient-float` effect, not this one.
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`) is honoured through
+ * `bootGated`: at a tier where the loop is off the element runs no loop and shows its resting state, crossing into
+ * that tier destroys the loop, and leaving it builds the loop again.
+ *
  * @package
  */
 
 import { animateLoop, parseTime } from '@sgs/loop-control'; // eslint-disable-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
+import { bootGated } from './off-switch';
 
 const SELECTOR = '[data-sgs-fx~="svg-loop"]';
 const PREFIX = 'data-sgs-fx-svg-loop-';
@@ -36,7 +41,8 @@ const WAVE_SCALE = 0.05;
 const WAVE_ROTATE = 1;
 const LABEL = 'Pause graphic animation';
 
-let registered = [];
+/** Stops the tier-gated loop of every element, for a bfcache rebuild. */
+let stopGated = () => {};
 
 /**
  * The element's SVG loop values: the computed custom properties `--sgs-svl-duration` and `--sgs-svl-amplitude` (which
@@ -114,22 +120,20 @@ export function svgLoopKeyframes( values ) {
 }
 
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
-		registered.push(
-			animateLoop( el, {
-				read: () => readSvgLoop( el ),
-				keyframes: svgLoopKeyframes,
-				pauseControl:
-					el.getAttribute( PREFIX + 'pause-control' ) === 'true',
-				label: LABEL,
-			} )
-		);
+	stopGated = bootGated( 'svg-loop', SELECTOR, ( el ) => {
+		const loop = animateLoop( el, {
+			read: () => readSvgLoop( el ),
+			keyframes: svgLoopKeyframes,
+			pauseControl: el.getAttribute( PREFIX + 'pause-control' ) === 'true',
+			label: LABEL,
+		} );
+		return () => loop.destroy();
 	} );
 }
 
 function teardown() {
-	registered.forEach( ( loop ) => loop.destroy() );
-	registered = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 if ( 'loading' === document.readyState ) {

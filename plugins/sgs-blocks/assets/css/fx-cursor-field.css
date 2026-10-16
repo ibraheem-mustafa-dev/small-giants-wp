@@ -630,3 +630,37 @@
 		display: none;
 	}
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the emitter overlay, the ring layer and every participant's field layer paint nothing. The field properties inherit down to participants, so one override on the emitter silences them all. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-mobile~="cursor-field"][data-sgs-cursor-field],
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-disable-mobile][data-sgs-cursor-field] {
+		--sgs-cursor-field-layer: none;
+		--sgs-cursor-field-participant-layer: none;
+		--sgs-cursor-field-mask: none;
+	}
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-mobile~="cursor-field"][data-sgs-cursor-field]::before,
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-disable-mobile][data-sgs-cursor-field]::before {
+		display: none;
+	}
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-mobile~="cursor-field"] > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"],
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-disable-mobile] > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+		display: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-tablet~="cursor-field"][data-sgs-cursor-field],
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-disable-tablet][data-sgs-cursor-field] {
+		--sgs-cursor-field-layer: none;
+		--sgs-cursor-field-participant-layer: none;
+		--sgs-cursor-field-mask: none;
+	}
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-tablet~="cursor-field"][data-sgs-cursor-field]::before,
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-disable-tablet][data-sgs-cursor-field]::before {
+		display: none;
+	}
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-off-tablet~="cursor-field"] > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"],
+	[data-sgs-fx~="cursor-field"][data-sgs-fx-disable-tablet] > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"] {
+		display: none;
+	}
+}

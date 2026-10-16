@@ -26,17 +26,22 @@
  *
  * JS therefore adds exactly one thing: the field FOLLOWING the pointer.
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`) is honoured through
+ * `bootGated`: at a tier where the field is off the element has no pointer listener and no ring writer (the
+ * stylesheet paints nothing there), crossing into that tier tears both down, and leaving it attaches them again.
+ *
  * @package
  */
 
 import { initCursorField } from './cursor-field';
 import { initCursorFieldRings } from './cursor-field-ring';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked as emitters. */
 const SELECTOR = '[data-sgs-cursor-field]';
 
-/** Live cleanups, so a bfcache restore can tear down before re-init. */
-let cleanups = [];
+/** Stops the tier-gated emitters, for a bfcache restore. */
+let stopGated = () => {};
 
 /**
  * Attach the emitter to every marked element on the page.
@@ -44,12 +49,15 @@ let cleanups = [];
  * @return {void}
  */
 function boot() {
-	const els = [ ...document.querySelectorAll( SELECTOR ) ];
-	els.forEach( ( el ) => {
-		cleanups.push( initCursorField( el ) );
+	// Per element: the emitter, then the `image-reveal` ring layer when the renderer injected one (its own pointer writer).
+	stopGated = bootGated( 'cursor-field', SELECTOR, ( el ) => {
+		const stopEmitter = initCursorField( el );
+		const stopRing = initCursorFieldRings( [ el ] );
+		return () => {
+			stopRing();
+			stopEmitter();
+		};
 	} );
-	// The `image-reveal` ring layer, when the renderer injected one: its own pointer writer.
-	cleanups.push( initCursorFieldRings( els ) );
 }
 
 /**
@@ -58,8 +66,8 @@ function boot() {
  * @return {void}
  */
 function teardown() {
-	cleanups.forEach( ( cleanup ) => cleanup() );
-	cleanups = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();

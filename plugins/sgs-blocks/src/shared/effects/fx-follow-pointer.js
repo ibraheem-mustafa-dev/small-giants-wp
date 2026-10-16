@@ -85,7 +85,7 @@ function bindElement( el ) {
 function boot() {
 	const els = [ ...document.querySelectorAll( SELECTOR ) ];
 	if ( els.length > 0 ) {
-		teardown = bindAll( els, bindElement );
+		teardown = bindAll( els, bindElement, 'follow-pointer' );
 	}
 }
 

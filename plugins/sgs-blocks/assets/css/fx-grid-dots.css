@@ -134,3 +134,17 @@
  * rules forbid, and it is the same argument `fx-surface-treatment.css` records
  * for having no reduced-motion gate of its own.
  */
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the dot canvas is not shown. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="grid-dots"][data-sgs-fx-off-mobile~="grid-dots"] .sgs-grid-dots__canvas,
+	[data-sgs-fx~="grid-dots"][data-sgs-fx-disable-mobile] .sgs-grid-dots__canvas {
+		display: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="grid-dots"][data-sgs-fx-off-tablet~="grid-dots"] .sgs-grid-dots__canvas,
+	[data-sgs-fx~="grid-dots"][data-sgs-fx-disable-tablet] .sgs-grid-dots__canvas {
+		display: none;
+	}
+}

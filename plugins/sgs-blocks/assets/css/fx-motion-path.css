@@ -252,9 +252,30 @@
  * away normally once its own containing block scrolls past, rather than
  * staying glued to the screen forever.
  */
-[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting {
-	position: sticky;
-	top: var( --sgs-fx-motion-path-rest-y );
+/*
+ * Per-device off switch (Spec 38A FR-38A-23). The parked state is the effect's own result, and the authored
+ * `position` it replaces cannot be recovered by an override, so the rule is not applied at a tier where the effect is
+ * off (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off). Desktop is never off.
+ */
+@media ( min-width: 1024px ) {
+	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting {
+		position: sticky;
+		top: var( --sgs-fx-motion-path-rest-y );
+	}
+}
+
+@media ( max-width: 767.98px ) {
+	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting:not( [data-sgs-fx-off-mobile~="motion-path"], [data-sgs-fx-disable-mobile] ) {
+		position: sticky;
+		top: var( --sgs-fx-motion-path-rest-y );
+	}
+}
+
+@media ( min-width: 768px ) and ( max-width: 1023.98px ) {
+	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting:not( [data-sgs-fx-off-tablet~="motion-path"], [data-sgs-fx-disable-tablet] ) {
+		position: sticky;
+		top: var( --sgs-fx-motion-path-rest-y );
+	}
 }
 
 /*

@@ -1654,5 +1654,14 @@
     "added_commit": null,
     "budget_ms": 3000,
     "order": 185
+  },
+  {
+    "id": "check-motion-off-switch-coverage",
+    "cmd": "python scripts/check-motion-off-switch-coverage.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 186
   }
 ]

@@ -46,12 +46,13 @@
 import { WAVE_LAYERS } from './webgl/wave-gradient';
 import { createAurora } from './webgl/aurora';
 import { prefersReducedMotion } from './motion-utils';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="wave-gradient"]';
 
-/** Live instances, so a bfcache restore can tear down before re-init. */
-let instances = [];
+/** Stops every tier-gated instance, so a bfcache restore can tear down before re-init. */
+let stopGated = () => {};
 
 /**
  * One shared, never-rendered element used to ask the browser itself whether a
@@ -402,6 +403,8 @@ function attach( el ) {
 			document.removeEventListener( 'visibilitychange', onVisibility );
 			if ( toggle ) {
 				toggle.removeEventListener( 'click', onToggle );
+				// Back to the server-rendered resting state: the control is inert without the runtime.
+				toggle.hidden = true;
 			}
 			gradient.destroy();
 			canvas.remove();
@@ -411,16 +414,16 @@ function attach( el ) {
 }
 
 /**
- * Attach every marked element on the page.
+ * Attach every marked element whose effect is on at this device tier. A motion layer's per-device off switch
+ * (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`, Spec 38A FR-38A-23) tears the canvas and loop down on
+ * entering that tier and builds them again on leaving it.
  *
  * @return {void}
  */
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
+	stopGated = bootGated( 'wave-gradient', SELECTOR, ( el ) => {
 		const instance = attach( el );
-		if ( instance ) {
-			instances.push( instance );
-		}
+		return instance ? () => instance.destroy() : undefined;
 	} );
 }
 
@@ -430,8 +433,8 @@ function boot() {
  * @return {void}
  */
 function teardown() {
-	instances.forEach( ( i ) => i.destroy() );
-	instances = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();

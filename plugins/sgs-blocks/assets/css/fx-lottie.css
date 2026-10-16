@@ -121,3 +121,41 @@
 		visibility: visible;
 	}
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the player svg and its pause control are hidden and the poster shows, the same state as without JS. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie > svg,
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie > svg,
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie-layer > svg,
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie-layer > svg {
+		display: none;
+	}
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie:has(> svg) > :is(img, picture),
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie:has(> svg) > :is(img, picture),
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie-layer:has(> svg) :is(img, picture),
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie-layer:has(> svg) :is(img, picture) {
+		visibility: visible;
+	}
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-mobile~="lottie"].sgs-lottie + .sgs-lottie__pause,
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-mobile].sgs-lottie + .sgs-lottie__pause {
+		display: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie > svg,
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie > svg,
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie-layer > svg,
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie-layer > svg {
+		display: none;
+	}
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie:has(> svg) > :is(img, picture),
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie:has(> svg) > :is(img, picture),
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie-layer:has(> svg) :is(img, picture),
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie-layer:has(> svg) :is(img, picture) {
+		visibility: visible;
+	}
+	[data-sgs-fx~="lottie"][data-sgs-fx-off-tablet~="lottie"].sgs-lottie + .sgs-lottie__pause,
+	[data-sgs-fx~="lottie"][data-sgs-fx-disable-tablet].sgs-lottie + .sgs-lottie__pause {
+		display: none;
+	}
+}

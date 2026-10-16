@@ -32,8 +32,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-# Names of the shared helper the JS runtimes will call once it exists. An empty tuple is safe.
-HELPER_NAMES = ['isEffectOffAtThisTier']
+# Names of the shared Tier V gate in src/shared/effects/off-switch.js. `isEffectOffAtThisTier` is the per-call
+# check; `bootGated` runs every element through it and re-checks on each tier change, so a runtime that calls only
+# `bootGated` carries its own evidence line instead of relying on the import walk. An empty list is safe.
+HELPER_NAMES = ['isEffectOffAtThisTier', 'bootGated']
 
 # Literal references that prove a file reads the per-tier off switch.
 GUARD_LITERALS = ['data-sgs-fx-off-', 'data-sgs-fx-disable-', 'isDisabledAtThisTier']
@@ -368,6 +370,12 @@ def self_test() -> int:
         without_helper = {r['slug']: r['class'] for r in scan(root, [])['rows'] if r['kind'] == 'js'}
         expect('helper name guards the file when listed', with_helper['bad'] == 'GUARDED')
         expect('empty HELPER_NAMES is safe and leaves it UNGUARDED', without_helper['bad'] == 'UNGUARDED')
+        write(fx / 'fx-bad.js', "export function boot() { stop = bootGated('bad', SELECTOR, init); }\n")
+        gated = {r['slug']: r['class'] for r in scan(root)['rows'] if r['kind'] == 'js'}
+        expect('a runtime calling only bootGated is GUARDED by the default HELPER_NAMES', gated['bad'] == 'GUARDED')
+        write(fx / 'fx-bad.js', "export function boot() { stop = bootGatedLater('bad', SELECTOR, init); }\n")
+        prefix = {r['slug']: r['class'] for r in scan(root)['rows'] if r['kind'] == 'js'}
+        expect('a longer name that only starts with bootGated stays UNGUARDED', prefix['bad'] == 'UNGUARDED')
 
     print('self-test: ' + ('FAILED: ' + '; '.join(failures) if failures else 'all checks passed'))
     return 1 if failures else 0

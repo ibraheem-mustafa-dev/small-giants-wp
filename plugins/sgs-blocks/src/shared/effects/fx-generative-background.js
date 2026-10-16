@@ -59,6 +59,7 @@
 
 import { createGenerativeBackground } from './webgl/generative-background';
 import { prefersReducedMotion } from './motion-utils';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="generative-background"]';
@@ -71,8 +72,8 @@ const COLOUR_PROPS = [
 	'--sgs-genbg-4',
 ];
 
-/** Live instances, so a bfcache restore can tear down before re-init. */
-let instances = [];
+/** Stops every tier-gated instance, so a bfcache restore can tear down before re-init. */
+let stopGated = () => {};
 
 /*
  * ── Colour parsing (identical approach to fx-wave-gradient.js) ────────────
@@ -592,6 +593,8 @@ function attachWebglLayer( el, staticCanvas ) {
 			}
 			if ( toggle && onToggle ) {
 				toggle.removeEventListener( 'click', onToggle );
+				// Back to the server-rendered resting state: the control is inert without the runtime.
+				toggle.hidden = true;
 			}
 			if ( handle ) {
 				handle.destroy();
@@ -640,6 +643,10 @@ function attachWebglLayer( el, staticCanvas ) {
 		},
 	} ).then( ( created ) => {
 		if ( cancelled || ! created ) {
+			// Torn down while the renderer was being built: release it rather than leave a live GPU surface behind.
+			if ( cancelled && created ) {
+				created.destroy();
+			}
 			return;
 		}
 		handle = created;
@@ -727,16 +734,16 @@ function attach( el ) {
 }
 
 /**
- * Attach every marked element on the page.
+ * Attach every marked element whose effect is on at this device tier. A motion layer's per-device off switch
+ * (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`, Spec 38A FR-38A-23) tears the canvases and loop down on
+ * entering that tier and builds them again on leaving it.
  *
  * @return {void}
  */
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
+	stopGated = bootGated( 'generative-background', SELECTOR, ( el ) => {
 		const instance = attach( el );
-		if ( instance ) {
-			instances.push( instance );
-		}
+		return instance ? () => instance.destroy() : undefined;
 	} );
 }
 
@@ -746,8 +753,8 @@ function boot() {
  * @return {void}
  */
 function teardown() {
-	instances.forEach( ( i ) => i.destroy() );
-	instances = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();

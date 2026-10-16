@@ -14,17 +14,23 @@
  * Attributes: `data-sgs-fx-ambient-float-axis` (`x`, `y` or `both`; default `y`) and
  * `data-sgs-fx-ambient-float-pause-control="true"`, which asks for the pause button.
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`) is honoured through
+ * `bootGated`: at a tier where the float is off the element runs no loop and shows its resting state, crossing into
+ * that tier destroys the loop, and leaving it builds the loop again.
+ *
  * @package
  */
 
 // eslint-disable-next-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
 import { animateLoop, parseLength, readLoopTiming } from '@sgs/loop-control';
+import { bootGated } from './off-switch';
 
 const SELECTOR = '[data-sgs-fx~="ambient-float"]';
 const PREFIX = 'data-sgs-fx-ambient-float-';
 const DEFAULT_TRAVEL = '12px';
 
-let registered = [];
+/** Stops the tier-gated loop of every element, for a bfcache rebuild. */
+let stopGated = () => {};
 
 /**
  * The element's float values from its computed custom properties and axis attribute.
@@ -73,21 +79,19 @@ export function floatKeyframes( values ) {
 }
 
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
-		registered.push(
-			animateLoop( el, {
-				read: () => readFloat( el ),
-				keyframes: floatKeyframes,
-				pauseControl:
-					el.getAttribute( PREFIX + 'pause-control' ) === 'true',
-			} )
-		);
+	stopGated = bootGated( 'ambient-float', SELECTOR, ( el ) => {
+		const loop = animateLoop( el, {
+			read: () => readFloat( el ),
+			keyframes: floatKeyframes,
+			pauseControl: el.getAttribute( PREFIX + 'pause-control' ) === 'true',
+		} );
+		return () => loop.destroy();
 	} );
 }
 
 function teardown() {
-	registered.forEach( ( loop ) => loop.destroy() );
-	registered = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 if ( 'loading' === document.readyState ) {

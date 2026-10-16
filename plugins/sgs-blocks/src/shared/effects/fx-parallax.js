@@ -29,11 +29,18 @@
  * part at rest; a mid-session change in either direction is honoured here (the
  * view travel is removed on the way in, the driver resumes on the way out).
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`, Spec 38A FR-38A-23)
+ * is honoured by `init()` through `bootGated`: at a tier where parallax is off the element is not handed to the
+ * driver, crossing into that tier releases it (`unregister`, which clears the travel and the driver's own values so
+ * the part sits at rest), and leaving the tier registers it again. The reduced-motion listener is attached by the
+ * first registered element and removed with the last.
+ *
  * @package
  */
 
 // eslint-disable-next-line import/no-unresolved -- a webpack external (script module `@sgs/scroll-driver`).
 import { observe, unobserve } from '@sgs/scroll-driver';
+import { bootGated } from './off-switch';
 
 const SELECTOR = '[data-sgs-fx~="parallax"]';
 const BASIS_ATTRIBUTE = 'data-sgs-fx-parallax-basis';
@@ -45,6 +52,8 @@ const viewElements = new Set();
 /** Every element handed to the driver, for teardown. */
 const driven = new Set();
 const lastTravel = new WeakMap();
+/** Stops of every `init()` call, so `teardown()` can end the tier-gated registrations. */
+const gatedStops = new Set();
 
 let reducedQuery = null;
 let listening = false;
@@ -152,25 +161,49 @@ export function register( el ) {
 }
 
 /**
- * Register every parallax element under a root.
+ * Release one element: the driver stops writing to it and everything written on it is removed, so the part is back at
+ * rest. The reduced-motion listener goes with the last element.
+ *
+ * @param {Element} el A registered parallax element.
+ */
+export function unregister( el ) {
+	if ( ! driven.has( el ) ) {
+		return;
+	}
+	unobserve( el );
+	clearTravel( el );
+	driven.delete( el );
+	viewElements.delete( el );
+	if ( 0 === driven.size ) {
+		unlisten();
+	}
+}
+
+/**
+ * Register every parallax element under a root that is on at the current device tier, and keep each in step with the
+ * tier (see the off switch note above).
  *
  * @param {ParentNode} [root] Search root, the document by default.
  */
 export function init( root = document ) {
-	root.querySelectorAll( SELECTOR ).forEach( register );
+	const stop = bootGated(
+		'parallax',
+		root.querySelectorAll( SELECTOR ),
+		( el ) => {
+			register( el );
+			return () => unregister( el );
+		}
+	);
+	gatedStops.add( stop );
 }
 
 /**
  * Release every element and remove what was written on it.
  */
 export function teardown() {
-	driven.forEach( ( el ) => {
-		unobserve( el );
-		clearTravel( el );
-	} );
-	driven.clear();
-	viewElements.clear();
-	unlisten();
+	gatedStops.forEach( ( stop ) => stop() );
+	gatedStops.clear();
+	Array.from( driven ).forEach( unregister );
 }
 
 if ( 'undefined' !== typeof window && 'undefined' !== typeof document ) {

@@ -34,6 +34,14 @@
  * instances and attaches NO listener at all — byte-identical to the no-JS
  * state, the same SUPPRESS contract `magnet.js` documents.
  *
+ * ── THE PER-DEVICE OFF SWITCH ─────────────────────────────────────────────
+ * A motion layer's `data-sgs-fx-off-<tier>` list (or the flat
+ * `data-sgs-fx-disable-<tier>`) is honoured per emitter through `bootGated`:
+ * at a tier where the effect is off the element gets no canvas and no pool,
+ * crossing into that tier destroys them, and leaving it builds them again.
+ * The shared listeners exist only while at least one emitter is running, so
+ * a page whose every emitter is off at this tier carries none.
+ *
  * @package
  */
 
@@ -44,6 +52,7 @@ import {
 	isTouchInput,
 	supportsFinePointer,
 } from './motion-utils';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="particles"]';
@@ -105,6 +114,9 @@ if ( typeof window !== 'undefined' ) {
 /** The single shared pointer driver, or null when nothing is registered. */
 let onPointerMove = null;
 
+/** Stops every tier-gated emitter and the tier listener. */
+let stopGated = () => {};
+
 /**
  * Read one instance's options. Called at boot and again on window resize.
  *
@@ -161,34 +173,14 @@ function isOver( el, clientX, clientY ) {
 }
 
 /**
- * Attach every marked element and start the shared driver.
+ * Attach the shared pointer and resize drivers, once.
  *
  * @return {void}
  */
-function boot() {
-	// SUPPRESS (§10): no instance, no canvas, no listener. Mirrors
-	// `magnet.js`'s reduced-motion branch exactly.
-	if ( prefersReducedMotion() ) {
+function attachDrivers() {
+	if ( onPointerMove ) {
 		return;
 	}
-	// Coarse static gate — see the module docblock. An all-touch device
-	// never gets the canvas/pool built in the first place.
-	if ( ! supportsFinePointer() ) {
-		return;
-	}
-
-	const els = [ ...document.querySelectorAll( SELECTOR ) ];
-	if ( ! els.length ) {
-		return;
-	}
-
-	els.forEach( ( el ) => {
-		instances.push( {
-			el,
-			particles: createParticles( el, readOptions( el ) ),
-		} );
-	} );
-
 	onPointerMove = rafThrottle( ( event ) => {
 		if ( isTouchInput() ) {
 			return;
@@ -212,11 +204,11 @@ function boot() {
 }
 
 /**
- * Tear every instance down and remove the shared listener.
+ * Remove the shared pointer and resize drivers.
  *
  * @return {void}
  */
-function teardown() {
+function detachDrivers() {
 	if ( onPointerMove ) {
 		onPointerMove.cancel();
 		document.removeEventListener( 'mousemove', onPointerMove );
@@ -227,8 +219,59 @@ function teardown() {
 		window.removeEventListener( 'resize', onResize );
 		onResize = null;
 	}
-	instances.forEach( ( { particles } ) => particles.destroy() );
-	instances = [];
+}
+
+/**
+ * Start one emitter: its canvas and pool, plus the shared drivers when it is
+ * the first one running.
+ *
+ * @param {HTMLElement} el The marked element.
+ * @return {Function} Stops the emitter, and the shared drivers when it was
+ *                    the last one running.
+ */
+function startEmitter( el ) {
+	const instance = {
+		el,
+		particles: createParticles( el, readOptions( el ) ),
+	};
+	instances.push( instance );
+	attachDrivers();
+	return () => {
+		instance.particles.destroy();
+		instances = instances.filter( ( item ) => item !== instance );
+		if ( ! instances.length ) {
+			detachDrivers();
+		}
+	};
+}
+
+/**
+ * Start every marked element whose effect is on at this tier.
+ *
+ * @return {void}
+ */
+function boot() {
+	// SUPPRESS (§10): no instance, no canvas, no listener. Mirrors
+	// `magnet.js`'s reduced-motion branch exactly.
+	if ( prefersReducedMotion() ) {
+		return;
+	}
+	// Coarse static gate — see the module docblock. An all-touch device
+	// never gets the canvas/pool built in the first place.
+	if ( ! supportsFinePointer() ) {
+		return;
+	}
+	stopGated = bootGated( 'particles', SELECTOR, startEmitter );
+}
+
+/**
+ * Tear every instance down and remove the shared listeners.
+ *
+ * @return {void}
+ */
+function teardown() {
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();

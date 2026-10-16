@@ -20,10 +20,17 @@
  *
  * `pagehide` tears every instance down; `pageshow` with `persisted` (a bfcache restore) rebuilds from scratch.
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`, Spec 38A FR-38A-23)
+ * is honoured through `bootGated`: at a tier where the Lottie is off the element has no binding, trigger or player and
+ * keeps its poster; crossing into that tier tears the binding down (a mount still in flight is discarded when it
+ * lands), and leaving it binds the element again. The visibility, breakpoint and scroll listeners are shared: they
+ * attach with the first live binding and detach with the last.
+ *
  * @package
  */
 
 import { init as playerInit } from './lottie-adapter.js';
+import { bootGated } from './off-switch.js';
 import { prefersReducedMotion, rafThrottle } from '../effects/motion-utils.js';
 import {
 	readConfig,
@@ -46,6 +53,16 @@ let scrollDriver = null;
 /** The loop control's breakpoint queries this module listens to, so a tier change re-reads the speed. */
 let breakpointQueries = [];
 
+/** Whether the visibility and breakpoint listeners are attached (they follow the live bindings). */
+let sharedListening = false;
+
+/** Stops the tier-gated binding of every element. */
+let stopGated = null;
+
+/** The reduced-motion query and the one-off listeners that outlive `cleanup()`. */
+let reducedQuery = null;
+let permanentBound = false;
+
 /**
  * @typedef {Object} LottieBinding
  * @property {Element}                   el         The Lottie element.
@@ -57,6 +74,8 @@ let breakpointQueries = [];
  * @property {boolean}                   mounted    Whether the player is mounted or mounting.
  * @property {IntersectionObserver|null} observer   The trigger's observer.
  * @property {AbortController}           controller Cancels listeners and fetches on cleanup.
+ * @property {number}                    epoch      Bumped by every teardown, so a mount that started earlier can tell.
+ * @property {boolean}                   scrollWired Whether the shared scroll driver serves this binding.
  */
 
 /**
@@ -65,28 +84,78 @@ let breakpointQueries = [];
  * @return {void}
  */
 export function init() {
-	document.querySelectorAll( SELECTOR ).forEach( bindInstance );
+	if ( stopGated ) {
+		return;
+	}
+	stopGated = bootGated( 'lottie', SELECTOR, bindInstance );
 
 	window.addEventListener( 'pagehide', cleanup );
-	window.addEventListener( 'pageshow', ( event ) => {
-		if ( event.persisted ) {
-			cleanup();
-			init();
+	if ( ! permanentBound ) {
+		permanentBound = true;
+		window.addEventListener( 'pageshow', ( event ) => {
+			if ( event.persisted ) {
+				cleanup();
+				init();
+			}
+		} );
+		if ( 'function' === typeof window.matchMedia ) {
+			reducedQuery = window.matchMedia(
+				'(prefers-reduced-motion: reduce)'
+			);
+			reducedQuery.addEventListener( 'change', handleReducedMotionChange );
 		}
-	} );
-	document.addEventListener( 'visibilitychange', handleVisibilityChange );
-
-	if ( 'function' === typeof window.matchMedia ) {
-		window
-			.matchMedia( '(prefers-reduced-motion: reduce)' )
-			.addEventListener( 'change', handleReducedMotionChange );
-		breakpointQueries = BREAKPOINTS.map( ( text ) =>
-			window.matchMedia( text )
-		);
-		breakpointQueries.forEach( ( query ) =>
-			query.addEventListener( 'change', handleBreakpointChange )
-		);
 	}
+	syncSharedListeners();
+}
+
+/**
+ * Attach the visibility and breakpoint listeners while at least one binding is live, and detach them with the last.
+ *
+ * @return {void}
+ */
+function syncSharedListeners() {
+	const wanted = instances.size > 0 && null !== stopGated;
+	if ( wanted === sharedListening ) {
+		return;
+	}
+	sharedListening = wanted;
+	if ( wanted ) {
+		document.addEventListener( 'visibilitychange', handleVisibilityChange );
+		if ( 'function' === typeof window.matchMedia ) {
+			breakpointQueries = BREAKPOINTS.map( ( text ) =>
+				window.matchMedia( text )
+			);
+			breakpointQueries.forEach( ( query ) =>
+				query.addEventListener( 'change', handleBreakpointChange )
+			);
+		}
+		return;
+	}
+	document.removeEventListener( 'visibilitychange', handleVisibilityChange );
+	breakpointQueries.forEach( ( query ) =>
+		query.removeEventListener( 'change', handleBreakpointChange )
+	);
+	breakpointQueries = [];
+}
+
+/**
+ * Detach the shared scroll driver once no live binding is scroll-wired.
+ *
+ * @return {void}
+ */
+function releaseScrollDriver() {
+	if (
+		! scrollDriver ||
+		Array.from( instances.values() ).some( ( entry ) => entry.scrollWired )
+	) {
+		return;
+	}
+	window.removeEventListener( 'scroll', scrollDriver );
+	window.removeEventListener( 'resize', scrollDriver );
+	if ( scrollDriver.cancel ) {
+		scrollDriver.cancel();
+	}
+	scrollDriver = null;
 }
 
 /**
@@ -110,33 +179,25 @@ function handleBreakpointChange() {
  * @return {void}
  */
 export function cleanup() {
+	if ( stopGated ) {
+		const stop = stopGated;
+		stopGated = null;
+		stop();
+	}
 	instances.forEach( ( binding ) => teardownBinding( binding ) );
 	instances.clear();
-
-	if ( scrollDriver ) {
-		window.removeEventListener( 'scroll', scrollDriver );
-		window.removeEventListener( 'resize', scrollDriver );
-		if ( scrollDriver.cancel ) {
-			scrollDriver.cancel();
-		}
-		scrollDriver = null;
-	}
-
+	releaseScrollDriver();
 	window.removeEventListener( 'pagehide', cleanup );
-	document.removeEventListener( 'visibilitychange', handleVisibilityChange );
-	breakpointQueries.forEach( ( query ) =>
-		query.removeEventListener( 'change', handleBreakpointChange )
-	);
-	breakpointQueries = [];
+	syncSharedListeners();
 }
 
 /**
  * @param {Element} el One Lottie element.
- * @return {void}
+ * @return {Function|undefined} Releases the binding (the off switch's stop).
  */
 function bindInstance( el ) {
 	if ( instances.has( el ) ) {
-		return;
+		return undefined;
 	}
 
 	const binding = {
@@ -149,14 +210,23 @@ function bindInstance( el ) {
 		mounted: false,
 		observer: null,
 		controller: new AbortController(),
+		epoch: 0,
+		scrollWired: false,
 	};
 	instances.set( el, binding );
+	syncSharedListeners();
 
-	if ( prefersReducedMotion() ) {
-		// No trigger is scheduled: the poster already in the markup is the whole experience.
-		return;
+	if ( ! prefersReducedMotion() ) {
+		// Under reduced motion no trigger is scheduled: the poster already in the markup is the whole experience.
+		wireTrigger( binding );
 	}
-	wireTrigger( binding );
+
+	return () => {
+		teardownBinding( binding );
+		instances.delete( el );
+		releaseScrollDriver();
+		syncSharedListeners();
+	};
 }
 
 /**
@@ -169,7 +239,12 @@ function wireTrigger( binding ) {
 	const signal = { signal: controller.signal };
 
 	if ( 'load' === trigger ) {
-		const start = () => activate( binding, true );
+		const start = () => {
+			// The idle callback may land after the binding was torn down (the off tier, a reduced-motion switch).
+			if ( ! signal.signal.aborted ) {
+				activate( binding, true );
+			}
+		};
 		if ( 'requestIdleCallback' in window ) {
 			window.requestIdleCallback( start, { timeout: 2000 } );
 		} else {
@@ -214,7 +289,7 @@ function wireTrigger( binding ) {
  * @return {void}
  */
 function wireScrollTrigger( binding ) {
-	const { el, controller } = binding;
+	const { el } = binding;
 
 	binding.observer = new window.IntersectionObserver(
 		( entries ) => {
@@ -228,6 +303,7 @@ function wireScrollTrigger( binding ) {
 		{ threshold: 0 }
 	);
 	binding.observer.observe( el );
+	binding.scrollWired = true;
 
 	if ( ! scrollDriver ) {
 		scrollDriver = rafThrottle( () => {
@@ -241,7 +317,8 @@ function wireScrollTrigger( binding ) {
 				}
 			} );
 		} );
-		const options = { passive: true, signal: controller.signal };
+		// Shared by every scroll-triggered binding, so no one binding's abort signal owns it.
+		const options = { passive: true };
 		window.addEventListener( 'scroll', scrollDriver, options );
 		window.addEventListener( 'resize', scrollDriver, options );
 	}
@@ -277,6 +354,8 @@ async function mount( binding ) {
 		return;
 	}
 	binding.mounted = true;
+	// A teardown while this mount is awaiting bumps the epoch; the mount then discards what it fetched or built.
+	const epoch = binding.epoch;
 
 	let animationData;
 	try {
@@ -292,28 +371,40 @@ async function mount( binding ) {
 		animationData = await response.json();
 	} catch ( error ) {
 		// The poster markup already in the DOM stays.
-		binding.mounted = false;
+		if ( epoch === binding.epoch ) {
+			binding.mounted = false;
+		}
 		return;
 	}
 
-	if ( ! document.body.contains( el ) ) {
+	if ( epoch !== binding.epoch || ! document.body.contains( el ) ) {
 		return;
 	}
 
+	let player;
 	try {
 		if ( isLayer( el ) ) {
 			el.classList.add( LAYER_CLASS );
 		}
-		binding.player = await playerInit( {
+		player = await playerInit( {
 			container: el,
 			animationData,
 			loop: config.loop,
 			speed: config.speed,
 		} );
 	} catch ( error ) {
-		binding.mounted = false;
+		if ( epoch === binding.epoch ) {
+			binding.mounted = false;
+		}
 		return;
 	}
+
+	if ( epoch !== binding.epoch ) {
+		// Torn down while the player was being built: release it without ever attaching it.
+		player.destroy();
+		return;
+	}
+	binding.player = player;
 
 	// A scroll-driven animation shows the frame for where the page already is; the scroll listener only seeks on the
 	// next scroll, so a page opened or restored part-way down would otherwise hold frame 0.
@@ -354,6 +445,7 @@ function handleReducedMotionChange( event ) {
 		instances.forEach( ( binding ) =>
 			teardownBinding( binding, { keepBinding: true } )
 		);
+		releaseScrollDriver();
 		return;
 	}
 
@@ -385,6 +477,8 @@ function teardownBinding( binding, opts = {} ) {
 		binding.player = null;
 	}
 	binding.el.classList.remove( LAYER_CLASS );
+	binding.epoch += 1;
+	binding.scrollWired = false;
 	binding.mounted = false;
 	binding.inView = false;
 	binding.active = false;

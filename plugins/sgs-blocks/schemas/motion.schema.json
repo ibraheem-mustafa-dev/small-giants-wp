@@ -2441,7 +2441,7 @@
 		"offTiers": {
 			"x-sgs-kind": "meta",
 			"type": "array",
-			"description": "The device tiers on which this effect does not run (written as the effect's own slug in data-sgs-fx-off-tablet / -mobile, which the Tier G boot gate reads).",
+			"description": "The device tiers on which this effect does not run (written as the effect's own slug in data-sgs-fx-off-tablet / -mobile). Every effect runtime honours it, and re-checks when the viewport crosses a tier: the Tier G boot gate and the Tier V runtimes stop and restart, and each effect stylesheet neutralises its painted result at that tier.",
 			"items": {
 				"type": "string",
 				"enum": [

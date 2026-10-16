@@ -9,6 +9,8 @@
  * @package
  */
 
+import { bootGated } from './off-switch';
+
 /**
  * Clamp a number into a range.
  *
@@ -145,11 +147,28 @@ export function onReducedMotionChange( callback ) {
 /**
  * Start a tracker per element, each following the live reduced-motion preference. Returns one teardown.
  *
- * @param {HTMLElement[]} els    Elements.
- * @param {Function}      create Builds one element's tracker controller.
+ * With an `effect` slug (the `data-sgs-fx` token) every element runs through `bootGated`: an element whose effect is
+ * off at the current device tier gets no listener, one entering such a tier is stopped and reset, and one leaving it
+ * is started again (Spec 38A FR-38A-23). Without a slug every element is always bound.
+ *
+ * @param {HTMLElement[]} els      Elements.
+ * @param {Function}      create   Builds one element's tracker controller.
+ * @param {string}        [effect] Effect slug to gate on the per-device off switch.
  * @return {Function} Teardown that stops every tracker and the preference listener.
  */
-export function bindAll( els, create ) {
+export function bindAll( els, create, effect ) {
+	if ( effect ) {
+		return bootGated( effect, els, ( el ) => {
+			const c = create( el );
+			const off = onReducedMotionChange( ( reduced ) =>
+				reduced ? c.stop() : c.start()
+			);
+			return () => {
+				off();
+				c.stop();
+			};
+		} );
+	}
 	const controllers = els.map( create );
 	const off = onReducedMotionChange( ( reduced ) =>
 		controllers.forEach( ( c ) => ( reduced ? c.stop() : c.start() ) )

@@ -179,3 +179,35 @@
 		transition: none;
 	}
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the canvases and toggle are hidden and the effect's gradient ground is removed. The element's own authored background cannot be recovered in CSS, so it reads transparent. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-mobile~="generative-background"] .sgs-generative-background__canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-mobile] .sgs-generative-background__canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-mobile~="generative-background"] .sgs-generative-background__webgl-canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-mobile] .sgs-generative-background__webgl-canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-mobile~="generative-background"] .sgs-generative-background__toggle,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-mobile] .sgs-generative-background__toggle {
+		display: none;
+	}
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-mobile~="generative-background"],
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-mobile] {
+		background-image: none;
+		background-color: transparent;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-tablet~="generative-background"] .sgs-generative-background__canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-tablet] .sgs-generative-background__canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-tablet~="generative-background"] .sgs-generative-background__webgl-canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-tablet] .sgs-generative-background__webgl-canvas,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-tablet~="generative-background"] .sgs-generative-background__toggle,
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-tablet] .sgs-generative-background__toggle {
+		display: none;
+	}
+	[data-sgs-fx~="generative-background"][data-sgs-fx-off-tablet~="generative-background"],
+	[data-sgs-fx~="generative-background"][data-sgs-fx-disable-tablet] {
+		background-image: none;
+		background-color: transparent;
+	}
+}

@@ -34,6 +34,14 @@
  * and it is the same picture the effect shows before the pointer arrives, so
  * one state serves both and nothing is hidden from anyone.
  *
+ * ── THE PER-DEVICE OFF SWITCH ─────────────────────────────────────────────
+ * A motion layer's `data-sgs-fx-off-<tier>` list (or the flat
+ * `data-sgs-fx-disable-<tier>`) is honoured per element through `bootGated`:
+ * at a tier where the effect is off the element gets no lattice, canvas or
+ * rAF loop, crossing into that tier destroys them, and leaving it builds them
+ * again. The shared mousemove listener exists only while at least one field is
+ * running.
+ *
  * @package
  */
 
@@ -44,6 +52,7 @@ import {
 	isTouchInput,
 	supportsFinePointer,
 } from './motion-utils';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="grid-dots"]';
@@ -53,6 +62,9 @@ let instances = [];
 
 /** The single shared pointer driver, or null when nothing is registered. */
 let onPointerMove = null;
+
+/** Stops every tier-gated field and the tier listener. */
+let stopGated = () => {};
 
 /**
  * PROBE HANDLE — read-only, permanent, no side effects (D807 precedent).
@@ -118,32 +130,14 @@ function readOptions( el ) {
 }
 
 /**
- * Attach every marked element and start the shared driver.
+ * Attach the shared pointer driver, once.
  *
  * @return {void}
  */
-function boot() {
-	// SUPPRESS (§10): no instance, no canvas, no listener.
-	if ( prefersReducedMotion() ) {
+function attachDriver() {
+	if ( onPointerMove ) {
 		return;
 	}
-	// Coarse static gate — see the module docblock.
-	if ( ! supportsFinePointer() ) {
-		return;
-	}
-
-	const els = [ ...document.querySelectorAll( SELECTOR ) ];
-	if ( ! els.length ) {
-		return;
-	}
-
-	els.forEach( ( el ) => {
-		instances.push( {
-			el,
-			field: createGridDots( el, readOptions( el ) ),
-		} );
-	} );
-
 	onPointerMove = rafThrottle( ( event ) => {
 		// REACTIVE gate — a hybrid device passes supportsFinePointer() and can
 		// still be touched.
@@ -169,18 +163,64 @@ function boot() {
 }
 
 /**
- * Tear every instance down and remove the shared listener.
+ * Remove the shared pointer driver.
  *
  * @return {void}
  */
-function teardown() {
+function detachDriver() {
 	if ( onPointerMove ) {
 		onPointerMove.cancel();
 		document.removeEventListener( 'mousemove', onPointerMove );
 		onPointerMove = null;
 	}
-	instances.forEach( ( { field } ) => field.destroy() );
-	instances = [];
+}
+
+/**
+ * Start one field: its lattice and canvas, plus the shared driver when it is
+ * the first one running.
+ *
+ * @param {HTMLElement} el The marked element.
+ * @return {Function} Stops the field, and the shared driver when it was the
+ *                    last one running.
+ */
+function startField( el ) {
+	const instance = { el, field: createGridDots( el, readOptions( el ) ) };
+	instances.push( instance );
+	attachDriver();
+	return () => {
+		instance.field.destroy();
+		instances = instances.filter( ( item ) => item !== instance );
+		if ( ! instances.length ) {
+			detachDriver();
+		}
+	};
+}
+
+/**
+ * Start every marked element whose effect is on at this tier.
+ *
+ * @return {void}
+ */
+function boot() {
+	// SUPPRESS (§10): no instance, no canvas, no listener.
+	if ( prefersReducedMotion() ) {
+		return;
+	}
+	// Coarse static gate — see the module docblock.
+	if ( ! supportsFinePointer() ) {
+		return;
+	}
+	stopGated = bootGated( 'grid-dots', SELECTOR, startField );
+}
+
+/**
+ * Tear every instance down and remove the shared listener.
+ *
+ * @return {void}
+ */
+function teardown() {
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();

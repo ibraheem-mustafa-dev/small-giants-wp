@@ -35,3 +35,17 @@
 	--sgs-sp-y: var( --sgs-scroll-progress-value );
 	transform-origin: 50% 0;
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the bar reads zero progress, the same empty rest state it has with JS blocked. Beats the :where() definitions above. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="scroll-progress"][data-sgs-fx-off-mobile~="scroll-progress"],
+	[data-sgs-fx~="scroll-progress"][data-sgs-fx-disable-mobile] {
+		--sgs-scroll-progress-value: 0;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="scroll-progress"][data-sgs-fx-off-tablet~="scroll-progress"],
+	[data-sgs-fx~="scroll-progress"][data-sgs-fx-disable-tablet] {
+		--sgs-scroll-progress-value: 0;
+	}
+}

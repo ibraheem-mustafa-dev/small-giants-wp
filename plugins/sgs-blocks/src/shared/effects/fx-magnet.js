@@ -17,6 +17,7 @@
  */
 
 import { registerMagnet, DEFAULT_RADIUS, DEFAULT_RETURN_MS } from '@sgs/magnet';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="magnet"]';
@@ -29,8 +30,8 @@ const DEFAULT_FACTOR = 0.35;
 const EASING =
 	/^(?:linear|ease|ease-in|ease-out|ease-in-out)$|^(?:cubic-bezier|linear)\([\d.,\s%-]+\)$/;
 
-/** Cleanups for the live magnets, so a bfcache restore can tear down before re-init. */
-let cleanups = [];
+/** Stops the tier-gated registration of every magnet, so a bfcache restore can tear down before re-init. */
+let stopGated = () => {};
 
 /**
  * A number read from one attribute, bounded; the fallback when the attribute is
@@ -119,12 +120,14 @@ export function readOptions( el ) {
 }
 
 /**
- * Register every marked element with the shared driver.
+ * Register every marked element whose magnet is on at this tier with the shared driver. A motion layer's per-device
+ * off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`, Spec 38A FR-38A-23) unregisters the element on
+ * entering that tier, so the driver drops its listeners with the last one, and registers it again on leaving.
  *
  * @return {void}
  */
 function boot() {
-	cleanups = [ ...document.querySelectorAll( SELECTOR ) ].map( ( el ) =>
+	stopGated = bootGated( 'magnet', SELECTOR, ( el ) =>
 		registerMagnet( el, readOptions( el ) )
 	);
 }
@@ -135,8 +138,8 @@ function boot() {
  * @return {void}
  */
 function teardown() {
-	cleanups.forEach( ( cleanup ) => cleanup() );
-	cleanups = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();

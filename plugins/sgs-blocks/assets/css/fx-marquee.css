@@ -89,3 +89,49 @@
 		mask-image: none;
 	}
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the scroll translate, the cloned items, the edge-fade mask and the pause control are removed. The lane's flex row and overflow clip are left, because the authored layout cannot be recovered in CSS; the script removes those marks when it tears down. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
+		translate: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"] [data-sgs-marquee-clone],
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile] [data-sgs-marquee-clone] {
+		display: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"],
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"] {
+		mask-image: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"] > .sgs-motion-pause,
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile] > .sgs-motion-pause,
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-mobile~="marquee"][data-sgs-marquee-lane="on"] > .sgs-motion-pause,
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-mobile][data-sgs-marquee-lane="on"] > .sgs-motion-pause {
+		display: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
+		translate: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"] [data-sgs-marquee-clone],
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet] [data-sgs-marquee-clone] {
+		display: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"],
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"] {
+		mask-image: none;
+	}
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"] > .sgs-motion-pause,
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet] > .sgs-motion-pause,
+	[data-sgs-fx~="marquee"][data-sgs-fx-off-tablet~="marquee"][data-sgs-marquee-lane="on"] > .sgs-motion-pause,
+	[data-sgs-fx~="marquee"][data-sgs-fx-disable-tablet][data-sgs-marquee-lane="on"] > .sgs-motion-pause {
+		display: none;
+	}
+}

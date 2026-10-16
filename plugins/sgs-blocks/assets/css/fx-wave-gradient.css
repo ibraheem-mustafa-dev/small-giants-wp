@@ -548,3 +548,45 @@
 	--sgs-wave-2: #3E7A6B;
 	--sgs-wave-3: #6B5B8A;
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the canvas, toggle and animated ::before/::after blobs are hidden and the gradient ground is removed. Ties in specificity with the variant rules above resolve to this later block. The element's own authored background cannot be recovered in CSS, so it reads transparent. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-mobile~="wave-gradient"] .sgs-wave-gradient__canvas,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile] .sgs-wave-gradient__canvas,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-mobile~="wave-gradient"] .sgs-wave-gradient__toggle,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile] .sgs-wave-gradient__toggle {
+		display: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-mobile~="wave-gradient"]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::before,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::before,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-mobile~="wave-gradient"]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::after,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::after {
+		display: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-mobile~="wave-gradient"],
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile] {
+		background-image: none;
+		background-color: transparent;
+		animation: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-tablet~="wave-gradient"] .sgs-wave-gradient__canvas,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet] .sgs-wave-gradient__canvas,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-tablet~="wave-gradient"] .sgs-wave-gradient__toggle,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet] .sgs-wave-gradient__toggle {
+		display: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-tablet~="wave-gradient"]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::before,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::before,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-tablet~="wave-gradient"]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::after,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet]:is(.sgs-wave-gradient--pastel, .sgs-wave-gradient--horizon, .sgs-wave-gradient--ribbon, .sgs-wave-gradient--veil)::after {
+		display: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-tablet~="wave-gradient"],
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet] {
+		background-image: none;
+		background-color: transparent;
+		animation: none;
+	}
+}

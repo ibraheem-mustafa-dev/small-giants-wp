@@ -97,3 +97,25 @@
 		display: none;
 	}
 }
+
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the injected shape overlays are hidden. fx-shape-routes.php appends the visual and target svgs as the next siblings of the block root and strips data-sgs-fx from the root but leaves the off and disable attributes there, so the adjacent-sibling selectors reach them; the :has() selectors cover the attributes landing on the path. */
+@media (max-width: 767.98px) {
+	[data-sgs-fx-off-mobile~="morph"] + .sgs-fx-shape-visual,
+	[data-sgs-fx-disable-mobile] + .sgs-fx-shape-visual,
+	[data-sgs-fx-off-mobile~="morph"] + .sgs-fx-shape-visual + .sgs-fx-shape-target,
+	[data-sgs-fx-disable-mobile] + .sgs-fx-shape-visual + .sgs-fx-shape-target,
+	.sgs-fx-shape-visual:has(> path[data-sgs-fx-off-mobile~="morph"]),
+	.sgs-fx-shape-visual:has(> path[data-sgs-fx-disable-mobile]) {
+		display: none;
+	}
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	[data-sgs-fx-off-tablet~="morph"] + .sgs-fx-shape-visual,
+	[data-sgs-fx-disable-tablet] + .sgs-fx-shape-visual,
+	[data-sgs-fx-off-tablet~="morph"] + .sgs-fx-shape-visual + .sgs-fx-shape-target,
+	[data-sgs-fx-disable-tablet] + .sgs-fx-shape-visual + .sgs-fx-shape-target,
+	.sgs-fx-shape-visual:has(> path[data-sgs-fx-off-tablet~="morph"]),
+	.sgs-fx-shape-visual:has(> path[data-sgs-fx-disable-tablet]) {
+		display: none;
+	}
+}

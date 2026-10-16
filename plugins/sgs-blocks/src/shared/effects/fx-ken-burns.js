@@ -17,6 +17,10 @@
  *
  * Both cancel under reduced motion and start again if the visitor lifts the preference.
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`) is honoured through
+ * `bootGated`: at a tier where Ken Burns is off the element runs no loop and shows its resting state, crossing into
+ * that tier destroys the loop, and leaving it builds the loop again.
+ *
  * @package
  */
 
@@ -27,6 +31,7 @@ import {
 	prefersReducedMotion,
 	registerLoop,
 } from '@sgs/loop-control'; // eslint-disable-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
+import { bootGated } from './off-switch';
 
 const SELECTOR = '[data-sgs-fx~="ken-burns"]';
 const PREFIX = 'data-sgs-fx-ken-burns-';
@@ -40,7 +45,8 @@ const PAN_DIRECTIONS = [ 'none', 'left', 'right', 'up', 'down' ];
 const PAN_SHARE = 0.02;
 const LABEL = 'Pause background animation';
 
-let registered = [];
+/** Stops the tier-gated run of every element, for a bfcache rebuild. */
+let stopGated = () => {};
 
 /**
  * One computed custom property's text (the emitter writes a tier's value there inside its media query), or ''.
@@ -219,27 +225,25 @@ function runOnce( el, pauseControl ) {
 }
 
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
+	stopGated = bootGated( 'ken-burns', SELECTOR, ( el ) => {
 		const pauseControl =
 			el.getAttribute( PREFIX + 'pause-control' ) === 'true';
-		if ( readKenBurns( el ).mode === 'zoom-out-once' ) {
-			registered.push( runOnce( el, pauseControl ) );
-			return;
-		}
-		registered.push(
-			animateLoop( el, {
-				read: () => readKenBurns( el ),
-				keyframes: kenBurnsKeyframes,
-				pauseControl,
-				label: LABEL,
-			} )
-		);
+		const run =
+			readKenBurns( el ).mode === 'zoom-out-once'
+				? runOnce( el, pauseControl )
+				: animateLoop( el, {
+						read: () => readKenBurns( el ),
+						keyframes: kenBurnsKeyframes,
+						pauseControl,
+						label: LABEL,
+				  } );
+		return () => run.destroy();
 	} );
 }
 
 function teardown() {
-	registered.forEach( ( loop ) => loop.destroy() );
-	registered = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 if ( 'loading' === document.readyState ) {

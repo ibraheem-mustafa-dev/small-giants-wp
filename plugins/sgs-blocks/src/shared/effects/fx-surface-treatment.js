@@ -42,12 +42,13 @@
 import { initSurface } from './webgl';
 import { resolvePreset } from './surface-treatments/presets';
 import { prefersReducedMotion, rafThrottle } from './motion-utils';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked as surface-treatment hosts. */
 const SELECTOR = '[data-sgs-fx~="surface-treatment"]';
 
-/** Live cleanups, so a bfcache restore can tear down before re-init. */
-let cleanups = [];
+/** Stops every tier-gated treatment, so a bfcache restore can tear down before re-init. */
+let stopGated = () => {};
 
 /**
  * Convert a preset uniform key (e.g. `uIntensity`) to the `data-sgs-fx-
@@ -454,14 +455,14 @@ function initTreatment( el ) {
 }
 
 /**
- * Attach a treatment to every marked element on the page.
+ * Attach a treatment to every marked element whose effect is on at this device tier. A motion layer's per-device off
+ * switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`, Spec 38A FR-38A-23) destroys the surface and restores
+ * the image on entering that tier, and builds it again on leaving it.
  *
  * @return {void}
  */
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
-		cleanups.push( initTreatment( el ) );
-	} );
+	stopGated = bootGated( 'surface-treatment', SELECTOR, initTreatment );
 }
 
 /**
@@ -470,8 +471,8 @@ function boot() {
  * @return {void}
  */
 function teardown() {
-	cleanups.forEach( ( cleanup ) => cleanup() );
-	cleanups = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();

@@ -330,8 +330,13 @@ describe( 'values', () => {
 			followTier( el );
 			boot();
 			await settle();
-			expect( query( '(max-width: 1023px)' ).listeners ).toHaveLength( 1 );
-			expect( query( '(max-width: 767px)' ).listeners ).toHaveLength( 1 );
+			// The off switch's tier watcher shares the 767px query, so count this module's own listener by name.
+			const speedListeners = ( text ) =>
+				query( text ).listeners.filter(
+					( listener ) => 'handleBreakpointChange' === listener.name
+				);
+			expect( speedListeners( '(max-width: 1023px)' ) ).toHaveLength( 1 );
+			expect( speedListeners( '(max-width: 767px)' ) ).toHaveLength( 1 );
 			window.dispatchEvent( new Event( 'pagehide' ) );
 			expect( query( '(max-width: 1023px)' ).listeners ).toHaveLength( 0 );
 			expect( query( '(max-width: 767px)' ).listeners ).toHaveLength( 0 );

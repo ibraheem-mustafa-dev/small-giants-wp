@@ -16,10 +16,15 @@
  *
  * Reduced motion is read live on every trigger, and a switch to reduce cancels a circle already running.
  *
+ * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`) is honoured through
+ * `bootGated`: at a tier where the ripple is off the element has no listener, and crossing into that tier removes the
+ * listeners and any circle in flight; leaving it binds them again.
+ *
  * @package
  */
 
 import { prefersReducedMotion } from './motion-utils';
+import { bootGated } from './off-switch';
 
 const SELECTOR = '[data-sgs-fx~="ripple"]';
 const PLAY = 'data-sgs-ripple';
@@ -29,9 +34,11 @@ const DEFAULT_EASING = 'ease-out';
 const DEFAULT_COLOUR = '#fff';
 const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
 
-/** Elements with a bound listener, for a bfcache rebuild. */
+/** Elements with a bound listener, each with its unbind. */
 const bound = new Map();
 let reducedQuery = null;
+/** Stops the tier-gated binding of every element, for a bfcache rebuild. */
+let stopGated = () => {};
 
 /**
  * The circle's diameter: the element's larger side times the size factor.
@@ -144,11 +151,11 @@ function onEvent( el, type, event ) {
  * Bind one element.
  *
  * @param {HTMLElement} el Element.
- * @return {void}
+ * @return {Function} Unbind: removes the listeners and stops a circle in flight.
  */
 function bindElement( el ) {
 	if ( bound.has( el ) ) {
-		return;
+		return bound.get( el );
 	}
 	const down = ( event ) => onEvent( el, 'pointerdown', event );
 	const click = ( event ) => onEvent( el, 'click', event );
@@ -157,13 +164,16 @@ function bindElement( el ) {
 	el.addEventListener( 'click', click );
 	el.addEventListener( 'animationend', end );
 	el.addEventListener( 'animationcancel', end );
-	bound.set( el, () => {
+	const unbind = () => {
 		el.removeEventListener( 'pointerdown', down );
 		el.removeEventListener( 'click', click );
 		el.removeEventListener( 'animationend', end );
 		el.removeEventListener( 'animationcancel', end );
 		stop( el );
-	} );
+		bound.delete( el );
+	};
+	bound.set( el, unbind );
+	return unbind;
 }
 
 /**
@@ -178,12 +188,12 @@ function onReducedChange() {
 }
 
 /**
- * Bind every marked element and listen for a reduced-motion switch.
+ * Bind every marked element whose ripple is on at this tier, and listen for a reduced-motion switch.
  *
  * @return {void}
  */
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( bindElement );
+	stopGated = bootGated( 'ripple', SELECTOR, bindElement );
 	if ( ! reducedQuery && typeof window.matchMedia === 'function' ) {
 		reducedQuery = window.matchMedia( REDUCED_QUERY );
 		reducedQuery.addEventListener( 'change', onReducedChange );
@@ -195,8 +205,8 @@ boot();
 // A bfcache restore may describe a re-rendered DOM: rebuild.
 window.addEventListener( 'pageshow', ( event ) => {
 	if ( event.persisted ) {
-		bound.forEach( ( off ) => off() );
-		bound.clear();
+		stopGated();
+		bound.forEach( ( unbind ) => unbind() );
 		boot();
 	}
 } );

@@ -94,6 +94,7 @@
  */
 
 import { isNativeHorizontalScroller } from './motion-utils';
+import { bootGated } from './off-switch';
 
 /** Elements the render layer marked as loop-eligible. */
 const SELECTOR = '[data-sgs-loop]';
@@ -374,8 +375,8 @@ export function initCarouselLoop( el ) {
 	};
 }
 
-/** Live cleanups, so a bfcache restore can tear down before re-init. */
-let cleanups = [];
+/** Stops the tier-gated loop of every element, for a bfcache restore. */
+let stopGated = () => {};
 
 /**
  * Attach the loop to every marked element on the page.
@@ -385,22 +386,21 @@ let cleanups = [];
  * `data-sgs-loop` is a genuinely separate grammar (see this file's docblock:
  * an element can carry BOTH `data-sgs-fx="draggable"` AND `data-sgs-loop="1"`
  * at once, which a single-value `data-sgs-fx` slot could never express).
+ *
+ * The per-device off switch (`data-sgs-fx-off-<tier>` naming `carousel-loop`, or `data-sgs-fx-disable-<tier>`) goes
+ * through `bootGated`: at a tier where the loop is off the track keeps only its real items, crossing into that tier
+ * removes the clones and the scroll listener, and leaving it clones again.
  */
 function boot() {
-	document.querySelectorAll( SELECTOR ).forEach( ( el ) => {
-		const cleanup = initCarouselLoop( el );
-		if ( cleanup ) {
-			cleanups.push( cleanup );
-		}
-	} );
+	stopGated = bootGated( 'carousel-loop', SELECTOR, initCarouselLoop );
 }
 
 /**
  * Tear every attached loop down.
  */
 function teardown() {
-	cleanups.forEach( ( cleanup ) => cleanup() );
-	cleanups = [];
+	stopGated();
+	stopGated = () => {};
 }
 
 boot();
