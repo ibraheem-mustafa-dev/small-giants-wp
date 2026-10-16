@@ -245,7 +245,7 @@
 				"plan-card": {
 					"restingShadow": true,
 					"selector": ".sgs-pricing-table__plan",
-					"label": "Whole plan card",
+					"label": "Each plan card",
 					"order": 1,
 					"clusters": [],
 					"_note": "name/description/features/ctaText/ctaUrl/iconName/highlighted/period/savingsBadgeText are per-plan CONTENT fields inside the `plans` array, not independent style controls — mirrors sgs/card-grid's card-tile/card-badge documentation pattern for `arrayContentLift` blocks."

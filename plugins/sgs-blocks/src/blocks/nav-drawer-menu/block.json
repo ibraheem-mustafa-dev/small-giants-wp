@@ -131,8 +131,8 @@
 					"_note": "The <ul class=\"sgs-nav-drawer-menu__bar\"> that actually arranges the item links (a vertical list). Remaining ARRANGEMENT members are honest GAPs (style.css hardcodes `list-style:none;margin:0;padding:0;position:relative` with no attribute). `css:grid-template-columns:count` is a pseudo-property destination tag (mirrors `css:color-gradient` — not a real CSS property, a manifest-level routing key) claiming `listColumns` as this element's grid COLUMN-COUNT destination for the converter's grid resolver (`db.attr_for_grid_column_count`), matching render.php's own target selector `.sgs-nav-drawer-menu__bar` for the in-drawer vertical-list column count."
 				},
 				"item": {
-					"label": "Nav item (resting)",
-					"order": 3,
+					"label": "Each nav item (resting)",
+					"order": 1,
 					"clusters": [
 						"text",
 						"fill",

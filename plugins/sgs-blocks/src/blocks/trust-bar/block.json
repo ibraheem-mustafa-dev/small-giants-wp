@@ -232,7 +232,7 @@
 				},
 				"item": {
 					"selector": ".sgs-trust-bar__badge",
-					"label": "Whole badge (icon and text)",
+					"label": "Each badge (icon and text)",
 					"layer": "GRID_AREA",
 					"order": 2,
 					"clusters": [

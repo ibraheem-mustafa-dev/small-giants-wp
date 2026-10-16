@@ -79,7 +79,7 @@
 					"_note": "New ROOT colour panel (2026-08-20) -- background+text colour/gradient with hover, mirroring sgs/testimonial-slider's root attrMap shape (css:background-color/css:background-image/css:color) extended with the D636 css:color-gradient text-clip mechanism (sgs/heading precedent). Paints the block's own root <div>, distinct from tileBackgroundColour (the 'tile' element below) and the item*Hover attrs (the 'item' element, the nested hover surface)."
 				},
 				"tile": {
-					"label": "Whole tile, logo and name (when names are shown)",
+					"label": "Each tile, logo and name (when names are shown)",
 					"order": 2,
 					"clusters": [
 						"fill",
@@ -151,7 +151,7 @@
 					"_note_hover": "Hover colour declared 2026-09-05. Was previously a bare `color:` in the root $root_hover_decls bucket, colliding with textColourHover's own `color:` in the same rule and never reaching this element (which sets its own explicit resting colour). render.php now emits an ancestor-hover rule on this element's selector, so the declaration is truthful."
 				},
 				"item": {
-					"label": "Logo tile (the whole tile when names are off)",
+					"label": "Each logo tile (the whole tile when names are off)",
 					"order": 3,
 					"clusters": [],
 					"prefix": "",

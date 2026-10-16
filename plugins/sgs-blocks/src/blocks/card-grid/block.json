@@ -139,7 +139,7 @@
         },
         "item": {
           "restingShadow": true,
-          "label": "Whole card",
+          "label": "Each card",
           "order": 1,
           "clusters": [],
           "attrMap": {

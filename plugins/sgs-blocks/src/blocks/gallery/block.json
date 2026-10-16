@@ -181,7 +181,7 @@
 					"_note_colour": "captionColour declared 2026-09-05: render.php:118 reads it and it paints the caption's text colour. It previously had css_property='color' in the DB with no authored source (a rogue seed that would vanish on the next reseed); declaring it here makes that value legitimate and durable."
 				},
 				"item": {
-					"label": "Whole grid item",
+					"label": "Each grid item",
 					"layer": "GRID_AREA",
 					"order": 1,
 					"clusters": [],

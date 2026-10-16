@@ -20,7 +20,7 @@ Searching one directory and concluding a tool does not exist is a live failure m
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 392 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 700 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 701 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -173,17 +173,18 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 139 | `migrate-section-gutter-tokens.py` | Per-tier section padding and gutter tokens (Spec 32 FR-32-15), added to the framework theme.json and every |
 | 140 | `check-link-source-adoption.py` | every shared link field offers the link source choice. |
 | 141 | `check-motion-pause-control.py` | content that moves on its own carries the shared pause control. |
-| 142 | `check-motion-item-parts.py` | - a block that repeats items names its whole-item motion part first. |
+| 142 | `check-motion-item-parts.py` | - a block that repeats items names its repeated-item motion parts "Each ..." and lists them first. |
 | 143 | `generate-motion-stagger-columns.py` | - writes the grid-columns attribute map the stagger helper reads (FR-38A-24). |
-| 144 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 145 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 146 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 147 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 148 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
-| 149 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
-| 150 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
+| 144 | `check-retired-blocks.py` | - a block that has been removed leaves no trace in live sources or the framework DB. |
+| 145 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 146 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 147 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 148 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 149 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 150 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
+| 151 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
 
-**150 gating scripts.** Regenerate this whole section with:
+**151 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -191,7 +192,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (150 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 150 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (151 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 151 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -530,6 +531,15 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `dest`
 - CLI flags read: `--check`, `--self-test`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-retired-blocks.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `REPO` = PLUGIN.parent.parent
+- Reads: `sqlite3:f"file:{path}?mode=ro"`
+- Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): sqlite_master
+- CLI flags read: `--check`, `--self-test`, `--survey`, `--with-db`
+- Env vars read: `SGS_FRAMEWORK_DB`
+- Non-zero exit sites found: SystemExit(non-zero on failure)
 
 **`plugins/sgs-blocks/scripts/check-separators-through-helper.py`** (build)
 - Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `BASELINE` = Path(__file__).resolve().with_name("check-separators-through-helper-baseline.json")
@@ -1101,7 +1111,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 653 scripts
+#### `plugins/sgs-blocks/scripts/` — 654 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1184,7 +1194,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-motion-control-sets.py` | manifest+script-call+settings | per-effect control sets and Intensity presets agree with Spec 38A section 5.4 |
 | `check-motion-db-rows.py` | manifest+script-call | every motion field and every declared part has a row in `motion_field_rows` (Spec 38A FR-38A-3). |
 | `check-motion-fx-list-match.py` | script-call | no reader of `data-sgs-fx` may match the whole value (Spec 38A FR-38A-23). |
-| `check-motion-item-parts.py` | manifest+npm | - a block that repeats items names its whole-item motion part first. |
+| `check-motion-item-parts.py` | manifest+npm | - a block that repeats items names its repeated-item motion parts "Each ..." and lists them first. |
 | `check-motion-paint-slots.py` | — | every paint slot has one owner or a refusal (Spec 38A FR-38A-49, section 10). |
 | `check-motion-part-selectors.py` | — | every declared motion part reaches an element (Spec 38A section 6.2, FR-38A-16). |
 | `check-motion-pause-control.py` | manifest+npm | content that moves on its own carries the shared pause control. |
@@ -1204,6 +1214,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-render-tier-object-spacing.py` | manifest+npm | GUARD gate (Step 8 shape 2 — 'compares a derived copy to its source; 0 |
 | `check-render-undefined-vars.py` | manifest+npm+script-call | Undefined-variable gate for block render templates (PHPStan level 1). |
 | `check-rest-route-require.py` | manifest+npm | STRUCTURAL GUARD — catches a REST route registered against a callback class |
+| `check-retired-blocks.py` | manifest+npm | - a block that has been removed leaves no trace in live sources or the framework DB. |
 | `check-separators-through-helper.py` | manifest | lines between items go through the helper. |
 | `check-shader-sources.py` | manifest+npm | structural gate for Tier W `*.frag.js` shader sources. |
 | `check-shadow-fallback-php.py` | manifest+npm+script-call | Every PHP writer of a `box-shadow:` declaration must carry the forced-colours fallback. |

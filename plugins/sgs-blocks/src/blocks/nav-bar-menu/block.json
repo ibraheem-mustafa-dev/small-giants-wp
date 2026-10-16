@@ -144,8 +144,8 @@
 					"_note": "The <ul class=\"sgs-nav-bar-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css hardcodes `display:flex;flex-wrap:wrap` with no attribute). This block declares no `listColumns` grid-column-count destination; that attribute belongs to the in-drawer vertical list on sgs/nav-drawer-menu."
 				},
 				"item": {
-					"label": "Nav item (resting)",
-					"order": 3,
+					"label": "Each nav item (resting)",
+					"order": 1.1,
 					"clusters": [
 						"text",
 						"fill",
@@ -434,15 +434,15 @@
 					"_note": "The wrap of every dropdown and mega panel (`.sgs-nav-bar-menu__panel-motion`, includes/nav-menu-markup.php), shown while its trigger is expanded. A motion target only (Spec 38A FR-38A-51): its `open` entrance plays as the panel opens and its close values as it closes; on the Entrance model each wrap is a motion state host (includes/helpers-nav-bar-motion-model.php). Styling stays on `submenu-panel`."
 				},
 				"subitem": {
-					"label": "Dropdown item",
-					"order": 9.2,
+					"label": "Each dropdown item",
+					"order": 1.2,
 					"clusters": [],
 					"prefix": "",
 					"_note": "Each `<li class=\"sgs-nav-bar-menu__subitem\">` of a dropdown. A motion target only (Spec 38A FR-38A-51): its `open` entrance plays as the dropdown opens, delayed by its stored index delay (the bar's stagger settings, written per index by Sgs_Motion_Loop_Delays::item_array). Its link's styling stays on `sublink`."
 				},
 				"mega-item": {
-					"label": "Mega panel column",
-					"order": 9.3,
+					"label": "Each mega panel column",
+					"order": 1.3,
 					"clusters": [],
 					"prefix": "",
 					"_note": "Each direct child of a mega panel's content row (a `sgs/mega-group` or `sgs/mega-aside` column), which this bar classes `sgs-nav-bar-menu__mega-item` at render when the part holds an entrance (includes/helpers-nav-bar-motion-model.php). A motion target only (Spec 38A FR-38A-51), delayed by its stored index delay. Its styling stays on the mega panel blocks."

@@ -1,34 +1,34 @@
 {
   "detector": "scripts/check-motion-item-parts.py",
-  "rule": "a block that repeats items names its whole-item motion part first",
+  "rule": "a block that repeats items names its repeated-item motion parts \"Each ...\" and lists them first (renamed from \"Whole ...\" on 2026-10-16: the picker's first option is already \"Whole block\")",
   "date": "2026-10-16",
   "corpus": 16,
   "before": {
-    "ok": [
+    "ok": [],
+    "failing_no_item_part": [
       "sgs/brand-strip",
-      "sgs/trust-bar"
-    ],
-    "failing_no_whole_part": [
       "sgs/card-grid",
       "sgs/gallery",
       "sgs/google-reviews",
       "sgs/icon-list",
+      "sgs/nav-bar-menu",
+      "sgs/nav-drawer-menu",
+      "sgs/option-picker",
       "sgs/post-grid",
       "sgs/pricing-table",
       "sgs/process-steps",
-      "sgs/timeline"
+      "sgs/product-card",
+      "sgs/timeline",
+      "sgs/trust-bar"
     ],
-    "exempt": {
-      "sgs/choice-flow-question": "options belong to a question; the question is the unit",
-      "sgs/form-field-tiles": "tiles are form inputs, not revealed items",
-      "sgs/nav-drawer-menu": "nav items follow the navigation motion model (Spec 36)",
-      "sgs/option-picker": "options are selectable pills inside a form control, not revealed items",
-      "sgs/product-card": "pack sizes and colour swatches are controls inside one card, not revealed items",
-      "sgs/nav-bar-menu": "nav items follow the navigation motion model (Spec 36); found once the corpus also read includes/ (independent review)"
+    "gaps": {
+      "sgs/choice-flow-question": "its option items have no motion part: the only part is options (the list)",
+      "sgs/form-field-tiles": "its tile items have no motion part: the only parts are wrapper and inner"
     }
   },
   "unrecognised": 0,
   "after": {
-    "failing": 0
+    "failing": 0,
+    "gaps": 2
   }
 }

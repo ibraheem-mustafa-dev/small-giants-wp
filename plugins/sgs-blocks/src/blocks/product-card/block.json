@@ -390,8 +390,8 @@
 					"_note": "Standalone saving/discount badge overlaid on the media area (Frame Card component) — DISTINCT from the existing 'tag' element (trial/featured, keyed to variantStyle): this badge is independent of variant and can appear alongside either. Mirrors 'tag''s own attrMap shape exactly (css:background-color + css:padding explicit; css:color resolves via the default {prefix}TextColour convention, same as tagTextColour). Rendered via the shared sgs_label_box_css_rule() helper (mirrors sgs/label + the existing trial-tag box), called from every render branch per R-31-9. Ground-truth position is bottom-left per the real Frame Card.dc.html markup (`bottom:12px;left:12px`) — the README's 'top-right' claim is stale prose, not the design source; savingBadgePosition defaults to 'bottom-left' and is operator-choosable."
 				},
 				"swatch": {
-					"label": "Colour swatches",
-					"order": 16,
+					"label": "Each colour swatch",
+					"order": 1,
 					"clusters": [
 						"layout"
 					],

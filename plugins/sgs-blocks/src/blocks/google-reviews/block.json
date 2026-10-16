@@ -299,7 +299,7 @@
 				},
 				"review": {
 					"restingShadow": true,
-					"label": "Whole review card",
+					"label": "Each review card",
 					"order": 1,
 					"layer": "OUTER",
 					"clusters": [

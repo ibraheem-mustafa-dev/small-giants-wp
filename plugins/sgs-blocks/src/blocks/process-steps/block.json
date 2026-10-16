@@ -233,7 +233,7 @@
 					"_note": "Spec 35 FR-35-6 — JS scroll-driven motion, a separate mechanism from the `motion` (CSS-transition) cluster on `wrapper`. No stagger/parallax/trigger attrs exist on this block — honest gaps."
 				},
 				"step": {
-					"label": "Whole process step",
+					"label": "Each process step",
 					"order": 1,
 					"clusters": [
 						"layout"
