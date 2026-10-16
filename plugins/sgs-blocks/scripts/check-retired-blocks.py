@@ -4,7 +4,7 @@
 A removed `sgs/<slug>` block keeps turning up as a name in comments, baselines, caches, fixtures and DB rows. Each is stale
 text the next reader has to explain. This check lists every trace of a retired slug.
 
-LIVE SOURCES scanned (files git tracks): plugins/ (minus build output, dependencies, caches, dated reports and generated tool indexes), scripts/,
+LIVE SOURCES scanned (the git index, i.e. what the next commit and the deploy's checkout contain): plugins/ (minus build output, dependencies, caches, dated reports and generated tool indexes), scripts/,
 theme/, sites/, and the live docs under .claude/ (specs, plans, rules, the top-level docs and the generated catalogues).
 NOT scanned, because they are history and git holds the rest: dated reports and backups, session memory, scratch output,
 pipeline-state, worktrees, build output.
@@ -90,25 +90,25 @@ def is_live(rel: str) -> bool:
 
 
 def file_traces() -> list[str]:
+    """Traces in what git will commit (the index), so a local run matches the deploy's clean checkout: a tracked file that is
+    deleted only in the working tree still counts until the deletion is committed."""
     rx = pattern()
     name_rx = re.compile("|".join(re.escape(n) for n in sorted(RETIRED)))
     out = []
     for rel in tracked_files():
-        # The check script itself names the slugs it hunts.
-        if not is_live(rel) or rel == "plugins/sgs-blocks/scripts/check-retired-blocks.py":
-            continue
-        if name_rx.search(rel):
+        if is_live(rel) and rel != "plugins/sgs-blocks/scripts/check-retired-blocks.py" and name_rx.search(rel):
             out.append(f"{rel}  (name)")
-        path = REPO / rel
-        if path.suffix.lower() not in TEXT_SUFFIXES:
-            continue
-        try:
-            if path.stat().st_size > MAX_BYTES:
-                continue
-            lines = scan_text(path.read_text(encoding="utf-8", errors="replace"), rx)
-        except OSError:
-            continue
-        out.extend(f"{rel}:{n}" for n in lines)
+    found = subprocess.run(
+        ["git", "grep", "--cached", "-n", "-I", "-P", rx.pattern, "--", *LIVE_ROOTS],
+        cwd=REPO, capture_output=True,
+    )
+    if found.returncode not in (0, 1):  # 1 = no match; anything else is a git failure, never a silent pass
+        raise SystemExit(f"[check-retired-blocks] git grep failed: {found.stderr.decode('utf-8', errors='replace')[:300]}")
+    for line in found.stdout.decode("utf-8", errors="replace").splitlines():
+        rel, _, rest = line.partition(":")
+        number = rest.partition(":")[0]
+        if is_live(rel) and rel != "plugins/sgs-blocks/scripts/check-retired-blocks.py" and Path(rel).suffix.lower() in TEXT_SUFFIXES:
+            out.append(f"{rel}:{number}")
     return out
 
 
