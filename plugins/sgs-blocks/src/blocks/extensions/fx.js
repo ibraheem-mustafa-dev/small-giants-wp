@@ -54,7 +54,7 @@ import genbgPositionRanges from './fx-genbg-position-ranges.json';
 import fxPathRoutes from '../../../includes/fx-path-routes.json';
 import fxShapeRoutes from '../../../includes/fx-shape-routes.json';
 import { ToggleGroupControl, ToggleGroupControlOption, ToggleGroupControlOptionIcon, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { GSAP_EASING_OPTIONS as FX_EASE_OPTIONS } from '../../components/motion/easing-master-list';
+import { GSAP_EASING_OPTIONS } from '../../components/motion/easing-master-list';
 import {
 	treatmentThumbnail,
 	shapeThumbnail,
@@ -2520,7 +2520,7 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 									__nextHasNoMarginBottom
 									label={ __( 'Feel', 'sgs-blocks' ) }
 									value={ attributes.fxEase }
-									options={ FX_EASE_OPTIONS }
+									options={ GSAP_EASING_OPTIONS }
 									onChange={ ( value ) =>
 										setParam( { fxEase: value } )
 									}
