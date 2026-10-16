@@ -32,7 +32,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { gotoThroughCheck, settleInView, parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
+import { launchOptions, gotoThroughCheck, settleInView, parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const PLUGIN = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -132,7 +132,8 @@ async function openPage( context, { local, url, strip } ) {
 			return route.fulfill( { status: 200, contentType: 'text/javascript', body: fs.readFileSync( file ) } );
 		} );
 	} else if ( strip ) {
-		await context.route( /fx-cursor-field\.css/, async ( route ) => {
+		// The registration is declared in both stylesheets (motion.css and fx-cursor-field.css); the control removes every copy.
+		await context.route( /\/(fx-cursor-field|motion)\.css/, async ( route ) => {
 			const response = await route.fetch();
 			return route.fulfill( { response, body: stripRadiusProperty( await response.text() ) } );
 		} );
@@ -191,6 +192,9 @@ export const readFacts = ( sel ) => {
 	};
 };
 
+/** A computed transition duration that is no transition: 0s, or the theme's reduced-motion reset (0.01ms !important, read back as 1e-05s). */
+const noTransition = ( d ) => { const sec = parseFloat( d ); return Number.isFinite( sec ) && sec <= 0.001; };
+
 /** Park the pointer outside the card and let every transition finish. */
 const park = async ( page ) => {
 	await page.mouse.move( 2, 2 );
@@ -224,7 +228,7 @@ async function radiusAndWash( page, rep, control ) {
 		const radius = series.map( ( s ) => s.r );
 		const wash = series.map( ( s ) => s.w );
 		const clip = parseCircle( series[ series.length - 1 ].clip );
-		out.push( { pos: `${ lx },${ ly }`, radius, wash, clip, ms: settleMs( series, 'r', 0.5 ) } );
+		out.push( { pos: `${ lx },${ ly }`, at: { x: lx, y: ly }, radius, wash, clip, ms: settleMs( series, 'r', 0.5 ) } );
 	}
 	if ( control ) return out;
 	const facts = await page.evaluate( readFacts, REVEAL );
@@ -236,8 +240,8 @@ async function radiusAndWash( page, rep, control ) {
 	} );
 	rep.check( 'reveal-clip-follows-pointer', {
 		selector: REVEAL, property: '::before clip-path circle centre once hovered',
-		measured: out.map( ( o ) => ( { pos: o.pos, clip: o.clip } ) ), expected: 'circle(90px at <the pointer in the card>) within 1px',
-		pass: out.every( ( o ) => o.clip && Math.abs( o.clip.r - 90 ) < 0.6 && `${ Math.round( o.clip.x ) },${ Math.round( o.clip.y ) }` === o.pos ),
+		measured: out.map( ( o ) => ( { pos: o.pos, clip: o.clip } ) ), expected: 'circle(90px at <the pointer in the card>) within 1px (the browser truncates a fractional pointer position)',
+		pass: out.every( ( o ) => o.clip && Math.abs( o.clip.r - 90 ) < 0.6 && o.at && Math.abs( o.clip.x - o.at.x ) <= 1 && Math.abs( o.clip.y - o.at.y ) <= 1 ),
 	} );
 	rep.check( 'reveal-wash', {
 		selector: REVEAL, property: '::before --sgs-cursor-field-wash, sampled every frame, at three pointer positions',
@@ -314,8 +318,8 @@ async function reducedMotion( page, rep ) {
 	rep.check( 'reduced-motion', {
 		selector: REVEAL, property: 'radius transition duration, ring display, ring position writes, radius samples after hover',
 		measured: { transitionDuration: after.transitionDuration, ringDisplay: after.ring && after.ring.display, ringStyle: after.ringStyle, firstNonZero: first >= 0 ? series[ first ].r : null },
-		expected: 'no transition (0s), no ring, no ring position written, and the radius arrives at 90px at once rather than easing',
-		pass: after.transitionDuration.split( ',' ).every( ( d ) => d.trim() === '0s' ) && !! after.ring && after.ring.display === 'none' && ! /--sgs-ring-x/.test( after.ringStyle || '' ) && first >= 0 && Math.abs( series[ first ].r - 90 ) < 0.6,
+		expected: 'no transition (0s, or the theme reset of 0.01ms), no ring, no ring position written, and the radius arrives at 90px at once rather than easing',
+		pass: after.transitionDuration.split( ',' ).every( ( d ) => noTransition( d ) ) && !! after.ring && after.ring.display === 'none' && ! /--sgs-ring-x/.test( after.ringStyle || '' ) && first >= 0 && Math.abs( series[ first ].r - 90 ) < 0.6,
 	} );
 	rep.control( 'reduced-motion', {
 		selector: REVEAL, property: 'the same card under no preference', measured: normal.transitionDuration,
@@ -347,7 +351,7 @@ async function rippleWithReveal( page, rep ) {
 }
 
 async function unregisteredControl( browserType, rep, { local, url, width } ) {
-	const browser = await browserType.launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
+	const browser = await browserType.launch( launchOptions( browserType.name() ) );
 	const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
 	try {
 		const page = await openPage( context, { local, url, strip: true } );
@@ -375,7 +379,7 @@ export async function main( argv ) {
 	for ( const engine of args.engines ) {
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, mode: local ? 'local' : 'live' } );
-			const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
+			const browser = await BROWSERS[ engine ].launch( launchOptions( engine ) );
 			const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
 			try {
 				const page = await openPage( context, { local, url, strip: false } );

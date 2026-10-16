@@ -235,3 +235,13 @@ export async function settleInView( page, selector ) {
 	await page.evaluate( () => { delete window.__sgsSettleTop; } );
 	return handle.boundingBox();
 }
+
+/**
+ * Browser launch options for a live probe. `SGS_HEADED=1` runs real Chrome headed for Chromium (the host's bot check
+ * challenges Playwright's bundled headless Chromium after a burst of runs); Firefox and WebKit have no such channel and
+ * launch as they are.
+ */
+export const launchOptions = ( engine = 'chromium' ) => ( {
+	headless: ! process.env.SGS_HEADED,
+	...( process.env.SGS_HEADED && 'chromium' === engine && { channel: 'chrome' } ),
+} );

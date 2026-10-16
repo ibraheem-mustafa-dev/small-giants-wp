@@ -33,7 +33,7 @@
  */
 
 import { chromium } from 'playwright';
-import { gotoThroughCheck, parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
+import { launchOptions, gotoThroughCheck, parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
 
 const HEIGHT = 900;
 const PANELS = 5;
@@ -302,7 +302,7 @@ async function main() {
 		process.exit( report.summary() );
 	}
 	const url = `${ siteBase( args.site ) }/?page_id=${ args.pages[ 0 ] }`;
-	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
+	const browser = await chromium.launch( launchOptions() );
 	try {
 		const desktop = await checkDesktop( browser, url, report );
 		await checkSnapRow( browser, url, report );

@@ -42,7 +42,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { gotoThroughCheck, settleInView, parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
+import { launchOptions, gotoThroughCheck, settleInView, parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
 import * as L from './probe-motion-stacks-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
@@ -264,7 +264,7 @@ async function main() {
 	const url = local ? null : `${ siteBase( args.site ) }/?p=${ args.pages[ 0 ] }&cb=m5z`;
 	const all = [];
 	for ( const engine of args.engines ) {
-		const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
+		const browser = await BROWSERS[ engine ].launch( launchOptions( engine ) );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, mode: local ? 'local' : 'live' } );
 			const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );

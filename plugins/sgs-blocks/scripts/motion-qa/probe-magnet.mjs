@@ -29,7 +29,7 @@
  */
 
 import { chromium, firefox, webkit } from 'playwright';
-import { gotoThroughCheck, parseArgs, siteBase, Reporter, near, parseTranslate, isRest, styleWritesTransform } from './probe-motion-model-lib.mjs';
+import { launchOptions, gotoThroughCheck, parseArgs, siteBase, Reporter, near, parseTranslate, isRest, styleWritesTransform } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const HEIGHT = 900;
@@ -263,7 +263,7 @@ async function main() {
 	const navUrl = navPage ? `${ base }/?p=${ navPage }&cb=m54` : url;
 	const all = [];
 	for ( const engine of args.engines ) {
-		const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
+		const browser = await BROWSERS[ engine ].launch( launchOptions( engine ) );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, site: args.site } );
 			const newPage = async ( target, opts = {} ) => {

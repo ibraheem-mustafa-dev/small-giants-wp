@@ -28,7 +28,7 @@
  */
 
 import { chromium, firefox, webkit } from 'playwright';
-import { gotoThroughCheck, parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
+import { launchOptions, gotoThroughCheck, parseArgs, siteBase, Reporter, near } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const HEIGHT = 900;
@@ -213,7 +213,7 @@ async function main() {
 	const urls = args.pages.map( ( id ) => `${ base }/?p=${ id }&cb=m59` );
 	const all = [];
 	for ( const engine of args.engines ) {
-		const browser = await BROWSERS[ engine ].launch( { headless: ! process.env.SGS_HEADED, ...( process.env.SGS_HEADED && { channel: "chrome" } ) } );
+		const browser = await BROWSERS[ engine ].launch( launchOptions( engine ) );
 		const url = await findPage( browser, urls );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, site: args.site } );
