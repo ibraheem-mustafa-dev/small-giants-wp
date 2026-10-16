@@ -233,6 +233,8 @@ function currentTier() {
  * Skipping boot is SAFE by construction: per FR-38-2 each effect applies its own
  * initial hidden/offset state and the server never renders one, so an element
  * that is never booted simply stays fully visible. Fail-open, same as JS-blocked.
+ * `bootEffect` asks again on every tier change, so the answer is always the
+ * current tier's.
  *
  * @param {HTMLElement} el     Element carrying the fx attributes.
  * @param {string}      effect Effect name as it appears in `data-sgs-fx`.
@@ -266,22 +268,77 @@ export function isDisabledAtThisTier( el, effect ) {
 export function bootEffect( effect, init ) {
 	const selector = `[data-sgs-fx~="${ effect }"]`;
 	/*
-	 * Evaluated once, at boot. A visitor who RESIZES across a tier boundary
-	 * mid-session keeps whatever was decided on load — re-booting effects on
-	 * resize would mean tearing down and rebuilding live ScrollTriggers, which
-	 * is a materially riskier change than this one and is not what Step 15
-	 * asked for. Stated here rather than left for someone to discover.
+	 * The tier gate is re-checked whenever the viewport crosses a device-tier
+	 * boundary (FR-38A-23). Every matching element keeps its own state, so an
+	 * effect that is off at the new tier is torn down through its cleanup
+	 * (leaving the server-rendered, fully visible content) and an effect that
+	 * booted off starts once its tier allows it. An element whose on/off state
+	 * does not change is left alone: an enabled effect that must re-read its
+	 * per-device parameters does so itself (`scroll-rows.js::rebuildOnTierChange`).
 	 */
-	const elements = Array.from( document.querySelectorAll( selector ) ).filter(
-		( el ) => ! isDisabledAtThisTier( el, effect )
+	const states = Array.from( document.querySelectorAll( selector ) ).map(
+		( el ) => ( { el, cleanup: undefined, running: false } )
 	);
 
-	const cleanups = elements.map( ( el ) => init( el ) );
+	const start = ( state ) => {
+		state.cleanup = init( state.el );
+		state.running = true;
+	};
+
+	const stop = ( state ) => {
+		if ( typeof state.cleanup === 'function' ) {
+			state.cleanup();
+		}
+		state.cleanup = undefined;
+		state.running = false;
+	};
+
+	states.forEach( ( state ) => {
+		if ( ! isDisabledAtThisTier( state.el, effect ) ) {
+			start( state );
+		}
+	} );
+
+	const onTierChange = () => {
+		states.forEach( ( state ) => {
+			const off = isDisabledAtThisTier( state.el, effect );
+			if ( off && state.running ) {
+				stop( state );
+			} else if ( ! off && ! state.running ) {
+				start( state );
+			}
+		} );
+	};
+
+	// The same tier queries `currentTier()` reads. A browser without
+	// matchMedia, or a returned object without addEventListener, gets no
+	// listener: the boot-time decision then stands.
+	const tierQueries = [
+		'(max-width: 767px)',
+		'(min-width: 768px) and (max-width: 1023px)',
+	];
+	const queries =
+		typeof window.matchMedia === 'function'
+			? tierQueries
+					.map( ( query ) => window.matchMedia( query ) )
+					.filter(
+						( list ) =>
+							list && typeof list.addEventListener === 'function'
+					)
+			: [];
+	queries.forEach( ( query ) =>
+		query.addEventListener( 'change', onTierChange )
+	);
 
 	return () => {
-		cleanups.forEach( ( cleanup ) => {
-			if ( typeof cleanup === 'function' ) {
-				cleanup();
+		queries.forEach( ( query ) => {
+			if ( typeof query.removeEventListener === 'function' ) {
+				query.removeEventListener( 'change', onTierChange );
+			}
+		} );
+		states.forEach( ( state ) => {
+			if ( state.running ) {
+				stop( state );
 			}
 		} );
 	};
