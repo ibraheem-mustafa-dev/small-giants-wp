@@ -38,15 +38,15 @@ RETIRED = {
 
 # Directory names never entered, anywhere.
 SKIP_DIRS = {
-    "node_modules", ".git", "vendor", "build", "worktrees", "__pycache__", ".mypy_cache", ".pytest_cache", ".phpunit.cache",
+    "node_modules", ".git", "vendor", "worktrees", "__pycache__", ".mypy_cache", ".pytest_cache", ".phpunit.cache",
     "toolindex",
 }
 # Paths (relative to the repo, forward slashes) that are history or generated output, so are not live sources.
 SKIP_PREFIXES = (
-    "plugins/sgs-blocks/reports/",
+    "plugins/sgs-blocks/reports/", "plugins/sgs-blocks/build/",
     ".claude/reports/", ".claude/backups/", ".claude/memory/", ".claude/scratch/", ".claude/archive/",
     ".claude/verify/", ".claude/plans/archive/", ".claude/specs/archive/", ".claude/catalogues/archive/",
-    ".superpowers/", "pipeline-state/", "reports/",
+    ".superpowers/", "pipeline-state/",
 )
 # A client draft export lives unchanged under sites/<client>/ (its folder name starts design_handoff).
 SKIP_CONTAINS = ("/design_handoff",)

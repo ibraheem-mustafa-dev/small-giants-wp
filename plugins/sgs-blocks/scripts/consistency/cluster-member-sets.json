@@ -234,7 +234,7 @@
 						"BackgroundMediaOpacity",
 						"BackgroundImageOpacity"
 					],
-					"note": "Phase 0 item 0c, 2026-08-11 (D561): the last two widen an existing member rather than adding a css:* row — the same pattern 055a24ce used. sgs/container.backgroundMediaOpacity dims the ::before media layer (class-sgs-container-wrapper.php:727-730, D536). It was falling through to tier-2 with nothing claiming them."
+					"note": "Phase 0 item 0c, 2026-08-11 (D561): the last one widens an existing member rather than adding a css:* row — the same pattern 055a24ce used. sgs/container.backgroundMediaOpacity dims the ::before media layer (class-sgs-container-wrapper.php:727-730, D536). It was falling through to tier-2 with nothing claiming it."
 				},
 				{
 					"key": "css:background-image",

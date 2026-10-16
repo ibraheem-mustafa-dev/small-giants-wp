@@ -5814,6 +5814,11 @@ def _prune_orphans_on_conn(
         aggressive   → DELETE the row from blocks.
         conservative → set is_stale=1 on the blocks row (column added if absent).
 
+    (e) MOTION TARGETS and (f) PER-BLOCK ROWS in block_composition, array_item_schema and
+        markup_examples (sgs/* slugs only; core blocks share those tables) — rows of a block no
+        longer in `blocks`. Both are always deleted in either prune mode: these tables have no
+        is_stale column to mark, and a retired block's rows are never wanted.
+
     Returns counters dict.
     """
     c = conn.cursor()
@@ -6143,6 +6148,10 @@ def stage_9_prune_orphans(
         agents_counts.get("orphan_blocks_actioned", 0)
         + claude_counts.get("orphan_blocks_actioned", 0)
     )
+    total_orphan_child_rows = (
+        agents_counts.get("orphan_block_child_rows_deleted", 0)
+        + claude_counts.get("orphan_block_child_rows_deleted", 0)
+    )
 
     stale_verb = "deleted" if prune_mode == _PRUNE_MODE_AGGRESSIVE else "marked_stale"
     summary = (
@@ -6151,6 +6160,7 @@ def stage_9_prune_orphans(
         f"orphan_attributes_deleted={total_orphan_attrs}, "
         f"stale_supports_{stale_verb}={total_stale_supports}, "
         f"orphan_attributes_deleted_attr_level={total_ghost_attrs}, "
+        f"orphan_block_child_rows_deleted={total_orphan_child_rows}, "
         f"orphan_blocks_{stale_verb}={total_orphan_blocks} {db_scope_note}."
     )
     print(summary)
@@ -6161,6 +6171,7 @@ def stage_9_prune_orphans(
         "orphan_attributes_deleted": total_orphan_attrs,
         f"stale_supports_{stale_verb}": total_stale_supports,
         "orphan_attributes_deleted_attr_level": total_ghost_attrs,
+        "orphan_block_child_rows_deleted": total_orphan_child_rows,
         f"orphan_blocks_{stale_verb}": total_orphan_blocks,
         "orphan_blocks_deleted": total_orphan_blocks,
         "prune_mode": prune_mode,
