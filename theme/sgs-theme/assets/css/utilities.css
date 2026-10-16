@@ -305,8 +305,9 @@ body.admin-bar html {
 	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--accent, #d8ca50));
 	outline-offset: 2px;
 	border-radius: 4px;
-	box-shadow: var(--sgs-focus-shadow, 0 0 8px 2px
-		color-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent));
+	--sgs-focus-shadow: 0 0 8px 2px
+		color-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent);
+	box-shadow: var(--sgs-focus-shadow);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

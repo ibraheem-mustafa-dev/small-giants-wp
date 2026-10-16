@@ -350,21 +350,34 @@ describe( 'keyboard focus keeps the theme focus glow beside the hover ring and a
 		);
 	} );
 
-	test( 'every theme :focus-visible glow reads --sgs-focus-shadow, which the theme defines once on :root', () => {
+	// The glow is defined inside each focus rule rather than on :root: an unregistered custom property substitutes its
+	// var()s where it is declared, so a :root definition would freeze --sgs-focus-glow at the root value and a section
+	// that overrides the glow colour would no longer change it. Defined on the focused element, it reads that element's
+	// own --sgs-focus-glow, and motion.css's `[data-sgs-mc~="box-shadow"]:focus-visible` reads the same value.
+	test( 'every theme :focus-visible glow defines --sgs-focus-shadow from --sgs-focus-glow in its own rule and reads it', () => {
 		const glows = [];
-		let defined = 0;
+		const elsewhere = [];
 		for ( const file of [ 'core-blocks-critical.css', 'utilities.css' ] ) {
-			postcss.parse( fs.readFileSync( path.join( THEME_CSS, file ), 'utf8' ) ).walkDecls( ( decl ) => {
-				if ( '--sgs-focus-shadow' === decl.prop ) {
-					defined++;
+			postcss.parse( fs.readFileSync( path.join( THEME_CSS, file ), 'utf8' ) ).walkRules( ( rule ) => {
+				const decls = rule.nodes.filter( ( node ) => 'decl' === node.type );
+				const defined = decls.filter( ( decl ) => '--sgs-focus-shadow' === decl.prop );
+				if ( ! /:focus-visible/.test( rule.selector ) ) {
+					defined.forEach( () => elsewhere.push( `${ file } ${ rule.selector }` ) );
+					return;
 				}
-				if ( 'box-shadow' === decl.prop && /:focus-visible/.test( decl.parent.selector || '' ) && /--sgs-focus-glow|focus-shadow/.test( decl.value ) ) {
-					glows.push( `${ file } ${ decl.parent.selector }: ${ norm( decl.value ) }` );
-				}
+				decls
+					.filter( ( decl ) => 'box-shadow' === decl.prop && /--sgs-focus-glow|focus-shadow/.test( decl.value ) )
+					.forEach( ( decl ) =>
+						glows.push( {
+							where: `${ file } ${ rule.selector }`,
+							reads: /^var\(--sgs-focus-shadow\b/.test( norm( decl.value ) ),
+							defines: defined.length === 1 && /var\(--sgs-focus-glow\b/.test( defined[ 0 ].value ),
+						} )
+					);
 			} );
 		}
-		expect( defined ).toBe( 1 );
+		expect( elsewhere ).toEqual( [] );
 		expect( glows.length ).toBeGreaterThanOrEqual( 4 );
-		expect( glows.filter( ( g ) => ! /: var\(--sgs-focus-shadow\b/.test( g ) ) ).toEqual( [] );
+		expect( glows.filter( ( g ) => ! g.reads || ! g.defines ).map( ( g ) => g.where ) ).toEqual( [] );
 	} );
 } );

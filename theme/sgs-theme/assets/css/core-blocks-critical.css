@@ -124,9 +124,6 @@ html {
 :root {
 	--sgs-focus-color: var(--wp--preset--color--accent, #d8ca50);
 	--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50);
-	/* The focus glow every :focus-visible rule draws; a block that paints its own box-shadow on focus (the motion
-	   hover ring) lists it first so the glow stays. */
-	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
 }
 
 /* ─── REMOVE INTER-SECTION GAPS ─── */
@@ -301,9 +298,13 @@ html {
 
 /* Universal focus ring — catches anything without a specific rule.
    3px width ensures WCAG 2.4.11 compliance. Never suppress with outline: 0. */
+/* --sgs-focus-shadow is the glow every focus rule draws, defined here on the focused element (not on :root) so it
+   reads that element's own --sgs-focus-glow; a block that paints its own box-shadow on focus (the motion hover ring)
+   lists it first so the glow stays. */
 :focus-visible {
 	outline: 3px solid var(--sgs-focus-color);
 	outline-offset: 2px;
+	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
 	box-shadow: var(--sgs-focus-shadow);
 }
 
@@ -311,6 +312,7 @@ html {
 :root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) {
 	outline: 3px solid var(--sgs-focus-color) !important;
 	outline-offset: 2px;
+	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
 	box-shadow: var(--sgs-focus-shadow) !important;
 }
 
@@ -319,6 +321,7 @@ html {
 .wp-block-navigation a:focus-visible {
 	outline: 3px solid var(--sgs-focus-color);
 	outline-offset: 2px;
+	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
 	box-shadow: var(--sgs-focus-shadow);
 }
 
