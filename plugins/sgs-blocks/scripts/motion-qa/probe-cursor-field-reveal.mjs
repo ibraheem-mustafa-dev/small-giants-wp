@@ -10,6 +10,9 @@
  *                        the pointer (computed `clip-path`). Control: the same page with the `@property` registration for
  *                        `--sgs-cursor-field-radius` removed jumps from 0 to 90 with nothing in between.
  *   reveal-wash          the wash opacity reads 0.5 at rest and 0.3 on hover, easing between them.
+ *   reveal-picture       the `::before` image decodes and the painted pixels inside the clip circle differ from the card's own
+ *                        background (a screenshot decoded on a canvas). Control: the plain card with the pointer parked declares
+ *                        the same image but its radius is 0, and the same pixel read finds no picture.
  *   ring                 the ring layer is aria-hidden, a 180px circle, scales 0 to 1 on hover, and follows the pointer
  *                        with a 0.4s lag (a jump of the pointer moves the ring through intermediate positions and it
  *                        arrives in 250 to 520ms). Control: a series that jumps in one frame fails the lag judge.
@@ -78,6 +81,17 @@ export function parseCircle( value ) {
 	return m ? { r: parseFloat( m[ 1 ] ), x: parseFloat( m[ 2 ] ), y: parseFloat( m[ 3 ] ) } : null;
 }
 
+/** Euclidean distance between two [r, g, b] pixels. */
+export const rgbDistance = ( a, b ) => Math.hypot( a[ 0 ] - b[ 0 ], a[ 1 ] - b[ 1 ], a[ 2 ] - b[ 2 ] );
+
+/**
+ * A picture is painted when the stylesheet's image decoded and at least one pixel inside the clip circle differs from the
+ * card's own background (a corner far outside the circle) by more than `min`.
+ */
+export function paintsPicture( { loaded, inside, outside }, min = 12 ) {
+	return !! loaded && inside.some( ( px ) => rgbDistance( px, outside ) > min );
+}
+
 /** The stylesheet with the radius registration removed (the negative control). */
 export const stripRadiusProperty = ( css ) => css.replace( /@property\s+--sgs-cursor-field-radius\s*\{[^}]*\}/, '' );
 
@@ -95,6 +109,10 @@ function selfTest() {
 	want( parseCircle( 'circle(90px at 120px 60px)' ).x === 120, 'circle parse reads the centre' );
 	want( parseCircle( 'none' ) === null, 'no circle parses to null' );
 	want( ! /@property\s+--sgs-cursor-field-radius/.test( stripRadiusProperty( '@property --sgs-cursor-field-radius { syntax: "<length>"; }\n.a{}' ) ), 'the strip removes the registration' );
+	want( rgbDistance( [ 0, 0, 0 ], [ 3, 4, 0 ] ) === 5, 'the pixel distance is Euclidean' );
+	want( paintsPicture( { loaded: true, inside: [ [ 200, 80, 20 ] ], outside: [ 221, 221, 221 ] } ), 'a picture unlike the card background counts as painted' );
+	want( ! paintsPicture( { loaded: true, inside: [ [ 221, 221, 221 ], [ 222, 220, 221 ] ], outside: [ 221, 221, 221 ] } ), 'pixels equal to the card background are not a picture' );
+	want( ! paintsPicture( { loaded: false, inside: [ [ 200, 80, 20 ] ], outside: [ 221, 221, 221 ] } ), 'an image that did not decode is not painted' );
 	console.log( JSON.stringify( { selfTest: true, failures } ) );
 	return failures.length ? 1 : 0;
 }
@@ -132,7 +150,7 @@ async function openPage( context, { local, url, strip } ) {
 			return route.fulfill( { status: 200, contentType: 'text/javascript', body: fs.readFileSync( file ) } );
 		} );
 	} else if ( strip ) {
-		// The registration is declared in both stylesheets (motion.css and fx-cursor-field.css); the control removes every copy.
+		// The registration is declared once, in motion.css; the control removes it (fx-cursor-field.css is routed too, in case a copy returns).
 		await context.route( /\/(fx-cursor-field|motion)\.css/, async ( route ) => {
 			const response = await route.fetch();
 			return route.fulfill( { response, body: stripRadiusProperty( await response.text() ) } );
@@ -350,6 +368,74 @@ async function rippleWithReveal( page, rep ) {
 	} );
 }
 
+/** In the page: decode a PNG (base64) on a canvas and return the [r, g, b] of each point. */
+const readPixels = async ( { b64, points } ) => {
+	const img = new Image();
+	img.src = `data:image/png;base64,${ b64 }`;
+	await img.decode();
+	const canvas = document.createElement( 'canvas' );
+	canvas.width = img.naturalWidth;
+	canvas.height = img.naturalHeight;
+	const ctx = canvas.getContext( '2d' );
+	ctx.drawImage( img, 0, 0 );
+	return points.map( ( [ x, y ] ) => Array.from( ctx.getImageData( x, y, 1, 1 ).data ).slice( 0, 3 ) );
+};
+
+/** In the page: the first `url()` in the card's `::before` background-image, and whether it decodes to a picture. */
+const readImage = async ( sel ) => {
+	const bg = getComputedStyle( document.querySelector( sel ), '::before' ).backgroundImage;
+	const m = /url\("((?:[^"\\]|\\.)*)"\)/.exec( bg );
+	if ( ! m ) return { bg, url: null, loaded: false };
+	const img = new Image();
+	img.src = m[ 1 ];
+	try {
+		await img.decode();
+	} catch ( e ) {
+		return { bg, url: m[ 1 ], loaded: false };
+	}
+	return { bg, url: m[ 1 ], loaded: img.naturalWidth > 0 && img.naturalHeight > 0 };
+};
+
+/** Park or hover, settle, then read the image and the painted pixels inside the clip circle and at the card's own corner. */
+async function samplePaint( page, sel, hover ) {
+	const box = await settleInView( page, sel );
+	await park( page );
+	const cx = Math.round( box.width / 2 );
+	const cy = Math.round( box.height / 2 );
+	if ( hover ) await page.mouse.move( box.x + cx, box.y + cy, { steps: 2 } );
+	await page.waitForTimeout( 900 );
+	const image = await page.evaluate( readImage, sel );
+	const circle = parseCircle( await page.evaluate( ( s ) => getComputedStyle( document.querySelector( s ), '::before' ).clipPath, sel ) );
+	const shot = await page.screenshot( { clip: { x: box.x, y: box.y, width: Math.floor( box.width ), height: Math.floor( box.height ) } } );
+	if ( process.env.SGS_PROBE_SHOTS ) fs.writeFileSync( path.join( process.env.SGS_PROBE_SHOTS, `reveal-picture-${ hover ? 'hover' : 'parked' }-${ sel.slice( 1 ) }.png` ), shot );
+	const points = [ [ cx, cy ], [ cx - 40, cy ], [ cx + 40, cy ], [ 6, Math.floor( box.height ) - 7 ] ];
+	const px = await page.evaluate( readPixels, { b64: shot.toString( 'base64' ), points } );
+	// A capture can let a physical mouse take over the pointer (headed Chrome), which collapses the circle before the frame is taken.
+	const after = parseCircle( await page.evaluate( ( s ) => getComputedStyle( document.querySelector( s ), '::before' ).clipPath, sel ) );
+	const stable = !! circle && !! after && Math.abs( after.r - circle.r ) < 0.6;
+	return { image, circle, stable, inside: px.slice( 0, 3 ), outside: px[ 3 ] };
+}
+
+async function revealPicture( page, rep ) {
+	const hovered = await samplePaint( page, REVEAL, true );
+	const parked = await samplePaint( page, PLAIN, false );
+	if ( ! hovered.stable || ! parked.stable ) {
+		rep.check( 'reveal-picture', { pass: null, why: 'the pointer state changed while the screenshot was taken (a physical mouse over a headed window); rerun with the mouse still, or headless' } );
+		return;
+	}
+	const show = ( s ) => ( { url: s.image.url && s.image.url.slice( 0, 90 ), loaded: s.image.loaded, clipRadius: s.circle && s.circle.r, inside: s.inside, outside: s.outside } );
+	rep.check( 'reveal-picture', {
+		selector: REVEAL, property: '::before background-image (decoded) and the painted pixels inside the clip circle against the card corner',
+		measured: show( hovered ), expected: 'the image decodes, the clip circle is 90px and the pixels inside it differ from the card background',
+		pass: !! hovered.circle && Math.abs( hovered.circle.r - 90 ) < 0.6 && paintsPicture( { loaded: hovered.image.loaded, inside: hovered.inside, outside: hovered.outside } ),
+	} );
+	rep.control( 'reveal-picture', {
+		selector: PLAIN, property: 'the same pixels on the plain card with the pointer parked (its image is declared, its clip radius is 0)',
+		measured: show( parked ), expected: 'the declared image paints nothing, so the check above reads a picture, not a declaration',
+		red: !! parked.image.loaded && !! parked.circle && parked.circle.r < 0.6 && ! paintsPicture( { loaded: true, inside: parked.inside, outside: parked.outside } ),
+	} );
+}
+
 async function unregisteredControl( browserType, rep, { local, url, width } ) {
 	const browser = await browserType.launch( launchOptions( browserType.name() ) );
 	const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
@@ -389,6 +475,7 @@ export async function main( argv ) {
 					rep.check( 'reveal-radius', { pass: null, why: 'this browser reports a coarse pointer, so the field is gated off' } );
 				} else {
 					await radiusAndWash( page, rep, false );
+					await revealPicture( page, rep );
 					await ringChecks( page, rep );
 					await reducedMotion( page, rep );
 					await rippleWithReveal( page, rep );

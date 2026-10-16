@@ -539,7 +539,6 @@
  * (aria-hidden), moved by `src/shared/effects/cursor-field-ring.js` through `--sgs-ring-x` and `--sgs-ring-y`.
  * ========================================================================== */
 
-@property --sgs-cursor-field-radius { syntax: '<length>'; inherits: true; initial-value: 260px; }
 @property --sgs-cursor-field-wash { syntax: '<number>'; inherits: false; initial-value: 0.5; }
 
 [data-sgs-cursor-field="image-reveal"] {
