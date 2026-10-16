@@ -274,6 +274,7 @@ if ( ! class_exists( 'WP_Query' ) ) {
 	 */
 	class WP_Query {
 		public array $posts        = array();
+		public int $post_count     = 0;
 		public int $max_num_pages  = 0;
 		private int $current_index = -1;
 

@@ -76,11 +76,12 @@ if ( 'carousel' === $layout && $sgs_pg_loop_carousel ) {
 // --- Post cards grid.
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $sgs_pg_inner_fx_attr is built entirely from literal strings above, no dynamic value.
 echo '<div class="sgs-post-grid__inner"' . $sgs_pg_inner_fx_attr . '>';
+// Loop stagger (Spec 38A §8, FR-38A-26): one scoped rule per card from its index on this page, through the shared
+// collector; null when the block has no stagger. The `<style>` string is only non-empty where the collector never flushes (the editor preview).
+// Called before the empty-page branch: an empty first page still emits the cards' inherited entrance for cards fetched later.
+$sgs_pg_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::post_grid( $uid, $attributes, (int) $query->post_count );
+echo (string) $sgs_pg_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays.
 if ( $query->have_posts() ) {
-	// Loop stagger (Spec 38A §8, FR-38A-26): one scoped rule per card from its index on this page, through the shared
-	// collector; null when the block has no stagger. The `<style>` string is only non-empty where the collector never flushes (the editor preview).
-	$sgs_pg_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::post_grid( $uid, $attributes, (int) $query->post_count );
-	echo (string) $sgs_pg_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays.
 	$card_index = 0;
 	while ( $query->have_posts() ) {
 		$query->the_post();

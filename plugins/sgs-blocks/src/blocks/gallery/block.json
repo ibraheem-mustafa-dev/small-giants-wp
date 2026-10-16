@@ -35,6 +35,7 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"motionItems": "item",
 			"motion": true,
 			"separators": {
 				"separators": {

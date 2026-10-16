@@ -294,6 +294,18 @@ namespace {
 	) as list( $name, $selector, $want ) ) {
 		$check( $want === Sgs_Motion_Loop_Inherit::item_part( $name, $selector ), "item part: $name $selector => " . var_export( $want, true ) );
 	}
+	// The editor canvas finds the item part from supports.sgs.motionItems: each block that inherits declares the part its
+	// render.php item selector names (the nav bar's panel items only ever carry their own entrance, so it declares none).
+	foreach ( array(
+		'sgs/card-grid'       => 'item',
+		'sgs/gallery'         => 'item',
+		'sgs/timeline'        => 'entry',
+		'sgs/nav-drawer-menu' => 'item',
+		'sgs/post-grid'       => 'card',
+		'sgs/nav-bar-menu'    => null,
+	) as $name => $want ) {
+		$check( $want === Sgs_Motion_Loop_Inherit::declared_item_part( $name ), "declared item part: $name => " . var_export( $want, true ) );
+	}
 
 	// 8. Post grid, apply on: the card part takes the container entrance.
 	$reset();
@@ -341,6 +353,48 @@ namespace {
 			$check( array_key_exists( $key, $php_def ) && $php_def[ $key ] === $value, "parity: drift check DEFAULTS[$key] equals the PHP default" );
 		}
 	}
+
+	// 12. Council A1, delegated: the grid's own entrance moves only when the cards take it. The grid renders its cards
+	// inside its own frame, as WordPress does.
+	$grid_root = static function ( array $attributes, array $ids ) use ( $render_grid ): string {
+		$block = array(
+			'blockName'   => 'sgs/card-grid',
+			'attrs'       => $attributes,
+			'innerBlocks' => array(),
+		);
+		$cards = '';
+		$html  = sgs_test_render_motion_block(
+			$block,
+			'<div class="sgs-card-grid sgs-cg-test1234">X</div>',
+			null,
+			static function () use ( $render_grid, $attributes, $ids, &$cards ): void {
+				$cards = $render_grid( $attributes, $ids );
+			}
+		);
+		return $html . "\n" . $cards;
+	};
+	$grid_plays = static function ( string $html ): bool {
+		return 1 === preg_match( '/^<div [^>]*data-sgs-me=/', $html );
+	};
+	$reset();
+	$handed = $grid_root( $grid( 'wc-product', true, array( 'root' => array( 'entrance' => array( 'base' => $base ) ) ) ), array( 41, 42 ) );
+	$check( ! $grid_plays( $handed ) && 2 === $cards_with( $handed, 'data-sgs-me="scroll translate opacity"' ), 'delegated positive control: the cards take the grid entrance, so the grid no longer plays it: ' . $handed );
+	$reset();
+	$kept = $grid_root( $grid( 'wc-product', true, array( 'root' => array( 'entrance' => array( 'base' => $base ) ), 'item' => $title ) ), array( 43, 44 ) );
+	$check( $grid_plays( $kept ), 'test_container_entrance_survives_when_delegated_cards_keep_their_own_entrance: the grid item part (the card root) has its own entrance, so the grid keeps its: ' . $kept );
+
+	// 13. Council D: a regex failure in single_scope_styles keeps the cards instead of blanking them.
+	$big       = '<div class="wp-block-sgs-product-card">A</div><style id="sgs-m-0123456789">' . str_repeat( 'a{b:c}', 4000 ) . '</style><div class="wp-block-sgs-product-card">B</div>';
+	$limit     = ini_get( 'pcre.backtrack_limit' );
+	$jit       = ini_get( 'pcre.jit' );
+	ini_set( 'pcre.jit', '0' );
+	ini_set( 'pcre.backtrack_limit', '10' );
+	$kept_html = Sgs_Motion_Delegate::single_scope_styles( $big );
+	$failed    = PREG_NO_ERROR !== preg_last_error();
+	ini_set( 'pcre.backtrack_limit', (string) $limit );
+	ini_set( 'pcre.jit', (string) $jit );
+	$check( $failed, 'regex failure: the planted backtrack limit makes the pattern fail' );
+	$check( $big === $kept_html, 'regex failure: single_scope_styles returns the cards unchanged, never an empty string (' . strlen( $kept_html ) . ' bytes)' );
 
 	echo ( 0 === $failures ? 'PASS' : 'FAIL' ) . ": $checks checks, $failures failures\n";
 	exit( 0 === $failures ? 0 : 1 );

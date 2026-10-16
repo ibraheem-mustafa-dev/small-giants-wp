@@ -174,7 +174,8 @@ export function planElements( rootEl, plan ) {
 
 /**
  * The block's canvas emission: emitted once, then again without the hover state and entrance of any target that shares
- * an element with an earlier-declared one (found in this DOM).
+ * an element with an earlier-declared one (found in this DOM). An inherited item plan (`inheritedFrom`) takes no part in
+ * that comparison, and when this DOM shows no item it is dropped and the container keeps its entrance.
  *
  * @param {Element|null} rootEl  Block element, or null before it mounts.
  * @param {Object}       motion  Stored motion attribute.
@@ -182,11 +183,18 @@ export function planElements( rootEl, plan ) {
  * @return {Object} `emitScopedCss()` output plus `losers`.
  */
 export function planCanvas( rootEl, motion, options ) {
-	const first = emitScopedCss( motion, options );
-	if ( ! rootEl || first.plans.length < 2 ) {
+	let first = emitScopedCss( motion, options );
+	const inherited = first.plans.find( ( plan ) => plan.inheritedFrom );
+	if ( rootEl && inherited && planElements( rootEl, inherited ).length === 0 ) {
+		// No item shows, so nothing takes the container's entrance: it stays on the container, as on the page.
+		options = { ...options, noItems: true };
+		first = emitScopedCss( motion, options );
+	}
+	const stored = first.plans.filter( ( plan ) => ! plan.inheritedFrom );
+	if ( ! rootEl || stored.length < 2 ) {
 		return { ...first, losers: {} };
 	}
-	const losers = sharedLosers( first.plans, options.elements, ( plan ) => planElements( rootEl, plan ) );
+	const losers = sharedLosers( stored, options.elements, ( plan ) => planElements( rootEl, plan ) );
 	return Object.keys( losers ).length === 0
 		? { ...first, losers }
 		: { ...emitScopedCss( motion, { ...options, losers } ), losers };

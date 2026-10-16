@@ -1215,7 +1215,7 @@
 	},
 	{
 		"name": "stagger apply moves the container entrance to the children",
-		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}.sgs-m-0123456789 .sgs-card-grid__title{--sgs-me-from-op:0;--sgs-me-dur:300ms;}",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}.sgs-m-0123456789 .sgs-card-grid__title{--sgs-me-from-op:0;--sgs-me-dur:300ms;}.sgs-m-0123456789 .sgs-card-grid__item{--sgs-me-from-op:0;--sgs-me-from-ty:28px;--sgs-me-dur:400ms;}",
 		"plans": [
 			{
 				"target": "root",
@@ -1235,6 +1235,16 @@
 					"data-sgs-me": "scroll opacity"
 				},
 				"entrance": true
+			},
+			{
+				"target": "item",
+				"selector": ".sgs-m-0123456789 .sgs-card-grid__item",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true,
+				"inheritedFrom": "root"
 			}
 		],
 		"rootAttrs": {},
@@ -1252,6 +1262,155 @@
 					"data-sgs-me": "scroll translate opacity"
 				},
 				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply moves a wrapper part entrance to the items",
+		"css": ".sgs-m-0123456789 .sgs-card-grid__item{--sgs-me-from-op:0;--sgs-me-from-ty:28px;--sgs-me-dur:400ms;}",
+		"plans": [
+			{
+				"target": "grid",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {},
+				"entrance": false
+			},
+			{
+				"target": "item",
+				"selector": ".sgs-m-0123456789 .sgs-card-grid__item",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "load translate opacity"
+				},
+				"entrance": true,
+				"inheritedFrom": "grid"
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply leaves the container entrance when the item part has its own",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:28px;--sgs-me-dur:400ms;--sgs-me-delay:120ms;}.sgs-m-0123456789 .sgs-card-grid__item{--sgs-me-from-op:0;--sgs-me-dur:300ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			},
+			{
+				"target": "item",
+				"selector": ".sgs-m-0123456789 .sgs-card-grid__item",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "load opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply on a container holding inner blocks moves the entrance to them",
+		"css": "",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply on a container with no inner blocks keeps the entrance",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:28px;--sgs-me-dur:400ms;--sgs-me-delay:120ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply in a delegating mode hands the entrance to the card root",
+		"css": "",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply in a delegating mode keeps the entrance when the card root has its own",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:28px;--sgs-me-dur:400ms;--sgs-me-delay:120ms;}.sgs-m-0123456789 .sgs-card-grid__item{--sgs-me-from-op:0;--sgs-me-dur:300ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			},
+			{
+				"target": "item",
+				"selector": ".sgs-m-0123456789 .sgs-card-grid__item",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "load opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "stagger apply moves a menu's open entrance to its items",
+		"css": ".sgs-m-0123456789 .sgs-nav-drawer-menu__item{--sgs-me-from-op:0;--sgs-me-from-tx:-16px;--sgs-me-dur:300ms;}.sgs-m-0123456789 .sgs-nav-drawer-menu__item{--sgs-me-close-dur:200ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {},
+				"entrance": false
+			},
+			{
+				"target": "item",
+				"selector": ".sgs-m-0123456789 .sgs-nav-drawer-menu__item",
+				"root": false,
+				"attrs": {
+					"data-sgs-me": "open translate opacity"
+				},
+				"entrance": true,
+				"inheritedFrom": "root"
 			}
 		],
 		"rootAttrs": {},

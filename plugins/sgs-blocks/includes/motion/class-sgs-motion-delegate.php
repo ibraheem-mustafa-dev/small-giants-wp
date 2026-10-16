@@ -22,9 +22,13 @@
  * - An entrance on a named `state` the child does not declare plays on scroll instead (the twin of
  *   `stagger-write.js::inheritedBase`).
  * - With the block's stagger `apply` on, a child root with no entrance takes the block's own entrance, delays removed
- *   (each child's delay comes from its stagger rule, `Sgs_Motion_Loop_Delays::item_array`).
+ *   (each child's delay comes from its stagger rule, `Sgs_Motion_Loop_Delays::item_array`), and the hand-over is
+ *   recorded on the block's render frame (`Sgs_Motion_Renderer::note_moved`), so the block itself stops playing it. A
+ *   child root that keeps its own entrance (the block's part mapped onto it has one) takes nothing, and the block keeps
+ *   its entrance (`hands_entrance`; the canvas twin is `canvas/stagger-apply.js::delegatedMove`).
  * - Every child gets the same motion, so the children share one motion scope; `single_scope_styles` keeps the editor
- *   preview to one `<style>` per scope (each child's delay is its own loop rule, never in the shared scope).
+ *   preview to one `<style>` per scope (each child's delay is its own loop rule, never in the shared scope), and
+ *   returns the children unchanged if its pattern fails.
  *
  * @package SGS\Blocks
  */
@@ -118,10 +122,11 @@ final class Sgs_Motion_Delegate {
 				$handed[ $target ] = self::rehome( $elements[ $part ], $states );
 			}
 		}
-		$own      = is_array( $child_motion ) && is_array( $child_motion['elements'] ?? null ) ? $child_motion['elements'] : array();
-		$template = true === ( $raw['stagger']['apply'] ?? null ) ? Sgs_Motion_Loop_Inherit::container_base( $block_name, $doc ) : null;
-		if ( null !== $template && ! is_array( $handed['root']['entrance']['base'] ?? null ) && ! is_array( $own['root']['entrance']['base'] ?? null ) ) {
-			$handed['root']['entrance']['base'] = self::playable( Sgs_Motion_Loop_Inherit::without_delays( $template ), $states );
+		$own  = is_array( $child_motion ) && is_array( $child_motion['elements'] ?? null ) ? $child_motion['elements'] : array();
+		$from = self::hands_entrance( $block_name, $attributes, $child_motion );
+		if ( null !== $from ) {
+			$handed['root']['entrance']['base'] = self::playable( Sgs_Motion_Loop_Inherit::without_delays( $doc['elements'][ $from ]['entrance']['base'] ), $states );
+			Sgs_Motion_Renderer::note_moved( $block_name, $from );
 		}
 		if ( array() === $handed ) {
 			return $child_motion;
@@ -136,6 +141,35 @@ final class Sgs_Motion_Delegate {
 	}
 
 	/**
+	 * The container target whose entrance the child block's root takes in a delegating mode with `apply` on, or null:
+	 * when the delegation is not active, `apply` is off, the block has no entrance of its own, a block part mapped onto
+	 * the child's root carries an entrance, or the child's root has one.
+	 *
+	 * @param string              $block_name   The delegating block's name.
+	 * @param array<string,mixed> $attributes   The delegating block's attributes.
+	 * @param mixed               $child_motion The child's own motion value (null when it has none).
+	 * @return string|null
+	 */
+	public static function hands_entrance( string $block_name, array $attributes, $child_motion = null ): ?string {
+		$delegation = self::active( $block_name, $attributes );
+		$raw        = $attributes['sgsMotion'] ?? null;
+		if ( null === $delegation || ! is_array( $raw ) || true !== ( $raw['stagger']['apply'] ?? null ) ) {
+			return null;
+		}
+		$doc      = Sgs_Motion_Document::sanitise( $raw );
+		$elements = isset( $doc['elements'] ) && is_array( $doc['elements'] ) ? $doc['elements'] : array();
+		foreach ( $delegation['parts'] as $part => $target ) {
+			if ( 'root' === $target && is_array( $elements[ $part ]['entrance']['base'] ?? null ) ) {
+				return null;
+			}
+		}
+		if ( is_array( $child_motion ) && is_array( $child_motion['elements']['root']['entrance']['base'] ?? null ) ) {
+			return null;
+		}
+		return Sgs_Motion_Loop_Inherit::container_target( $block_name, $doc );
+	}
+
+	/**
 	 * The delegated children's markup with each motion scope's inline `<style>` printed once. The children of one block
 	 * get identical motion, so they share one scope (`Sgs_Motion_Renderer` hashes the motion), and where the collector
 	 * never flushes (the editor preview) each child would otherwise print the same tag with the same id.
@@ -145,7 +179,7 @@ final class Sgs_Motion_Delegate {
 	 */
 	public static function single_scope_styles( string $html ): string {
 		$seen = array();
-		return (string) preg_replace_callback(
+		$out  = preg_replace_callback(
 			'/<style id="(sgs-m-[0-9a-f]{10})">.*?<\/style>/s',
 			static function ( array $m ) use ( &$seen ): string {
 				if ( isset( $seen[ $m[1] ] ) ) {
@@ -156,6 +190,7 @@ final class Sgs_Motion_Delegate {
 			},
 			$html
 		);
+		return null === $out ? $html : $out;
 	}
 
 	/**

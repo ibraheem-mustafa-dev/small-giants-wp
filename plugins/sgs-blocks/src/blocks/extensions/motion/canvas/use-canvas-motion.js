@@ -50,14 +50,19 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 		( select ) => Boolean( select( 'core/block-editor' )?.getSettings?.()?.__unstableIsPreviewMode ),
 		[]
 	);
+	// Whether the block holds inner blocks: then the stagger's "Apply entrance to children" moves the container's entrance
+	// to them (`stagger-apply.js`).
+	const hasInnerBlocks = useSelect(
+		( select ) => ( select( 'core/block-editor' )?.getBlockCount?.( clientId ) ?? 0 ) > 0,
+		[ clientId ]
+	);
 	// Only the attributes that decide the hover ring's refusal (the shadow attributes) reach the options, so editing
 	// anything else does not re-emit the block's motion.
 	const shadows = JSON.stringify(
 		shadowValues( getBlockType( name )?.supports?.sgs?.elements, attributes )
 	);
-	const delegate = JSON.stringify(
-		ringDelegate( activeDelegation( getBlockType( name )?.supports?.sgs, attributes ), childOf )
-	);
+	const delegation = JSON.stringify( activeDelegation( getBlockType( name )?.supports?.sgs, attributes ) );
+	const delegate = JSON.stringify( ringDelegate( JSON.parse( delegation ), childOf ) );
 	const options = useMemo( () => {
 		const sgs = getBlockType( name )?.supports?.sgs || {};
 		return {
@@ -68,8 +73,11 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			root: canvasRootSelector( clientId ),
 			attributes: JSON.parse( shadows ),
 			ringDelegate: JSON.parse( delegate ),
+			motionItems: sgs.motionItems,
+			delegation: JSON.parse( delegation ),
+			hasInnerBlocks,
 		};
-	}, [ name, clientId, shadows, delegate ] );
+	}, [ name, clientId, shadows, delegate, delegation, hasInnerBlocks ] );
 
 	useEffect( () => {
 		if ( preview || ( ! motion && ! linked ) ) {

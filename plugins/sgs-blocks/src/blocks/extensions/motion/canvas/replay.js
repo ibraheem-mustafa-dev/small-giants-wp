@@ -62,6 +62,12 @@ function playOn( el, attrs ) {
 	} );
 }
 
+// A plan Replay plays for a target: the target's own entrance, or the entrance its children inherited from it (the
+// stagger's "Apply entrance to children", `stagger-apply.js`), which plays on the items.
+function playsFrom( plan, target ) {
+	return Boolean( plan.entrance ) && ( plan.target === target || plan.inheritedFrom === target );
+}
+
 /**
  * Play a target's entrance once in the canvas. Under reduced motion nothing moves and a one-line notice shows.
  *
@@ -72,8 +78,8 @@ function playOn( el, attrs ) {
 export function replay( clientId, target = 'root' ) {
 	const entry = registry.get( clientId );
 	const rootEl = entry ? entry.element() : null;
-	const plan = entry?.emitted.plans.find( ( candidate ) => candidate.target === target && candidate.entrance );
-	if ( ! rootEl || ! plan ) {
+	const plans = entry ? entry.emitted.plans.filter( ( candidate ) => playsFrom( candidate, target ) ) : [];
+	if ( ! rootEl || plans.length === 0 ) {
 		return Promise.resolve( { played: false, reduced: false } );
 	}
 	if ( prefersReduced( rootEl ) ) {
@@ -84,9 +90,9 @@ export function replay( clientId, target = 'root' ) {
 		} );
 		return Promise.resolve( { played: false, reduced: true } );
 	}
-	const targets = planElements( rootEl, plan );
-	return Promise.all( targets.map( ( el ) => playOn( el, plan.attrs ) ) ).then( () => ( {
-		played: targets.length > 0,
+	const pairs = plans.flatMap( ( plan ) => planElements( rootEl, plan ).map( ( el ) => [ el, plan.attrs ] ) );
+	return Promise.all( pairs.map( ( [ el, attrs ] ) => playOn( el, attrs ) ) ).then( () => ( {
+		played: pairs.length > 0,
 		reduced: false,
 	} ) );
 }
@@ -99,5 +105,5 @@ export function replay( clientId, target = 'root' ) {
  * @return {boolean} True when Replay has something to play.
  */
 export function canReplay( clientId, target = 'root' ) {
-	return Boolean( registry.get( clientId )?.emitted.plans.some( ( p ) => p.target === target && p.entrance ) );
+	return Boolean( registry.get( clientId )?.emitted.plans.some( ( p ) => playsFrom( p, target ) ) );
 }

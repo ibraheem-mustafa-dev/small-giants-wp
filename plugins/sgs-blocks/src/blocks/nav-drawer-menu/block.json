@@ -33,6 +33,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"motionItems": "item",
 			"motion": {
 				"opens": [
 					"root",

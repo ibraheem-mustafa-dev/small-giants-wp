@@ -51,7 +51,7 @@ import { resolveLayerDrops } from './layer-drops';
 import { stripShared } from './shared-element';
 import { emitFocus, focusAllowed, FOCUS_REFUSAL } from './emit-focus';
 import { hasRing, RING_REFUSAL, ringPaints, ringRefused, stripRing } from './emit-ring';
-import { movedEntranceTarget } from './stagger-apply';
+import { delegatedMove, inheritedItem, movedEntranceTarget } from './stagger-apply';
 
 /** Hover colour and shadow properties whose timing the hover state owns (FR-38A-7). */
 const HOVER_PAINT = [ 'color', 'background-color', 'border-color', 'box-shadow' ];
@@ -283,10 +283,46 @@ function usesSource( targets, source ) {
 }
 
 /**
+ * Where the stagger's `apply` moves the container's entrance, and the item plan that plays it: `moved` is the
+ * container target whose entrance the container leaves out, `plan` and `css` the declared item part's inherited
+ * entrance (null and '' when no item takes it).
+ *
+ * @param {Object} motion  The stored motion attribute.
+ * @param {Object} targets The sanitised document's `elements`.
+ * @param {Object} options `emitScopedCss()` options (`hasInnerBlocks`: the block holds blocks; `noItems`: no item shows).
+ * @return {{moved:?string,plan:?Object,css:string}} The hand-over.
+ */
+function itemHandOver( motion, targets, { blockName, elements, root, states, context, motionItems, delegation, hasInnerBlocks, noItems } ) {
+	const none = { moved: null, plan: null, css: '' };
+	if ( hasInnerBlocks ) {
+		return { ...none, moved: movedEntranceTarget( motion, targets, elements ) };
+	}
+	if ( delegation ) {
+		return { ...none, moved: delegatedMove( motion, targets, elements, delegation ) };
+	}
+	const item = noItems ? null : inheritedItem( motion, targets, elements, motionItems );
+	const resolved = item ? resolveTarget( blockName, elements, root, item.part, {} ) : null;
+	if ( resolved === null ) {
+		return none;
+	}
+	const emitted = emitTarget( { entrance: { base: item.base } }, resolved.selector, { ...context, suppressEntrance: false, states } );
+	if ( ! emitted.entrance || Object.keys( emitted.attrs ).length === 0 ) {
+		return none;
+	}
+	return {
+		moved: item.from,
+		plan: { target: item.part, ...resolved, attrs: emitted.attrs, entrance: true, inheritedFrom: item.from },
+		css: emitted.css,
+	};
+}
+
+/**
  * Emit a whole block's motion: sanitise the document, then for each resolvable target (in stored order) drop refused
  * layers and, for a target that shares its element with an earlier-declared one (`losers`, found in the canvas DOM by
  * `shared-element.js`), its hover state and entrance; emit its CSS and data attributes. With the stagger's `apply` on,
- * the container's own entrance plays on its children only (`stagger-apply.js`).
+ * the container's own entrance plays on its children only, and only when they take it (`stagger-apply.js`): a block
+ * that prints its items itself gets one more plan, its declared item part (`target`) playing the container's entrance
+ * (`inheritedFrom`, the container target Replay plays it from), after the stored targets' plans.
  *
  * @param {Object} motion  The stored motion attribute.
  * @param {Object} options `blockName`, `elements` (`supports.sgs.elements`), `root` (the scoped root selector),
@@ -294,18 +330,20 @@ function usesSource( targets, source ) {
  *                         `context` (`lcp`, `suppressEntrance`) for every target, and `animationItems` (the block's
  *                         `supports.sgs.animationItems`, which with the `item` part names its repeated items) and
  *                         `attributes` (the block's attributes, so a shadowed element drops the hover ring; without them
- *                         no ring is refused) and `ringDelegate` (the child block a delegating mode prints, `emit-ring.js::ringDelegate`).
+ *                         no ring is refused) and `ringDelegate` (the child block a delegating mode prints, `emit-ring.js::ringDelegate`),
+ *                         `motionItems`, `delegation`, `hasInnerBlocks` and `noItems` (the hand-over, `itemHandOver`).
  * @return {{css:string,plans:Array,rootAttrs:Object,dropped:Array,itemMatches?:Array}} Empty for an absent or invalid
  *         attribute; `itemMatches` (the elements to mark `data-sgs-mitem`) only when a hover layer uses source item.
  */
-export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes, ringDelegate } ) {
+export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes, ringDelegate, motionItems, delegation = null, hasInnerBlocks = false, noItems = false } ) {
 	const out = { css: '', plans: [], rootAttrs: {}, dropped: [] };
 	const doc = sanitiseDocument( motion );
 	const targets = doc.elements;
 	if ( ! targets || typeof targets !== 'object' || Array.isArray( targets ) ) {
 		return out;
 	}
-	const moved = movedEntranceTarget( motion, targets, elements );
+	const handOver = itemHandOver( motion, targets, { blockName, elements, root, states, context, motionItems, delegation, hasInnerBlocks, noItems } );
+	const moved = handOver.moved;
 	Object.entries( targets ).forEach( ( [ target, stored ] ) => {
 		const resolved = resolveTarget( blockName, elements, root, target, stored || {} );
 		if ( resolved === null ) {
@@ -346,6 +384,10 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		out.css += emitted.css;
 		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );
 	} );
+	if ( handOver.plan ) {
+		out.css += handOver.css;
+		out.plans.push( handOver.plan );
+	}
 	const usesRoot = usesSource( targets, 'root' );
 	if ( usesRoot ) {
 		out.rootAttrs[ 'data-sgs-mroot' ] = '';

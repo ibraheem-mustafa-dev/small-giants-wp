@@ -8,8 +8,10 @@
  * classes, in the renderer's order (`Sgs_Motion_Document::sanitise`, `Sgs_Motion_Shared_Element::losers` over the
  * case's `html` when it has one, `Sgs_Motion_Targets::resolve`, `Sgs_Motion_Layer_Drops::resolve`,
  * `Sgs_Motion_Shared_Element::strip`, `Sgs_Motion_Emitter::emit` with the open and state trigger filters, and the
- * container entrance a stagger's `apply` moves to the children, `Sgs_Motion_Loop_Inherit::moved_target`) under the
- * scope the case names, through the WordPress stand-ins in `tests/php/stubs/motion-render-stubs.php` (block types read
+ * container entrance a stagger's `apply` moves to the children: `Sgs_Motion_Loop_Inherit::moved_target` for a case
+ * with `innerBlocks`, `Sgs_Motion_Delegate::hands_entrance` in a delegating mode, else the declared item part's
+ * inherited entrance, `Sgs_Motion_Loop_Inherit::inherited_layer` and `emit_layer`, as one more plan after the stored
+ * targets' plans) under the scope the case names, through the WordPress stand-ins in `tests/php/stubs/motion-render-stubs.php` (block types read
  * from the real block.json files).
  *
  * Usage:
@@ -23,6 +25,7 @@ declare( strict_types=1 );
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals, WordPress.WP.AlternativeFunctions, WordPress.Security.EscapeOutput.OutputNotEscaped, Generic.Formatting.MultipleStatementAlignment -- CLI test fixture printing JSON, not shipped code.
 
+use SGS\Blocks\Motion\Sgs_Motion_Delegate;
 use SGS\Blocks\Motion\Sgs_Motion_Document;
 use SGS\Blocks\Motion\Sgs_Motion_Emitter;
 use SGS\Blocks\Motion\Sgs_Motion_Layer_Drops;
@@ -58,7 +61,31 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 	);
 	$sgs_uses_root = false;
 	$sgs_uses_item = false;
-	$sgs_moved     = Sgs_Motion_Loop_Inherit::moved_target( $sgs_name, $sgs_motion );
+	$sgs_attrs     = is_array( $sgs_case['attributes'] ?? null ) ? $sgs_case['attributes'] : array();
+	$sgs_item_plan = null;
+	$sgs_item_css  = '';
+	$sgs_moved     = null;
+	if ( ! empty( $sgs_case['innerBlocks'] ) ) {
+		$sgs_moved = Sgs_Motion_Loop_Inherit::moved_target( $sgs_name, $sgs_motion );
+	} elseif ( null !== Sgs_Motion_Delegate::active( $sgs_name, $sgs_attrs ) ) {
+		$sgs_moved = Sgs_Motion_Delegate::hands_entrance( $sgs_name, array_merge( $sgs_attrs, array( 'sgsMotion' => $sgs_motion ) ) );
+	} else {
+		$sgs_layer    = Sgs_Motion_Loop_Inherit::inherited_layer( $sgs_name, $sgs_motion );
+		$sgs_resolved = null === $sgs_layer ? null : Sgs_Motion_Targets::resolve( $sgs_name, $sgs_scope, $sgs_layer['part'], array() );
+		$sgs_emitted  = null === $sgs_resolved ? null : Sgs_Motion_Loop_Inherit::emit_layer( $sgs_name, $sgs_layer, $sgs_resolved['selector'], ! empty( $sgs_context['lcp'] ) );
+		if ( null !== $sgs_emitted ) {
+			$sgs_moved     = $sgs_layer['from'];
+			$sgs_item_css  = $sgs_emitted['css'];
+			$sgs_item_plan = array(
+				'target'        => $sgs_layer['part'],
+				'selector'      => $sgs_resolved['selector'],
+				'root'          => $sgs_resolved['match']['root'],
+				'attrs'         => (object) $sgs_emitted['attrs'],
+				'entrance'      => true,
+				'inheritedFrom' => $sgs_layer['from'],
+			);
+		}
+	}
 	foreach ( $sgs_targets as $sgs_target => $sgs_element ) {
 		$sgs_target = (string) $sgs_target;
 		foreach ( array_merge( array( $sgs_element['hover']['state'] ?? array() ), $sgs_element['hover']['effects'] ?? array() ) as $sgs_layer ) {
@@ -93,6 +120,10 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 			'attrs'    => (object) $sgs_emitted['attrs'],
 			'entrance' => $sgs_emitted['entrance'],
 		);
+	}
+	if ( null !== $sgs_item_plan ) {
+		$sgs_result['css']    .= $sgs_item_css;
+		$sgs_result['plans'][] = $sgs_item_plan;
 	}
 	if ( $sgs_uses_root ) {
 		$sgs_result['rootAttrs']['data-sgs-mroot'] = '';

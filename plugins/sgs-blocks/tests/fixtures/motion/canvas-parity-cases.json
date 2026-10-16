@@ -1913,6 +1913,260 @@
 			"context": {}
 		},
 		{
+			"name": "stagger apply moves a wrapper part entrance to the items",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"grid": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400,
+									"delay": 120
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "stagger apply leaves the container entrance when the item part has its own",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400,
+									"delay": 120
+								}
+							}
+						}
+					},
+					"item": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"opacity": 0
+									},
+									"to": {},
+									"duration": 300
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "stagger apply on a container holding inner blocks moves the entrance to them",
+			"block": "sgs/container",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400,
+									"delay": 120
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"innerBlocks": true
+		},
+		{
+			"name": "stagger apply on a container with no inner blocks keeps the entrance",
+			"block": "sgs/container",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400,
+									"delay": 120
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "stagger apply in a delegating mode hands the entrance to the card root",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400,
+									"delay": 120
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"source": "wc-product"
+			}
+		},
+		{
+			"name": "stagger apply in a delegating mode keeps the entrance when the card root has its own",
+			"block": "sgs/card-grid",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 28
+									},
+									"to": {},
+									"duration": 400,
+									"delay": 120
+								}
+							}
+						}
+					},
+					"item": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"opacity": 0
+									},
+									"to": {},
+									"duration": 300
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 80
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {},
+			"attributes": {
+				"source": "wc-product"
+			}
+		},
+		{
+			"name": "stagger apply moves a menu's open entrance to its items",
+			"block": "sgs/nav-drawer-menu",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "open",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateX": -16
+									},
+									"to": {},
+									"duration": 300
+								},
+								"close": {
+									"closeDuration": 200
+								}
+							}
+						}
+					}
+				},
+				"stagger": {
+					"apply": true,
+					"step": 60
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
 			"name": "hover ring refused by a stylesheet shadow with no attribute (product card root)",
 			"block": "sgs/product-card",
 			"motion": {

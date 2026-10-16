@@ -155,12 +155,17 @@ final class Sgs_Motion_Loop_Delays {
 	 * @param array<string,mixed> $attributes The block's attributes.
 	 * @param int                 $count      Cards on this page.
 	 * @return string|null Null when the block has no stagger (do not tag cards); otherwise the `<style>` tag to echo
-	 *                     before the cards (an empty string when the rules went to the front-end collector).
+	 *                     before the cards (an empty string when the rules went to the front-end collector). An empty
+	 *                     page still emits the cards' inherited entrance (`apply` on) for cards fetched later, without
+	 *                     moving the grid's own entrance, and no delays.
 	 */
 	public static function post_grid( string $uid, array $attributes, int $count ): ?string {
 		$stagger = self::normalise( $attributes['sgsMotion']['stagger'] ?? null );
-		if ( null === $stagger || $count < 1 || '' === $uid ) {
+		if ( null === $stagger || '' === $uid ) {
 			return null;
+		}
+		if ( $count < 1 ) {
+			return Sgs_Motion_Loop_Inherit::item_entrance( 'sgs/post-grid', $uid, $attributes, '.sgs-post-grid__card', false );
 		}
 		$grid    = 'grid' === ( $attributes['layout'] ?? 'grid' );
 		$columns = array();

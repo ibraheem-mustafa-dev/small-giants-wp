@@ -103,6 +103,9 @@ const jsResult = ( c ) => {
 		root: c.root,
 		attributes: attributesOf( c ),
 		ringDelegate: ringDelegate( activeDelegation( sgs, attributesOf( c ) ), childOf ),
+		motionItems: sgs.motionItems,
+		delegation: activeDelegation( sgs, attributesOf( c ) ),
+		hasInnerBlocks: Boolean( c.innerBlocks ),
 		context: {
 			lcp: Boolean( c.context.lcp ),
 			suppressEntrance: Boolean( c.context.suppress_entrance ),
@@ -117,6 +120,7 @@ const jsResult = ( c ) => {
 			root: plan.root,
 			attrs: plan.attrs,
 			entrance: plan.entrance,
+			...( plan.inheritedFrom ? { inheritedFrom: plan.inheritedFrom } : {} ),
 		} ) ),
 		rootAttrs: out.rootAttrs,
 		losers: out.losers,

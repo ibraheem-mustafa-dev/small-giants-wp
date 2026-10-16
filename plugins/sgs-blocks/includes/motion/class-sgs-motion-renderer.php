@@ -138,6 +138,22 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
+	 * Record that the block rendering now handed its container entrance to its items (`Sgs_Motion_Loop_Inherit`, a
+	 * delegated child block through `Sgs_Motion_Delegate`), so `render()` leaves that target's entrance out. Called from
+	 * inside the block's render callback, where the block's own frame is the open one; any other block is ignored.
+	 *
+	 * @param string $block_name The block that handed its entrance over.
+	 * @param string $target     The container target whose entrance moved (`root` or a wrapper part).
+	 * @return void
+	 */
+	public static function note_moved( string $block_name, string $target ): void {
+		$top = count( self::$stack ) - 1;
+		if ( $top >= 0 && self::$stack[ $top ]['name'] === $block_name ) {
+			self::$stack[ $top ]['moved'] = $target;
+		}
+	}
+
+	/**
 	 * Record which assets the data attributes just printed need.
 	 *
 	 * @param array<string,mixed> $attrs  Attributes printed on a target or the root.
@@ -310,6 +326,24 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
+	 * The container target whose entrance `stagger.apply` moved to the children, or null. A block holding inner blocks
+	 * moves it whenever `apply` is on and it has an entrance (the editor wrote it on each child,
+	 * `stagger-write.js::childMotionWithDelay`); a block that prints its items itself moves it only when this render
+	 * handed it over (`note_moved`), so a container whose items keep their own entrance, or that printed no items,
+	 * keeps its own.
+	 *
+	 * @param array<string,mixed> $block Parsed block.
+	 * @param array<string,mixed> $frame The block's render frame.
+	 * @return string|null
+	 */
+	private static function moved( array $block, array $frame ): ?string {
+		if ( ! empty( $block['innerBlocks'] ) ) {
+			return Sgs_Motion_Loop_Inherit::moved_target( (string) ( $block['blockName'] ?? '' ), $block['attrs'][ self::ATTR ] ?? null );
+		}
+		return isset( $frame['moved'] ) && is_string( $frame['moved'] ) ? $frame['moved'] : null;
+	}
+
+	/**
 	 * Emit the block's motion (render_block, priority 20).
 	 *
 	 * @param mixed $block_content Rendered HTML.
@@ -354,7 +388,7 @@ final class Sgs_Motion_Renderer {
 		$plans         = array();
 		$css           = '';
 		$losers        = Sgs_Motion_Shared_Element::losers( $block_content, $name, $scope, $doc['elements'] );
-		$moved         = Sgs_Motion_Loop_Inherit::moved_target( $name, $attrs[ self::ATTR ] ?? null );
+		$moved         = self::moved( $block, $frame );
 		foreach ( $doc['elements'] as $target => $element ) {
 			$target   = (string) $target;
 			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, $target, (array) $element );
