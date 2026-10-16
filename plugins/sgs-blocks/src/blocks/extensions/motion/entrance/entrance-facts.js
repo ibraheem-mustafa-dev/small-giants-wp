@@ -186,16 +186,9 @@ export const isDesktopOnly = ( key ) =>
 	false;
 
 // Blocks that print their items on the server, so their stagger delays are written when the page renders
-// (`includes/motion/class-sgs-motion-loop-delays.php`: post_grid() and item_array() callers). The nav drawer's menu is
-// one: a dynamic block with no inner blocks whose `render.php` tags its items and calls `item_array()`.
-const SERVER_ITEM_BLOCKS = Object.freeze( [
-	'sgs/post-grid',
-	'sgs/card-grid',
-	'sgs/gallery',
-	'sgs/timeline',
-	'sgs/nav-drawer-menu',
-	'sgs/nav-bar-menu',
-] );
+// (`includes/motion/class-sgs-motion-loop-delays.php`: post_grid() and item_array() callers). The list is generated from
+// the render code by `scripts/generate-motion-stagger-columns.py` (the `serverItems` key), never written by hand.
+const SERVER_ITEM_BLOCKS = Object.freeze( gridColumns.serverItems || [] );
 
 /**
  * Whether a block's items are rendered by the server, so the editor has no child blocks to write delays on.
