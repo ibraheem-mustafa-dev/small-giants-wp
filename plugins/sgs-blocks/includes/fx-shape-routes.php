@@ -57,9 +57,10 @@
  * how the curated pairs are named (`logo-icon` reads as "the brand mark
  * becomes an icon", not "reshape whatever the block happened to draw").
  *
- * PRIORITY 11 — same slot as `fx-path-routes.php` (a sibling expansion, never
+ * PRIORITY 22 — same slot as `fx-path-routes.php` (a sibling expansion, never
  * the same block instance). Must run AFTER `fx-attributes.php` (p10) injects
- * `data-sgs-fx-shape` onto dynamic blocks, and BEFORE `SGS_Motion_Registry`'s
+ * `data-sgs-fx-shape` onto dynamic blocks and the motion layer renderer (p20)
+ * writes it for a layer, and BEFORE `SGS_Motion_Registry`'s
  * p99 sniff, which decides whether MorphSVGPlugin is enqueued at all.
  *
  * SECURITY. A custom shape pair is TWO media-library attachment IDs, never
@@ -432,4 +433,4 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 	 */
 	return $content;
 }
-\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_expand_fx_shape_pair', 11, 1 );
+\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_expand_fx_shape_pair', 22, 1 ); // After the layer renderer (20), which writes data-sgs-fx for layer-authored effects.

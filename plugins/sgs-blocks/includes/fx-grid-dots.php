@@ -161,4 +161,4 @@ function sgs_apply_fx_grid_dots( string $block_content ): string {
 	);
 }
 
-\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_grid_dots', 11, 1 );
+\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_grid_dots', 22, 1 ); // After the layer renderer (20), which writes data-sgs-fx for layer-authored effects.

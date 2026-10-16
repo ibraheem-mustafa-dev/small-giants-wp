@@ -27,9 +27,10 @@
  * no colour set, behaviour is byte-identical to before, so no existing instance
  * moves. `particles.js` prefers this custom property and falls back to `color`.
  *
- * PRIORITY 11 — the same slot as `fx-cursor-field.php` / `fx-surface-treatment.php`
+ * PRIORITY 22 — the same slot as `fx-cursor-field.php` / `fx-surface-treatment.php`
  * / `fx-path-routes.php`, i.e. AFTER `sgs_inject_fx_attributes()` at priority 10
- * has stamped `data-sgs-fx-*` onto the block root.
+ * has stamped `data-sgs-fx-*` onto the block root of a flat `fx` attribute, and AFTER the motion
+ * layer renderer at priority 20, which stamps it for an effect layer.
  *
  * @package SGS\Blocks
  */
@@ -126,4 +127,4 @@ function sgs_apply_fx_particles( string $block_content ): string {
 	);
 }
 
-\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_particles', 11, 1 );
+\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_particles', 22, 1 ); // After the layer renderer (20), which writes data-sgs-fx for layer-authored effects.

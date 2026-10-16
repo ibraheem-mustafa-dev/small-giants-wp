@@ -31,10 +31,12 @@
  * a blank surface where an effect was configured. So SSR marks the emitter and
  * JS adds only the tracking.
  *
- * PRIORITY 11 matches the sibling route-expanders (`fx-path-routes.php`,
+ * PRIORITY 22 matches the sibling route-expanders (`fx-path-routes.php`,
  * `fx-shape-routes.php`): after `fx-attributes.php` (p10) has injected the fx
  * data attributes onto DYNAMIC blocks — static blocks already carry them from
- * save time — and before `SGS_Motion_Registry`'s p99 sniff, which decides
+ * save time — and after the motion layer renderer (p20), which writes
+ * `data-sgs-fx` for an effect authored as a layer (an earlier filter finds no
+ * effect on such a block); and before `SGS_Motion_Registry`'s p99 sniff, which decides
  * whether the module and stylesheet are enqueued at all.
  *
  * @package SGS\Blocks
@@ -425,4 +427,4 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	);
 }
 
-\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_cursor_field', 11, 1 );
+\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_cursor_field', 22, 1 ); // After the layer renderer (20), which writes data-sgs-fx for layer-authored effects.

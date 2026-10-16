@@ -50,7 +50,7 @@ const FX_ATTR_MAP = array(
 	/*
 	 * Motion-path route (Spec 38 §11.2, D427). These two are the AUTHORING
 	 * surface; `includes/fx-path-routes.php` reads them back off the rendered
-	 * markup at p11 and expands them into the hidden route <svg> plus the
+	 * markup at p22 and expands them into the hidden route <svg> plus the
 	 * `data-sgs-fx-motion-path-target` selector the runtime resolves. That
 	 * target attribute is render-layer OUTPUT and deliberately has no row here
 	 * — nothing authors it.
@@ -83,7 +83,7 @@ const FX_ATTR_MAP = array(
 	/*
 	 * MorphSVG shape pair (Spec 38 §11.2, D427). These are the AUTHORING
 	 * surface; `includes/fx-shape-routes.php` reads them back off the
-	 * rendered markup at p11 and expands them into the visible FROM `<svg>` +
+	 * rendered markup at p22 and expands them into the visible FROM `<svg>` +
 	 * hidden TO `<svg>` + `data-sgs-fx-morph-target` selector the runtime
 	 * resolves. That target attribute is render-layer OUTPUT and
 	 * deliberately has no row here, same as the motion-path target above —
@@ -127,7 +127,7 @@ const FX_ATTR_MAP = array(
 	 * filter for static blocks — without this row a dynamic block's chosen
 	 * treatment/colours never reach the rendered root and
 	 * `includes/fx-surface-treatment.php` (which reads these back off the
-	 * markup at p11) has nothing to act on.
+	 * markup at p22) has nothing to act on.
 	 */
 	'fxTreatment'            => 'data-sgs-fx-treatment',
 	'fxTreatmentIntensity'   => 'data-sgs-fx-treatment-intensity',
@@ -177,7 +177,7 @@ const FX_ATTR_MAP = array(
 	 * not just baked in by `fx.js`'s save filter for static blocks — without
 	 * this row a dynamic block's chosen colours/ground never reach the
 	 * rendered root and `includes/fx-generative-background.php` (which reads
-	 * these back off the markup at p11) has nothing to act on.
+	 * these back off the markup at p22) has nothing to act on.
 	 */
 	'fxGenColour1'           => 'data-sgs-fx-gen-colour-1',
 	'fxGenColour2'           => 'data-sgs-fx-gen-colour-2',

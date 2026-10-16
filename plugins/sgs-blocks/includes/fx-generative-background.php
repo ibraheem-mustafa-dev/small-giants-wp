@@ -158,4 +158,4 @@ function sgs_apply_fx_generative_background( string $block_content ): string {
 	);
 }
 
-\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_generative_background', 11, 1 );
+\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_generative_background', 22, 1 ); // After the layer renderer (20), which writes data-sgs-fx for layer-authored effects.

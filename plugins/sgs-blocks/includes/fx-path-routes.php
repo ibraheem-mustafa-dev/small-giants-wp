@@ -28,9 +28,10 @@
  * attribute. Expanding here rather than in each path is what stops the effect
  * working on some blocks and silently not on others.
  *
- * PRIORITY 11 IS LOAD-BEARING. It must run AFTER `fx-attributes.php` (p10)
- * injects `data-sgs-fx-path` onto dynamic blocks — expanding first would find
- * nothing to expand — and BEFORE `SGS_Motion_Registry`'s p99 sniff, which is
+ * PRIORITY 22 IS LOAD-BEARING. It must run AFTER `fx-attributes.php` (p10)
+ * injects `data-sgs-fx-path` onto dynamic blocks and AFTER the motion layer
+ * renderer (p20) writes it for a layer — expanding first would find nothing
+ * to expand — and BEFORE `SGS_Motion_Registry`'s p99 sniff, which is
  * what decides whether the motion-path module is enqueued at all.
  *
  * SECURITY. A custom route is a MEDIA LIBRARY attachment ID, never pasted
@@ -385,4 +386,4 @@ function sgs_expand_fx_path_route( string $block_content ): string {
 	 */
 	return $content;
 }
-\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_expand_fx_path_route', 11, 1 );
+\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_expand_fx_path_route', 22, 1 ); // After the layer renderer (20), which writes data-sgs-fx for layer-authored effects.

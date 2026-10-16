@@ -45,9 +45,10 @@
  * file's only job is to stamp the data attributes and uniform overrides onto
  * the block's root element — it does not need its own registry entry point.
  *
- * PRIORITY 11 — same slot as `fx-cursor-field.php` / `fx-path-routes.php` /
- * `fx-shape-routes.php` (sibling p11 expanders): AFTER `fx-attributes.php`
- * (p10) has injected the fx data attributes onto DYNAMIC blocks — static
+ * PRIORITY 22 — same slot as `fx-cursor-field.php` / `fx-path-routes.php` /
+ * `fx-shape-routes.php` (sibling p22 expanders): AFTER `fx-attributes.php`
+ * (p10) has injected the fx data attributes onto DYNAMIC blocks and the motion
+ * layer renderer (p20) has written them for a layer — static
  * blocks already carry them from save time — and BEFORE `SGS_Motion_Registry`'s
  * p99 sniff, which decides whether the module and stylesheet are enqueued at
  * all. This ordering is invisible without a comment: if this filter ran at or
@@ -305,4 +306,4 @@ function sgs_apply_fx_surface_treatment( string $block_content ): string {
 	);
 }
 
-\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_surface_treatment', 11, 1 );
+\add_filter( 'render_block', __NAMESPACE__ . '\\sgs_apply_fx_surface_treatment', 22, 1 ); // After the layer renderer (20), which writes data-sgs-fx for layer-authored effects.
