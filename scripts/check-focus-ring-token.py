@@ -10,6 +10,7 @@ focus ring (`outline`, `outline-color`, `box-shadow`, `border-color`) from the f
     --wp--custom--focus-ring--color-*   (theme.json settings.custom.focus-ring)
     --sgs-focus-color                   (theme: core-blocks-critical.css)
     --sgs-focus-glow                    (the halo that accompanies --sgs-focus-color)
+    --sgs-focus-shadow                  (the whole halo box-shadow, built from --sgs-focus-glow)
 
 Why: a client palette can set primary == text, so `var(--wp--preset--color--primary)` or a hardcoded
 #141414 fallback paints a black ring over the design's focus colour and overrides the correct
@@ -64,7 +65,7 @@ GLOBS = [
 ]
 SKIP_PARTS = {"build", "node_modules"}
 PROPS = {"outline", "outline-color", "box-shadow", "border-color"}
-ALLOWED_VARS = re.compile(r"^--(wp--custom--focus-ring--color-[\w-]+|sgs-focus-color|sgs-focus-glow)$")
+ALLOWED_VARS = re.compile(r"^--(wp--custom--focus-ring--color-[\w-]+|sgs-focus-color|sgs-focus-glow|sgs-focus-shadow)$")
 NON_COLOUR_VAR = re.compile(r"width|offset|style|thickness|size|radius|spread|blur", re.I)
 KEYWORDS = {"currentcolor", "transparent", "none", "inherit", "initial", "unset", "revert", "0"}
 IGNORED_WORDS = {
@@ -87,6 +88,7 @@ ALLOWLIST: List[Tuple[str, str, str]] = [
     ("fx-generative-background.css", "__toggle", "control sits over a dark generative canvas"),
     ("fx-wave-gradient.css", "__toggle", "control sits over a dark gradient canvas"),
     ("utilities.css", ".skip-link", "skip link paints on its own coloured ground"),
+    ("assets/css/motion.css", '[data-sgs-mc~="box-shadow"]:focus-visible', "the hover ring and accent line replay on keyboard focus in the colours the client chose for the hover state, listed after the theme glow (--sgs-focus-shadow), which stays the focus indicator"),
 ]
 
 

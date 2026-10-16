@@ -124,6 +124,9 @@ html {
 :root {
 	--sgs-focus-color: var(--wp--preset--color--accent, #d8ca50);
 	--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50);
+	/* The focus glow every :focus-visible rule draws; a block that paints its own box-shadow on focus (the motion
+	   hover ring) lists it first so the glow stays. */
+	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
 }
 
 /* ─── REMOVE INTER-SECTION GAPS ─── */
@@ -301,14 +304,14 @@ html {
 :focus-visible {
 	outline: 3px solid var(--sgs-focus-color);
 	outline-offset: 2px;
-	box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
+	box-shadow: var(--sgs-focus-shadow);
 }
 
 /* WordPress core buttons */
 :root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) {
 	outline: 3px solid var(--sgs-focus-color) !important;
 	outline-offset: 2px;
-	box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent) !important;
+	box-shadow: var(--sgs-focus-shadow) !important;
 }
 
 /* WordPress core navigation links */
@@ -316,7 +319,7 @@ html {
 .wp-block-navigation a:focus-visible {
 	outline: 3px solid var(--sgs-focus-color);
 	outline-offset: 2px;
-	box-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
+	box-shadow: var(--sgs-focus-shadow);
 }
 
 /* ─── HEADER TOP BAR CONTRAST ─── */

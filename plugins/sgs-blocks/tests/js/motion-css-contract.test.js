@@ -327,3 +327,44 @@ describe( 'negative controls: each planted fault is caught', () => {
 		expect( contractErrors( CSS.replace( find, replace ) ).length ).toBeGreaterThan( 0 );
 	} );
 } );
+
+describe( 'keyboard focus keeps the theme focus glow beside the hover ring and accent line', () => {
+	const THEME_CSS = path.resolve( PLUGIN, '..', '..', 'theme', 'sgs-theme', 'assets', 'css' );
+	const boxShadowOf = ( css, selector ) => {
+		let value = null;
+		postcss.parse( css ).walkRules( ( rule ) => {
+			if ( rule.selector === selector ) {
+				rule.walkDecls( 'box-shadow', ( decl ) => {
+					value = norm( decl.value );
+				} );
+			}
+		} );
+		return value;
+	};
+
+	test( 'the focused element draws the theme glow first, then the same ring and accent the channel draws', () => {
+		const persistent = boxShadowOf( CSS, '[data-sgs-mc~="box-shadow"]' );
+		expect( persistent ).not.toBeNull();
+		expect( boxShadowOf( CSS, '[data-sgs-mc~="box-shadow"]:focus-visible' ) ).toBe(
+			`var(--sgs-focus-shadow, 0 0 0 0 transparent), ${ persistent }`
+		);
+	} );
+
+	test( 'every theme :focus-visible glow reads --sgs-focus-shadow, which the theme defines once on :root', () => {
+		const glows = [];
+		let defined = 0;
+		for ( const file of [ 'core-blocks-critical.css', 'utilities.css' ] ) {
+			postcss.parse( fs.readFileSync( path.join( THEME_CSS, file ), 'utf8' ) ).walkDecls( ( decl ) => {
+				if ( '--sgs-focus-shadow' === decl.prop ) {
+					defined++;
+				}
+				if ( 'box-shadow' === decl.prop && /:focus-visible/.test( decl.parent.selector || '' ) && /--sgs-focus-glow|focus-shadow/.test( decl.value ) ) {
+					glows.push( `${ file } ${ decl.parent.selector }: ${ norm( decl.value ) }` );
+				}
+			} );
+		}
+		expect( defined ).toBe( 1 );
+		expect( glows.length ).toBeGreaterThanOrEqual( 4 );
+		expect( glows.filter( ( g ) => ! /: var\(--sgs-focus-shadow\b/.test( g ) ) ).toEqual( [] );
+	} );
+} );
