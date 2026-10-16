@@ -31,9 +31,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ── Minimal WordPress function stubs ─────────────────────────────────────────
 // Only what SGS_Container_Wrapper::render() + its required helpers actually
-// call for the fixtures exercised below (no bg-image/video/svg/shape-divider
-// fixture is used, so wp_kses() etc. are deliberately NOT stubbed — if a future
-// fixture needs them, add the stub then).
+// call for the fixtures exercised below (the only background fixture is a plain
+// image, so wp_kses() etc. are deliberately NOT stubbed — if a future fixture
+// needs them, add the stub then).
 
 if ( ! function_exists( 'wp_json_encode' ) ) {
 	/**
@@ -136,6 +136,19 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 	}
 }
 
+if ( ! function_exists( 'attachment_url_to_postid' ) ) {
+	/**
+	 * Stub: the fixture image URLs are not media-library attachments, so none resolves (sgs_responsive_image() then
+	 * prints its plain <img> fallback).
+	 *
+	 * @param string $url Image URL.
+	 * @return int Always 0.
+	 */
+	function attachment_url_to_postid( $url ): int {
+		return 0;
+	}
+}
+
 require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-container-wrapper.php';
 
 $pass = 0;
@@ -214,7 +227,7 @@ $content_attrs = array(
 );
 
 // ── (a) Structural + byte-stable golden assertions per KIND ───────────────────
-// A full byte-exact golden string was judged TOO BRITTLE for a 1671-line wrapper
+// A full byte-exact golden string was judged TOO BRITTLE for a wrapper this large
 // with dozens of independent feature gates (any unrelated future feature landing
 // a new class/attr on the SAME selector would false-fail this test even though
 // the 3 properties under test are untouched). Instead we pin: (1) the exact
@@ -228,11 +241,11 @@ $content_attrs = array(
 $section_html = SGS_Container_Wrapper::render( $section_attrs, null, '<p>inner</p>', 'section' );
 
 contains( $section_html, '<style id="sgs-container-', 'section: scoped <style> tag present' );
-contains( $section_html, '<section class="sgs-container sgs-container--flex sgs-container-', 'section: exact class list (sgs-container sgs-container--flex + uid)' );
+contains( $section_html, '<section class="sgs-container has-global-padding sgs-container--flex sgs-container-', 'section: exact class list (banded container gets has-global-padding, then the layout class, then the uid)' );
 contains( $section_html, 'padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;', 'section: base spacing golden rule' );
 contains( $section_html, '{max-width:1200px;margin-inline:auto}', 'section: base outer max-width golden rule' );
 contains( $section_html, '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', 'section: base content-band golden rule' );
-contains( $section_html, '>.sgs-container__inner{gap:24px;display:flex;flex-wrap:wrap}', 'section: base grid/flex golden rule (grid-on-inner)' );
+contains( $section_html, '>.sgs-container__inner{gap:24px;display:flex}', 'section: base grid/flex golden rule (grid-on-inner)' );
 contains( $section_html, '<div class="sgs-container__inner">', 'section: __inner band wrapper present, no inline style (no grid-item vars on flex)' );
 contains( $section_html, '<p>inner</p>', 'section: inner_html passed through verbatim' );
 not_contains( $section_html, 'style="', 'section: NO inline style="" attribute anywhere (Spec 32 no-inline contract)' );
@@ -242,7 +255,9 @@ $layout_html = SGS_Container_Wrapper::render( $layout_attrs, null, '<p>cols</p>'
 // html_tag defaults to 'section' when the caller passes no $opts['tag'] — this
 // is true for every KIND (the tag is a caller override, not KIND-derived), so
 // 'layout' renders <section> here exactly like 'section' and 'content' do.
-contains( $layout_html, '<section class="sgs-container sgs-container--grid sgs-cols-3 sgs-cols-tablet-2 sgs-cols-mobile-1 sgs-container-', 'layout: exact class list incl. default column-shorthand classes (sgs-container sgs-container--grid sgs-cols-3/tablet-2/mobile-1 + uid)' );
+contains( $layout_html, '<section class="sgs-container has-global-padding sgs-container--grid sgs-container-', 'layout: exact class list (the sgs-cols-* shorthand classes are gone; the tier counts are @media rules)' );
+not_contains( $layout_html, 'sgs-cols-', 'layout: no sgs-cols-* shorthand class' );
+contains( $layout_html, '@media (max-width:1023px){', 'layout: default tablet column count is a scoped @media rule' );
 contains( $layout_html, 'padding-top:32px;padding-bottom:32px;', 'layout: base spacing golden rule (top+bottom only)' );
 contains( $layout_html, '{max-width:960px;margin-inline:auto}', 'layout: base outer max-width golden rule' );
 contains( $layout_html, '>.sgs-container__inner{max-width:var(--wp--style--global--wide-size,1400px);margin-inline:auto}', 'layout: base content-band golden rule (wide token)' );
@@ -251,19 +266,18 @@ not_contains( $layout_html, 'backgroundImage', 'layout: NO section-only backgrou
 
 $content_html = SGS_Container_Wrapper::render( $content_attrs, null, '<p>text</p>', 'content' );
 
-contains( $content_html, '<section class="sgs-container sgs-container-', 'content: default tag=section, exact class list (no layout class — content kind has no grid/flex)' );
+contains( $content_html, '<section class="sgs-container has-global-padding sgs-container-', 'content: default tag=section, exact class list (band gutter class, no layout class — content kind has no grid/flex)' );
 contains( $content_html, 'padding-top:16px;padding-bottom:16px;', 'content: base spacing golden rule (WP-native style.spacing.padding, applied to the OUTER — distinct from band padding)' );
 contains( $content_html, '{max-width:800px;margin-inline:auto}', 'content: base outer max-width golden rule' );
 contains( $content_html, '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', 'content: base content-band golden rule (contentWidth only — no contentBandPadding attr was set)' );
 not_contains( $content_html, 'display:grid', 'content: NO grid layer (content kind has no __inner grid/flex per Spec 31 §13.6)' );
 not_contains( $content_html, 'display:flex', 'content: NO flex layer (content kind has no __inner grid/flex per Spec 31 §13.6)' );
 
-// ── KIND gate — the mechanism that makes composite wrapper (D294) safe ─────────
-// Section-only layers (background image/video/overlay/svg/shape-divider) must
-// be completely absent for 'layout' and 'content' kinds, even given the EXACT
-// SAME $attributes that produce them under 'section'. This is what lets a
-// content-KIND composite (quote/info-box) safely reuse this class without
-// accidentally inheriting section-only behaviour.
+// ── Background layers are universal across KINDs (D6, 2026-08-11) ─────────────
+// The background image/video/overlay/svg layers were section-only; D6 made them
+// universal, so a layout or content KIND given the SAME attributes prints the same
+// background <img> and object-fit rule. (A simple no-repeat cover/contain image
+// prints as an <img>, not a CSS background-image.)
 $bg_attrs = array(
 	'maxWidth'        => '1200px',
 	'backgroundImage' => array( 'url' => 'https://example.com/bg.jpg' ),
@@ -273,12 +287,16 @@ $bg_section_html = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', '
 $bg_layout_html  = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'layout' );
 $bg_content_html = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'content' );
 
-contains( $bg_section_html, 'sgs-container--has-bg-image', 'kind-gate: section kind WITH backgroundImage emits the has-bg-image class' );
-contains( $bg_section_html, 'background-image:url(https://example.com/bg.jpg)', 'kind-gate: section kind WITH backgroundImage emits the background-image scoped rule' );
-not_contains( $bg_layout_html, 'sgs-container--has-bg-image', 'kind-gate: layout kind with the SAME backgroundImage attr does NOT emit has-bg-image (section-only layer gated off)' );
-not_contains( $bg_layout_html, 'background-image:', 'kind-gate: layout kind with the SAME backgroundImage attr does NOT emit the background-image rule' );
-not_contains( $bg_content_html, 'sgs-container--has-bg-image', 'kind-gate: content kind with the SAME backgroundImage attr does NOT emit has-bg-image (section-only layer gated off)' );
-not_contains( $bg_content_html, 'background-image:', 'kind-gate: content kind with the SAME backgroundImage attr does NOT emit the background-image rule' );
+foreach ( array(
+	'section' => $bg_section_html,
+	'layout'  => $bg_layout_html,
+	'content' => $bg_content_html,
+) as $bg_kind => $bg_kind_html ) {
+	contains( $bg_kind_html, 'sgs-container--has-bg-image', 'bg-universal: ' . $bg_kind . ' kind WITH backgroundImage emits the has-bg-image class' );
+	contains( $bg_kind_html, 'class="sgs-container__image-bg"', 'bg-universal: ' . $bg_kind . ' kind prints the background <img> with the part class' );
+	contains( $bg_kind_html, '> .sgs-container__image-bg{object-fit:cover;object-position:center center}', 'bg-universal: ' . $bg_kind . ' kind emits the scoped object-fit rule' );
+	not_contains( $bg_kind_html, 'background-image:', 'bg-universal: ' . $bg_kind . ' kind paints the image as an <img>, not a CSS background-image' );
+}
 
 // ── (b) UID-STABILITY INVARIANT — highest-value assertion in this file ────────
 // The whole responsive-CSS + scoped-selector mechanism depends on the uid being
@@ -316,6 +334,47 @@ $render_c = SGS_Container_Wrapper::render( $section_attrs, null, '<p>DIFFERENT i
 $uid_c    = extract_uid( $render_c );
 ok( $uid_a === $uid_c, 'uid-stability: uid is independent of $inner_html (only $attributes + anchor feed the md5)' );
 
+// ── Background Lottie layer (Spec 38A FR-38A-52) ──────────────────────────────
+// A `lottie` effect layer on the `background` part plays in a holder <div> the
+// wrapper prints (class sgs-container__image-bg + sgs-container__lottie-bg) with
+// the background image inside as its poster (class sgs-container__lottie-poster).
+// A caller that prints its own holder (sgs/hero) passes `no_background_holder`.
+$lottie_layer_motion = array(
+	'v'        => 1,
+	'elements' => array(
+		'background' => array(
+			'effects' => array(
+				array(
+					'id'      => 'lottie',
+					'effect'  => 'lottie',
+					'trigger' => 'visible',
+					'values'  => array( 'file' => 4079, 'loop' => true ),
+				),
+			),
+		),
+	),
+);
+$lottie_attrs = array_merge( $bg_attrs, array( 'sgsMotion' => $lottie_layer_motion ) );
+
+$lottie_html = SGS_Container_Wrapper::render( $lottie_attrs, null, '<p>x</p>', 'section' );
+contains( $lottie_html, '<div class="sgs-container__image-bg sgs-container__lottie-bg" aria-hidden="true"><img src="https://example.com/bg.jpg"', 'lottie layer: the holder prints with the poster image inside it' );
+contains( $lottie_html, 'class="sgs-container__lottie-poster"', 'lottie layer: the poster carries the poster class' );
+not_contains( $lottie_html, '<img src="https://example.com/bg.jpg" alt="" loading="lazy" decoding="async" class="sgs-container__image-bg"', 'lottie layer: the image does not also carry the part class' );
+not_contains( $lottie_html, 'class="sgs-container__image-bg" ', 'lottie layer: no bare background <img> beside the holder' );
+
+$no_holder_html = SGS_Container_Wrapper::render( $lottie_attrs, null, '<p>x</p>', 'section', array( 'no_background_holder' => true ) );
+not_contains( $no_holder_html, 'sgs-container__lottie-bg', 'no_background_holder: the wrapper prints no holder' );
+contains( $no_holder_html, 'class="sgs-container__image-bg"', 'no_background_holder: the background image keeps the plain part class' );
+
+// No layer: the output is byte-identical to the same block without any motion
+// (the uid hashes the attributes, so it is normalised before comparing).
+$plain_html  = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'section' );
+$empty_html  = SGS_Container_Wrapper::render( array_merge( $bg_attrs, array( 'sgsMotion' => array( 'v' => 1, 'elements' => array() ) ) ), null, '<p>x</p>', 'section' );
+$norm_plain  = str_replace( extract_uid( $plain_html ), 'UID', $plain_html );
+$norm_empty  = str_replace( extract_uid( $empty_html ), 'UID', $empty_html );
+not_contains( $plain_html, 'sgs-container__lottie-bg', 'no layer: no holder prints' );
+ok( $norm_plain === $norm_empty, 'no layer: a block with an empty sgsMotion prints byte-identical output to one without' );
+
 // ── (c) DIFFERENT attributes → DIFFERENT uid ───────────────────────────────────
 
 $section_attrs_variant = $section_attrs;
@@ -327,17 +386,12 @@ $uid_variant     = extract_uid( $render_variant );
 ok( '' !== $uid_variant, 'uid-variance: variant render produced a uid' );
 ok( $uid_a !== $uid_variant, 'uid-variance: changing a single attribute (gap 24px→32px) changes the uid (' . $uid_a . ' !== ' . $uid_variant . ')' );
 
-// KIND alone (section vs layout vs content) also changes rendered output even
-// on identical $attributes, because KIND gates which layers are consumed —
-// but the uid basis is $attributes+anchor only, so same attrs + different KIND
-// legitimately SHARE a uid (verified above: $bg_section_html / $bg_layout_html
-// / $bg_content_html all carry the same uid) while their HTML content differs
-// (already asserted in the kind-gate block above: has-bg-image / background-
-// image present under 'section', absent under 'layout' and 'content').
+// KIND is not part of the uid basis ($attributes+anchor only), so identical
+// attrs under different KINDs share a uid even where the markup differs.
 ok(
 	extract_uid( $bg_section_html ) === extract_uid( $bg_layout_html )
 		&& extract_uid( $bg_layout_html ) === extract_uid( $bg_content_html ),
-	'uid-variance: identical $attributes under different KIND share the same uid (uid basis is $attributes+anchor only, never KIND) — content divergence is asserted separately by the kind-gate block'
+	'uid-variance: identical $attributes under different KIND share the same uid (uid basis is $attributes+anchor only, never KIND)'
 );
 
 // A second, unrelated attribute change (maxWidth) must also change the uid —
