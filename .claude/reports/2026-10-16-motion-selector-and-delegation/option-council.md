@@ -18,6 +18,10 @@ Dated snapshot of a three-rater council (framework fit, editor feasibility, serv
 
 All three raters ranked C first, B second and V last (certainty high; no rater dissented on the ranking). Recommendation: C, with an "Edit card design" button in the grid's panel that selects the template card, so the card's controls are one click away.
 
+## Decision
+
+Bean chose C on 2026-10-16, to be proven by the experiment at the end of this report before the full build.
+
 ## Evidence behind the ranking
 
 - Framework DB: `sgs-update-v2.py::stage_1_sgs_codebase_scan` writes one `block_attributes` row per top-level attribute and never expands object properties, so B and V's `cardAttributes` would be one opaque row (the existing `separators` objects show it). C keeps the card as a real block with its own 518 rows and 27 `motion_targets`.
