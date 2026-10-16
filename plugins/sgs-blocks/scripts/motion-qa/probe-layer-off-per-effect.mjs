@@ -244,7 +244,7 @@ async function reading( page, selector ) {
 		const fragments = Array.from( el.querySelectorAll( 'div[aria-hidden="true"]' ) )
 			.filter( ( d ) => 'relative' === d.style.position && 'inline-block' === d.style.display );
 		return {
-			fx: el.getAttribute( 'data-sgs-fx' ),
+			fx: ( el.dataset.sgsFx || '' ).split( /\s+/ ).filter( Boolean ).join( ' ' ),
 			offMobile: el.getAttribute( 'data-sgs-fx-off-mobile' ),
 			offTablet: el.getAttribute( 'data-sgs-fx-off-tablet' ),
 			disableMobile: el.hasAttribute( 'data-sgs-fx-disable-mobile' ),
