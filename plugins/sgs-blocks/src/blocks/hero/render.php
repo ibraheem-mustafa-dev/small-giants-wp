@@ -1304,6 +1304,9 @@ if ( $has_attr_video ) {
 // that renders first ON THE PAGE — whichever block it belongs to — gets the
 // high-priority hint; every later instance stays lazy.
 $bg_img_html = '';
+// A `lottie` layer on the background part plays in a holder that takes the image's class (Spec 38A FR-38A-52).
+require_once dirname( __DIR__, 3 ) . '/includes/motion/class-sgs-motion-background-lottie.php';
+$sgs_hero_lottie_layer = \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
 if ( $has_standard_bg_image ) {
 	require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
@@ -1313,7 +1316,7 @@ if ( $has_standard_bg_image ) {
 	$loading        = $sgs_is_first ? 'eager' : 'lazy';
 
 	$img_attrs = array(
-		'class'         => 'sgs-hero__bg-img',
+		'class'         => $sgs_hero_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-hero__bg-img',
 		'aria-hidden'   => 'true',
 		'fetchpriority' => $fetch_priority,
 		'loading'       => $loading,
@@ -1332,6 +1335,9 @@ if ( $has_standard_bg_image ) {
 		'full',
 		$img_attrs
 	);
+}
+if ( $sgs_hero_lottie_layer ) {
+	$bg_img_html = '<div class="sgs-hero__bg-img sgs-container__lottie-bg" aria-hidden="true">' . $bg_img_html . '</div>';
 }
 
 // Build overlay. NO-INLINE: this block emits zero inline style property
@@ -1710,6 +1716,8 @@ $hero_helper_opts = array(
 	'extra_classes' => $classes,
 	'extra_styles'  => $styles,
 	'no_overlay'    => true,
+	// The hero prints its own background (and its Lottie holder), never the wrapper's.
+	'no_background_holder' => true,
 );
 if ( $is_split ) {
 	$hero_helper_opts['wrap_inner'] = false;

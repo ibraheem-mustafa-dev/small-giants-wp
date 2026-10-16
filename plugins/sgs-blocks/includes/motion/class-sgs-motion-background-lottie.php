@@ -9,6 +9,8 @@
  * `fx-lottie.css` rule fills the section behind its content) with the background image inside as the poster. The
  * poster takes `sgs-container__lottie-poster` instead of the part class, so the motion renderer stamps the layer on the
  * holder alone; it inherits the holder's object-fit and object-position, so the block's focal point still applies.
+ * `sgs/hero` paints its own background image (`.sgs-hero__bg-img`, its `background` part), so its render prints the
+ * same holder under that class around its poster and tells the wrapper to print none (`no_background_holder`).
  *
  * @package SGS\Blocks
  */

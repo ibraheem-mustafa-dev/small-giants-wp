@@ -44,6 +44,14 @@ export async function openDrawer( page, drawerSelector, timeout = 8000 ) {
 	const deadline = Date.now() + timeout;
 	let clicks = 0;
 	while ( Date.now() < deadline ) {
+		// A dialog already open is waiting for its motion state: another click would toggle it shut.
+		if ( await page.evaluate( ( sel ) => !! document.querySelector( sel )?.open, drawerSelector ) ) {
+			const late = await page.waitForFunction( isOpen, drawerSelector, { timeout: Math.max( 1, deadline - Date.now() ) } ).then( () => true, () => false );
+			if ( late ) {
+				return { opened: true, why: '', clicks };
+			}
+			break;
+		}
 		// A dialog that opened late covers the trigger, so a click is bounded and the open state is read after it.
 		const clicked = found.visible
 			? await page.click( '[data-probe-drawer-trigger]', { timeout: RETRY_MS } ).then( () => true, () => false )

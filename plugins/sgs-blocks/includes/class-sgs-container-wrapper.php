@@ -529,7 +529,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$bg_lottie_loop          = array_key_exists( 'bgLottieLoop', $attributes ) ? (bool) $attributes['bgLottieLoop'] : true;
 			$has_bg_lottie           = $bg_lottie_id > 0;
 			// A `lottie` layer on the background part plays in a holder the wrapper prints (Spec 38A FR-38A-52).
-			$has_bg_lottie_layer     = ! $has_bg_lottie && \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
+			$has_bg_lottie_layer     = empty( $opts['no_background_holder'] ) && ! $has_bg_lottie && \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
 			$bg_parallax             = ! empty( $attributes['bgParallax'] );
 			$bg_ken_burns            = ! empty( $attributes['bgKenBurns'] );
 			$bg_animation_duration   = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
@@ -2556,7 +2556,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// Background image zoom on hover: the real <img> when one rendered, else the
 			// root's ::before image layer (tiled or sized backgrounds).
-			if ( $bg_hover_zoom && $has_bg_image && ! $has_bg_video && ! $has_bg_lottie && $uid
+			if ( $bg_hover_zoom && $has_bg_image && ! $has_bg_video && ! $has_bg_lottie && ! $has_bg_lottie_layer && $uid
 				&& ( '' !== $bg_img_html || ! empty( $sgs_media_layer_decls ) ) ) {
 				$responsive_css .= sgs_container_bg_hover_zoom_css(
 					$uid,
