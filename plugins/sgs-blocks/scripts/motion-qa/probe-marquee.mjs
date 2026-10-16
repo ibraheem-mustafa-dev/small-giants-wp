@@ -22,7 +22,8 @@
  *     must fail the rate check.
  *   - hover: the rate before the pointer arrives must not pass as the hover rate.
  *   - touch / pause: the held-still judge on the running row must fail.
- *   - fade: the control trust bar must have no mask, and a fade width planted as 12 before boot must fail the check.
+ *   - fade: the control trust bar must have no mask, and a fade width planted as 12 (applied by a breakpoint
+ *     crossing, which makes the runtime re-read its settings) must fail the check.
  *   - rate: the row run at 1.05x its playback rate must fail the 2% judge.
  *   - touch: the tap is a synthetic touch PointerEvent (Firefox's touch emulation is not dependable).
  *   - reduced: the same judge on the no-preference page must fail.
@@ -303,18 +304,20 @@ async function liveChecks( ctx ) {
 	await nudged.close();
 	rep.control( 'marquee-rate', { selector: '.m515-speed', property: 'the row run at 1.05x its playback rate', measured: n.speed, expected: 'the check fails', red: n.speed > 0.5 && ! judgeRate( DRAFTS[ '.m515-speed' ], n ) } );
 
-	// The stored fade width equals the runtime default, so plant another width before boot: the fade check must fail.
-	// The style goes in at document start: module scripts run before DOMContentLoaded, so a later rule arrives after
-	// the marquee has read its settings.
-	const wider = await open( ctx, {}, () => {
-		const style = document.createElement( 'style' );
-		style.textContent = '.m515-speed{--sgs-marquee-edge-fade-width:12 !important}';
-		document.documentElement.appendChild( style );
-	} );
+	// The stored fade width equals the runtime default, so plant another width: the fade check must fail. The runtime
+	// re-reads its settings on a breakpoint change (its media-query listeners force a relayout), so the planted rule is
+	// added after load and the viewport crosses a breakpoint and comes back.
+	const wider = await open( ctx );
+	await wider.page.addStyleTag( { content: '.m515-speed{--sgs-marquee-edge-fade-width:12 !important}' } );
+	const across = ctx.width > 1023 ? 1000 : ctx.width > 767 ? 1100 : 800;
+	await wider.page.setViewportSize( { width: across, height: HEIGHT } );
+	await wider.page.waitForTimeout( 600 );
+	await wider.page.setViewportSize( { width: ctx.width, height: HEIGHT } );
+	await wider.page.waitForTimeout( 800 );
 	await bringIntoView( wider.page, '.m515-speed' );
 	const w = await measure( wider.page, '.m515-speed', 300 );
 	await wider.close();
-	rep.control( 'marquee-fade', { selector: '.m515-speed', property: 'the fade width planted as 12 before boot', measured: w.mask, expected: 'the check fails', red: /gradient/.test( w.mask ) && ! judgeFade( w.mask, DRAFTS[ '.m515-speed' ].fade ) } );
+	rep.control( 'marquee-fade', { selector: '.m515-speed', property: 'the fade width planted as 12, applied by a breakpoint crossing', measured: w.mask, expected: 'the check fails', red: /gradient/.test( w.mask ) && ! judgeFade( w.mask, DRAFTS[ '.m515-speed' ].fade ) } );
 }
 
 async function reducedChecks( ctx ) {
