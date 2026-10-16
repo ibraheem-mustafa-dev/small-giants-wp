@@ -84,12 +84,18 @@ export function parseCircle( value ) {
 /** Euclidean distance between two [r, g, b] pixels. */
 export const rgbDistance = ( a, b ) => Math.hypot( a[ 0 ] - b[ 0 ], a[ 1 ] - b[ 1 ], a[ 2 ] - b[ 2 ] );
 
+/** What the white wash alone paints over a background pixel at the given opacity (the wash sits over the image). */
+export const washOnly = ( outside, wash ) => outside.map( ( c ) => Math.round( c * ( 1 - wash ) + 255 * wash ) );
+
 /**
- * A picture is painted when the stylesheet's image decoded and at least one pixel inside the clip circle differs from the
- * card's own background (a corner far outside the circle) by more than `min`.
+ * A picture is painted when the stylesheet's image decoded and at least one pixel inside the clip circle differs both from
+ * the card's own background (a corner far outside the circle) and from what the wash alone would paint over it, by more
+ * than `min`. The second test is what separates a painted image from a circle that only shows the wash: with a 404 image
+ * the wash alone read about 11 away from the card, just under the first test's threshold.
  */
-export function paintsPicture( { loaded, inside, outside }, min = 12 ) {
-	return !! loaded && inside.some( ( px ) => rgbDistance( px, outside ) > min );
+export function paintsPicture( { loaded, inside, outside, wash = 0 }, min = 12 ) {
+	const bare = washOnly( outside, wash );
+	return !! loaded && inside.some( ( px ) => rgbDistance( px, outside ) > min && rgbDistance( px, bare ) > min );
 }
 
 /** The stylesheet with the radius registration removed (the negative control). */
@@ -113,6 +119,8 @@ function selfTest() {
 	want( paintsPicture( { loaded: true, inside: [ [ 200, 80, 20 ] ], outside: [ 221, 221, 221 ] } ), 'a picture unlike the card background counts as painted' );
 	want( ! paintsPicture( { loaded: true, inside: [ [ 221, 221, 221 ], [ 222, 220, 221 ] ], outside: [ 221, 221, 221 ] } ), 'pixels equal to the card background are not a picture' );
 	want( ! paintsPicture( { loaded: false, inside: [ [ 200, 80, 20 ] ], outside: [ 221, 221, 221 ] } ), 'an image that did not decode is not painted' );
+	want( ! paintsPicture( { loaded: true, inside: [ [ 252, 247, 230 ] ], outside: [ 251, 243, 220 ], wash: 0.3 } ), 'a circle that shows only the wash is not a picture (the live 404 reading)' );
+	want( paintsPicture( { loaded: true, inside: [ [ 145, 125, 118 ] ], outside: [ 251, 243, 220 ], wash: 0.3 } ), 'a photo under the wash is a picture' );
 	console.log( JSON.stringify( { selfTest: true, failures } ) );
 	return failures.length ? 1 : 0;
 }
@@ -405,6 +413,7 @@ async function samplePaint( page, sel, hover ) {
 	if ( hover ) await page.mouse.move( box.x + cx, box.y + cy, { steps: 2 } );
 	await page.waitForTimeout( 900 );
 	const image = await page.evaluate( readImage, sel );
+	const wash = await page.evaluate( ( s ) => parseFloat( getComputedStyle( document.querySelector( s ), '::before' ).getPropertyValue( '--sgs-cursor-field-wash' ) ), sel );
 	const circle = parseCircle( await page.evaluate( ( s ) => getComputedStyle( document.querySelector( s ), '::before' ).clipPath, sel ) );
 	const shot = await page.screenshot( { clip: { x: box.x, y: box.y, width: Math.floor( box.width ), height: Math.floor( box.height ) } } );
 	if ( process.env.SGS_PROBE_SHOTS ) fs.writeFileSync( path.join( process.env.SGS_PROBE_SHOTS, `reveal-picture-${ hover ? 'hover' : 'parked' }-${ sel.slice( 1 ) }.png` ), shot );
@@ -413,7 +422,7 @@ async function samplePaint( page, sel, hover ) {
 	// A capture can let a physical mouse take over the pointer (headed Chrome), which collapses the circle before the frame is taken.
 	const after = parseCircle( await page.evaluate( ( s ) => getComputedStyle( document.querySelector( s ), '::before' ).clipPath, sel ) );
 	const stable = !! circle && !! after && Math.abs( after.r - circle.r ) < 0.6;
-	return { image, circle, stable, inside: px.slice( 0, 3 ), outside: px[ 3 ] };
+	return { image, circle, stable, wash: Number.isFinite( wash ) ? wash : 0, inside: px.slice( 0, 3 ), outside: px[ 3 ] };
 }
 
 async function revealPicture( page, rep ) {
@@ -427,7 +436,7 @@ async function revealPicture( page, rep ) {
 	rep.check( 'reveal-picture', {
 		selector: REVEAL, property: '::before background-image (decoded) and the painted pixels inside the clip circle against the card corner',
 		measured: show( hovered ), expected: 'the image decodes, the clip circle is 90px and the pixels inside it differ from the card background',
-		pass: !! hovered.circle && Math.abs( hovered.circle.r - 90 ) < 0.6 && paintsPicture( { loaded: hovered.image.loaded, inside: hovered.inside, outside: hovered.outside } ),
+		pass: !! hovered.circle && Math.abs( hovered.circle.r - 90 ) < 0.6 && paintsPicture( { loaded: hovered.image.loaded, inside: hovered.inside, outside: hovered.outside, wash: hovered.wash } ),
 	} );
 	rep.control( 'reveal-picture', {
 		selector: PLAIN, property: 'the same pixels on the plain card with the pointer parked (its image is declared, its clip radius is 0)',
