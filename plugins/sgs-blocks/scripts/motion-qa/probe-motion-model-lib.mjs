@@ -214,3 +214,24 @@ export async function gotoThroughCheck( page, url, tries = 6 ) {
 	}
 	return false;
 }
+
+/**
+ * Scroll an element to the middle of the viewport and wait until Lenis smooth scroll has stopped and the element's box is
+ * steady, so a box read straight afterwards is where the pointer will find it. Returns the element's bounding box, or null
+ * when nothing matches `selector`.
+ */
+export async function settleInView( page, selector ) {
+	const handle = await page.$( selector );
+	if ( ! handle ) return null;
+	await handle.evaluate( ( el ) => el.scrollIntoView( { block: 'center', behavior: 'instant' } ) );
+	await page.waitForFunction( ( sel ) => {
+		const el = document.querySelector( sel );
+		if ( ! el ) return true;
+		const top = el.getBoundingClientRect().top;
+		const steady = window.__sgsSettleTop !== undefined && Math.abs( window.__sgsSettleTop - top ) < 0.5;
+		window.__sgsSettleTop = top;
+		return steady && ! document.documentElement.classList.contains( 'lenis-scrolling' );
+	}, selector, { polling: 120, timeout: 5000 } ).catch( () => null );
+	await page.evaluate( () => { delete window.__sgsSettleTop; } );
+	return handle.boundingBox();
+}

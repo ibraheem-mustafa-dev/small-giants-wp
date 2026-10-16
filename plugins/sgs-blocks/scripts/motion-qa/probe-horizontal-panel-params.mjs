@@ -81,7 +81,21 @@ async function scrollTo( page, y, settle = true ) {
 		const step = () => ( ++i >= n ? r() : requestAnimationFrame( step ) );
 		requestAnimationFrame( step );
 	} ), settle ? 6 : 1 );
-	if ( settle ) await page.waitForTimeout( 80 );
+	if ( settle ) {
+		await page.waitForTimeout( 80 );
+		// Lenis smooth scroll and a smoothed track keep moving after the jump: wait until the scroll position and the track's
+		// transform are both unchanged between two polls and Lenis reports it has stopped.
+		await page.waitForFunction( () => {
+			const host = document.querySelector( '.m55-hp' );
+			const marked = host && host.querySelector( ':scope > [data-sgs-fx-track]' );
+			const track = marked && ( marked.querySelector( ':scope > .wp-block-sgs-container' ) || marked );
+			const key = `${ window.scrollY }|${ track ? getComputedStyle( track ).transform : '' }`;
+			const same = window.__hpKey === key;
+			window.__hpKey = key;
+			return same && ! document.documentElement.classList.contains( 'lenis-scrolling' );
+		}, null, { polling: 100, timeout: 4000 } ).catch( () => null );
+		await page.evaluate( () => { delete window.__hpKey; } );
+	}
 }
 
 /** The live measurement of the host, its track and its panels at the current scroll. */

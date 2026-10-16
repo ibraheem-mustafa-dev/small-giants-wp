@@ -42,7 +42,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { gotoThroughCheck, parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, settleInView, parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
 import * as L from './probe-motion-stacks-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
@@ -52,14 +52,8 @@ const SEL = { a: '.m5z-a', b: '.m5z-b', c: '.m5z-c', d: '.m5z-d', control: '.m5z
 
 // ---- Pointer helpers --------------------------------------------------------------------------------------------
 
-/** Scroll the element near the top third of the viewport and return its box. */
-async function reveal( page, sel ) {
-	const handle = await page.$( sel );
-	if ( ! handle ) return null;
-	await handle.scrollIntoViewIfNeeded();
-	await page.waitForTimeout( 120 );
-	return handle.boundingBox();
-}
+/** Scroll the element to the middle of the viewport, wait out Lenis smooth scroll, and return its box. */
+const reveal = ( page, sel ) => settleInView( page, sel );
 
 const away = async ( page ) => {
 	await page.mouse.move( 2, 2 );
@@ -83,8 +77,12 @@ async function cornerRead( page, sel, inset = 12 ) {
 	await away( page );
 	const box = await reveal( page, sel );
 	if ( ! box ) return null;
-	await page.mouse.move( box.x + box.width - inset, box.y + inset - 30 );
-	await page.mouse.move( box.x + box.width - inset, box.y + inset, { steps: 4 } );
+	// A tilted card's corner is pulled inward, so a pointer within about 20px of an edge flickers out of :hover: read 5% in
+	// horizontally and 11.5% down, with `inset` as the floor.
+	const x = box.x + box.width - Math.max( inset, box.width * 0.05 );
+	const y = box.y + Math.max( inset, box.height * 0.115 );
+	await page.mouse.move( x, y - 30 );
+	await page.mouse.move( x, y, { steps: 4 } );
 	await page.waitForTimeout( 420 );
 	return read( page, sel );
 }

@@ -32,7 +32,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { gotoThroughCheck, parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
+import { gotoThroughCheck, settleInView, parseArgs, siteBase, Reporter } from './probe-motion-model-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const PLUGIN = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -199,6 +199,8 @@ const park = async ( page ) => {
 
 /** Sample while the pointer moves to a point of the card; returns the samples and the point's element-local coordinates. */
 async function hoverAt( page, sel, [ fx, fy ], ring = true, ms = 1100 ) {
+	// The card sits wherever the page has scrolled to; under Lenis it keeps moving after a jump, so settle it in view first.
+	await settleInView( page, sel );
 	const facts = await page.evaluate( readFacts, sel );
 	const size = await page.evaluate( ( s ) => {
 		const r = document.querySelector( s ).getBoundingClientRect();
@@ -324,7 +326,7 @@ async function reducedMotion( page, rep ) {
 async function rippleWithReveal( page, rep ) {
 	const press = async ( sel ) => {
 		await park( page );
-		const box = await ( await page.$( sel ) ).boundingBox();
+		const box = await settleInView( page, sel );
 		await page.mouse.move( box.x + box.width * 0.4, box.y + box.height * 0.5, { steps: 2 } );
 		await page.mouse.down();
 		await page.waitForTimeout( 120 );
