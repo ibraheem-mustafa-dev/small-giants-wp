@@ -103,6 +103,17 @@ async function waitForEditor( page, timeout ) {
 		const editor = window.wp.data.dispatch( 'core/editor' );
 		if ( typeof editor.setRenderingMode === 'function' ) editor.setRenderingMode( 'post-only' );
 	} );
+	// The switch re-renders the editor; wait until the root blocks are the post's own (no template part or post-content
+	// wrapper left at the root), so `resetBlocks` never lands on the template's roots.
+	await page.waitForFunction(
+		() => {
+			const editor = window.wp.data.select( 'core/editor' );
+			const mode = typeof editor.getRenderingMode === 'function' ? editor.getRenderingMode() : 'post-only';
+			const roots = window.wp.data.select( 'core/block-editor' ).getBlocks().map( ( b ) => b.name );
+			return 'post-only' === mode && ! roots.some( ( n ) => 'core/template-part' === n || 'core/post-content' === n );
+		},
+		{ timeout }
+	);
 }
 
 /**

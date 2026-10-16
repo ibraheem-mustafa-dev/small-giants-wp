@@ -94,7 +94,25 @@ export function storedLayers( blocks, effect, out = [] ) {
  */
 export function launchOptions( engine ) {
 	const headed = Boolean( process.env.SGS_HEADED );
-	return { headless: ! headed, ...( headed && 'chromium' === engine && { channel: 'chrome' } ) };
+	// A headed window behind others would otherwise throttle requestAnimationFrame, which the probes sample with.
+	const args = 'chromium' === engine ? [ '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows' ] : [];
+	return { headless: ! headed, args, ...( headed && 'chromium' === engine && { channel: 'chrome' } ) };
+}
+
+/**
+ * True when timed readings come from a running animation: its time advanced by at least 80% of the wall-clock gap
+ * between each pair of reads, and the painted value changed. A paused or frozen animation still sits on its formula,
+ * so a sample judge alone would pass it.
+ *
+ * @param {{t: number}[]} samples Readings with the animation's `currentTime` as `t`.
+ * @param {number}        gap     The wait between reads in ms.
+ * @param {Function}      value   `( sample ) => string`, the painted value.
+ * @return {boolean} Whether the animation ran.
+ */
+export function judgeRunning( samples, gap, value ) {
+	if ( samples.length < 2 ) return false;
+	const advanced = samples.every( ( s, i ) => 0 === i || ( Number.isFinite( s.t ) && s.t - samples[ i - 1 ].t >= 0.8 * gap ) );
+	return advanced && new Set( samples.map( value ) ).size > 1;
 }
 
 /**

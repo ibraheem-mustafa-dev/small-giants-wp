@@ -36,7 +36,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, firefox, webkit } from 'playwright';
 import { parseArgs, siteBase, Reporter, near, parseTranslate, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
-import { cubicBezier, loopProgress, storedLayers, launchOptions, passChallenge } from './probe-loop-lib.mjs';
+import { cubicBezier, loopProgress, storedLayers, launchOptions, passChallenge, judgeRunning } from './probe-loop-lib.mjs';
 
 /** The canary page built from ambient-float.json. */
 export const AMBIENT_FLOAT_PAGE = 5297;
@@ -150,7 +150,8 @@ async function motionChecks( ctx ) {
 	for ( const { sel, samples } of series ) {
 		const spec = specs[ sel ];
 		rep.check( 'float-timing', { selector: sel, property: 'Animation.effect.getTiming()', measured: samples[ 0 ].timing, expected: { duration: spec.period, delay: -spec.phase, direction: spec.direction, easing: spec.easing }, pass: judgeTiming( spec, samples[ 0 ].timing ) } );
-		rep.check( 'float-samples', { selector: sel, property: 'computed translate at three animation times vs the stored formula', measured: samples.map( ( s ) => ( { t: s.currentTime, translate: s.translate, want: expectedOffset( spec, s.currentTime ) } ) ), expected: `within ${ TOLERANCE_PX }px`, pass: judgeSamples( spec, samples ) } );
+		const running = judgeRunning( samples.map( ( s ) => ( { ...s, t: s.currentTime } ) ), SAMPLE_GAP_MS, ( s ) => s.translate );
+		rep.check( 'float-samples', { selector: sel, property: 'computed translate at three animation times vs the stored formula, with the time advancing', measured: { running, rows: samples.map( ( s ) => ( { t: s.currentTime, translate: s.translate, want: expectedOffset( spec, s.currentTime ) } ) ) }, expected: `running, within ${ TOLERANCE_PX }px`, pass: running && judgeSamples( spec, samples ) } );
 	}
 	const b = series.find( ( s ) => s.sel === '.m512-b' );
 	rep.control( 'float-timing', { selector: '.m512-b', property: "float B's timing judged against float A's stored values", measured: b.samples[ 0 ].timing, expected: 'rejected', red: ! judgeTiming( specs[ '.m512-a' ], b.samples[ 0 ].timing ) } );

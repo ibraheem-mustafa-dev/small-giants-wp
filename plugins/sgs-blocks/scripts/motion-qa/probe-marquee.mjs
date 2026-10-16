@@ -20,7 +20,9 @@
  *     must fail the rate check.
  *   - hover: the rate before the pointer arrives must not pass as the hover rate.
  *   - touch / pause: the held-still judge on the running row must fail.
- *   - fade: the control trust bar must have no mask.
+ *   - fade: the control trust bar must have no mask, and a fade width planted as 12 before boot must fail the check.
+ *   - rate: the row run at 1.05x its playback rate must fail the 2% judge.
+ *   - touch: the tap is a synthetic touch PointerEvent (Firefox's touch emulation is not dependable).
  *   - reduced: the same judge on the no-preference page must fail.
  *
  * FIXTURE: tests/fixtures/motion/pages/marquee.json, built with scripts/wp-build-page.js. Blocks are found by marker class.
@@ -96,17 +98,26 @@ export function judgeHover( draft, free, hovered ) {
 /** True when a row is held still. */
 export const judgeStill = ( speed ) => Number.isFinite( speed ) && speed < 0.5;
 
-/** True when a computed mask fades both ends over the given percentage. */
-export const judgeFade = ( mask, percent ) => typeof mask === 'string' && ( mask.match( /transparent|rgba\(0, 0, 0, 0\)/g ) || [] ).length >= 2 && mask.includes( `${ percent }%` );
+/**
+ * True when a computed mask fades both ends over the given percentage: a gradient whose first and last stops are
+ * transparent and whose first opaque stop sits at exactly that percentage.
+ */
+export function judgeFade( mask, percent ) {
+	if ( typeof mask !== 'string' || ! /gradient/.test( mask ) ) return false;
+	const transparent = ( mask.match( /transparent|rgba\(0, 0, 0, 0\)/g ) || [] ).length;
+	const stop = /(?:#000|rgb\(0, 0, 0\))\s+(-?\d*\.?\d+)%/.exec( mask );
+	return transparent >= 2 && Boolean( stop ) && Math.abs( parseFloat( stop[ 1 ] ) - percent ) < 0.01;
+}
 
 /** Whether a marquee should run at a viewport width. */
 export const shouldRun = ( draft, width ) => width <= draft.below;
 
 // ---- Page helpers ----------------------------------------------------------------------------------------------
 
-async function open( ctx, opts = {} ) {
+async function open( ctx, opts = {}, init = null ) {
 	const context = await ctx.browser.newContext( { viewport: { width: ctx.width, height: HEIGHT }, ...opts } );
 	const page = await context.newPage();
+	if ( init ) await page.addInitScript( init );
 	await page.goto( ctx.url, { waitUntil: 'load' } ).catch( () => page.goto( ctx.url, { waitUntil: 'load' } ) );
 	await passChallenge( page );
 	await page.waitForTimeout( 2000 );
@@ -121,6 +132,20 @@ async function bringIntoView( page, sel ) {
 		window.scrollTo( { top: Math.max( 0, top ), behavior: 'instant' } );
 	}, sel );
 	await page.waitForTimeout( 900 );
+	// A late image or a relayout rebuilds the loop; wait until the pitch reads the same twice, 300ms apart.
+	const pitch = () => page.evaluate( ( s ) => {
+		const root = document.querySelector( s );
+		const set = root && root.querySelector( '[data-sgs-marquee-set]' );
+		const clone = root && root.querySelector( '[data-sgs-marquee-clone]' );
+		return set && clone ? Math.round( clone.getBoundingClientRect().left - set.getBoundingClientRect().left ) : 0;
+	}, sel );
+	let last = await pitch();
+	for ( let i = 0; i < 10; i++ ) {
+		await page.waitForTimeout( 300 );
+		const now = await pitch();
+		if ( now === last ) break;
+		last = now;
+	}
 }
 
 /** The block's run state, its pitch, and the set's left edge sampled every frame for `ms`. */
@@ -140,10 +165,19 @@ const MEASURE = ( [ sel, ms ] ) => new Promise( ( resolve ) => {
 	}
 	const points = [];
 	const t0 = performance.now();
+	let done = false;
+	const finish = () => {
+		if ( ! done ) {
+			done = true;
+			resolve( { ...base, points } );
+		}
+	};
+	// A throttled frame loop must not hang the probe: the timer ends the sample whatever the frames did.
+	setTimeout( finish, ms + 1000 );
 	const step = ( now ) => {
 		points.push( { t: now, x: set.getBoundingClientRect().left } );
 		if ( now - t0 < ms ) requestAnimationFrame( step );
-		else resolve( { ...base, points } );
+		else finish();
 	};
 	requestAnimationFrame( step );
 } );
@@ -242,6 +276,28 @@ async function liveChecks( ctx ) {
 	const f = await measure( forced.page, '.m515-speed' );
 	await forced.close();
 	rep.control( 'marquee-rate', { selector: '.m515-speed', property: 'copies forced to translate: none (author !important)', measured: f.speed, expected: 'the check fails', red: ! judgeRate( DRAFTS[ '.m515-speed' ], f ) } );
+
+	// Resolution: the same row run 5% fast must fail the 2% judge, so a pass is not the judge's slack.
+	const nudged = await open( ctx );
+	await bringIntoView( nudged.page, '.m515-speed' );
+	await nudged.page.evaluate( () => document.querySelectorAll( '.m515-speed [data-sgs-marquee-set], .m515-speed [data-sgs-marquee-clone]' ).forEach( ( el ) => el.getAnimations().forEach( ( a ) => a.updatePlaybackRate( 1.05 ) ) ) );
+	await nudged.page.waitForTimeout( 300 );
+	const n = await measure( nudged.page, '.m515-speed' );
+	await nudged.close();
+	rep.control( 'marquee-rate', { selector: '.m515-speed', property: 'the row run at 1.05x its playback rate', measured: n.speed, expected: 'the check fails', red: n.speed > 0.5 && ! judgeRate( DRAFTS[ '.m515-speed' ], n ) } );
+
+	// The stored fade width equals the runtime default, so plant another width before boot: the fade check must fail.
+	const wider = await open( ctx, {}, () => {
+		document.addEventListener( 'DOMContentLoaded', () => {
+			const style = document.createElement( 'style' );
+			style.textContent = '.m515-speed{--sgs-marquee-edge-fade-width:12}';
+			document.head.appendChild( style );
+		} );
+	} );
+	await bringIntoView( wider.page, '.m515-speed' );
+	const w = await measure( wider.page, '.m515-speed', 300 );
+	await wider.close();
+	rep.control( 'marquee-fade', { selector: '.m515-speed', property: 'the fade width planted as 12 before boot', measured: w.mask, expected: 'the check fails', red: /gradient/.test( w.mask ) && ! judgeFade( w.mask, DRAFTS[ '.m515-speed' ].fade ) } );
 }
 
 async function reducedChecks( ctx ) {
@@ -283,6 +339,7 @@ function selfTest() {
 	need( 'hover slow', judgeHover( { hoverRate: 0.15 }, 45, 6.75 ) && ! judgeHover( { hoverRate: 0.15 }, 45, 45 ) );
 	need( 'hover stop', judgeHover( { hoverRate: 0 }, 45, 0 ) && ! judgeHover( { hoverRate: 0 }, 45, 40 ) );
 	need( 'fade', judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 5%, rgb(0, 0, 0) calc(95%), transparent 100%)', 5 ) && ! judgeFade( 'none', 5 ) );
+	need( 'fade is numeric', ! judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 15%, rgb(0, 0, 0) 85%, transparent 100%)', 5 ) && ! judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 12%, rgb(0, 0, 0) 88%, transparent 100%)', 5 ) );
 	need( 'range', shouldRun( DRAFTS[ '.m515-loop24' ], 768 ) && ! shouldRun( DRAFTS[ '.m515-loop24' ], 1440 ) && ! shouldRun( DRAFTS[ '.m515-ticker' ], 768 ) );
 	console.log( JSON.stringify( { selfTest: true, failures } ) );
 	return failures.length ? 1 : 0;

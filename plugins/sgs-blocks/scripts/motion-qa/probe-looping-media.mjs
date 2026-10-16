@@ -43,7 +43,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { chromium, firefox, webkit } from 'playwright';
 import { parseArgs, siteBase, Reporter, near, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
-import { cubicBezier, loopProgress, storedLayers, launchOptions, passChallenge } from './probe-loop-lib.mjs';
+import { cubicBezier, loopProgress, storedLayers, launchOptions, passChallenge, judgeRunning } from './probe-loop-lib.mjs';
 
 /** The canary page built from looping-media.json. */
 export const LOOPING_MEDIA_PAGE = 5303;
@@ -138,7 +138,7 @@ const RECORD_DRAW = () => {
 			const first = 'none' === dash ? total : parseFloat( dash );
 			window.__sgsDraw.push( { t: now, f: total > 0 ? Math.min( 1, first / total ) : 0 } );
 		}
-		if ( now < 8000 ) requestAnimationFrame( tick );
+		if ( now < 30000 ) requestAnimationFrame( tick );
 	};
 	requestAnimationFrame( tick );
 };
@@ -177,7 +177,11 @@ async function lottieAt( page, fraction ) {
 		const el = document.querySelector( s );
 		window.scrollTo( { top: el.getBoundingClientRect().top + window.scrollY - window.innerHeight * ( 1 - f ), behavior: 'instant' } );
 	}, [ LOTTIE, fraction ] );
-	await page.waitForTimeout( 1200 );
+	await page.waitForTimeout( 400 );
+	// A one-pixel nudge fires a scroll event once the player has settled at this position, so the frame read is the one
+	// the scroll listener sets for the final geometry.
+	await page.evaluate( () => window.scrollBy( 0, 1 ) );
+	await page.waitForTimeout( 400 );
 	return page.evaluate( ( s ) => {
 		const el = document.querySelector( s );
 		const rect = el.getBoundingClientRect();
@@ -193,7 +197,8 @@ async function kbChecks( ctx ) {
 	const spec = specs.kb;
 	const live = await open( ctx );
 	const rows = await samples( live.page, KB );
-	rep.check( 'kb-samples', { selector: KB, property: 'computed scale at three animation times vs the stored zoom-out-once', measured: rows.map( ( r ) => ( { t: r.t, scale: r.scale, want: kbScale( spec, r.t ), duration: r.duration } ) ), expected: `${ spec.zoomStart }% to ${ spec.zoomEnd }% over ${ spec.duration }ms`, pass: judgeKb( spec, rows ) && near( rows[ 0 ].duration, spec.duration, 1 ) } );
+	const kbRunning = judgeRunning( rows, 700, ( r ) => r.scale );
+	rep.check( 'kb-samples', { selector: KB, property: 'computed scale at three animation times vs the stored zoom-out-once, with the time advancing', measured: { running: kbRunning, rows: rows.map( ( r ) => ( { t: r.t, scale: r.scale, want: kbScale( spec, r.t ), duration: r.duration } ) ) }, expected: `running, ${ spec.zoomStart }% to ${ spec.zoomEnd }% over ${ spec.duration }ms`, pass: kbRunning && judgeKb( spec, rows ) && near( rows[ 0 ].duration, spec.duration, 1 ) } );
 	rep.control( 'kb-samples', { selector: KB, property: 'the readings judged against a 120% zoom start', measured: rows.map( ( r ) => r.scale ), expected: 'rejected', red: ! judgeKb( { ...spec, zoomStart: 120 }, rows ) } );
 
 	const start = await live.page.evaluate( READ, KB );
@@ -204,8 +209,10 @@ async function kbChecks( ctx ) {
 	await live.page.waitForTimeout( 600 );
 	const end = await live.page.evaluate( READ, KB );
 	await live.close();
-	const holds = ( r ) => near( parseFloat( r.scale ), spec.zoomEnd / 100, 0.001 );
-	rep.check( 'kb-hold', { selector: KB, property: 'scale after the run ends', measured: { scale: end.scale, state: end.state }, expected: spec.zoomEnd / 100, pass: holds( end ) } );
+	// The end zoom of 100% is also the channel's initial value, so the scale alone cannot tell a held last frame from an
+	// animation that ended and dropped away; a held run is still attached and finished.
+	const holds = ( r ) => near( parseFloat( r.scale ), spec.zoomEnd / 100, 0.001 ) && 'finished' === r.state;
+	rep.check( 'kb-hold', { selector: KB, property: 'scale and play state after the run ends', measured: { scale: end.scale, state: end.state }, expected: { scale: spec.zoomEnd / 100, state: 'finished' }, pass: holds( end ) } );
 	rep.control( 'kb-hold', { selector: KB, property: 'the hold judge early in the run', measured: start.scale, expected: 'rejected', red: ! holds( start ) } );
 
 	const forced = await open( ctx );
@@ -221,7 +228,8 @@ async function svgChecks( ctx ) {
 	const live = await open( ctx );
 	const rows = await samples( live.page, SVG, 900 );
 	await live.close();
-	rep.check( 'svg-samples', { selector: SVG, property: 'computed opacity at three animation times vs the stored pulse', measured: rows.map( ( r ) => ( { t: r.t, opacity: r.opacity, want: pulseOpacity( spec, r.t ), duration: r.duration } ) ), expected: `amplitude ${ spec.amplitude } over ${ spec.duration }ms within 0.01`, pass: judgePulse( spec, rows ) && near( rows[ 0 ].duration, spec.duration, 1 ) } );
+	const svgRunning = judgeRunning( rows, 900, ( r ) => r.opacity );
+	rep.check( 'svg-samples', { selector: SVG, property: 'computed opacity at three animation times vs the stored pulse, with the time advancing', measured: { running: svgRunning, rows: rows.map( ( r ) => ( { t: r.t, opacity: r.opacity, want: pulseOpacity( spec, r.t ), duration: r.duration } ) ) }, expected: `running, amplitude ${ spec.amplitude } over ${ spec.duration }ms within 0.01`, pass: svgRunning && judgePulse( spec, rows ) && near( rows[ 0 ].duration, spec.duration, 1 ) } );
 	rep.control( 'svg-samples', { selector: SVG, property: 'the readings judged against amplitude 2', measured: rows.map( ( r ) => r.opacity ), expected: 'rejected', red: ! judgePulse( { ...spec, amplitude: 2 }, rows ) } );
 	const forced = await open( ctx );
 	await forced.page.addStyleTag( { content: '.m513-svg .sgs-container__svg-bg{opacity:1 !important}' } );
@@ -267,6 +275,9 @@ async function pauseChecks( ctx ) {
 async function lottieChecks( ctx ) {
 	const { rep } = ctx;
 	const live = await open( ctx );
+	// Warm up: the first time the Lottie enters view it fetches its file and the player; wait for the player to mount.
+	await lottieAt( live.page, 0.3 );
+	await live.page.waitForFunction( ( s ) => Boolean( document.querySelector( s ).querySelector( 'svg g g' ) ), LOTTIE, { timeout: 20000 } ).catch( () => {} );
 	const rows = [];
 	for ( const f of [ 0.3, 0.5, 0.7 ] ) {
 		const r = await lottieAt( live.page, f );
@@ -286,7 +297,7 @@ async function lottieChecks( ctx ) {
 async function drawChecks( ctx ) {
 	const { rep, specs } = ctx;
 	const live = await open( ctx );
-	await live.page.waitForTimeout( specs.draw.duration + 1500 );
+	await live.page.waitForFunction( () => ( window.__sgsDraw || [] ).some( ( s, i, all ) => s.f >= 0.999 && all.slice( 0, i ).some( ( r ) => r.f <= 0.005 ) ), null, { timeout: specs.draw.duration + 15000 } ).catch( () => {} );
 	const series = await live.page.evaluate( () => window.__sgsDraw || [] );
 	await live.close();
 	const span = drawSpan( series );
@@ -379,6 +390,7 @@ function selfTest() {
 	need( 'draw needs a reset', Number.isNaN( drawSpan( [ { t: 0, f: 1 }, { t: 10, f: 1 } ] ) ) );
 	need( 'draw times from the reset', judgeDraw( drawSpan( [ { t: 0, f: 1 }, { t: 5, f: 1 }, ...series ].map( ( r, i ) => ( i < 2 ? r : { ...r, t: r.t + 10 } ) ) ), 2000 ) );
 	need( 'held', judgeHeld( 5, 5.2 ) && ! judgeHeld( 5, 600 ) );
+	need( 'running', judgeRunning( [ { t: 0, v: 'a' }, { t: 700, v: 'b' } ], 700, ( s ) => s.v ) && ! judgeRunning( [ { t: 5, v: 'a' }, { t: 5, v: 'a' } ], 700, ( s ) => s.v ) );
 	console.log( JSON.stringify( { selfTest: true, failures } ) );
 	return failures.length ? 1 : 0;
 }
