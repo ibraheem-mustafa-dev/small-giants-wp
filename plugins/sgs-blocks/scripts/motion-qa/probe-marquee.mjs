@@ -61,6 +61,9 @@ export const DRAFTS = {
 	'.m515-ticker': { loopSeconds: 30, hoverRate: 0, below: 767 },
 };
 const CONTROL = '.m515-control';
+/** A trust bar with a title and a marquee at every width, edge fade 8%: the title must stay outside the moving strip. */
+const TITLED = '.m515-titled';
+const TITLED_FADE = 8;
 
 // ---- Pure judges -----------------------------------------------------------------------------------------------
 
@@ -110,6 +113,28 @@ export function judgeFade( mask, percent ) {
 	const transparent = ( mask.match( /transparent|rgba\(0, 0, 0, 0\)/g ) || [] ).length;
 	const stop = /(?:#000|rgb\(0, 0, 0\))\s+(-?\d*\.?\d+)%/.exec( mask );
 	return transparent >= 2 && Boolean( stop ) && Math.abs( parseFloat( stop[ 1 ] ) - percent ) < 0.01;
+}
+
+/** The area (px squared) two [left, top, right, bottom] boxes share. */
+export function overlap( a, b ) {
+	const w = Math.min( a[ 2 ], b[ 2 ] ) - Math.max( a[ 0 ], b[ 0 ] );
+	const h = Math.min( a[ 3 ], b[ 3 ] ) - Math.max( a[ 1 ], b[ 1 ] );
+	return w > 0 && h > 0 ? w * h : 0;
+}
+
+/**
+ * True when no badge is painted over the title: in every sample the lane is a box of its own (not the block root) that
+ * does not contain the title, and each badge's visible box (its box cut to the lane when the lane clips) shares no
+ * area with the title box. `clips` false makes the judge read the badges' unclipped boxes.
+ *
+ * @param {{laneIsRoot: boolean, laneHoldsTitle: boolean, clips: boolean, lane: number[]|null, title: number[], badges: number[][]}[]} samples
+ */
+export function judgeTitle( samples ) {
+	if ( ! samples.length ) return false;
+	return samples.every( ( s ) => s.lane && ! s.laneIsRoot && ! s.laneHoldsTitle && s.badges.length > 0 && s.badges.every( ( b ) => {
+		const cut = s.clips ? [ Math.max( b[ 0 ], s.lane[ 0 ] ), Math.max( b[ 1 ], s.lane[ 1 ] ), Math.min( b[ 2 ], s.lane[ 2 ] ), Math.min( b[ 3 ], s.lane[ 3 ] ) ] : b;
+		return overlap( s.title, cut ) < 1;
+	} ) );
 }
 
 /** Whether a marquee should run at a viewport width. */
@@ -189,6 +214,37 @@ async function measure( page, sel, ms = SAMPLE_MS ) {
 	const r = await page.evaluate( MEASURE, [ sel, ms ] );
 	return { on: r.on, clones: r.clones, pitch: r.pitch, mask: r.mask, speed: velocity( r.points ), frames: r.points.length };
 }
+
+/** The titled bar's title, lane and badge boxes, sampled `n` times `gap` ms apart while the strip moves. */
+const TITLED_MEASURE = ( [ sel, n, gap ] ) => new Promise( ( resolve ) => {
+	const samples = [];
+	const box = ( el ) => {
+		const r = el.getBoundingClientRect();
+		return [ r.left, r.top, r.right, r.bottom ];
+	};
+	const mask = ( el ) => ( el ? ( getComputedStyle( el ).maskImage || getComputedStyle( el ).webkitMaskImage || '' ) : '' );
+	const take = () => {
+		const root = document.querySelector( sel );
+		const title = root.querySelector( '.sgs-trust-bar__title' );
+		const lane = root.querySelector( '[data-sgs-marquee-lane="on"]' );
+		samples.push( {
+			on: 'on' === root.getAttribute( 'data-sgs-marquee' ),
+			laneIsRoot: lane === root,
+			laneHoldsTitle: Boolean( lane && title && lane.contains( title ) ),
+			clips: Boolean( lane ) && /hidden|clip/.test( getComputedStyle( lane ).overflowX ),
+			lane: lane ? box( lane ) : null,
+			title: title ? box( title ) : [ 0, 0, 0, 0 ],
+			badges: Array.from( root.querySelectorAll( '.sgs-trust-bar__badge' ) ).map( box ),
+			rootMask: mask( root ),
+			laneMask: mask( lane ),
+		} );
+		if ( samples.length < n ) setTimeout( take, gap );
+		else resolve( samples );
+	};
+	take();
+} );
+
+const titledReading = ( page ) => page.evaluate( TITLED_MEASURE, [ TITLED, 6, 350 ] );
 
 const pauseButton = ( page, sel ) => page.locator( `${ sel } .sgs-motion-pause, ${ sel } + .sgs-motion-pause` ).first();
 
@@ -286,7 +342,23 @@ async function liveChecks( ctx ) {
 	const c = await measure( page, CONTROL );
 	rep.control( 'marquee-range', { selector: CONTROL, property: 'the trust bar with no marquee runs', measured: { on: c.on, clones: c.clones, speed: c.speed }, expected: 'never runs', red: ! c.on && 0 === c.clones } );
 	rep.control( 'marquee-fade', { selector: CONTROL, property: 'the fade judge on the control bar', measured: c.mask, expected: 'rejected', red: ! judgeFade( c.mask, 5 ) } );
+
+	// A titled bar: the title is not in the lane, no badge is painted over it, and the edge fade belongs to the lane.
+	await bringIntoView( page, TITLED );
+	const tr = await titledReading( page );
+	const last = tr[ tr.length - 1 ];
+	rep.check( 'marquee-title', { selector: TITLED, property: 'badge boxes (cut to the lane) against the title box over six samples', measured: { on: last.on, clips: last.clips, laneIsRoot: last.laneIsRoot, laneHoldsTitle: last.laneHoldsTitle, title: last.title.map( Math.round ), lane: last.lane && last.lane.map( Math.round ) }, expected: 'a clipping lane of its own; no badge area under the title', pass: last.on && judgeTitle( tr ) } );
+	rep.check( 'marquee-title-fade', { selector: TITLED, property: 'mask-image on the block root and on the lane', measured: { root: last.rootMask, lane: last.laneMask }, expected: `no mask on the root; transparent at both ends of the lane over ${ TITLED_FADE }%`, pass: ! /gradient/.test( last.rootMask ) && judgeFade( last.laneMask, TITLED_FADE ) } );
+	rep.control( 'marquee-title', { selector: TITLED, property: 'the same judge on the unclipped badge boxes', measured: { overlapPx2: Math.round( Math.max( ...tr.flatMap( ( s ) => s.badges.map( ( b ) => overlap( s.title, b ) ) ) ) ) }, expected: 'rejected (the strip does travel under the title)', red: ! judgeTitle( tr.map( ( s ) => ( { ...s, clips: false } ) ) ) } );
+	rep.control( 'marquee-title-fade', { selector: TITLED, property: 'the fade judge on the block root', measured: last.rootMask, expected: 'rejected', red: ! judgeFade( last.rootMask, TITLED_FADE ) } );
 	await live.close();
+
+	const unclipped = await open( ctx );
+	await unclipped.page.addStyleTag( { content: '.sgs-trust-bar__lane{overflow:visible !important}' } );
+	await bringIntoView( unclipped.page, TITLED );
+	const ur = await titledReading( unclipped.page );
+	await unclipped.close();
+	rep.control( 'marquee-title', { selector: TITLED, property: 'the lane planted with overflow: visible (read back from the computed style)', measured: { clips: ur[ ur.length - 1 ].clips }, expected: 'the check fails', red: false === ur[ ur.length - 1 ].clips && ! judgeTitle( ur ) } );
 
 	const forced = await open( ctx );
 	await forced.page.addStyleTag( { content: '[data-sgs-marquee-lane="on"] > *{translate:none !important}' } );
@@ -361,6 +433,12 @@ function selfTest() {
 	need( 'fade', judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 5%, rgb(0, 0, 0) calc(95%), transparent 100%)', 5 ) && ! judgeFade( 'none', 5 ) );
 	need( 'fade is numeric', ! judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 15%, rgb(0, 0, 0) 85%, transparent 100%)', 5 ) && ! judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 12%, rgb(0, 0, 0) 88%, transparent 100%)', 5 ) );
 	need( 'range', shouldRun( DRAFTS[ '.m515-loop24' ], 768 ) && ! shouldRun( DRAFTS[ '.m515-loop24' ], 1440 ) && ! shouldRun( DRAFTS[ '.m515-ticker' ], 768 ) );
+	const sample = ( over ) => ( { laneIsRoot: false, laneHoldsTitle: false, clips: true, lane: [ 200, 0, 1000, 80 ], title: [ 0, 0, 180, 40 ], badges: [ [ 100, 0, 260, 60 ], [ 300, 0, 460, 60 ] ], ...over } );
+	need( 'overlap', 0 === overlap( [ 0, 0, 10, 10 ], [ 10, 0, 20, 10 ] ) && 25 === overlap( [ 0, 0, 10, 10 ], [ 5, 5, 20, 20 ] ) );
+	need( 'title clipped passes', judgeTitle( [ sample() ] ) );
+	need( 'title unclipped fails', ! judgeTitle( [ sample( { clips: false } ) ] ) );
+	need( 'title lane is the root fails', ! judgeTitle( [ sample( { laneIsRoot: true } ) ] ) && ! judgeTitle( [ sample( { laneHoldsTitle: true } ) ] ) );
+	need( 'title no lane or samples fails', ! judgeTitle( [ sample( { lane: null } ) ] ) && ! judgeTitle( [] ) );
 	console.log( JSON.stringify( { selfTest: true, failures } ) );
 	return failures.length ? 1 : 0;
 }
@@ -384,7 +462,7 @@ async function main() {
 			const rep = new Reporter( { engine, width, site: args.site } );
 			const ctx = { browser, width, url, rep };
 			const probe = await open( ctx );
-			const missing = await probe.page.evaluate( ( sels ) => sels.filter( ( s ) => ! document.querySelector( s ) ), [ ...Object.keys( DRAFTS ), CONTROL ] );
+			const missing = await probe.page.evaluate( ( sels ) => sels.filter( ( s ) => ! document.querySelector( s ) ), [ ...Object.keys( DRAFTS ), CONTROL, TITLED ] );
 			await probe.close();
 			if ( missing.length ) {
 				rep.check( 'marquee-fixture', { selector: url, measured: missing, expected: 'every marker present', pass: null, why: `markers missing from page ${ pageId }: ${ missing.join( ', ' ) }` } );

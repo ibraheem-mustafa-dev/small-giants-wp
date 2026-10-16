@@ -433,7 +433,7 @@
 											"duration": 30000,
 											"hoverRate": 0,
 											"belowBreakpoint": "mobile",
-											"pauseControl": true
+											"pauseControl": false
 										}
 									}
 								]
@@ -501,6 +501,103 @@
 							"label": "Free UK delivery over £35"
 						}
 					]
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-titled-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Titled trust bar: the title stays outside the moving strip",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/trust-bar",
+				"attributes": {
+					"className": "m515-titled",
+					"title": "Accredited by",
+					"items": [
+						{
+							"icon": "check",
+							"label": "Baked fresh when you order"
+						},
+						{
+							"icon": "check",
+							"label": "Handmade in Birmingham"
+						},
+						{
+							"icon": "check",
+							"label": "Registered food business"
+						},
+						{
+							"icon": "check",
+							"label": "Free UK delivery over £35"
+						},
+						{
+							"icon": "check",
+							"label": "Allergen information on every box"
+						},
+						{
+							"icon": "check",
+							"label": "Five-star hygiene rating"
+						},
+						{
+							"icon": "check",
+							"label": "Family run since 2019"
+						},
+						{
+							"icon": "check",
+							"label": "Gift boxes made to order"
+						}
+					],
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "mqt",
+										"effect": "marquee",
+										"values": {
+											"speed": 60,
+											"edgeFade": true,
+											"edgeFadeWidth": 8,
+											"pauseControl": true
+										}
+									}
+								]
+							}
+						}
+					}
 				}
 			}
 		]

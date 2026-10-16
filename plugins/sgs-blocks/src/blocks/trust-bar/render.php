@@ -739,9 +739,15 @@ foreach ( $items as $tb_item_index => $item ) {
 
 // --- Marquee track wrapper ----------------------------------------------------
 // The shared marquee runtime clones the `data-sgs-marquee-set` element and moves every copy.
-$badges_html = $tb_marquee_track
+// A titled bar prints the set inside its own lane (`.sgs-trust-bar__lane`), so the lane clips the moving copies and the
+// title, a sibling of the lane, stays outside the strip instead of the badges sliding under it. An untitled bar prints
+// the set straight inside the root, as before.
+$tb_track_html = $tb_marquee_track
 	? '<div class="sgs-trust-bar__track" data-sgs-marquee-set>' . $items_html . '</div>'
 	: $items_html;
+$badges_html   = ( $tb_marquee_track && '' !== $title_html )
+	? '<div class="sgs-trust-bar__lane">' . $tb_track_html . '</div>'
+	: $tb_track_html;
 
 // --- Scoped typography <style> ------------------------------------------------
 // Label selector covers both variants:
