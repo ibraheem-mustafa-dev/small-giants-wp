@@ -42,7 +42,7 @@ Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/spe
 | Hover rotate and translate (FR-38A-42) | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-per-device.mjs --fixture tilted-cards` | each card at its own rest angle, straightening on hover; polaroid frame matches | PENDING |
 | Bean's inspector sign-off (Gate 5) | Bean sets a hover lift, a part entrance and a grid stagger on a canary card | done without help | PENDING |
 
-## M4 — Stagger and nav motion (PENDING)
+## M4 — Stagger and nav motion (PARTLY: the Indus drawer's 140ms start and the swept Eye Care drawer land with M6.5)
 
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
