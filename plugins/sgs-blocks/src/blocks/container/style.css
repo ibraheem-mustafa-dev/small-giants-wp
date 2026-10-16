@@ -279,6 +279,16 @@
 .sgs-container--ken-burns {
 	animation: sgs-container-ken-burns var(--sgs-ken-burns-duration, 20s) ease-in-out infinite alternate;
 	background-size: 110% !important; /* start slightly zoomed so the zoom has room */
+	/* The same zoom as the container's base animation (motion.css), so an entrance on the container plays over it
+	   and the zoom runs on underneath and after it. */
+	--sgs-base-animation-name: sgs-container-ken-burns;
+	--sgs-base-animation-duration: var(--sgs-ken-burns-duration, 20s);
+	--sgs-base-animation-timing-function: ease-in-out;
+	--sgs-base-animation-delay: 0s;
+	--sgs-base-animation-iteration-count: infinite;
+	--sgs-base-animation-direction: alternate;
+	--sgs-base-animation-fill-mode: none;
+	--sgs-base-animation-timeline: auto;
 }
 
 @keyframes sgs-container-ken-burns {

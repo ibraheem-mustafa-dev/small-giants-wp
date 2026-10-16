@@ -178,9 +178,9 @@
 		--sgs-mt-c-opacity: none;
 		--sgs-mt-c-filter: none;
 		--sgs-mt-c-clip-path: none;
-		--sgs-mt-in: var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-transform), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
-		--sgs-mt-out: var(--sgs-mt-c-translate), var(--sgs-mt-c-rotate), var(--sgs-mt-c-transform), var(--sgs-mt-c-scale), var(--sgs-mt-c-opacity), var(--sgs-mt-c-filter), var(--sgs-mt-c-clip-path);
-		animation-fill-mode: both;
+		--sgs-mt-in: var(--sgs-me-a-list-name);
+		--sgs-mt-out: var(--sgs-base-animation-name, none), var(--sgs-mt-c-translate), var(--sgs-mt-c-rotate), var(--sgs-mt-c-transform), var(--sgs-mt-c-scale), var(--sgs-mt-c-opacity), var(--sgs-mt-c-filter), var(--sgs-mt-c-clip-path);
+		--sgs-me-a-fill: both;
 	}
 	[data-sgs-me~="open"][data-sgs-me~="translate"] { --sgs-mt-c-translate: sgs-me-close-translate; }
 	[data-sgs-me~="open"][data-sgs-me~="rotate"] { --sgs-mt-c-rotate: sgs-me-close-rotate; }
@@ -199,14 +199,42 @@
 	   WAAPI module, as in motion.css. */
 	[data-sgs-me~="open"]:not([data-sgs-me-keyframes]):is([data-sgs-motion-state~="open"], [data-sgs-motion-state~="open"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]) *) {
 		animation-name: var(--sgs-mt-in, none);
+		animation-duration: var(--sgs-me-a-list-duration);
+		animation-timing-function: var(--sgs-me-a-list-timing-function);
+		animation-delay: var(--sgs-me-a-list-delay);
+		animation-iteration-count: var(--sgs-me-a-list-iteration-count);
+		animation-direction: var(--sgs-me-a-list-direction);
+		animation-fill-mode: var(--sgs-me-a-list-fill-mode);
+		animation-timeline: var(--sgs-me-a-list-timeline);
 	}
 
 	/* Close: inside (or on) a closing host, and inside no host that is neither open nor closing. */
 	[data-sgs-me~="open"]:not([data-sgs-me-keyframes]):is([data-sgs-motion-state~="close"], [data-sgs-motion-state~="close"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]), [data-sgs-motion-state]:not([data-sgs-motion-state~="open"]):not([data-sgs-motion-state~="close"]) *) {
+		--sgs-me-a-dur: var(--sgs-me-close-dur, var(--sgs-me-dur, var(--wp--custom--duration--slow, 450ms)));
+		--sgs-me-a-ease: var(--sgs-me-close-ease, var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out)));
+		--sgs-me-a-delay: var(--sgs-me-close-delay, var(--sgs-me-loop-close-delay, 0ms));
 		animation-name: var(--sgs-mt-out, none);
-		animation-duration: var(--sgs-me-close-dur, var(--sgs-me-dur, var(--wp--custom--duration--slow, 450ms)));
-		animation-timing-function: var(--sgs-me-close-ease, var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out)));
-		animation-delay: var(--sgs-me-close-delay, var(--sgs-me-loop-close-delay, 0ms));
+		animation-duration: var(--sgs-me-a-list-duration);
+		animation-timing-function: var(--sgs-me-a-list-timing-function);
+		animation-delay: var(--sgs-me-a-list-delay);
+		animation-iteration-count: var(--sgs-me-a-list-iteration-count);
+		animation-direction: var(--sgs-me-a-list-direction);
+		animation-fill-mode: var(--sgs-me-a-list-fill-mode);
+		animation-timeline: var(--sgs-me-a-list-timeline);
+	}
+
+	/* State: the per-instance rule (Sgs_Motion_Trigger_Open_State, and the canvas twin) writes only the animation name
+	   while its named state is on; the longhands sit here, under any state host, so the entrance's own timing wins over
+	   any class the element carries. Outside its named state the name list is the base animation alone, and these
+	   lists start with the base animation's own positions, so it runs unchanged. */
+	[data-sgs-me~="state"]:not([data-sgs-me-keyframes]):is([data-sgs-motion-state], [data-sgs-motion-state] *) {
+		animation-duration: var(--sgs-me-a-list-duration);
+		animation-timing-function: var(--sgs-me-a-list-timing-function);
+		animation-delay: var(--sgs-me-a-list-delay);
+		animation-iteration-count: var(--sgs-me-a-list-iteration-count);
+		animation-direction: var(--sgs-me-a-list-direction);
+		animation-fill-mode: var(--sgs-me-a-list-fill-mode);
+		animation-timeline: var(--sgs-me-a-list-timeline);
 	}
 }
 

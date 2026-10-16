@@ -187,16 +187,34 @@
  * If a THIRD atom ever needs `.sgs-media-el` animation, extend this rule
  * with a third comma-separated position — do not give it its own bare
  * `animation-*` declaration elsewhere.
+ *
+ * The composed lists are written once, as the element's base animation
+ * (`--sgs-base-animation-*`, registered in `motion.css`), and the real
+ * longhands read them. A Spec 38A entrance on the same element (a product
+ * card image with a scroll Fade up, say) plays through its own rule, which
+ * puts these lists first and its channels after them: the entrance keeps its
+ * own duration, one iteration and normal direction, wins any property both
+ * animate while it plays, and the loop runs on underneath it and after it,
+ * never restarted. Each list holds exactly two positions; a new position
+ * goes into every list, the timeline included (`motion.css` partial).
  */
 
 @media ( prefers-reduced-motion: no-preference ) {
 	.sgs-media-el {
-		animation-name: var( --sgs-media-svg-animation-name, none ), var( --sgs-media-motion-animation-name, none );
-		animation-duration: var( --sgs-media-svg-animation-duration, 0s ), var( --sgs-media-motion-animation-duration, 20s );
-		animation-timing-function: var( --sgs-media-svg-animation-timing-function, ease-in-out ), var( --sgs-media-motion-animation-timing-function, ease-in-out );
-		animation-iteration-count: var( --sgs-media-svg-animation-iteration-count, infinite ), var( --sgs-media-motion-animation-iteration-count, infinite );
-		animation-direction: var( --sgs-media-svg-animation-direction, alternate ), var( --sgs-media-motion-animation-direction, alternate );
-		animation-fill-mode: none, var( --sgs-media-motion-animation-fill-mode, none );
+		--sgs-base-animation-name: var( --sgs-media-svg-animation-name, none ), var( --sgs-media-motion-animation-name, none );
+		--sgs-base-animation-duration: var( --sgs-media-svg-animation-duration, 0s ), var( --sgs-media-motion-animation-duration, 20s );
+		--sgs-base-animation-timing-function: var( --sgs-media-svg-animation-timing-function, ease-in-out ), var( --sgs-media-motion-animation-timing-function, ease-in-out );
+		--sgs-base-animation-delay: 0s, 0s;
+		--sgs-base-animation-iteration-count: var( --sgs-media-svg-animation-iteration-count, infinite ), var( --sgs-media-motion-animation-iteration-count, infinite );
+		--sgs-base-animation-direction: var( --sgs-media-svg-animation-direction, alternate ), var( --sgs-media-motion-animation-direction, alternate );
+		--sgs-base-animation-fill-mode: none, var( --sgs-media-motion-animation-fill-mode, none );
+		--sgs-base-animation-timeline: auto, auto;
+		animation-name: var( --sgs-base-animation-name );
+		animation-duration: var( --sgs-base-animation-duration );
+		animation-timing-function: var( --sgs-base-animation-timing-function );
+		animation-iteration-count: var( --sgs-base-animation-iteration-count );
+		animation-direction: var( --sgs-base-animation-direction );
+		animation-fill-mode: var( --sgs-base-animation-fill-mode );
 	}
 }
 
@@ -752,7 +770,8 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 
 	@supports ( animation-timeline: scroll() ) {
 		.sgs-media-el {
-			animation-timeline: var( --sgs-media-motion-animation-timeline, auto );
+			--sgs-base-animation-timeline: var( --sgs-media-motion-animation-timeline, auto ), var( --sgs-media-motion-animation-timeline, auto );
+			animation-timeline: var( --sgs-base-animation-timeline );
 		}
 
 		@keyframes sgs-media-motion-parallax {

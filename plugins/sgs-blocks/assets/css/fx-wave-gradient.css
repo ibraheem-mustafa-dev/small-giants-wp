@@ -254,6 +254,16 @@
 	);
 	background-size: 190% 100%;
 	animation: sgs-wave-pastel-base 26s ease-in-out infinite;
+	/* The same drift as the host's base animation (motion.css), so an entrance on the host plays over it and the
+	   drift runs on underneath and after it. */
+	--sgs-base-animation-name: sgs-wave-pastel-base;
+	--sgs-base-animation-duration: 26s;
+	--sgs-base-animation-timing-function: ease-in-out;
+	--sgs-base-animation-delay: 0s;
+	--sgs-base-animation-iteration-count: infinite;
+	--sgs-base-animation-direction: normal;
+	--sgs-base-animation-fill-mode: none;
+	--sgs-base-animation-timeline: auto;
 }
 
 [data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::before {
@@ -571,6 +581,7 @@
 	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-mobile~="wave-gradient"].sgs-wave-gradient--pastel,
 	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile].sgs-wave-gradient--pastel {
 		animation-name: none;
+		--sgs-base-animation-name: none;
 	}
 }
 @media (min-width: 768px) and (max-width: 1023.98px) {
@@ -594,5 +605,6 @@
 	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-tablet~="wave-gradient"].sgs-wave-gradient--pastel,
 	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet].sgs-wave-gradient--pastel {
 		animation-name: none;
+		--sgs-base-animation-name: none;
 	}
 }

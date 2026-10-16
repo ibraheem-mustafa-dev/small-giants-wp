@@ -826,9 +826,10 @@
 
 	/* The same for an item on the Entrance model: an `open` entrance holds its
 	   to-values (motion-triggers.css), and a held `translate` makes the item the
-	   drill panel's containing block, so in drill mode it fills backwards only. */
+	   drill panel's containing block, so in drill mode it fills backwards only.
+	   The entrance's per-channel fill (motion.css) is what its playing rule reads. */
 	.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item[data-sgs-me~="open"] {
-		animation-fill-mode: backwards;
+		--sgs-me-a-fill: backwards;
 	}
 
 	.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:not([data-sgs-me]) {

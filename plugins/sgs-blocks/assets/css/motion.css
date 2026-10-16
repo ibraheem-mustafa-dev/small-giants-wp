@@ -158,6 +158,21 @@
 @property --sgs-mh-to-accent-c { syntax: '*'; inherits: false; }
 @property --sgs-pad-start-rest { syntax: '*'; inherits: false; }
 
+/* ── The base animation (§9 entrance rule): an element's own looping animation, written by whatever owns it (the media
+   atom's composed ken burns or svg presentation in media-element.css, the wave-gradient drift, the container ken
+   burns) as one comma list per longhand, every list the same length. A playing entrance puts these lists first and
+   its own channels after them, so the loop keeps running under the entrance and after it, and the entrance wins any
+   property both animate while it plays. Per element, never inherited, so a child entrance never replays its parent's
+   loop. ── */
+@property --sgs-base-animation-name { syntax: '*'; inherits: false; }
+@property --sgs-base-animation-duration { syntax: '*'; inherits: false; }
+@property --sgs-base-animation-timing-function { syntax: '*'; inherits: false; }
+@property --sgs-base-animation-delay { syntax: '*'; inherits: false; }
+@property --sgs-base-animation-iteration-count { syntax: '*'; inherits: false; }
+@property --sgs-base-animation-direction { syntax: '*'; inherits: false; }
+@property --sgs-base-animation-fill-mode { syntax: '*'; inherits: false; }
+@property --sgs-base-animation-timeline { syntax: '*'; inherits: false; }
+
 /* ── Persistent channels (§10): declared only where a non-entrance owner writes that channel, so an element
    with nothing but an entrance never holds a transform, a filter or a containing block. ── */
 [data-sgs-mc~="translate"] {
@@ -326,6 +341,12 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+	/* The entrance's timing lives in custom properties, never in a bare animation longhand: a bare longhand here ties
+	   with any class the element also carries (`.sgs-media-el` is 0,1,0 too), so the stylesheet printed last would
+	   decide the entrance's duration, iteration count and direction. Every rule that plays an entrance (the playing
+	   rule below, motion-triggers.css's open, close and state rules) writes all eight longhands from the
+	   --sgs-me-a-list-* lists: the base animation's positions first, then one position per channel. --sgs-me-a-dur,
+	   -ease, -delay and -fill are the per-channel values a trigger or a block overrides. */
 	[data-sgs-me] {
 		--sgs-me-a-translate: none;
 		--sgs-me-a-rotate: none;
@@ -334,14 +355,22 @@
 		--sgs-me-a-opacity: none;
 		--sgs-me-a-filter: none;
 		--sgs-me-a-clip-path: none;
-		animation-duration: var(--sgs-me-dur, var(--wp--custom--entrance--duration, 750ms));
-		animation-timing-function: var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out));
-		animation-delay: var(--sgs-me-delay, var(--sgs-me-loop-delay, 0ms));
-		animation-fill-mode: backwards;
+		--sgs-me-a-dur: var(--sgs-me-dur, var(--wp--custom--entrance--duration, 750ms));
+		--sgs-me-a-ease: var(--sgs-me-ease, var(--wp--custom--entrance--easing, ease-out));
+		--sgs-me-a-delay: var(--sgs-me-delay, var(--sgs-me-loop-delay, 0ms));
+		--sgs-me-a-fill: backwards;
+		--sgs-me-a-list-name: var(--sgs-base-animation-name, none), var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-transform), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
+		--sgs-me-a-list-duration: var(--sgs-base-animation-duration, 0s), var(--sgs-me-a-dur), var(--sgs-me-a-dur), var(--sgs-me-a-dur), var(--sgs-me-a-dur), var(--sgs-me-a-dur), var(--sgs-me-a-dur), var(--sgs-me-a-dur);
+		--sgs-me-a-list-timing-function: var(--sgs-base-animation-timing-function, ease), var(--sgs-me-a-ease), var(--sgs-me-a-ease), var(--sgs-me-a-ease), var(--sgs-me-a-ease), var(--sgs-me-a-ease), var(--sgs-me-a-ease), var(--sgs-me-a-ease);
+		--sgs-me-a-list-delay: var(--sgs-base-animation-delay, 0s), var(--sgs-me-a-delay), var(--sgs-me-a-delay), var(--sgs-me-a-delay), var(--sgs-me-a-delay), var(--sgs-me-a-delay), var(--sgs-me-a-delay), var(--sgs-me-a-delay);
+		--sgs-me-a-list-iteration-count: var(--sgs-base-animation-iteration-count, 1), 1, 1, 1, 1, 1, 1, 1;
+		--sgs-me-a-list-direction: var(--sgs-base-animation-direction, normal), normal, normal, normal, normal, normal, normal, normal;
+		--sgs-me-a-list-fill-mode: var(--sgs-base-animation-fill-mode, none), var(--sgs-me-a-fill), var(--sgs-me-a-fill), var(--sgs-me-a-fill), var(--sgs-me-a-fill), var(--sgs-me-a-fill), var(--sgs-me-a-fill), var(--sgs-me-a-fill);
+		--sgs-me-a-list-timeline: var(--sgs-base-animation-timeline, auto), auto, auto, auto, auto, auto, auto, auto;
 	}
 	/* A disclosure panel's entrance defaults to the panel open-and-close duration (§7). */
 	[data-sgs-me~="open"] {
-		animation-duration: var(--sgs-me-dur, var(--wp--custom--duration--slow, 450ms));
+		--sgs-me-a-dur: var(--sgs-me-dur, var(--wp--custom--duration--slow, 450ms));
 	}
 	[data-sgs-me~="translate"] { --sgs-me-a-translate: sgs-me-translate; }
 	[data-sgs-me~="rotate"] { --sgs-me-a-rotate: sgs-me-rotate; }
@@ -353,7 +382,14 @@
 
 	/* A multi-keyframe entrance is played by the WAAPI module (motion-keyframes.js), never by these two-state rules. */
 	[data-sgs-me]:not([data-sgs-me-keyframes]):is([data-sgs-me~="load"], [data-sgs-in]) {
-		animation-name: var(--sgs-me-a-translate), var(--sgs-me-a-rotate), var(--sgs-me-a-transform), var(--sgs-me-a-scale), var(--sgs-me-a-opacity), var(--sgs-me-a-filter), var(--sgs-me-a-clip-path);
+		animation-name: var(--sgs-me-a-list-name);
+		animation-duration: var(--sgs-me-a-list-duration);
+		animation-timing-function: var(--sgs-me-a-list-timing-function);
+		animation-delay: var(--sgs-me-a-list-delay);
+		animation-iteration-count: var(--sgs-me-a-list-iteration-count);
+		animation-direction: var(--sgs-me-a-list-direction);
+		animation-fill-mode: var(--sgs-me-a-list-fill-mode);
+		animation-timeline: var(--sgs-me-a-list-timeline);
 	}
 
 	/* The hidden start state: only under the reveal module's class, only before the element is in view. */

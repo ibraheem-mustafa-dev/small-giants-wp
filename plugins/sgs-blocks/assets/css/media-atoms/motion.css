@@ -82,7 +82,8 @@
 
 	@supports ( animation-timeline: scroll() ) {
 		.sgs-media-el {
-			animation-timeline: var( --sgs-media-motion-animation-timeline, auto );
+			--sgs-base-animation-timeline: var( --sgs-media-motion-animation-timeline, auto ), var( --sgs-media-motion-animation-timeline, auto );
+			animation-timeline: var( --sgs-base-animation-timeline );
 		}
 
 		@keyframes sgs-media-motion-parallax {
