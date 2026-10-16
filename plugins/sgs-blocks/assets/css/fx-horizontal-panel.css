@@ -218,10 +218,10 @@
 	--sgs-fx-active: 1;
 }
 
-/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the element returns to the native swipeable row, the default state of this file. .sgs-js plus the two attributes is (0,3,0), equal to the .sgs-js overflow-x: clip rules above, and this block is later. The below-mode static stack rules stay stronger, so a tier configured to stack still stacks. */
+/* Per-device off switch (Spec 38A FR-38A-23). When this effect is off at the current tier (data-sgs-fx-off-<tier> names it, or data-sgs-fx-disable-<tier> turns every effect off), the element returns to the native swipeable row, the default state of this file. .sgs-js plus the two attributes is (0,3,0), equal to the .sgs-js overflow-x: clip rules above, and this block is later. The mobile gate excludes an element whose below-mode is static, so a tier configured to stack still stacks. */
 @media (max-width: 767.98px) {
-	.sgs-js [data-sgs-fx~="horizontal-panel"][data-sgs-fx-off-mobile~="horizontal-panel"],
-	.sgs-js [data-sgs-fx~="horizontal-panel"][data-sgs-fx-disable-mobile] {
+	.sgs-js [data-sgs-fx~="horizontal-panel"][data-sgs-fx-off-mobile~="horizontal-panel"]:not( [data-sgs-fx-horizontal-panel-below-mode="static"]:not( [data-sgs-fx-horizontal-panel-breakpoint="mobile"] ) ),
+	.sgs-js [data-sgs-fx~="horizontal-panel"][data-sgs-fx-disable-mobile]:not( [data-sgs-fx-horizontal-panel-below-mode="static"]:not( [data-sgs-fx-horizontal-panel-breakpoint="mobile"] ) ) {
 		overflow-x: auto;
 		overflow-y: hidden;
 		scroll-snap-type: x mandatory;

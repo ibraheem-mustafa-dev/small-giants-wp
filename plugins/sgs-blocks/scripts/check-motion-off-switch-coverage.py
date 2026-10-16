@@ -97,7 +97,8 @@ def strip_css_comments(text: str) -> str:
 
 def guard_regex(helper_names) -> re.Pattern:
     parts = [re.escape(lit) for lit in GUARD_LITERALS]
-    parts += [r'\b' + re.escape(name) + r'\b' for name in helper_names if name]
+    # A helper counts only where it is called: an import line alone proves nothing.
+    parts += [r'\b' + re.escape(name) + r'\s*\(' for name in helper_names if name]
     return re.compile('|'.join(parts))
 
 
@@ -214,6 +215,9 @@ def scan(root: Path, helper_names=HELPER_NAMES) -> dict:
         slug = file.stem[len('fx-'):]
         stripped = strip_css_comments(read_text(file))
         hit = first_hit(stripped, re.compile(r'data-sgs-fx-(?:off|disable)-'))
+        # Both tiers must be gated: a stylesheet that mentions only mobile (or only tablet) leaves the other tier running.
+        both = all(re.search(r'data-sgs-fx-(?:off|disable)-' + tier, stripped) for tier in ('mobile', 'tablet'))
+        hit = hit if both else None
         keyed = len(re.findall(r'\[data-sgs-fx~="%s"\]' % re.escape(slug), stripped))
         rows.append({'kind': 'css', 'slug': slug, 'file': rel(root, file), 'keyed_selectors': keyed,
                      'class': 'GUARDED' if hit else 'UNGUARDED',
@@ -335,7 +339,8 @@ def self_test() -> int:
         write(root / 'src/shared/nav-interactivity/store.js', "export const s = 1;\n")
         write(root / 'assets/css/fx-badcss.css', '[data-sgs-fx~="badcss"] { opacity: 1; }\n')
         write(root / 'assets/css/fx-goodcss.css',
-              '/* note */\n[data-sgs-fx~="goodcss"]:not([data-sgs-fx-off-tablet~="goodcss"]) { opacity: 1; }\n')
+              '/* note */\n[data-sgs-fx~="goodcss"]:not([data-sgs-fx-off-tablet~="goodcss"], [data-sgs-fx-off-mobile~="goodcss"]) { opacity: 1; }\n')
+        write(root / 'assets/css/fx-halfcss.css', '[data-sgs-fx~="halfcss"]:not([data-sgs-fx-off-tablet~="halfcss"]) { opacity: 1; }\n')
 
         print('self-test: first tree (unguarded runtime, comment-only mention, unguarded stylesheet)')
         result = scan(root)
@@ -346,6 +351,7 @@ def self_test() -> int:
         expect('Tier G module calling bootEffect is GUARDED', by[('js', 'tierg')] == 'GUARDED')
         expect('unguarded stylesheet is UNGUARDED', by[('css', 'badcss')] == 'UNGUARDED')
         expect('guarded stylesheet is GUARDED', by[('css', 'goodcss')] == 'GUARDED')
+        expect('a stylesheet gating only one tier is UNGUARDED', by[('css', 'halfcss')] == 'UNGUARDED')
         excluded = {e['file'] for e in result['excluded']}
         counted = {r['file'] for r in result['rows']}
         for name in ('src/shared/effects/particles-engine.js', 'src/shared/effects/nav-drilldown.js',
@@ -358,7 +364,8 @@ def self_test() -> int:
         print('self-test: second tree (every effect guarded; excluded files remain unguarded)')
         write(fx / 'fx-bad.js', "if (isDisabledAtThisTier(el, 'bad')) return;\n")
         write(fx / 'fx-note.js', "const off = el.getAttribute('data-sgs-fx-off-mobile');\n")
-        write(root / 'assets/css/fx-badcss.css', '[data-sgs-fx~="badcss"]:not([data-sgs-fx-disable-mobile]) { opacity: 1; }\n')
+        write(root / 'assets/css/fx-badcss.css', '[data-sgs-fx~="badcss"]:not([data-sgs-fx-disable-mobile], [data-sgs-fx-disable-tablet]) { opacity: 1; }\n')
+        write(root / 'assets/css/fx-halfcss.css', '[data-sgs-fx~="halfcss"]:not([data-sgs-fx-off-tablet~="halfcss"], [data-sgs-fx-off-mobile~="halfcss"]) { opacity: 1; }\n')
         expect('--check exits 0 on the green tree', run(root, ['--check']) == 0)
         green = scan(root)
         expect('green tree has zero UNGUARDED while excluded files still carry no guard',
@@ -373,6 +380,9 @@ def self_test() -> int:
         write(fx / 'fx-bad.js', "export function boot() { stop = bootGated('bad', SELECTOR, init); }\n")
         gated = {r['slug']: r['class'] for r in scan(root)['rows'] if r['kind'] == 'js'}
         expect('a runtime calling only bootGated is GUARDED by the default HELPER_NAMES', gated['bad'] == 'GUARDED')
+        write(fx / 'fx-bad.js', "import { bootGated } from './off-switch';\nexport function boot() { for (const el of els) init(el); }\n")
+        imported = {r['slug']: r['class'] for r in scan(root)['rows'] if r['kind'] == 'js'}
+        expect('an import of the helper with no call stays UNGUARDED', imported['bad'] == 'UNGUARDED')
         write(fx / 'fx-bad.js', "export function boot() { stop = bootGatedLater('bad', SELECTOR, init); }\n")
         prefix = {r['slug']: r['class'] for r in scan(root)['rows'] if r['kind'] == 'js'}
         expect('a longer name that only starts with bootGated stays UNGUARDED', prefix['bad'] == 'UNGUARDED')

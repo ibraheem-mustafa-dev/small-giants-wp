@@ -201,11 +201,11 @@ function currentTier() {
 	if ( typeof window.matchMedia !== 'function' ) {
 		return null;
 	}
-	if ( window.matchMedia( '(max-width: 767px)' ).matches ) {
+	if ( window.matchMedia( '(max-width: 767.98px)' ).matches ) {
 		return 'mobile';
 	}
 	if (
-		window.matchMedia( '(min-width: 768px) and (max-width: 1023px)' )
+		window.matchMedia( '(min-width: 768px) and (max-width: 1023.98px)' )
 			.matches
 	) {
 		return 'tablet';
@@ -314,8 +314,8 @@ export function bootEffect( effect, init ) {
 	// matchMedia, or a returned object without addEventListener, gets no
 	// listener: the boot-time decision then stands.
 	const tierQueries = [
-		'(max-width: 767px)',
-		'(min-width: 768px) and (max-width: 1023px)',
+		'(max-width: 767.98px)',
+		'(min-width: 768px) and (max-width: 1023.98px)',
 	];
 	const queries =
 		typeof window.matchMedia === 'function'

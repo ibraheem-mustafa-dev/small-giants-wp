@@ -39,8 +39,8 @@ function queryMatches( query, at ) {
 	if ( query.includes( 'reduced-motion' ) ) {
 		return false;
 	}
-	const max = /max-width:\s*(\d+)px/.exec( query );
-	const min = /min-width:\s*(\d+)px/.exec( query );
+	const max = /max-width:\s*([\d.]+)px/.exec( query );
+	const min = /min-width:\s*([\d.]+)px/.exec( query );
 	return (
 		( ! max || at <= Number( max[ 1 ] ) ) &&
 		( ! min || at >= Number( min[ 1 ] ) )

@@ -22,10 +22,14 @@
  * @package
  */
 
-/** The device-tier queries: mobile <=767, tablet 768-1023, desktop >=1024. Never design breakpoints. */
+/**
+ * The device-tier queries: mobile <=767, tablet 768-1023, desktop >=1024. Never design breakpoints. The fractional edges
+ * match the stylesheet gates (`@media ( max-width: 767.98px )`), so a fractional viewport width reads as the same tier in
+ * script and in CSS.
+ */
 export const TIER_QUERIES = {
-	mobile: '(max-width: 767px)',
-	tablet: '(min-width: 768px) and (max-width: 1023px)',
+	mobile: '(max-width: 767.98px)',
+	tablet: '(min-width: 768px) and (max-width: 1023.98px)',
 };
 
 /**
@@ -95,16 +99,26 @@ export function onTierChange( callback ) {
 		last = tier;
 		callback( tier, previous );
 	};
+	// Safari before 14 only has addListener/removeListener on a media query list.
 	const lists = Object.values( TIER_QUERIES )
 		.map( ( query ) => window.matchMedia( query ) )
 		.filter(
-			( list ) => list && typeof list.addEventListener === 'function'
+			( list ) =>
+				list &&
+				( typeof list.addEventListener === 'function' ||
+					typeof list.addListener === 'function' )
 		);
-	lists.forEach( ( list ) => list.addEventListener( 'change', listener ) );
+	lists.forEach( ( list ) =>
+		typeof list.addEventListener === 'function'
+			? list.addEventListener( 'change', listener )
+			: list.addListener( listener )
+	);
 	return () => {
 		lists.forEach( ( list ) => {
 			if ( typeof list.removeEventListener === 'function' ) {
 				list.removeEventListener( 'change', listener );
+			} else if ( typeof list.removeListener === 'function' ) {
+				list.removeListener( listener );
 			}
 		} );
 	};
@@ -134,8 +148,14 @@ export function bootGated( effect, targets, init ) {
 	} ) );
 
 	const start = ( state ) => {
-		state.running = true;
-		state.cleanup = init( state.el );
+		try {
+			state.cleanup = init( state.el );
+			state.running = true;
+		} catch ( error ) {
+			// One element failing to start leaves it as server-rendered and never blocks the others.
+			state.cleanup = undefined;
+			state.running = false;
+		}
 	};
 	const stop = ( state ) => {
 		const cleanup = state.cleanup;

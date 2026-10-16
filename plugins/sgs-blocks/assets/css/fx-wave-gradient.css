@@ -567,7 +567,10 @@
 	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile] {
 		background-image: none;
 		background-color: transparent;
-		animation: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-mobile~="wave-gradient"].sgs-wave-gradient--pastel,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-mobile].sgs-wave-gradient--pastel {
+		animation-name: none;
 	}
 }
 @media (min-width: 768px) and (max-width: 1023.98px) {
@@ -587,6 +590,9 @@
 	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet] {
 		background-image: none;
 		background-color: transparent;
-		animation: none;
+	}
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-off-tablet~="wave-gradient"].sgs-wave-gradient--pastel,
+	[data-sgs-fx~="wave-gradient"][data-sgs-fx-disable-tablet].sgs-wave-gradient--pastel {
+		animation-name: none;
 	}
 }

@@ -20,8 +20,8 @@ let width = 1440;
 let listeners = [];
 
 function queryMatches( query, at ) {
-	const max = /max-width:\s*(\d+)px/.exec( query );
-	const min = /min-width:\s*(\d+)px/.exec( query );
+	const max = /max-width:\s*([\d.]+)px/.exec( query );
+	const min = /min-width:\s*([\d.]+)px/.exec( query );
 	return (
 		( ! max || at <= Number( max[ 1 ] ) ) &&
 		( ! min || at >= Number( min[ 1 ] ) )
@@ -276,5 +276,63 @@ describe( 'bootGated', () => {
 		} );
 		const { counts } = counted( 'ripple' );
 		expect( counts ).toEqual( { init: 1, cleanup: 0 } );
+	} );
+} );
+
+describe( 'device-tier edges', () => {
+	test.each( [
+		[ 767, 'mobile' ],
+		[ 767.5, 'mobile' ],
+		[ 768, 'tablet' ],
+		[ 1023, 'tablet' ],
+		[ 1023.5, 'tablet' ],
+		[ 1024, 'desktop' ],
+	] )( 'a %spx viewport is %s, the same edges the stylesheet gates use', ( at, tier ) => {
+		installViewport( at );
+		expect( currentTier() ).toBe( tier );
+	} );
+} );
+
+describe( 'bootGated resilience', () => {
+	test( 'one element whose init throws leaves the others started and the tier listener subscribed', () => {
+		installViewport( 1440 );
+		document.body.replaceChildren();
+		const first = document.createElement( 'div' );
+		const second = document.createElement( 'div' );
+		[ first, second ].forEach( ( el ) => {
+			el.setAttribute( 'data-sgs-fx', 'ripple' );
+			document.body.appendChild( el );
+		} );
+		const started = [];
+		const stop = bootGated( 'ripple', [ first, second ], ( el ) => {
+			if ( el === first ) {
+				throw new Error( 'cannot start' );
+			}
+			started.push( el );
+			return () => started.splice( started.indexOf( el ), 1 );
+		} );
+		expect( started ).toEqual( [ second ] );
+		expect( listeners.length ).toBeGreaterThan( 0 );
+		stop();
+		expect( started ).toEqual( [] );
+	} );
+
+	test( 'a media query list with only addListener (Safari before 14) is still watched', () => {
+		let registered = null;
+		window.matchMedia = () => ( {
+			matches: false,
+			addListener: ( fn ) => {
+				registered = fn;
+			},
+			removeListener: ( fn ) => {
+				if ( registered === fn ) {
+					registered = null;
+				}
+			},
+		} );
+		const stop = onTierChange( () => {} );
+		expect( typeof registered ).toBe( 'function' );
+		stop();
+		expect( registered ).toBeNull();
 	} );
 } );

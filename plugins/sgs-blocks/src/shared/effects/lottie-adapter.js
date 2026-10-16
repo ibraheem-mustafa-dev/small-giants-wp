@@ -43,6 +43,10 @@ export async function init( { container, animationData, loop = false, speed = 1 
 		/* webpackChunkName: "lottie-web" */ '@sgs/lottie-web'
 	);
 
+	// lottie-web's destroy() empties the container (`wrapper.innerText = ''`), which would delete the poster the server
+	// rendered inside it; the resting children are put back after every destroy.
+	const resting = Array.from( container.childNodes );
+
 	const player = lottie.loadAnimation( {
 		container,
 		renderer: 'svg',
@@ -73,7 +77,10 @@ export async function init( { container, animationData, loop = false, speed = 1 
 			const total = player.totalFrames || 0;
 			player.goToAndStop( clamp01( progress ) * total, true );
 		},
-		destroy: () => player.destroy(),
+		destroy: () => {
+			player.destroy();
+			container.replaceChildren( ...resting );
+		},
 		getDuration: ( inFrames = false ) => player.getDuration( inFrames ),
 		setSpeed: ( value ) => player.setSpeed( clampSpeed( value ) ),
 		setLoop: ( value ) => {

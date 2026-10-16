@@ -55,8 +55,8 @@ function queryMatches( query, width ) {
 	if ( query.includes( 'prefers-reduced-motion' ) ) {
 		return query.includes( 'no-preference' );
 	}
-	const max = /max-width:\s*(\d+)px/.exec( query );
-	const min = /min-width:\s*(\d+)px/.exec( query );
+	const max = /max-width:\s*([\d.]+)px/.exec( query );
+	const min = /min-width:\s*([\d.]+)px/.exec( query );
 	return (
 		( ! max || width <= Number( max[ 1 ] ) ) &&
 		( ! min || width >= Number( min[ 1 ] ) )

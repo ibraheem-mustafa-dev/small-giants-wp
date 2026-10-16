@@ -1663,5 +1663,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 186
+  },
+  {
+    "id": "check-fx-off-switch-css",
+    "cmd": "node tests/playwright/fx-off-switch-css.check.mjs",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 90000,
+    "order": 187
   }
 ]

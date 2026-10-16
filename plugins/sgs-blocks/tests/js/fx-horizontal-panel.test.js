@@ -231,7 +231,7 @@ describe( 'per-device parameters', () => {
 
 	/** Whether every `(min-width: Npx)` / `(max-width: Npx)` clause of a query holds at the current width. */
 	const matches = ( query ) =>
-		[ ...query.matchAll( /\((min|max)-width:\s*(\d+)px\)/g ) ].every(
+		[ ...query.matchAll( /\((min|max)-width:\s*([\d.]+)px\)/g ) ].every(
 			( [ , side, px ] ) =>
 				'min' === side ? width >= Number( px ) : width <= Number( px )
 		);

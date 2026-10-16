@@ -265,14 +265,14 @@
 }
 
 @media ( max-width: 767.98px ) {
-	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting:not( [data-sgs-fx-off-mobile~="motion-path"], [data-sgs-fx-disable-mobile] ) {
+	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting:not( :where( [data-sgs-fx-off-mobile~="motion-path"], [data-sgs-fx-disable-mobile] ) ) {
 		position: sticky;
 		top: var( --sgs-fx-motion-path-rest-y );
 	}
 }
 
 @media ( min-width: 768px ) and ( max-width: 1023.98px ) {
-	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting:not( [data-sgs-fx-off-tablet~="motion-path"], [data-sgs-fx-disable-tablet] ) {
+	[data-sgs-fx~="motion-path"].sgs-fx-motion-path--resting:not( :where( [data-sgs-fx-off-tablet~="motion-path"], [data-sgs-fx-disable-tablet] ) ) {
 		position: sticky;
 		top: var( --sgs-fx-motion-path-rest-y );
 	}
@@ -287,8 +287,23 @@
  * serves both branches; the runtime does not need a second code path that
  * could fall out of sync with this one.
  */
-@media ( prefers-reduced-motion: reduce ) {
+@media ( prefers-reduced-motion: reduce ) and ( min-width: 1024px ) {
 	[data-sgs-fx~="motion-path"] {
+		position: sticky;
+		top: var( --sgs-fx-motion-path-rest-y );
+	}
+}
+
+/* The same rule below desktop, withheld at a tier where the layer's per-device off switches the effect off. */
+@media ( prefers-reduced-motion: reduce ) and ( max-width: 767.98px ) {
+	[data-sgs-fx~="motion-path"]:not( :where( [data-sgs-fx-off-mobile~="motion-path"], [data-sgs-fx-disable-mobile] ) ) {
+		position: sticky;
+		top: var( --sgs-fx-motion-path-rest-y );
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) and ( min-width: 768px ) and ( max-width: 1023.98px ) {
+	[data-sgs-fx~="motion-path"]:not( :where( [data-sgs-fx-off-tablet~="motion-path"], [data-sgs-fx-disable-tablet] ) ) {
 		position: sticky;
 		top: var( --sgs-fx-motion-path-rest-y );
 	}

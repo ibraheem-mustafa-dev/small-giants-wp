@@ -1,6 +1,6 @@
 // Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23).
 //
-// jsdom does not evaluate media queries, so this drives real Chromium at 375 / 900 / 1440 wide against a static
+// jsdom does not evaluate media queries, so this drives real Chromium at 375 / 767 / 768 / 900 / 1023 / 1024 / 1440 wide (both sides of each tier edge) against a static
 // fixture that loads the real assets/css files (motion.css plus the effect's own stylesheet). It needs no WordPress
 // site and no credentials, so it is a standalone script rather than part of the live-site Playwright suite.
 //
@@ -26,8 +26,8 @@ const require = createRequire(path.join(pluginRoot, 'package.json'));
 const { chromium } = require('playwright');
 const BASELINE = process.env.SGS_FX_CSS_BASELINE === '1';
 
-const WIDTHS = [375, 900, 1440];
-const TIER_OF = { 375: 'mobile', 900: 'tablet', 1440: 'desktop' };
+const WIDTHS = [375, 767, 768, 900, 1023, 1024, 1440];
+const TIER_OF = { 375: 'mobile', 767: 'mobile', 768: 'tablet', 900: 'tablet', 1023: 'tablet', 1024: 'desktop', 1440: 'desktop' };
 const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 
 // probe: { sel, pseudo?, prop, off, custom? } reads one value; `off` is the value the neutralised state must read.
@@ -54,7 +54,7 @@ const CASES = [
 	{ slug: 'wave-gradient', name: 'wave-gradient blob', html: (a) => `<div data-test-host class="sgs-wave-gradient--pastel" data-sgs-fx="wave-gradient" ${a}></div>`, probe: { sel: null, pseudo: '::before', prop: 'display', off: 'none' } },
 	{ slug: 'cursor-field', name: 'cursor-field layer', html: (a) => `<div data-test-host data-sgs-fx="cursor-field" data-sgs-cursor-field="glow" ${a}><div data-sgs-cursor-participant></div></div>`, probe: { sel: null, prop: '--sgs-cursor-field-layer', off: 'none' } },
 	{ slug: 'cursor-field', name: 'cursor-field participant', html: (a) => `<div data-test-host data-sgs-fx="cursor-field" data-sgs-cursor-field="glow" ${a}><div data-sgs-cursor-participant></div></div>`, probe: { sel: '[data-sgs-cursor-participant]', prop: 'background-image', off: 'none' } },
-	{ slug: 'horizontal-panel', name: 'horizontal-panel (default breakpoint)', skipControlAt: [375], html: (a) => `<div data-test-host data-sgs-fx="horizontal-panel" ${a}><div data-sgs-fx-track><div class="wp-block-sgs-container"><div></div></div></div></div>`, probe: { sel: null, prop: 'overflow-x', off: 'auto' } },
+	{ slug: 'horizontal-panel', name: 'horizontal-panel (default breakpoint)', skipControlAt: [375, 767], html: (a) => `<div data-test-host data-sgs-fx="horizontal-panel" ${a}><div data-sgs-fx-track><div class="wp-block-sgs-container"><div></div></div></div></div>`, probe: { sel: null, prop: 'overflow-x', off: 'auto' } },
 	{ slug: 'horizontal-panel', name: 'horizontal-panel (mobile breakpoint)', html: (a) => `<div data-test-host data-sgs-fx="horizontal-panel" data-sgs-fx-horizontal-panel-breakpoint="mobile" ${a}><div data-sgs-fx-track><div class="wp-block-sgs-container"><div></div></div></div></div>`, probe: { sel: null, prop: 'overflow-x', off: 'auto' } },
 	{ slug: 'motion-path', html: (a) => `<div data-test-host class="sgs-fx-motion-path--resting" data-sgs-fx="motion-path" ${a}></div>`, probe: { sel: null, prop: 'position', off: 'static' } },
 	{ slug: 'morph', name: 'morph overlay (attributes on the block root)', html: (a) => `<div id="root" data-test-host ${a}></div><svg class="sgs-fx-shape-visual" viewBox="0 0 100 100"><path data-sgs-fx="morph" d="M0 0"></path></svg><svg class="sgs-fx-shape-target" viewBox="0 0 100 100"><path d="M0 0"></path></svg>`, probe: { sel: '.sgs-fx-shape-visual', scope: 'document', prop: 'display', off: 'none' } },
@@ -64,11 +64,11 @@ const CASES = [
 // Which widths each variant neutralises.
 const VARIANTS = [
 	{ id: 'none', attrs: () => '', neutral: [] },
-	{ id: 'off-both', attrs: (s) => `data-sgs-fx-off-mobile="${s}" data-sgs-fx-off-tablet="${s}"`, neutral: [375, 900] },
-	{ id: 'off-mobile-only', attrs: (s) => `data-sgs-fx-off-mobile="${s}"`, neutral: [375] },
-	{ id: 'off-tablet-only', attrs: (s) => `data-sgs-fx-off-tablet="${s}"`, neutral: [900] },
-	{ id: 'disable-both', attrs: () => 'data-sgs-fx-disable-mobile="1" data-sgs-fx-disable-tablet="1"', neutral: [375, 900] },
-	{ id: 'disable-tablet-only', attrs: () => 'data-sgs-fx-disable-tablet="1"', neutral: [900] },
+	{ id: 'off-both', attrs: (s) => `data-sgs-fx-off-mobile="${s}" data-sgs-fx-off-tablet="${s}"`, neutral: [375, 767, 768, 900, 1023] },
+	{ id: 'off-mobile-only', attrs: (s) => `data-sgs-fx-off-mobile="${s}"`, neutral: [375, 767] },
+	{ id: 'off-tablet-only', attrs: (s) => `data-sgs-fx-off-tablet="${s}"`, neutral: [768, 900, 1023] },
+	{ id: 'disable-both', attrs: () => 'data-sgs-fx-disable-mobile="1" data-sgs-fx-disable-tablet="1"', neutral: [375, 767, 768, 900, 1023] },
+	{ id: 'disable-tablet-only', attrs: () => 'data-sgs-fx-disable-tablet="1"', neutral: [768, 900, 1023] },
 	{ id: 'off-other-effect', attrs: () => 'data-sgs-fx-off-mobile="zzz-other" data-sgs-fx-off-tablet="zzz-other"', neutral: [] },
 ];
 
