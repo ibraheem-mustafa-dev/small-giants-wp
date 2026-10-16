@@ -304,12 +304,12 @@ async function liveChecks( ctx ) {
 	rep.control( 'marquee-rate', { selector: '.m515-speed', property: 'the row run at 1.05x its playback rate', measured: n.speed, expected: 'the check fails', red: n.speed > 0.5 && ! judgeRate( DRAFTS[ '.m515-speed' ], n ) } );
 
 	// The stored fade width equals the runtime default, so plant another width before boot: the fade check must fail.
+	// The style goes in at document start: module scripts run before DOMContentLoaded, so a later rule arrives after
+	// the marquee has read its settings.
 	const wider = await open( ctx, {}, () => {
-		document.addEventListener( 'DOMContentLoaded', () => {
-			const style = document.createElement( 'style' );
-			style.textContent = '.m515-speed{--sgs-marquee-edge-fade-width:12 !important}';
-			document.head.appendChild( style );
-		} );
+		const style = document.createElement( 'style' );
+		style.textContent = '.m515-speed{--sgs-marquee-edge-fade-width:12 !important}';
+		document.documentElement.appendChild( style );
 	} );
 	await bringIntoView( wider.page, '.m515-speed' );
 	const w = await measure( wider.page, '.m515-speed', 300 );
