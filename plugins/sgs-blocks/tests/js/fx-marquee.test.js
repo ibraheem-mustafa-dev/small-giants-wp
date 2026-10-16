@@ -439,6 +439,16 @@ describe( 'marquee visibility', () => {
 		expect( live().every( ( a ) => a.playState === 'running' ) ).toBe( true );
 	} );
 
+	test( 'a rebuild while the root is off screen keeps the new copies paused', async () => {
+		const { root } = mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
+		await boot();
+		report( root, false );
+		layout.root = 900;
+		resizeObservers.forEach( ( ro ) => ro.fire() );
+		expect( live().length ).toBeGreaterThan( 0 );
+		expect( live().every( ( a ) => a.playState === 'paused' ) ).toBe( true );
+	} );
+
 	test( 'NEGATIVE CONTROL: a clone reported out of view on its own pauses nothing, since no copy watches itself', async () => {
 		const { root } = mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
 		await boot();

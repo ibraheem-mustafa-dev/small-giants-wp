@@ -11,6 +11,8 @@
  *   marquee-touch        a touch tap holds the 24s loop still and a second tap lets it run
  *   marquee-fade         the 45px/s strip paints a mask that fades its ends over 5%
  *   marquee-pause        every running marquee has a pause button; pressing it holds the row still, pressing again lets it run
+ *   marquee-pause-visible the button sits inside the block's visible box and focusing it does not scroll the row (a
+ *                        click would scroll a clipped button into view, so the press alone cannot show this)
  *   marquee-reduced      under prefers-reduced-motion: reduce nothing is cloned or moves
  *
  * NEGATIVE CONTROLS
@@ -249,6 +251,21 @@ async function liveChecks( ctx ) {
 		const present = ( await button.count() ) > 0;
 		let pressed = null;
 		let resumed = null;
+		// A click scrolls a clipped button into view, so the button's place is read first: inside the block's visible
+		// box, and keyboard focus on it must not scroll the row.
+		const place = present ? await page.evaluate( ( s ) => {
+			const root = document.querySelector( s );
+			const btn = root.querySelector( '.sgs-motion-pause' ) || root.nextElementSibling;
+			const r = root.getBoundingClientRect();
+			const b = btn.getBoundingClientRect();
+			const inside = b.width > 0 && b.left >= r.left - 0.5 && b.right <= r.right + 0.5 && b.top >= r.top - 0.5 && b.bottom <= r.bottom + 0.5;
+			const outsideRoot = ! root.contains( btn );
+			btn.focus();
+			const scrolled = root.scrollLeft !== 0 || root.scrollTop !== 0;
+			btn.blur();
+			return { inside: inside || outsideRoot, scrolled, box: [ Math.round( b.left ), Math.round( b.top ), Math.round( b.width ) ], root: [ Math.round( r.left ), Math.round( r.width ) ] };
+		}, sel ) : null;
+		rep.check( 'marquee-pause-visible', { selector: sel, property: 'the pause button sits inside the visible box, and focus does not scroll the row', measured: place, expected: 'inside, not scrolled', pass: Boolean( place ) && place.inside && ! place.scrolled } );
 		if ( present ) {
 			await button.click();
 			await page.mouse.move( 2, 2 );

@@ -64,6 +64,19 @@
 	z-index: 3;
 }
 
+/* When the root is its own lane, the pause button the loop control appends to the root would be the last item of the
+ * one-row lane, past the clipped edge; it is pinned to the end of the row instead, inside the box. */
+[data-sgs-fx~="marquee"][data-sgs-marquee-lane="on"] > .sgs-motion-pause {
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-end: 0;
+	transform: translateY(-50%);
+}
+
+[data-sgs-fx~="marquee"][data-sgs-marquee-lane="on"] > .sgs-motion-pause:focus-visible {
+	outline-offset: -4px;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-fx~="marquee"][data-sgs-fx-marquee-edge-fade="true"] {
 		mask-image: none;

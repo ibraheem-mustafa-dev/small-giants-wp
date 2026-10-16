@@ -200,6 +200,12 @@ export function registerLoop( el, options = {} ) {
 	if ( ! loops.has( watched ) ) {
 		loops.set( watched, new Set() );
 	}
+	// A loop joining an element that is already observed takes its known visibility: observing it again fires no new
+	// entry, so a loop rebuilt while the element is off screen would otherwise run until the next crossing.
+	const sibling = loops.get( watched ).values().next().value;
+	if ( sibling ) {
+		loop.visible = sibling.visible;
+	}
 	loops.get( watched ).add( loop );
 	let destroyed = false;
 

@@ -19,7 +19,7 @@
  * Wired into `build-deploy.py` as `step_motion_qa()`, after `step_verify_payload()`.
  * Opt out with `--skip-motion-qa`, and know that doing so is the D338 mistake.
  *
- * SCOPE, STATED HONESTLY. This runner registers the FOUR probes that are standing
+ * SCOPE, STATED HONESTLY. This runner registers only the probes that are standing
  * regression checks with negative controls and stable canary fixtures. The other probes in
  * this directory are one-shot investigation artefacts tied to a specific incident; they
  * are still runnable by hand and are NOT claimed to be covered here. Promoting one means
@@ -56,6 +56,21 @@ const PROBES = [
 		file: 'probe-scroll-progress.mjs',
 		what: 'Spec 38A FR-38A-36 scroll progress on fixture page 5250: bar scale and counter text equal page progress, section bar, reduced motion, asset guard',
 		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
+	},
+	{
+		file: 'probe-ambient-float.mjs',
+		what: 'Spec 38A FR-38A-37 ambient float on fixture page 5297: stored timing, three-time samples, phases, pause button, focus pause, reduced motion',
+		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
+	},
+	{
+		file: 'probe-looping-media.mjs',
+		what: 'Spec 38A FR-38A-52 looping media on fixture page 5303: Ken Burns zoom-out-once and hold, SVG pulse, pause buttons, Lottie on scroll, logo draw on load, reduced motion, asset guard',
+		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
+	},
+	{
+		file: 'probe-marquee.mjs',
+		what: 'Spec 38A FR-38A-44 marquee on fixture page 5305: three reference drafts within 2% (45px/s, 24s, 64s, 30s), hover rate, touch pause, edge fade, pause buttons, breakpoint range, reduced motion; 375 runs the below-breakpoint marquees',
+		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440', '--width', '375' ],
 	},
 ];
 
