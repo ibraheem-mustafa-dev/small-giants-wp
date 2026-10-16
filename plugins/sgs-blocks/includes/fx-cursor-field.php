@@ -149,6 +149,21 @@ function sgs_fx_cursor_field_number( $value, float $min, float $max ): ?float {
 }
 
 /**
+ * CSS declarations as the text of a `<style>` element.
+ *
+ * A `<style>` holds raw text, so its CSS is never HTML-escaped: `esc_html` wrote the quotes round an image URL as
+ * `&quot;`, which CSS does not decode, and the card lost its picture. Every value is validated or encoded where it is
+ * built, so the one thing left to prevent is the text closing the element or opening a tag: `<` and `>` become CSS
+ * escapes, which cannot end a `<style>` and read as the same character inside a string.
+ *
+ * @param string $css Declarations joined with semicolons.
+ * @return string The text, safe inside `<style>`.
+ */
+function sgs_fx_cursor_field_css_text( string $css ): string {
+	return \str_replace( array( '<', '>' ), array( '\3C ', '\3E ' ), $css );
+}
+
+/**
  * A media-library image as a CSS `url()`, with every character that could end the string or the rule encoded.
  *
  * @param int $id Attachment ID.
@@ -421,7 +436,7 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	return \sprintf(
 		'%1$s<style>%2$s%3$s</style>%4$s',
 		$head,
-		array() === $declarations ? '' : \sprintf( '.%1$s{%2$s}', $uid, \esc_html( \implode( ';', $declarations ) ) ),
+		array() === $declarations ? '' : \sprintf( '.%1$s{%2$s}', $uid, sgs_fx_cursor_field_css_text( \implode( ';', $declarations ) ) ),
 		\sprintf( $slot_rules, $uid ),
 		$processor->get_updated_html()
 	);
