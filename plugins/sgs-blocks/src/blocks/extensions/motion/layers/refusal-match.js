@@ -45,8 +45,9 @@ export function levelsForTarget( target, elements = null ) {
  * Whether a target is of a kind an effect needs (§5.4 "Part (text)", "Part (SVG)"). An effect whose schema entry names
  * `x-part-kinds` fits a declared part only when that part's declaration carries one of those kinds as `true`
  * (`"text": true`, `"svg": true`, written by `scripts/migrate-motion-part-kinds.py`); the root takes every kind (its
- * block's registry row, through the qualifying-blocks map, decides those effects there), and an effect with no kinds
- * fits any target.
+ * block's registry row, through the qualifying-blocks map, decides those effects there), a `custom:<n>` target takes
+ * every kind too (the author chose its selector, and the server checks no kind), and an effect with no kinds fits any
+ * target.
  *
  * @param {string}      effect     Effect slug.
  * @param {string}      target     `root`, a part key or a `custom:<n>` target.
@@ -55,7 +56,11 @@ export function levelsForTarget( target, elements = null ) {
  */
 export function kindsFit( effect, target, elements = null ) {
 	const kinds = EFFECTS[ effect ]?.[ PART_KINDS_KEY ];
-	if ( ! Array.isArray( kinds ) || target === 'root' ) {
+	if (
+		! Array.isArray( kinds ) ||
+		target === 'root' ||
+		String( target ).startsWith( 'custom:' )
+	) {
 		return true;
 	}
 	return kinds.some( ( kind ) => elements?.[ target ]?.[ kind ] === true );

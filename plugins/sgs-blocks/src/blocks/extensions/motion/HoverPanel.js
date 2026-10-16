@@ -37,9 +37,12 @@ import FocusState, { focusAvailable } from './hover/FocusState';
 import PresetThumbnailGrid from './thumbnails/PresetThumbnailGrid';
 
 const NONE = 'hover-none';
-const HOVER_CHOICES = hoverPresetChoices().filter(
-	( option ) => option.value !== NONE
-);
+// The Hover state choices, without None (the unset option) and, on an element whose ring is refused, without the
+// presets that stamp a ring or accent field.
+const choicesFor = ( ringRefused ) =>
+	hoverPresetChoices( { omitKeys: ringRefused ? RING_KEYS : [] } ).filter(
+		( option ) => option.value !== NONE
+	);
 
 /**
  * @param {Object}           props
@@ -53,6 +56,7 @@ const HOVER_CHOICES = hoverPresetChoices().filter(
 export default function HoverPanel( { blockName, clientId, elements, motion, layers } ) {
 	const [ target, setTarget ] = useState( ROOT_TARGET );
 	const ringRefused = useRingRefused( clientId, blockName, elements, target );
+	const hoverChoices = choicesFor( ringRefused );
 	const [ notice, setNotice ] = useState( null );
 	const flow = useRestamp( layers );
 	const drive = useDrivenBy( layers, target, setNotice );
@@ -91,7 +95,7 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 					'Plays on devices that can hover, and for keyboard focus.',
 					'sgs-blocks'
 				) }
-				options={ HOVER_CHOICES }
+				options={ hoverChoices }
 				value={ choice === NONE ? '' : choice }
 				emptyLabel={
 					layer && ! layer.preset
@@ -102,7 +106,7 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 			/>
 			<PresetThumbnailGrid
 				label={ __( 'Hover state previews', 'sgs-blocks' ) }
-				options={ HOVER_CHOICES }
+				options={ hoverChoices }
 				value={ choice === NONE ? '' : choice }
 				onChange={ ( slug ) => actions.choosePreset( slug ) }
 			/>

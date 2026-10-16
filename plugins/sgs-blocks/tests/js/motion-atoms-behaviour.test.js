@@ -25,6 +25,7 @@ const {
 	restampLayer,
 	ReplayButton,
 	StaggerHelper,
+	ChoiceAtom,
 } = require( '../../src/components/motion' );
 const presetFile = require( '../../src/components/motion/generated-motion-presets.json' );
 const defs = require( '../../src/components/motion/generated-motion-defs.json' );
@@ -149,6 +150,44 @@ describe( 'the trigger picker', () => {
 		mount( TriggerPicker, props, 'state' );
 		expect( container.textContent ).toContain( 'Added' );
 		expect( container.textContent ).toContain( 'Removed' );
+	} );
+} );
+
+describe( 'a choice that cannot be unset (emptyLabel null)', () => {
+	const FOUR = [ 'one', 'two', 'three', 'four' ].map( ( value ) => ( { value, label: `Option ${ value }` } ) );
+	const select = () => q( 'select[aria-label="Pick"]' );
+
+	it( 'shows no real option as chosen when nothing is stored', () => {
+		mount( ChoiceAtom, { label: 'Pick', options: FOUR, emptyLabel: null }, undefined );
+		expect( select().value ).not.toBe( 'one' );
+		expect( FOUR.map( ( o ) => o.value ) ).not.toContain( select().value );
+		expect( shownOptions( 'Pick' ) ).toEqual( [ 'one', 'two', 'three', 'four' ] );
+	} );
+
+	it( 'shows a stored value outside the list as itself, marked, never as another option', () => {
+		mount( ChoiceAtom, { label: 'Pick', options: FOUR, emptyLabel: null }, 'five' );
+		expect( select().value ).toBe( 'five' );
+		const shown = [ ...select().querySelectorAll( 'option' ) ].find( ( o ) => o.value === 'five' );
+		expect( shown.textContent ).toContain( 'Five' );
+		expect( shown.textContent ).not.toBe( 'Five' );
+	} );
+
+	it( 'still shows a listed value as chosen', () => {
+		mount( ChoiceAtom, { label: 'Pick', options: FOUR, emptyLabel: null }, 'three' );
+		expect( select().value ).toBe( 'three' );
+	} );
+} );
+
+describe( 'the trigger picker without a stored trigger', () => {
+	it( 'shows the trigger the entrance plays on (scroll, the emitter default), not the first option', () => {
+		mount( TriggerPicker, { panel: 'entrance', states: [ 'added' ] }, undefined );
+		expect( shownOptions( 'Start when' ) ).toEqual( [ 'load', 'scroll', 'open', 'state' ] );
+		expect( q( 'select[aria-label="Start when"]' ).value ).toBe( 'scroll' );
+	} );
+
+	it( 'shows a stored trigger the list no longer offers as itself, never as the first option', () => {
+		mount( TriggerPicker, { panel: 'entrance', states: [ 'added' ], exclude: [ 'open' ] }, 'open' );
+		expect( q( 'select[aria-label="Start when"]' ).value ).toBe( 'open' );
 	} );
 } );
 

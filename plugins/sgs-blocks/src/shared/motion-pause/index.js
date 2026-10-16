@@ -39,7 +39,7 @@
  * @param {string}      [options.touch]       'press' (default): pause while a finger is down on the region.
  *                                            'toggle': a tap on the region pauses, the next tap resumes.
  *                                            'none': touch alone does not pause.
- * @return {{isPaused: Function, setRunning: Function, pause: Function, play: Function}} Controller.
+ * @return {{isPaused: Function, setRunning: Function, pause: Function, play: Function, addFocusRegion: Function, removeFocusRegion: Function, reset: Function}} Controller.
  */
 export function initMotionPause( root, options = {} ) {
 	const onChange = typeof options.onChange === 'function' ? options.onChange : () => {};
@@ -126,20 +126,35 @@ export function initMotionPause( root, options = {} ) {
 	// The focus region is the root plus any element added with `addFocusRegion()` (a pause button placed outside the
 	// root); focus moving between them is not leaving it.
 	const regions = [ root ];
+	// Region -> its [ focusin, focusout ] handlers, so a region can be removed with its listeners.
+	const handlers = new Map();
 	const inRegion = ( node ) => node instanceof Node && regions.some( ( region ) => region.contains( node ) );
 	const listenForFocus = ( region ) => {
-		region.addEventListener( 'focusin', () => {
+		const onIn = () => {
 			focused = true;
 			sync();
-		} );
-		region.addEventListener( 'focusout', ( event ) => {
+		};
+		const onOut = ( event ) => {
 			if ( inRegion( event.relatedTarget ) ) {
 				return;
 			}
 			focused = false;
 			releasePlay();
 			sync();
-		} );
+		};
+		region.addEventListener( 'focusin', onIn );
+		region.addEventListener( 'focusout', onOut );
+		handlers.set( region, [ onIn, onOut ] );
+	};
+	const removeRegion = ( region ) => {
+		const pair = handlers.get( region );
+		if ( region === root || ! pair ) {
+			return;
+		}
+		region.removeEventListener( 'focusin', pair[ 0 ] );
+		region.removeEventListener( 'focusout', pair[ 1 ] );
+		handlers.delete( region );
+		regions.splice( regions.indexOf( region ), 1 );
 	};
 	listenForFocus( root );
 
@@ -173,6 +188,34 @@ export function initMotionPause( root, options = {} ) {
 				regions.push( region );
 				listenForFocus( region );
 			}
+		},
+		/**
+		 * Stop counting focus inside an element added with `addFocusRegion()` (a button that has been removed).
+		 *
+		 * @param {HTMLElement} region The element.
+		 */
+		removeFocusRegion( region ) {
+			removeRegion( region );
+			focused = inRegion( document.activeElement );
+			sync();
+		},
+		/**
+		 * Back to the state of a fresh controller, for an owner whose motion ended and may start again (the loop
+		 * control when a root's last loop is destroyed): no held pause or play, no added regions, and the focus pause
+		 * only while focus really is inside the root.
+		 */
+		reset() {
+			regions.slice( 1 ).forEach( removeRegion );
+			userPaused = false;
+			userPlayed = false;
+			hovered = false;
+			pressed = false;
+			tapped = false;
+			focused = inRegion( document.activeElement );
+			if ( button ) {
+				button.setAttribute( 'aria-pressed', 'false' );
+			}
+			sync();
 		},
 	};
 }

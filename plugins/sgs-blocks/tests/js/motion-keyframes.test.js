@@ -173,6 +173,35 @@ describe( 'motion-keyframes', () => {
 		expect( animate ).toHaveBeenCalledTimes( 2 );
 	} );
 
+	it( 'repeated scans over one waiting target build one observer and still play it once', async () => {
+		const { onScan } = load();
+		const host = document.createElement( 'div' );
+		document.body.appendChild( host );
+		const waiting = document.createElement( 'div' );
+		waiting.setAttribute( 'data-sgs-me', 'scroll translate opacity' );
+		waiting.setAttribute( 'data-sgs-me-keyframes', JSON.stringify( KEYFRAMES ) );
+		host.appendChild( waiting );
+		const Real = globalThis.MutationObserver;
+		let built = 0;
+		globalThis.MutationObserver = class extends Real {
+			constructor( callback ) {
+				super( callback );
+				built++;
+			}
+		};
+		try {
+			onScan( { target: host } );
+			onScan( { target: host } );
+			onScan( { target: host } );
+		} finally {
+			globalThis.MutationObserver = Real;
+		}
+		expect( built ).toBe( 1 );
+		waiting.setAttribute( 'data-sgs-in', '' );
+		await new Promise( ( r ) => setTimeout( r, 0 ) );
+		expect( animate ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'ignores keyframe JSON with fewer than two frames', () => {
 		const { play } = load();
 		play( target( { frames: [ KEYFRAMES[ 0 ] ] } ) );

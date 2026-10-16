@@ -243,6 +243,45 @@ describe( 'destroy', () => {
 	} );
 } );
 
+describe( 'register again after the last loop is destroyed', () => {
+	test( 'a visitor pause does not outlive the group: the new loop plays and its button says playing', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		const first = loopControl.registerLoop( el, { pauseControl: true } );
+		buttonsIn( root )[ 0 ].click();
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+		first.destroy();
+		const again = loopControl.registerLoop( el, { pauseControl: true } );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+		expect( again.isPaused() ).toBe( false );
+		expect( buttonsIn( root ) ).toHaveLength( 1 );
+		expect( buttonsIn( root )[ 0 ].getAttribute( 'aria-pressed' ) ).toBe( 'false' );
+	} );
+
+	test( 'a removed button beside its own-root loop no longer counts as focus inside the region', () => {
+		document.body.innerHTML =
+			'<div class="sgs-wrap"><h2 class="wp-block-sgs-heading" data-sgs-fx="ambient-float">Float</h2><a href="#y">next</a></div>';
+		const el = document.querySelector( 'h2' );
+		const first = loopControl.registerLoop( el, { pauseControl: true } );
+		const oldButton = el.nextElementSibling;
+		first.destroy();
+		loopControl.registerLoop( el, { pauseControl: true } );
+		oldButton.dispatchEvent( new FocusEvent( 'focusin', { bubbles: true } ) );
+		expect( el.hasAttribute( PAUSED ) ).toBe( false );
+	} );
+
+	test( 'focus still inside the root when the loop registers again keeps the focus pause', () => {
+		const [ root ] = build();
+		const el = floatIn( root );
+		const first = loopControl.registerLoop( el );
+		root.querySelector( 'a' ).focus();
+		focusIn( root );
+		first.destroy();
+		loopControl.registerLoop( el );
+		expect( el.hasAttribute( PAUSED ) ).toBe( true );
+	} );
+} );
+
 describe( 'reduced-motion helper', () => {
 	test( 'reads the preference and calls back on a change', () => {
 		expect( loopControl.prefersReducedMotion() ).toBe( false );

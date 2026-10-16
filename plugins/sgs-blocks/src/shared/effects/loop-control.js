@@ -268,6 +268,9 @@ export function registerLoop( el, options = {} ) {
 			el.removeAttribute( PAUSED_ATTR );
 			if ( group.loops.size === 0 ) {
 				removeButton( group );
+				// The root's motion has ended: a later registerLoop on it starts from a fresh state, not the old
+				// visitor pause behind a new button that says playing.
+				group.controller.reset();
 			}
 		},
 	};

@@ -20,6 +20,14 @@ const PANEL_ENTRIES = Object.freeze( {
 	effects: 'EffectLayer',
 } );
 
+// The trigger a layer with none stored plays on, where the emitter fixes one: an entrance plays on scroll
+// (`Sgs_Motion_Emitter::emit` and `canvas/emit-entrance.js` read `trigger ?? 'scroll'`) and a hover layer on hover. An
+// effect layer has no single default (each effect's runtime picks its own), so it shows the unset placeholder.
+export const DEFAULT_TRIGGERS = Object.freeze( {
+	hover: 'hover',
+	entrance: 'scroll',
+} );
+
 const TRIGGER_LABELS = Object.freeze( {
 	hover: __( 'Hover or focus', 'sgs-blocks' ),
 	load: __( 'Page loads', 'sgs-blocks' ),
@@ -68,7 +76,7 @@ const humanise = ( value ) => {
  * @param {Object}   props
  * @param {string}   props.panel            `hover`, `entrance`, `entrance-text` or `effects`.
  * @param {string}   [props.label]          Field label.
- * @param {string}   [props.value]          The chosen trigger.
+ * @param {string}   [props.value]          The chosen trigger; when unset, the panel's `DEFAULT_TRIGGERS` entry shows.
  * @param {Function} props.onChange         Receives the chosen trigger.
  * @param {string[]} [props.effectTriggers] The effect's `fx_effects.triggers`.
  * @param {string[]} [props.states]         The states the block declares (`supports.sgs.motion.states`).
@@ -107,7 +115,7 @@ export default function TriggerPicker( {
 				help={ help }
 				options={ options }
 				fieldNode={ { enum: triggers } }
-				value={ value }
+				value={ value ?? DEFAULT_TRIGGERS[ panel ] }
 				onChange={ onChange }
 				emptyLabel={ null }
 			/>

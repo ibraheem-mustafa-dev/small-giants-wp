@@ -36,6 +36,10 @@
 	// Target -> the animation this module last created on it, so a replay can cancel it.
 	var running = typeof WeakMap === 'function' ? new WeakMap() : null;
 
+	// Targets an observer already waits on for data-sgs-in, so a repeated scan (each post-grid load more rescans the
+	// list) adds no second observer for the same node.
+	var watched = typeof WeakSet === 'function' ? new WeakSet() : null;
+
 	// Owner property -> channel (the `--sgs-me-*` rows of the §10 channel table).
 	var PROPERTY_CHANNEL = {
 		'--sgs-me-tx': 'translate',
@@ -317,7 +321,8 @@
 
 	/**
 	 * Wire multi-keyframe entrances: load entrances play now, the rest when data-sgs-in appears (`play` marks a target
-	 * `data-sgs-me-kf`, so a second scan of the same items plays nothing again).
+	 * `data-sgs-me-kf`, so a second scan of the same items plays nothing again, and a target already waiting gets no
+	 * second observer).
 	 *
 	 * @param {Element[]} list Entrance targets.
 	 * @return {MutationObserver|null} The observer waiting on signals, or null when nothing waits.
@@ -330,7 +335,7 @@
 		list.forEach( function ( el ) {
 			if ( startsOnLoad( el ) || el.hasAttribute( 'data-sgs-in' ) ) {
 				play( el );
-			} else {
+			} else if ( ! watched || ! watched.has( el ) ) {
 				waiting.push( el );
 			}
 		} );
@@ -345,6 +350,9 @@
 			} );
 		} );
 		waiting.forEach( function ( el ) {
+			if ( watched ) {
+				watched.add( el );
+			}
 			observer.observe( el, { attributes: true, attributeFilter: [ 'data-sgs-in' ] } );
 		} );
 		return observer;

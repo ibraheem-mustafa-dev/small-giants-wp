@@ -66,7 +66,13 @@ describe( 'kindsFit', () => {
 	it( 'refuses a kinded effect on a part when the declarations are unknown or the marker is not true', () => {
 		expect( kindsFit( 'split-reveal', 'title', null ) ).toBe( false );
 		expect( kindsFit( 'split-reveal', 'title', { title: { text: 'yes' } } ) ).toBe( false );
-		expect( kindsFit( 'draw', 'custom:1', elements ) ).toBe( false );
+	} );
+	it( 'lets every kind onto a custom target, whose selector the author chose (the server has no kind check)', () => {
+		[ 'split-reveal', 'scramble', 'draw', 'morph', 'motion-path', 'svg-loop' ].forEach( ( effect ) => {
+			expect( kindsFit( effect, 'custom:0', {} ) ).toBe( true );
+			expect( kindsFit( effect, 'custom:1', elements ) ).toBe( true );
+			expect( kindsFit( effect, 'custom:2', null ) ).toBe( true );
+		} );
 	} );
 } );
 

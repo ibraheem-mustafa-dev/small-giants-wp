@@ -176,3 +176,34 @@ describe( 'motion pause: the button', () => {
 		expect( states ).toEqual( [ true, false ] );
 	} );
 } );
+
+describe( 'motion pause: reset and focus regions', () => {
+	it( 'removeFocusRegion stops a removed region counting as focus inside', () => {
+		const { control } = build();
+		const extra = document.createElement( 'button' );
+		document.body.appendChild( extra );
+		control.addFocusRegion( extra );
+		extra.dispatchEvent( focus( 'focusin' ) );
+		expect( control.isPaused() ).toBe( true );
+		extra.dispatchEvent( focus( 'focusout' ) );
+		control.removeFocusRegion( extra );
+		extra.dispatchEvent( focus( 'focusin' ) );
+		expect( control.isPaused() ).toBe( false );
+	} );
+
+	it( 'reset clears a held pause and a held play, keeps a focus that is really inside, and drops added regions', () => {
+		const { root, control, button } = build();
+		const extra = document.createElement( 'button' );
+		document.body.appendChild( extra );
+		control.addFocusRegion( extra );
+		control.pause();
+		control.reset();
+		expect( control.isPaused() ).toBe( false );
+		expect( button.getAttribute( 'aria-pressed' ) ).toBe( 'false' );
+		extra.dispatchEvent( focus( 'focusin' ) );
+		expect( control.isPaused() ).toBe( false );
+		root.querySelector( 'a' ).focus();
+		control.reset();
+		expect( control.isPaused() ).toBe( true );
+	} );
+} );

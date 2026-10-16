@@ -66,15 +66,26 @@ export function sourceOptionsFor( {
 }
 
 /**
- * The hover presets the Hover state choice offers: the preset rows of the hover panel that are not an effect's.
+ * The hover presets the Hover state choice offers: the preset rows of the hover panel that are not an effect's. With
+ * `omitKeys`, a preset whose stamped values (any device) hold one of those fields is left out, so an element whose ring
+ * is refused is never offered a preset the guard would strip to nothing (Border accent).
  *
+ * @param {Object}   [args]
+ * @param {string[]} [args.omitKeys] Value fields the element cannot take.
  * @return {{value: string, label: string}[]} The choices, in the order of the preset file.
  */
-export function hoverPresetChoices() {
+export function hoverPresetChoices( { omitKeys = [] } = {} ) {
+	const touches = ( row ) =>
+		[ row.values, ...Object.values( row.devices || {} ) ].some( ( values ) =>
+			Object.keys( values || {} ).some( ( key ) => omitKeys.includes( key ) )
+		);
 	return presetFile.presets
 		.filter(
 			( row ) =>
-				row.kind === 'preset' && row.panel === 'hover' && ! row.effect
+				row.kind === 'preset' &&
+				row.panel === 'hover' &&
+				! row.effect &&
+				! touches( row )
 		)
 		.map( ( row ) => ( { value: row.slug, label: row.label } ) );
 }

@@ -391,6 +391,34 @@ describe( 'the hover ring (FR-38A-42)', () => {
 		expect( host.textContent ).toContain( 'Clear the shadow to use them' );
 	} );
 
+	const presetFile = require( '../../src/components/motion/generated-motion-presets.json' );
+	const RING_FIELDS = [ 'ringSpread', 'ringColour', 'accentWidth', 'accentColour' ];
+	// Every hover preset whose stamped values carry a ring or accent field, read from the preset data.
+	const ringPresets = presetFile.presets
+		.filter( ( row ) => row.kind === 'preset' && row.panel === 'hover' && ! row.effect )
+		.filter( ( row ) =>
+			[ row.values, ...Object.values( row.devices || {} ) ].some( ( values ) =>
+				Object.keys( values || {} ).some( ( key ) => RING_FIELDS.includes( key ) )
+			)
+		)
+		.map( ( row ) => row.slug );
+	const offered = () =>
+		[ ...byLabel( 'Hover state', 'select' ).querySelectorAll( 'option' ) ].map( ( o ) => o.value );
+
+	it( 'offers the Border accent preset on a block with no shadow set', () => {
+		expect( ringPresets ).toContain( 'hover-border-accent' );
+		global.__sgsAttrs = { shadow: '' };
+		mount( withState( { ...SCALE } ), 'sgs/hero', HERO_ELEMENTS );
+		ringPresets.forEach( ( slug ) => expect( offered() ).toContain( slug ) );
+	} );
+
+	it( 'leaves out every preset that stamps a ring or accent field on a block whose shadow is set', () => {
+		global.__sgsAttrs = { shadow: 'md' };
+		mount( withState( { ...SCALE } ), 'sgs/hero', HERO_ELEMENTS );
+		ringPresets.forEach( ( slug ) => expect( offered() ).not.toContain( slug ) );
+		expect( offered() ).toContain( 'hover-scale' );
+	} );
+
 	it( 'treats a shadow of none as no shadow', () => {
 		global.__sgsAttrs = { shadow: 'none' };
 		mount( withState( { ...SCALE } ), 'sgs/hero', HERO_ELEMENTS );
