@@ -87,7 +87,7 @@
  *    the split recorded the harness commit as meta.gitCommit; --compare reads that key when harnessCommit is absent.
  *
  * ── --ab ───────────────────────────────────────────────────────────────────────────────────────────────────────
- * The `sgs_motion_support_enabled` filter does not exist yet, and a toggle needs server code, so --ab takes two
+ * The `sgs_motion_support_enabled` filter (`includes/motion/support-registration.php`) is server code, so --ab takes two
  * editor URLs and interleaves A, B, A, B ... (cancelling drift in the host or the machine). To flip a filter
  * without editing the theme, give B a query argument that a small mu-plugin maps onto the filter, for example
  *   --b-url "<site>/wp-admin/post.php?post=5196&action=edit&sgs_motion_support_enabled=0"
