@@ -15,7 +15,13 @@
  * - Only a genuinely absent value is left out: a numeric zero (no smoothing lag) is written.
  * - One attribute, one value: when two layers on one element write the same attribute, the first in paint order keeps
  *   it and the later value is reported through the `sgs_motion_layer_dropped` action.
- * - A layer's `off` tiers are the per-breakpoint switches `data-sgs-fx-disable-tablet` / `-mobile` set to `1`.
+ * - A layer's `off` tiers are written as per-tier token lists, `data-sgs-fx-off-tablet` / `-mobile`, naming the effect
+ *   slugs whose own layer is off on that tier (joined across layers like `data-sgs-fx`), so each effect is switched
+ *   off per device on its own. The element-wide `data-sgs-fx-disable-tablet` / `-mobile` belong to the flat
+ *   `fxDisableTablet` / `fxDisableMobile` attributes (`includes/fx-attributes.php`) and are never written here.
+ *   Both switches are read by `src/shared/effects/gsap/provider.js::isDisabledAtThisTier`, the boot gate of the Tier G
+ *   effects; the vanilla runtimes (`src/shared/effects/fx-*.js`) and the stylesheet-only effects (`assets/css/fx-*.css`)
+ *   read neither switch.
  * - A hover state with `followPointer` on in any tier adds `follow-pointer` to the element's `data-sgs-fx`.
  *
  * Every value is checked again through `Sgs_Motion_Field_Types::sanitise` against its own schema node before it is
@@ -45,11 +51,17 @@ final class Sgs_Motion_Fx_Emitter {
 	 */
 	const FOLLOW_POINTER = 'follow-pointer';
 
-	/** The tiers a layer's `off` list may name, as the attributes the runtimes read. */
+	/**
+	 * The tiers a layer's `off` list may name, as the per-tier token lists the runtimes read: each names the effect slugs
+	 * whose own layer is off on that tier, so a sibling effect on the same element keeps running.
+	 */
 	const OFF_ATTRS = array(
-		'tablet' => 'data-sgs-fx-disable-tablet',
-		'mobile' => 'data-sgs-fx-disable-mobile',
+		'tablet' => 'data-sgs-fx-off-tablet',
+		'mobile' => 'data-sgs-fx-off-mobile',
 	);
+
+	/** The attributes whose values are space-separated effect slugs, joined across an element's layers. */
+	const TOKEN_LISTS = array( 'data-sgs-fx', 'data-sgs-fx-off-tablet', 'data-sgs-fx-off-mobile' );
 
 	/**
 	 * The `data-sgs-fx*` attributes of one element's effect layers.
@@ -93,8 +105,8 @@ final class Sgs_Motion_Fx_Emitter {
 	}
 
 	/**
-	 * Merge a second attribute set into a first: `data-sgs-fx` lists are joined, every other attribute keeps the first
-	 * value and reports the later one as dropped.
+	 * Merge a second attribute set into a first: the effect-slug lists (`TOKEN_LISTS`) are joined, every other attribute
+	 * keeps the first value and reports the later one as dropped.
 	 *
 	 * @param array<string,string> $first  Attributes already held.
 	 * @param array<string,string> $second Attributes to add.
@@ -104,7 +116,7 @@ final class Sgs_Motion_Fx_Emitter {
 	 */
 	public static function merge( array $first, array $second, string $block = '', string $target = '' ): array {
 		foreach ( $second as $name => $value ) {
-			if ( 'data-sgs-fx' === $name && isset( $first[ $name ] ) ) {
+			if ( in_array( $name, self::TOKEN_LISTS, true ) && isset( $first[ $name ] ) ) {
 				$slugs          = array_merge( explode( ' ', $first[ $name ] ), explode( ' ', $value ) );
 				$first[ $name ] = implode( ' ', array_values( array_unique( array_filter( $slugs, 'strlen' ) ) ) );
 				continue;
@@ -163,7 +175,7 @@ final class Sgs_Motion_Fx_Emitter {
 		}
 		foreach ( self::OFF_ATTRS as $tier => $attr ) {
 			if ( is_array( $layer['off'] ?? null ) && in_array( $tier, $layer['off'], true ) ) {
-				$out[ $attr ] = '1';
+				$out[ $attr ] = $effect;
 			}
 		}
 		$values = isset( $layer['values'] ) && is_array( $layer['values'] ) ? $layer['values'] : array();

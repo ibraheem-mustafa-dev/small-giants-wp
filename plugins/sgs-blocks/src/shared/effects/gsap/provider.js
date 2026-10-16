@@ -189,38 +189,65 @@ export function withMotionAllowed( setup ) {
 }
 
 /**
- * Is this element disabled at the CURRENT device tier?
+ * The device tier the viewport is in now, or null when it cannot be read.
  *
- * Reads `data-sgs-fx-disable-tablet` / `-mobile` (Step 15). The tiers are the
- * project's device-tier standard — mobile <=767, tablet 768-1023, desktop
- * >=1024 — NOT arbitrary visual breakpoints, which are design-driven and must
- * never be swept into this vocabulary.
+ * The tiers are the project's device-tier standard: mobile <=767, tablet
+ * 768-1023, desktop >=1024. They are NOT arbitrary visual breakpoints, which
+ * are design-driven and must never be swept into this vocabulary.
+ *
+ * @return {'mobile'|'tablet'|'desktop'|null} The current tier.
+ */
+function currentTier() {
+	if ( typeof window.matchMedia !== 'function' ) {
+		return null;
+	}
+	if ( window.matchMedia( '(max-width: 767px)' ).matches ) {
+		return 'mobile';
+	}
+	if (
+		window.matchMedia( '(min-width: 768px) and (max-width: 1023px)' )
+			.matches
+	) {
+		return 'tablet';
+	}
+	return 'desktop';
+}
+
+/**
+ * Is this effect switched off on this element at the CURRENT device tier?
+ *
+ * Two switches are read, per tier (tablet, mobile):
+ *   · `data-sgs-fx-disable-<tier>`: the flat `fxDisableTablet` /
+ *     `fxDisableMobile` attributes (Step 15). Present = every effect on the
+ *     element is off at that tier.
+ *   · `data-sgs-fx-off-<tier>`: a motion layer's `off` list (Spec 38A),
+ *     written by `Sgs_Motion_Fx_Emitter` as space-separated effect slugs (the
+ *     `data-sgs-fx` vocabulary). Only the listed effects are off at that
+ *     tier, so a sibling effect on the same element keeps running.
  *
  * Gating here rather than inside each effect module is deliberate: `bootEffect`
- * is the one choke point every effect boots through, so a single check covers
- * every effect present and future, with no per-effect carve-out (R-31-9).
+ * is the one choke point every Tier G effect boots through, so a single check
+ * covers every such effect present and future, with no per-effect carve-out
+ * (R-31-9).
  *
  * Skipping boot is SAFE by construction: per FR-38-2 each effect applies its own
  * initial hidden/offset state and the server never renders one, so an element
  * that is never booted simply stays fully visible. Fail-open, same as JS-blocked.
  *
- * @param {HTMLElement} el Element carrying the fx attributes.
- * @return {boolean} True when the effect must not run at this viewport.
+ * @param {HTMLElement} el     Element carrying the fx attributes.
+ * @param {string}      effect Effect name as it appears in `data-sgs-fx`.
+ * @return {boolean} True when this effect must not run at this viewport.
  */
-function isDisabledAtThisTier( el ) {
-	if ( typeof window.matchMedia !== 'function' ) {
+export function isDisabledAtThisTier( el, effect ) {
+	const tier = currentTier();
+	if ( tier !== 'mobile' && tier !== 'tablet' ) {
 		return false;
 	}
-	if (
-		el.hasAttribute( 'data-sgs-fx-disable-mobile' ) &&
-		window.matchMedia( '(max-width: 767px)' ).matches
-	) {
+	if ( el.hasAttribute( `data-sgs-fx-disable-${ tier }` ) ) {
 		return true;
 	}
-	return (
-		el.hasAttribute( 'data-sgs-fx-disable-tablet' ) &&
-		window.matchMedia( '(min-width: 768px) and (max-width: 1023px)' ).matches
-	);
+	const off = el.getAttribute( `data-sgs-fx-off-${ tier }` ) || '';
+	return off.split( /\s+/ ).includes( effect );
 }
 
 /**
@@ -246,7 +273,7 @@ export function bootEffect( effect, init ) {
 	 * asked for. Stated here rather than left for someone to discover.
 	 */
 	const elements = Array.from( document.querySelectorAll( selector ) ).filter(
-		( el ) => ! isDisabledAtThisTier( el )
+		( el ) => ! isDisabledAtThisTier( el, effect )
 	);
 
 	const cleanups = elements.map( ( el ) => init( el ) );

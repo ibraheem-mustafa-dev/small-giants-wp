@@ -187,7 +187,7 @@ namespace {
 	$vals  = $layer['values'] ?? array();
 	ksort( $vals );
 	fx_check( 'bold' === ( $layer['intensity'] ?? '' ) && array( 'mobile' ) === ( $layer['off'] ?? null ) && array( 'easing' => 'cubic-bezier(0.165, 0.84, 0.44, 1)', 'endElement' => 'top', 'endViewport' => 0, 'smoothing' => 1500, 'startElement' => 'top', 'startViewport' => 70 ) === $vals, 'roster scrub: dramatic is bold, the preset values are in the layer, fxDisableMobile is off mobile: ' . json_encode( $layer ) );
-	fx_check( '1' === ( Emitter::layer_attrs( $layer )['data-sgs-fx-disable-mobile'] ?? null ) && in_array( 'fxDisableMobile', $r['consumed'], true ), 'the migrated layer still writes data-sgs-fx-disable-mobile="1"' );
+	fx_check( 'scrub' === ( Emitter::layer_attrs( $layer )['data-sgs-fx-off-mobile'] ?? null ) && in_array( 'fxDisableMobile', $r['consumed'], true ), 'the migrated layer switches its scrub off on mobile: data-sgs-fx-off-mobile="scrub"' );
 
 	// 4. All or nothing: a value the layer cannot hold leaves the whole effect flat, reported.
 	$r = $m->map( 'sgs/hero', array( 'fx' => 'scrub', 'fxStart' => 'top top+=93', 'fxScrub' => 1 ) );

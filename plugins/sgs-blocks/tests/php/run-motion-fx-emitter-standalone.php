@@ -171,8 +171,8 @@ namespace {
 	$out   = fx_render( 'sgs/team-member', fx_doc( 'image', array( 'effects' => array( $scrub ) ) ), $card );
 	$img   = fx_attrs( fx_tag( $out, 'sgs-team-member__photo' ) );
 	fx_check(
-		array( 'data-sgs-fx' => 'scrub', 'data-sgs-fx-disable-mobile' => '1', 'data-sgs-fx-ease' => 'power3.out', 'data-sgs-fx-end' => 'top center', 'data-sgs-fx-scrub' => '0.8', 'data-sgs-fx-start' => 'top 85%', 'data-sgs-fx-trigger' => 'scroll' ) === $img,
-		'scrub on the image part: the grammar on the <img>, the power3.out curve as its GSAP name, off mobile as the disable flag: ' . json_encode( $img )
+		array( 'data-sgs-fx' => 'scrub', 'data-sgs-fx-ease' => 'power3.out', 'data-sgs-fx-end' => 'top center', 'data-sgs-fx-off-mobile' => 'scrub', 'data-sgs-fx-scrub' => '0.8', 'data-sgs-fx-start' => 'top 85%', 'data-sgs-fx-trigger' => 'scroll' ) === $img,
+		'scrub on the image part: the grammar on the <img>, the power3.out curve as its GSAP name, off mobile as the scrub token in data-sgs-fx-off-mobile: ' . json_encode( $img )
 	);
 	fx_check( array() === fx_attrs( fx_tag( $out, 'wp-block-sgs-team-member' ) ), 'the root carries no data-sgs-fx for an image-part layer' );
 

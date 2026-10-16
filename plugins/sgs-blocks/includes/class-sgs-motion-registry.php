@@ -1183,19 +1183,19 @@ class SGS_Motion_Registry {
 
 	/*
 	 * ⚠ `data-sgs-fx-disable-tablet` / `-mobile` (Spec 38 §7 build task,
-	 * D446 Task 15) are DELIBERATELY NOT read anywhere in this class.
+	 * D446 Task 15) and `data-sgs-fx-off-tablet` / `-mobile` (Spec 38A) are
+	 * DELIBERATELY NOT read anywhere in this class.
 	 *
-	 * These per-breakpoint disable flags are emitted onto the block's own
-	 * root element by `includes/fx-attributes.php` and `src/blocks/
-	 * extensions/fx.js` (the editor control + both save/render paths), and
-	 * are meant to be read by the EFFECT MODULE at `init()` time — matched
-	 * against a live `matchMedia` check — so the effect never fires below
-	 * the chosen breakpoint. That consumption lives in `src/shared/effects/
-	 * gsap/provider.js` and the individual `fx-*.js` modules, none of which
-	 * this file touches.
+	 * The disable flags (every effect on the element) are emitted by
+	 * `includes/fx-attributes.php` and `src/blocks/extensions/fx.js` from the
+	 * flat `fxDisableTablet` / `fxDisableMobile`; the off lists (the named
+	 * effects only) by `Sgs_Motion_Fx_Emitter` from a layer's `off`. Both are
+	 * read at boot, against a live `matchMedia` check, by
+	 * `src/shared/effects/gsap/provider.js::isDisabledAtThisTier`, which
+	 * gates every Tier G effect; this file touches neither.
 	 *
-	 * Do NOT make this registry skip an enqueue because a disable flag is
-	 * present: the flags only ever disable a TABLET or MOBILE tier, never
+	 * Do NOT make this registry skip an enqueue because a disable flag or an
+	 * off list is present: they only ever disable a TABLET or MOBILE tier, never
 	 * desktop, so the effect can always still fire at ≥1024px regardless of
 	 * how the flags are set. Enqueue must stay keyed purely on whether
 	 * `data-sgs-fx` is present at all — exactly what `extract_effects()`
