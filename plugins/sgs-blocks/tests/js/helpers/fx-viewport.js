@@ -70,6 +70,7 @@ function resize( to ) {
 				queryMatches( entry.query, from ) !==
 				queryMatches( entry.query, to )
 		)
+		.slice()
 		.forEach( ( entry ) => {
 			// A listener removed by an earlier one in the same dispatch is not called, as in a browser.
 			if ( ! listeners.includes( entry ) ) {
@@ -101,4 +102,9 @@ function bypassGate() {
 	} ) );
 }
 
-module.exports = { installViewport, resize, bypassGate, OFF_SWITCH };
+module.exports = {
+	installViewport,
+	resize,
+	bypassGate,
+	OFF_SWITCH,
+};

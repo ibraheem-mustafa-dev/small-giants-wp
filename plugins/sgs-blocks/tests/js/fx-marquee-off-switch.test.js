@@ -10,7 +10,7 @@
 
 /* global jest, describe, test, expect, beforeEach, afterEach */
 
-const { installViewport, resize } = require( './fx-off-switch-viewport' );
+const { installViewport, resize } = require( './helpers/fx-viewport' );
 
 jest.mock(
 	'@sgs/loop-control',
