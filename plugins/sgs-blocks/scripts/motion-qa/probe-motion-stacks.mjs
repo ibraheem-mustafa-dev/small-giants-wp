@@ -163,9 +163,11 @@ async function styleCheck( page, rep ) {
 function weightRow( rep, log, local ) {
 	const w = L.weigh( log );
 	const tierG = false;
+	// The live fixture carries every effect family: its ceiling is the accepted stress allowance. The offline harness carries four stacks and keeps the client-page budget.
+	const stress = ! local;
 	const kb = ( n ) => Math.round( ( n / 1024 ) * 10 ) / 10;
-	rep.check( 'page-weight', { property: `${ local ? 'gzipped harness files' : 'bytes on the wire' } for ${ w.files } stylesheet and script responses`, measured: { cssKB: kb( w.css ), jsKB: kb( w.js ), gsapKB: kb( w.gsap ), lottieKB: kb( w.lottie ), webglKB: kb( w.webgl ), sgsCssKB: kb( w.sgsCss ), sgsJsKB: kb( w.sgsJs ) }, expected: 'CSS under 100 KB, JS under 50 KB (Tier W 120 KB, Lottie player its own 60 KB), zero GSAP bytes with no Tier G effect', pass: w.files > 0 ? L.judgeWeight( w, { tierG } ) : null, why: w.files > 0 ? '' : 'no stylesheet or script response was logged' } );
-	rep.control( 'page-weight', { property: 'the same log with a planted 51 KB script, a 101 KB stylesheet and a GSAP file', measured: [ kb( w.js + 51 * 1024 ), kb( w.css + 101 * 1024 ), 'gsap' ], expected: 'each judged over budget', red: ! L.judgeWeight( L.weigh( [ ...log, { url: '/x.js', type: 'js', bytes: 51 * 1024 } ] ) ) && ! L.judgeWeight( L.weigh( [ ...log, { url: '/x.css', type: 'css', bytes: 101 * 1024 } ] ) ) && ! L.judgeWeight( L.weigh( [ ...log, { url: '/gsap.min.js', type: 'js', bytes: 10 } ] ) ) } );
+	rep.check( 'page-weight', { property: `${ local ? 'gzipped harness files' : 'bytes on the wire' } for ${ w.files } stylesheet and script responses`, measured: { cssKB: kb( w.css ), jsKB: kb( w.js ), gsapKB: kb( w.gsap ), lottieKB: kb( w.lottie ), webglKB: kb( w.webgl ), sgsCssKB: kb( w.sgsCss ), sgsJsKB: kb( w.sgsJs ) }, expected: stress ? 'the stress fixture ceiling: CSS under 200 KB and JS under 100 KB (the client-page budget is 100 KB and 50 KB), zero GSAP bytes with no Tier G effect' : 'CSS under 100 KB, JS under 50 KB (Tier W 120 KB, Lottie player its own 60 KB), zero GSAP bytes with no Tier G effect', pass: w.files > 0 ? L.judgeWeight( w, { tierG, stress } ) : null, why: w.files > 0 ? '' : 'no stylesheet or script response was logged' } );
+	rep.control( 'page-weight', { property: 'the same log with a planted 51 KB script, a 101 KB stylesheet and a GSAP file', measured: [ kb( w.js + 101 * 1024 ), kb( w.css + 201 * 1024 ), 'gsap' ], expected: 'each judged over budget', red: ! L.judgeWeight( L.weigh( [ ...log, { url: '/x.js', type: 'js', bytes: 101 * 1024 } ] ), { stress } ) && ! L.judgeWeight( L.weigh( [ ...log, { url: '/x.css', type: 'css', bytes: 201 * 1024 } ] ), { stress } ) && ! L.judgeWeight( L.weigh( [ ...log, { url: '/gsap.min.js', type: 'js', bytes: 10 } ] ), { stress } ) } );
 }
 
 /** Collect the page's stylesheet and script responses with their wire size. */
@@ -234,6 +236,9 @@ export function selfTest() {
 	want( L.judgeWeight( L.weigh( [ ...ok, { url: '/build/lottie.js', type: 'js', bytes: kb( 55 ) } ] ) ), 'the Lottie player is held to its own 60 KB allowance' );
 	want( ! L.judgeWeight( L.weigh( [ ...ok, { url: '/build/lottie.js', type: 'js', bytes: kb( 61 ) } ] ) ), 'a Lottie player over 60 KB fails' );
 	want( L.judgeWeight( L.weigh( [ ...ok, { url: '/build/webgl-renderer.js', type: 'js', bytes: kb( 80 ) } ] ) ), 'a Tier W page has 120 KB' );
+	want( L.judgeWeight( L.weigh( [ ...ok, { url: '/b.js', type: 'js', bytes: kb( 60 ) }, { url: '/b.css', type: 'css', bytes: kb( 100 ) } ] ), { stress: true } ), 'the stress fixture ceiling admits 80 KB of JS and 140 KB of CSS' );
+	want( ! L.judgeWeight( L.weigh( [ ...ok, { url: '/b.js', type: 'js', bytes: kb( 81 ) } ] ), { stress: true } ), 'the stress ceiling still fails JS over 100 KB' );
+	want( ! L.judgeWeight( L.weigh( [ ...ok, { url: '/b.css', type: 'css', bytes: kb( 161 ) } ] ), { stress: true } ), 'the stress ceiling still fails CSS over 200 KB' );
 	want( styleWritesTransform( '--a:1; transform: none' ) && ! styleWritesTransform( '--a:1' ), 'the inline style judge catches a transform' );
 	const tree = JSON.parse( fs.readFileSync( path.join( FIXTURE_DIR, 'motion-stacks.json' ), 'utf8' ) );
 	const found = collectMotion( tree ).map( ( m ) => m.className );

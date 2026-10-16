@@ -21,6 +21,9 @@ export const CSS_BUDGET = 100 * 1024;
 export const JS_BUDGET = 50 * 1024;
 /** Spec 38 §1.2: Tier W pages carry a named 120 KB JS allowance; the Lottie player (Tier H) a named 60 KB one, for the player alone. */
 export const TIER_W_JS_BUDGET = 120 * 1024;
+/** The all-effects stress fixture (page 5272, every effect family on one page) is held to this ceiling, not the client-page budget: Bean accepted its weight on 2026-10-15 under Spec 38's tier rules, with no per-page splitting. */
+export const STRESS_CSS_BUDGET = 200 * 1024;
+export const STRESS_JS_BUDGET = 100 * 1024;
 export const LOTTIE_ALLOWANCE = 60 * 1024;
 
 // ---- Pure judges ------------------------------------------------------------------------------------------------
@@ -84,10 +87,11 @@ export function weigh( log ) {
  * no Tier G effect, must be absent (FR-38-3: zero GSAP bytes). A Tier W page's JS budget is 120 KB; the Lottie player is
  * counted against its own 60 KB allowance and left out of the 50 KB figure.
  */
-export function judgeWeight( w, { tierG = false } = {} ) {
-	const jsBudget = w.webgl > 0 ? TIER_W_JS_BUDGET : JS_BUDGET;
+export function judgeWeight( w, { tierG = false, stress = false } = {} ) {
+	const jsBudget = stress ? STRESS_JS_BUDGET : w.webgl > 0 ? TIER_W_JS_BUDGET : JS_BUDGET;
+	const cssBudget = stress ? STRESS_CSS_BUDGET : CSS_BUDGET;
 	const jsCounted = w.js - w.lottie;
-	return w.css < CSS_BUDGET && jsCounted < jsBudget && w.lottie <= LOTTIE_ALLOWANCE && ( tierG || w.gsap === 0 );
+	return w.css < cssBudget && jsCounted < jsBudget && w.lottie <= LOTTIE_ALLOWANCE && ( tierG || w.gsap === 0 );
 }
 
 // ---- The offline harness ----------------------------------------------------------------------------------------
