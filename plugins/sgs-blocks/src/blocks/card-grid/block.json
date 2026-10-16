@@ -139,8 +139,8 @@
         },
         "item": {
           "restingShadow": true,
-          "label": "Card",
-          "order": 4,
+          "label": "Whole card",
+          "order": 1,
           "clusters": [],
           "attrMap": {
             "css:background-color": "cardBackground",

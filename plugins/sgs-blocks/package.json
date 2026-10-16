@@ -20,6 +20,7 @@
     "check:tier-db-parity": "python scripts/migrate-tier-object.py --check-db-parity",
     "check:box-longhands": "python scripts/migrate-box-longhands.py --check",
     "check:motion-pause-control": "python scripts/check-motion-pause-control.py --check",
+    "check:motion-item-parts": "python scripts/check-motion-item-parts.py --check",
     "check:personal-data": "python ../../scripts/lint-patterns-for-personal-data.py",
     "check:font-sources": "node ../../scripts/font-source-audit.js",
     "check:render-closures": "python scripts/migrate-render-closures.py --check",

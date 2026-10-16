@@ -103,8 +103,8 @@
         },
         "card": {
           "restingShadow": true,
-          "label": "Post card",
-          "order": 3,
+          "label": "Whole post card",
+          "order": 1,
           "clusters": [
             "fill"
           ],

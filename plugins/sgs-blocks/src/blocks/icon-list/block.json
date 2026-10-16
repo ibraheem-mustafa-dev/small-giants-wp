@@ -110,8 +110,8 @@
 					}
 				},
 				"item": {
-					"label": "Item row",
-					"order": 3,
+					"label": "Whole item row",
+					"order": 1,
 					"clusters": [
 						"text",
 						"layout"

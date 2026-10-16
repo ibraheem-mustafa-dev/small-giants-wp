@@ -299,8 +299,8 @@
 				},
 				"review": {
 					"restingShadow": true,
-					"label": "Review card",
-					"order": 12,
+					"label": "Whole review card",
+					"order": 1,
 					"layer": "OUTER",
 					"clusters": [
 						"fill",

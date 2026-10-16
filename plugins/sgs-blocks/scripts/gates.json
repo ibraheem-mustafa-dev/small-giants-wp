@@ -1627,5 +1627,14 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 182
+  },
+  {
+    "id": "check-motion-item-parts",
+    "cmd": "python scripts/check-motion-item-parts.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 183
   }
 ]

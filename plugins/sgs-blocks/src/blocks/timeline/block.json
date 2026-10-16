@@ -168,8 +168,8 @@
 					"_note": "dateColour drives `--sgs-date-colour`, applied via a `:not([style*='color'])` CSS fallback on `.sgs-timeline__date` (style.scss:358-360) so an inline colour override always wins. Resolves via default convention (`date`+`Colour`). dateColourGradient/Hover/HoverGradient (2026-09-07, colour-conformance TEXT closeout, corrected same session) are routed through the standard text-colour trio in render.php, scoped to `.sgs-timeline__date` directly — NOT the sgs_custom_property_gradient_decls() background-image chain a first pass mistakenly copied from connectorColour (a FILL/background attribute) — dateColour paints text (color:), which that mechanism cannot express."
 				},
 				"entry": {
-					"label": "Timeline entry",
-					"order": 5,
+					"label": "Whole timeline entry",
+					"order": 1,
 					"clusters": [
 						"layout",
 						"text"

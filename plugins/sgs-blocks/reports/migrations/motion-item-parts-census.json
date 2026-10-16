@@ -1,0 +1,33 @@
+{
+  "detector": "scripts/check-motion-item-parts.py",
+  "rule": "a block that repeats items names its whole-item motion part first",
+  "date": "2026-10-16",
+  "corpus": 15,
+  "before": {
+    "ok": [
+      "sgs/brand-strip",
+      "sgs/trust-bar"
+    ],
+    "failing_no_whole_part": [
+      "sgs/card-grid",
+      "sgs/gallery",
+      "sgs/google-reviews",
+      "sgs/icon-list",
+      "sgs/post-grid",
+      "sgs/pricing-table",
+      "sgs/process-steps",
+      "sgs/timeline"
+    ],
+    "exempt": {
+      "sgs/choice-flow-question": "options belong to a question; the question is the unit",
+      "sgs/form-field-tiles": "tiles are form inputs, not revealed items",
+      "sgs/nav-drawer-menu": "nav items follow the navigation motion model (Spec 36)",
+      "sgs/option-picker": "options are selectable pills inside a form control, not revealed items",
+      "sgs/product-card": "pack sizes and colour swatches are controls inside one card, not revealed items"
+    }
+  },
+  "unrecognised": 0,
+  "after": {
+    "failing": 0
+  }
+}
