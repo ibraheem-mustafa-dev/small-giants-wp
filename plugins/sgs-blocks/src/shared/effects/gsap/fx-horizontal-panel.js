@@ -8,7 +8,9 @@
  * (`data-sgs-fx-scrub`), ease, hold (the share of the pin spent at rest after the travel), pin length per panel
  * plus a fixed tail (the pin spans `panels × length + tail`; with no stored length it spans the travel distance),
  * breakpoint, below-breakpoint mode, and the outputs of `horizontal-panel-state.js` (progress, active panel,
- * proximity focus). Before FR-38A-50 this file hard-coded `scrub: true` and `ease: 'none'` and never read hold.
+ * proximity focus). Smoothing, hold, pin length, tail and the focus values can differ per device: they are read at
+ * the current tier, and the pin is rebuilt with the new tier's values when the viewport crosses the tablet or mobile
+ * breakpoint (`rebuildOnTierChange`).
  *
  * FAIL-OPEN CONTRACT: the fallback for BOTH narrow viewports and reduced motion is CSS, not JS. The stylesheet
  * `assets/css/fx-horizontal-panel.css` renders `[data-sgs-fx~="horizontal-panel"]` as a native
@@ -39,6 +41,7 @@ import {
 	resolveEase,
 } from '@sgs/motion-provider';
 import { readParams, lengthPx } from './horizontal-panel-params.js';
+import { rebuildOnTierChange } from './scroll-rows.js';
 import {
 	resolveTrack,
 	layoutPanels,
@@ -139,7 +142,8 @@ function pin( gsap, el, track, params ) {
  * Initialise one horizontal-panel section.
  *
  * @param {HTMLElement} el The element carrying `data-sgs-fx="horizontal-panel"`.
- * @return {Function} Cleanup that reverts the matchMedia context, killing whichever breakpoint branch was active.
+ * @return {Function} Cleanup that detaches the tier listeners and reverts the matchMedia context, killing whichever
+ *                    breakpoint branch was active.
  */
 export function initHorizontalPanel( el ) {
 	return withMotionAllowed( ( gsap ) => {
@@ -147,12 +151,16 @@ export function initHorizontalPanel( el ) {
 		if ( ! track ) {
 			return undefined;
 		}
-		const params = readParams( el );
-		const mm = gsap.matchMedia();
-		// Below the stored breakpoint this registers no handler, so GSAP creates nothing and the element stays
-		// exactly as the stylesheet rendered it: a native scroll-snap row or a static stack.
-		mm.add( params.pinQuery, () => pin( gsap, el, track, params ) );
-		return () => mm.revert();
+		const build = () => {
+			// Read at the current device tier; a tier change tears this build down and reads again.
+			const params = readParams( el );
+			const mm = gsap.matchMedia();
+			// Below the stored breakpoint this registers no handler, so GSAP creates nothing and the element stays
+			// exactly as the stylesheet rendered it: a native scroll-snap row or a static stack.
+			mm.add( params.pinQuery, () => pin( gsap, el, track, params ) );
+			return () => mm.revert();
+		};
+		return rebuildOnTierChange( build );
 	} );
 }
 

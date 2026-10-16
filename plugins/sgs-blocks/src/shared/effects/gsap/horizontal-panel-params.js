@@ -2,15 +2,18 @@
  * Tier G effect: the stored parameters of a horizontal-panel section (Spec 38A FR-38A-38, FR-38A-39, FR-38A-50).
  *
  * Each parameter arrives on the attribute that `motion.schema.json::HorizontalPanelValues` names for it
- * (`x-sgs-field.dataAttr`). A parameter whose field also names a custom property would be read from the computed
- * custom property first; none of this effect's inputs do (its only custom properties, `--sgs-fx-progress`,
- * `--sgs-focus-s` and `--sgs-focus-op`, are outputs the effect writes), so every input is the attribute, then the
- * default below. Exports functions only; nothing runs on import and nothing is written.
+ * (`x-sgs-field.dataAttr`, the desktop value). A per-device parameter (smoothing, hold, pin length, tail and the four
+ * focus values) also names its own custom property (`x-sgs-field.cssProperty`), which the emitter writes per device
+ * tier inside the breakpoint media queries (`Sgs_Motion_Effect_Properties::css`); it is read from the element's
+ * computed custom property first, then the attribute, then the default below. The focus inputs have their own
+ * properties, separate from the outputs the effect writes on each panel (`--sgs-focus-s`, `--sgs-focus-op`,
+ * `--sgs-fx-progress`), so an output never overwrites a stored input. Exports functions only; nothing runs on import
+ * and nothing is written.
  *
  * @package
  */
 
-import { readSmoothing } from './scroll-rows.js';
+import { readSmoothing, readResponsive } from './scroll-rows.js';
 
 /**
  * Where each parameter arrives: the `x-sgs-field.dataAttr` of that parameter.
@@ -32,6 +35,23 @@ export const ATTRS = {
 	edgeScale: 'data-sgs-fx-horizontal-panel-edge-scale',
 	focusOpacity: 'data-sgs-fx-horizontal-panel-focus-opacity',
 	edgeOpacity: 'data-sgs-fx-horizontal-panel-edge-opacity',
+};
+
+/**
+ * The per-device custom property of each parameter that has one (its `x-sgs-field.cssProperty`). It wins over the
+ * attribute when non-empty.
+ *
+ * @type {Object<string, string>}
+ */
+export const CUSTOM_PROPERTIES = {
+	smoothing: '--sgs-horizontal-panel-smoothing',
+	hold: '--sgs-horizontal-panel-hold',
+	pinLength: '--sgs-horizontal-panel-pin-length',
+	pinTail: '--sgs-horizontal-panel-pin-tail',
+	focusScale: '--sgs-horizontal-panel-focus-scale',
+	edgeScale: '--sgs-horizontal-panel-edge-scale',
+	focusOpacity: '--sgs-horizontal-panel-focus-opacity',
+	edgeOpacity: '--sgs-horizontal-panel-edge-opacity',
 };
 
 /**
@@ -82,15 +102,26 @@ function flag( el, name, fallback ) {
 }
 
 /**
- * A finite number from an attribute, or the fallback.
+ * A per-device parameter's text: its computed custom property, else its attribute, else null.
  *
- * @param {HTMLElement} el       Element carrying the attribute.
- * @param {string}      name     Attribute name.
+ * @param {HTMLElement} el  Element carrying the parameter.
+ * @param {string}      key Parameter key in `ATTRS` and `CUSTOM_PROPERTIES`.
+ * @return {string|null} The value.
+ */
+function responsive( el, key ) {
+	return readResponsive( el, CUSTOM_PROPERTIES[ key ], ATTRS[ key ] );
+}
+
+/**
+ * A finite number from a per-device parameter, or the fallback.
+ *
+ * @param {HTMLElement} el       Element carrying the parameter.
+ * @param {string}      key      Parameter key in `ATTRS` and `CUSTOM_PROPERTIES`.
  * @param {number}      fallback Value when unset or unreadable.
  * @return {number} The number.
  */
-function number( el, name, fallback ) {
-	const raw = text( el, name );
+function number( el, key, fallback ) {
+	const raw = responsive( el, key );
 	const parsed = null === raw ? NaN : parseFloat( raw );
 	return Number.isFinite( parsed ) ? parsed : fallback;
 }
@@ -138,13 +169,13 @@ export function lengthPx( length, viewport ) {
 
 /**
  * The hold fraction: the share of the pin spent with the row at rest after its travel. A number from 0 to 0.6 or a
- * named step; absent means none, so the default mapping is linear.
+ * named step; absent means none, so the default mapping is linear. The per-device property wins over the attribute.
  *
- * @param {HTMLElement} el Element carrying `data-sgs-fx-hold`.
+ * @param {HTMLElement} el Element carrying `--sgs-horizontal-panel-hold` or `data-sgs-fx-hold`.
  * @return {number} Fraction of the pin, 0 to 0.6.
  */
 export function readHold( el ) {
-	const raw = text( el, ATTRS.hold );
+	const raw = responsive( el, 'hold' );
 	if ( null === raw ) {
 		return 0;
 	}
@@ -156,7 +187,8 @@ export function readHold( el ) {
 }
 
 /**
- * Every stored parameter of one horizontal-panel element.
+ * Every stored parameter of one horizontal-panel element, at the current device tier (the per-device values come
+ * from the custom properties the tier's media query sets, so a caller re-reads them when the tier changes).
  *
  * @param {HTMLElement} el The element carrying `data-sgs-fx="horizontal-panel"`.
  * @return {Object} The parameters: `scrub` (seconds, or `true` for none), `ease` (text or null), `hold`, `pinQuery`,
@@ -166,27 +198,24 @@ export function readParams( el ) {
 	const breakpoint = text( el, ATTRS.breakpoint );
 	const belowMode = text( el, ATTRS.belowMode );
 	return {
-		scrub: readSmoothing( el, ATTRS.smoothing, null, 0 ),
+		scrub: readSmoothing(
+			el,
+			ATTRS.smoothing,
+			CUSTOM_PROPERTIES.smoothing,
+			0
+		),
 		ease: text( el, ATTRS.easing ),
 		hold: readHold( el ),
 		pinQuery: PIN_QUERIES[ breakpoint ] || PIN_QUERIES.tablet,
 		belowMode: 'static' === belowMode ? 'static' : 'snap',
-		pinLength: parseScrollLength( text( el, ATTRS.pinLength ) ),
-		pinTail: parseScrollLength( text( el, ATTRS.pinTail ) ),
+		pinLength: parseScrollLength( responsive( el, 'pinLength' ) ),
+		pinTail: parseScrollLength( responsive( el, 'pinTail' ) ),
 		progress: flag( el, ATTRS.progressOutput, true ),
 		active: flag( el, ATTRS.activeState, true ),
 		focus: flag( el, ATTRS.proximityFocus, false ),
-		focusScale: number( el, ATTRS.focusScale, FOCUS_DEFAULTS.focusScale ),
-		edgeScale: number( el, ATTRS.edgeScale, FOCUS_DEFAULTS.edgeScale ),
-		focusOpacity: number(
-			el,
-			ATTRS.focusOpacity,
-			FOCUS_DEFAULTS.focusOpacity
-		),
-		edgeOpacity: number(
-			el,
-			ATTRS.edgeOpacity,
-			FOCUS_DEFAULTS.edgeOpacity
-		),
+		focusScale: number( el, 'focusScale', FOCUS_DEFAULTS.focusScale ),
+		edgeScale: number( el, 'edgeScale', FOCUS_DEFAULTS.edgeScale ),
+		focusOpacity: number( el, 'focusOpacity', FOCUS_DEFAULTS.focusOpacity ),
+		edgeOpacity: number( el, 'edgeOpacity', FOCUS_DEFAULTS.edgeOpacity ),
 	};
 }

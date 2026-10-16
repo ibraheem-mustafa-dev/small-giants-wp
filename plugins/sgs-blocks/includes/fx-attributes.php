@@ -313,24 +313,30 @@ function sgs_fx_presets(): array {
 				'fxScrub' => 1.5,
 			),
 		),
+		/*
+		 * The horizontal panel reads `fxEnd` as the pin length PER PANEL (the pin spans panels x length, plus any tail),
+		 * `fxScrub` as its smoothing in seconds (0 is none, locked to the scrollbar) and `fxHold` as the share of the pin
+		 * spent at rest after the travel. Standard is the reference Heritage track: 70vh per panel, linear, no smoothing,
+		 * no hold.
+		 */
 		'horizontal-panel' => array(
 			'subtle'   => array(
 				'fxStart' => null,
 				'fxEnd'   => '+=50%',
-				'fxHold'  => 'short',
-				'fxScrub' => 0.3,
+				'fxHold'  => null,
+				'fxScrub' => 0,
 			),
 			'standard' => array(
 				'fxStart' => null,
-				'fxEnd'   => '+=100%',
+				'fxEnd'   => '+=70%',
 				'fxHold'  => null,
-				'fxScrub' => 0.8,
+				'fxScrub' => 0,
 			),
 			'dramatic' => array(
 				'fxStart' => null,
-				'fxEnd'   => '+=200%',
-				'fxHold'  => 'long',
-				'fxScrub' => 1.5,
+				'fxEnd'   => '+=100%',
+				'fxHold'  => 'short',
+				'fxScrub' => 0.8,
 			),
 		),
 		'split-reveal'     => array(

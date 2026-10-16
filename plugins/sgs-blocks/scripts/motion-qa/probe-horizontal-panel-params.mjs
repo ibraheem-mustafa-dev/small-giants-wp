@@ -3,8 +3,9 @@
  * (FR-38A-38, FR-38A-39, FR-38A-50) on a deployed site.
  *
  * FIXTURE: tests/fixtures/motion/pages/horizontal-panel.json (an `sgs/timeline` horizontal with five panels, pin length
- * 70vh per panel plus a 40vh tail, no smoothing, proximity focus on), built with scripts/wp-build-page.js. The host is
- * found by its marker class `.m55-hp`. With no --page the probe reports UNANSWERED and exits 2.
+ * 70vh per panel plus a 40vh tail, no smoothing, proximity focus on; Tablet pin length 60vh, Mobile 50vh), built with
+ * scripts/wp-build-page.js. The host is found by its marker class `.m55-hp`. With no --page the probe reports
+ * UNANSWERED and exits 2.
  *
  * WHAT IT MEASURES (1440 x 900 unless noted; every scroll is forced to `scroll-behavior: auto`)
  *   hp-pin-length      the pin spans 5 x 70vh + 40vh = 390vh (the scroll range over which the host is `position: fixed`)
@@ -17,10 +18,14 @@
  *   hp-snap-row        at 375 the host is a scroll-snap row (overflow-x auto, snap x) with no pin spacer
  *   hp-smoothing       a stored smoothing of 1.5s changes the measured scroll mapping (the FR-38A-50 negative control)
  *   hp-hold            a stored hold of 0.3 changes where the travel completes
+ *   hp-per-device@768  the host's --sgs-horizontal-panel-pin-length computes the Tablet value `+=60%`
+ *   hp-per-device@375  the same property computes the Mobile value `+=50%`
+ *   hp-pin-length@768  at 768 x 900 the pin spans 5 x 60vh + 40vh = 340vh: the runtime reads the Tablet value
  *
  * NEGATIVE CONTROLS (each must come out red)
  *   hp-linear/control      the judge run on the smoothed page's lagging sample must reject it
  *   hp-focus-edge/control  the judge run on the centred panel's values must reject them as the edge values
+ *   hp-per-device/control  the per-device judge run on the 1440 reading (the desktop `+=70%`) must reject it as Tablet
  *   hp-smoothing and hp-hold are themselves comparisons against a variant page (the response is rewritten in flight to
  *   store the parameter), so the baseline page is the control.
  *
@@ -41,10 +46,18 @@ const PER_PANEL_VH = 0.7;
 const TAIL_VH = 0.4;
 const TOL = 0.01;
 
+/** The fixture's per-device pin length, as the emitter writes it (`Sgs_Motion_Effect_Properties`), and the property. */
+export const PIN_PROPERTY = '--sgs-horizontal-panel-pin-length';
+export const TIER_PIN = { 1440: '+=70%', 768: '+=60%', 375: '+=50%' };
+const TABLET_PER_PANEL_VH = 0.6;
+
 // ---- Pure judges ---------------------------------------------------------------------------------------------
 
 /** The pin length the stored values give, in pixels. */
 export const expectedPin = ( viewport, panels = PANELS ) => ( panels * PER_PANEL_VH + TAIL_VH ) * viewport;
+
+/** True when a computed per-device property reads a tier's expected value (whitespace aside). */
+export const judgeTier = ( measured, width ) => 'string' === typeof measured && measured.trim() === TIER_PIN[ width ];
 
 /** The share of the pin the row travels over (the rest is the tail), for a stored hold. */
 export const travelShare = ( hold = 0, panels = PANELS ) =>
@@ -248,6 +261,33 @@ async function checkSnapRow( browser, url, report ) {
 	await context.close();
 }
 
+/** The per-device pin length read back at 768 and 375, the measured Tablet pin, and the desktop reading as control. */
+async function checkPerDevice( browser, url, report ) {
+	const readings = {};
+	for ( const width of [ 1440, 768, 375 ] ) {
+		const { context, page } = await open( browser, url, width );
+		readings[ width ] = await page.evaluate( ( name ) => {
+			const host = document.querySelector( '.m55-hp' );
+			return host ? getComputedStyle( host ).getPropertyValue( name ) : null;
+		}, PIN_PROPERTY );
+		if ( 768 === width ) {
+			const range = await pinRange( page );
+			const want = ( PANELS * TABLET_PER_PANEL_VH + TAIL_VH ) * HEIGHT;
+			report.check( 'hp-pin-length@768', range
+				? { selector: '.m55-hp @768', property: 'pin length (px)', measured: range.end - range.start, expected: want, pass: near( range.end - range.start, want, 3 ) }
+				: { pass: null, why: 'the host never became position: fixed at 768' } );
+		}
+		await context.close();
+	}
+	for ( const width of [ 768, 375 ] ) {
+		const measured = readings[ width ];
+		report.check( `hp-per-device@${ width }`, null === measured
+			? { pass: null, why: `no .m55-hp host at ${ width }` }
+			: { selector: `.m55-hp @${ width }`, property: PIN_PROPERTY, measured: measured.trim(), expected: TIER_PIN[ width ], pass: judgeTier( measured, width ) } );
+	}
+	report.control( 'hp-per-device', { measured: readings[ 1440 ]?.trim() ?? null, expected: TIER_PIN[ 768 ], red: ! judgeTier( readings[ 1440 ], 768 ) } );
+}
+
 /** The scrolled fraction at which a variant's row has travelled `target` of its distance, one frame after an instant scroll. */
 async function lagAt( browser, url, attrs, fraction, settle ) {
 	const { context, page } = await open( browser, url, 1440, attrs );
@@ -290,6 +330,9 @@ function selfTest() {
 	expect( 'edge judge rejects the centre values (control)', ! judgeFocus( { scale: 1, opacity: 1 }, 1 ) );
 	expect( 'a lagging sample fails the linear judge (control)', ! near( 0.2, expectedTravel( 0.5 ), TOL ) );
 	expect( 'parseScale reads none and a pair', parseScale( 'none' ) === 1 && parseScale( '0.94 0.94' ) === 0.94 );
+	expect( 'tier judge accepts the Tablet and Mobile values', judgeTier( ' +=60%', 768 ) && judgeTier( '+=50%', 375 ) );
+	expect( 'tier judge rejects the desktop value as Tablet (control)', ! judgeTier( TIER_PIN[ 1440 ], 768 ) );
+	expect( 'tier judge rejects an unset property (control)', ! judgeTier( '', 375 ) && ! judgeTier( null, 768 ) );
 	return failures.length ? 1 : 0;
 }
 
@@ -306,6 +349,7 @@ async function main() {
 	try {
 		const desktop = await checkDesktop( browser, url, report );
 		await checkSnapRow( browser, url, report );
+		await checkPerDevice( browser, url, report );
 		if ( desktop ) await checkVariants( browser, url, report );
 	} finally {
 		await browser.close();

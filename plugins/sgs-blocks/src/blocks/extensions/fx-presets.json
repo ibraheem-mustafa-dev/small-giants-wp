@@ -32,9 +32,9 @@
 			"dramatic": { "fxStart": null, "fxEnd": "+=200%", "fxHold": "long", "fxScrub": 1.5 }
 		},
 		"horizontal-panel": {
-			"subtle": { "fxStart": null, "fxEnd": "+=50%", "fxHold": "short", "fxScrub": 0.3 },
-			"standard": { "fxStart": null, "fxEnd": "+=100%", "fxHold": null, "fxScrub": 0.8 },
-			"dramatic": { "fxStart": null, "fxEnd": "+=200%", "fxHold": "long", "fxScrub": 1.5 }
+			"subtle": { "fxStart": null, "fxEnd": "+=50%", "fxHold": null, "fxScrub": 0 },
+			"standard": { "fxStart": null, "fxEnd": "+=70%", "fxHold": null, "fxScrub": 0 },
+			"dramatic": { "fxStart": null, "fxEnd": "+=100%", "fxHold": "short", "fxScrub": 0.8 }
 		},
 		"split-reveal": {
 			"subtle": { "fxStart": "top 85%", "fxEnd": null, "fxDuration": 0.5, "fxStagger": 0.02, "fxEase": "power1.out", "fxSplit": "words", "fxMask": null },

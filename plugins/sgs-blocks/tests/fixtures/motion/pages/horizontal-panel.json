@@ -84,6 +84,14 @@
 									"edgeScale": 0.94,
 									"focusOpacity": 1,
 									"edgeOpacity": 0.55
+								},
+								"devices": {
+									"tablet": {
+										"pinLength": "60vh"
+									},
+									"mobile": {
+										"pinLength": "50vh"
+									}
 								}
 							}
 						]

@@ -4272,7 +4272,7 @@
 					},
 					"x-sgs-field": {
 						"fieldType": "duration",
-						"cssProperty": null,
+						"cssProperty": "--sgs-horizontal-panel-smoothing",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-scrub",
@@ -4296,7 +4296,7 @@
 					"maximum": 0.6,
 					"x-sgs-field": {
 						"fieldType": "ratio",
-						"cssProperty": null,
+						"cssProperty": "--sgs-horizontal-panel-hold",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-hold"
@@ -4323,7 +4323,7 @@
 					"description": "Pin length per panel, in vh.",
 					"x-sgs-field": {
 						"fieldType": "distance",
-						"cssProperty": null,
+						"cssProperty": "--sgs-horizontal-panel-pin-length",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-end",
@@ -4336,7 +4336,7 @@
 					"description": "A fixed tail after the last panel, in vh.",
 					"x-sgs-field": {
 						"fieldType": "distance",
-						"cssProperty": null,
+						"cssProperty": "--sgs-horizontal-panel-pin-tail",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-horizontal-panel-pin-tail",
@@ -4392,7 +4392,7 @@
 					"maximum": 2,
 					"x-sgs-field": {
 						"fieldType": "scale",
-						"cssProperty": "--sgs-focus-s",
+						"cssProperty": "--sgs-horizontal-panel-focus-scale",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-horizontal-panel-focus-scale"
@@ -4403,7 +4403,7 @@
 					"maximum": 2,
 					"x-sgs-field": {
 						"fieldType": "scale",
-						"cssProperty": "--sgs-focus-s",
+						"cssProperty": "--sgs-horizontal-panel-edge-scale",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-horizontal-panel-edge-scale"
@@ -4413,7 +4413,7 @@
 					"$ref": "#/$defs/opacity",
 					"x-sgs-field": {
 						"fieldType": "opacity",
-						"cssProperty": "--sgs-focus-op",
+						"cssProperty": "--sgs-horizontal-panel-focus-opacity",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-horizontal-panel-focus-opacity"
@@ -4423,7 +4423,7 @@
 					"$ref": "#/$defs/opacity",
 					"x-sgs-field": {
 						"fieldType": "opacity",
-						"cssProperty": "--sgs-focus-op",
+						"cssProperty": "--sgs-horizontal-panel-edge-opacity",
 						"state": "active",
 						"perDevice": true,
 						"dataAttr": "data-sgs-fx-horizontal-panel-edge-opacity"

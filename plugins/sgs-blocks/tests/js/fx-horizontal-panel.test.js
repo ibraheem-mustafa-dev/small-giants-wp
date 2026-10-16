@@ -188,6 +188,193 @@ describe( 'createState', () => {
 	} );
 } );
 
+/*
+ * Per-device parameters (FR-38A-38, FR-38A-39). The emitter writes each per-device value as a custom property: the
+ * desktop value in the base rule, tablet and mobile inside `@media (max-width:1023px)` and `(max-width:767px)`
+ * (`Sgs_Motion_Effect_Properties::css`). jsdom applies no media query, so `stylesheetAt` stands in for the browser's
+ * cascade of those rules, decided by the mocked `window.matchMedia` at the current width.
+ */
+const TIERED = {
+	desktop: {
+		'--sgs-horizontal-panel-smoothing': '0ms',
+		'--sgs-horizontal-panel-hold': '0',
+		'--sgs-horizontal-panel-pin-length': '+=70%',
+		'--sgs-horizontal-panel-pin-tail': '40vh',
+		'--sgs-horizontal-panel-focus-scale': '1',
+		'--sgs-horizontal-panel-edge-scale': '0.94',
+		'--sgs-horizontal-panel-focus-opacity': '1',
+		'--sgs-horizontal-panel-edge-opacity': '0.55',
+	},
+	tablet: {
+		'--sgs-horizontal-panel-smoothing': '300ms',
+		'--sgs-horizontal-panel-hold': '0.2',
+		'--sgs-horizontal-panel-pin-length': '+=60%',
+		'--sgs-horizontal-panel-pin-tail': '30vh',
+		'--sgs-horizontal-panel-edge-scale': '0.9',
+		'--sgs-horizontal-panel-edge-opacity': '0.5',
+	},
+	mobile: {
+		'--sgs-horizontal-panel-smoothing': '500ms',
+		'--sgs-horizontal-panel-hold': '0.1',
+		'--sgs-horizontal-panel-pin-length': '+=50%',
+		'--sgs-horizontal-panel-pin-tail': '20vh',
+		'--sgs-horizontal-panel-edge-scale': '0.85',
+		'--sgs-horizontal-panel-edge-opacity': '0.4',
+	},
+};
+
+describe( 'per-device parameters', () => {
+	let width = 1440;
+	let listeners = [];
+	const realMatchMedia = window.matchMedia;
+	const realComputed = window.getComputedStyle;
+
+	/** Whether every `(min-width: Npx)` / `(max-width: Npx)` clause of a query holds at the current width. */
+	const matches = ( query ) =>
+		[ ...query.matchAll( /\((min|max)-width:\s*(\d+)px\)/g ) ].every(
+			( [ , side, px ] ) =>
+				'min' === side ? width >= Number( px ) : width <= Number( px )
+		);
+
+	/** The emitted rules as the browser cascades them at the current width. */
+	const stylesheetAt = () => ( {
+		...TIERED.desktop,
+		...( matches( '(max-width: 1023px)' ) ? TIERED.tablet : {} ),
+		...( matches( '(max-width: 767px)' ) ? TIERED.mobile : {} ),
+	} );
+
+	const resize = ( next ) => {
+		width = next;
+		listeners.forEach( ( listener ) => listener() );
+	};
+
+	beforeEach( () => {
+		width = 1440;
+		listeners = [];
+		window.matchMedia = jest.fn( ( query ) => ( {
+			get matches() {
+				return matches( query );
+			},
+			addEventListener: ( type, listener ) => listeners.push( listener ),
+			removeEventListener: ( type, listener ) => {
+				listeners = listeners.filter( ( l ) => l !== listener );
+			},
+		} ) );
+		window.getComputedStyle = ( node ) => {
+			const real = realComputed( node );
+			const sheet = node.hasAttribute( 'data-sgs-hp-tiered' )
+				? stylesheetAt()
+				: {};
+			return {
+				getPropertyValue: ( name ) =>
+					name in sheet
+						? sheet[ name ]
+						: real.getPropertyValue( name ),
+			};
+		};
+	} );
+
+	afterEach( () => {
+		window.matchMedia = realMatchMedia;
+		window.getComputedStyle = realComputed;
+	} );
+
+	// The desktop values also sit on the data attributes, as the emitter writes them.
+	const tieredHost = () =>
+		host( {
+			'data-sgs-hp-tiered': '',
+			'data-sgs-fx-scrub': '0',
+			'data-sgs-fx-hold': '0',
+			'data-sgs-fx-end': '+=70%',
+			'data-sgs-fx-horizontal-panel-pin-tail': '40vh',
+			'data-sgs-fx-horizontal-panel-proximity-focus': 'true',
+			'data-sgs-fx-horizontal-panel-edge-scale': '0.94',
+			'data-sgs-fx-horizontal-panel-edge-opacity': '0.55',
+		} );
+
+	it.each( [
+		[ 1440, true, 0, 70, 40, 0.94, 0.55 ],
+		[ 768, 0.3, 0.2, 60, 30, 0.9, 0.5 ],
+		[ 375, 0.5, 0.1, 50, 20, 0.85, 0.4 ],
+	] )(
+		'at %ipx reads that tier’s smoothing, hold, pin length, tail and focus edge',
+		( atWidth, scrub, hold, pinLength, pinTail, edgeScale, edgeOpacity ) => {
+			width = atWidth;
+			const p = readParams( tieredHost() );
+			expect( p.scrub ).toBe( scrub );
+			expect( p.hold ).toBeCloseTo( hold );
+			expect( p.pinLength ).toEqual( { value: pinLength, unit: 'vh' } );
+			expect( p.pinTail ).toEqual( { value: pinTail, unit: 'vh' } );
+			expect( p.edgeScale ).toBeCloseTo( edgeScale );
+			expect( p.edgeOpacity ).toBeCloseTo( edgeOpacity );
+			// A tier that sets no centre value inherits the wider one.
+			expect( p.focusScale ).toBe( 1 );
+		}
+	);
+
+	it( 'falls back to the attribute when no property is set (the negative control: the tiers above come from the properties)', () => {
+		width = 375;
+		const el = tieredHost();
+		el.removeAttribute( 'data-sgs-hp-tiered' );
+		const p = readParams( el );
+		expect( p.hold ).toBe( 0 );
+		expect( p.pinLength ).toEqual( { value: 70, unit: 'vh' } );
+		expect( p.edgeScale ).toBeCloseTo( 0.94 );
+	} );
+
+	it( 'rebuilds the pin with the new tier’s values when the viewport crosses a breakpoint', () => {
+		const { __gsap: gsapDouble } = require( '@sgs/motion-provider' );
+		const {
+			initHorizontalPanel,
+		} = require( '../../src/shared/effects/gsap/fx-horizontal-panel.js' );
+		const el = tieredHost();
+		const track = document.createElement( 'div' );
+		track.append(
+			document.createElement( 'div' ),
+			document.createElement( 'div' )
+		);
+		el.append( track );
+		gsapDouble.to.mockClear();
+		initHorizontalPanel( el );
+		const desktop = gsapDouble.to.mock.calls[ 0 ][ 1 ].scrollTrigger;
+		expect( desktop.scrub ).toBe( true );
+		resize( 800 );
+		expect( gsapDouble.to ).toHaveBeenCalledTimes( 2 );
+		const tablet = gsapDouble.to.mock.calls[ 1 ][ 1 ].scrollTrigger;
+		expect( tablet.scrub ).toBe( 0.3 );
+		// Two panels at 60vh plus a 30vh tail, at jsdom's 768px viewport height.
+		expect( tablet.end() ).toBe(
+			`+=${ ( 0.6 * window.innerHeight * 2 ) + ( 0.3 * window.innerHeight ) }`
+		);
+	} );
+
+	it( 'never overwrites the stored focus input with the focus output it writes on each panel', () => {
+		width = 768;
+		const el = tieredHost();
+		const panels = [ 0, 1 ].map( () => document.createElement( 'div' ) );
+		panels.forEach( ( panel, i ) => {
+			panel.getBoundingClientRect = () => ( { left: i * 100, width: 100 } );
+			el.appendChild( panel );
+		} );
+		el.getBoundingClientRect = () => ( { left: 0, width: 100 } );
+		const before = readParams( el );
+		createState( el, panels, { ...before, progress: false, active: false } ).update( 0.5 );
+		const after = readParams( el );
+		expect( after.edgeScale ).toBeCloseTo( 0.9 );
+		expect( after.edgeOpacity ).toBeCloseTo( 0.5 );
+		expect( after ).toEqual( before );
+		const written = [ el, ...panels ].flatMap( ( node ) =>
+			Array.from( node.style )
+		);
+		expect( written ).toEqual(
+			expect.arrayContaining( [ '--sgs-focus-s', '--sgs-focus-op' ] )
+		);
+		expect(
+			written.filter( ( name ) => name.startsWith( '--sgs-horizontal-panel-' ) )
+		).toEqual( [] );
+	} );
+} );
+
 describe( 'the pin ease', () => {
 	const { __gsap: gsapDouble } = require( '@sgs/motion-provider' );
 	const {

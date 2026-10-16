@@ -196,7 +196,10 @@
  * while it runs and writes `--sgs-focus-s` and `--sgs-focus-op` on it; with the parameter on, the panel applies them
  * through the same `scale` and `opacity` properties `motion.css` composes (a panel that holds its own scale or
  * opacity channel, `data-sgs-mc`, takes the composed rule there instead, so the focus value multiplies with its
- * other motion rather than replacing it). With the parameter off nothing is written and nothing applies.
+ * other motion rather than replacing it). With the parameter off nothing is written and nothing applies. The stored
+ * focus and edge values are inputs on their own per-device properties (`--sgs-horizontal-panel-focus-scale`,
+ * `-edge-scale`, `-focus-opacity`, `-edge-opacity`, set on the section by the emitter), which the module reads; the two
+ * outputs applied here are only ever written by the module, so an output never overwrites a stored input.
  *
  * `--sgs-fx-active` is 1 on the active panel and 0 elsewhere, inherited by its parts, so a part restyles through
  * the active state with no script of its own: `color: color-mix( in srgb, var( --accent ) calc( var( --sgs-fx-active ) * 100% ), grey )`.
