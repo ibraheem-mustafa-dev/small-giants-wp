@@ -46,9 +46,10 @@ Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/spe
 
 | Criterion | Command | Expected | STATUS |
 |---|---|---|---|
-| JS and PHP stagger parity | `php plugins/sgs-blocks/tests/php/run-motion-stagger-parity-standalone.php` | identical to the JS test cases | PASS (2026-10-15: 84 passed, 0 failed; the same 70 cases in `tests/js/motion-stagger-parity.test.js`) |
-| Stagger drift gate | `python plugins/sgs-blocks/scripts/check-motion-stagger-drift.py --check` | exit 0 (and `--self-test` exit 1) | PASS (2026-10-15: `--check` 4 fixture trees, 70 parity cases, 0 problems; `--self-test` exits 0 after reporting its planted out-of-order delay, so the expected exit 1 here should read "reports the plant") |
-| Indus drawer and mega delays live | probe on indus-test (M4.5, M4.6) | measured equals stored: 55ms step drawer, 26ms step mega, both capped at 320ms | PARTLY (2026-10-15 on indus-test, Chromium, Firefox and WebKit: measured equals stored for the drawer's 55ms steps and the mega rows' 26ms steps capped at 320; the Indus drawer tree stores no cap, so its 7th item is 330ms; Bean's glance passed 2026-10-15; open items in the build plan's Track S S4 bullet) |
+| JS and PHP stagger parity | `php plugins/sgs-blocks/tests/php/run-motion-stagger-parity-standalone.php` | identical to the JS test cases | PASS (2026-10-16: 88 passed, 0 failed; the same 74 cases, `together` included, in `tests/js/motion-stagger-parity.test.js`) |
+| Stagger drift gate | `python plugins/sgs-blocks/scripts/check-motion-stagger-drift.py --check` | exit 0 (and `--self-test` exit 1) | PASS (2026-10-16: `--check` 4 fixture trees, 74 parity cases, 0 problems; `--self-test` exits 0 after reporting its planted out-of-order delay, so the expected exit 1 here should read "reports the plant") |
+| Indus drawer and mega delays live | probe on indus-test (M4.5, M4.6) | measured equals stored: 55ms step drawer with no cap (draft A-14), 26ms step mega capped at 320ms (draft A-12) | PARTLY (2026-10-15 on indus-test, Chromium, Firefox and WebKit: measured equals stored for the drawer's 55ms steps and the mega rows' 26ms steps capped at 320; Bean's glance passed 2026-10-15; the drawer's 140ms start (A-14) lands with the M6.5 Indus drawer) |
+| Drawer closes together live | `node plugins/sgs-blocks/scripts/motion-qa/probe-motion-drawer-close-together.mjs --page 5316` (control 5276) | every item's close delay 0 and the dialog closed within the panel close + 150ms; the reversed control red | PASS (2026-10-16, Chromium, Firefox and WebKit at 375: delays 0,0,0,0,0, closed in 205 to 233ms against 200ms; control 200/150/100/50 and about 460ms, red) |
 
 ## M5 — Effects fold-in (PENDING)
 
