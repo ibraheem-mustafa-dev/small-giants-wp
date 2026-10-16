@@ -208,9 +208,11 @@ function check( root, consumers = CONSUMERS ) {
 			continue;
 		}
 		const src = read( path.join( root, file ) );
-		const wired = new RegExp( `import\\s*\\{[^}]*\\b${ view }\\b(?:\\s+as\\s+${ local })?[^}]*\\}\\s*from\\s*'[^']*easing-master-list'` );
+		// The consumer keeps its local name: `view as local` when they differ, the bare view with no alias when they match.
+		const binding = view === local ? `\\b${ view }\\b(?!\\s+as\\b)` : `\\b${ view }\\s+as\\s+${ local }\\b`;
+		const wired = new RegExp( `import\\s*\\{[^}]*${ binding }[^}]*\\}\\s*from\\s*'[^']*easing-master-list'` );
 		if ( ! wired.test( src ) ) {
-			problems.push( `${ file }: does not import ${ view } from the master module` );
+			problems.push( `${ file }: does not import ${ view } from the master module${ view === local ? ' unaliased' : ` as ${ local }` }` );
 		}
 	}
 	for ( const proof of ENUM_PROOFS ) {
@@ -358,6 +360,13 @@ function selfTest() {
 	fs.writeFileSync( masterPath, original );
 	fs.writeFileSync( consumerPath, 'export const nothing = 1;\n' );
 	expect( 'plant 3: an unwired consumer is caught', check( tmp, [ consumer ] ), false, 'does not import' );
+	fs.writeFileSync( consumerPath, clean.replace( 'as EASING_OPTIONS', 'as OTHER_EASING_OPTIONS' ) );
+	expect( 'plant 4: a consumer importing under the wrong local name is caught', check( tmp, [ consumer ] ), false, 'as EASING_OPTIONS' );
+	const same = { ...consumer, local: 'CSS_EASING_OPTIONS' };
+	fs.writeFileSync( consumerPath, clean.replace( ' as EASING_OPTIONS', '' ) );
+	expect( 'positive control: an unaliased consumer keeping the view name passes', check( tmp, [ same ] ), true );
+	fs.writeFileSync( consumerPath, clean );
+	expect( 'plant 5: a consumer that should keep the view name but aliases it is caught', check( tmp, [ same ] ), false, 'unaliased' );
 	fs.rmSync( tmp, { recursive: true, force: true } );
 	return results.every( Boolean ) ? 0 : 1;
 }

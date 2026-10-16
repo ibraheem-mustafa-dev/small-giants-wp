@@ -298,7 +298,8 @@ function itemHandOver( motion, targets, { blockName, elements, root, states, con
 		return { ...none, moved: movedEntranceTarget( motion, targets, elements ) };
 	}
 	if ( delegation ) {
-		return { ...none, moved: delegatedMove( motion, targets, elements, delegation ) };
+		// No child shows (an empty result), so nothing takes the container's entrance, as on the page.
+		return noItems ? none : { ...none, moved: delegatedMove( motion, targets, elements, delegation ) };
 	}
 	const item = noItems ? null : inheritedItem( motion, targets, elements, motionItems );
 	const resolved = item ? resolveTarget( blockName, elements, root, item.part, {} ) : null;

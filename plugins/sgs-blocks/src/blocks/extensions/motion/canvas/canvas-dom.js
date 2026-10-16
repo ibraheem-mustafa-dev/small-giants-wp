@@ -16,7 +16,7 @@
 import { emitScopedCss } from './emit-scoped-css';
 import { sharedLosers } from './shared-element';
 import { loopDelayCss } from './loop-delays';
-import { delegatedChildPlans } from './delegated-children';
+import { blockRootClass, delegatedChildPlans } from './delegated-children';
 import { resolveTarget } from './resolve-target';
 import { declaredItemPart } from './stagger-apply';
 
@@ -195,10 +195,11 @@ export function planCanvas( rootEl, motion, options ) {
 		options,
 		planTargets( rootEl, motion, options )
 	);
-	if ( ! rootEl || ! options.delegation ) {
+	if ( ! rootEl ) {
 		return out;
 	}
-	// A delegating block's children are the server's preview, which carries their delays (`delegated-children.js`).
+	// A delegating block's children are the server's preview, which carries their delays (`delegated-children.js`); outside
+	// a delegating mode there is no child block, so there are no plans.
 	const children = delegatedChildPlans( motion, options ).filter(
 		( plan ) => planElements( rootEl, plan ).length > 0
 	);
@@ -246,8 +247,14 @@ function withLoopDelays( rootEl, motion, options, out ) {
 function planTargets( rootEl, motion, options ) {
 	let first = emitScopedCss( motion, options );
 	const inherited = first.plans.find( ( plan ) => plan.inheritedFrom );
-	if ( rootEl && inherited && planElements( rootEl, inherited ).length === 0 ) {
-		// No item shows, so nothing takes the container's entrance: it stays on the container, as on the page.
+	const childClass = blockRootClass( options.delegation?.block );
+	const noChild =
+		Boolean( rootEl ) &&
+		childClass !== '' &&
+		rootEl.querySelector( `.${ childClass }` ) === null;
+	if ( rootEl && ( noChild || ( inherited && planElements( rootEl, inherited ).length === 0 ) ) ) {
+		// No item or delegated child shows, so nothing takes the container's entrance: it stays on the container, as on
+		// the page (`render-delegated.php` prints an empty result before it hands any child the entrance).
 		options = { ...options, noItems: true };
 		first = emitScopedCss( motion, options );
 	}

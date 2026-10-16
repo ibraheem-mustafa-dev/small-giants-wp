@@ -38,16 +38,23 @@ function prefersReduced( el ) {
 
 // Play one element's entrance: write the plan's entrance attributes, set `data-sgs-in`, and when the play ends take off
 // `data-sgs-in` and the attributes it wrote. An entrance the server already printed on the element (a delegating
-// block's children in its preview) plays from those attributes, which stay.
+// block's children in its preview) plays from those attributes, which stay: they come off for the reflow and go back on
+// with `data-sgs-in`, because a `load` marker already holds its finished animation at rest (`motion.css` names the
+// animation for `[data-sgs-me~="load"]`), so only a fresh marker restarts it.
 function playOn( el, attrs ) {
 	const win = el.ownerDocument.defaultView || window;
 	const written = ENTRANCE_ATTRS.filter(
 		( name ) => attrs[ name ] !== undefined
 	);
+	const carried = ENTRANCE_ATTRS.filter(
+		( name ) => ! written.includes( name ) && el.hasAttribute( name )
+	).map( ( name ) => [ name, el.getAttribute( name ) ] );
 	written.forEach( ( name ) => el.setAttribute( name, attrs[ name ] ) );
+	carried.forEach( ( [ name ] ) => el.removeAttribute( name ) );
 	el.removeAttribute( 'data-sgs-me-kf' );
 	el.removeAttribute( 'data-sgs-in' );
 	el.getBoundingClientRect();
+	carried.forEach( ( [ name, value ] ) => el.setAttribute( name, value ) );
 	el.setAttribute( 'data-sgs-in', '' );
 	const keyframes = win.sgsMotionKeyframes;
 	if ( el.hasAttribute( 'data-sgs-me-keyframes' ) && keyframes?.play ) {
