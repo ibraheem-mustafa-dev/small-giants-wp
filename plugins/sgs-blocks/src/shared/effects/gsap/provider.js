@@ -233,8 +233,8 @@ function currentTier() {
  * Skipping boot is SAFE by construction: per FR-38-2 each effect applies its own
  * initial hidden/offset state and the server never renders one, so an element
  * that is never booted simply stays fully visible. Fail-open, same as JS-blocked.
- * `bootEffect` asks again on every tier change, so the answer is always the
- * current tier's.
+ * `bootEffect` asks again on every tier change where the browser reports
+ * media-query changes, so the answer is the current tier's.
  *
  * @param {HTMLElement} el     Element carrying the fx attributes.
  * @param {string}      effect Effect name as it appears in `data-sgs-fx`.
