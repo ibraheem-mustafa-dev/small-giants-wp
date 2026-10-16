@@ -1,0 +1,255 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "vo-ripples"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Ripple off mobile",
+					"url": "https://example.com/",
+					"className": "vro-a",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ripple1",
+										"effect": "ripple",
+										"trigger": "pointerdown",
+										"values": {
+											"colour": "#ffffff",
+											"duration": 650,
+											"easing": "linear",
+											"sizeFactor": 2.2,
+											"peakOpacity": 0.35
+										},
+										"off": [
+											"mobile"
+										]
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Ripple control",
+					"url": "https://example.com/",
+					"className": "vro-b",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ripple1",
+										"effect": "ripple",
+										"trigger": "pointerdown",
+										"values": {
+											"colour": "#ffffff",
+											"duration": 650,
+											"easing": "linear",
+											"sizeFactor": 2.2,
+											"peakOpacity": 0.35
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Ripple off tablet",
+					"url": "https://example.com/",
+					"className": "vro-c",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "ripple1",
+										"effect": "ripple",
+										"trigger": "pointerdown",
+										"values": {
+											"colour": "#ffffff",
+											"duration": 650,
+											"easing": "linear",
+											"sizeFactor": 2.2,
+											"peakOpacity": 0.35
+										},
+										"off": [
+											"tablet"
+										]
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "vo-sheens"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Sheen card",
+					"description": "A diagonal band crosses this card once on each pointer entry.",
+					"className": "vso-a",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"effects": [
+										{
+											"id": "sheen1",
+											"effect": "sheen",
+											"trigger": "hover",
+											"values": {
+												"bandWidth": 60,
+												"angle": -18,
+												"colour": "#ffffff",
+												"opacity": 0.45,
+												"duration": 750,
+												"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+											},
+											"off": [
+												"mobile"
+											]
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Sheen card",
+					"description": "A diagonal band crosses this card once on each pointer entry.",
+					"className": "vso-b",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"effects": [
+										{
+											"id": "sheen1",
+											"effect": "sheen",
+											"trigger": "hover",
+											"values": {
+												"bandWidth": 60,
+												"angle": -18,
+												"colour": "#ffffff",
+												"opacity": 0.45,
+												"duration": 750,
+												"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Sheen card",
+					"description": "A diagonal band crosses this card once on each pointer entry.",
+					"className": "vso-c",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"effects": [
+										{
+											"id": "sheen1",
+											"effect": "sheen",
+											"trigger": "hover",
+											"values": {
+												"bandWidth": 60,
+												"angle": -18,
+												"colour": "#ffffff",
+												"opacity": 0.45,
+												"duration": 750,
+												"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+											},
+											"off": [
+												"tablet"
+											]
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		]
+	}
+]
