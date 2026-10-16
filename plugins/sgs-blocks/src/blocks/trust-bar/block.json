@@ -143,8 +143,8 @@
 				"icon-badge": {
 					"restingShadow": true,
 					"selector": ".sgs-trust-bar__circle",
-					"label": "Icon badge (icon-circle variant)",
-					"order": 2,
+					"label": "Icon circle only (icon-circle variant)",
+					"order": 3,
 					"clusters": [
 						"fill",
 						"layout",
@@ -179,8 +179,8 @@
 					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover pairs with the resting iconColour above (2026-09-02) — render.php:255-258 emits it as a `color:` decl scoped to the block ROOT rather than a dedicated icon-badge selector, but the element it semantically belongs to (and the one its resting twin is declared on) is icon-badge, matching check-hover-state-classification.py's resting-twin discriminator."
 				},
 				"label": {
-					"label": "Badge label",
-					"order": 3,
+					"label": "Badge text only",
+					"order": 6,
 					"clusters": [
 						"text"
 					],
@@ -188,8 +188,8 @@
 					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node."
 				},
 				"badge-label": {
-					"label": "Badge label colour (text-only / image-badge variants)",
-					"order": 3,
+					"label": "Badge text colour (text-only / image-badge variants)",
+					"order": 6,
 					"clusters": [
 						"text"
 					],
@@ -211,7 +211,7 @@
 				"title": {
 					"text": true,
 					"label": "Title",
-					"order": 4,
+					"order": 7,
 					"clusters": [
 						"text"
 					],
@@ -232,9 +232,9 @@
 				},
 				"item": {
 					"selector": ".sgs-trust-bar__badge",
-					"label": "Badge item",
+					"label": "Whole badge (icon and text)",
 					"layer": "GRID_AREA",
-					"order": 5,
+					"order": 2,
 					"clusters": [
 						"layout"
 					],
@@ -247,8 +247,8 @@
 				},
 				"icon-bare": {
 					"selector": ".sgs-trust-bar__icon",
-					"label": "Bare icon (icon-bare variant)",
-					"order": 7,
+					"label": "Bare icon only (icon-bare variant)",
+					"order": 4,
 					"clusters": [
 						"layout"
 					],
@@ -261,8 +261,8 @@
 				},
 				"badge-img": {
 					"surface": true,
-					"label": "Badge image (image-badge variant)",
-					"order": 6,
+					"label": "Badge image only (image-badge variant)",
+					"order": 5,
 					"clusters": [
 						"fill",
 						"layout"

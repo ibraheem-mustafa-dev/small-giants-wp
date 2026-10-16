@@ -262,7 +262,7 @@ const ENTRANCE_MEASURE = ( [ sel, unreveal ] ) => {
 		on: 'on' === root.getAttribute( 'data-sgs-marquee' ),
 		clones: root.querySelectorAll( '[data-sgs-marquee-clone]' ).length,
 		total: badges.length,
-		pending: badges.filter( ( el ) => /scroll/.test( el.getAttribute( 'data-sgs-me' ) || '' ) ).length,
+		pending: badges.filter( ( el ) => /scroll/.test( el.getAttribute( 'data-sgs-me' ) || '' ) ).length,
 		hidden: badges.filter( ( el ) => parseFloat( getComputedStyle( el ).opacity ) < 0.99 ).length,
 	};
 };
