@@ -339,11 +339,13 @@ final class Product_Bindings {
 	 * resolve_cpt_field() and get_product_data() CPT branch. Both previously
 	 * built the same two-span string independently — now they call this.
 	 *
-	 * @param string $price Raw price value (numeric string or empty).
-	 * @param string $note  Optional price note (e.g. "per pack", "inc. VAT").
+	 * @param string $price      Raw price value (numeric string or empty).
+	 * @param string $note       Optional price note (e.g. "per pack", "inc. VAT").
+	 * @param string $note_class Extra class on the note span: the product card passes its `sgs-product-card__price-note`
+	 *                           part class, so a motion layer on that part reaches the note on a bound sgs_product card.
 	 * @return string HTML string — amount span + optional note span. Empty if no price.
 	 */
-	private static function format_cpt_price_html( string $price, string $note ): string {
+	private static function format_cpt_price_html( string $price, string $note, string $note_class = '' ): string {
 		$html = '';
 		if ( $price ) {
 			$html .= '<span class="sgs-product-price__amount">'
@@ -351,7 +353,7 @@ final class Product_Bindings {
 				. '</span>';
 		}
 		if ( $note ) {
-			$html .= ' <span class="sgs-product-price__note">'
+			$html .= ' <span class="' . \esc_attr( trim( 'sgs-product-price__note ' . $note_class ) ) . '">'
 				. \esc_html( $note )
 				. '</span>';
 		}
@@ -467,7 +469,7 @@ final class Product_Bindings {
 		$price      = \get_post_meta( $product_id, 'sgs_price', true );
 		$price_note = \get_post_meta( $product_id, 'sgs_price_note', true );
 		// C1 (QC): delegate to shared formatter — eliminates duplicated span-building logic.
-		$price_html = self::format_cpt_price_html( (string) $price, (string) $price_note );
+		$price_html = self::format_cpt_price_html( (string) $price, (string) $price_note, 'sgs-product-card__price-note' );
 
 		$thumb_id  = \get_post_thumbnail_id( $product_id );
 		$image_url = \get_the_post_thumbnail_url( $product_id, 'woocommerce_thumbnail' );

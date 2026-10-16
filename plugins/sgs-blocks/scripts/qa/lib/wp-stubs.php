@@ -314,12 +314,25 @@ if ( ! function_exists( 'get_post_thumbnail_id' ) ) {
 
 if ( ! function_exists( 'wp_get_attachment_image_url' ) ) {
 	function wp_get_attachment_image_url( $id, $size = 'thumbnail' ) {
-		return '';
+		// No media library: an attachment resolves only when an --attachments-file (ID => URL) or a --product-file
+		// (`image_id` + `image_url`) names its URL.
+		$product = $GLOBALS['sgs_qa_product'] ?? null;
+		if ( (int) $id > 0 && isset( $GLOBALS['sgs_qa_attachments'][ (string) (int) $id ] ) ) {
+			return (string) $GLOBALS['sgs_qa_attachments'][ (string) (int) $id ];
+		}
+		return is_array( $product ) && (int) $id > 0 && (int) ( $product['image_id'] ?? 0 ) === (int) $id ? (string) ( $product['image_url'] ?? '' ) : '';
 	}
 }
 
 if ( ! function_exists( 'get_post_meta' ) ) {
 	function get_post_meta( $id, $key = '', $single = false ) {
+		// A --product-file's or --post-file's `meta` (key => value) for its own ID; otherwise no meta exists.
+		foreach ( array( $GLOBALS['sgs_qa_product'] ?? null, isset( $GLOBALS['sgs_qa_post'] ) ? (array) $GLOBALS['sgs_qa_post'] : null ) as $source ) {
+			if ( '' !== $key && is_array( $source ) && (int) ( $source['id'] ?? $source['ID'] ?? 0 ) === (int) $id && array_key_exists( $key, (array) ( $source['meta'] ?? array() ) ) ) {
+				$value = ( (array) $source['meta'] )[ $key ];
+				return $single ? $value : array( $value );
+			}
+		}
 		return $single ? '' : array();
 	}
 }
@@ -332,7 +345,10 @@ if ( ! function_exists( 'get_the_title' ) ) {
 
 if ( ! function_exists( 'get_the_excerpt' ) ) {
 	function get_the_excerpt( $post = null ): string {
-		return '';
+		// The global post's excerpt when it is the post asked for (a --post-file), else '' (no post exists).
+		$current = $GLOBALS['sgs_qa_post'] ?? null;
+		$id      = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+		return is_object( $current ) && ( 0 === $id || (int) ( $current->ID ?? 0 ) === $id ) ? (string) ( $current->post_excerpt ?? '' ) : '';
 	}
 }
 
@@ -344,6 +360,13 @@ if ( ! function_exists( 'wp_trim_words' ) ) {
 
 if ( ! function_exists( 'get_permalink' ) ) {
 	function get_permalink( $post = null ) {
+		// A plain permalink for the --product-file or --post-file ID (the posts that exist); '' for any other post.
+		$id = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+		foreach ( array( $GLOBALS['sgs_qa_product'] ?? null, isset( $GLOBALS['sgs_qa_post'] ) ? (array) $GLOBALS['sgs_qa_post'] : null ) as $source ) {
+			if ( $id > 0 && is_array( $source ) && (int) ( $source['id'] ?? $source['ID'] ?? 0 ) === $id ) {
+				return 'https://example.test/?p=' . $id;
+			}
+		}
 		return '';
 	}
 }
@@ -1037,5 +1060,72 @@ if ( ! function_exists( 'antispambot' ) ) {
 	function antispambot( $email_address, $hex_encoding = 0 ) {
 		// Core hides characters as HTML entities at random; the harness keeps the address readable so a test can match it.
 		return (string) $email_address;
+	}
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Core functions the motion part render-path gate's renders reach
+// (scripts/check-motion-part-render-paths.py). Each behaves like core for the
+// inputs those renders use.
+// ─────────────────────────────────────────────────────────────────────────
+
+if ( ! function_exists( 'number_format_i18n' ) ) {
+	function number_format_i18n( $number, $decimals = 0 ) {
+		// Core formats with the site locale's separators; the harness uses the en_GB ones.
+		return number_format( (float) $number, absint( $decimals ), '.', ',' );
+	}
+}
+
+if ( ! function_exists( 'get_the_post_thumbnail_url' ) ) {
+	function get_the_post_thumbnail_url( $post = null, $size = 'post-thumbnail' ) {
+		// The global post's `thumbnail_url` (a --post-file key standing in for its featured image), else false as core
+		// returns for a post with no featured image.
+		$current = $GLOBALS['sgs_qa_post'] ?? null;
+		return is_object( $current ) && ! empty( $current->thumbnail_url ) ? (string) $current->thumbnail_url : false;
+	}
+}
+
+if ( ! function_exists( 'sanitize_hex_color' ) ) {
+	function sanitize_hex_color( $color ) {
+		// Core's rule: a 3- or 6-digit hex colour with its hash, else null.
+		return 1 === preg_match( '|^#([A-Fa-f0-9]{3}){1,2}$|', (string) $color ) ? (string) $color : null;
+	}
+}
+
+if ( ! function_exists( 'wp_get_attachment_image_src' ) ) {
+	function wp_get_attachment_image_src( $attachment_id, $size = 'thumbnail', $icon = false ) {
+		// No media library in the harness: an attachment ID resolves to nothing, as core returns for an unknown ID.
+		return false;
+	}
+}
+
+if ( ! function_exists( 'has_term' ) ) {
+	function has_term( $term = '', $taxonomy = '', $post = null ) {
+		// The term slugs a --product-file (`terms`: taxonomy => slugs) or --post-file (`terms`) gives its own ID.
+		$id = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+		foreach ( array( $GLOBALS['sgs_qa_product'] ?? null, isset( $GLOBALS['sgs_qa_post'] ) ? (array) $GLOBALS['sgs_qa_post'] : null ) as $source ) {
+			if ( is_array( $source ) && (int) ( $source['id'] ?? $source['ID'] ?? 0 ) === $id ) {
+				$slugs = (array) ( ( (array) ( $source['terms'] ?? array() ) )[ $taxonomy ] ?? array() );
+				return '' === $term ? ! empty( $slugs ) : in_array( (string) $term, $slugs, true );
+			}
+		}
+		return false;
+	}
+}
+
+if ( ! function_exists( 'wp_get_attachment_image' ) ) {
+	function wp_get_attachment_image( $attachment_id, $size = 'thumbnail', $icon = false, $attr = '' ) {
+		// Core's contract for the inputs the renders use: '' when the attachment has no image URL, else an <img> carrying
+		// the caller's attributes (class, loading, alt, aria-hidden). No srcset: the harness has no image sizes.
+		$src = wp_get_attachment_image_url( $attachment_id, $size );
+		if ( '' === $src ) {
+			return '';
+		}
+		$attr = array_merge( array( 'src' => $src, 'alt' => '' ), is_array( $attr ) ? $attr : array() );
+		$html = '<img';
+		foreach ( $attr as $name => $value ) {
+			$html .= ' ' . esc_attr( (string) $name ) . '="' . esc_attr( (string) $value ) . '"';
+		}
+		return $html . ' />';
 	}
 }

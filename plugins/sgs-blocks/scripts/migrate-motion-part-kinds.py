@@ -73,6 +73,15 @@ CONFIRMED = {
                         'class added to the first <img>/<video> sgs_render_media returned'),
     'gallery:image': ((r"array\(\s*'sgs-gallery__img'\s*\)", r"wp_get_attachment_image\("),
                       'class on the <img> wp_get_attachment_image prints'),
+    'hero:background': ((r"'sgs-hero__bg-img sgs-hero__background'", r"'bg_img_class'\s*=>\s*'sgs-hero__background'"),
+                        "the background <img> (the standard variant's own, and the wrapper's on the split variant through its "
+                        'bg_img_class option) and the Lottie holder that replaces it'),
+}
+# Text parts the DB gives no evidence for, each read by hand and pinned by patterns that must still match the block's
+# render source, or --check fails: `block:part` -> (patterns, reason).
+CONFIRMED_TEXT = {
+    'icon:label': ((r"'<span class=\"sgs-icon__label-text\">'\s*\.\s*esc_html\(\s*\$label_text\s*\)",),
+                   'labelText is printed into the visible label span (the DB row names the hidden accessible-name span)'),
 }
 # Text evidence the DB gives but the render source contradicts, each read by hand and pinned by patterns that must still
 # match the block's render source, or --check fails: `block:part` -> (patterns, reason).
@@ -256,6 +265,12 @@ def analyse(blocks_dir, includes_dir, texts):
             stale = bool(confirmed) and not all(re.search(pat, own) for pat in confirmed[0])
             if confirmed and not stale:
                 kinds['surface'] = confirmed[1]
+            confirmed_text = CONFIRMED_TEXT.get(f'{slug}:{part}')
+            if confirmed_text:
+                if all(re.search(pat, own) for pat in confirmed_text[0]):
+                    kinds['text'] = confirmed_text[1]
+                else:
+                    stale = True
             refuted = REFUTED_TEXT.get(f'{slug}:{part}')
             if refuted:
                 if all(re.search(pat, own) for pat in refuted[0]):
@@ -397,7 +412,7 @@ def check(blocks_dir, includes_dir, texts):
             problems.append(f"{r['block']}: block.json does not parse")
             continue
         if r['stale_confirmation']:
-            problems.append(f"{r['block']}:{r['part']} is in CONFIRMED or REFUTED_TEXT but its patterns no longer match the render source")
+            problems.append(f"{r['block']}:{r['part']} is in CONFIRMED, CONFIRMED_TEXT or REFUTED_TEXT but its patterns no longer match the render source")
         for kind in ENFORCED:
             if kind in r['kinds'] and kind not in r['marked']:
                 problems.append(f"{r['block']}:{r['part']} renders as {kind} ({r['kinds'][kind]}) but has no \"{kind}\": true")

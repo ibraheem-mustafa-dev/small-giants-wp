@@ -253,6 +253,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		 *                                                       (C3 double-emit guard — composite has its own overlay).
 		 *                                    'wrap_inner'    => bool|null  Override the __inner guard. null = use the
 		 *                                                       default guard (contentWidth set + layout empty).
+		 *                                    'bg_img_class'  => string  Extra class on the background <img> (the
+		 *                                                       composite's own motion part class, e.g. the split
+		 *                                                       hero's `sgs-hero__background`).
 		 * @return string  Full HTML output ready for echo.
 		 */
 		public static function render(
@@ -283,6 +286,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$opt_extra_attr_html = isset( $opts['extra_attr_html'] ) && is_string( $opts['extra_attr_html'] ) ? $opts['extra_attr_html'] : '';
 			$opt_no_overlay      = ! empty( $opts['no_overlay'] );
 			$opt_wrap_inner      = array_key_exists( 'wrap_inner', $opts ) ? $opts['wrap_inner'] : null;
+			$opt_bg_img_class    = isset( $opts['bg_img_class'] ) && is_string( $opts['bg_img_class'] ) ? sanitize_html_class( $opts['bg_img_class'] ) : '';
 
 			// Allowed kinds — fall back to 'section' on invalid input.
 			$allowed_kinds = array( 'section', 'layout', 'content' );
@@ -1304,7 +1308,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					'',
 					'full',
 					array(
-						'class'         => $has_bg_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-container__image-bg',
+						'class'         => trim( ( $has_bg_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-container__image-bg' ) . ' ' . $opt_bg_img_class ),
 						'aria-hidden'   => 'true',
 						'fetchpriority' => $sgs_bg_img_is_first ? 'high' : 'auto',
 						'loading'       => $sgs_bg_img_is_first ? 'eager' : 'lazy',

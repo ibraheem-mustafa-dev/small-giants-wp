@@ -520,8 +520,11 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // this file's <img> tags plus passed into product-card-builtin-render.php
 // for the typed element. class_exists()-guarded so a request that somehow
 // reaches this file before the class autoloads still renders with the plain
-// base class (mirrors buybox/gallery-col.php's own guard).
-$sgs_pc_main_img_class  = 'product-card-img';
+// base class (mirrors buybox/gallery-col.php's own guard). Every bound <img>
+// also carries the motion part class `sgs-product-card__image` (the typed
+// image's class), so a motion layer on the `image` part reaches the photo on
+// every render path (Spec 38A section 6.2).
+$sgs_pc_main_img_class  = 'product-card-img sgs-product-card__image';
 $sgs_pc_thumb_img_class = '';
 if ( class_exists( 'SGS_Media_Element' ) ) {
 	$sgs_pc_main_img_class .= ' ' . implode( ' ', SGS_Media_Element::element_classes( SGS_Media_Element::scope_class( $sgs_card_uid, 'main' ) ) );
@@ -944,7 +947,7 @@ if ( null === $data ) {
 
 	ob_start();
 	?>
-	<div class="product-card-body">
+	<div class="product-card-body sgs-product-card__body">
 		<p class="product-desc">
 			<?php
 			/*
@@ -1106,7 +1109,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<?php endif; ?>
 		</div>
 	<?php endif; ?>
-	<div class="product-card-body">
+	<div class="product-card-body sgs-product-card__body">
 		<?php if ( '' !== $sgs_badge_inbody ) : ?>
 			<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
 		<?php elseif ( '' !== $sgs_badge_overlay && '' === $sgs_resolved_img ) : ?>
@@ -1130,12 +1133,12 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 		<div class="price-row sgs-product-card__price-row">
 			<div class="sgs-product-card__price-group">
 			<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
-				<div class="price price--from">
+				<div class="price price--from sgs-product-card__price">
 					<span class="price-from-label sgs-product-card__price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
 					<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
 				</div>
 			<?php elseif ( ! empty( $data['price_html'] ) ) : ?>
-				<div class="price"><?php echo wp_kses_post( $data['price_html'] ); ?></div>
+				<div class="price sgs-product-card__price"><?php echo wp_kses_post( $data['price_html'] ); ?></div>
 			<?php endif; ?>
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
@@ -1152,7 +1155,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			$ro_cta_label = sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaText'] ?? '', __( 'View product', 'sgs-blocks' ) );
 			$ro_cta_href  = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $data['wc_id'] ) ) );
 			?>
-			<a class="sgs-button sgs-button--primary product-card__view" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
+			<a class="sgs-button sgs-button--primary product-card__view sgs-product-card__cta--primary" href="<?php echo $ro_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $ro_cta_label ); ?></a>
 		<?php endif; ?>
 	</div>
 	<?php
@@ -1573,7 +1576,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			</div>
 			<?php endif; ?>
 
-			<div class="product-card-body">
+			<div class="product-card-body sgs-product-card__body">
 				<?php // FP-H: in-body badge (trial only — F7 moved the featured badge into the media box above). ?>
 				<?php if ( '' !== $sgs_badge_inbody ) : ?>
 					<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
@@ -1665,7 +1668,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<div class="price-row sgs-product-card__price-row" aria-live="polite">
 					<div class="sgs-product-card__price-group">
 					<span
-						class="price price--current"
+						class="price price--current sgs-product-card__price"
 						data-wp-text="context.priceDisplay"
 					><?php echo esc_html( $price_display ); ?></span>
 					<s
@@ -1761,7 +1764,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						$sgs_cta_href = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $add_to_cart_id ) ) );
 						?>
 					<a
-						class="sgs-button sgs-button--primary product-card__add-to-cart"
+						class="sgs-button sgs-button--primary product-card__add-to-cart sgs-product-card__cta--primary"
 						href="<?php echo $sgs_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
 					>
 						<span class="product-card__cart-label"><?php echo esc_html( $sgs_cta_label ); ?></span>
@@ -1776,7 +1779,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					>
 						<button
 							type="submit"
-							class="sgs-button sgs-button--primary product-card__add-to-cart"
+							class="sgs-button sgs-button--primary product-card__add-to-cart sgs-product-card__cta--primary"
 							data-wp-bind--disabled="context.pending"
 							data-wp-bind--aria-busy="context.pending"
 						>
@@ -1960,7 +1963,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 <?php endif; ?>
 </div>
 
-<div class="product-card-body">
+<div class="product-card-body sgs-product-card__body">
 	<?php // FP-H: in-body badge (trial only — F7 moved the featured badge into the media wrap above). ?>
 	<?php if ( '' !== $sgs_badge_inbody ) : ?>
 		<span class="sgs-product-card__tag sgs-product-card__tag--<?php echo esc_attr( $variant_style ); ?>"><?php echo esc_html( $sgs_badge_inbody ); ?></span>
@@ -2066,12 +2069,12 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		// value server-side).
 		if ( ! empty( $data['is_variable'] ) && ! empty( $data['price_from_html'] ) ) :
 			?>
-			<div class="price price--from">
+			<div class="price price--from sgs-product-card__price">
 				<span class="price-from-label sgs-product-card__price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
 				<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
 			</div>
 		<?php else : ?>
-			<div class="price">
+			<div class="price sgs-product-card__price">
 				<?php echo wp_kses_post( $data['price_html'] ); ?>
 			</div>
 		<?php endif; ?>
@@ -2120,7 +2123,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		<?php if ( 'learn-more' === $sgs_nonvar_behaviour ) : ?>
 			<?php $sgs_nv_cta_href = esc_url( sgs_product_card_resolve_element( $attributes, 'cta', $attributes['ctaUrl'] ?? '', get_permalink( $add_to_cart_id ) ) ); ?>
 		<a
-			class="sgs-button sgs-button--primary product-card__add-to-cart"
+			class="sgs-button sgs-button--primary product-card__add-to-cart sgs-product-card__cta--primary"
 			href="<?php echo $sgs_nv_cta_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"
 		>
 			<span class="product-card__cart-label"><?php echo esc_html( $sgs_nv_cta_label ); ?></span>
@@ -2135,7 +2138,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		>
 			<button
 				type="submit"
-				class="sgs-button sgs-button--primary product-card__add-to-cart"
+				class="sgs-button sgs-button--primary product-card__add-to-cart sgs-product-card__cta--primary"
 				data-wp-bind--disabled="context.pending"
 				data-wp-bind--aria-busy="context.pending"
 			>

@@ -44,6 +44,14 @@
  *       (--render-file overrides the slug->real-path resolution — the
  *       integration point a codemod uses to check ITS OWN proposed edit,
  *       written to a temp file, before ever touching the real tree.)
+ *   php render-css-harness.php --slug sgs/hero --attrs-file attrs.json --motion-targets
+ *       (--motion-targets registers the real block.json types and a WP_Block-shaped block,
+ *       applies the block.json attribute defaults as WordPress does, and adds a `targets`
+ *       map: every declared part resolved by the real Sgs_Motion_Targets::resolve. The
+ *       motion part render-path gate, scripts/check-motion-part-render-paths.py, reads it.)
+ *   --product-file product.json   a minimal WooCommerce product (wc-product-stub.php)
+ *   --post-file post.json         the global post get_post() returns (an object: ID, post_type, ...)
+ *   --attachments-file a.json     attachment ID => image URL (the harness has no media library)
  *
  * @package SGS\Blocks\QA
  */
@@ -107,6 +115,10 @@ require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-stagger.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-emitter.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-delays.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-inherit.php';
+
+// Real SGS code: sgs/product-card's bound paths call sgs_product_card_has_real_image() (the no-photo box), which the
+// plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
+require_once $sgs_blocks_dir . '/includes/product-card-no-photo.php';
 
 /**
  * Parse --flag value / --flag=value style CLI args.
@@ -258,7 +270,18 @@ if ( is_file( $block_json ) ) {
 	}
 }
 
-$block = new SGS_QA_Stub_Block( $attributes, $context, $block_type );
+// --motion-targets: the registered block type, WordPress's attribute defaults and a WP_Block-shaped block, so the real
+// motion target resolver and the container wrapper's motion band force run (motion-targets-stubs.php says why opt-in).
+$motion_targets = isset( $args['motion-targets'] );
+if ( $motion_targets ) {
+	require_once __DIR__ . '/motion-targets-stubs.php';
+	require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-custom-target.php';
+	require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-targets.php';
+	$attributes = sgs_qa_apply_attribute_defaults( $attributes, null !== $block_type ? $block_type->attributes : array() );
+	$block      = new SGS_QA_Motion_Block( $slug, $attributes, $context, $block_type );
+} else {
+	$block = new SGS_QA_Stub_Block( $attributes, $context, $block_type );
+}
 
 // --inner-blocks-file: JSON list of {name, attributes, html}; each becomes a $block->inner_blocks
 // entry whose render() returns html (what a composite parent such as sgs/tabs iterates).
@@ -277,6 +300,43 @@ if ( isset( $args['inner-blocks-file'] ) ) {
 			(string) ( $row['html'] ?? '' )
 		);
 	}
+}
+
+// --product-file: one minimal WooCommerce product for wc_get_product() (wc-product-stub.php documents its limits).
+if ( isset( $args['product-file'] ) ) {
+	if ( ! is_file( $args['product-file'] ) ) {
+		harness_fail( 'product-file not found: ' . $args['product-file'] );
+	}
+	$product_tree = json_decode( (string) file_get_contents( $args['product-file'] ), true );
+	if ( ! is_array( $product_tree ) ) {
+		harness_fail( 'invalid JSON for product-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_product'] = $product_tree;
+	require_once __DIR__ . '/wc-product-stub.php';
+}
+
+// --attachments-file: attachment ID => image URL, what wp_get_attachment_image_url() answers (wp-stubs.php).
+if ( isset( $args['attachments-file'] ) ) {
+	if ( ! is_file( $args['attachments-file'] ) ) {
+		harness_fail( 'attachments-file not found: ' . $args['attachments-file'] );
+	}
+	$attachments_tree = json_decode( (string) file_get_contents( $args['attachments-file'] ), true );
+	if ( ! is_array( $attachments_tree ) ) {
+		harness_fail( 'invalid JSON for attachments-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_attachments'] = $attachments_tree;
+}
+
+// --post-file: the global post get_post() returns, as an object (ID, post_type, post_title, ...).
+if ( isset( $args['post-file'] ) ) {
+	if ( ! is_file( $args['post-file'] ) ) {
+		harness_fail( 'post-file not found: ' . $args['post-file'] );
+	}
+	$post_tree = json_decode( (string) file_get_contents( $args['post-file'] ), true );
+	if ( ! is_array( $post_tree ) ) {
+		harness_fail( 'invalid JSON for post-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_post'] = (object) $post_tree;
 }
 
 // --post-content-file: the serialised content of the global post (get_post() returns it).
@@ -346,10 +406,21 @@ if ( preg_match_all( '#<style\b[^>]*>(.*?)</style>#s', $html, $matches ) ) {
 	$css = implode( "\n", $matches[1] );
 }
 
-echo json_encode(
-	array(
-		'ok'   => true,
-		'html' => $html,
-		'css'  => $css,
-	)
+$result = array(
+	'ok'   => true,
+	'html' => $html,
+	'css'  => $css,
 );
+
+// Every declared part resolved by the real resolver, relative to a placeholder scope class the caller maps onto the
+// rendered root. A part the resolver does not offer (`"motion": false`) resolves to null.
+if ( $motion_targets ) {
+	$targets  = array();
+	$elements = null !== $block_type && is_array( $block_meta['supports']['sgs']['elements'] ?? null ) ? $block_meta['supports']['sgs']['elements'] : array();
+	foreach ( array_keys( $elements ) as $part ) {
+		$targets[ (string) $part ] = \SGS\Blocks\Motion\Sgs_Motion_Targets::resolve( $slug, 'sgs-qa-scope', (string) $part, array() );
+	}
+	$result['targets'] = (object) $targets;
+}
+
+echo json_encode( $result );

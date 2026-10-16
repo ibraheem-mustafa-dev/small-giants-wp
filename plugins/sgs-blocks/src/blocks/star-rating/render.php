@@ -311,6 +311,8 @@ if ( $is_tp_official ) {
 $star_fill_defs_injected  = false;
 $empty_fill_defs_injected = false;
 
+// Each star is an <svg class="sgs-star-rating__star"> (the `star` motion part); its <path> carries the --full or
+// --empty modifier the fill rules above target.
 for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 	if ( $i <= floor( $rating ) ) {
 		$fill       = $star_colour;
@@ -324,7 +326,7 @@ for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 		$grad_id     = $unique_id . '-half-' . $i;
 		$fill        = "url(#$grad_id)";
 		$stars_html .= sprintf(
-			'<svg width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' .
+			'<svg class="sgs-star-rating__star" width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' .
 			'<defs><linearGradient id="%s"><stop offset="50%%" stop-color="%s"/><stop offset="50%%" stop-color="%s"/></linearGradient></defs>' .
 			'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="%s"/></svg>',
 			$star_size,
@@ -346,7 +348,7 @@ for ( $i = 1; ! $is_tp_official && $i <= $max_rating; $i++ ) {
 	}
 
 	$stars_html .= sprintf(
-		'<svg width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">%s' .
+		'<svg class="sgs-star-rating__star" width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">%s' .
 		'<path class="%s" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="%s"/></svg>',
 		$star_size,
 		$star_size,

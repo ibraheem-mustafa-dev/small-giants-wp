@@ -15,7 +15,7 @@
  *   .sgs-responsive-logo              — root wrapper
  *   .sgs-responsive-logo__link        — home link (when linkToHome = true)
  *   .sgs-responsive-logo__picture     — <picture> element
- *   .sgs-responsive-logo__image--desktop / --tablet / --mobile — img elements
+ *   .sgs-responsive-logo__image (+ --desktop) / --tablet / --mobile — img elements
  *   .sgs-responsive-logo__svg         — inline SVG wrapper (animation mode)
  *   .sgs-responsive-logo--animate-draw / --animate-hover / --animate-scroll
  *
@@ -624,7 +624,7 @@ if ( $has_lottie_animation ) {
 		'<picture class="sgs-responsive-logo__picture">' .
 		'<source media="(max-width: 767px)" srcset="%1$s">' .
 		'<source media="(max-width: 1023px)" srcset="%2$s">' .
-		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
+		'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
 		'</picture>',
 		esc_url( $effective_mobile_url ),
 		esc_url( $effective_tablet_url ),
@@ -690,7 +690,7 @@ if ( $has_lottie_animation ) {
 		'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
 		'<source media="(max-width: 767px)" srcset="%1$s">' .
 		'<source media="(max-width: 1023px)" srcset="%2$s">' .
-		'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager"%6$s>' .
+		'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager"%6$s>' .
 		'</picture>',
 		esc_url( $effective_mobile_url ),
 		esc_url( $effective_tablet_url ),
@@ -716,7 +716,7 @@ if ( $has_lottie_animation ) {
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: %5$dpx)" srcset="%1$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%6$s>' .
+			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
 			esc_url( $desktop_url ),
@@ -730,7 +730,7 @@ if ( $has_lottie_animation ) {
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: 1023px)" srcset="%1$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%5$s>' .
+			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%5$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
 			esc_url( $desktop_url ),
@@ -745,7 +745,7 @@ if ( $has_lottie_animation ) {
 			'<picture class="sgs-responsive-logo__picture">' .
 			'<source media="(max-width: 767px)" srcset="%1$s">' .
 			'<source media="(max-width: 1023px)" srcset="%2$s">' .
-			'<img class="sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
+			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $effective_mobile_url ),
 			esc_url( $effective_tablet_url ),

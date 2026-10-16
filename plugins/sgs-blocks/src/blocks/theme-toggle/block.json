@@ -34,6 +34,8 @@
 			},
 			"elements": {
 				"label": {
+					"absentIn": ["segmented"],
+					"absentWhy": "The segmented style is a radiogroup of three plain text buttons (Light, Dark, Auto) with no label element; a layer on the root reaches the group.",
 					"text": true,
 					"label": "Label",
 					"order": 1,
@@ -59,6 +61,8 @@
 					"_note": "'current' = the toggle's own aria-pressed/aria-checked TRUE state (dark mode active) — Spec 36 section 14 FR-41-3's third state, reused here for a genuinely state-driven colour rather than a hover-adjacent one."
 				},
 				"icon": {
+					"absentIn": ["segmented"],
+					"absentWhy": "The segmented style prints text buttons only; the sun and moon icons belong to the switch style.",
 					"label": "Icon",
 					"order": 2,
 					"clusters": [

@@ -1,0 +1,812 @@
+{
+ "_why": "Render paths per motion block, for scripts/check-motion-part-render-paths.py. Curated by hand because which attribute set selects a different branch of a render.php is read from the code, not derivable from block.json (framework rule R-31-1 allows a curated list only as data with the reason). Each block is either `single` (the reason it is checked as one path by check-motion-part-selectors.py) or `paths`; a path's id is what block.json `supports.sgs.elements.<part>.absentIn` names. Contents are fixture inputs, never real client data.",
+ "blocks": {
+  "accordion": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "account": {
+   "single": "Its parts are printed by the logged-out tracking card and by includes/account/templates/dashboard.php, the logged-in dashboard (a WooCommerce template override reached through the WooCommerce shortcode); the harness renders no WooCommerce account endpoint, and without WooCommerce the block prints an editor notice only."
+  },
+  "before-after": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "brand-strip": {
+   "single": "Its modes print mode-specific parts under their own names (brand-text in text mode, logo in logo mode, tile and name only with captions); no part's element is printed under another class in another mode, so the static check covers it."
+  },
+  "breadcrumbs": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "business-info": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "button": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "buybox": {
+   "single": "Only the main path prints buybox markup, and it needs a Product_Manifest built from real variations, which the harness does not fake (scripts/qa/lib/wp-stubs.php, DELIBERATELY NOT STUBBED). The five fallback paths (no WooCommerce, not a WC_Product, a simple product, no manifest, a context over 24 KB) hand the page to core WooCommerce blocks, so no buybox part exists there by design."
+  },
+  "card-grid": {
+   "base": {
+    "variant": "card",
+    "imageFallback": true,
+    "noImageLabel": "Photo to come",
+    "overlayColour": "#000000",
+    "overlayOpacity": 40,
+    "items": [
+     {
+      "title": "Card one",
+      "subtitle": "Sub",
+      "media": "https://example.test/c.jpg",
+      "glyph": "star",
+      "badge": "New",
+      "badgeVariant": "primary"
+     },
+     {
+      "title": "Bee",
+      "subtitle": "No photo"
+     }
+    ]
+   },
+   "paths": {
+    "own-items": {
+     "why": "source manual: render-items.php prints the grid's own cards (one with a photo and glyph, one on the image-fallback tile, so both branches of the image area render)",
+     "attrs": {
+      "source": "manual"
+     }
+    },
+    "products": {
+     "why": "source wc-product / cpt-collection: render-delegated.php prints one sgs/product-card per result; supports.sgs.motionDelegate maps the grid's parts onto the card",
+     "delegatesTo": {
+      "block": "product-card",
+      "paths": [
+       "live-wc-simple",
+       "live-wc-no-photo",
+       "live-cpt",
+       "readonly-variable"
+      ]
+     }
+    }
+   }
+  },
+  "cart": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "choice-flow": {
+   "single": "One render path: a linked flow renders the referenced flow's sgs/choice-flow, which re-enters this render.php on its main path; a broken reference prints a notice only."
+  },
+  "choice-flow-question": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "collapsible-text": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "container": {
+   "base": {
+    "backgroundImage": {
+     "url": "https://example.test/bg.jpg",
+     "id": 0
+    },
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+   },
+   "paths": {
+    "bg-simple": {
+     "why": "a no-repeat cover/contain background image: SGS_Container_Wrapper::render prints it as <img class=\"sgs-container__image-bg\">",
+     "attrs": {},
+     "content": "<p>Hello</p>"
+    },
+    "bg-css-layer": {
+     "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
+     "attrs": {
+      "backgroundRepeat": "repeat"
+     },
+     "content": "<p>Hello</p>"
+    }
+   }
+  },
+  "countdown-timer": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "counter": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "filter-search": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "form": {
+   "single": "One render path: a linked form renders the definition's sgs/form, which re-enters this render.php on its main path; a broken reference prints a notice only."
+  },
+  "form-field-tiles": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "gallery": {
+   "base": {
+    "showCaptions": true
+   },
+   "paths": {
+    "attachment": {
+     "why": "image items with an attachment ID print wp_get_attachment_image()",
+     "attrs": {
+      "mediaItems": [
+       {
+        "url": "https://example.test/g1.jpg",
+        "type": "image",
+        "id": 11,
+        "alt": "One",
+        "caption": "First"
+       },
+       {
+        "url": "https://example.test/g2.jpg",
+        "type": "image",
+        "id": 12,
+        "alt": "Two",
+        "caption": "Second"
+       }
+      ]
+     },
+     "attachments": {
+      "11": "https://example.test/g1.jpg",
+      "12": "https://example.test/g2.jpg"
+     }
+    },
+    "attachment-lightbox": {
+     "why": "the same items inside the lightbox trigger button (enableLightbox)",
+     "attrs": {
+      "mediaItems": [
+       {
+        "url": "https://example.test/g1.jpg",
+        "type": "image",
+        "id": 11,
+        "alt": "One",
+        "caption": "First"
+       },
+       {
+        "url": "https://example.test/g2.jpg",
+        "type": "image",
+        "id": 12,
+        "alt": "Two",
+        "caption": "Second"
+       }
+      ],
+      "enableLightbox": true
+     },
+     "attachments": {
+      "11": "https://example.test/g1.jpg",
+      "12": "https://example.test/g2.jpg"
+     }
+    },
+    "media-slot": {
+     "why": "a video item, or an image with no attachment ID, prints sgs_render_media() markup in place of the attachment <img>",
+     "attrs": {
+      "mediaItems": [
+       {
+        "url": "https://example.test/g3.jpg",
+        "type": "image",
+        "id": 0,
+        "alt": "Three",
+        "caption": "Third"
+       },
+       {
+        "url": "https://example.test/v.mp4",
+        "type": "video",
+        "id": 0,
+        "alt": "",
+        "caption": "Clip"
+       }
+      ]
+     }
+    },
+    "media-slot-lightbox": {
+     "why": "the media-slot items inside the lightbox trigger button",
+     "attrs": {
+      "mediaItems": [
+       {
+        "url": "https://example.test/g3.jpg",
+        "type": "image",
+        "id": 0,
+        "alt": "Three",
+        "caption": "Third"
+       },
+       {
+        "url": "https://example.test/v.mp4",
+        "type": "video",
+        "id": 0,
+        "alt": "",
+        "caption": "Clip"
+       }
+      ],
+      "enableLightbox": true
+     }
+    }
+   }
+  },
+  "google-rating-badge": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "google-reviews": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "hero": {
+   "base": {
+    "backgroundImage": {
+     "url": "https://example.test/bg.jpg",
+     "id": 0
+    },
+    "backgroundOverlayColour": "#000000",
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+    "splitMediaType": "image",
+    "splitMediaImageUrl": "https://example.test/s.jpg",
+    "splitMediaImageAlt": "A view"
+   },
+   "paths": {
+    "standard": {
+     "why": "variant standard: the content band inside the section, the hero's own background <img>",
+     "attrs": {
+      "variant": "standard"
+     },
+     "content": "<p>Hello</p>"
+    },
+    "split": {
+     "why": "variant split: render.php passes wrap_inner false, so the section root is the content/media grid; the background <img> is the wrapper's",
+     "attrs": {
+      "variant": "split"
+     },
+     "content": "<p>Hello</p>"
+    },
+    "bg-css-layer": {
+     "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
+     "attrs": {
+      "variant": "split",
+      "backgroundRepeat": "repeat"
+     },
+     "content": "<p>Hello</p>"
+    }
+   }
+  },
+  "icon": {
+   "base": {
+    "iconSource": "lucide",
+    "iconName": "star",
+    "showLabel": true,
+    "labelText": "Rated"
+   },
+   "paths": {
+    "linked": {
+     "why": "linkUrl set: the shape and visible label inside the link, with a hidden accessible-name span",
+     "attrs": {
+      "linkUrl": "https://example.test/"
+     }
+    },
+    "unlinked": {
+     "why": "no link and a visible label: the shape and label inside sgs-icon__inner",
+     "attrs": {
+      "linkUrl": ""
+     }
+    }
+   }
+  },
+  "icon-list": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "image-sequence": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "language-switch": {
+   "single": "Its modes print mode-specific parts under their own names (separator only in the list display); no part's element is printed under another class in another mode, so the static check covers it."
+  },
+  "local-time": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "media": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "mega-panel": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "modal": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "multi-button": {
+   "base": {
+    "backgroundImage": {
+     "url": "https://example.test/bg.jpg",
+     "id": 0
+    },
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+   },
+   "paths": {
+    "bg-simple": {
+     "why": "a no-repeat cover/contain background image: SGS_Container_Wrapper::render prints it as <img class=\"sgs-container__image-bg\">",
+     "attrs": {},
+     "content": "<p>Hello</p>"
+    },
+    "bg-css-layer": {
+     "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
+     "attrs": {
+      "backgroundRepeat": "repeat"
+     },
+     "content": "<p>Hello</p>"
+    }
+   }
+  },
+  "nav-bar-menu": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "nav-drawer": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "nav-drawer-menu": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "notice-banner": {
+   "single": "Its modes print mode-specific parts under their own names (arrows only in the enhanced rotating banner); no part's element is printed under another class in another mode, so the static check covers it."
+  },
+  "option-picker": {
+   "single": "Its modes print mode-specific parts under their own names (the visible label only with showLabel; otherwise the legend is screen-reader only); no part's element is printed under another class in another mode, so the static check covers it."
+  },
+  "physics-canvas": {
+   "base": {
+    "backgroundImage": {
+     "url": "https://example.test/bg.jpg",
+     "id": 0
+    },
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+   },
+   "paths": {
+    "bg-simple": {
+     "why": "a no-repeat cover/contain background image: SGS_Container_Wrapper::render prints it as <img class=\"sgs-container__image-bg\">",
+     "attrs": {},
+     "content": "<p>Hello</p>"
+    },
+    "bg-css-layer": {
+     "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
+     "attrs": {
+      "backgroundRepeat": "repeat"
+     },
+     "content": "<p>Hello</p>"
+    }
+   }
+  },
+  "post-grid": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "pricing-table": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "process-steps": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "product-card": {
+   "base": {
+    "variantStyle": "featured",
+    "featuredTag": "New",
+    "overrideElements": [
+     "badge"
+    ],
+    "showRating": true,
+    "ratingValue": 4.5,
+    "reviewCount": 3,
+    "showBrandOverlay": true,
+    "brandName": "Oakco",
+    "showSavingBadge": true,
+    "savingLabel": "Save 10%",
+    "showWishlist": true,
+    "cta2Text": "Details",
+    "colourSwatches": [
+     {
+      "colour": "#aa0000",
+      "label": "Red"
+     },
+     {
+      "colour": "#00aa00",
+      "label": "Green"
+     },
+     {
+      "colour": "#0000aa",
+      "label": "Blue"
+     },
+     {
+      "colour": "#aaaa00",
+      "label": "Ochre"
+     },
+     {
+      "colour": "#00aaaa",
+      "label": "Teal"
+     }
+    ],
+    "swatchMaxVisible": 4,
+    "showAttributeTag": true,
+    "attributeTagSource": "tag",
+    "attributeTagTerm": "oak",
+    "attributeTagText": "Solid oak"
+   },
+   "paths": {
+    "typed": {
+     "why": "sourceMode typed: includes/product-card-builtin-render.php::sgs_product_card_builtin_render",
+     "attrs": {
+      "sourceMode": "typed",
+      "productName": "Oak table",
+      "description": "Solid oak.",
+      "image": {
+       "url": "https://example.test/a.jpg",
+       "id": 0
+      },
+      "imageAlt": "Oak table",
+      "priceLarge": "£120",
+      "priceNote": "per item",
+      "ctaText": "Buy",
+      "ctaUrl": "https://example.test/buy"
+     }
+    },
+    "live-wc-simple": {
+     "why": "a WooCommerce simple product with a photo: the live default card (product-card--live)",
+     "attrs": {
+      "sourceMode": "wc-product",
+      "productId": 52,
+      "rrpMetaKey": "_sgs_rrp"
+     },
+     "product": {
+      "id": 52,
+      "name": "Oak table",
+      "price_html": "<span class=\"woocommerce-Price-amount amount\">£120</span>",
+      "price": "120",
+      "type": "simple",
+      "image_id": 7,
+      "image_url": "https://example.test/oak.jpg",
+      "short_description": "Solid oak.",
+      "in_stock": true,
+      "average_rating": "4.5",
+      "review_count": 3,
+      "terms": {
+       "product_tag": [
+        "oak"
+       ]
+      },
+      "meta": {
+       "_sgs_rrp": "150"
+      }
+     }
+    },
+    "live-wc-no-photo": {
+     "why": "the live default card for a product with no photo: the no-photo box replaces the image",
+     "attrs": {
+      "sourceMode": "wc-product",
+      "productId": 52,
+      "noImageLabel": "Photo to come",
+      "rrpMetaKey": "_sgs_rrp"
+     },
+     "product": {
+      "id": 52,
+      "name": "Oak table",
+      "price_html": "<span class=\"woocommerce-Price-amount amount\">£120</span>",
+      "price": "120",
+      "type": "simple",
+      "image_id": 0,
+      "image_url": "https://example.test/oak.jpg",
+      "short_description": "Solid oak.",
+      "in_stock": true,
+      "average_rating": "4.5",
+      "review_count": 3,
+      "terms": {
+       "product_tag": [
+        "oak"
+       ]
+      },
+      "meta": {
+       "_sgs_rrp": "150"
+      }
+     }
+    },
+    "live-cpt": {
+     "why": "sourceMode sgs-cpt (an sgs_product post, what a cpt-collection card-grid renders without WooCommerce): the live default card with no WooCommerce product",
+     "attrs": {
+      "sourceMode": "sgs-cpt",
+      "productId": 41
+     },
+     "post": {
+      "ID": 41,
+      "post_type": "sgs_product",
+      "post_title": "Oak table",
+      "post_excerpt": "Solid oak.",
+      "post_status": "publish",
+      "thumbnail_url": "https://example.test/a.jpg",
+      "terms": {
+       "product_tag": [
+        "oak"
+       ]
+      },
+      "meta": {
+       "sgs_price": "120",
+       "sgs_price_note": "per item"
+      }
+     }
+    },
+    "readonly-variable": {
+     "why": "a WooCommerce variable product where the configurator is unsupported (WC_VERSION below the floor): the read-only From card",
+     "attrs": {
+      "sourceMode": "wc-product",
+      "productId": 52,
+      "rrpMetaKey": "_sgs_rrp"
+     },
+     "product": {
+      "id": 52,
+      "name": "Oak table",
+      "price_html": "<span class=\"woocommerce-Price-amount amount\">£120</span>",
+      "price": "120",
+      "type": "variable",
+      "image_id": 7,
+      "image_url": "https://example.test/oak.jpg",
+      "short_description": "Solid oak.",
+      "in_stock": true,
+      "average_rating": "4.5",
+      "review_count": 3,
+      "terms": {
+       "product_tag": [
+        "oak"
+       ]
+      },
+      "variation_price_min": "90",
+      "variation_price_max": "150",
+      "meta": {
+       "_sgs_rrp": "150"
+      }
+     }
+    },
+    "interactive-variable": {
+     "unrendered": "the configurator card needs WC_VERSION and a Product_Manifest built from real variations (scripts/qa/lib/wp-stubs.php, DELIBERATELY NOT STUBBED); its markup carries the same part classes as the live default card (render.php, the variable branch)"
+    }
+   }
+  },
+  "product-search": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "quote": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "responsive-logo": {
+   "base": {
+    "logoUrl": "https://example.test/logo.png",
+    "logoUrlTablet": "https://example.test/logo-t.png",
+    "logoUrlMobile": "https://example.test/logo-m.png"
+   },
+   "paths": {
+    "static": {
+     "why": "a static logo: <picture> with the desktop <img>",
+     "attrs": {}
+    },
+    "linked": {
+     "why": "linkToHome: the picture inside the home link",
+     "attrs": {
+      "linkToHome": true
+     }
+    }
+   }
+  },
+  "separator": {
+   "base": {},
+   "paths": {
+    "icon": {
+     "why": "contentMode icon: the icon in the content slot between two lines",
+     "attrs": {
+      "contentMode": "icon",
+      "contentIconSource": "lucide",
+      "contentIconName": "star"
+     }
+    },
+    "text": {
+     "why": "contentMode text: a text label in the content slot",
+     "attrs": {
+      "contentMode": "text",
+      "contentText": "Or"
+     }
+    },
+    "plain": {
+     "why": "contentMode none: the <hr> is the block root, with no content slot",
+     "attrs": {
+      "contentMode": "none"
+     }
+    }
+   }
+  },
+  "site-footer": {
+   "base": {
+    "backgroundImage": {
+     "url": "https://example.test/bg.jpg",
+     "id": 0
+    },
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+   },
+   "paths": {
+    "bg-simple": {
+     "why": "a no-repeat cover/contain background image: SGS_Container_Wrapper::render prints it as <img class=\"sgs-container__image-bg\">",
+     "attrs": {},
+     "content": "<p>Hello</p>"
+    },
+    "bg-css-layer": {
+     "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
+     "attrs": {
+      "backgroundRepeat": "repeat"
+     },
+     "content": "<p>Hello</p>"
+    }
+   }
+  },
+  "site-footer-row": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "site-header": {
+   "base": {
+    "backgroundImage": {
+     "url": "https://example.test/bg.jpg",
+     "id": 0
+    },
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>"
+   },
+   "paths": {
+    "bg-simple": {
+     "why": "a no-repeat cover/contain background image: SGS_Container_Wrapper::render prints it as <img class=\"sgs-container__image-bg\">",
+     "attrs": {},
+     "content": "<p>Hello</p>"
+    },
+    "bg-css-layer": {
+     "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
+     "attrs": {
+      "backgroundRepeat": "repeat"
+     },
+     "content": "<p>Hello</p>"
+    }
+   }
+  },
+  "site-header-row": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "star-rating": {
+   "base": {
+    "rating": 3.5,
+    "maxRating": 5
+   },
+   "paths": {
+    "svg-stars": {
+     "why": "the default style: one <svg> per star (full, half and empty)",
+     "attrs": {}
+    },
+    "trustpilot-official": {
+     "why": "the is-style-trustpilot-official style: Trustpilot's own star badge as one <img>",
+     "attrs": {
+      "className": "is-style-trustpilot-official"
+     }
+    }
+   }
+  },
+  "store-selector": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "table-of-contents": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "tabs": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "team-member": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "testimonial": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "testimonial-slider": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "theme-toggle": {
+   "base": {
+    "label": "Theme"
+   },
+   "paths": {
+    "switch": {
+     "why": "toggleStyle switch: one button with sun and moon icons and a label",
+     "attrs": {
+      "toggleStyle": "switch"
+     },
+     "globalSettings": {
+      "custom": {
+       "dark": {
+        "base": "#111111",
+        "contrast": "#eeeeee"
+       }
+      }
+     }
+    },
+    "segmented": {
+     "why": "toggleStyle segmented: a radiogroup of three plain text buttons (Light, Dark, Auto)",
+     "attrs": {
+      "toggleStyle": "segmented"
+     },
+     "globalSettings": {
+      "custom": {
+       "dark": {
+        "base": "#111111",
+        "contrast": "#eeeeee"
+       }
+      }
+     }
+    }
+   }
+  },
+  "timeline": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "trust-bar": {
+   "base": {
+    "backgroundImage": {
+     "url": "https://example.test/bg.jpg",
+     "id": 0
+    },
+    "bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+    "title": "Trusted by",
+    "items": [
+     {
+      "icon": "star",
+      "label": "Fast delivery",
+      "media": {
+       "url": "https://example.test/badge.png",
+       "id": 0,
+       "alt": "Badge"
+      }
+     },
+     {
+      "icon": "heart",
+      "label": "Loved",
+      "media": {
+       "url": "https://example.test/badge2.png",
+       "id": 0,
+       "alt": "Badge two"
+      }
+     }
+    ]
+   },
+   "paths": {
+    "icon-circle": {
+     "why": "badgeStyle icon-circle: each badge prints its icon in a circle (sgs-trust-bar__circle) and a label (sgs-trust-bar__label); the background image is the wrapper's <img>",
+     "attrs": {
+      "badgeStyle": "icon-circle"
+     }
+    },
+    "icon-bare": {
+     "why": "badgeStyle icon-bare: the icon on its own (sgs-trust-bar__icon) and a label",
+     "attrs": {
+      "badgeStyle": "icon-bare"
+     }
+    },
+    "text-only": {
+     "why": "badgeStyle text-only: each badge is a text label (sgs-trust-bar__badge-label)",
+     "attrs": {
+      "badgeStyle": "text-only"
+     }
+    },
+    "image-badge": {
+     "why": "badgeStyle image-badge: each badge is an image (sgs-trust-bar__badge-img) and a text label",
+     "attrs": {
+      "badgeStyle": "image-badge"
+     }
+    },
+    "bg-css-layer": {
+     "why": "a tiled background image (backgroundRepeat repeat, also any size other than cover/contain, parallax, fixed attachment or a per-device image) is painted on the root's ::before by SGS_Container_Wrapper::render ($sgs_bg_img_is_simple false), not on an element",
+     "attrs": {
+      "badgeStyle": "icon-circle",
+      "backgroundRepeat": "repeat"
+     }
+    }
+   }
+  },
+  "trustpilot-reviews": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "whatsapp-cta": {
+   "single": "Its modes print mode-specific parts under their own names (card-title and card-subline only in the card variant); no part's element is printed under another class in another mode, so the static check covers it."
+  },
+  "wishlist-link": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  },
+  "wishlist-panel": {
+   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+  }
+ }
+}

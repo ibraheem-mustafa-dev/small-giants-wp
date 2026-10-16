@@ -484,6 +484,11 @@ ob_start();
 					'mime' => $img['mime'] ?? '',
 				);
 				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
+				// A video item, or an image with no attachment ID, prints this markup in place of the attachment <img>;
+				// its media carries the same gallery image classes (the `image` motion part class `sgs-gallery__img` and
+				// the media-element marker), so motion, zoom and object-fit reach every item. sgs_render_media() prints
+				// one class attribute on its opening tag.
+				$item_html = (string) preg_replace( '/^(<(?:img|video)\b[^>]*?\sclass=")/', '$1' . esc_attr( $sgs_gallery_img_class ) . ' ', $item_html, 1 );
 				if ( $img_decorative ) {
 					// sgs_render_media() has no aria-hidden param (shared helper — out of
 					// scope to change here). Its output always opens with a literal
@@ -596,10 +601,8 @@ ob_start();
 									);
 								} else {
 									// Video items, or images without an attachment ID, render via the
-									// shared media-slot helper — emits <img> or <video> as needed. Pre-
-									// existing gap, unchanged by this fix: sgs_render_media() does not
-									// receive `sgs-gallery__img` (or the new media-element marker) either,
-									// so this path never carried the object-fit rule.
+									// shared media-slot helper — emits <img> or <video> as needed, with the
+									// gallery image classes added where $item_html is built.
 									echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 								}
 								?>

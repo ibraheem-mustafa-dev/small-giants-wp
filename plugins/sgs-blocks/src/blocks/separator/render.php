@@ -343,6 +343,9 @@ if ( 'icon' === $content_mode ) {
 	} else {
 		$content_html = '<span class="sgs-separator__icon" aria-hidden="true">' . sgs_get_lucide_icon( $icon_name ) . '</span>';
 	}
+	// The icon sits in the content slot, as the text does and as edit.js previews it: the icon size and colour rule
+	// above is scoped to `.sgs-separator__content`, and the `content` motion part resolves to it.
+	$content_html = '<span class="sgs-separator__content">' . $content_html . '</span>';
 } elseif ( 'text' === $content_mode ) {
 	$content_text            = $attributes['contentText'] ?? '';
 	$content_colour          = $attributes['contentColour'] ?? '';

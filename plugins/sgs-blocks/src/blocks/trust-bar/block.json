@@ -141,6 +141,8 @@
 					"_note": "gridTemplateColumns/Rows, gap, justify-*/align-content/flex-* are consumed by SGS_Container_Wrapper via the universal wrapper mechanism (render.php:214-220 comment). No alignItems/display/overflow/aspect-ratio/width/height/max-height attrs exist — honest gaps."
 				},
 				"icon-badge": {
+					"absentIn": ["icon-bare", "text-only", "image-badge"],
+					"absentWhy": "The icon circle exists only in the icon-circle badge style.",
 					"restingShadow": true,
 					"selector": ".sgs-trust-bar__circle",
 					"label": "Icon circle only (icon-circle variant)",
@@ -179,6 +181,8 @@
 					"_note": "iconColour (the SVG stroke/fill colour, style.css:80 `color: var(--sgs-trust-badge-icon-colour, ...)`) resolves via css:color (text cluster) — mirrors sgs/icon's own icon element + sgs/business-info's icon element, which use the same functional-icon-colour/css:color convention (Spec 35 vocabulary fix). Only applies when badgeStyle='icon-circle' (supports.sgs.variants). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover pairs with the resting iconColour above (2026-09-02) — render.php:255-258 emits it as a `color:` decl scoped to the block ROOT rather than a dedicated icon-badge selector, but the element it semantically belongs to (and the one its resting twin is declared on) is icon-badge, matching check-hover-state-classification.py's resting-twin discriminator."
 				},
 				"label": {
+					"absentIn": ["text-only", "image-badge"],
+					"absentWhy": "The icon styles print their text as sgs-trust-bar__label; the text-only and image-badge styles print it as the badge-label part.",
 					"label": "Badge text only",
 					"order": 6,
 					"clusters": [
@@ -188,6 +192,8 @@
 					"_note": "Typography only (labelFontSize/labelFontWeight/labelFontStyle, render.php:393) — covers both variants via a compound selector. Colour is NOT claimed here: on icon-circle it's the separate textColour attr (render.php:54,111 -> --sgs-trust-badge-text-colour -> style.css:106 .sgs-trust-bar--icon-circle .sgs-trust-bar__label); on text-only/image-badge it's labelColour, claimed by the sibling badge-label element instead — one attrMap slot can't hold two attributes, and the two variants render different class names for what would otherwise be the same conceptual node."
 				},
 				"badge-label": {
+					"absentIn": ["icon-circle", "icon-bare", "bg-css-layer"],
+					"absentWhy": "The text-only and image-badge styles print their text as sgs-trust-bar__badge-label; the icon styles print it as the label part.",
 					"label": "Badge text colour (text-only / image-badge variants)",
 					"order": 6,
 					"clusters": [
@@ -246,6 +252,8 @@
 					"_note": "The badge box of every variant (`.sgs-trust-bar__badge` as rendered; a draft may write it as `__item`, the element key per-area routing matches on, keyed on the draft's BEM element token). Declared `layer: GRID_AREA` (a per-child area of the band, like sgs/hero's content area) so the css_layer classifier does NOT fall back to its arrangement rule, which labelled itemGap GRID and let the icon-to-label gap capture the band's own items gap (`gap: 6px 32px`) that belongs in `gap`. itemGap is the icon-to-label gap inside one badge; itemPadding is the badge's own padding; both are responsive tier objects emitted as scoped rules on `.{uid}.wp-block-sgs-trust-bar .sgs-trust-bar__badge` by includes/helpers-trust-bar-item.php::sgs_trust_bar_item_css. Per-item fillStyle/fillColour (image-badge and text-only item content) remain repeater-row fields, not block-level style controls."
 				},
 				"icon-bare": {
+					"absentIn": ["icon-circle", "text-only", "image-badge", "bg-css-layer"],
+					"absentWhy": "The bare icon exists only in the icon-bare badge style.",
 					"selector": ".sgs-trust-bar__icon",
 					"label": "Bare icon only (icon-bare variant)",
 					"order": 4,
@@ -260,6 +268,8 @@
 					"_note": "The `.sgs-trust-bar__icon` span in the icon-bare variant: the icon on its own with no circle behind it, at iconBareSize px. Colour, gradient, hover and stroke width are the same attributes as the icon-circle variant (iconColour, iconColourGradient, iconColourHover, iconStrokeWidth, declared on the icon-badge element). Emitted only when badgeStyle=icon-bare."
 				},
 				"badge-img": {
+					"absentIn": ["icon-circle", "icon-bare", "text-only", "bg-css-layer"],
+					"absentWhy": "The badge image exists only in the image-badge style.",
 					"surface": true,
 					"label": "Badge image only (image-badge variant)",
 					"order": 5,
@@ -278,6 +288,8 @@
 					"_note": "The <img> in the image-badge variant (render.php:281-297, .sgs-trust-bar__badge-img). Mirrors icon-badge size/border-radius/box-shadow plus an image-specific object-fit; badgeImageSize maps css:width AND css:height (a single square dimension, render.php:284-285). Emitted only when badgeStyle=image-badge."
 				},
 				"background": {
+					"absentIn": ["bg-css-layer"],
+					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
 					"selector": ".sgs-container__image-bg",

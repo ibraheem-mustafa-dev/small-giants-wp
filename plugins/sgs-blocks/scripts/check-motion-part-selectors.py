@@ -33,7 +33,7 @@ MODES
                      container wrapper's band class prints (a whole class token: not after a dot, which is a CSS
                      selector, and not part of a longer class name)
   --self-test        plants (in temp copies) a part with no selector and no class (caught), a declared selector (passes),
-                     a BEM-class part (passes), a declared selector naming a class the block never emits (caught), an
+                     a BEM-class part (passes), a part printed only as a modifier class (caught), a declared selector naming a class the block never emits (caught), an
                      excluded part (passes), a `motion` value other than false (caught), a wrapper block's content-band
                      (passes), the same without the wrapper's motion band force (caught), a declared selector naming the
                      wrapper's band class (passes), a declared class that is only a prefix of a printed class (caught)
@@ -143,9 +143,11 @@ def include_text(includes: Path) -> list[str]:
 
 
 def emitted_elements(text: str, slug: str) -> set[str]:
-    """Element names of `sgs-<slug>__<element>` classes literally present in `text`, outside CSS selectors."""
+    """Element names of `sgs-<slug>__<element>` classes literally present in `text` as whole class tokens, outside CSS
+    selectors, by the rule `prints_class` uses: a modifier class (`sgs-x__image--desktop`) names no plain element, so it
+    does not count as `image`."""
     # A class written after a dot is a CSS selector or a comment about one, not an element carrying it.
-    return set(re.findall(r"(?<![.\w-])sgs-" + re.escape(slug) + r"__([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)", text))
+    return set(re.findall(r"(?<![.\w-])sgs-" + re.escape(slug) + r"__([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)(?![\w-])", text))
 
 
 def prints_class(text: str, cls: str) -> bool:
@@ -384,6 +386,7 @@ def self_test() -> int:
         _plant(tmp, "bare", {"label": "Thing"}, "<?php echo '<div class=\"sgs-bare__other\"></div>';")
         _plant(tmp, "chosen", {"label": "Thing", "selector": ".sgs-chosen__real"}, "<?php echo '<i class=\"sgs-chosen__real\"></i>';")
         _plant(tmp, "classed", {"label": "Thing"}, "<?php echo '<i class=\"sgs-classed__thing\"></i>';")
+        _plant(tmp, "modonly", {"label": "Thing"}, "<?php echo '<i class=\"sgs-modonly__thing--big\"></i>';")
         _plant(tmp, "dangling", {"label": "Thing", "selector": ".sgs-dangling__gone"}, "<?php echo '<i class=\"sgs-dangling__other\"></i>';")
         _plant(tmp, "skipped", {"label": "Thing", "motion": False}, "<?php echo '<div></div>';")
         _plant(tmp, "badflag", {"label": "Thing", "motion": "no"}, "<?php echo '<i class=\"sgs-badflag__thing\"></i>';")
@@ -411,6 +414,7 @@ def self_test() -> int:
             ("a part whose name matches no emitted class has no candidate", rows["bare"]["candidates"] == []),
             ("a declared selector passes", rows["chosen"]["how"] == "declared" and not any("chosen" in p for p in problems)),
             ("a BEM-class part passes", rows["classed"]["how"] == "bem"),
+            ("a part printed only as a modifier class (sgs-x__thing--big) is unresolved", rows["modonly"]["how"] == "unresolved"),
             ("a declared selector the block never emits is caught", any("dangling" in p for p in problems)),
             ("a part marked motion false is excluded, not unresolved", rows["skipped"]["how"] == "excluded" and not any(p.startswith("skipped:") for p in problems)),
             ("a motion value other than false is caught", any(p.startswith("badflag:") for p in problems)),

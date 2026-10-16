@@ -1096,15 +1096,19 @@
 /* Image — fills the full card width at the fixed image-height. object-fit
    now governed by the media-element atom layer (rule 37-media-no-handroll —
    .sgs-media-el default cover matches what this rule used to hardcode, so
-   an untouched card renders byte-identical). */
-.product-card .sgs-product-card__image {
+   an untouched card renders byte-identical). The bound <img> carries this class
+   too (the motion part class) beside .product-card-img; :where(:not(.product-card-img))
+   keeps this rule on the typed image only. */
+.product-card .sgs-product-card__image:where(:not(.product-card-img)) {
 	width: 100%;
 	height: var( --sgs-product-card-image-height, 220px );
 	display: block;
 }
 
-/* Body — matches .product-card-body layout (the bound-mode body class). */
-.product-card .sgs-product-card__body {
+/* Body — matches .product-card-body layout (the bound-mode body class). The bound
+ * body carries both classes; :where(:not(.product-card-body)) keeps this rule on the
+ * typed body only. */
+.product-card .sgs-product-card__body:where(:not(.product-card-body)) {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
@@ -1115,7 +1119,7 @@
  * :where(.product-card) .product-card-body rule above for the full Spec 32 section 6.1
  * migration rationale; specificity-0 so a per-instance cardPadding (scoped
  * `.{uid} .sgs-product-card__body{padding:...}` rule, render.php) always wins. */
-:where(.product-card) .sgs-product-card__body {
+:where(.product-card) .sgs-product-card__body:where(:not(.product-card-body)) {
 	padding: 20px;
 }
 
@@ -1220,8 +1224,9 @@
 }
 
 /* Price amount — matches .product-card .price. The typography defaults sit in the
- * :where() block below so the priceFont* controls (0,2,0, sgs_typography_css_rule) outrank them. */
-.product-card .sgs-product-card__price {
+ * :where() block below so the priceFont* controls (0,2,0, sgs_typography_css_rule) outrank them.
+ * The bound price carries both classes; :where(:not(.price)) keeps this rule on the typed price only. */
+.product-card .sgs-product-card__price:where(:not(.price)) {
 	/*
 	 * FRAMEWORK-CORRECTNESS: was hardcoded to the client-only 'Fraunces' — a
 	 * client typeface has no place in a framework block (rule violation). The
@@ -1241,7 +1246,7 @@
 /* Price and price-note typography defaults: the uid-scoped priceFont* / priceNoteFont*
  * rules (0,2,0) strictly outrank these (0,1,0). The family is the theme's Display
  * token (per-client overridable), never a client typeface. */
-:where(.product-card) .sgs-product-card__price {
+:where(.product-card) .sgs-product-card__price:where(:not(.price)) {
 	font-family: var( --wp--preset--font-family--display );
 	font-size: 28px;
 	font-weight: 700;

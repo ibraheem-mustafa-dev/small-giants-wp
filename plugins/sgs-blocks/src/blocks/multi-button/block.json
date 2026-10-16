@@ -114,6 +114,8 @@
           "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls. The group sets their default border through the childBtn* attributes, which render.php prints as --sgs-mb-btn-* custom properties that button/style.css reads; a button's own border attributes override them."
         },
         "background": {
+          "absentIn": ["bg-css-layer"],
+          "absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
           "surface": true,
           "prefix": "",
           "selector": ".sgs-container__image-bg",

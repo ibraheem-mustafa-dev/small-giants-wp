@@ -1316,7 +1316,7 @@ if ( $has_standard_bg_image ) {
 	$loading        = $sgs_is_first ? 'eager' : 'lazy';
 
 	$img_attrs = array(
-		'class'         => $sgs_hero_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-hero__bg-img',
+		'class'         => $sgs_hero_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-hero__bg-img sgs-hero__background',
 		'aria-hidden'   => 'true',
 		'fetchpriority' => $fetch_priority,
 		'loading'       => $loading,
@@ -1337,7 +1337,7 @@ if ( $has_standard_bg_image ) {
 	);
 }
 if ( $sgs_hero_lottie_layer ) {
-	$bg_img_html = '<div class="sgs-hero__bg-img sgs-container__lottie-bg" aria-hidden="true">' . $bg_img_html . '</div>';
+	$bg_img_html = '<div class="sgs-hero__bg-img sgs-hero__background sgs-container__lottie-bg" aria-hidden="true">' . $bg_img_html . '</div>';
 }
 
 // Build overlay. NO-INLINE: this block emits zero inline style property
@@ -1718,6 +1718,9 @@ $hero_helper_opts = array(
 	'no_overlay'    => true,
 	// The hero prints its own background (and its Lottie holder), never the wrapper's.
 	'no_background_holder' => true,
+	// The split variant's background image is the wrapper's <img>; it carries the
+	// hero's `background` motion part class, as the standard variant's own <img> does.
+	'bg_img_class'  => 'sgs-hero__background',
 );
 if ( $is_split ) {
 	$hero_helper_opts['wrap_inner'] = false;

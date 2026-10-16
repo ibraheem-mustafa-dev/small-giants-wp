@@ -210,6 +210,8 @@
 					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D701 (2026-08-20): `borderColourGradient` (resting) added as the base-level sibling to `borderColourHoverGradient` — the wrapper's resting border colour comes from WP-native `__experimentalBorder.color` (already mapped above at `css:border-color`), and this new gradient wins over that native solid colour at render time when set (mirrors `borderColourHover`/`borderColourHoverGradient` and `sgs/quote`'s `borderColour`/`borderColourGradient` pair). See render.php for the emission order that makes the override work without `!important`. D702 (2026-08-20): `css:background-color`/`css:color` retargeted from the dead `native:color.background` reference (WordPress never registered that attribute — `supports.color` was absent) to the plain `backgroundColour`/`textColour` string attrs, mirroring `sgs/testimonial-slider`'s `slider` element. The hover pair (`backgroundColourHover`/`textColourHover`) was already declared on this block but bound to nothing until now."
 				},
 				"inner": {
+					"absentIn": ["split", "bg-css-layer"],
+					"absentWhy": "The split variant content/media grid is the section root itself (render.php passes wrap_inner false), so no band element exists; a layer on the root reaches the grid.",
 					"selector": ".sgs-hero__content-band",
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
@@ -231,6 +233,8 @@
 					"_note": "The content/media split grid (named regions content + media; the `supports.sgs.gridAreas` flag that used to name them was deleted D639 — the regions are defined by the contentPadding/mediaPadding attrs themselves). Declares no `prefix` so arrangement members map explicitly. No `display`, `align-items`, `order` or `overflow` attribute exists on this block — honest GAPs, not omissions."
 				},
 				"content-band": {
+					"absentIn": ["split", "bg-css-layer"],
+					"absentWhy": "The split variant content/media grid is the section root itself (render.php passes wrap_inner false), so no band element exists; a layer on the root reaches the grid.",
 					"label": "Content band",
 					"layer": "CONTENT",
 					"order": 3,
@@ -259,6 +263,8 @@
 					}
 				},
 				"media": {
+					"absentIn": ["standard"],
+					"absentWhy": "The media column exists only in the split variant.",
 					"label": "Media column",
 					"layer": "GRID_AREA",
 					"order": 5,
@@ -327,6 +333,8 @@
 					"_note": "A second decorative overlay layered on top of the split-media column only (`.sgs-hero__media-overlay`, render.php ~line 1170) — separate from the section-level `overlay` element above; mirrors its shape 1:1 but scoped to the foreground media instead of the section background. REPOINTED 2026-08-16 (D643): this mapped `mediaOverlayGradientFrom`, deleted by the D636 storage collapse (837f7c97); same one-string shape and same removal of the stranded-sibling note as `overlay` above. `clusters: []`, same CONTESTED-avoidance rationale as `overlay` above. `prefix: \"\"` opt-out, same rationale. Found live 2026-08-15: DB tagged 4 attrs css_element='media-overlay', undeclared until now."
 				},
 				"split-image": {
+					"absentIn": ["standard"],
+					"absentWhy": "The split image exists only in the split variant.",
 					"surface": true,
 					"label": "Split image",
 					"layer": "GRID_AREA",
@@ -337,6 +345,8 @@
 					"_note": "The IMAGE type's extra class, applied by sgs_tier_media_render()'s per-type $extra argument so it lands ONLY on an <img> tier. It intentionally carries NO attrMap: as of 2026-08-27 (commit 33816708e) every splitMedia* control paints on the type-agnostic `.sgs-hero__split-media` base class instead, so video and SVG tiers obey the same controls — they previously obeyed none. The class is still emitted and still load-bearing for STATIC, image-only styling in style.css: the base width/height/object-fit/display rule (style.css:292) and the hover-zoom transform (style.css:305-318). Neither is attribute-driven, so neither belongs to an attr and neither maps here."
 				},
 				"split-media": {
+					"absentIn": ["standard"],
+					"absentWhy": "The split media holder exists only in the split variant.",
 					"surface": true,
 					"label": "Split media",
 					"layer": "GRID_AREA",
@@ -370,13 +380,15 @@
 					"_note": "The type-agnostic base class emitted by sgs_tier_media_render() — carries `sgs-hero__split-media` plus `--{tier}` and `--{type}` modifiers on EVERY tier node whatever its type. It OWNS the whole splitMedia* control family as of 2026-08-27 (commit 33816708e): width, height, border-radius, border-color/style/width, padding, object-fit and object-position all emit scoped to this class in render.php, which is what lets a video or SVG tier honour them. object-fit/object-position emit on the compound `.sgs-hero__split-media--image,.sgs-hero__split-media--video` selector — replaced-element properties do nothing on the <span> wrapping inline SVG — and a BEM MODIFIER is never an element, so the classifier's deriver cuts at the `--` and still resolves here. ⛔ WHY THIS MAP MOVED: it lived on split-image, which pinned 16 block_attributes.css_element rows to a class those properties no longer paint on. The tier variants (splitMediaPaddingTablet, splitMediaObjectPositionMobile, …) were already correct because they carry no attrMap key and fall through to selector derivation — that split is what exposed the stale manifest. `css:max-width` added 2026-09-05 (db-consistency residual close-out), routed to `splitMediaMaxWidth` (object + `splitMediaMaxWidthUnit` sibling, desktop-tier only) — the object+unit pair is strictly MORE expressive than a bare percentage (it can express one via `splitMediaMaxWidthUnit: '%'`), so nothing is lost. `splitMediaMaxWidthPercent` (a bare-percentage duplicate of this same capability, emitted second so it won the cascade when both were set) was DELETED 2026-09-07 — this attr is now the sole max-width writer for split media."
 				},
 				"background": {
+					"absentIn": ["bg-css-layer"],
+					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
-					"selector": ".sgs-hero__bg-img",
+					"selector": ".sgs-hero__background",
 					"label": "Background image",
 					"order": 14,
 					"clusters": [],
-					"_note": "`.sgs-hero__bg-img`, the <img> hero prints for its standard background image (hero paints its own and nulls backgroundImage before the wrapper). A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
+					"_note": "`.sgs-hero__background`, on the background <img> on both variants: the standard variant's own `.sgs-hero__bg-img` (hero paints its own and nulls backgroundImage before the wrapper) and the split variant's wrapper `.sgs-container__image-bg` (render.php passes it as the wrapper's bg_img_class). A motion target so a Ken Burns layer scales the image alone, never the block's content; it declares no style clusters because its look is governed by the Background panel."
 				},
 				"svg-bg": {
 					"svg": true,

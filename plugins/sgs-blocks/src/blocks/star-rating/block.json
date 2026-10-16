@@ -76,6 +76,9 @@
 					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-star-rating — display:flex hardcoded, no attribute, so no `layer`/arrangement members). No width/height/max-width/border/box-shadow/gap attribute exists on this block — honest gaps. Content-KIND, block-private (D294)."
 				},
 				"star": {
+					"svg": true,
+					"absentIn": ["trustpilot-official"],
+					"absentWhy": "The Trustpilot official style prints Trustpilot's star badge as one <img> (sgs-star-rating__tp-badge), not separate stars; a layer on the root reaches it.",
 					"label": "Star",
 					"order": 2,
 					"clusters": [
@@ -89,6 +92,8 @@
 					}
 				},
 				"star-empty": {
+					"absentIn": ["trustpilot-official"],
+					"absentWhy": "The Trustpilot official style prints Trustpilot's star badge as one <img>, not separate stars.",
 					"selector": ".sgs-star-rating__star--empty",
 					"label": "Star (unfilled)",
 					"order": 3,
