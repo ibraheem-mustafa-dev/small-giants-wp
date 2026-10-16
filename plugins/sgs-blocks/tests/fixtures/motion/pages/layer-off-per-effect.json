@@ -13,7 +13,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Scroll room around the two timelines",
+					"content": "Scroll room around the three timelines",
 					"level": "h2"
 				}
 			}
@@ -29,35 +29,35 @@
 			"entries": [
 				{
 					"date": "1990",
-					"title": "Draggable off on mobile milestone 1",
+					"title": "Split reveal off on mobile milestone 1",
 					"description": "<p>Panel 1 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "1998",
-					"title": "Draggable off on mobile milestone 2",
+					"title": "Split reveal off on mobile milestone 2",
 					"description": "<p>Panel 2 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "2006",
-					"title": "Draggable off on mobile milestone 3",
+					"title": "Split reveal off on mobile milestone 3",
 					"description": "<p>Panel 3 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "2014",
-					"title": "Draggable off on mobile milestone 4",
+					"title": "Split reveal off on mobile milestone 4",
 					"description": "<p>Panel 4 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "2022",
-					"title": "Draggable off on mobile milestone 5",
+					"title": "Split reveal off on mobile milestone 5",
 					"description": "<p>Panel 5 of five.</p>",
 					"icon": "",
 					"image": 0
@@ -72,19 +72,13 @@
 								{
 									"id": "split1",
 									"effect": "split-reveal",
-									"trigger": "scroll"
+									"trigger": "scroll",
+									"off": [
+										"mobile"
+									]
 								}
 							]
-						},
-						"effects": [
-							{
-								"id": "drag1",
-								"effect": "draggable",
-								"off": [
-									"mobile"
-								]
-							}
-						]
+						}
 					}
 				}
 			}
@@ -146,13 +140,7 @@
 									"trigger": "scroll"
 								}
 							]
-						},
-						"effects": [
-							{
-								"id": "drag1",
-								"effect": "draggable"
-							}
-						]
+						}
 					}
 				}
 			}
@@ -168,35 +156,35 @@
 			"entries": [
 				{
 					"date": "1990",
-					"title": "Split reveal off on mobile milestone 1",
+					"title": "Split reveal off on tablet milestone 1",
 					"description": "<p>Panel 1 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "1998",
-					"title": "Split reveal off on mobile milestone 2",
+					"title": "Split reveal off on tablet milestone 2",
 					"description": "<p>Panel 2 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "2006",
-					"title": "Split reveal off on mobile milestone 3",
+					"title": "Split reveal off on tablet milestone 3",
 					"description": "<p>Panel 3 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "2014",
-					"title": "Split reveal off on mobile milestone 4",
+					"title": "Split reveal off on tablet milestone 4",
 					"description": "<p>Panel 4 of five.</p>",
 					"icon": "",
 					"image": 0
 				},
 				{
 					"date": "2022",
-					"title": "Split reveal off on mobile milestone 5",
+					"title": "Split reveal off on tablet milestone 5",
 					"description": "<p>Panel 5 of five.</p>",
 					"icon": "",
 					"image": 0
@@ -213,17 +201,11 @@
 									"effect": "split-reveal",
 									"trigger": "scroll",
 									"off": [
-										"mobile"
+										"tablet"
 									]
 								}
 							]
-						},
-						"effects": [
-							{
-								"id": "drag1",
-								"effect": "draggable"
-							}
-						]
+						}
 					}
 				}
 			}
@@ -243,7 +225,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Scroll room around the two timelines",
+					"content": "Scroll room around the three timelines",
 					"level": "h2"
 				}
 			}

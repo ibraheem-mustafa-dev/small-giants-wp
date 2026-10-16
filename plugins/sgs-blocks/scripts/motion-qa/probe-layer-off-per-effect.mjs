@@ -1,38 +1,39 @@
 /**
- * Spec 38A FR-38A-23 (per-effect `off`): live proof that a motion layer's per-device `off` switches off only its own
- * Tier G effect, never a sibling effect on the same element.
+ * Spec 38A FR-38A-23 (per-effect `off`): live proof that a motion layer's per-device `off` list reaches the Tier G boot
+ * gate (`gsap/provider.js::isDisabledAtThisTier( el, effect )`) as that effect's own slug, so the effect skips boot on
+ * exactly the listed tiers and boots everywhere else.
  *
  * FIXTURE: tests/fixtures/motion/pages/layer-off-per-effect.json, built with scripts/wp-build-page.js. Three horizontal
- * `sgs/timeline` blocks (mobile layout carousel, the block's own reveal off), each with two Tier G layers on
- * `elements.root`: an `entrance.text` split-reveal and an `effects` draggable. That is the only kind of Tier G pair the
- * renderer keeps on one element (every other pair is dropped by the `tier-g-shared-scroll-settings` refusal), both
- * effects allow the root (draggable `x-target-level` block, split-reveal part with text kinds, which the root takes), and
- * sgs/timeline qualifies for both in generated-fx-qualifying-blocks.json.
- *   .mlo-a  draggable off on mobile. Rendered data-sgs-fx-off-mobile="draggable". Proves the sibling (split-reveal)
- *           still boots at 375: the old element-wide switch stopped it.
- *   .mlo-b  the control: both layers, no off.
- *   .mlo-c  split-reveal off on mobile. Rendered data-sgs-fx-off-mobile="split-reveal". Proves the listed effect skips
- *           boot at 375 and boots at 1440.
+ * `sgs/timeline` blocks (mobile layout carousel, the block's own reveal off), each with one split-reveal layer on
+ * `elements.root` (`entrance.text`; schema x-target-level part with text kinds, which the root takes; sgs/timeline
+ * qualifies for it in generated-fx-qualifying-blocks.json):
+ *   .mlo-a  off ["mobile"]. Rendered data-sgs-fx-off-mobile="split-reveal".
+ *   .mlo-b  the control: no off.
+ *   .mlo-c  off ["tablet"]. Rendered data-sgs-fx-off-tablet="split-reveal".
  *
- * BOOT MARKERS, read from what each effect's boot writes into the DOM (never a computed style):
- *   split-reveal  fx-split-reveal.js::initSplitReveal runs SplitText.create( el, { aria: 'auto' } ), whose word
- *                 wrappers are `<div aria-hidden="true">` with inline `position: relative; display: inline-block`
- *                 (gsap SplitText.js `_getWrapper`). SGS blocks render no inline style (Spec 32), so a descendant with
- *                 those inline declarations is a SplitText fragment. SplitText also writes `aria-label` on the element.
- *   draggable     fx-draggable.js::bindDrag sets `el.style.cursor = 'grab'` when initDraggable boots, which needs a fine
- *                 pointer and the element ITSELF to be an overflowing `overflow-x: auto|scroll` scroller.
- *                 ⚠ The timeline root is not one (its scroller is the child `.sgs-timeline__list`), so draggable cannot
- *                 boot on a timeline root at any width. Every draggable check is therefore answered only when the
- *                 control row boots draggable at that width, and is UNANSWERED with that reason otherwise.
+ * WHY ONE EFFECT, NOT A SIBLING PAIR: the sibling clause (one layer's off leaves a second Tier G effect on the same
+ * element running) has no live surface. The Tier G effects are the eleven that boot through `bootEffect`; the
+ * `tier-g-shared-scroll-settings` refusal drops every pair among them except a pair with draggable, split-reveal with
+ * scramble is refused by `text-rewrite-entrance`, and draggable qualifies only for sgs/before-after, which qualifies for
+ * neither text effect and whose root is `overflow: hidden`, so initDraggable would decline it anyway. The sibling clause
+ * stays covered by tests/js/provider-tier-gate.test.js and tests/php/run-fx-layer-off-per-effect-standalone.php.
  *
- * WHAT IT CHECKS (each engine, at 375 and 1440 wide). A check on .mlo-a or .mlo-c is answered only when the control
- * .mlo-b booted the same effect at the same width, so a pass is never read off an effect that cannot boot here:
- *   emitted              data-sgs-fx names both effects on all three; off-mobile is "draggable" on .mlo-a,
- *                        "split-reveal" on .mlo-c and absent on .mlo-b (a mismatch means the fixture or emitter: UNANSWERED).
- *   off-effect-skipped   an effect in the row's off-mobile list has not booted at 375 and has booted at 1440.
- *   sibling-boots        an effect not in the row's off list has booted at both widths.
- *   control-boots        .mlo-b booted each effect.
- *   Live negative control: the off-effect-skipped judge fed .mlo-b's 375 split-reveal reading must go red.
+ * BOOT MARKER, read from what the boot writes into the DOM (never a computed style): fx-split-reveal.js::initSplitReveal
+ * runs SplitText.create( el, { aria: 'auto' } ), whose word wrappers are `<div aria-hidden="true">` with inline
+ * `position: relative; display: inline-block` (gsap SplitText.js `_getWrapper`). SGS blocks render no inline style
+ * (Spec 32), so a descendant with those inline declarations is a SplitText fragment. SplitText also writes `aria-label`
+ * on the element (reported, not judged).
+ *
+ * WHAT IT CHECKS (each engine, at 375, 768 and 1440 wide). A check on .mlo-a or .mlo-c is answered only when the
+ * control .mlo-b booted split-reveal at the same width:
+ *   emitted              data-sgs-fx is "split-reveal" on all three; off-mobile only on .mlo-a, off-tablet only on .mlo-c,
+ *                        and no element-wide data-sgs-fx-disable-* (a mismatch means the fixture or emitter: UNANSWERED).
+ *   off-effect-skipped   a row whose off list names this tier has not booted split-reveal.
+ *   boots-off-tier       a row whose off list does not name this tier has booted it (.mlo-c at 375 proves a tablet-only
+ *                        off leaves mobile running; .mlo-a at 768 the reverse).
+ *   control-boots        .mlo-b booted split-reveal.
+ *   Live negative control: the off-effect-skipped judge fed .mlo-b's reading as if it listed this tier must go red, so
+ *                        a pass on .mlo-a or .mlo-c is not read off a marker that never appears.
  *
  * Usage:
  *   node plugins/sgs-blocks/scripts/motion-qa/probe-layer-off-per-effect.mjs --page <id> [--site sandybrown]
@@ -55,10 +56,10 @@ const FIXTURE = path.join( FIXTURE_DIR, 'layer-off-per-effect.json' );
 const BLOCKS_DIR = path.join( REPO, 'plugins', 'sgs-blocks', 'src', 'blocks' );
 const SCHEMA_FILE = path.join( REPO, 'plugins', 'sgs-blocks', 'schemas', 'motion.schema.json' );
 const QUALIFYING_FILE = path.join( BLOCKS_DIR, 'extensions', 'generated-fx-qualifying-blocks.json' );
+const EFFECT = 'split-reveal';
 const ROWS = { a: '.mlo-a', b: '.mlo-b', c: '.mlo-c' };
-const EFFECTS = [ 'split-reveal', 'draggable' ];
-const EXPECTED_OFF = { a: 'draggable', b: null, c: 'split-reveal' };
-const WIDTHS = [ 375, 1440 ];
+const EXPECTED_OFF = { a: { mobile: EFFECT, tablet: null }, b: { mobile: null, tablet: null }, c: { mobile: null, tablet: EFFECT } };
+const WIDTHS = [ 375, 768, 1440 ];
 const HEIGHT = 900;
 const ENGINES = [ 'chromium', 'firefox', 'webkit' ];
 const BOOT_TIMEOUT = 10000;
@@ -67,34 +68,32 @@ const BOOT_TIMEOUT = 10000;
 
 const tokens = ( value ) => ( value || '' ).split( /\s+/ ).filter( Boolean );
 
-/** Which effects booted, from one element's reading. */
-export function booted( reading ) {
-	return {
-		draggable: 'grab' === reading.cursor || 'grabbing' === reading.cursor,
-		'split-reveal': reading.splitFragments > 0,
-	};
-}
+/** Whether split-reveal booted, from one element's reading. */
+export const booted = ( reading ) => reading.splitFragments > 0;
 
 /** The rendered attributes match the fixture on every row. Null when a row is missing. */
 export function judgeEmitted( readings ) {
 	if ( Object.keys( ROWS ).some( ( k ) => ! readings[ k ] ) ) return null;
 	return Object.entries( EXPECTED_OFF ).every( ( [ k, off ] ) => {
 		const r = readings[ k ];
-		return EFFECTS.every( ( e ) => tokens( r.fx ).includes( e ) ) &&
-			( null === off ? null === r.offMobile : off === tokens( r.offMobile ).join( ' ' ) ) &&
-			null === r.offTablet && ! r.disableMobile;
+		const list = ( v ) => ( v ? tokens( v ).join( ' ' ) : null );
+		return EFFECT === tokens( r.fx ).join( ' ' ) && off.mobile === list( r.offMobile ) && off.tablet === list( r.offTablet ) &&
+			! r.disableMobile && ! r.disableTablet;
 	} );
 }
 
+/** The off list a reading carries for a tier ('desktop' has none). */
+const offAt = ( reading, tier ) => tokens( 'mobile' === tier ? reading.offMobile : 'tablet' === tier ? reading.offTablet : '' );
+
 /**
- * One effect on one row at one tier. Returns { check, pass } where pass is null when the control did not boot this
- * effect here (nothing to compare against), else whether the row behaved as its off list says.
+ * One row at one tier: { check, pass }. pass is null when the control did not boot the effect here (nothing to
+ * compare against), else whether the row booted exactly when its off list does not name this tier.
  */
-export function judgeEffect( row, control, effect, tier ) {
-	const off = 'mobile' === tier && tokens( row.offMobile ).includes( effect );
-	const check = tokens( row.offMobile ).includes( effect ) ? 'off-effect-skipped' : 'sibling-boots';
-	if ( ! booted( control )[ effect ] ) return { check, pass: null };
-	return { check, pass: off ? ! booted( row )[ effect ] : booted( row )[ effect ] };
+export function judgeRow( row, control, tier ) {
+	const off = offAt( row, tier ).includes( EFFECT );
+	const check = off ? 'off-effect-skipped' : 'boots-off-tier';
+	if ( ! booted( control ) ) return { check, pass: null };
+	return { check, pass: off ? ! booted( row ) : booted( row ) };
 }
 
 // ---- Static placement check (target level, part kinds, block qualification) ------------------------------------
@@ -141,27 +140,28 @@ function blockElements( blockName ) {
 // ---- Self-test -------------------------------------------------------------------------------------------------
 
 const read = ( over = {} ) => ( {
-	fx: 'split-reveal draggable', offMobile: null, offTablet: null, disableMobile: false, cursor: 'grab', splitFragments: 12, ...over,
+	fx: EFFECT, offMobile: null, offTablet: null, disableMobile: false, disableTablet: false, splitFragments: 12, ...over,
 } );
 
 async function fixtureChecks( rep ) {
-	const tree = JSON.parse( fs.readFileSync( FIXTURE, 'utf8' ) );
-	const items = collectMotion( tree );
+	const items = collectMotion( JSON.parse( fs.readFileSync( FIXTURE, 'utf8' ) ) );
 	const schema = JSON.parse( fs.readFileSync( SCHEMA_FILE, 'utf8' ) );
 	const qualifying = JSON.parse( fs.readFileSync( QUALIFYING_FILE, 'utf8' ) );
 
 	const placed = items.flatMap( ( item ) => placementProblems( item.block, item.motion, schema, qualifying, blockElements( item.block ) ).map( ( r ) => ( { className: item.className, ...r } ) ) );
 	rep.check( 'fixture-placement', {
 		selector: FIXTURE, property: 'each layer: schema x-target-level and x-part-kinds for its target, and the block qualifies for the effect',
-		measured: placed, expected: 'six layers (three timelines x split-reveal, draggable), every one allowed where it sits',
-		pass: 6 === placed.length && placed.every( ( r ) => r.ok ),
+		measured: placed, expected: 'three split-reveal layers on sgs/timeline root, each allowed where it sits',
+		pass: 3 === placed.length && placed.every( ( r ) => r.ok ),
 	} );
-	// Negative control: the draggable on sgs/container's `inner` part (a part target; container does not qualify).
-	const wrong = placementProblems( 'sgs/container', { v: 1, elements: { inner: { effects: [ { id: 'd', effect: 'draggable' } ] } } }, schema, qualifying, blockElements( 'sgs/container' ) );
-	rep.control( 'fixture-placement', {
-		property: 'draggable on sgs/container part "inner"', measured: wrong, expected: 'refused: block-level effect on a part, and a non-qualifying block',
-		red: wrong.length > 0 && wrong.every( ( r ) => ! r.ok ),
-	} );
+	const misplaced = [
+		[ 'sgs/container', { v: 1, elements: { inner: { effects: [ { id: 'd', effect: 'draggable' } ] } } }, 'a block-level effect on a part of a block that does not qualify' ],
+		[ 'sgs/timeline', { v: 1, elements: { root: { effects: [ { id: 'd', effect: 'draggable' } ] } } }, 'draggable on sgs/timeline, which no longer qualifies for it' ],
+	];
+	for ( const [ block, motion, why ] of misplaced ) {
+		const rows = placementProblems( block, motion, schema, qualifying, blockElements( block ) );
+		rep.control( 'fixture-placement', { property: `${ block } ${ JSON.stringify( motion.elements ) }`, measured: rows, why, red: rows.length > 0 && rows.every( ( r ) => ! r.ok ) } );
+	}
 
 	let checkMotion;
 	try {
@@ -187,33 +187,31 @@ async function fixtureChecks( rep ) {
 
 export async function selfTest() {
 	const rep = new Reporter( { mode: 'self-test' } );
-	const good = { a: read( { offMobile: 'draggable' } ), b: read(), c: read( { offMobile: 'split-reveal' } ) };
+	const good = { a: read( { offMobile: EFFECT } ), b: read(), c: read( { offTablet: EFFECT } ) };
 
 	rep.check( 'emitted', { pass: true === judgeEmitted( good ) } );
 	rep.check( 'emitted:missing-row', { pass: null === judgeEmitted( { ...good, c: null } ) } );
-	rep.control( 'emitted', { why: 'the old element-wide switch on .mlo-a', red: false === judgeEmitted( { ...good, a: read( { offMobile: null, disableMobile: true } ) } ) } );
-	rep.control( 'emitted', { why: 'an off list that also names the sibling', red: false === judgeEmitted( { ...good, a: read( { offMobile: 'draggable split-reveal' } ) } ) } );
+	rep.control( 'emitted', { why: 'the old element-wide switch on .mlo-a', red: false === judgeEmitted( { ...good, a: read( { disableMobile: true } ) } ) } );
+	rep.control( 'emitted', { why: 'the tablet off written as mobile on .mlo-c', red: false === judgeEmitted( { ...good, c: read( { offMobile: EFFECT } ) } ) } );
 
-	// .mlo-a at mobile: draggable off and absent, split-reveal (the sibling) booted.
-	const aMobile = read( { offMobile: 'draggable', cursor: '' } );
-	const sib = judgeEffect( aMobile, good.b, 'split-reveal', 'mobile' );
-	rep.check( 'sibling-boots@mobile', { measured: sib, pass: 'sibling-boots' === sib.check && true === sib.pass } );
-	const oldGate = judgeEffect( read( { offMobile: 'draggable', cursor: '', splitFragments: 0 } ), good.b, 'split-reveal', 'mobile' );
-	rep.control( 'sibling-boots@mobile', { why: 'the old element-wide gate: the sibling did not boot on .mlo-a', measured: oldGate, red: false === oldGate.pass } );
+	const skipped = judgeRow( read( { offMobile: EFFECT, splitFragments: 0 } ), good.b, 'mobile' );
+	rep.check( 'off-effect-skipped@mobile', { measured: skipped, pass: 'off-effect-skipped' === skipped.check && true === skipped.pass } );
+	const ignored = judgeRow( good.a, good.b, 'mobile' );
+	rep.control( 'off-effect-skipped@mobile', { why: 'the gate ignored: split-reveal booted at mobile on .mlo-a', measured: ignored, red: false === ignored.pass } );
 
-	// .mlo-c: split-reveal off at mobile, booted at desktop.
-	const cMobile = read( { offMobile: 'split-reveal', splitFragments: 0 } );
-	const skip = judgeEffect( cMobile, good.b, 'split-reveal', 'mobile' );
-	rep.check( 'off-effect-skipped@mobile', { measured: skip, pass: 'off-effect-skipped' === skip.check && true === skip.pass } );
-	const desk = judgeEffect( good.c, good.b, 'split-reveal', 'desktop' );
-	rep.check( 'off-effect-skipped@desktop', { measured: desk, pass: true === desk.pass } );
-	const ignored = judgeEffect( good.c, good.b, 'split-reveal', 'mobile' );
-	rep.control( 'off-effect-skipped@mobile', { why: 'the gate ignored: split-reveal booted at mobile on .mlo-c', measured: ignored, red: false === ignored.pass } );
-	const never = judgeEffect( cMobile, good.b, 'split-reveal', 'desktop' );
-	rep.control( 'off-effect-skipped@desktop', { why: 'split-reveal never booted at desktop either', measured: never, red: false === never.pass } );
+	const cMobile = judgeRow( good.c, good.b, 'mobile' );
+	rep.check( 'boots-off-tier@mobile', { measured: cMobile, pass: 'boots-off-tier' === cMobile.check && true === cMobile.pass } );
+	const leaked = judgeRow( read( { offTablet: EFFECT, splitFragments: 0 } ), good.b, 'mobile' );
+	rep.control( 'boots-off-tier@mobile', { why: 'a tablet-only off that also stopped mobile', measured: leaked, red: false === leaked.pass } );
 
-	// A control that cannot boot the effect leaves the row unanswered, never a pass.
-	const noControl = judgeEffect( aMobile, read( { cursor: '' } ), 'draggable', 'mobile' );
+	const cTablet = judgeRow( read( { offTablet: EFFECT, splitFragments: 0 } ), good.b, 'tablet' );
+	rep.check( 'off-effect-skipped@tablet', { measured: cTablet, pass: 'off-effect-skipped' === cTablet.check && true === cTablet.pass } );
+	const aDesktop = judgeRow( good.a, good.b, 'desktop' );
+	rep.check( 'boots-off-tier@desktop', { measured: aDesktop, pass: true === aDesktop.pass } );
+	const never = judgeRow( read( { offMobile: EFFECT, splitFragments: 0 } ), good.b, 'desktop' );
+	rep.control( 'boots-off-tier@desktop', { why: 'split-reveal never booted at desktop either', measured: never, red: false === never.pass } );
+
+	const noControl = judgeRow( good.a, read( { splitFragments: 0 } ), 'mobile' );
 	rep.check( 'unanswered-without-control', { measured: noControl, pass: null === noControl.pass } );
 
 	await fixtureChecks( rep );
@@ -236,7 +234,7 @@ function parseArgs( argv ) {
 	return args;
 }
 
-/** One row's fx attributes, the boot markers and the draggable precondition, read in the page. */
+/** One row's fx attributes and the split-reveal boot marker, read in the page. */
 async function reading( page, selector ) {
 	return page.evaluate( ( sel ) => {
 		const el = document.querySelector( sel );
@@ -248,10 +246,9 @@ async function reading( page, selector ) {
 			offMobile: el.getAttribute( 'data-sgs-fx-off-mobile' ),
 			offTablet: el.getAttribute( 'data-sgs-fx-off-tablet' ),
 			disableMobile: el.hasAttribute( 'data-sgs-fx-disable-mobile' ),
-			cursor: el.style.cursor,
+			disableTablet: el.hasAttribute( 'data-sgs-fx-disable-tablet' ),
 			splitFragments: fragments.length,
 			ariaLabel: el.getAttribute( 'aria-label' ),
-			rootScroller: [ 'auto', 'scroll' ].includes( getComputedStyle( el ).overflowX ) && el.scrollWidth > el.clientWidth,
 		};
 	}, selector );
 }
@@ -266,7 +263,6 @@ async function runWidth( browserType, engine, width, url, rep ) {
 			return;
 		}
 		const env = await page.evaluate( () => ( {
-			fine: matchMedia( '(pointer: fine)' ).matches,
 			reduce: matchMedia( '(prefers-reduced-motion: reduce)' ).matches,
 			tier: matchMedia( '(max-width: 767px)' ).matches ? 'mobile' : matchMedia( '(max-width: 1023px)' ).matches ? 'tablet' : 'desktop',
 		} ) );
@@ -277,8 +273,8 @@ async function runWidth( browserType, engine, width, url, rep ) {
 			rep.check( 'emitted', { pass: null, measured: missing, why: 'rows missing (build tests/fixtures/motion/pages/layer-off-per-effect.json)' } );
 			return;
 		}
-		if ( ! env.fine || env.reduce ) {
-			rep.check( 'boot', { pass: null, measured: env, why: 'draggable needs a fine pointer and split-reveal needs no reduced-motion preference' } );
+		if ( env.reduce ) {
+			rep.check( 'boot', { pass: null, measured: env, why: 'split-reveal does not boot under a reduced-motion preference' } );
 			return;
 		}
 		await settleInView( page, ROWS.b );
@@ -291,13 +287,13 @@ async function runWidth( browserType, engine, width, url, rep ) {
 		const r = {};
 		for ( const k of Object.keys( ROWS ) ) r[ k ] = await reading( page, sel( k ) );
 		const ctx = { tier: env.tier };
-		const show = ( x ) => ( { offMobile: x.offMobile, cursor: x.cursor, splitFragments: x.splitFragments, ariaLabel: !! x.ariaLabel, rootScroller: x.rootScroller, booted: booted( x ) } );
+		const show = ( x ) => ( { offMobile: x.offMobile, offTablet: x.offTablet, splitFragments: x.splitFragments, ariaLabel: !! x.ariaLabel, booted: booted( x ) } );
 
 		const emitted = judgeEmitted( r );
 		rep.check( 'emitted', {
-			selector: Object.values( ROWS ).join( ', ' ), property: 'data-sgs-fx, data-sgs-fx-off-mobile, data-sgs-fx-off-tablet, data-sgs-fx-disable-mobile',
-			measured: Object.fromEntries( Object.entries( r ).map( ( [ k, x ] ) => [ k, { fx: x.fx, offMobile: x.offMobile, offTablet: x.offTablet, disableMobile: x.disableMobile } ] ) ),
-			expected: 'all name split-reveal and draggable; off-mobile "draggable" on .mlo-a, "split-reveal" on .mlo-c, none on .mlo-b',
+			selector: Object.values( ROWS ).join( ', ' ), property: 'data-sgs-fx, data-sgs-fx-off-mobile, data-sgs-fx-off-tablet, data-sgs-fx-disable-*',
+			measured: Object.fromEntries( Object.entries( r ).map( ( [ k, x ] ) => [ k, { fx: x.fx, offMobile: x.offMobile, offTablet: x.offTablet, disableMobile: x.disableMobile, disableTablet: x.disableTablet } ] ) ),
+			expected: 'all "split-reveal"; off-mobile only on .mlo-a, off-tablet only on .mlo-c; no element-wide switch',
 			pass: emitted ? true : null, why: emitted ? '' : 'the rendered attributes do not match the fixture, so the boot checks would not test the gate',
 		} );
 		if ( ! emitted ) return;
@@ -305,31 +301,21 @@ async function runWidth( browserType, engine, width, url, rep ) {
 			rep.check( 'boot', { ...ctx, selector: sel( 'b' ), measured: show( r.b ), pass: null, why: `the control's split-reveal never booted within ${ BOOT_TIMEOUT }ms (Tier G modules not loaded)` } );
 			return;
 		}
-
-		for ( const effect of EFFECTS ) {
-			const controlBooted = booted( r.b )[ effect ];
-			rep.check( 'control-boots', {
-				...ctx, effect, selector: sel( 'b' ), measured: show( r.b ), expected: `${ effect } booted`,
-				pass: controlBooted ? true : 'draggable' === effect && ! r.b.rootScroller ? null : false,
-				why: controlBooted ? '' : 'draggable' === effect && ! r.b.rootScroller
-					? 'the timeline root is not an overflowing overflow-x scroller (its scroller is .sgs-timeline__list), so initDraggable declines to boot on it'
-					: '',
+		rep.check( 'control-boots', { ...ctx, selector: sel( 'b' ), measured: show( r.b ), expected: 'split-reveal booted (SplitText fragments)', pass: booted( r.b ) } );
+		for ( const k of [ 'a', 'c' ] ) {
+			const j = judgeRow( r[ k ], r.b, env.tier );
+			rep.check( j.check, {
+				...ctx, selector: sel( k ), property: 'SplitText fragments (inline position:relative; display:inline-block, aria-hidden)', measured: show( r[ k ] ),
+				expected: 'off-effect-skipped' === j.check ? 'split-reveal not booted' : 'split-reveal booted',
+				pass: j.pass, why: null === j.pass ? 'the control did not boot split-reveal at this width, so this row has nothing to be compared with' : '',
 			} );
-			for ( const k of [ 'a', 'c' ] ) {
-				const j = judgeEffect( r[ k ], r.b, effect, env.tier );
-				rep.check( j.check, {
-					...ctx, effect, selector: sel( k ), measured: show( r[ k ] ),
-					expected: 'off-effect-skipped' === j.check && 'mobile' === env.tier ? `${ effect } not booted` : `${ effect } booted`,
-					pass: j.pass, why: null === j.pass ? `the control did not boot ${ effect } at this width, so this row has nothing to be compared with` : '',
-				} );
-			}
 		}
-		if ( 'mobile' === env.tier ) {
-			const asControl = judgeEffect( { ...r.b, offMobile: 'split-reveal' }, r.b, 'split-reveal', 'mobile' );
+		if ( 'desktop' !== env.tier ) {
+			const asOff = judgeRow( { ...r.b, [ 'mobile' === env.tier ? 'offMobile' : 'offTablet' ]: EFFECT }, r.b, env.tier );
 			rep.control( 'off-effect-skipped', {
-				...ctx, selector: sel( 'b' ), property: 'the off-effect-skipped judge fed the control row as if it listed split-reveal off', measured: show( r.b ),
-				expected: 'red: a split-reveal that boots at mobile shows on the marker, so the pass on .mlo-c is not vacuous',
-				red: null === asControl.pass ? null : ! asControl.pass,
+				...ctx, selector: sel( 'b' ), property: 'the off-effect-skipped judge fed the control row as if it listed this tier', measured: show( r.b ),
+				expected: 'red: a split-reveal that boots here shows on the marker, so the skip on the off row is not vacuous',
+				red: null === asOff.pass ? null : ! asOff.pass,
 			} );
 		}
 	} catch ( e ) {

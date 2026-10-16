@@ -399,6 +399,13 @@ EXACT_MATCH_BLOCKS: dict[str, frozenset[str]] = {
     "image-sequence": frozenset({"sgs/image-sequence"}),
 }
 
+# Effects that attach to the block ROOT element and boot only when that element is itself the native horizontal
+# scroller (fx-draggable.js::initDraggable asks `isNativeHorizontalScroller( el )` of the marked root and never looks
+# for a scroller inside it). Offering one on a block whose scrolling sits on a child (`.sgs-timeline__list`) would put a
+# control in the panel that boots nowhere, so these need the block's ROOT rule to scroll (`_root_scroll_blocks`), or the
+# block's own `supports.sgs.fx.draggable: true` opt-in, on top of the 'track' provision.
+ROOT_SCROLL_EFFECTS: frozenset[str] = frozenset({"draggable"})
+
 # NOTE on a mechanism that was tried here and REJECTED (2026-07-31, same
 # day): a `FORCED_PANEL_HOSTS: dict[str, frozenset[str]]` hardcoded
 # effect->block map briefly lived at this exact spot as a follow-up fix for
@@ -653,6 +660,86 @@ def _x_scroll_track_blocks() -> set[str]:
     return found
 
 
+def _root_scroll_selector_hit( css: str, root_classes: tuple[str, ...] ) -> bool:
+    """Does a desktop-reachable `overflow-x: auto|scroll` sit on a rule whose selector is the block's ROOT class?
+
+    Walks the stylesheet once with a stack of the selectors (and `@media` conditions) currently open. A declaration
+    counts when its innermost rule's selector list names a root class on its own (`.sgs-timeline`,
+    `.wp-block-sgs-timeline`, optionally with modifier classes or `&`) and not a descendant (`.sgs-timeline__list`,
+    `.sgs-timeline .x`, `&__list`).
+
+    :param css:          Stylesheet source with comments already stripped.
+    :param root_classes: The block's root class names, without the dot.
+    :return: True when the root element itself scrolls sideways on a desktop-width viewport.
+    """
+    root_re = re.compile(
+        r"^(?:\.(?:" + "|".join(re.escape(c) for c in root_classes) + r"))(?:\.[\w-]+)*$|^&(?:\.[\w-]+)*$"
+    )
+    stack: list[tuple[str, bool]] = []
+    start = 0
+    for index, char in enumerate(css):
+        if char == "{":
+            head = css[start:index].strip()
+            is_media = head.startswith("@")
+            stack.append((head, is_media))
+            start = index + 1
+        elif char == "}":
+            if stack:
+                stack.pop()
+            start = index + 1
+        elif char == ";":
+            decl = css[start:index + 1]
+            start = index + 1
+            if not _OVERFLOW_X_SCROLLABLE.search(decl) or not stack:
+                continue
+            rules = [(h, m) for h, m in stack if not m]
+            medias = [h[len("@media"):] for h, m in stack if m and h.startswith("@media")]
+            if not rules or any(_is_narrow_viewport_only(c) for c in medias):
+                continue
+            innermost = rules[-1][0]
+            selectors = [s.strip() for s in innermost.split(",") if s.strip()]
+            top_level = len(rules) == 1 or innermost.startswith("&")
+            if top_level and any(root_re.match(s) for s in selectors):
+                return True
+    return False
+
+
+def _root_scroll_blocks() -> set[str]:
+    """Blocks whose own stylesheet makes the block ROOT a desktop-reachable native horizontal scroller.
+
+    The stricter sibling of `_x_scroll_track_blocks()` (which also counts a scrolling child): the question
+    fx-draggable.js asks of the element carrying the marker, which is always the block root.
+
+    :return: Set of block names.
+    """
+    found: set[str] = set()
+    for block_dir in sorted(BLOCKS_DIR.glob("*/")):
+        block_json_path = block_dir / "block.json"
+        if not block_json_path.exists():
+            continue
+        try:
+            name = json.loads(block_json_path.read_text(encoding="utf-8")).get("name")
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not name or "/" not in name:
+            continue
+        slug = name.split("/", 1)[1]
+        classes = (f"sgs-{slug}", f"wp-block-sgs-{slug}")
+        for stylesheet_name in BLOCK_STYLESHEETS:
+            stylesheet = block_dir / stylesheet_name
+            if not stylesheet.exists():
+                continue
+            try:
+                css = stylesheet.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            css = _strip_css_comments(css, stylesheet_name.endswith(".scss"))
+            if _root_scroll_selector_hit(css, classes):
+                found.add(name)
+                break
+    return found
+
+
 MARQUEE_SET_HOOK = "data-sgs-marquee-set"
 
 
@@ -839,6 +926,7 @@ def compute_map() -> dict[str, list[str]]:
     block_jsons = _load_block_jsons()
     richtext_blocks = _richtext_blocks()
     x_scroll_blocks = _x_scroll_track_blocks()
+    root_scroll_blocks = _root_scroll_blocks()
     raster_image_blocks = _raster_image_blocks()
     marquee_blocks = _marquee_track_blocks()
     qualifying_effects = _load_qualifying_effects()
@@ -972,6 +1060,13 @@ def compute_map() -> dict[str, list[str]]:
             )
             if natively_provided:
                 offered = [e for e in offered if e not in natively_provided]
+
+            # ROOT-SCROLL EXCLUSION. An effect in ROOT_SCROLL_EFFECTS boots only on a block whose ROOT is the scroller.
+            # It is removed from the OFFERED list here, after the panel gate above, so a block keeps the panel and
+            # every other effect it already has; only the effect that cannot boot on it is withdrawn.
+            fx_declared = block_json.get("supports", {}).get("sgs", {}).get("fx") or {}
+            if block_slug not in root_scroll_blocks and fx_declared.get("draggable") is not True:
+                offered = [e for e in offered if e not in ROOT_SCROLL_EFFECTS]
 
             # Guard: if the exclusion emptied the roster, the block should not
             # get an fx panel at all rather than an empty picker.
