@@ -15,6 +15,7 @@ import { __ } from '@wordpress/i18n';
 import defs from '../../../../components/motion/motion-defs';
 import presetFile from '../../../../components/motion/generated-motion-presets.json';
 import gridColumns from '../stagger/generated-grid-columns.json';
+import { hasMotionSupport } from '../register';
 
 const DEFS = defs.$defs;
 const STATE_NAME = new RegExp( DEFS.stateName.pattern );
@@ -200,16 +201,34 @@ export const hasServerItems = ( blockName ) =>
 	SERVER_ITEM_BLOCKS.includes( blockName );
 
 /**
- * Whether a block is a container the stagger helper acts on: its type has a stored column role, or it holds blocks.
+ * How many of a container's direct inner blocks can carry a motion value, and so a stagger delay.
  *
- * @param {string} blockName  The block's name.
- * @param {number} childCount Direct inner blocks.
+ * @param {Object[]} children The container's direct inner blocks (`name` each).
+ * @return {number} The count of children whose block type declares the motion support.
+ */
+export const countDelayCarriers = ( children ) =>
+	children.filter( ( child ) => hasMotionSupport( getBlockType( child.name ) ) )
+		.length;
+
+/**
+ * Whether a block is a container the stagger helper acts on: it prints its items on the server, it holds a child that can
+ * carry a delay, or it is empty and its type has a stored column role. A block whose children cannot carry a delay
+ * (accordion items, tab panels, form fields) gets no helper, since it would write nothing.
+ *
+ * @param {string} blockName      The block's name.
+ * @param {number} childCount     Direct inner blocks.
+ * @param {number} carrierCount   Direct inner blocks that can carry a delay (`countDelayCarriers`).
  * @return {boolean} True for a container.
  */
-export const isContainerBlock = ( blockName, childCount ) =>
-	Boolean( gridColumns.blocks?.[ blockName ] ) ||
-	hasServerItems( blockName ) ||
-	childCount > 0;
+export const isContainerBlock = ( blockName, childCount, carrierCount ) => {
+	if ( hasServerItems( blockName ) ) {
+		return true;
+	}
+	if ( childCount > 0 ) {
+		return carrierCount > 0;
+	}
+	return Boolean( gridColumns.blocks?.[ blockName ] );
+};
 
 /**
  * The container's stored column count at one tier: the block's column attribute for that tier (a tier object, or a

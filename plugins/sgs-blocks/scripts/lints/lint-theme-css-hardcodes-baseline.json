@@ -31,22 +31,6 @@
     "selector": ".sgs-top-bar-mobile-cta .wp-block-button__link:hover, .sgs-top-bar-mobile-cta .wp-block-button__link:focus, .sgs-top-bar-mobile-cta .sgs-business-info-wrap:hover",
     "value": "rgba(255, 255, 255, 0.25)"
   },
-  "theme/sgs-theme/assets/css/mega-menu-panels.css:.sgs-mega-item__desc:font-size:0.8rem": {
-    "file": "theme/sgs-theme/assets/css/mega-menu-panels.css",
-    "line": 274,
-    "property": "font-size",
-    "reason": "mega-menu item description -- a small secondary-copy line inside a nav dropdown panel, not a content heading/body element governed by theme.json's typography scale",
-    "selector": ".sgs-mega-item__desc",
-    "value": "0.8rem"
-  },
-  "theme/sgs-theme/assets/css/mega-menu-panels.css:.sgs-mega-title, .sgs-mega-panel .sgs-mega-title, .sgs-mega-menu__panel .sgs-mega-title:letter-spacing:0.06em": {
-    "file": "theme/sgs-theme/assets/css/mega-menu-panels.css",
-    "line": 140,
-    "property": "letter-spacing",
-    "reason": "uppercase mega-menu label tracking",
-    "selector": ".sgs-mega-title, .sgs-mega-panel .sgs-mega-title, .sgs-mega-menu__panel .sgs-mega-title",
-    "value": "0.06em"
-  },
   "theme/sgs-theme/assets/css/utilities.css:.skip-link:not(.screen-reader-text):focus, .skip-link:not(.screen-reader-text):focus-visible:font-size:1rem": {
     "file": "theme/sgs-theme/assets/css/utilities.css",
     "line": 100,

@@ -636,11 +636,10 @@ FX_EFFECTS: list[dict] = [
         # radius, which is the whole difference between a magnetic button and a
         # hover state.
         #
-        # NOT A NEW MECHANISM: `src/shared/effects/magnet.js` has shipped since
-        # the mega-menu build, driving `sgs/nav-menu`'s label nudge. This effect
-        # generalises that module (two axes + a proximity radius) rather than
-        # writing a second one. `initMagnet`'s no-options behaviour is unchanged
-        # and byte-identical, so nav-menu is untouched.
+        # NOT A NEW MECHANISM: `src/shared/effects/magnet.js` already exists. This
+        # effect generalises that module (two axes + a proximity radius) rather
+        # than writing a second one. `initMagnet`'s no-options behaviour is
+        # unchanged and byte-identical.
         "effect": "wave-gradient",
         # ⛔ TIER W'S SECOND ENTRY, and it WIDENS the tier rather than extending
         # it. Recorded here because the D-number must not read as "one more

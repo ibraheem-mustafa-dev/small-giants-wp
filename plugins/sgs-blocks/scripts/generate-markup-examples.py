@@ -231,10 +231,7 @@ def has_inner_blocks(bj: dict) -> bool:
         'gallery', 'feature-grid', 'icon-grid', 'stats-bar', 'timeline',
         'process-steps',
     }
-    # 2026-05-25 D72: old 'trust-bar' (stat-counter block) retired in favour of
-    # universal-nesting via sgs/container + sgs/icon-list / sgs/counter.
-    # 2026-05-31: sgs/trust-badges renamed to sgs/trust-bar (different block — the
-    # horizontal trust-signal strip). That renamed block is NOT in `composites`.
+    # sgs/trust-bar (the horizontal trust-signal strip) is NOT in `composites`.
     return slug in composites
 
 

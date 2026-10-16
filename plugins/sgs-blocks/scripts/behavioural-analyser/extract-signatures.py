@@ -1519,7 +1519,7 @@ def _attrs_from_helper_calls(
     wired into THIS path, so an already-allowlisted helper call
     (`sgs_typography_css_rule`, a Shape D contract since before Cause
     A/B) using a selector variable still fell through to no element evidence —
-    the exact gap this fix closes: sgs/nav-menu's `itemFontSize`, applied via
+    the exact gap this fix closes: sgs/nav-bar-menu's `itemFontSize`, applied via
     the same `$link_sel` as `itemBg`/`itemColour`/`itemRadius`, kept resolving
     to `css_element='item'` after those three flipped to `'link'`. A selector
     variable with no BEM substring in its own assignment (Cause C, root-scoped)
@@ -2076,9 +2076,9 @@ def _attr_to_raw_props_php(
 
     Also returns `attr_state`: attrName -> selector-context state (WORKSTREAM 2,
     2026-07-21). Some blocks build a CSS SELECTOR string directly in PHP rather than
-    via style.css, e.g. sgs/adaptive-nav/render.php:258 —
-      $css .= $root_sel . ' .sgs-adaptive-nav__link:hover,' . $root_sel
-        . ' .sgs-adaptive-nav__link:focus-visible{color:var(--wp--preset--color--'
+    via style.css, e.g. —
+      $css .= $root_sel . ' .sgs-example__link:hover,' . $root_sel
+        . ' .sgs-example__link:focus-visible{color:var(--wp--preset--color--'
         . $link_hover . ');}';
     — invisible to `_custom_props_consumed` (which only reads style.css). Applying
     the SAME evidence rule here: `_derive_state_from_selector` runs against each
@@ -2115,13 +2115,13 @@ def _attr_to_raw_props_php(
     # the custom property and putting the attribute in the VALUE:
     #   sgs/product-search/render.php:108-114
     #     '--sgs-ps-input-border' => $attributes['inputBorderColour'] ?? '',
-    #   sgs/nav-menu/render.php:1217-1222   (value is a multi-line ternary)
-    #     '--sgs-nm-submenu-bg' => '' !== (string) ( $attributes['submenuBg'] ?? '' )
-    #         ? sgs_colour_value( (string) $attributes['submenuBg'] ) : '',
+    #   (a value may also be a multi-line ternary)
+    #     '--sgs-ps-x' => '' !== (string) ( $attributes['xColour'] ?? '' )
+    #         ? sgs_colour_value( (string) $attributes['xColour'] ) : '',
     # Neither is reachable by shape A (the key is not an attr name) nor by shapes
     # B/C (no `'--sgs-foo:' . $x` concatenation, no `$v = $attributes[...]`
     # assignment — the attribute is referenced inline inside an array VALUE).
-    # Result: 7 colour attributes across those two blocks carried css_property
+    # Result: colour attributes written this way carried css_property
     # NULL, so survey.js reported REFUSED:no-css_property and rule 31's mechanism
     # axis was blind to them.
     #
@@ -2227,9 +2227,9 @@ def _attr_to_raw_props_php(
                 # Selector-context state — checked on EVERY string fragment, not just
                 # ones carrying a property token. A concatenated selector is routinely
                 # split across several fragments before its declaration ever appears,
-                # e.g. adaptive-nav/render.php:258:
-                #   $root_sel . ' .sgs-adaptive-nav__link:hover,' . $root_sel
-                #     . ' .sgs-adaptive-nav__link:focus-visible{color:var(...)'
+                # e.g.:
+                #   $root_sel . ' .sgs-example__link:hover,' . $root_sel
+                #     . ' .sgs-example__link:focus-visible{color:var(...)'
                 # — ":hover" sits in an EARLIER fragment than "color:". Gating state
                 # detection on "this fragment also has a property" (as first tried)
                 # missed it entirely. `current_state` is STICKY within a statement —
@@ -3124,7 +3124,7 @@ def extract_css_property_and_layer() -> dict:
         # below): an EXPLICIT manifest `attrMap` `css:<property>` key is a hand-curated,
         # authoritative declaration of WHICH property this attr sets. It WINS over the
         # emission-parse guess, which can grab a neighbouring property from the same
-        # rendered rule — e.g. sgs/nav-menu underlineOffset: the manifest declares
+        # rendered rule — e.g. sgs/nav-bar-menu underlineOffset: the manifest declares
         # `css:bottom`, but emission scraped `position` from the rule's leading
         # `position:absolute`. Only the attrMap source carries a css key (prefix-
         # convention hits are None), so this never touches an attr the author did not
@@ -3774,14 +3774,9 @@ _DUAL_BOUND_INSPECTOR_CONTROL_OVERRIDES: dict[tuple[str, str], str] = {
     # canvas surface, not an inspector control (see module comment above).
     ("sgs/product-card", "productName"): "TextControl",
     # --- 2026-08-06 addition: same primary/default-path rule as sgs/hero above. ---
-    # Both blocks post-date the 2026-07-21 audit, so neither was in its 93 rows; both
-    # were hand-traced against edit.js before being written here (never derived).
+    # This block post-dates the 2026-07-21 audit, so it was not in its 93 rows; it
+    # was hand-traced against edit.js before being written here (never derived).
     #
-    # nav-menu::collapsePoint — ToggleGroupControl "Show the burger on"
-    # (Always/Tablet/Mobile/Custom) is ALWAYS rendered; the UnitControl "Switch to
-    # burger below" renders only when the scope resolves to 'custom'. Structurally
-    # identical to sgs/hero::gridTemplateColumns, so it takes the same ruling.
-    ("sgs/nav-menu", "collapsePoint"): "ToggleGroupControl",
     # mega-panel::asideSeparator — an OBJECT attr {style, colour, width} written by
     # THREE controls. The detector offered UnitControl vs DesignTokenPicker and
     # NEITHER is the client-facing answer: the ToggleGroupControl "Divider"
@@ -4488,7 +4483,7 @@ def _self_test_helper_call_selector_var_yields_bem_element() -> bool:
     """`--self-test` fixture proving `_attrs_from_helper_calls` (Shape D) now
     wires the Cause B selector-variable resolver (`_build_php_selector_var_map`)
     into its OWN selector-argument handling — closing the gap found live on
-    sgs/nav-bar-menu (formerly the conflated sgs/nav-menu, split D1059):
+    sgs/nav-bar-menu:
     `itemBg`/`itemColour`/`itemRadius` (Cause A,
     `_attrs_from_state_colour_helper_calls`) flipped to `css_element='link'`,
     but the fourth "item"-prefixed attribute, `itemFontSize`, is applied via
@@ -4538,7 +4533,7 @@ def _self_test_helper_call_selector_var_yields_bem_element() -> bool:
             f"= {elements.get('itemFontSize')!r}, expected {{'link'}} (POSITIVE "
             "control — a selector variable assigned a literal BEM-bearing "
             "selector in an earlier statement must now resolve, mirroring "
-            "sgs/nav-menu's real $link_sel shape)",
+            "sgs/nav-bar-menu's real $link_sel shape)",
             file=sys.stderr,
         )
         ok = False

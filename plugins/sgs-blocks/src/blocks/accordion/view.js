@@ -199,7 +199,7 @@ function initAccordions() {
  * a property declaration) + two classes (.is-animating toggles the transition,
  * .is-open toggles the settled height). Never write .style.height/.style.
  * overflow/.style.transition — those declarations live in style.css keyed off
- * the var/classes. Mirrors sgs/mobile-nav's swipe-gesture pattern (D298).
+ * the var/classes.
  */
 function openItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );

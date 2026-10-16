@@ -1485,7 +1485,7 @@ def _index_sgs_block_files(
         # authoring burden, and a live in-repo writer: the failure D525 fixed
         # cannot recur here.
         #
-        # ⛔ kind='discovery' is NOT optional. `sgs/content-collection` declares
+        # ⛔ kind='discovery' is NOT optional. a block can declare
         # the keyword "collection", which is also a FUNCTIONAL capability name.
         # Sharing one namespace would let any future block gain a functional
         # capability by using it as a search word — `isCollectionKind()` firing on
@@ -2367,7 +2367,7 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_
 # BUILD time (npm prebuild -> run-motion-fx-generators.js), a channel
 # check_css_property_reseed.py's own docstring calls out as the ONLY thing that
 # gets wiped on the next /sgs-update reseed (STOP-24). D432 (2026-07-31) is the
-# incident this caused: seeding box_family for sgs/nav-menu required a full
+# incident this caused: seeding box_family for a block required a full
 # /sgs-update, which (correctly) INSERTed the block_attributes rows for
 # sgs/image-sequence's fxStart/fxEnd/fxScrub + the 4 blocks' dragMomentum (they
 # are real block.json-declared attrs), and the NEXT build's motion seeder then
@@ -3013,9 +3013,9 @@ def _apply_attr_classification_overrides(
     # `.claude/reports/...` / this session's diagnostic script): 5 css_element rows
     # (sgs/card-grid.transitionDuration/transitionEasing, sgs/google-reviews.
     # starColour, sgs/post-grid.shadowHover/imageZoomHover) and 1 css_tier row
-    # (sgs/nav-menu.gap) are non-NULL in the DB today but absent from `combined` this
+    # are non-NULL in the DB today but absent from `combined` this
     # run — i.e. already stale, uncovered by the narrower object_tier_fossils cleanup
-    # below (that cleanup requires attr_type='object'; nav-menu.gap is 'string').
+    # below (that cleanup requires attr_type='object'; that css_tier row's attribute is 'string').
     #
     # css_property got the SAME live diagnostic and came back with ZERO stale rows
     # today — ownership is clean (verified: the one migration that writes

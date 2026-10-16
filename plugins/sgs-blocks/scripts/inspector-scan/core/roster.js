@@ -1,23 +1,13 @@
 'use strict';
 
 // GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md
-// source=file evidence=live-read scripts/consistency/roster.json on 2026-08-03:
-// { blocks: [...84 "sgs/x" strings...], _meta: { count: 84 } }, and
-// src/blocks/ holds 84 directories each with block.json — roster and disk are
-// reconciled AS OF THIS SESSION (the design doc's cited 83-vs-84 physics-canvas
-// drift has since been closed by another track's roster regen). The scanner
-// still reconciles on every run rather than trusting that fact (H3).
-//
-// ⛔ THE FIGURES ABOVE ARE THE 2026-08-03 READING AND ARE KEPT AS THE DATED
-// RECORD — they are NOT current. Re-measured 2026-08-09 at a09226e8: roster.json
-// _meta.count 83, blocks array 83, `ls src/blocks/*/block.json` 83, and this
-// module's own _meta.denominator reports 83/83/83. The cause is a retired block,
-// `sgs/content-collection`, deleted 2026-08-08 at 37ad3bb8 (D529: "Block count
-// 84 -> 83") — NOT a counting convention. Note `ls -d src/blocks/*/` returns 84
-// even now, because src/blocks/extensions/ holds no block.json and is not a
-// block; that off-by-one is permanent and separate, and the "84 directories each
-// with block.json" clause above was never quite right about it. Nothing here is
-// behavioural — loadRosterRaw reads the file, never this comment (D543).
+// source=file evidence=live-read scripts/consistency/roster.json: a `blocks`
+// array of "sgs/x" strings plus `_meta.count`; src/blocks/ holds one directory per
+// block, each with block.json. `src/blocks/extensions/` holds no block.json and is
+// not a block, so `ls -d src/blocks/*/` returns one more than the block count. The
+// scanner reconciles roster against disk on every run rather than trusting that
+// they agree (H3). Nothing here is behavioural: loadRosterRaw reads the file,
+// never this comment (D543).
 
 const fs = require( 'fs' );
 const path = require( 'path' );

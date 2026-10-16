@@ -339,14 +339,14 @@
 	}
 }
 
-/* ===== SVG background layer (merged from sgs/svg-background 2026-05-28 D93) ===== */
+/* ===== SVG background layer ===== */
 
 .sgs-container--has-bg-svg {
 	overflow: hidden;
 }
 
 /* "Minimum height" of the SVG background (bgSvgMinHeight): a floor on the block that
-   carries the layer, as the original sgs/svg-background wrapper applied it. The wrapper
+   carries the layer. The wrapper
    (and the editor's svgBackgroundPreview()) adds the modifier and sets
    --sgs-svg-min-height on that block only when a value is set. */
 .sgs-container--has-svg-min-height {

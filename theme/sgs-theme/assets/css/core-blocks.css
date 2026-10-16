@@ -874,12 +874,6 @@ footer .is-style-no-bullets a {
 	}
 }
 
-/*
- * Show/hide rules for the mobile nav toggle + off-canvas drawer live entirely
- * in the sgs/adaptive-nav block's own style.css (style-index.css) — the block
- * owns its collapse breakpoint (Task 1 / D336). No theme-level rules needed.
- */
-
 /* ── Section gap fix: remove block-gap between full-width sections ────────
  * WordPress constrained layout applies --wp--style--block-gap as margin-top
  * to every child. alignfull sections should be flush — zero white strips

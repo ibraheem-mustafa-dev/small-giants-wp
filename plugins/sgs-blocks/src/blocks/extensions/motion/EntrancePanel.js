@@ -37,6 +37,7 @@ import {
 	EDITOR_STORE,
 	ENTRANCE_TRIGGER_LABELS,
 	entrancePresetOptions,
+	countDelayCarriers,
 	isContainerBlock,
 	triggerFacts,
 } from './entrance/entrance-facts';
@@ -80,6 +81,13 @@ export default function EntrancePanel( {
 		( select ) =>
 			( select( EDITOR_STORE )?.getBlockOrder?.( clientId ) || [] )
 				.length,
+		[ clientId ]
+	);
+	const carrierCount = useSelect(
+		( select ) =>
+			countDelayCarriers(
+				select( EDITOR_STORE )?.getBlocks?.( clientId ) || []
+			),
 		[ clientId ]
 	);
 
@@ -251,7 +259,7 @@ export default function EntrancePanel( {
 					tier={ tier }
 					setProblem={ setProblem }
 				/>
-				{ isContainerBlock( blockName, childCount ) && (
+				{ isContainerBlock( blockName, childCount, carrierCount ) && (
 					<EntranceStagger
 						blockName={ blockName }
 						clientId={ clientId }

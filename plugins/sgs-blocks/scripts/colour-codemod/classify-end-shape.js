@@ -711,9 +711,9 @@ function classifyAll() {
 		// see nothing to match. Follow require_once the same way
 		// classify-gradient-path-deferred.js already does, so the FULL render
 		// surface (dispatcher + every included module) is what gets tested,
-		// not just the dispatcher file's own text. Real case this fixed
-		// (2026-09-11): sgs/nav-menu.itemBorderColour's `sgs_border_states_css()`
-		// call lives in includes/nav-menu-css.php, never in render.php.
+		// not just the dispatcher file's own text. Real case this fixed:
+		// a `sgs_border_states_css()` call lives in an included CSS partial, never
+		// in render.php.
 		// renderFiles() adds the plain-required partials inside the block folder at any depth.
 		const partialFiles = renderFiles( path.join( BLOCKS_DIR, dir ) ).map( ( f ) => path.resolve( f ) );
 		const requiredTexts = fs.existsSync( renderFile )

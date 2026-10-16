@@ -262,8 +262,8 @@ def self_test() -> int:
 
     # Negative control: the gate itself — attempting a rename whose DESTINATION is not
     # declared on the target block must refuse before touching anything. Mirrors the
-    # real sgs/nav-menu `gap` incident in migrate-theme-tier-scalars.py's own self-test:
-    # a plausible-looking migration target whose schema was never actually moved.
+    # `gap` case in migrate-theme-tier-scalars.py's own self-test: a plausible-looking
+    # migration target whose schema was never actually moved.
     check("gate: sgs/container does NOT declare 'notARealDestination' "
           "(the case the CLI-level gate refuses on)",
           not _dest_attr_declared('sgs/container', 'notARealDestination'))

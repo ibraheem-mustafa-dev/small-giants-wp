@@ -36,12 +36,8 @@ FUNC_CATEGORY = {
     # rowShrinkHideTarget (all sanitize_html_class -> an HTML class token),
     # sgs/nav-drawer.drawerRef (sanitize_html_class), sgs/form.successRedirect
     # (wp_validate_redirect -> a redirect target, not a visitor-followed
-    # link). Proof this is the right shape, not a guess: sgs/nav-menu's
-    # identically-purposed `drawerRef` already carries role=technical, and
-    # differs from sgs/nav-drawer's ONLY in reaching esc_attr (2 D1 rows)
-    # rather than sanitize_html_class (0 D1 rows) -- same attribute, same
-    # meaning, opposite detectability, purely because of the escaping-vs-
-    # normalising function used at the one call site.
+    # link). The escaping-vs-normalising function used at the one call site
+    # decides whether D1 sees the attribute at all.
     "sanitize_key": "NOT-content",
     "sanitize_html_class": "NOT-content",
     "wp_validate_redirect": "NOT-content",
@@ -145,7 +141,7 @@ def _classify_esc_attr_core(before: str, after: str, stmt: str, key: str) -> str
     if re.search(r"(aria-label|title)\s*=\s*['\"]{0,2}\s*\.?\s*$", window, re.IGNORECASE):
         return "a11y-metadata"
     # PHP associative-array literal form: 'aria-label' => esc_attr( $x ) —
-    # the SGS_Container_Wrapper::render() `extra_attrs` shape (sgs/nav-menu).
+    # the SGS_Container_Wrapper::render() `extra_attrs` shape.
     if re.search(r"['\"](alt|placeholder)['\"]\s*=>\s*$", window, re.IGNORECASE):
         return "authored-alt-text"
     if re.search(r"['\"](aria-label|title)['\"]\s*=>\s*$", window, re.IGNORECASE):
@@ -362,7 +358,7 @@ def self_test() -> int:
          "must be a fragment veto, never link-href."),
         ("fxNavLabel", "a11y-metadata",
          "a DIRECT binding must survive a later conditional reassignment from "
-         "unrelated locals (sgs/nav-menu.navLabel)."),
+         "unrelated locals."),
         ("fxFieldName", "NOT-content",
          "a fragment landing in `name=` is a form-processing key, NOT content — "
          "fragmentation must suppress CONTENT categories only (the 2026-08-06 fix). "

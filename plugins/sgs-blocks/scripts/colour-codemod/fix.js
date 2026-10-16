@@ -331,7 +331,7 @@ function resolveDirectSelector( php, varName ) {
  *
  * resolveDirectSelector never finds a candidate here — the base var (or, on
  * some blocks, the raw `$attributes['attr']` read with NO intermediate var
- * at all: sgs/nav-menu.submenuColour, sgs/product-card.tagTextColour) is
+ * at all: sgs/product-card.tagTextColour) is
  * never itself an argument to sgs_colour_value/sgs_text_colour_decl/
  * sgs_background_paint_decl — it only reaches `sgs_text_colour_decl()`
  * two hops later, via `$effective`. `sgs_resolve_text_colour_or_gradient()`
@@ -1034,8 +1034,7 @@ function wireOnlyGradientCheck( db, slug, blockJson, php, baseAttr ) {
 // `background-color:` need not be an entirely standalone quoted-concatenation
 // segment (`'background-color:' .`) — it may instead be the TAIL of a larger
 // single string literal that also carries a selector/other-property prefix in
-// the SAME quotes (e.g. `' .sgs-nav-bar-menu__burger{background-color:' .`, real
-// shape found live at sgs/nav-menu's burgerBg/indicatorColour). Both shapes
+// the SAME quotes (e.g. `' .sgs-nav-bar-menu__burger{background-color:' .`). Both shapes
 // are matched by one regex; `prefix`/`quote` come back non-empty only for the
 // fused shape, telling the caller to re-close the literal at the split point
 // rather than deleting the whole thing (Bug A fix, 2026-09-04).
@@ -1420,8 +1419,8 @@ function planRow( db, dir, slug, row, phpText, blockJsonPathOverride ) {
 	// Finding 5 (cross-tier review, 2026-09-04): a failed findVarAssignedFromAttr
 	// used to be an early exit here. Strategy T's own fix (below, Bug B/C)
 	// needed ONE specific case to fall through instead — a text-mechanism row
-	// with NO intermediate PHP variable at all (e.g. sgs/nav-menu's
-	// submenuColour, which reads $attributes['submenuColour'] directly), so
+	// with NO intermediate PHP variable at all (a colour attr
+	// read directly from $attributes), so
 	// resolveTextGradientChainSelector can still be tried with varName=null.
 	// That widening was accidentally left general: for every OTHER mechanism
 	// a failed var lookup fell all the way through to Strategy H's hover-sink
@@ -1899,8 +1898,7 @@ function applyRenderPhpFix( phpText, plan ) {
 	// already does correctly. Double-quoted selectorTemplate, matching both
 	// branches below — NOT single-quoted — because a selectorTemplate can
 	// legitimately carry `{$var}` PHP-interpolation syntax (Strategy T,
-	// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-bar-menu__sublink`
-	// for sgs/nav-menu.submenuColour); PHP only expands `{$var}` inside double
+	// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-bar-menu__sublink`); PHP only expands `{$var}` inside double
 	// quotes.
 	const hoverCall =
 		`sgs_hover_state_rules( "${ plan.selectorTemplate }", "${ plan.propText }:" . sgs_colour_value( ${ hoverGuardVar } ), ':focus-visible' )`;

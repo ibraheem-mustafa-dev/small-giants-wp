@@ -143,8 +143,6 @@ SECTION_ATTR_RE = re.compile(
 # Blocks that are never container-bearing regardless of their attrs.
 EXCLUDE_SLUGS: Set[str] = {
     "sgs/container",       # the reference block itself
-    "sgs/mobile-nav-toggle",  # chrome-only toggle button
-    "sgs/mega-menu",          # navigation chrome, not a content wrapper
 }
 
 
@@ -217,7 +215,6 @@ def build_structural_parents(slugs: List[str]) -> Set[str]:
     Explicitly excluded from the child scan:
       - sgs/form-field-* (config inputs, not structural items)
       - sgs/form-review  (config block)
-      - sgs/mega-menu    (navigation chrome)
     These blocks declare parent relationships for constraining their editor
     placement, not because the parent is a layout container of multiple items.
     """
@@ -229,9 +226,9 @@ def build_structural_parents(slugs: List[str]) -> Set[str]:
         parents = bj.get("parent", None)
         if not parents:
             continue
-        # Skip if this child is a form-field input, chrome block, or review block
+        # Skip if this child is a form-field input or review block
         if (slug.startswith("sgs/form-field")
-                or slug in {"sgs/form-review", "sgs/mega-menu"}):
+                or slug in {"sgs/form-review"}):
             continue
         for parent_slug in parents:
             structural.add(parent_slug)
@@ -369,7 +366,7 @@ def main() -> int:
         # Container-bearing = InnerBlocks OR layout attrs OR an explicit operator
         # override (criterion a, b, or c). The override is the strongest signal —
         # derive_kind() already treats it as priority 1 — so a block relying on it
-        # alone (e.g. sgs/nav-menu: no InnerBlocks, no grid/flex attrs, just a flat
+        # alone (e.g. a block with no InnerBlocks, no grid/flex attrs, just a flat
         # `gap`) must not be silently excluded from candidacy before derive_kind()
         # ever runs.
         if not (ib or has_layout or has_override):
@@ -443,20 +440,13 @@ def main() -> int:
             # sgs/site-footer-row added 2026-07-13 (Spec 17 §S9 / FR-S9-3, D325): the footer row
             # inside sgs/site-footer — a column grid (up to 6 cols → 1 on mobile) or flex cluster.
             "sgs/site-footer-row",
-            # sgs/nav-menu added 2026-07-20 (Spec 36 FR-36-2 / Phase-1 close): layout-KIND nav
-            # bar — the canonical nav block of the Spec 36 rebuild.
-            # sgs/adaptive-nav (the block it superseded) was RETIRED 2026-07-22 (FR-37-21) —
-            # deleted from the codebase and pruned from the DB by /sgs-update Stage 10.
-            # SPLIT 2026-09-14 (D1059) into sgs/nav-bar-menu + sgs/nav-drawer-menu.
-            # sgs/nav-bar-menu inherits this slot: it is BLOCK-PRIVATE (D539, no
+            # sgs/nav-bar-menu (Spec 36 FR-36-2): layout-KIND nav bar. It is BLOCK-PRIVATE (D539, no
             # SGS_Container_Wrapper) but still genuinely container-bearing on this
             # script's own criterion (b) — Step 6 (2026-09-15) restored `justifyContent`,
             # a real layout-orchestration attr that arranges the rendered item list.
             # sgs/nav-drawer-menu does NOT belong here: it declares no layout-family
             # attr at all (its Step 8 additions, splitAfterItemId/splitSide, are not
-            # arrangement attrs) — its old `containerKind:"layout"` override was a
-            # stale Step-2 scaffold copy-paste from the pre-split block, removed from
-            # its block.json rather than carried forward.
+            # arrangement attrs) — it carries no `containerKind:"layout"` override.
             "sgs/nav-bar-menu",
             # sgs/brand-strip added 2026-07-20: detected layout-KIND since the Track-1 Spec 35
             # inspector rebuild gave it the grid/flex attr family. Detection was correct; the
@@ -480,8 +470,6 @@ def main() -> int:
             # reports it for the right reasons (InnerBlocks | structural-parent); the roster had not
             # been refreshed since the block was added.
             "sgs/measured-diagram",
-            # sgs/content-collection is not in this roster: `src/blocks/content-collection/`
-            # does not exist and the DB has no `sgs/content-collection` row.
         },
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",
@@ -511,20 +499,6 @@ def main() -> int:
             # `InnerBlocks` alone, like sgs/mega-group above. The roster had not been refreshed
             # since the rebuild; it does not assert wrapper delegation.
             "sgs/social-icons",
-            # sgs/mobile-nav REMOVED 2026-07-16 (qc-council, 2 raters): the block was
-            # DELETED by `7c60b8ff` ("wire the theme to adaptive-nav drawer + delete
-            # mobile-nav", Wave 2) and its off-canvas drawer absorbed into
-            # `sgs/adaptive-nav`. The validator was therefore CORRECT to fail (exit 1,
-            # "MISSING (expected but not detected)") every run since — it was reporting a
-            # genuinely stale expectation, not a detection bug. Nothing was written to
-            # disk either way (the block.json writer is gated on all_match).
-            # ⚠ BRANCH-COUPLED — do NOT cherry-pick this line to `main` alone.
-            # `mobile-nav` STILL EXISTS on `main` (verified: git ls-tree main), so on main
-            # this entry is still CORRECT. Removing it there before the deletion lands
-            # would break the validator in the OPPOSITE direction ("EXTRA (detected but
-            # not expected)"). This removal must merge together with `7c60b8ff`.
-            # (NB: plugins/sgs-blocks/CLAUDE.md miscites the deletion as "D336" — D336 is
-            # the site-takedown incident; the deletion is D337/Wave 2.)
             # product-faq + product-faq-item added 2026-06-10 (new since D160 — F2/D197).
             "sgs/product-faq", "sgs/product-faq-item",
             # product-card REMOVED 2026-06-10: the D204 built-in-element rebuild made it

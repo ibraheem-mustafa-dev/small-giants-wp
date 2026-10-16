@@ -104,47 +104,6 @@
       }
     },
     {
-      "slug": "sgs/mobile-nav-toggle",
-      "rootSelector": ".wp-block-sgs-mobile-nav-toggle",
-      "attrs": {
-        "iconSize": 24,
-        "ariaLabel": "Open navigation",
-        "style": {
-          "spacing": {
-            "padding": {
-              "top": "5px",
-              "right": "17px",
-              "bottom": "9px",
-              "left": "23px"
-            },
-            "margin": {
-              "top": "10px",
-              "right": "2px",
-              "bottom": "6px",
-              "left": "14px"
-            }
-          },
-          "color": {
-            "text": "#333333"
-          }
-        },
-        "paddingTablet": {
-          "top": "4px",
-          "right": "12px",
-          "bottom": "6px",
-          "left": "16px"
-        },
-        "paddingMobile": {
-          "top": "2px",
-          "right": "8px",
-          "bottom": "4px",
-          "left": "10px"
-        }
-      },
-      "expected": {},
-      "_boxNote": "zero-inline VERIFIED; box-on-root N/A \u2014 box lands on the inner <button>, not the wrapper root (block owns its own padding)"
-    },
-    {
       "slug": "sgs/product-search",
       "rootSelector": ".wp-block-sgs-product-search",
       "attrs": {
@@ -439,36 +398,6 @@
       },
       "expected": {},
       "_boxNote": "zero-inline VERIFIED; box-on-root N/A \u2014 renders empty (no InnerBlocks via self-closing harness); box lands on the details rows, not the empty wrapper root"
-    },
-    {
-      "slug": "sgs/content-collection",
-      "rootSelector": ".wp-block-sgs-content-collection",
-      "attrs": {
-        "style": {
-          "spacing": {
-            "margin": {
-              "top": "10px",
-              "right": "2px",
-              "bottom": "6px",
-              "left": "14px"
-            }
-          },
-          "border": {
-            "radius": {
-              "topLeft": "3px",
-              "topRight": "11px",
-              "bottomRight": "7px",
-              "bottomLeft": "19px"
-            }
-          }
-        }
-      },
-      "expected": {
-        "desktop": {
-          "marginTB": "10px 6px",
-          "borderRadius": "3px 11px 7px 19px"
-        }
-      }
     },
     {
       "slug": "sgs/gallery",

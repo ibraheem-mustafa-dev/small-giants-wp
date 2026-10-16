@@ -1338,39 +1338,6 @@ body.woocommerce-cart .with-empty-cart-icon,
 	}
 }
 
-/* ── Shop archive: equal-height SGS product cards (Bean review point 9) ──
-   Scoped to the product archive body class so homepage/cloned
-   content-collection surfaces are untouched (scope-to-unused-variant rule).
-   Card is a flex column filling its grid item; the CTA region (last child)
-   pins to the bottom so buttons align across a row. VERIFIED structure:
-   .sgs-content-collection__grid > li.sgs-content-collection__item >
-   .product-card (live shop HTML 2026-06-11). */
-.post-type-archive-product .sgs-content-collection__item {
-	display: flex;
-}
-
-.post-type-archive-product .sgs-content-collection__item > .product-card {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-}
-
-/* The card renders ONE .product-card-body child holding image/title/price/CTA
-   (live-probed) — flex it so the CTA (its last child) pins to the bottom. */
-.post-type-archive-product .sgs-content-collection__item > .product-card > .product-card-body {
-	display: flex;
-	flex-direction: column;
-	flex: 1 1 auto;
-}
-
-/* Pin the CTA itself (the body's last child is a hidden cart-status element,
-   so :last-child absorbed the auto margin uselessly — live-probed). Target the
-   direct child that contains (or is) the add-to-cart control. */
-.post-type-archive-product .sgs-content-collection__item > .product-card .product-card-body > :has(.product-card__add-to-cart),
-.post-type-archive-product .sgs-content-collection__item > .product-card .product-card-body > .product-card__add-to-cart {
-	margin-top: auto;
-}
-
 /* ─── 10. SHOP ARCHIVE — WC PRODUCT-COLLECTION CARD EQUAL HEIGHT (DEFECT 3) ───
  *
  * Scoped under .sgs-shop-layout so only the shop sidebar+grid surface is

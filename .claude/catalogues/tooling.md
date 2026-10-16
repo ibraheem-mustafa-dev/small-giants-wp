@@ -20,7 +20,7 @@ Searching one directory and concluding a tool does not exist is a live failure m
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 392 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 701 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 699 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -1111,7 +1111,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 654 scripts
+#### `plugins/sgs-blocks/scripts/` — 650 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1233,7 +1233,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-undeclared-attrs.py` | manifest+npm+script-call | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
 | `check-undefined-refs.js` | manifest+npm+script-call | THE GAP THIS CLOSES. On 2026-08-22 three blocks shipped broken editors: sgs/text, sgs/quote and sgs/testimonial referenced `borderColourHover` /… |
 | `check-undefined-refs.selftest.js` | manifest+script-call | Self-test for check-undefined-refs.js. |
-| `check-ungated-paint-rules.py` | manifest+npm+script-call | STRUCTURAL GUARD (WARN-ONLY for this build) — Spec 41 FR-41-35 / gate §11 G20c. |
+| `check-ungated-paint-rules.py` | manifest+npm | STRUCTURAL GUARD (WARN-ONLY for this build) — Spec 41 FR-41-35 / gate §11 G20c. |
 | `check-universal-fit.js` | manifest+script-call | WARN-ONLY STRUCTURAL REPORT — maps every universal editor extension |
 | `check-wiring-fingerprint.py` | manifest+script-call | : every attribute that paints must be wired end to |
 | `check-withdrawn-figures.py` | manifest | a figure withdrawn in one file stays withdrawn everywhere. |
@@ -1499,8 +1499,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrate-render-closures.py` | manifest+npm | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
 | `migrate-section-gutter-tokens.py` | manifest+npm+script-call | Per-tier section padding and gutter tokens (Spec 32 FR-32-15), added to the framework theme.json and every |
 | `migrate-shadow-presets.py` | manifest | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
-| `migrate-stored-tier-scalars.py` | manifest+script-call | fold a flat per-device scalar into ONE tier object, |
-| `migrate-theme-attr-rename.py` | manifest+script-call | rename ONE attribute key, scoped to ONE block slug, |
+| `migrate-stored-tier-scalars.py` | manifest | fold a flat per-device scalar into ONE tier object, |
+| `migrate-theme-attr-rename.py` | manifest | rename ONE attribute key, scoped to ONE block slug, |
 | `migrate-theme-native-spacing.py` | manifest+npm | Migrate hand-authored `style.spacing` to the block-OWNED padding/margin attrs. |
 | `migrate-theme-tier-scalars.py` | manifest+script-call | fold a flat per-device scalar into ONE tier object, |
 | `migrate-tier-object.py` | manifest+npm+script-call | collapse a flat per-device attribute trio into ONE tier object. |
@@ -1517,10 +1517,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrations/2026-09-07-migrate-dead-border-attrs.py` | manifest | Migrate style.border to typed border attributes in SGS pattern files. |
 | `migrations/2026-09-10-add-tier-shape-column.py` | manifest+script-call | add block_attributes.tier_shape. |
 | `migrations/2026-09-11-add-co-animates-opacity-column.py` | manifest | add |
-| `migrations/2026-09-14-nav-menu-split-classify-harness.php` | script-call | Render harness for `2026-09-14-nav-menu-split-classify.py`. Runs INSIDE WordPress via `wp eval-file -` (STDIN — nothing is uploaded) and prints one… |
-| `migrations/2026-09-14-nav-menu-split-classify-sentinels.php` | script-call | Test-value generator for `2026-09-14-nav-menu-split-classify-harness.php`. |
-| `migrations/2026-09-14-nav-menu-split-classify.py` | manifest+script-call | deterministic bar / drawer / both verdict for every |
-| `migrations/2026-09-14-nav-menu-split.py` | manifest | census + codemod for splitting `sgs/nav-menu` into |
 | `migrations/2026-10-13-motion-fields-tables.py` | manifest+script-call | - Spec 38A FR-38A-3 (DB clause), decision 3 option B. |
 | `migrations/2026-10-13-motion-presets-and-fx-columns.py` | manifest+script-call | - Spec 38A FR-38A-6 (DB clauses). |
 | `motion-qa/probe-ambient-float.mjs` | script-call | Spec 38A FR-38A-37: live acceptance of the ambient-float effect on a deployed site. |

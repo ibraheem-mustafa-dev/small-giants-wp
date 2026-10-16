@@ -168,7 +168,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     # paintable background surface — it is inert on a block without one, which
     # QA Gate A forbids), so it cannot be 'none'. But MEASURED before building:
     # letting it create panels would put a brand-new fx panel on 11 blocks
-    # including sgs/nav-menu, sgs/site-header, sgs/site-footer and sgs/form —
+    # including sgs/site-header, sgs/site-footer and sgs/form —
     # and because `offered = specific + permissive`, each of those 11 would ALSO
     # silently gain motion-path and scrub, which they have never had. That is
     # precisely the "13 panels where none makes sense" containment failure this

@@ -33,7 +33,18 @@ REPO = PLUGIN.parent.parent
 
 # Retired block slugs (bare, without `sgs/`), each with the date it was removed. Only ever grows.
 RETIRED = {
+    "adaptive-nav": "2026-07-22",
+    "announcement-bar": "2026-06-11",
+    "certification-bar": "2026-05-29",
+    "content-collection": "2026-08-08",
     "cta-section": "2026-10-09",
+    "divider": "2026-07-05",
+    "mega-menu": "2026-07-22",
+    "mobile-nav": "2026-07-14",
+    "mobile-nav-toggle": "2026-07-14",
+    "nav-menu": "2026-09-14",
+    "svg-background": "2026-05-29",
+    "trust-badges": "2026-06-01",
 }
 
 # Directory names never entered, anywhere.
@@ -48,8 +59,9 @@ SKIP_PREFIXES = (
     ".claude/verify/", ".claude/plans/archive/", ".claude/specs/archive/", ".claude/catalogues/archive/",
     ".superpowers/", "pipeline-state/",
 )
-# A client draft export lives unchanged under sites/<client>/ (its folder name starts design_handoff).
-SKIP_CONTAINS = ("/design_handoff",)
+# A client draft lives unchanged under sites/<client>/: its export (a folder starting design_handoff), its handoff folder
+# (Spec 48A) and its mockups. They are the client's input, not framework sources.
+SKIP_CONTAINS = ("/design_handoff", "/handoff/", "Handoff/", "/mockups/")
 LIVE_ROOTS = ("plugins", "scripts", "theme", "sites", ".claude")
 TEXT_SUFFIXES = {".php", ".js", ".mjs", ".cjs", ".json", ".py", ".md", ".css", ".scss", ".html", ".txt", ".yml", ".yaml", ".sql", ".sh"}
 MAX_BYTES = 3_000_000
@@ -66,9 +78,15 @@ def db_path() -> Path:
     return Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 
+# Slugs distinctive enough to count without the `sgs/` or `sgs-` prefix. The others are ordinary words or names core and
+# the theme also use (divider, nav-menu, mobile-nav), so only their block name `sgs/<slug>` and class root `sgs-<slug>` count.
+BARE_SLUGS = {"cta-section"}
+
+
 def pattern() -> re.Pattern:
-    names = "|".join(re.escape(n) for n in sorted(RETIRED))
-    return re.compile(rf"(?<![A-Za-z0-9_-])(?:sgs/)?(?:{names})(?![A-Za-z0-9_-])")
+    prefixed = "|".join(re.escape(n) for n in sorted(RETIRED))
+    bare = "|".join(re.escape(n) for n in sorted(BARE_SLUGS))
+    return re.compile(rf"(?<![A-Za-z0-9_-])(?:sgs[/-](?:{prefixed})|{bare})(?![A-Za-z0-9]|-[A-Za-z0-9])")
 
 
 def scan_text(text: str, rx: re.Pattern) -> list[int]:
@@ -93,10 +111,10 @@ def file_traces() -> list[str]:
     """Traces in what git will commit (the index), so a local run matches the deploy's clean checkout: a tracked file that is
     deleted only in the working tree still counts until the deletion is committed."""
     rx = pattern()
-    name_rx = re.compile("|".join(re.escape(n) for n in sorted(RETIRED)))
+    slugs = {n for n in RETIRED}
     out = []
     for rel in tracked_files():
-        if is_live(rel) and rel != "plugins/sgs-blocks/scripts/check-retired-blocks.py" and name_rx.search(rel):
+        if is_live(rel) and rel != "plugins/sgs-blocks/scripts/check-retired-blocks.py" and slugs.intersection(rel.split("/")):
             out.append(f"{rel}  (name)")
     found = subprocess.run(
         ["git", "grep", "--cached", "-n", "-I", "-P", rx.pattern, "--", *LIVE_ROOTS],
@@ -143,6 +161,10 @@ def self_test() -> int:
     need("matches the bare slug", scan_text("(container, cta-section, hero)", rx) == [1])
     need("does not match a longer name", scan_text("whatsapp-cta-section-x and my-cta-section", rx) == [])
     need("does not match another slug", scan_text("sgs/cta-banner", rx) == [])
+    need("matches a prefixed slug", scan_text("block sgs/divider here", rx) == [1])
+    need("matches a class root with an element", scan_text(".sgs-nav-menu__link", rx) == [1])
+    need("does not match a bare ordinary word", scan_text("a divider and a nav-menu and mobile-nav", rx) == [])
+    need("does not match a live longer name", scan_text("sgs-nav-menu-panels and sgs/divider-x", rx) == [])
     need("reports each line", scan_text("a\ncta-section\nb\nsgs/cta-section", rx) == [2, 4])
     need("register has dates", all(RETIRED.values()))
     print('{"selfTest": true, "failures": %s}' % failures)

@@ -272,7 +272,7 @@
       "category": "behaviour-family",
       "label": "Collapsible / expandable content (accordion, collapsible text, dropdown menu)",
       "optimal_control": {
-        "component": "BUILD: DisclosureControls (shared set — accordion, accordion-item, collapsible-text, table-of-contents, mega-menu, pricing-table, business-info, product-faq-item all hand-roll their own subset today)",
+        "component": "BUILD: DisclosureControls (shared set — accordion, accordion-item, collapsible-text, table-of-contents, pricing-table, business-info, product-faq-item all hand-roll their own subset today)",
         "props": {
           "collapsible": "ToggleControl",
           "defaultOpen": "ToggleControl (per-item) OR RangeControl/index-picker (container-level 'which item opens by default', -1 = none)",
@@ -337,8 +337,8 @@
       ],
       "shared_component": "BUILD: DisclosureControls",
       "spec_ref": "Spec 35A Part H ('optional-controls group -> ToolsPanel/ToolsPanelItem'), Spec 35 Part B Selection row (ToggleGroupControl for 2-5 short options)",
-      "current_state": "9 attrs across 9 blocks with no shared component: sgs/accordion (allowMultiple bool, defaultOpen number/index), sgs/accordion-item + sgs/product-faq-item (isOpen bool, per-item), sgs/collapsible-text (collapsible bool, collapsedLines number), sgs/table-of-contents (collapsible bool, defaultCollapsed bool — inverse-polarity duplicate of accordion's defaultOpen concept), sgs/business-info + sgs/button (labelCollapse enum — an odd pairing; button's 'labelCollapse' is really an icon-only-collapse-to-icon-button pattern, conceptually closer to a responsive-display toggle than a disclosure, worth a future reclass), sgs/mega-menu (openOn enum: click/hover), sgs/pricing-table (toggleStyle enum).",
-      "divergence": "9 open/collapse attrs across 9 blocks with no shared component and inverse-polarity duplicates (defaultOpen vs defaultCollapsed); should share DisclosureControls.",
+      "current_state": "8 attrs across 8 blocks with no shared component: sgs/accordion (allowMultiple bool, defaultOpen number/index), sgs/accordion-item + sgs/product-faq-item (isOpen bool, per-item), sgs/collapsible-text (collapsible bool, collapsedLines number), sgs/table-of-contents (collapsible bool, defaultCollapsed bool — inverse-polarity duplicate of accordion's defaultOpen concept), sgs/business-info + sgs/button (labelCollapse enum — an odd pairing; button's 'labelCollapse' is really an icon-only-collapse-to-icon-button pattern, conceptually closer to a responsive-display toggle than a disclosure, worth a future reclass), sgs/pricing-table (toggleStyle enum).",
+      "divergence": "8 open/collapse attrs across 8 blocks with no shared component and inverse-polarity duplicates (defaultOpen vs defaultCollapsed); should share DisclosureControls.",
       "divergence_severity": "medium",
       "notes": "sgs/button's labelCollapse is a borderline member — it collapses a text label to icon-only, not an expand/collapse-content disclosure. Keep it in this family per the source classification (do not silently move it without a registry-wide pass) but flag it in the eventual lint as a 'verify fit' case, not a hard-fail divergence."
     },
@@ -463,21 +463,20 @@
     {
       "setting_key": "behaviour:sticky-header-nav-behaviour",
       "category": "behaviour-family",
-      "label": "Sticky / shrinking header & nav-collapse behaviour",
+      "label": "Sticky / shrinking header behaviour",
       "optimal_control": {
         "component": "BUILD: StickyBehaviourControls — the sticky-position BOOLEAN should route through native `position: { sticky: true }` block support where the block declares it (site-header, notice-banner); the SGS-only shrink/transparent/collapse-tier behaviours have NO native WP equivalent and stay bespoke",
         "props": {
           "headerSticky / stickyPosition": "native position.sticky supports flag where available; ToggleGroupControl(top/bottom) for notice-banner's stickyPosition since it can stick to either edge",
           "headerShrink": "ToggleControl",
           "headerTransparent": "ToggleControl",
-          "contrastSafe": "ToggleGroupControl (auto/light-text/dark-text — safety net for a transparent header over varying hero brightness)",
-          "collapseTier / collapseCustomPx": "ToggleGroupControl (768/1024/custom) + RangeControl(px) shown only when 'custom' is chosen"
+          "contrastSafe": "ToggleGroupControl (auto/light-text/dark-text — safety net for a transparent header over varying hero brightness)"
         },
         "preset_layer": null,
-        "units": "collapseCustomPx is a px RangeControl (device-tier px value)",
+        "units": "n/a",
         "responsive_device_tier": true,
         "multi_value": "none",
-        "dropdown_completeness": "ToggleGroupControl for collapseTier/contrastSafe/stickyPosition (all 2-4 short options)",
+        "dropdown_completeness": "ToggleGroupControl for contrastSafe/stickyPosition (all 2-4 short options)",
         "alpha_clearable": "n/a",
         "reset_disclosure": "ToolsPanel — site-header alone already has 4 of the 7 members (headerSticky/Shrink/Transparent + contrastSafe), comfortably past the A5 threshold"
       },
@@ -512,22 +511,14 @@
           "dimensions_applied": [
             "dimension 5"
           ]
-        },
-        {
-          "member_label": "Nav-collapse breakpoint tier",
-          "component": "ToggleGroupControl (768/1024/custom) + RangeControl(px) when custom",
-          "dimensions_applied": [
-            "dimension 3 device-tier",
-            "dimension 2 units (px)"
-          ]
         }
       ],
       "shared_component": "OWNED BY TRACK 2 (header/footer/nav rebuild) — do NOT design a split here",
       "spec_ref": "Spec 35A Part G ('position.sticky N — HIGH priority, free inspector UI'), Spec 35 Part C Position/layout ('sticky (N: position.sticky) T')",
-      "current_state": "7 attrs across 3 blocks: sgs/site-header (contrastSafe enum, headerShrink/headerSticky/headerTransparent bool — verified live: site-header/block.json declares NO `supports.position.sticky`, so headerSticky is a fully bespoke boolean today, not routed through the native support), sgs/adaptive-nav (collapseCustomPx number, collapseTier enum — this is a responsive nav-collapse BREAKPOINT, not stickiness, see notes), sgs/notice-banner (stickyPosition enum top/bottom).",
-      "divergence": "Superseded: the sticky/transparent/shrink/contrast-safe + nav-collapse behaviour on site-header/adaptive-nav/notice-banner is being rebuilt by Track 2 (header/footer/nav) as a 3-state (inherit/on/off) value tiered per surface + breakpoint — a fuller model than a standalone StickyToggle+NavCollapseTier split. The Spec 35 rollout must NOT touch these blocks' sticky/collapse behaviour.",
+      "current_state": "5 attrs across 2 blocks: sgs/site-header (contrastSafe enum, headerShrink/headerSticky/headerTransparent bool — verified live: site-header/block.json declares NO `supports.position.sticky`, so headerSticky is a fully bespoke boolean today, not routed through the native support), sgs/notice-banner (stickyPosition enum top/bottom).",
+      "divergence": "Superseded: the sticky/transparent/shrink/contrast-safe behaviour on site-header/notice-banner is being rebuilt by Track 2 (header/footer/nav) as a 3-state (inherit/on/off) value tiered per surface + breakpoint — a fuller model than a standalone StickyToggle+NavCollapseTier split. The Spec 35 rollout must NOT touch these blocks' sticky behaviour.",
       "divergence_severity": "none",
-      "notes": "RESOLVED via Track 2 (Bean, 2026-07-19). Owner = the header/footer/nav FULL REBUILD — Spec 17 (§S9) + the P1 architecture decision `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md` (locked: every responsive on/off capability — sticky/transparent/shrink/contrast-safe — becomes a 3-state inherit/on/off value, tiered per surface + breakpoint; collapseTier default set there). The current flat booleans (headerSticky/headerTransparent/headerShrink + contrastSafe, no tiered siblings) are what that rebuild replaces. Spec 35's job here is ZERO: do not independently restyle or split these — defer to Track 2 to avoid a collision on the shared branch. This row is retained for completeness, marked deferred/none so the Wave rollout skips it."
+      "notes": "RESOLVED via Track 2 (Bean, 2026-07-19). Owner = the header/footer/nav FULL REBUILD — Spec 17 (§S9) + the P1 architecture decision `.claude/plans/2026-07-18-P1-architecture-decision-header-footer-nav.md` (locked: every responsive on/off capability — sticky/transparent/shrink/contrast-safe — becomes a 3-state inherit/on/off value, tiered per surface + breakpoint). The current flat booleans (headerSticky/headerTransparent/headerShrink + contrastSafe, no tiered siblings) are what that rebuild replaces. Spec 35's job here is ZERO: do not independently restyle or split these — defer to Track 2 to avoid a collision on the shared branch. This row is retained for completeness, marked deferred/none so the Wave rollout skips it."
     },
     {
       "setting_key": "behaviour:hover-effect",

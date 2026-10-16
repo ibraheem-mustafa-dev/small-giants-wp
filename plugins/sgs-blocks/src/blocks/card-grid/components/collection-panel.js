@@ -1,14 +1,12 @@
 /**
  * CollectionPanel — inspector controls for card-grid's `cpt-collection` source.
  *
- * This is the WooCommerce-INDEPENDENT collection path, folded in from
- * sgs/content-collection on 2026-08-01. It queries a custom post type
- * (sgs_product by default) with seven meta-driven selection rules and renders
+ * This is the WooCommerce-INDEPENDENT collection path. It queries a custom post
+ * type (sgs_product by default) with seven meta-driven selection rules and renders
  * each result through sgs/product-card in sgs-cpt mode.
  *
- * The two sub-panels (handpicked / category) are the ones content-collection
- * already shipped — they are imported, not re-implemented, so there is one
- * copy of each picker.
+ * The two sub-panels (handpicked / category) live in this directory and are
+ * imported here, so there is one copy of each picker.
  *
  * Extracted to its own file so card-grid/edit.js does not grow further; that
  * file is already over the project's length limit and splitting it is a
@@ -25,13 +23,6 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-// Relocated into card-grid 2026-08-08 when sgs/content-collection was deleted.
-// The fold (2026-08-01) left these two panels living inside the block being
-// retired, so card-grid — the block that ABSORBED the functionality — imported
-// across a directory that was about to vanish. Deleting the block broke the
-// build: webpack resolved nothing, postbuild never ran, and the block count
-// silently fell 84 -> 83. An absorption is not complete while the surviving
-// block still reaches into the corpse.
 import HandpickedPanel from './handpicked-panel';
 import CategoryPanel from './category-panel';
 

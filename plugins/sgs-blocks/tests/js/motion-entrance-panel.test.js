@@ -187,6 +187,23 @@ describe( 'the stagger helper', () => {
 		expect( buttonText( 'Write delays' ) ).toBeUndefined();
 	} );
 
+	it( 'hides on a block whose children cannot carry a delay, and shows once one can', () => {
+		global.__children = [ child( 'a', undefined, false ), child( 'b', undefined, false ) ];
+		mount( { blockName: 'sgs/accordion' } );
+		expect( byLabel( 'Apply entrance to children' ) ).toBeNull();
+		expect( buttonText( 'Write delays' ) ).toBeUndefined();
+		H.remount();
+		global.__children = [ child( 'a', undefined, false ), child( 'b' ) ];
+		mount( { blockName: 'sgs/accordion' } );
+		expect( byLabel( 'Apply entrance to children' ) ).not.toBeNull();
+	} );
+
+	it( 'shows on a block whose items the server prints, whatever its inner blocks', () => {
+		global.__children = [ child( 'a', undefined, false ) ];
+		mount( { blockName: 'sgs/nav-drawer-menu' } );
+		expect( byLabel( 'Apply entrance to children' ) ).not.toBeNull();
+	} );
+
 	it( 'writes each motion-capable child its own delay in one update and skips the others', async () => {
 		const own = withBase( 'root', 'scroll' ).elements.root.entrance.base;
 		global.__children = [

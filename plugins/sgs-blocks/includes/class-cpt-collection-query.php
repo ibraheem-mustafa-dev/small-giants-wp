@@ -2,8 +2,8 @@
 /**
  * CPT Collection Query — the meta-driven, WooCommerce-INDEPENDENT collection engine.
  *
- * This is the single home for the seven meta-driven selection rules that were
- * originally implemented inline in `sgs/content-collection`'s render.php:
+ * This is the single home for the seven meta-driven selection rules used by
+ * `sgs/card-grid` when its source is 'cpt-collection':
  *
  *   newest         — date DESC
  *   featured       — meta_query: sgs_featured = '1', date DESC tiebreak
@@ -13,17 +13,12 @@
  *   handpicked     — post__in array, ordered by the operator's array order
  *   category       — tax_query on {post_type}_cat, date DESC
  *
- * WHY THIS CLASS EXISTS (2026-08-01 fold):
- * `sgs/content-collection` was folded into `sgs/card-grid`. `card-grid`'s product
- * path (includes/class-card-grid-products.php) hard-gates on `wc_get_products()`
- * and returns an empty array when WooCommerce is inactive. `content-collection`
- * had NO such gate — it queried the `sgs_product` custom post type through plain
- * WP_Query and worked on every install. Folding without porting that path would
- * have deleted a working capability from every non-WooCommerce site.
- *
- * So the rules live HERE, once, and BOTH blocks call this class:
- *   - sgs/content-collection  (legacy block, still registered, still renders)
- *   - sgs/card-grid           (source = 'cpt-collection')
+ * WHY THIS CLASS EXISTS:
+ * `card-grid`'s product path (includes/class-card-grid-products.php) hard-gates
+ * on `wc_get_products()` and returns an empty array when WooCommerce is
+ * inactive. This class queries the `sgs_product` custom post type through plain
+ * WP_Query, so the 'cpt-collection' source works on every install. Its only
+ * caller is `card-grid`'s render-delegated.php.
  *
  * There is deliberately no WooCommerce reference anywhere in this file. It runs
  * on a bare WordPress install. WooCommerce-specific querying stays in

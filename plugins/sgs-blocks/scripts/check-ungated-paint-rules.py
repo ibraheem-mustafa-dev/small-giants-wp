@@ -13,8 +13,8 @@ defect (a reset, a zero-specificity `:where()` default, an a11y rule, a
 wrapper-delegated paint, or a genuinely attribute-driven `var()` with a real
 writer). Both CSS surfaces, one run, per block.
 
-This is the enforcement half of FR-41-15's `sgs/nav-menu` census: three
-consecutive human reviews of that one block each under-counted the same
+This is the enforcement half of FR-41-15's census: three
+consecutive human reviews of one block each under-counted the same
 defect class (a `background`/`border` SHORTHAND emitted unconditionally,
 resetting `background-image` to `none` and silently erasing a text-sweep
 gradient on hover) because the search was bounded one notch narrower than the
@@ -22,8 +22,8 @@ defect each time — literal-string scan, then a line-RANGE, then a
 line-ANCHORED grep restricted to one file. Prose describing the correct
 method is not enforcement; this script is.
 
-⛔ FRAMEWORK-WIDE BY DESIGN, NOT A `sgs/nav-menu` LINT. FR-41-15's corrected
-methodology contains nothing nav-menu-specific: join each CSS-emitting
+⛔ FRAMEWORK-WIDE BY DESIGN, NOT A SINGLE-BLOCK LINT. FR-41-15's corrected
+methodology contains nothing block-specific: join each CSS-emitting
 statement to its terminating `;`, test the joined text for a `background`/
 `border` declaration, then read the block's own `style.css` for the same
 shape. The classification input ("is this gated on an operator attribute?")
@@ -56,8 +56,7 @@ codebase's own stylesheets), which is why one function serves both surfaces.
 `VARIABLE_AWARENESS_LIMIT` below, always printed by `--survey`). A
 declaration assembled into an intermediate PHP variable in one statement and
 appended to the CSS accumulator in a LATER, separate statement is invisible
-to a single-statement join, by construction. `sgs/nav-menu`'s own
-`$sgs_nm_featured_vars` assembly is a live instance of this exact shape.
+to a single-statement join, by construction.
 
 ⚠ ALSO NOT FULLY CROSS-STATEMENT AWARE for the "reset" exemption — see
 `RESET_STATEMENT_LIMIT` below, also always printed by `--survey`.
@@ -72,7 +71,7 @@ MODES
 11 / owner ruling 4). The hard-fail scope is a single named module constant,
 `HARD_FAIL_BLOCKS`, left empty here; Step 26 sets it (reading the scope from
 `plugins/sgs-blocks/scripts/gates.json`'s own config for this gate's entry,
-never as a dict hardcoded in this file — R-31-1) to `['sgs/nav-menu']` once
+never as a dict hardcoded in this file — R-31-1) to the hard-fail blocks once
 the tree is clean. Framework-wide hardening beyond that is separate future
 work, triaged against a real no-filter `--survey` run.
 
@@ -104,12 +103,12 @@ _FIXTURES_DIR = _HERE / "fixtures" / "ungated-paint"
 # Enforcement scope (FR-41-35(f), owner ruling 4, 2026-09-11)
 # ---------------------------------------------------------------------------
 # WARN-ONLY for this build. `--check` always exits 0 regardless of findings —
-# the tree still holds the eleven `sgs/nav-menu` rules FR-41-15 has not yet
+# the tree still holds rules FR-41-15 has not yet
 # removed, and a gate that always fails trains readers to skip it (this
 # project's own recorded pre-merge-hook-gate failure shape).
 #
-# Step 26 sets this to the gates.json-configured scope — `['sgs/nav-menu']`
-# for this phase — and flips `--check` to fail closed for exactly those
+# Step 26 sets this to the gates.json-configured scope
+# for this phase and flips `--check` to fail closed for exactly those
 # blocks while every other block's findings stay printed-and-passing.
 # Framework-wide hardening beyond that is separate future work, triaged
 # against a real no-filter `--survey` run.
@@ -128,12 +127,10 @@ VARIABLE_AWARENESS_LIMIT = (
     "PHP variable in one statement and appended to the CSS accumulator in a "
     "LATER, separate statement is outside what this scan can see — the join "
     "follows one statement to its terminating ';', never a value carried "
-    "across two. `sgs/nav-menu`'s own `$sgs_nm_featured_vars` assembly is a "
-    "live instance of this exact shape; it happens not to matter there only "
-    "because its declarations are custom-property ASSIGNMENTS "
-    "(`--sgs-nm-featured-bg:`), which never match the background/border "
-    "regex. The next rule built the same way, with a real property name "
-    "inside it, would be invisible here."
+    "across two. A rule built that way is invisible here when its "
+    "declarations are custom-property ASSIGNMENTS, which never match the "
+    "background/border regex, and equally invisible when it carries a real "
+    "property name."
 )
 
 RESET_STATEMENT_LIMIT = (
@@ -160,8 +157,8 @@ VAR_WRITER_UNCONDITIONAL_READ_LIMIT = (
     "The var()-with-writer exemption verifies the WRITER exists and is "
     "empty-guarded — it does NOT verify the READING statement is ALSO "
     "conditional on that same write having happened. FR-41-15 census #7 "
-    "(`sgs/nav-menu`'s featured sub-item resting paint) is exactly this "
-    "shape: `--sgs-nm-featured-bg` genuinely has a guarded writer, so this "
+    "(a featured sub-item resting paint) is exactly this "
+    "shape: the custom property genuinely has a guarded writer, so this "
     "exemption fires and dismisses it — but FR-41-15 still classifies the "
     "statement as CENSUSED (fate: CONVERT), because the READ itself is "
     "unconditional and paints its own hardcoded fallback whenever the "
@@ -801,7 +798,7 @@ def main() -> int:
     mode.add_argument("--survey", action="store_true", help="Emit the three-bucket census.")
     mode.add_argument("--check", action="store_true", help="WARN-ONLY for this build — see HARD_FAIL_BLOCKS.")
     mode.add_argument("--self-test", action="store_true", help="Run the fixture regression suite.")
-    parser.add_argument("--block", default=None, help="Scope to one block slug, e.g. sgs/nav-menu.")
+    parser.add_argument("--block", default=None, help="Scope to one block slug, e.g. sgs/nav-bar-menu.")
     args = parser.parse_args()
 
     if args.self_test:

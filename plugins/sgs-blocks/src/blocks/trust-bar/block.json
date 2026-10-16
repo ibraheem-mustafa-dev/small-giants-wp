@@ -5,7 +5,7 @@
 	"version": "0.5.4",
 	"title": "SGS Trust Bar",
 	"category": "sgs-content",
-	"description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Typed mode only: curated items[] repeater. Merged from sgs/certification-bar 2026-05-29 D95.",
+	"description": "Horizontal strip of trust signals. Three variants: icon-in-circle (default), text-only pill badges, and image-badge (certification logos). Typed mode only: curated items[] repeater.",
 	"keywords": [
 		"trust",
 		"badges",

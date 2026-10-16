@@ -24,9 +24,9 @@ That left three bad options, and the project had already tried two of them:
   measurement that was never taken. A gate field that is argued rather than
   measured is worth nothing, and it teaches the next agent that the field is
   negotiable.
-* **Revert the work.** The day before, a correct, deployed, live-measured
-  ``sgs/nav-menu`` focus fix was REVERTED for precisely this reason, because the
-  author would not fabricate the field. Discarding good code to keep a gate
+* **Revert the work.** A correct, deployed, live-measured focus fix was
+  REVERTED for precisely this reason, because the author would not fabricate
+  the field. Discarding good code to keep a gate
   honest is the right instinct pointed at the wrong target.
 * **``--no-verify``.** Discards gitleaks, the wp-* pre-merge gate, cheat-gate, F5
   and F6 — all of which were passing — to skip one inapplicable check.

@@ -500,7 +500,7 @@ function classify_esc_attr_window(string $before): string {
         return 'a11y-metadata';
     }
     // PHP associative-array literal form: 'aria-label' => esc_attr( $x ) —
-    // the SGS_Container_Wrapper::render() `extra_attrs` shape (sgs/nav-menu).
+    // the SGS_Container_Wrapper::render() `extra_attrs` shape.
     if (preg_match('/[\'"](alt|placeholder)[\'"]\s*=>\s*$/i', $before)) {
         return 'authored-alt-text';
     }
@@ -886,7 +886,7 @@ function printf_placeholder_context(string $text, int $matchStart, int $matchEnd
  * context, either literal HTML syntax (`aria-label="..."`) or a PHP
  * associative-array literal passed to a shared helper
  * (`'aria-label' => esc_attr( $var )`, the SGS_Container_Wrapper::render()
- * `extra_attrs` shape used by sgs/nav-menu).
+ * `extra_attrs` shape).
  *
  * Returns the matched window (ending exactly where the variable token
  * begins, with any single intervening wrapper-escaping call stripped off
@@ -1148,11 +1148,10 @@ function run(array $files, array $eligibleSet, array $attrIndex = [], string $re
                     //
                     // INHERITANCE NEVER OVERWRITES A DIRECT BINDING. Measured
                     // regression on the first cut of this change (2026-08-05):
-                    // sgs/nav-menu.navLabel LOST its correct a11y-text
-                    // assignment. `$nav_label` is bound directly at
-                    // nav-menu/render.php:639
+                    // a nav label attribute LOST its correct a11y-text
+                    // assignment. `$nav_label` is bound directly
                     //     $nav_label = trim( (string) ( $attributes['navLabel'] ?? '' ) );
-                    // then CONDITIONALLY reassigned at :653 from unrelated
+                    // then CONDITIONALLY reassigned from unrelated
                     // locals (`$stripped` / `$derived`) — a fallback branch that
                     // may never execute. Letting a weak inherited binding
                     // clobber a strong direct one traded a true positive for a

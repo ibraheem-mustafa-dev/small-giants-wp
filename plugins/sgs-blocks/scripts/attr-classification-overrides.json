@@ -3308,7 +3308,7 @@
 			"attr": "modalRef",
 			"fields": {
 				"role": "technical",
-				"_reason": "2026-09-14 (shared-modal-content task). A published sgs_modal post ID this instance's dialog resolves its content from -- a non-visual, machine-facing pointer, not a paintable CSS value. Same shape and role as the pre-existing sgs/nav-menu::ref (classic/block menu ID) and sgs/nav-drawer::drawerRef (DOM id match), both already 'technical' on this same block family."
+				"_reason": "2026-09-14 (shared-modal-content task). A published sgs_modal post ID this instance's dialog resolves its content from -- a non-visual, machine-facing pointer, not a paintable CSS value. Same shape and role as the pre-existing sgs/nav-drawer::drawerRef (DOM id match), already 'technical' on this same block family."
 			}
 		},
 		{
@@ -3340,7 +3340,7 @@
 			"attr": "itemColourHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{
@@ -3348,7 +3348,7 @@
 			"attr": "itemColourHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{
@@ -3356,7 +3356,7 @@
 			"attr": "itemBgHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{
@@ -3364,7 +3364,7 @@
 			"attr": "itemBgHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{
@@ -3372,7 +3372,7 @@
 			"attr": "itemBorderHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{
@@ -3380,7 +3380,7 @@
 			"attr": "itemBorderHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{
@@ -3388,7 +3388,7 @@
 			"attr": "burgerBgHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{
@@ -3396,7 +3396,7 @@
 			"attr": "burgerColourHoverTreatment",
 			"fields": {
 				"role": "behaviour",
-				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+				"_reason": "2026-09-14 (nav-bar-menu / nav-drawer-menu DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, now on sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		},
 		{

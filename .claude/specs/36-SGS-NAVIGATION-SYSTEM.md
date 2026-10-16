@@ -657,7 +657,7 @@ R-31-13 stands: the owner's visual sign-off is co-authoritative, the numbers alo
 
 **Two named false-pass modes. Both have shipped a green report on a broken page:**
 
-- **A — a sampled contrast check reports the sample, not the page.** A sweep that measured `.sgs-nav-menu__link-text` alone reported a healthy 13.14:1 for a drawer that rendered **6 text elements at 1:1 — literally invisible** across 2 variants. **Sweep EVERY text node in the surface under test, each against its own real painted background.** A check scoped to one selector reports that selector's health and nothing else.
+- **A — a sampled contrast check reports the sample, not the page.** A sweep that measured the link text element alone reported a healthy 13.14:1 for a drawer that rendered **6 text elements at 1:1 — literally invisible** across 2 variants. **Sweep EVERY text node in the surface under test, each against its own real painted background.** A check scoped to one selector reports that selector's health and nothing else.
 - **B — a capture that never asserted "open" proves nothing.** A screenshot script that clicks a trigger and captures without asserting a panel opened can report a homepage with no menu open as a captured reference. **Assert the open state, then capture.** This is the same vacuous-check class as a negative control that never landed.
 
 **Rules of use, so this stays a floor and not a ceiling:**

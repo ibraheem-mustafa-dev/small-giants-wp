@@ -38,9 +38,8 @@
  * That is the extraction half of the sibling signal to `innerBlockSlugs`: a
  * variant whose nested child SLUG SET is identical to another variant's can
  * still be discriminated when one of those children carries an attribute
- * VALUE no sibling variant's same-slug child carries (`sgs/nav-drawer`'s
- * `two-column-editorial` is the motivating case — its `sgs/nav-menu` child is
- * the only one across all 7 variants setting `listColumns`).
+ * VALUE no sibling variant's same-slug child carries (e.g. the one variant
+ * whose nav child sets `listColumns`).
  *
  * Child attributes are evaluated PER PROPERTY, exactly like the variant's own
  * `attributes` above: a property whose value is not statically literal (an

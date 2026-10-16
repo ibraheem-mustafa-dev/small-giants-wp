@@ -61,8 +61,6 @@ SCOPE EXCLUSIONS (deliberate, not omissions):
     are REAL, reachable-fix candidates by the same evidence as every row
     fixed here — left for a dedicated follow-up once the peer session's
     product-card work is confirmed settled.
-  - `sgs/nav-menu` — named exclusion per brief; census found ZERO Gradient
-    rows on this block, so the exclusion is a no-op guard, not a skip.
 
 Census (verified 2026-08-27, not the ~8-block estimate carried into this
 task from earlier unrelated work): **78 unreachable rows** across the whole

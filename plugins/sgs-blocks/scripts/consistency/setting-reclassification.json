@@ -1,12 +1,12 @@
 {
   "summary": {
-    "non_css_attrs_examined": 655,
+    "non_css_attrs_examined": 633,
     "input_type_groups_count": 12,
     "behaviour_families_count": 11,
-    "genuinely_unique_count": 19,
+    "genuinely_unique_count": 18,
     "true_unique_semantic_settings": 31,
-    "collapse_ratio": "282 attrs Phase 1b called 'block-specific, do NOT standardise' (content_text=53 + behaviour_toggles=56 + enum_select=26 + media_urls=28 + unclassified=123, ~4 short of the 286 total non-property attrs it examined) -> 12 true semantic INPUT-TYPES across all 655 non-CSS-property attrs in this re-classification (515, a wider net than Phase 1b's 282 since it also re-examined the slot:/role: groups Phase 1b didn't bucket), further split into 11 named BEHAVIOUR FAMILIES for the recurring boolean/enum toggles.",
-    "note": "Phase 1b bucketed by NAME (content_text_attributes=53, behaviour_toggles=56, enum_select_controls=26, media_urls_assets=28, other_unclassified=123) and called all of it 'block-specific, do not standardise' without ever testing what INPUT each attr represents. Re-classifying by SEMANTIC INPUT TYPE (text-content / rich-text / media-source / colour-value / url-link / icon / number / enum-select / boolean-toggle / code-svg / json-config / date / system-internal) collapses all 655 non-CSS-property attrs into just 12 input patterns. The boolean/enum members of those further collapse into 11 named recurring BEHAVIOUR FAMILIES (slider-carousel, disclosure, visibility-responsive, media-playback, scroll-reveal-animation, hover-effect, form-validation-conditional, dismissible, link-target-behaviour, sticky-header-nav-behaviour, show-hide-display-toggle). Only 19 attrs resisted every pattern (see `genuinely_unique`) \u2014 every one of Bean's 4 example challenges (decorMedia / placeholder / carouselShowDots / 'the 123 unclassified') is answered directly in `answers_to_bean` below."
+    "collapse_ratio": "282 attrs Phase 1b called 'block-specific, do NOT standardise' (content_text=53 + behaviour_toggles=56 + enum_select=26 + media_urls=28 + unclassified=123, ~4 short of the 286 total non-property attrs it examined) -> 12 true semantic INPUT-TYPES across all 633 non-CSS-property attrs in this re-classification (515, a wider net than Phase 1b's 282 since it also re-examined the slot:/role: groups Phase 1b didn't bucket), further split into 11 named BEHAVIOUR FAMILIES for the recurring boolean/enum toggles.",
+    "note": "Phase 1b bucketed by NAME (content_text_attributes=53, behaviour_toggles=56, enum_select_controls=26, media_urls_assets=28, other_unclassified=123) and called all of it 'block-specific, do not standardise' without ever testing what INPUT each attr represents. Re-classifying by SEMANTIC INPUT TYPE (text-content / rich-text / media-source / colour-value / url-link / icon / number / enum-select / boolean-toggle / code-svg / json-config / date / system-internal) collapses all 633 non-CSS-property attrs into just 12 input patterns. The boolean/enum members of those further collapse into 11 named recurring BEHAVIOUR FAMILIES (slider-carousel, disclosure, visibility-responsive, media-playback, scroll-reveal-animation, hover-effect, form-validation-conditional, dismissible, link-target-behaviour, sticky-header-nav-behaviour, show-hide-display-toggle). Only 18 attrs resisted every pattern (see `genuinely_unique`) \u2014 every one of Bean's 4 example challenges (decorMedia / placeholder / carouselShowDots / 'the 123 unclassified') is answered directly in `answers_to_bean` below."
   },
   "input_type_groups": [
     {
@@ -60,7 +60,6 @@
         "inheritStyle",
         "isOpen",
         "isSubmit",
-        "itemMagnetEnabled",
         "linkOpensNewTab",
         "linkToHome",
         "loopCarousel",
@@ -131,7 +130,6 @@
         "smoothScroll",
         "staggerOnOpen",
         "storeSubmissions",
-        "submenuCaret",
         "textOnly",
         "verified",
         "videoAutoplay",
@@ -194,7 +192,6 @@
         "sgs/mega-panel",
         "sgs/modal",
         "sgs/multi-button",
-        "sgs/nav-menu",
         "sgs/notice-banner",
         "sgs/option-picker",
         "sgs/physics-canvas",
@@ -216,7 +213,7 @@
         "sgs/trustpilot-reviews",
         "sgs/whatsapp-cta"
       ],
-      "count": 140
+      "count": 138
     },
     {
       "type": "enum-select",
@@ -243,7 +240,6 @@
         "captionTag",
         "cardStyle",
         "closeStyle",
-        "collapsePoint",
         "colourMode",
         "colourPreset",
         "colourScheme",
@@ -275,13 +271,11 @@
         "headerTransparentDirection",
         "headingLevel",
         "headingRole",
-        "hoverStyle",
         "iconAlign",
         "iconPosition",
         "iconSize",
         "iconStyle",
         "imageEffect",
-        "indicatorStyle",
         "labelCollapse",
         "layoutMode",
         "level",
@@ -306,7 +300,6 @@
         "productSource",
         "queryPostType",
         "ratingType",
-        "ref",
         "revealTrigger",
         "rowSlot",
         "scaleHover",
@@ -324,7 +317,6 @@
         "stickyPosition",
         "style",
         "subTag",
-        "submenuAlign",
         "submenuModel",
         "submitStyle",
         "svgAnimation",
@@ -392,7 +384,6 @@
         "sgs/modal",
         "sgs/multi-button",
         "sgs/nav-drawer",
-        "sgs/nav-menu",
         "sgs/notice-banner",
         "sgs/option-picker",
         "sgs/physics-canvas",
@@ -422,7 +413,7 @@
         "sgs/trustpilot-reviews",
         "sgs/whatsapp-cta"
       ],
-      "count": 127
+      "count": 122
     },
     {
       "type": "media-source",
@@ -598,7 +589,6 @@
         "message",
         "min",
         "name",
-        "navLabel",
         "notifyMeLabel",
         "orgName",
         "panelHeading",
@@ -682,7 +672,6 @@
         "sgs/mega-panel",
         "sgs/modal",
         "sgs/nav-drawer",
-        "sgs/nav-menu",
         "sgs/notice-banner",
         "sgs/option-picker",
         "sgs/post-grid",
@@ -705,7 +694,7 @@
         "sgs/trustpilot-reviews",
         "sgs/whatsapp-cta"
       ],
-      "count": 85
+      "count": 84
     },
     {
       "type": "number",
@@ -723,12 +712,9 @@
         "evergreenHours",
         "evergreenMinutes",
         "excerptLength",
-        "featuredFontWeightHover",
-        "featuredRadiusHover",
         "formFocusRingOffset",
         "fxScrub",
         "iconCircleSize",
-        "itemRadiusHover",
         "maxRating",
         "maxResults",
         "maxReviews",
@@ -766,7 +752,6 @@
         "staggerDelay",
         "starSize",
         "startPosition",
-        "submenuCloseGrace",
         "svgAnimationSource",
         "tabletFrameCount",
         "tabletFramePad",
@@ -775,9 +760,7 @@
         "thumbnailIdMobile",
         "thumbnailIdTablet",
         "totalReviews",
-        "trustScore",
-        "underlineOffset",
-        "underlineThickness"
+        "trustScore"
       ],
       "blocks": [
         "sgs/accordion",
@@ -796,7 +779,6 @@
         "sgs/google-reviews",
         "sgs/image-sequence",
         "sgs/media",
-        "sgs/nav-menu",
         "sgs/physics-canvas",
         "sgs/post-grid",
         "sgs/product-card",
@@ -811,7 +793,7 @@
         "sgs/trust-bar",
         "sgs/trustpilot-reviews"
       ],
-      "count": 68
+      "count": 62
     },
     {
       "type": "colour-value",
@@ -831,8 +813,6 @@
         "ctaColourBorderHover",
         "ctaColourText",
         "ctaColourTextHover",
-        "featuredBgHover",
-        "featuredColourHover",
         "firstLetterColourHover",
         "gridItemBackgroundHover",
         "gridItemTextColourHover",
@@ -843,13 +823,10 @@
         "iconColourHover",
         "iconGlyphColourHover",
         "itemBackgroundColourHover",
-        "itemBgHover",
         "itemBorderColourHover",
-        "itemColourHover",
         "itemTextColourHover",
         "linkColourHover",
         "linkHoverBackgroundImage",
-        "navBgHover",
         "numberBackgroundHover",
         "overlayColourHover",
         "quoteColourHover",
@@ -860,8 +837,7 @@
         "textColourHover",
         "textColourScrolled",
         "tileShadowColourHover",
-        "toggleCloseColourHover",
-        "underlineColourHover"
+        "toggleCloseColourHover"
       ],
       "blocks": [
         "sgs/accordion-item",
@@ -886,7 +862,6 @@
         "sgs/mega-panel",
         "sgs/multi-button",
         "sgs/nav-drawer",
-        "sgs/nav-menu",
         "sgs/notice-banner",
         "sgs/physics-canvas",
         "sgs/post-grid",
@@ -909,14 +884,13 @@
         "sgs/trust-bar",
         "sgs/trustpilot-reviews"
       ],
-      "count": 46
+      "count": 40
     },
     {
       "type": "json-config",
       "member_attrs": [
         "categories",
         "entries",
-        "featuredItemIds",
         "fields",
         "handpickedIds",
         "headerHideOnScroll",
@@ -959,7 +933,6 @@
         "sgs/hero",
         "sgs/icon-list",
         "sgs/nav-drawer",
-        "sgs/nav-menu",
         "sgs/option-picker",
         "sgs/post-grid",
         "sgs/pricing-table",
@@ -977,7 +950,7 @@
         "sgs/trust-bar",
         "sgs/trustpilot-reviews"
       ],
-      "count": 33
+      "count": 32
     },
     {
       "type": "icon",
@@ -1249,11 +1222,8 @@
       "family": "hover-effect",
       "member_attrs": [
         "effectHover",
-        "featuredFontWeightHover",
-        "featuredRadiusHover",
         "grayscaleHover",
         "imageZoomHover",
-        "itemRadiusHover",
         "overlayHover",
         "scaleHover",
         "textDecorationHover"
@@ -1266,7 +1236,6 @@
         "sgs/heading",
         "sgs/icon",
         "sgs/info-box",
-        "sgs/nav-menu",
         "sgs/post-grid",
         "sgs/process-steps",
         "sgs/quote",
@@ -2986,42 +2955,6 @@
         "tabStyle"
       ]
     },
-    "sgs/nav-menu": {
-      "root": [
-        "burgerSize",
-        "collapsePoint",
-        "drawerRef",
-        "featuredBgHover",
-        "featuredColourHover",
-        "featuredItemIds",
-        "indicatorStyle",
-        "itemMagnetEnabled",
-        "navLabel",
-        "ref",
-        "sgsCustomCss",
-        "submenuAlign",
-        "submenuCaret",
-        "submenuCloseGrace",
-        "underlineColourHover",
-        "underlineOffset",
-        "underlineThickness"
-      ],
-      "hover-effect": [
-        "featuredFontWeightHover",
-        "featuredRadiusHover",
-        "itemRadiusHover"
-      ],
-      "hover": [
-        "hoverStyle"
-      ],
-      "card": [
-        "itemBgHover",
-        "itemColourHover"
-      ],
-      "items": [
-        "navBgHover"
-      ]
-    },
     "sgs/product-search": {
       "root": [
         "buttonLabel",
@@ -3613,10 +3546,6 @@
       "why_unique": "blocks=['sgs/button', 'sgs/heading', 'sgs/quote', 'sgs/text']; attr_type=['string']; control=['ShadowControl']; role=['visual'] \u2014 matches no input-type pattern (not text/media/icon/url/number/enum/boolean/date/svg/json-config)"
     },
     {
-      "attr": "burgerSize",
-      "why_unique": "blocks=['sgs/nav-menu']; attr_type=['string']; control=['UnitControl']; role=['select-from-enum'] \u2014 matches no input-type pattern (not text/media/icon/url/number/enum/boolean/date/svg/json-config)"
-    },
-    {
       "attr": "gridItemBorderGradientHover",
       "why_unique": "blocks=['sgs/container']; attr_type=['string']; control=[]; role=['colour-gradient'] \u2014 matches no input-type pattern (not text/media/icon/url/number/enum/boolean/date/svg/json-config)"
     },
@@ -3646,7 +3575,7 @@
     },
     {
       "attr": "sgsCustomCss",
-      "why_unique": "blocks=['sgs/nav-drawer', 'sgs/nav-menu']; attr_type=['string']; control=[]; role=['styling'] \u2014 matches no input-type pattern (not text/media/icon/url/number/enum/boolean/date/svg/json-config)"
+      "why_unique": "blocks=['sgs/nav-drawer']; attr_type=['string']; control=[]; role=['styling'] \u2014 matches no input-type pattern (not text/media/icon/url/number/enum/boolean/date/svg/json-config)"
     },
     {
       "attr": "shadowHover",
@@ -4734,16 +4663,6 @@
       "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
     },
-    "burgerSize": {
-      "input_type": null,
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": null
-    },
     "businessUnitUrl": {
       "input_type": "url-link",
       "behaviour_family": null,
@@ -4920,16 +4839,6 @@
       "element": "root",
       "blocks": [
         "sgs/nav-drawer"
-      ],
-      "n_blocks": 1,
-      "why": "enum_values present or SelectControl/ToggleGroupControl"
-    },
-    "collapsePoint": {
-      "input_type": "enum-select",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
       ],
       "n_blocks": 1,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
@@ -5667,10 +5576,9 @@
       "behaviour_family": null,
       "element": "root",
       "blocks": [
-        "sgs/nav-drawer",
-        "sgs/nav-menu"
+        "sgs/nav-drawer"
       ],
-      "n_blocks": 2,
+      "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
     },
     "dropCap": {
@@ -5878,56 +5786,6 @@
       ],
       "n_blocks": 1,
       "why": "attr_type=boolean"
-    },
-    "featuredBgHover": {
-      "input_type": "colour-value",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
-    },
-    "featuredColourHover": {
-      "input_type": "colour-value",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
-    },
-    "featuredFontWeightHover": {
-      "input_type": "number",
-      "behaviour_family": "hover-effect",
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type number/integer or Range/NumberControl"
-    },
-    "featuredItemIds": {
-      "input_type": "json-config",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type array/object holding structured repeater/config data, not a media object"
-    },
-    "featuredRadiusHover": {
-      "input_type": "number",
-      "behaviour_family": "hover-effect",
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type number/integer or Range/NumberControl"
     },
     "featuredTag": {
       "input_type": "text-content",
@@ -6370,16 +6228,6 @@
       "n_blocks": 1,
       "why": "attr_type=boolean"
     },
-    "hoverStyle": {
-      "input_type": "enum-select",
-      "behaviour_family": null,
-      "element": "hover",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "enum_values present or SelectControl/ToggleGroupControl"
-    },
     "icon": {
       "input_type": "icon",
       "behaviour_family": null,
@@ -6687,16 +6535,6 @@
       "n_blocks": 1,
       "why": "URL/href/link-target field"
     },
-    "indicatorStyle": {
-      "input_type": "enum-select",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "enum_values present or SelectControl/ToggleGroupControl"
-    },
     "inheritStyle": {
       "input_type": "boolean-toggle",
       "behaviour_family": null,
@@ -6741,16 +6579,6 @@
       "n_blocks": 1,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
     },
-    "itemBgHover": {
-      "input_type": "colour-value",
-      "behaviour_family": null,
-      "element": "card",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
-    },
     "itemBorderColourHover": {
       "input_type": "colour-value",
       "behaviour_family": null,
@@ -6760,36 +6588,6 @@
       ],
       "n_blocks": 1,
       "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
-    },
-    "itemColourHover": {
-      "input_type": "colour-value",
-      "behaviour_family": null,
-      "element": "card",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
-    },
-    "itemMagnetEnabled": {
-      "input_type": "boolean-toggle",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type=boolean"
-    },
-    "itemRadiusHover": {
-      "input_type": "number",
-      "behaviour_family": "hover-effect",
-      "element": "card",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type number/integer or Range/NumberControl"
     },
     "itemTextColourHover": {
       "input_type": "colour-value",
@@ -7368,26 +7166,6 @@
       "element": "heading",
       "blocks": [
         "sgs/team-member"
-      ],
-      "n_blocks": 1,
-      "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
-    },
-    "navBgHover": {
-      "input_type": "colour-value",
-      "behaviour_family": null,
-      "element": "items",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
-    },
-    "navLabel": {
-      "input_type": "text-content",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
       ],
       "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
@@ -8227,16 +8005,6 @@
       "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
     },
-    "ref": {
-      "input_type": "enum-select",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "enum_values present or SelectControl/ToggleGroupControl"
-    },
     "rel": {
       "input_type": "text-content",
       "behaviour_family": null,
@@ -8690,10 +8458,9 @@
       "behaviour_family": null,
       "element": "root",
       "blocks": [
-        "sgs/nav-drawer",
-        "sgs/nav-menu"
+        "sgs/nav-drawer"
       ],
-      "n_blocks": 2,
+      "n_blocks": 1,
       "why": null
     },
     "shadowColourHover": {
@@ -9607,36 +9374,6 @@
       "n_blocks": 1,
       "why": "enum_values present or SelectControl/ToggleGroupControl"
     },
-    "submenuAlign": {
-      "input_type": "enum-select",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "enum_values present or SelectControl/ToggleGroupControl"
-    },
-    "submenuCaret": {
-      "input_type": "boolean-toggle",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type=boolean"
-    },
-    "submenuCloseGrace": {
-      "input_type": "number",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type number/integer or Range/NumberControl"
-    },
     "submenuModel": {
       "input_type": "enum-select",
       "behaviour_family": null,
@@ -10228,36 +9965,6 @@
       ],
       "n_blocks": 1,
       "why": "prose/label copy \u2014 role=text-content, Text(area)Control, or canonical_slot=text/content"
-    },
-    "underlineColourHover": {
-      "input_type": "colour-value",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "DesignTokenPicker colour-token picker (Hover-state or override variant of a standard colour input)"
-    },
-    "underlineOffset": {
-      "input_type": "number",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type number/integer or Range/NumberControl"
-    },
-    "underlineThickness": {
-      "input_type": "number",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/nav-menu"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type number/integer or Range/NumberControl"
     },
     "uploadText": {
       "input_type": "text-content",

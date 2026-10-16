@@ -979,7 +979,7 @@ def compute_map() -> dict[str, list[str]]:
                 # paintable background (so it cannot be requires='none', which
                 # QA Gate A would fail as an inert control), but letting it
                 # create panels was MEASURED to add a brand-new fx panel to 11
-                # blocks — sgs/nav-menu, sgs/site-header, sgs/site-footer,
+                # blocks — sgs/site-header, sgs/site-footer,
                 # sgs/form among them — each of which would then also inherit
                 # motion-path and scrub through `permissive`. That is the "13
                 # panels where none makes sense" failure, arriving by a new route.

@@ -643,9 +643,9 @@
         "wc-product",
         "cpt-collection"
       ],
-      "description": "Where cards come from. 'wc-product' requires WooCommerce; 'cpt-collection' is the WooCommerce-INDEPENDENT path folded in from sgs/content-collection (2026-08-01) — it queries a custom post type (sgs_product by default) with the seven meta-driven selection rules and renders each result through sgs/product-card in sgs-cpt mode."
+      "description": "Where cards come from. 'wc-product' requires WooCommerce; 'cpt-collection' is the WooCommerce-INDEPENDENT path — it queries a custom post type (sgs_product by default) with the seven meta-driven selection rules and renders each result through sgs/product-card in sgs-cpt mode."
     },
-    "_comment_cpt_collection": "── Attributes below ported verbatim (same names, same defaults) from sgs/content-collection when that block was folded into this one on 2026-08-01. Names were kept IDENTICAL so migrating an existing sgs/content-collection block is a near-identity attribute map plus source:'cpt-collection'. They are declared here because WordPress silently DISCARDS any attribute a block.json does not declare (D338) — an undeclared port would look correct in render.php and do nothing. Engine: includes/class-cpt-collection-query.php.",
+    "_comment_cpt_collection": "── Attributes below drive the 'cpt-collection' source. They are declared here because WordPress silently DISCARDS any attribute a block.json does not declare (D338) — an undeclared port would look correct in render.php and do nothing. Engine: includes/class-cpt-collection-query.php.",
     "contentType": {
       "type": "string",
       "default": "sgs_product",

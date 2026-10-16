@@ -50,9 +50,8 @@ $fx_url         = 'https://example.test/' . $fx_clean_phone;
 echo esc_url( $fx_url );
 
 // Shape D — a DIRECT binding must NOT be clobbered by a later conditional
-// reassignment from unrelated locals. Real instance: sgs/nav-menu.navLabel
-// (nav-menu/render.php:639,653), which LOST its correct a11y-text assignment
-// on the first cut of multi-hop. $fx_other is deliberately tracked to a
+// reassignment from unrelated locals. A nav label attribute LOST its
+// correct a11y-text assignment on the first cut of multi-hop. $fx_other is deliberately tracked to a
 // DIFFERENT attribute, so a clobbering implementation mis-attributes this
 // aria-label to `fxOtherAttr`. Expect: fxNavLabel resolves a11y-metadata.
 $fx_other     = $attributes['fxOtherAttr'] ?? '';

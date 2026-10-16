@@ -159,8 +159,7 @@ def resolve_block_detailed(block_json, clusters=None):
     # ⚠ The insertion-order fallback was a real defect (found by adversarial review
     # 2026-08-08): two bare-prefix elements declaring the same cluster were separated
     # only by their position in block.json, so REORDERING THE JSON — a content-free
-    # change — silently moved controls between panels. 13 blocks were affected;
-    # `sgs/nav-menu` had 9 attributes hanging on it. A model that claims to be derived
+    # change — silently moved controls between panels. 13 blocks were affected. A model that claims to be derived
     # rather than hand-sorted cannot carry a hidden hand-sort.
     #
     # These ties are NOT resolved by a manufactured rule. They are reported: an

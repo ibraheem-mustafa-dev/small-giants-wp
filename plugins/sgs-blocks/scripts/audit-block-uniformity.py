@@ -29,7 +29,7 @@ if not blocks_dir.exists():
     sys.exit(2)
 
 # Static blocks where source:html is INTENTIONAL (have save.js, not render.php)
-SOURCE_HTML_EXEMPT = {"sgs/certification-bar", "sgs/counter", "sgs/notice-banner"}
+SOURCE_HTML_EXEMPT = {"sgs/counter", "sgs/notice-banner"}
 
 # Blocks intentionally without supports.color.
 #
@@ -41,9 +41,8 @@ SOURCE_HTML_EXEMPT = {"sgs/certification-bar", "sgs/counter", "sgs/notice-banner
 # ROOT, so a PER-ELEMENT colour (a nav link, a burger icon, a close control, a
 # border) physically could not satisfy it, and every such block had to be
 # exempted forever. The list grew 2 → 3 → 4 and one entry's own comment conceded
-# the heuristic was a false positive. As of 2026-08-07 the check is ROLE-KEYED on
-# the Spec 35 element manifest (see colour_findings() below) and all four
-# entries — sgs/nav-menu, sgs/nav-drawer, sgs/mega-panel, sgs/mega-aside — are
+# the heuristic was a false positive. The check is ROLE-KEYED on the Spec 35
+# element manifest (see colour_findings() below), so per-element colour is
 # resolved by the mechanism rather than by exemption.
 SUPPORTS_COLOR_EXEMPT = set()
 
@@ -77,13 +76,10 @@ def _is_colour_attr(attr_name):
     All three ARE mapped by their own manifests to `css:background-color` on an
     `isWrapper: true` element while the block declares no `supports.color`, so
     dropping this pre-filter flags all three immediately (measured, not assumed).
-    Separately, `sgs/nav-menu.navColour` sets `color:` on the block root
-    (render.php:713-725, `$uid_sel`) but its wrapper element does not claim it in
-    `attrMap`, so it is invisible either way.
-    These four are a REAL divergence from the framework norm — sgs/site-header
+    These three are a REAL divergence from the framework norm — sgs/site-header
     and sgs/site-footer carry the same root background through
     `supports.color` + `__experimentalSkipSerialization`. Closing them means
-    migrating three-to-four blocks to native colour supports and wiring the
+    migrating three blocks to native colour supports and wiring the
     scoped serialisation, which is a block migration, not an audit change, and
     this audit runs from the shared pre-commit hook — failing it would block
     every commit in every session until that migration lands. Raise it with Bean

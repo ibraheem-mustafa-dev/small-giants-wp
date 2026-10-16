@@ -788,12 +788,6 @@ def self_test() -> int:
     if not r:
         failures.append("sgs/nav-drawer.sgsCustomCss did not resolve to style-emission")
 
-    # 6. Positive -- sgs/nav-menu.sgsCustomCss: read+merged into $css in one
-    #    line, printed inside <style>...</style>.
-    r = style_emission_evidence("sgs/nav-menu", "sgsCustomCss")
-    if not r:
-        failures.append("sgs/nav-menu.sgsCustomCss did not resolve to style-emission")
-
     # 7. Fabricated attribute name guard, mechanism A -- must resolve to
     #    nothing (name isn't 'anchor' or 'className').
     r = native_support_evidence("sgs/button", "zzzNotARealAttributeName")

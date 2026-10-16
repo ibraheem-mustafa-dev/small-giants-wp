@@ -24,9 +24,8 @@ Usage:
     python survey-colour-coverage.py --self-test    # prove the detector can FAIL
 
 Governing background: this script was commissioned to answer "which colours
-does a block PAINT that the client cannot CHANGE?" The six hand-verified
-targets that grounded its design (sgs/nav-menu's hardcoded [aria-current]
-rule, sgs/accordion's open/hover gap, sgs/tabs' focus-visible gap,
+does a block PAINT that the client cannot CHANGE?" The hand-verified
+targets that grounded its design (sgs/accordion's open/hover gap, sgs/tabs' focus-visible gap,
 sgs/mega-panel's hover/focus gap, sgs/option-picker's hover gap,
 sgs/pricing-table's :checked gap, and sgs/form being the ONE block that
 exposes a focus ring as a setting) are asserted directly in --self-test.

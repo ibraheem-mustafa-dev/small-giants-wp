@@ -581,7 +581,7 @@
         "wave": "W-nav-surface"
       },
       "overlayMenu": {
-        "reason": "Distinct from the 5 surface-colour attrs above: this is the on/off mode toggle for whether mobile uses the overlay/drawer presentation at all (sgs/nav-menu's `<dialog>` drawer is always the mobile mode — no alternate 'default' mobile mode to toggle between). Deferred if an alternate mode is ever wanted.",
+        "reason": "Distinct from the 5 surface-colour attrs above: this is the on/off mode toggle for whether mobile uses the overlay/drawer presentation at all (the `<dialog>` drawer is always the mobile mode — no alternate 'default' mobile mode to toggle between). Deferred if an alternate mode is ever wanted.",
         "wave": "Wave-parity-1"
       },
       "overlayTextColor": {

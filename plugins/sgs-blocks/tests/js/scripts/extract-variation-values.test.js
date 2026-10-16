@@ -80,7 +80,7 @@ describe( 'extract-variation-values', () => {
 
 		test( 'arrow function helper innerBlocks entries', () => {
 			const source = `
-				const navMenu = ( extra = {} ) => [ 'sgs/nav-menu', { ...extra } ];
+				const navMenu = ( extra = {} ) => [ 'sgs/nav-bar-menu', { ...extra } ];
 				const variations = [
 					{
 						name: 'test-arrow',
@@ -97,9 +97,9 @@ describe( 'extract-variation-values', () => {
 			expect( result.variants[ 'test-arrow' ] ).toEqual( {
 				attributes: {},
 				nonLiteralAttrs: [],
-				innerBlockSlugs: [ 'sgs/nav-menu', 'sgs/button' ],
+				innerBlockSlugs: [ 'sgs/nav-bar-menu', 'sgs/button' ],
 				innerBlocks: [
-					{ slug: 'sgs/nav-menu', attributes: {}, nonLiteralAttrs: [] },
+					{ slug: 'sgs/nav-bar-menu', attributes: {}, nonLiteralAttrs: [] },
 					{ slug: 'sgs/button', attributes: { label: 'Go' }, nonLiteralAttrs: [] },
 				],
 				unresolvedInnerBlocks: 0,
@@ -370,7 +370,7 @@ describe( 'extract-variation-values', () => {
 		test( 'mix of literal and function entries in one variation', () => {
 			const source = `
 				function navMenu( extra = {} ) {
-					return [ 'sgs/nav-menu', { gap: '4px', ...extra } ];
+					return [ 'sgs/nav-bar-menu', { gap: '4px', ...extra } ];
 				}
 				const variations = [
 					{
@@ -391,9 +391,9 @@ describe( 'extract-variation-values', () => {
 			expect( result.variants[ 'mixed' ] ).toEqual( {
 				attributes: { drawerBg: 'primary' },
 				nonLiteralAttrs: [],
-				innerBlockSlugs: [ 'sgs/nav-menu', 'sgs/icon-list', 'sgs/text', 'sgs/button' ],
+				innerBlockSlugs: [ 'sgs/nav-bar-menu', 'sgs/icon-list', 'sgs/text', 'sgs/button' ],
 				innerBlocks: [
-					{ slug: 'sgs/nav-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [] },
+					{ slug: 'sgs/nav-bar-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [] },
 					{ slug: 'sgs/icon-list', attributes: {}, nonLiteralAttrs: [] },
 					{ slug: 'sgs/text', attributes: { text: 'Hello' }, nonLiteralAttrs: [] },
 					{ slug: 'sgs/button', attributes: { label: 'Click' }, nonLiteralAttrs: [] },
@@ -406,13 +406,12 @@ describe( 'extract-variation-values', () => {
 	describe( 'child-block attribute extraction (child-attribute-value composition signal)', () => {
 		test( 'a helper spread merges the call arguments over the helper defaults', () => {
 			// The REAL shape of every current SGS variations helper, and the case
-			// the whole signal turns on: sgs/nav-drawer's `two-column-editorial` is
-			// the only variant whose nav-menu sets `listColumns`, and it reaches
-			// the helper through `...extra`. If the spread were not evaluated, that
+			// the whole signal turns on: the only variant whose nav child sets
+			// `listColumns` reaches the helper through `...extra`. If the spread were not evaluated, that
 			// discriminator would silently not exist.
 			const source = `
 				function navMenu( extra = {} ) {
-					return [ 'sgs/nav-menu', { gap: '4px', ...extra } ];
+					return [ 'sgs/nav-bar-menu', { gap: '4px', ...extra } ];
 				}
 				const variations = [
 					{
@@ -433,7 +432,7 @@ describe( 'extract-variation-values', () => {
 			const result = extractFromFixture( source );
 			expect( result.variants[ 'two-column' ].innerBlocks ).toEqual( [
 				{
-					slug: 'sgs/nav-menu',
+					slug: 'sgs/nav-bar-menu',
 					attributes: {
 						gap: '4px',
 						itemFontSize: 64,
@@ -446,7 +445,7 @@ describe( 'extract-variation-values', () => {
 			// the other call's overrides. Were the bindings leaking, both variants
 			// would carry `listColumns` and the discriminator would vanish.
 			expect( result.variants[ 'plain' ].innerBlocks ).toEqual( [
-				{ slug: 'sgs/nav-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [] },
+				{ slug: 'sgs/nav-bar-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [] },
 			] );
 		} );
 
@@ -476,7 +475,7 @@ describe( 'extract-variation-values', () => {
 						name: 'bad-spread',
 						attributes: {},
 						innerBlocks: [
-							[ 'sgs/nav-menu', { gap: '4px', ...somethingUnknown } ],
+							[ 'sgs/nav-bar-menu', { gap: '4px', ...somethingUnknown } ],
 						],
 					},
 				];
@@ -484,7 +483,7 @@ describe( 'extract-variation-values', () => {
 			`;
 			const result = extractFromFixture( source );
 			expect( result.variants[ 'bad-spread' ].innerBlocks ).toEqual( [
-				{ slug: 'sgs/nav-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [ '...' ] },
+				{ slug: 'sgs/nav-bar-menu', attributes: { gap: '4px' }, nonLiteralAttrs: [ '...' ] },
 			] );
 		} );
 
@@ -493,7 +492,7 @@ describe( 'extract-variation-values', () => {
 			// resolves, so the pre-existing composition signal is unaffected.
 			const source = `
 				function odd( { a } ) {
-					return [ 'sgs/nav-menu', { gap: a } ];
+					return [ 'sgs/nav-bar-menu', { gap: a } ];
 				}
 				const variations = [
 					{
@@ -506,9 +505,9 @@ describe( 'extract-variation-values', () => {
 			`;
 			const result = extractFromFixture( source );
 			expect( result.variants[ 'unbindable' ].innerBlocks ).toEqual( [
-				{ slug: 'sgs/nav-menu', attributes: {}, nonLiteralAttrs: [] },
+				{ slug: 'sgs/nav-bar-menu', attributes: {}, nonLiteralAttrs: [] },
 			] );
-			expect( result.variants[ 'unbindable' ].innerBlockSlugs ).toEqual( [ 'sgs/nav-menu' ] );
+			expect( result.variants[ 'unbindable' ].innerBlockSlugs ).toEqual( [ 'sgs/nav-bar-menu' ] );
 		} );
 
 		test( 'an inherited Object.prototype name is never treated as a bound identifier', () => {
@@ -517,7 +516,7 @@ describe( 'extract-variation-values', () => {
 			// bogus attribute value.
 			const source = `
 				function helper( extra = {} ) {
-					return [ 'sgs/nav-menu', { weird: toString } ];
+					return [ 'sgs/nav-bar-menu', { weird: toString } ];
 				}
 				const variations = [
 					{
@@ -530,7 +529,7 @@ describe( 'extract-variation-values', () => {
 			`;
 			const result = extractFromFixture( source );
 			expect( result.variants[ 'proto' ].innerBlocks ).toEqual( [
-				{ slug: 'sgs/nav-menu', attributes: {}, nonLiteralAttrs: [ 'weird' ] },
+				{ slug: 'sgs/nav-bar-menu', attributes: {}, nonLiteralAttrs: [ 'weird' ] },
 			] );
 		} );
 	} );

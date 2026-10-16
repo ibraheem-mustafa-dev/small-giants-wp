@@ -223,8 +223,8 @@ const CHECK_B_BLOCKS_BUILD = true;
 // numberBackgroundHover and its siblings — process-steps' editor canvas
 // has no `:hover` preview mechanism of any kind, so no control on it can
 // ever satisfy this check, new or old. Not a new class of debt.
-// (sgs/product-card's 4 new gradient attrs and sgs/nav-menu.itemBgGradient
-// did NOT need a raise — those elements ARE canvas-previewed already.)
+// (sgs/product-card's 4 new gradient attrs did NOT need a raise — those
+// elements ARE canvas-previewed already.)
 // LOWERED 216 -> 196 (2026-09-05, SSR pass-through-wrapper exemption fix):
 // widening hasServerSideRenderWithAttributes() to accept a single-argument
 // pass-through wrapper (`attributes={ omitNullAttributes( attributes ) }`,

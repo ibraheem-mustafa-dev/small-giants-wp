@@ -148,7 +148,6 @@ ENTRIES = [
     ("sgs/physics-canvas", "physicsGravity", "behaviour", None),
     ("sgs/timeline", "revealStagger", "behaviour", None),
     ("sgs/decorative-image", "pathDrawTriggerOffset", "behaviour", None),
-    ("sgs/nav-menu", "submenuCloseGrace", "behaviour", None),
     ("sgs/form", "rateLimit", "behaviour", None),
 
     # --- E2 Shape 4: frame-count/pad numerics -> technical (canvas-engine config, not
@@ -166,7 +165,6 @@ ENTRIES = [
     ("sgs/countdown-timer", "evergreenMinutes", "behaviour", None),
     ("sgs/google-reviews", "maxReviews", "behaviour", None),
     ("sgs/icon-list", "menuRef", "technical", None),
-    ("sgs/nav-menu", "ref", "technical", None),
     ("sgs/responsive-logo", "logoSwitchCustomPx", "styling", None),
     ("sgs/responsive-logo", "svgAnimationSource", "technical", None),
     ("sgs/separator", "gradientAngle", "styling", None),

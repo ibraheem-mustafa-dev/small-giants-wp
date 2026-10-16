@@ -67,7 +67,7 @@
     "confidence": 0.8,
     "value": "#c56a7a",
     "reason": "name-tiebreak 'primary-dark'→primary-dark (usage role link-colour conf 0.80)",
-    "usage": "color on link-selector (.sgs-announcement-bar--send-to-ward a)",
+    "usage": "color on link-selector",
     "aliases": "",
     "delta_e_snap": 0.0
   },

@@ -108,60 +108,6 @@ CORRECTIONS: dict[str, str] = {
 # apply loop are removed; there is no column left to override.
 # ---------------------------------------------------------------------------
 
-# Orphan REMOVALS (2026-09-17, Spec 45 Tier 3 qc-council follow-up — parking entry
-# P-SPEC45-DEAD-BLOCK-COMPOSITION-PARENT-ROWS). These 7 rows reference blocks with
-# no row in `blocks` at all AND no source directory under src/blocks/ — fully
-# deleted/renamed blocks whose block_composition row was never cleaned up.
-# blocks.is_stale exists but is 0 for every row (not used as this signal today).
-# Confirmed live 2026-09-17: zero of these 7 slugs have a src/blocks/<slug> directory.
-# Spec 45's Tier 3 orphan filter (classless_field_resolver.py::_blocks_row_exists)
-# already drops any of these if they appear as a CANDIDATE slug inside another
-# parent's accepts_allowed_blocks — this removal cleans up the source rows
-# themselves so they stop being reachable as a Tier 3 PARENT too (empty/gap
-# outcome either way, but a clean table is easier to reason about than a
-# silently-tolerated orphan roster).
-# Idempotent: only deletes when the row is present AND still resolves to no
-# `blocks` row (re-running after a legitimate revival of one of these slugs is a
-# safe no-op for that slug).
-# ⚠ Two of the original 7 (`sgs/content-collection`, `sgs/adaptive-nav`) are
-# DELIBERATELY EXCLUDED from this tuple — both are still actively re-inserted by
-# this file's own INSERTS list below, with real dated rationale describing them
-# as planned/superseded work, not accidental leftovers. Deleting + immediately
-# re-inserting on every run is churn with no effect; their staleness is flagged
-# as an inline comment on each INSERT entry instead (see below) rather than
-# fought here. Only the 5 slugs with no other defender in this file are removed.
-ORPHAN_REMOVALS: tuple[str, ...] = (
-    "sgs/divider",
-    "sgs/mega-menu",
-    "sgs/mobile-nav",
-    "sgs/mobile-nav-toggle",
-    "sgs/nav-menu",
-)
-
-# accepts_allowed_blocks CORRECTIONS (2026-09-17, same-session self-caught regression).
-# The FIRST run of the ORPHAN_REMOVALS pass above (before sgs/adaptive-nav was excluded
-# from it) deleted sgs/adaptive-nav's row, and the SAME run's step 2 (INSERTS) then
-# re-created it from this file's own stale in-file default
-# (accepts_allowed_blocks=None, below) rather than its real live value
-# ("[\"sgs/mega-menu\"]", confirmed present in this same session's earlier direct query,
-# before any script ran). Real data was silently replaced by a stale default —
-# undetected until Spec 44 Task 1's test suite failed on it. Fixed here as a genuine,
-# reproducible CORRECTION (not a one-off manual UPDATE) and the INSERTS entry below is
-# corrected to match, so a future delete-then-reinsert cycle can't regress this again.
-ACCEPTS_ALLOWED_BLOCKS_CORRECTIONS: dict[str, str] = {
-    "sgs/adaptive-nav": '["sgs/mega-menu"]',
-}
-
-# Slug RENAMES (2026-06-02, Workstream A — D150). The block_composition table
-# carries the pre-D123 slug `sgs/trust-badges`; the block was renamed to
-# `sgs/trust-bar`. Rename the row (preserving its composition_role).
-# has_inner_blocks is no longer a column on this table (dropped Step 16) — it
-# is derived fresh at convert-time for sgs/trust-bar like every other block.
-# Idempotent: only renames when the old row exists and the new one does not.
-RENAMES: dict[str, str] = {
-    "sgs/trust-badges": "sgs/trust-bar",
-}
-
 # Fresh INSERTS (2026-06-02, Workstream A — D150). Blocks added after the
 # block_composition table was seeded (D108, 188 rows) and therefore missing a
 # row. Without a row, sync-container-wrapping-blocks.py --apply silently skips
@@ -174,25 +120,6 @@ RENAMES: dict[str, str] = {
 INSERTS: list[dict] = [
     {
         "block_slug": "sgs/option-picker",
-        "wraps_block": None,
-        "composition_role": "content-block",
-        "accepts_allowed_blocks": None,
-    },
-    {
-        # Added 2026-06-04 — the 29th container-roster block (layout KIND).
-        # Query-driven grid (own WP_Query renders Bound product-cards server-side,
-        # NO InnerBlocks) → matches its layout-grid peers post-grid/card-grid/gallery.
-        # wraps_block + container_kind='layout' are set by
-        # sync-container-wrapping-blocks.py --apply.
-        # ⚠ STALE AS OF 2026-09-17 (Spec 45 Tier 3 qc-council follow-up): no
-        # `blocks` table row and no `src/blocks/content-collection/` directory
-        # exist today — this block was never actually built. Kept in INSERTS
-        # rather than deleted because the row describes real, still-plausible
-        # planned scope (not an accidental leftover) — but treat this as a
-        # planning placeholder, not evidence the block exists. If this is
-        # confirmed abandoned rather than merely not-yet-built, remove this
-        # INSERT entry and move the slug into ORPHAN_REMOVALS above instead.
-        "block_slug": "sgs/content-collection",
         "wraps_block": None,
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
@@ -252,34 +179,6 @@ INSERTS: list[dict] = [
         "wraps_block": None,
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
-    },
-    {
-        # sgs/adaptive-nav (2026-07-13, Spec 17 §S9 / FR-S9-4) — layout-KIND nav
-        # container; renders the desktop bar from one wp_navigation source + collapses
-        # to the drawer. Replaces core/navigation in the header. Mirrors
-        # site-header-row (content-block). wraps_block + container_kind='layout' set
-        # by sync-container-wrapping-blocks.py --apply.
-        # ⚠ STALE AS OF 2026-09-17 (Spec 45 Tier 3 qc-council follow-up): no
-        # `blocks` table row and no `src/blocks/adaptive-nav/` directory exist
-        # today. Real nav blocks that DO exist: sgs/nav-bar-menu,
-        # sgs/nav-drawer, sgs/nav-drawer-menu — this design likely shipped
-        # under one or more of those names instead. Kept in INSERTS rather
-        # than deleted because the DB row is currently harmless (Spec 45's
-        # Tier 3 orphan filter already gates it out wherever it's reachable as
-        # a candidate) and re-litigating which of the 3 real nav blocks
-        # supersedes this row is bigger scope than a DB cleanup. If confirmed
-        # superseded, remove this INSERT entry and move the slug into
-        # ORPHAN_REMOVALS above instead.
-        # ⚠ accepts_allowed_blocks corrected 2026-09-17 to match the row's real
-        # live value ('["sgs/mega-menu"]') after a same-session incident where a
-        # delete-then-reinsert cycle silently replaced it with this INSERT
-        # entry's stale None default — see ACCEPTS_ALLOWED_BLOCKS_CORRECTIONS
-        # above, which is the actual reproducible fix; this default is corrected
-        # too so it can never regress the same way twice.
-        "block_slug": "sgs/adaptive-nav",
-        "wraps_block": None,
-        "composition_role": "content-block",
-        "accepts_allowed_blocks": '["sgs/mega-menu"]',
     },
     {
         # sgs/site-footer (2026-07-13, Spec 17 §S9 / FR-S9-3, D325) — section-KIND
@@ -527,75 +426,6 @@ def main() -> int:
     con = sqlite3.connect(str(DB_PATH))
     cur = con.cursor()
     changed = 0
-
-    # 0. Orphan REMOVALS (idempotent — only when the row is present AND still
-    #    resolves to no `blocks` row; a legitimate future revival of one of
-    #    these slugs makes this a safe no-op for it).
-    if ORPHAN_REMOVALS:
-        placeholders = ",".join("?" for _ in ORPHAN_REMOVALS)
-        real_rows = {
-            r[0]
-            for r in cur.execute(
-                f"SELECT slug FROM blocks WHERE slug IN ({placeholders})",  # noqa: S608
-                ORPHAN_REMOVALS,
-            )
-        }
-        for slug in ORPHAN_REMOVALS:
-            if slug in real_rows:
-                print(f"  [skip] orphan-removal {slug}: now a real block, not an orphan")
-                continue
-            cur.execute(
-                "DELETE FROM block_composition WHERE block_slug = ?", (slug,)
-            )
-            if cur.rowcount:
-                print(f"  [del]  orphan block_composition row: {slug}")
-                changed += cur.rowcount
-            else:
-                print(f"  [ok]   orphan-removal {slug}: row already absent")
-
-    # 0.5. accepts_allowed_blocks CORRECTIONS (idempotent — only writes when the
-    #      live value differs; skips silently if the row itself is absent, since
-    #      INSERTS below is what creates it, now with the corrected default).
-    for slug, correct_value in ACCEPTS_ALLOWED_BLOCKS_CORRECTIONS.items():
-        row = cur.execute(
-            "SELECT accepts_allowed_blocks FROM block_composition WHERE block_slug = ?",
-            (slug,),
-        ).fetchone()
-        if row is None:
-            print(f"  [skip] accepts_allowed_blocks correction {slug}: no row yet")
-            continue
-        if row[0] == correct_value:
-            print(f"  [ok]   accepts_allowed_blocks {slug}: already correct")
-            continue
-        cur.execute(
-            "UPDATE block_composition SET accepts_allowed_blocks = ? WHERE block_slug = ?",
-            (correct_value, slug),
-        )
-        changed += cur.rowcount
-        print(f"  [set]  accepts_allowed_blocks {slug}: {row[0]!r} -> {correct_value!r}")
-
-    # 1. Slug RENAMES (idempotent — only when old row exists and new does not).
-    #    has_inner_blocks is not a block_composition column any more (dropped
-    #    EXECUTION Step 16) — nothing to set here for the renamed target.
-    for old_slug, new_slug in RENAMES.items():
-        old = cur.execute(
-            "SELECT 1 FROM block_composition WHERE block_slug = ?", (old_slug,)
-        ).fetchone()
-        new = cur.execute(
-            "SELECT 1 FROM block_composition WHERE block_slug = ?", (new_slug,)
-        ).fetchone()
-        if new is not None:
-            print(f"  [ok]   rename {old_slug} -> {new_slug}: target already present")
-            continue
-        if old is None:
-            print(f"  [skip] rename {old_slug} -> {new_slug}: source row absent")
-            continue
-        cur.execute(
-            "UPDATE block_composition SET block_slug = ? WHERE block_slug = ?",
-            (new_slug, old_slug),
-        )
-        print(f"  [set]  rename {old_slug} -> {new_slug}")
-        changed += cur.rowcount
 
     # 1b. HAS_INNER_BLOCKS_OVERRIDES step REMOVED (EXECUTION Step 16) — the
     #     column it wrote no longer exists.

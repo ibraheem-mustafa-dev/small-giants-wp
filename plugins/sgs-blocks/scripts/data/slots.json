@@ -224,7 +224,7 @@
       "separator",
       "element",
       "[\"card-sep\", \"divider\", \"line\", \"rule\", \"shape\", \"wave\"]",
-      "sgs/divider",
+      "sgs/separator",
       "Visual divider",
       null,
       null

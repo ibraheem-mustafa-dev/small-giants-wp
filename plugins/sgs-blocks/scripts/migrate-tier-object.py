@@ -760,13 +760,13 @@ def _object_typed_blocks(prop: str) -> set:
     solved this exact false-positive class once for the S4 (theme-pattern) leg of this
     migration and its docstring is the canonical record:
 
-    'sgs/nav-menu declares `gap` as plain `"type":"string"` with NO Tablet/Mobile
+    'sgs/icon-list declares `gap` as plain `"type":"string"` with NO Tablet/Mobile
     siblings ever — its `"gap":"8px"` is correct AS-IS'.
 
     D574 (2026-08-11, coordinator review, second correction same day): the S3/shared-
     include hazard scanner built earlier this session had the IDENTICAL blind spot —
-    `RAW_CAST` fired on `nav-menu/render.php:1501`'s `(string) $attributes['gap']` even
-    though `sgs/nav-menu`'s own block.json declares `gap` as a plain string, never
+    `RAW_CAST` fired on a `(string) $attributes['gap']` cast even
+    though `sgs/icon-list`'s own block.json declares `gap` as a plain string, never
     object-typed, never part of this migration. A `(string)` cast on a genuinely
     string-typed attribute is correct code, not a hazard. Gating every hazard kind on
     this function closes that blind spot the same way S4 already closed it for theme
@@ -791,7 +791,7 @@ def _block_slug_for_path(path: Path):
     `path` is not a block's own render.php — a shared include (`includes/*.php`), or a
     self-test fixture file with no adjacent block.json. Used to pick the correct
     object-typed scope: a BLOCK's own render.php is scoped to THAT block's own schema
-    (nav-menu's `gap` is a plain string there, full stop); a SHARED include has no single
+    (icon-list's `gap` is a plain string there, full stop); a SHARED include has no single
     owner, so it's scoped to the UNION — does ANY block declare this prop object-typed
     (coordinator's explicit instruction: keep the two scopes distinct, or the wrapper
     blind spot this session already closed reopens)."""
@@ -824,7 +824,7 @@ def file_hazard_state(path: Path, prop: str, declared_siblings: set, object_type
     is THAT block's own schema; a `(string)` cast is only a hazard if that block's own
     `gap`/`fontSize`/etc is object-typed. For a SHARED include (no owning block), the
     scope is the UNION — is `prop` object-typed in ANY block at all — because the shared
-    code might be reached by such a block. Without this, `sgs/nav-menu`'s plain-string
+    code might be reached by such a block. Without this, `sgs/icon-list`'s plain-string
     `gap` (`"type":"string"`, never grew Tablet/Mobile siblings, never part of this
     migration) false-positived `RAW_CAST` on its own correct `(string)
     $attributes['gap']` cast — the exact class of bug `migrate-theme-tier-scalars.py`
@@ -957,15 +957,14 @@ def _strip_php_comments(src: str) -> str:
     unit — the embedded `/*`/`*/` substrings inside that match are never re-examined.
 
     ⛔ **A second real bug, found immediately after the first while sanity-checking
-    reported line numbers against a real file (nav-menu/render.php — D574).** A
+    reported line numbers against a real file (D574).** A
     multi-line `/* … */` block comment being deleted OUTRIGHT removes its own internal
     newlines along with it, so every line AFTER that comment shifts upward in the
     stripped text relative to the real file. `_scan_file_for_hazards()` computes its
     reported `line` by counting `\n` in the STRIPPED text up to the match — so once any
     multi-line comment precedes a hazard, the reported line number is simply wrong.
-    Measured: a `(string) $attributes['gap']` cast that is really at
-    nav-menu/render.php:1501 was first reported as line 977 — 524 lines short, entirely
-    attributable to the multi-line comments stripped ahead of it. Fixed by replacing each
+    Measured: a `(string) $attributes['gap']` cast was first reported 524 lines short,
+    entirely attributable to the multi-line comments stripped ahead of it. Fixed by replacing each
     matched comment with an equal COUNT of bare newlines (via a replacement function,
     not the empty string) rather than deleting it — the code content is still gone, but
     line alignment with the real file is preserved exactly."""
@@ -1606,8 +1605,8 @@ def self_test() -> int:
         # --- regression control: a MULTI-LINE /* */ comment must not shift line numbers
         # for hazards reported after it. This is a SECOND real bug found + fixed during
         # this pass, discovered by sanity-checking a reported line number against the real
-        # file — nav-menu/render.php's genuine `(string) $attributes['gap']` cast is at
-        # line 1501, but was first reported as line 977 (524 lines short) purely because
+        # file — a genuine `(string) $attributes['gap']` cast was first reported 524
+        # lines short purely because
         # multi-line comments earlier in the file had their internal newlines deleted
         # along with their text. ---
         multiline_comment_fixture = (
@@ -1627,8 +1626,8 @@ def self_test() -> int:
             Path(td, 'test-multiline-comment', 'x.php'), 'gap', declared_siblings=set())
         check('_strip_php_comments(): a hazard AFTER a multi-line /* */ comment reports '
               'its REAL line number (8), not one shifted by the comment\'s deleted '
-              'internal newlines (confirmed against nav-menu/render.php\'s real '
-              '977-vs-1501 drift before this fix)',
+              'internal newlines (confirmed against a real file\'s '
+              '524-line drift before this fix)',
               any(h['line'] == 8 for h in hazards_ml))
 
         # --- end-to-end proof against REAL git history: the wrapper's actual pre-fix
@@ -1754,12 +1753,12 @@ def self_test() -> int:
 
         # === Second coordinator-review correction (2026-08-11, same day) ====
         # `gap --check` STILL false-failed after the first correction — this time citing
-        # nav-menu/render.php:1501's `(string) $attributes['gap']`. Confirmed against the
-        # schema: sgs/nav-menu declares `gap` as plain `{"type":"string","default":"8px"}`
+        # a `(string) $attributes['gap']` cast. Confirmed against the
+        # schema: sgs/icon-list declares `gap` as plain `{"type":"string","default":"8px"}`
         # — never object-typed, never grew Tablet/Mobile siblings, never part of this
         # migration at all. This is the IDENTICAL false-positive class
         # migrate-theme-tier-scalars.py already solved once for its own S4 leg (its own
-        # docstring names sgs/nav-menu's `gap` as the exact real example it was built
+        # docstring names sgs/icon-list's `gap` as the exact real example it was built
         # against). Fixed here by `_object_typed_blocks(prop)` — mirroring that function's
         # name and contract exactly — scoping every hazard to "can this property actually
         # hold an array AT THIS SCOPE", per-block for a block's own render.php, union for
@@ -1768,28 +1767,28 @@ def self_test() -> int:
         # --- ground the fix in the REAL schema, not an assumption ---
         gap_object_typed = _object_typed_blocks('gap')
         check('_object_typed_blocks(\'gap\') against the REAL repo does NOT include '
-              '"sgs/nav-menu" (its block.json declares gap as plain "type":"string", '
+              '"sgs/icon-list" (its block.json declares gap as plain "type":"string", '
               'confirmed via direct read, never object-typed)',
-              'sgs/nav-menu' not in gap_object_typed)
+              'sgs/icon-list' not in gap_object_typed)
         check('_object_typed_blocks(\'gap\') against the REAL repo DOES include at least '
               'one block (e.g. sgs/container/sgs/hero — gap genuinely migrated to object '
               'for the blocks that use SGS_Container_Wrapper) — proves the function finds '
-              'real object-typed blocks, not just correctly excluding nav-menu',
+              'real object-typed blocks, not just correctly excluding icon-list',
               len(gap_object_typed) > 0)
 
-        # --- positive control: the REAL nav-menu/render.php, real block.json, must NOT
-        # classify RAW for "gap" any more ---
-        nav_menu_rp = Path('plugins/sgs-blocks/src/blocks/nav-menu/render.php')
-        nav_menu_slug = _block_slug_for_path(nav_menu_rp)
-        check('_block_slug_for_path resolves nav-menu/render.php to its real block.json '
-              'name ("sgs/nav-menu")', nav_menu_slug == 'sgs/nav-menu')
+        # --- positive control: the REAL icon-list/render.php, real block.json, must NOT
+        # classify RAW for "gap" ---
+        icon_list_rp = Path('plugins/sgs-blocks/src/blocks/icon-list/render.php')
+        icon_list_slug = _block_slug_for_path(icon_list_rp)
+        check('_block_slug_for_path resolves icon-list/render.php to its real block.json '
+              'name ("sgs/icon-list")', icon_list_slug == 'sgs/icon-list')
         nav_state, nav_hazards = file_hazard_state(
-            nav_menu_rp, 'gap', declared_siblings=declared_siblings('gap'))
-        check('coordinator-fix #2: the REAL nav-menu/render.php no longer classifies RAW '
-              'for "gap" (its own schema declares gap as a plain string — the '
-              '(string) cast at line 1501 is correct code, not a hazard)',
+            icon_list_rp, 'gap', declared_siblings=declared_siblings('gap'))
+        check('coordinator-fix #2: the REAL icon-list/render.php does not classify RAW '
+              'for "gap" (its own schema declares gap as a plain string — a '
+              '(string) cast there is correct code, not a hazard)',
               nav_state != 'RAW')
-        check('coordinator-fix #2: nav-menu/render.php now reports ZERO hazard findings '
+        check('coordinator-fix #2: icon-list/render.php reports ZERO hazard findings '
               'for "gap" (not merely downgraded to informational — genuinely out of scope, '
               'so nothing is printed by --survey either)',
               len(nav_hazards) == 0)
@@ -1799,7 +1798,7 @@ def self_test() -> int:
         # object-typed must still be flagged for the identical unguarded-cast shape.
         # Built from a synthetic block.json (mirrors a real object-typed block like
         # sgs/hero) paired with a heading-style unguarded cast, proving the scope gate is
-        # precise (excludes nav-menu) rather than blunt (excludes everything). ---
+        # precise (excludes icon-list) rather than blunt (excludes everything). ---
         d11 = Path(td) / 'test-fake-block' / 'fake-block'
         d11.mkdir(parents=True)
         (d11 / 'block.json').write_text(
@@ -1821,7 +1820,7 @@ def self_test() -> int:
             object_typed_blocks={'sgs/fake-block'})
         check('negative control: a block whose OWN block.json DOES declare "gap" as '
               'object-typed still fires RAW_CAST on the identical unguarded (string) cast '
-              '— the scope gate excludes nav-menu specifically, not RAW_CAST detection '
+              '— the scope gate excludes icon-list specifically, not RAW_CAST detection '
               'generally',
               fake_state == 'RAW'
               and any(h['kind'] == 'RAW_CAST' for h in fake_hazards))
@@ -1833,7 +1832,7 @@ def self_test() -> int:
             if any(h['kind'] in _LIVE_HAZARD_KINDS for h in f['hazards'])
         ]
         check('coordinator-fix #2 end-to-end: "gap" has ZERO live hazard findings '
-              'anywhere in the real repo (nav-menu\'s false positive is gone, and no '
+              'anywhere in the real repo (the plain-string false positive is gone, and no '
               'other live hazard was masked by the scope gate)',
               len(gap_live) == 0)
 

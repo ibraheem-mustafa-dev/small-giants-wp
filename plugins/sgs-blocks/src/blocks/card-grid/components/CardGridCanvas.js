@@ -28,7 +28,7 @@ export default function CardGridCanvas( { attributes, isWcProductMode, isCptColl
 		<>
 			{ /* Card-delegating modes (WooCommerce products / CPT collection): live
 			     server-side preview, so the operator sees the real query result —
-			     the same pattern sgs/content-collection used before the fold. */ }
+			     the same server-side preview pattern for both modes. */ }
 			{ isWcProductMode || isCptCollectionMode ? (
 				<div { ...blockProps }>
 					{ pageButtonPreviewCss && <style>{ pageButtonPreviewCss }</style> }

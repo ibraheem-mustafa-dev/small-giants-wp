@@ -107,7 +107,7 @@ function setup(): void {
 	 * A block theme does NOT expose Appearance → Menus unless it declares this
 	 * support — without it nav-menus.php fatals with "Your theme does not support
 	 * navigation menus or widgets". Spec 36 FR-36-1 makes classic menus the PRIMARY
-	 * menu-data path for the nav system (sgs/nav-menu), so the screen must be
+	 * menu-data path for the nav system (sgs/nav-bar-menu), so the screen must be
 	 * reachable on every SGS site.
 	 */
 	add_theme_support( 'menus' );
@@ -528,7 +528,7 @@ function enqueue_styles(): void {
 	);
 
 	// Mobile navigation (burger + off-canvas drawer) is owned entirely by the
-	// sgs/nav-drawer block (FR-37-21 — sgs/adaptive-nav + sgs/mega-menu retired).
+	// sgs/nav-bar-menu (burger) and sgs/nav-drawer blocks.
 	// CSS and JS load automatically via block.json — no theme-level enqueue.
 
 	// Header behaviour (sticky / transparent-on-scroll / shrink) is owned by the

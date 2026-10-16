@@ -113,21 +113,21 @@ def test_stale_css_element_is_cleared_when_classifier_drops_it():
 
 
 def test_stale_css_tier_is_cleared_when_classifier_drops_it():
-    """POSITIVE CONTROL — the second proven-stale column (mirrors the real
-    sgs/nav-menu.gap finding, attr_type='string' so the narrower object_tier_fossils
+    """POSITIVE CONTROL — the second proven-stale column (a real
+    stale-tier shape, attr_type='string' so the narrower object_tier_fossils
     cleanup does not reach it)."""
     conn = _make_db()
     conn.execute(
         "INSERT INTO block_attributes (block_slug, attr_name, attr_type, css_tier) "
-        "VALUES ('sgs/nav-menu', 'gap', 'string', 'desktop')"
+        "VALUES ('sgs/icon-list', 'gap', 'string', 'desktop')"
     )
     conn.commit()
 
-    fake_layer1 = {("sgs/nav-menu", "gap"): {"css_property": "gap"}}
+    fake_layer1 = {("sgs/icon-list", "gap"): {"css_property": "gap"}}
     _run_apply_with_fake_layer1(conn, fake_layer1)
 
     row = conn.execute(
-        "SELECT css_tier FROM block_attributes WHERE block_slug='sgs/nav-menu' AND attr_name='gap'"
+        "SELECT css_tier FROM block_attributes WHERE block_slug='sgs/icon-list' AND attr_name='gap'"
     ).fetchone()
     assert row[0] is None, "css_tier must be cleared once the classifier stops claiming a tier"
 

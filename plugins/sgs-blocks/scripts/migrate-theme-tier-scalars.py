@@ -63,7 +63,7 @@ def _object_typed_blocks(prop: str) -> set:
     block has ALREADY moved to the object shape at the schema level (S1 runs before
     S4, by design) — otherwise a scalar `prop` in a theme file isn't stale data, it's
     simply a block that never had a Tablet/Mobile family for this property at all.
-    Confirmed the failure mode this guards against is real, not theoretical: sgs/nav-menu
+    Confirmed the failure mode this guards against is real, not theoretical: sgs/icon-list
     declares `gap` as plain `"type":"string"` with NO Tablet/Mobile siblings ever — its
     theme-authored `"gap":"8px"` is correct AS-IS, and folding it to `{"desktop":"8px"}`
     would make WordPress silently discard the whole value on load (shape mismatch against
@@ -111,7 +111,7 @@ def classify(attrs: dict, prop: str, object_typed_blocks: set, block_name: str):
     """Same three shapes as migrate-tier-object.py's classify(), applied to VALUES
     (this is authored content, not a schema) rather than type declarations. GATED on
     the block's OWN block.json already declaring `prop` as object-typed — a scalar
-    value for a block that never had a Tablet/Mobile family (e.g. sgs/nav-menu's `gap`)
+    value for a block that never had a Tablet/Mobile family (e.g. sgs/icon-list's `gap`)
     is correct as-authored, not a migration target. See `_object_typed_blocks` docstring
     for the real instance this caught."""
     if block_name not in object_typed_blocks:
@@ -240,21 +240,21 @@ def self_test() -> int:
               n == 0 and f.read_text(encoding='utf-8') == original)
 
     # Negative control: a REAL bug found while proving this tool against live data —
-    # sgs/nav-menu declares `gap` as plain "type":"string" with NO Tablet/Mobile
+    # sgs/icon-list declares `gap` as plain "type":"string" with NO Tablet/Mobile
     # siblings ever declared. A scalar `gap` value on THAT block must NOT be folded —
     # its own block.json was never migrated to object, so wrapping it in {desktop:...}
     # would make WordPress silently discard the value on load (shape mismatch). This
-    # exact case produced 7 false "un-migrated" findings on the real theme tree before
+    # case produced false "un-migrated" findings on the real theme tree before
     # the object-typed-block gate (_object_typed_blocks) was added.
-    check("negative control: sgs/nav-menu's own gap is NOT object-typed in its "
+    check("negative control: sgs/icon-list's own gap is NOT object-typed in its "
           "block.json (the real block this bug was found against)",
-          'sgs/nav-menu' not in _object_typed_blocks('gap'))
+          'sgs/icon-list' not in _object_typed_blocks('gap'))
     with tempfile.TemporaryDirectory() as td:
-        f = Path(td) / 'nav-menu-fixture.php'
-        original = '<!-- wp:sgs/nav-menu {"gap":"8px"} -->\n'
+        f = Path(td) / 'icon-list-fixture.php'
+        original = '<!-- wp:sgs/icon-list {"gap":"8px"} -->\n'
         f.write_text(original, encoding='utf-8')
         n, err = apply_file(f, 'gap', apply=True)
-        check("negative control: sgs/nav-menu's un-tiered gap is left untouched, "
+        check("negative control: sgs/icon-list's un-tiered gap is left untouched, "
               "not wrapped into an object the block's schema doesn't declare",
               n == 0 and f.read_text(encoding='utf-8') == original)
 

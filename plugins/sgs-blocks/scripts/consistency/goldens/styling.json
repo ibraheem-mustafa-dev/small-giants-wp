@@ -123,7 +123,7 @@
      "evidence": "roster.json blocks[].qualifies.replacedCoreSupports includes 'typography' (WP core family name matches the schema key literally — no FAMILY_BY_CONTROL_TYPE entry needed).",
      "command": "node -e \"const r=require('./roster.json'); console.log(r.blocks.filter(b=>(b.qualifies&&b.qualifies.replacedCoreSupports||[]).includes('typography')).map(b=>b.slug))\"",
      "measured2026_08_19": {
-      "count": 16,
+      "count": 15,
       "blocks": [
        "sgs/accordion",
        "sgs/accordion-item",
@@ -134,7 +134,6 @@
        "sgs/heading",
        "sgs/hero",
        "sgs/multi-button",
-       "sgs/nav-menu",
        "sgs/post-grid",
        "sgs/quote",
        "sgs/tab",
@@ -212,7 +211,7 @@
     "featureParity": {
      "evidence": "roster.json blocks[].qualifies.replacedCoreSupports includes 'spacing'.",
      "measured2026_08_19": {
-      "count": 23,
+      "count": 22,
       "blocks": [
        "sgs/accordion",
        "sgs/accordion-item",
@@ -227,7 +226,6 @@
        "sgs/icon",
        "sgs/media",
        "sgs/multi-button",
-       "sgs/nav-menu",
        "sgs/post-grid",
        "sgs/quote",
        "sgs/responsive-logo",
