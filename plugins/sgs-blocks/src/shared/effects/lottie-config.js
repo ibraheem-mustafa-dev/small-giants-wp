@@ -43,7 +43,7 @@ export function isLayer( el ) {
  * @param {Element} el
  * @return {number} Speed, 1 when nothing is stored.
  */
-function readSpeed( el ) {
+export function readSpeed( el ) {
 	const computed = parseFloat(
 		window.getComputedStyle( el ).getPropertyValue( '--sgs-lottie-speed' )
 	);

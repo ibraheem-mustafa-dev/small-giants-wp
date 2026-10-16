@@ -16,6 +16,7 @@ jest.mock( '../../src/shared/effects/lottie-adapter.js', () => ( {
 			play: jest.fn(),
 			pause: jest.fn(),
 			seek: jest.fn(),
+			setSpeed: jest.fn(),
 			destroy: jest.fn(),
 		};
 		mockPlayers.push( player );
@@ -259,6 +260,81 @@ describe( 'values', () => {
 		boot();
 		await settle();
 		expect( mockInits[ 0 ].speed ).toBe( 2 );
+	} );
+
+	describe( 'speed per breakpoint', () => {
+		let tierSpeed;
+		let realComputed;
+
+		/** Make the computed `--sgs-lottie-speed` follow `tierSpeed`, as the emitter's media queries do. */
+		function followTier( el ) {
+			realComputed = window.getComputedStyle;
+			window.getComputedStyle = ( node ) =>
+				node === el
+					? {
+							getPropertyValue: ( n ) =>
+								n === '--sgs-lottie-speed' ? tierSpeed : '',
+					  }
+					: realComputed( node );
+		}
+
+		/** Cross a breakpoint: fire every loop-control breakpoint query's change listeners. */
+		function crossBreakpoint() {
+			[ '(max-width: 1023px)', '(max-width: 767px)' ].forEach( ( text ) =>
+				query( text ).listeners.forEach( ( listener ) => listener() )
+			);
+		}
+
+		afterEach( () => {
+			window.getComputedStyle = realComputed;
+		} );
+
+		test( 'crossing a breakpoint re-applies the new tier speed to the live player', async () => {
+			tierSpeed = '2';
+			const { el } = layer( 'data-sgs-fx-trigger="load"' );
+			followTier( el );
+			boot();
+			await settle();
+			expect( mockInits[ 0 ].speed ).toBe( 2 );
+
+			tierSpeed = '0.5';
+			crossBreakpoint();
+			expect( lastPlayer().setSpeed ).toHaveBeenLastCalledWith( 0.5 );
+		} );
+
+		test( 'a tier change before the player is created is read when it is created', async () => {
+			tierSpeed = '2';
+			const { el } = layer( 'data-sgs-fx-trigger="visible"' );
+			followTier( el );
+			boot();
+			tierSpeed = '0.5';
+			crossBreakpoint();
+			report( el, true );
+			await settle();
+			expect( mockInits[ 0 ].speed ).toBe( 0.5 );
+		} );
+
+		test( 'NEGATIVE CONTROL: with no breakpoint crossed the player speed is never re-set', async () => {
+			tierSpeed = '2';
+			const { el } = layer( 'data-sgs-fx-trigger="load"' );
+			followTier( el );
+			boot();
+			await settle();
+			tierSpeed = '0.5';
+			expect( lastPlayer().setSpeed ).not.toHaveBeenCalled();
+		} );
+
+		test( 'cleanup stops listening to the breakpoints', async () => {
+			tierSpeed = '2';
+			const { el } = layer( 'data-sgs-fx-trigger="load"' );
+			followTier( el );
+			boot();
+			await settle();
+			window.dispatchEvent( new Event( 'pagehide' ) );
+			tierSpeed = '0.5';
+			crossBreakpoint();
+			expect( lastPlayer().setSpeed ).not.toHaveBeenCalled();
+		} );
 	} );
 
 	test( 'the layer element is given the overlay class; a legacy span is not', async () => {

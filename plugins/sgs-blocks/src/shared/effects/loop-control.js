@@ -56,7 +56,7 @@ export { parseTime, parseLength, readLoopTiming } from './loop-timing';
 const ROOT_SELECTOR = '[class*="wp-block-sgs-"]';
 const PAUSED_ATTR = 'data-sgs-loop-paused';
 const DEFAULT_LABEL = 'Pause animation';
-const BREAKPOINTS = [ '(max-width: 1023px)', '(max-width: 767px)' ];
+export const BREAKPOINTS = [ '(max-width: 1023px)', '(max-width: 767px)' ];
 
 /** The root's shared state, kept for the life of the page so a root registered again reuses its listeners. */
 const groups = new WeakMap();

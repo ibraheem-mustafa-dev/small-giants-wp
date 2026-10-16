@@ -3320,6 +3320,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// Still opt-in only: it applies CSS containment, which is not behaviour-neutral.
 				if ( $container_queries ) {
 					$responsive_css .= $obj_outer_sel . '{container-type:inline-size}';
+					// Size containment leaves the outer no content width, so where a parent gives it auto
+					// margins (a flex column or grid cell) it would shrink to 0px. A stretch width fills the
+					// parent less the outer's own margins (width:100% would overflow by a set margin). The
+					// :where() wrapper keeps it at zero specificity so any width the block sets overrides it.
+					$responsive_css .= ':where(' . $obj_outer_sel . '){width:-webkit-fill-available;width:-moz-available;width:stretch;box-sizing:border-box}';
 				}
 
 				/**

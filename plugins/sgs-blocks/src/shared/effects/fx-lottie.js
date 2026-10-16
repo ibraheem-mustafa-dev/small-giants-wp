@@ -25,8 +25,14 @@
 
 import { init as playerInit } from './lottie-adapter.js';
 import { prefersReducedMotion, rafThrottle } from '../effects/motion-utils.js';
-import { readConfig, scrollProgress, isLayer } from './lottie-config.js';
+import {
+	readConfig,
+	readSpeed,
+	scrollProgress,
+	isLayer,
+} from './lottie-config.js';
 import { registerWithLoopControl, playIfAllowed } from './lottie-loop.js';
+import { BREAKPOINTS } from '@sgs/loop-control'; // eslint-disable-line import/no-unresolved -- a webpack external (script module `@sgs/loop-control`).
 
 const SELECTOR = '[data-sgs-fx~="lottie"]';
 const LAYER_CLASS = 'sgs-lottie-layer';
@@ -36,6 +42,9 @@ const instances = new Map();
 
 /** The single shared scroll/resize driver for scroll-triggered instances. */
 let scrollDriver = null;
+
+/** The loop control's breakpoint queries this module listens to, so a tier change re-reads the speed. */
+let breakpointQueries = [];
 
 /**
  * @typedef {Object} LottieBinding
@@ -71,7 +80,28 @@ export function init() {
 		window
 			.matchMedia( '(prefers-reduced-motion: reduce)' )
 			.addEventListener( 'change', handleReducedMotionChange );
+		breakpointQueries = BREAKPOINTS.map( ( text ) =>
+			window.matchMedia( text )
+		);
+		breakpointQueries.forEach( ( query ) =>
+			query.addEventListener( 'change', handleBreakpointChange )
+		);
 	}
+}
+
+/**
+ * A breakpoint was crossed: the emitter's media queries now give `--sgs-lottie-speed` the new tier's value, so re-read
+ * it and apply it to the live player (a player still mounting reads `config.speed` when it is created).
+ *
+ * @return {void}
+ */
+function handleBreakpointChange() {
+	instances.forEach( ( binding ) => {
+		binding.config.speed = readSpeed( binding.el );
+		if ( binding.player ) {
+			binding.player.setSpeed( binding.config.speed );
+		}
+	} );
 }
 
 /**
@@ -94,6 +124,10 @@ export function cleanup() {
 
 	window.removeEventListener( 'pagehide', cleanup );
 	document.removeEventListener( 'visibilitychange', handleVisibilityChange );
+	breakpointQueries.forEach( ( query ) =>
+		query.removeEventListener( 'change', handleBreakpointChange )
+	);
+	breakpointQueries = [];
 }
 
 /**
