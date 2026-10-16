@@ -1,0 +1,63 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"className": "m511-glow",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"effects": [
+							{
+								"id": "cg1",
+								"effect": "cursor-field",
+								"values": {
+									"field": "glow",
+									"colour": "accent",
+									"radius": 320
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Cursor field canary",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "The glow should follow the pointer across this text and across the opaque card below."
+				}
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"className": "m511-glow-opaque",
+					"backgroundColour": "#f4efe4",
+					"padding": {
+						"desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+						"tablet": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+						"mobile": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" }
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "OPAQUE CHILD - this must paint its own share of the same field, with no seam."
+						}
+					}
+				]
+			}
+		]
+	}
+]

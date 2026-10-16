@@ -1,0 +1,82 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+				"tablet": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+				"mobile": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" }
+			},
+			"className": "mce-panels"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"minHeight": { "desktop": "320px", "tablet": "320px", "mobile": "320px" },
+					"className": "mce-edge",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": { "clip": 100, "clipEdge": "bottom" },
+											"duration": 600,
+											"easing": "linear"
+										},
+										"close": {
+											"to": { "clip": 40 },
+											"closeDuration": 600,
+											"closeEasing": "linear"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{ "name": "sgs/info-box", "attributes": { "heading": "Bottom wipe with a close value", "description": "Opens from inset(0 0 100% 0) to inset(0) over 600ms, then closes on the bottom edge only to inset(0 0 40% 0) over 600ms." } }
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"minHeight": { "desktop": "320px", "tablet": "320px", "mobile": "320px" },
+					"className": "mce-all",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "open",
+										"values": {
+											"from": { "clip": 100, "clipEdge": "all" },
+											"duration": 600,
+											"easing": "linear"
+										},
+										"close": {
+											"to": { "clip": 40 },
+											"closeDuration": 600,
+											"closeEasing": "linear"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{ "name": "sgs/info-box", "attributes": { "heading": "Four-edge wipe with the same close value", "description": "The control: the same close value on clipEdge all closes every edge to inset(40%) over 600ms." } }
+				]
+			}
+		]
+	}
+]

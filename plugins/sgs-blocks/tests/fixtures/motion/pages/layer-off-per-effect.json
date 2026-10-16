@@ -1,0 +1,384 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "mlo-page"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "mlo-a",
+					"scrollSideways": {
+						"desktop": "on",
+						"tablet": "on",
+						"mobile": "on"
+					},
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"inner": {
+								"effects": [
+									{
+										"id": "scrub1",
+										"effect": "scrub",
+										"off": [
+											"mobile"
+										]
+									},
+									{
+										"id": "drag1",
+										"effect": "draggable"
+									}
+								]
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"layout": "stack",
+							"padding": {
+								"desktop": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"tablet": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"mobile": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Scrub off on mobile card one",
+									"level": "h3"
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"layout": "stack",
+							"padding": {
+								"desktop": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"tablet": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"mobile": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Scrub off on mobile card two",
+									"level": "h3"
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"layout": "stack",
+							"padding": {
+								"desktop": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"tablet": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"mobile": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Scrub off on mobile card three",
+									"level": "h3"
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "mlo-b",
+					"scrollSideways": {
+						"desktop": "on",
+						"tablet": "on",
+						"mobile": "on"
+					},
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"inner": {
+								"effects": [
+									{
+										"id": "scrub1",
+										"effect": "scrub"
+									},
+									{
+										"id": "drag1",
+										"effect": "draggable"
+									}
+								]
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"layout": "stack",
+							"padding": {
+								"desktop": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"tablet": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"mobile": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Control card one",
+									"level": "h3"
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"layout": "stack",
+							"padding": {
+								"desktop": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"tablet": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"mobile": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Control card two",
+									"level": "h3"
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"layout": "stack",
+							"padding": {
+								"desktop": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"tablet": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								},
+								"mobile": {
+									"top": "24px",
+									"right": "24px",
+									"bottom": "24px",
+									"left": "24px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Control card three",
+									"level": "h3"
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"layout": "stack",
+					"padding": {
+						"desktop": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"tablet": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						},
+						"mobile": {
+							"top": "24px",
+							"right": "24px",
+							"bottom": "24px",
+							"left": "24px"
+						}
+					},
+					"className": "mlo-spacer",
+					"minHeight": {
+						"desktop": "1200px"
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Scroll room so both rows can sit inside the viewport at every width."
+						}
+					}
+				]
+			}
+		]
+	}
+]
