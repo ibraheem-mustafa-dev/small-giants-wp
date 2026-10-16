@@ -290,7 +290,7 @@ async function liveChecks( ctx ) {
 	const wider = await open( ctx, {}, () => {
 		document.addEventListener( 'DOMContentLoaded', () => {
 			const style = document.createElement( 'style' );
-			style.textContent = '.m515-speed{--sgs-marquee-edge-fade-width:12}';
+			style.textContent = '.m515-speed{--sgs-marquee-edge-fade-width:12 !important}';
 			document.head.appendChild( style );
 		} );
 	} );

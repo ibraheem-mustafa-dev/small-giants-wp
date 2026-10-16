@@ -8,7 +8,9 @@
  * block keeps its own layout and every item stays visible.
  *
  * The script sets `data-sgs-marquee="on"` on the block root and `data-sgs-marquee-lane="on"` on the set's parent
- * while it runs, and `--sgs-marquee-fade-size` on the root when the edge fade is on.
+ * while it runs, and `--sgs-marquee-fade-size` on the root when the edge fade is on. The set's parent can be the block
+ * root itself (the trust bar prints its set straight inside the root), so every lane rule matches both the lane
+ * inside the root and the root that is its own lane.
  */
 
 @property --sgs-marquee-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
@@ -19,18 +21,22 @@
 	position: relative;
 }
 
-[data-sgs-fx~="marquee"] [data-sgs-marquee-lane="on"] {
+[data-sgs-fx~="marquee"] [data-sgs-marquee-lane="on"],
+[data-sgs-fx~="marquee"][data-sgs-marquee-lane="on"] {
 	display: flex;
 	flex-wrap: nowrap;
 	justify-content: flex-start;
 }
 
 [data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="up"] [data-sgs-marquee-lane="on"],
-[data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="down"] [data-sgs-marquee-lane="on"] {
+[data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="down"] [data-sgs-marquee-lane="on"],
+[data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="up"][data-sgs-marquee-lane="on"],
+[data-sgs-fx~="marquee"][data-sgs-fx-marquee-direction="down"][data-sgs-marquee-lane="on"] {
 	flex-direction: column;
 }
 
-[data-sgs-fx~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"] [data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]),
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-marquee-lane="on"] > :is([data-sgs-marquee-set], [data-sgs-marquee-clone]) {
 	flex: 0 0 auto;
 	max-width: none;
 	translate: var(--sgs-marquee-x) var(--sgs-marquee-y);
