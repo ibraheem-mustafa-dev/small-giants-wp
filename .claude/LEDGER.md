@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-10-13
+last_updated: 2026-10-16
 ---
 
 # small-giants-wp: LEDGER (the one living status)
@@ -74,15 +74,15 @@ Open owed items:
 
 ### Front M: Clone coverage foundation and the motion model (Spec 38A)
 
-**State (2026-10-16):** S1 to S3b and Gate 4 (2026-10-13) are done; wave 11's detail is in the build plan. Wave 12 (S4) runs as four tracks; each track's bullet in `plans/2026-10-12-spec38a-motion-build.md` holds its commits and open items. sandybrown runs `221929133`, which lacks main's `11526c0dd`.
+**State (2026-10-16):** S1 to S3b and Gate 4 (2026-10-13) are done; wave 11's detail is in the build plan. Wave 12 (S4) runs as four tracks; each track's bullet in `plans/2026-10-12-spec38a-motion-build.md` holds its commits and open items. sandybrown ran `16dfba0f2` last (peers deploy there too; `ssh hd "cat ~/.sgs-deploy-marker-sandybrown.json"` names the live commit).
 - **Track L: closed** (`221929133`). Built M5.8, M5.12 to M5.15, M5.16a-c and M6.3; the live fixtures for FR-38A-36, 37, 44 and 52 pass on sandybrown (pages 5250, 5297, 5303, 5305) in Chromium and Firefox, and their probes run in every deploy. Open: two items in its plan bullet (the trust-bar title beside a marquee, for Bean; stored marquees static until M6.5).
 - **Track S: closed** (handoff `9c7d464f8`). Built all nine units (M4.1 to M4.6, M6.2, M6.4, M5.17; the `@sgs/motion-state-loader` makes open and state motion play live) with council fixes `a62541995`, `7640bcd95`, `f5d5ccc10` and `94f12c84d`. Its follow-up closed items 1, 2, 7, 9, 12, 14, 15 and item 11's test (`7b8f42a66`..`dbb0daf8d`; fixtures 5316 and 5314). Open: items 4, 5, 6, 8, 10, 11's default entrances (with the M6.5 sweep) and 13, plus 16 (the hero background-Lottie live check; `ab91a3722` is live) and 17 (a stale `run-container-wrapper-standalone.php`), all in its plan bullet.
 - **Track E: built, Gate 6 passed (2026-10-16, sandybrown 221929133).** The six live probes were recalibrated and pass, the stacks in three engines. The eight per-effect `render_block` filters now run after the layer renderer (`f23537c62`). Its open items (fixture 5270's image, horizontal-panel per-device properties, the nav label magnet) are listed in the plan's Track E bullet with the unit each closes. Council fixes 1, 2, 3 and 5 are on main (`44372db1c`, mislabelled as Track S's); fix 4 landed in `daf70362f`.
-- **Track I: built; the live check of `11526c0dd` (not deployed) and two Bean decisions are open.** See the plan's "Track I state" and "M3.9b" bullets.
+- **Track I: built and live-checked; one canvas fix awaits its live check, and Bean's two decisions are open.** `11526c0dd`, the M3.9b checks and the delegated-card Replay (`16dfba0f2`) pass on sandybrown; the canvas fixes of `3d44a56c4` are tested, not yet live. Open items are in the plan's "Track I state" bullet.
 
 **Blockers:** none. **Bean decisions (open):** (1) the Gate 5 glance at draft 5291 (closes M3.3 to M3.6); (2) FR-38A-8: with "Apply entrance to children" on, does the container stay still (built) or also play its own entrance? Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
 
-**Resume from:** Track I's "Track I state and carried items (2026-10-16)" and "M3.9b" bullets in `plans/2026-10-12-spec38a-motion-build.md`, starting with a deploy and the live check of `11526c0dd` on draft 5310.
+**Resume from:** the "Track I state (2026-10-16)" bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with its item (8): one blocks deploy and the editor Replay check of `3d44a56c4`.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
