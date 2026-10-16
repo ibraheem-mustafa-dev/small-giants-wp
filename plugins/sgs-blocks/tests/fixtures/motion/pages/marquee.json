@@ -433,7 +433,7 @@
 											"duration": 30000,
 											"hoverRate": 0,
 											"belowBreakpoint": "mobile",
-											"pauseControl": false
+											"pauseControl": true
 										}
 									}
 								]
@@ -585,13 +585,13 @@
 							"root": {
 								"effects": [
 									{
-										"id": "mqt",
+										"id": "mqd",
 										"effect": "marquee",
 										"values": {
 											"speed": 60,
 											"edgeFade": true,
 											"edgeFadeWidth": 8,
-											"pauseControl": true
+											"pauseControl": false
 										}
 									}
 								]
