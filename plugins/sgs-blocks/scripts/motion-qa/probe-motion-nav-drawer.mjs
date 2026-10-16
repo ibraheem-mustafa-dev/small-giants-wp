@@ -42,6 +42,7 @@ import {
 	FIXTURE_DIR,
 	isRest,
 } from './probe-motion-model-lib.mjs';
+import { openDrawer as openVisibleDrawer } from './probe-drawer-open.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
 const HEIGHT = 900;
@@ -316,54 +317,12 @@ function parseArgv( argv ) {
 // ---- Page actions ----------------------------------------------------------------------------------------------
 
 /**
- * Open the drawer through the store: click its trigger (hidden or not), then wait for the `open` motion state.
+ * Open the drawer the way a visitor does (`probe-drawer-open.mjs`): a real click on its visible burger, repeated until
+ * the Interactivity API has hydrated it, then the `open` motion state.
  * @param page
  */
-async function openDrawer( page ) {
-	const clicked = await page.evaluate( () => {
-		const drawer = document.querySelector( '.m45-drawer' );
-		const trigger =
-			drawer &&
-			document.querySelector( `[aria-controls="${ drawer.id }"]` );
-		if ( ! trigger ) {
-			return false;
-		}
-		trigger.click();
-		return true;
-	} );
-	if ( ! clicked ) {
-		return {
-			opened: false,
-			why: 'no element controls the drawer (the page needs the header burger)',
-		};
-	}
-	try {
-		await page.waitForFunction(
-			() =>
-				/(^|\s)open(\s|$)/.test(
-					document
-						.querySelector( '.m45-drawer' )
-						?.getAttribute( 'data-sgs-motion-state' ) || ''
-				),
-			null,
-			{ timeout: 4000 }
-		);
-		return { opened: true, why: '' };
-	} catch ( e ) {
-		const state = await page.evaluate( () => {
-			const d = document.querySelector( '.m45-drawer' );
-			return {
-				open: Boolean( d?.open ),
-				state: d?.getAttribute( 'data-sgs-motion-state' ),
-			};
-		} );
-		return {
-			opened: false,
-			why: `the motion state never gained "open" (dialog open: ${
-				state.open
-			}, state: ${ JSON.stringify( state.state ) })`,
-		};
-	}
+function openDrawer( page ) {
+	return openVisibleDrawer( page, '.m45-drawer' );
 }
 
 /**

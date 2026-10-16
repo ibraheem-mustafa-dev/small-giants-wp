@@ -1,0 +1,34 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"className": "m1t-page"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Drawer close-together fixture",
+					"level": "h1"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "The drawer on this page was built with close in order off and migrated by wp sgs motion-migrate; on close every menu item closes at once, with no hold."
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/nav-bar-menu",
+		"attributes": {
+			"ref": 0,
+			"drawerRef": 5314,
+			"showBurger": true,
+			"className": "m1t-burger"
+		},
+		"innerBlocks": []
+	}
+]

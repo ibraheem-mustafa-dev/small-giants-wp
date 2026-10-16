@@ -1,0 +1,31 @@
+[
+	{
+		"name": "sgs/nav-drawer",
+		"attributes": {
+			"className": "m1t-drawer",
+			"itemStagger": 60,
+			"itemStaggerDuration": 300,
+			"itemStaggerOnClose": false,
+			"exitDuration": 200
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/nav-drawer-menu",
+				"attributes": {
+					"ref": 1467,
+					"className": "m1t-menu"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Book an eye test",
+					"url": "#",
+					"className": "m1t-item"
+				},
+				"innerBlocks": []
+			}
+		]
+	}
+]
