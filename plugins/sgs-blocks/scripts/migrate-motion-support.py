@@ -61,6 +61,10 @@ SPEC_NAMED = (
     'sgs/accordion',
     'sgs/form',
     'sgs/choice-flow',
+    # Item-part stagger (FR-38A-26, plan Track L): both hide the legacy entrance extension and carry the motion model for
+    # their "Each option" / "Each tile" part.
+    'sgs/choice-flow-question',
+    'sgs/form-field-tiles',
 )
 
 

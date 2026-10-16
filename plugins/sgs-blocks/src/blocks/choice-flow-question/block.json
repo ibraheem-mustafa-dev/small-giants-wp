@@ -38,6 +38,8 @@
 					"clusters": []
 				},
 				"question": {
+					"selector": ".sgs-choice-flow-question__title",
+					"text": true,
 					"label": "Question text",
 					"layer": "CONTENT",
 					"order": 2,
@@ -50,6 +52,7 @@
 					"_note": "v1 (Spec 43 Phase 2): plain-question step only, no colour/typography attrMap yet — kept minimal per FR-43-1's plain-question scope. Element declared for structural documentation; no styling attrs exist on this block to map."
 				},
 				"intro": {
+					"text": true,
 					"label": "Intro paragraph",
 					"layer": "CONTENT",
 					"order": 4,
