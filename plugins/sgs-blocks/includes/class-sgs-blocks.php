@@ -53,6 +53,7 @@ final class SGS_Blocks {
 		Card_Grid_Items_Rest::register();
 
 		// Global Block Defaults — REST API, editor injection, admin settings page.
+		require_once SGS_BLOCKS_PATH . 'includes/class-shipped-block-defaults.php';
 		require_once SGS_BLOCKS_PATH . 'includes/class-block-defaults.php';
 		Block_Defaults::register();
 

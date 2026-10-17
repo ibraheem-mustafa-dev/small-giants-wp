@@ -3,7 +3,7 @@
  * Block Defaults — REST API, option storage, editor injection, and admin page.
  *
  * Stores per-block attribute defaults in wp_options under 'sgs_block_defaults'.
- * Injects stored defaults into the editor via window.sgsBlockDefaults so the
+ * Injects stored defaults (over the shipped Shipped_Block_Defaults layer) into the editor via window.sgsBlockDefaults so the
  * JS extension can seed new block instances without an extra REST call.
  *
  * @package SGS\Blocks
@@ -171,7 +171,8 @@ class Block_Defaults {
 			return;
 		}
 
-		$defaults = self::get_stored_defaults();
+		// The shipped layer sits under the site's saved defaults; only this injection merges it, so it is never saved into the option.
+		$defaults = Shipped_Block_Defaults::merge_under( self::get_stored_defaults() );
 		if ( empty( $defaults ) ) {
 			return;
 		}

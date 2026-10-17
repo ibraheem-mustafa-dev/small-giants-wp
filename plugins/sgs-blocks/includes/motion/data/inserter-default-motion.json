@@ -1,0 +1,280 @@
+{
+    "sgs/card-grid": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "item": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/gallery": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-in",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0
+                                },
+                                "to": {
+                                    "opacity": 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/google-reviews": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/info-box": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/post-grid": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/pricing-table": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-slide-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "translateY": 100
+                                },
+                                "to": {
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/process-steps": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/team-member": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/testimonial": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "sgs/timeline": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "entry": {
+                    "entrance": {
+                        "base": {
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": 20
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                },
+                                "duration": 400,
+                                "easing": "ease-out"
+                            }
+                        }
+                    }
+                }
+            },
+            "stagger": {
+                "step": 100,
+                "offset": 0,
+                "order": "row-first",
+                "perRow": false
+            }
+        }
+    },
+    "sgs/trustpilot-reviews": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "entrance": {
+                        "base": {
+                            "preset": "entrance-fade-up",
+                            "trigger": "scroll",
+                            "values": {
+                                "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:entrance.distance"
+                                },
+                                "to": {
+                                    "opacity": 1,
+                                    "translateY": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
