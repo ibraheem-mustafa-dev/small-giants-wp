@@ -23,6 +23,9 @@
  *   - restates the arms that need no `:has()` (and a card's own focus source) in `@supports not selector(:has(*))`, in
  *     forced colours too, because a browser without `:has()` drops the whole selector list above;
  *   - gives a duotone or photo element on a dark ground a light ring (`--sgs-focus-inner`) and an ink far bloom;
+ *   - registers the three per-element override properties (`--sgs-focus-offset`, `--sgs-focus-halo`, `--sgs-focus-under`)
+ *     with `@property` and `inherits: false`, so an inset or shadowed card never hands its inset ring, halo or shadow to a
+ *     focusable descendant that carries no such class of its own;
  * and that no other theme stylesheet holds an indicator, apart from the files a later plan task owns (PENDING; an
  * entry that no longer holds a finding fails, so the list only shrinks).
  * Each focus.css check also runs against a planted fault (negative control), so a check that cannot fail fails here.
@@ -42,6 +45,10 @@ const { analyseCss } = require( '../../scripts/focus-system/classify-css.js' );
 // Theme stylesheets whose focus rules a later task of the focus plan removes (the detector's group in brackets).
 const PENDING = {
 };
+
+// Set by a block (or the inset class) on the focusable element itself and read by that element's own indicator.
+// `--sgs-focus-host-border` is not in the list: the signature `::before` reads it from its host, so it must inherit.
+const OVERRIDE_PROPERTIES = [ '--sgs-focus-offset', '--sgs-focus-halo', '--sgs-focus-under' ];
 
 const INDICATOR = new Set( [ 'outline', 'outline-offset', 'box-shadow' ] );
 const FORCED = '(forced-colors: active)';
@@ -263,6 +270,32 @@ const CHECKS = {
 		}
 		return problems;
 	},
+	overridePropertiesDoNotInherit( root ) {
+		const problems = [];
+		const seen = {};
+		root.walkAtRules( 'property', ( at ) => {
+			const decls = {};
+			at.walkDecls( ( d ) => { decls[ d.prop ] = d.value.trim().replace( /^["']|["']$/g, '' ); } );
+			seen[ at.params.trim() ] = decls;
+		} );
+		for ( const name of OVERRIDE_PROPERTIES ) {
+			const reg = seen[ name ];
+			if ( ! reg ) {
+				problems.push( `${ name } is not registered with @property` );
+				continue;
+			}
+			if ( 'false' !== reg.inherits ) {
+				problems.push( `${ name } registers inherits: ${ reg.inherits }, want false` );
+			}
+			if ( '*' !== reg.syntax ) {
+				problems.push( `${ name } registers syntax ${ reg.syntax }, want * (any value, so the var() fallback chains keep working)` );
+			}
+			if ( 'initial-value' in reg ) {
+				problems.push( `${ name } registers an initial-value, which would replace the var() fallback with a value` );
+			}
+		}
+		return problems;
+	},
 	signatureClearsHostBorder( root ) {
 		let found = false;
 		const problems = [];
@@ -318,6 +351,7 @@ describe( 'focus.css, the one focus system', () => {
 		darkDuotoneRingIsLight: ( text ) => text.replace( /(\.sgs-on-dark \.sgs-focus--duotone[^{]*\{[^}]*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
 		signaturePreviewMirrorsFocus: ( text ) => text.replace( /\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\)::before/g, '.sgs-focus--signature.sgs-focus-preview-x:not(#wpadminbar *)::before' ),
 		noHasFallbackKeepsAFocusRing: ( text ) => text.replace( /@supports not selector\(:has\(\*\)\)/, '@supports not selector(:is(*))' ),
+		overridePropertiesDoNotInherit: ( text ) => text.replace( /@property --sgs-focus-halo \{[^}]*\}/, '@property --sgs-focus-halo { syntax: "*"; inherits: true; }' ),
 		signatureClearsHostBorder: ( text ) => text.replace( /inset: calc\([^;]*--sgs-focus-host-border[^;]*\);/, 'inset: calc(var(--sgs-focus-width) * -3);' ),
 	};
 

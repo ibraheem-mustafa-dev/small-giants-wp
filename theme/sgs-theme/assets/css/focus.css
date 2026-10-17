@@ -9,6 +9,14 @@
  */
 @property --sgs-focus-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 @keyframes sgs-focus-spin { to { --sgs-focus-angle: 360deg; } }
+/* The per-element overrides are set on the focusable element itself and must not reach its descendants: an inset card
+   would otherwise hand its inset ring and halo to a swatch inside it, and a shadowed card its shadow. Registered with
+   no initial value, so an unset property is still guaranteed-invalid and every var() fallback below keeps working.
+   --sgs-focus-host-border is deliberately not registered: the signature ::before reads it from its host, and a pseudo-element
+   inherits only through inheritance. */
+@property --sgs-focus-offset { syntax: "*"; inherits: false; }
+@property --sgs-focus-halo { syntax: "*"; inherits: false; }
+@property --sgs-focus-under { syntax: "*"; inherits: false; }
 
 /* 1. Tokens: the client's snapshot (settings.custom.focus -> --wp--custom--focus--*), framework defaults from the palette. */
 :root,
