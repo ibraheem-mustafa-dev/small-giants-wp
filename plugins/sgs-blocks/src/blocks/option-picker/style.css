@@ -339,17 +339,6 @@
 }
 
 /* ================================================================
-   FOCUS ring — visible on keyboard navigation
-   The ring appears on the pill, triggered by :focus-within on the
-   label (because the real input is visually hidden inside the label).
-   ================================================================ */
-
-.sgs-option-picker__option input[type="radio"]:focus-visible ~ .sgs-option-picker__pill {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 3px;
-}
-
-/* ================================================================
    Editor placeholder when no options have been added
    ================================================================ */
 

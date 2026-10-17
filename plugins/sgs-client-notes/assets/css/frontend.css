@@ -365,9 +365,7 @@
 }
 
 .sgs-cn-reply-input:focus {
-	outline: none;
 	border-color: #2271b1;
-	box-shadow: 0 0 0 1px #2271b1;
 }
 
 .sgs-cn-reply-submit {
@@ -472,9 +470,7 @@
 
 .sgs-cn-form-group textarea:focus,
 .sgs-cn-form-group select:focus {
-	outline: none;
 	border-color: #2271b1;
-	box-shadow: 0 0 0 1px #2271b1;
 }
 
 .sgs-cn-form-actions {

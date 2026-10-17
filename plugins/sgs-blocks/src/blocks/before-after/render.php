@@ -538,7 +538,7 @@ $scoped_css[] = '@media(prefers-reduced-motion:reduce){' . $root_sel . ' .wp-blo
 // 6. Root classes + attributes.
 // ---------------------------------------------------------------------------
 
-$root_classes = array( 'wp-block-sgs-before-after', $uid );
+$root_classes = array( 'wp-block-sgs-before-after', 'sgs-focus-scope', $uid );
 if ( '' !== $preset_bg_slug ) {
 	$root_classes[] = 'has-background';
 	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
@@ -754,7 +754,7 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 		<?php endif; ?>
 		<div class="wp-block-sgs-before-after__divider" aria-hidden="true">
 			<div class="wp-block-sgs-before-after__divider-line"></div>
-			<div class="wp-block-sgs-before-after__handle">
+			<div class="wp-block-sgs-before-after__handle sgs-focus-proxy">
 				<?php
 				// $handle_icon_output resolved above (§8 top) — lucide/wp-icon
 				// via sgs_get_lucide_icon()/sgs_get_wp_icon(), pre-sanitised
@@ -783,7 +783,7 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 		<input
 			type="range"
 			id="<?php echo esc_attr( $range_id ); ?>"
-			class="wp-block-sgs-before-after__range"
+			class="wp-block-sgs-before-after__range sgs-focus-source"
 			min="0"
 			max="100"
 			step="1"

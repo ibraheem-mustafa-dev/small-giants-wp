@@ -386,15 +386,6 @@
 	background: transparent;
 }
 
-/* Visible focus indicator on the range — WCAG 2.2 AA (3:1 contrast, always
- * visible, never removed). Painted on the visual handle sibling because the
- * range itself is transparent. */
-.wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle,
-.wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-}
-
 .wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle {
 	transform: translate( -50%, -50% ) scale( 1.08 );
 }
@@ -466,11 +457,6 @@
 .wp-block-sgs-before-after__video-toggle:hover {
 	background-color: rgba( 0, 0, 0, 0.8 );
 	transform: scale( 1.08 );
-}
-
-.wp-block-sgs-before-after__video-toggle:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 .wp-block-sgs-before-after__video-toggle-icon {

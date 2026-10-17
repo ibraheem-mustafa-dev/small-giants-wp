@@ -45,11 +45,6 @@
 	box-sizing: border-box;
 }
 
-.sgs-product-search__input:focus-visible {
-	outline: 2px solid var( --sgs-ps-focus-ring, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)) );
-	outline-offset: 2px;
-}
-
 .sgs-product-search__submit {
 	min-width: 44px;
 	min-height: 44px;
@@ -63,11 +58,6 @@
 	border-radius: 8px;
 	cursor: pointer;
 	flex-shrink: 0;
-}
-
-.sgs-product-search__submit:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 .sgs-product-search__submit:hover {
@@ -317,12 +307,6 @@
 	cursor: pointer;
 }
 
-/* Visible focus ring — matches the pattern used on __submit and __input. */
-.sgs-product-search--icon summary.sgs-product-search__icon-toggle:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-}
-
 .sgs-product-search--icon summary.sgs-product-search__icon-toggle:hover {
 	opacity: 0.9;
 }
@@ -395,12 +379,6 @@
 	opacity: 0.9;
 }
 
-.sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible,
-.sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible {
-	outline: 2px solid var( --sgs-ps-focus-ring, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)) );
-	outline-offset: 2px;
-}
-
 /* No-JS fallback state: render.php emits the dialog with the `open`
    attribute so it is visible, non-modal, in-flow — the form's real GET
    submit works with zero JS. view.js closes it once JS is available. */
@@ -445,11 +423,6 @@
 
 .sgs-product-search__dialog .sgs-product-search__close:hover {
 	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
-}
-
-.sgs-product-search__dialog .sgs-product-search__close:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 .sgs-product-search__dialog-body {

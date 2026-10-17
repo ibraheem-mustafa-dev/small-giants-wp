@@ -50,7 +50,7 @@ if ( ! empty( $attributes['helpText'] ) ) {
 }
 
 printf(
-	'<input type="file" id="%s" name="%s" accept="%s" class="sgs-form-field__file-input" data-wp-on--change="actions.uploadFile" aria-describedby="%s"%s />',
+	'<input type="file" id="%s" name="%s" accept="%s" class="sgs-form-field__file-input sgs-focus-source" data-wp-on--change="actions.uploadFile" aria-describedby="%s"%s />',
 	esc_attr( $fid ),
 	esc_attr( $field_name ),
 	$accept,
@@ -58,7 +58,7 @@ printf(
 	$required ? ' required aria-required="true"' : ''
 );
 
-echo '<div class="sgs-form-field__file-label">';
+echo '<div class="sgs-form-field__file-label sgs-focus-proxy">';
 echo '<span>' . esc_html( $drop_label ) . '</span>';
 echo '<span class="sgs-form-field__file-hint">' . sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max ) . '</span>';
 if ( $is_panel ) {

@@ -224,11 +224,6 @@
 	text-align: center;
 }
 
-.sgs-pricing-table__cta:focus-visible {
-	outline: 3px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 3px;
-}
-
 .sgs-pricing-table__cta--primary {
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 	background-color: var(--wp--preset--color--primary, #333);
@@ -505,12 +500,6 @@
 	) {
 		background-color: rgba(15, 126, 128, 0.1);
 	}
-}
-
-/* Focus ring on inputs (keyboard nav — both styles) */
-.sgs-pricing-table__toggle-input:focus-visible + .sgs-pricing-table__toggle-label {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 /* Reduced motion — disable all transitions and the hover shadow shift. */

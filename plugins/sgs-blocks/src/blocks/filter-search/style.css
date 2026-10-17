@@ -16,13 +16,6 @@
 	background-color: var( --wp--preset--color--surface, #fff );
 	color: var( --sgs-filter-search-text, var( --wp--preset--color--text, #1a1a1a ) );
 	box-sizing: border-box;
-	transition: outline 0.2s ease-out, outline-offset 0.2s ease-out;
-}
-
-/* Focus-visible ring — 2px solid, ≥3:1 contrast per WCAG 2.4.11 (AA). */
-.sgs-filter-search__input:focus-visible {
-	outline: 2px solid var( --sgs-filter-search-focus, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)) );
-	outline-offset: 2px;
 }
 
 /* ─── Term list (taxonomy-terms mode) ───────────────────────────────────── */
@@ -51,11 +44,6 @@
 	color: var( --sgs-filter-search-text-hover, currentColor );
 }
 
-.sgs-filter-search__term-link:focus-visible {
-	outline: 2px solid var( --sgs-filter-search-focus, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)) );
-	outline-offset: 2px;
-}
-
 .sgs-filter-search__term-check {
 	flex-shrink: 0;
 	width: 16px;
@@ -65,11 +53,7 @@
 	box-sizing: border-box;
 }
 
-/* The ticked box uses the theme's primary colour directly. It must NOT borrow
-   --sgs-filter-search-focus: that property belongs to focusRingColour (an outline,
-   terminal end shape `outline-not-gradientable`), is scoped to the input so it never
-   reached these links anyway, and reusing it here re-classified the attribute as a
-   fill (classify-end-shape, 2026-09-24). */
+/* The ticked box uses the theme's primary colour directly. */
 .sgs-filter-search__term-link[aria-pressed="true"] .sgs-filter-search__term-check {
 	background-color: var( --wp--preset--color--primary, #0f7e80 );
 	border-color: var( --wp--preset--color--primary, #0f7e80 );

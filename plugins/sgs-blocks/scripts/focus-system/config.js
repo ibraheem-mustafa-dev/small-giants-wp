@@ -105,7 +105,7 @@ const PATH_GROUPS = [
 	[ 'theme-core', [ 'theme/sgs-theme/assets/css/core-blocks-critical.css', 'theme/sgs-theme/assets/css/utilities.css', 'theme/sgs-theme/assets/css/core-blocks.css', SYSTEM_FILE ] ],
 	[ 'woocommerce', [ 'theme/sgs-theme/assets/css/woocommerce.css' ] ],
 	[ 'nav', [ 'theme/sgs-theme/assets/css/dark-mode.css', 'plugins/sgs-blocks/assets/css/slider-nav.css' ] ],
-	[ 'forms', [ 'plugins/sgs-client-notes/assets/css/', 'plugins/sgs-blocks/assets/css/contrast.css' ] ],
+	[ 'forms', [ 'plugins/sgs-client-notes/assets/css/' ] ],
 	[ 'widgets', [ 'device-toggle', 'motion-pause', 'fx-marquee', 'fx-lottie', 'fx-generative-background', 'fx-wave-gradient' ].map( ( n ) => `plugins/sgs-blocks/assets/css/${ n }.css` ) ],
 ];
 

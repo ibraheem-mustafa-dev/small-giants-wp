@@ -823,8 +823,8 @@ foreach ( $valid_items as $item ) {
 
 	$pills_html .= sprintf(
 		'<label class="sgs-option-picker__option" for="%s">' .
-		'<input type="radio" id="%s" name="%s" value="%s"%s>' .
-		'<span class="sgs-option-picker__pill%s">%s</span>' .
+		'<input type="radio" class="sgs-focus-source" id="%s" name="%s" value="%s"%s>' .
+		'<span class="sgs-option-picker__pill sgs-focus-proxy%s">%s</span>' .
 		'</label>',
 		esc_attr( $input_id ),
 		esc_attr( $input_id ),

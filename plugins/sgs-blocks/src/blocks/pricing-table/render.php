@@ -108,10 +108,10 @@ if ( $show_toggle ) {
 	$yearly_id   = esc_attr( $block_id ) . '-yearly';
 	$toggle_html = sprintf(
 		'<div class="sgs-pricing-table__billing-toggle sgs-pricing-table__billing-toggle--style-%s" role="group" aria-label="%s">' .
-			'<input type="radio" id="%s" name="%s" value="monthly" class="sgs-pricing-table__toggle-input" checked>' .
-			'<label for="%s" class="sgs-pricing-table__toggle-label">%s</label>' .
-			'<input type="radio" id="%s" name="%s" value="yearly" class="sgs-pricing-table__toggle-input">' .
-			'<label for="%s" class="sgs-pricing-table__toggle-label">%s</label>' .
+			'<input type="radio" id="%s" name="%s" value="monthly" class="sgs-pricing-table__toggle-input sgs-focus-source" checked>' .
+			'<label for="%s" class="sgs-pricing-table__toggle-label sgs-focus-proxy">%s</label>' .
+			'<input type="radio" id="%s" name="%s" value="yearly" class="sgs-pricing-table__toggle-input sgs-focus-source">' .
+			'<label for="%s" class="sgs-pricing-table__toggle-label sgs-focus-proxy">%s</label>' .
 			'<span class="sgs-pricing-table__toggle-track" aria-hidden="true"></span>' .
 		'</div>',
 		esc_attr( $toggle_style ),
