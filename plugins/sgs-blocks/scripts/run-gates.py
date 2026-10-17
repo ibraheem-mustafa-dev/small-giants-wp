@@ -171,13 +171,26 @@ def run_one(gate: dict) -> tuple[int, str, float]:
     return code, out, elapsed
 
 
-def execute(gates: list[dict], label: str, verbose: bool, jobs: int = 1) -> tuple[list[dict], float]:
+def longest_first(gates: list[dict]) -> list[tuple[int, dict]]:
+    """(1-based roster number, gate) pairs, slowest `budget_ms` first; no budget counts as 0 and ties keep roster order."""
+    return sorted(enumerate(gates, 1), key=lambda pair: -(pair[1].get("budget_ms") or 0))
+
+
+def roster_order(gates: list[dict]) -> list[tuple[int, dict]]:
+    return list(enumerate(gates, 1))
+
+
+def execute(gates: list[dict], label: str, verbose: bool, jobs: int = 1, runner=None, order=None) -> tuple[list[dict], float]:
     """Run every gate. Never short-circuits — that is the entire point.
 
     jobs > 1 runs that many gates at once (each is its own process and writes only to
     temp copies, or to its baseline in an update mode no gate run uses); lines print as
-    gates finish, the results stay in roster order, and the total is wall-clock time.
+    gates finish, the results stay in roster order, and the total is wall-clock time. The pool is fed
+    longest `budget_ms` first, so the slowest gate starts first instead of last. `runner` and `order`
+    replace `run_one` and `longest_first` (the self-test plants faults through them).
     """
+    runner = runner or run_one
+    order = order or longest_first
     print(_RULE)
     print(f"RUNNING {len(gates)} gate(s) — {label}" + (f" · {jobs} at a time" if jobs > 1 else ""))
     print(_RULE)
@@ -192,7 +205,7 @@ def execute(gates: list[dict], label: str, verbose: bool, jobs: int = 1) -> tupl
     if jobs <= 1:
         total = 0.0
         for n, gate in enumerate(gates, 1):
-            code, out, secs = run_one(gate)
+            code, out, secs = runner(gate)
             total += secs
             results.append({"gate": gate, "code": code, "output": out, "secs": secs})
             show(n, gate, code, out, secs)
@@ -202,7 +215,7 @@ def execute(gates: list[dict], label: str, verbose: bool, jobs: int = 1) -> tupl
     started = time.perf_counter()
     by_index: dict[int, dict] = {}
     with ThreadPoolExecutor(max_workers=jobs) as pool:
-        futures = {pool.submit(run_one, gate): (n, gate) for n, gate in enumerate(gates, 1)}
+        futures = {pool.submit(runner, gate): (n, gate) for n, gate in order(gates)}
         for future in as_completed(futures):
             n, gate = futures[future]
             code, out, secs = future.result()
@@ -435,6 +448,39 @@ def do_self_test() -> int:
           [r["gate"]["id"] for r in par] == [g["id"] for g in trio])
     check("--jobs sees both failures", [r["code"] for r in par] == [1, 0, 1],
           str([r["code"] for r in par]))
+
+    # 4c. Longest budget first: the slowest gate starts first, results and numbering stay in roster order.
+    import threading
+    stub_gates = [{"id": "_lf_a", "budget_ms": 10}, {"id": "_lf_b", "budget_ms": 500},
+                  {"id": "_lf_c", "budget_ms": 100}, {"id": "_lf_d"}]
+
+    def run_longest_first(order) -> tuple[list[str], list[str], list[int]]:
+        started: list[str] = []
+        lock = threading.Lock()
+
+        def stub(gate: dict) -> tuple[int, str, float]:
+            with lock:
+                started.append(gate["id"])
+            time.sleep(0.3)
+            return 0, "", 0.3
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            res, _ = execute(stub_gates, "self-test", False, jobs=2, runner=stub, order=order)
+        return started, [r["gate"]["id"] for r in res], [r["code"] for r in res]
+
+    def longest_first_problems(order) -> list[str]:
+        started, ids, _ = run_longest_first(order)
+        out = [] if set(started[:2]) == {"_lf_b", "_lf_c"} and started[2:] == ["_lf_a", "_lf_d"] else [f"start order {started}"]
+        return out + ([] if ids == [g["id"] for g in stub_gates] else [f"results not in roster order: {ids}"])
+
+    check("--jobs starts the longest budget first, ties and no-budget in roster order, results in roster order",
+          not longest_first_problems(None), str(longest_first_problems(None)))
+    check("negative control: submitting in roster order turns the longest-first check red",
+          bool(longest_first_problems(roster_order)))
+    serial: list[str] = []
+    with contextlib.redirect_stdout(io.StringIO()):
+        execute(stub_gates, "self-test", False, 1, runner=lambda g: (serial.append(g["id"]) or 0, "", 0.0))
+    check("--jobs 1 runs in roster order", serial == [g["id"] for g in stub_gates], str(serial))
 
     # 5. An unrecognised interpreter is refused, not shelled out blindly.
     code, out, _ = run_one({"id": "_st_bad", "cmd": "rm -rf /"})

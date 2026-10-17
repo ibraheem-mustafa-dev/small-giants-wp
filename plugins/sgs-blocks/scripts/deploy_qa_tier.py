@@ -170,11 +170,44 @@ def head_commit(repo_root: Path = REPO_ROOT) -> str | None:
     return out.strip() if out and out.strip() else None
 
 
-def resolve_tier(requested: str, repo_root: Path = REPO_ROOT, now: datetime | None = None) -> tuple[str, str]:
-    """`choose_tier` with the real record, config and git history. Read-only, so a dry run may call it."""
+def shipped_uncommitted(dirty: list[str], payload: list[str], repo_root: Path = REPO_ROOT) -> list[str]:
+    """Repo-relative files a run ships that are not in HEAD: the dirty deploy files plus every `--payload` file.
+
+    A `--payload` entry may be a file (even a new untracked one) or a folder, which is expanded to the files in it.
+    """
+    out = [d.replace("\\", "/") for d in dirty]
+    for entry in payload:
+        rel = entry.replace("\\", "/").rstrip("/")
+        target = repo_root / rel
+        if target.is_dir():
+            out.extend(f.relative_to(repo_root).as_posix() for f in target.rglob("*") if f.is_file())
+        else:
+            out.append(rel)
+    return sorted(set(out))
+
+
+def motion_qa_action(deploy_blocks: bool, skip_motion_qa: bool, target_key: str) -> str:
+    """What a run does about motion QA: 'none' (not asked for), 'skip-target' (the probes measure only the canary) or 'run'.
+
+    A dry run decides exactly as a real run does, so it never reports a command a real run would skip.
+    """
+    if not deploy_blocks or skip_motion_qa:
+        return "none"
+    return "run" if target_key == "sandybrown" else "skip-target"
+
+
+def resolve_tier(requested: str, repo_root: Path = REPO_ROOT, now: datetime | None = None,
+                 uncommitted: list[str] | None = None) -> tuple[str, str]:
+    """`choose_tier` with the real record, config and git history. Read-only, so a dry run may call it.
+
+    `uncommitted` (see `shipped_uncommitted`) joins the commit diff before the globs are matched, because
+    `git diff <commit> HEAD` compares two commits and cannot see files the deploy ships from the working tree.
+    """
     now = now or datetime.now(timezone.utc)
     last = read_last_full()
     changed = changed_since(last["commit"], repo_root) if requested == "auto" and last else None
+    if changed is not None:
+        changed = changed + list(uncommitted or [])
     return choose_tier(requested, last, changed, now, load_config())
 
 
@@ -188,6 +221,18 @@ def note_full_pass(repo_root: Path = REPO_ROOT, now: datetime | None = None) -> 
     if ok:
         log(f"[motion-qa] recorded the full pass at {commit[:8]}")
     return ok
+
+
+def make_temp_repo(base: Path, files: dict[str, str]) -> Path:
+    """A throwaway git repo under `base` with one commit holding `files` (for self-tests; never the real checkout)."""
+    base.mkdir(parents=True, exist_ok=True)
+    for rel, text in files.items():
+        (base / rel).parent.mkdir(parents=True, exist_ok=True)
+        (base / rel).write_text(text, encoding="utf-8")
+    ident = ["-c", "user.name=selftest", "-c", "user.email=selftest@example.invalid", "-c", "commit.gpgsign=false"]
+    for args in (["init", "-q"], ["add", "."], [*ident, "commit", "-q", "-m", "fixture"]):
+        subprocess.run(["git", *args], cwd=base, check=True, capture_output=True)
+    return base
 
 
 def self_test() -> list[str]:
@@ -269,7 +314,7 @@ def self_test() -> list[str]:
         raise OSError("not handled")
 
     # Wiring: the record follows a passing full run only, through the real step_motion_qa with npm stubbed out.
-    def run_step(step, requested: str, rc: int, dry_run: bool) -> bool:
+    def run_step(step, requested: str, rc: int, dry_run: bool, **extra) -> bool:
         """True when the step left a record file behind."""
         with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
             target = Path(td) / "record.json"
@@ -278,7 +323,7 @@ def self_test() -> list[str]:
             deploy_verify.run = lambda cmd, **kw: rc
             try:
                 with contextlib.redirect_stdout(io.StringIO()):
-                    step(dry_run, requested, 1)
+                    step(dry_run, requested, 1, **extra)
             finally:
                 deploy_verify.run = saved_run
                 if saved_env is None:
@@ -291,6 +336,16 @@ def self_test() -> list[str]:
         want = {("full", 0, False): True, ("full", 1, False): False, ("smoke", 0, False): False, ("full", 0, True): False}
         return [f"{requested} rc={rc} dry={dry}: record written is not {expected}"
                 for (requested, rc, dry), expected in want.items() if run_step(step, requested, rc, dry) is not expected]
+
+    def check_record_flags(step) -> list[str]:
+        want = [({"uncommitted": ["plugins/x/marquee/a.js"]}, False, "a run that shipped uncommitted files"),
+                ({"skip_verify": True}, False, "a --skip-verify run"), ({}, True, "a clean verified run")]
+        return [f"{label}: record written is not {expected}" for extra, expected, label in want
+                if run_step(step, "full", 0, False, **extra) is not expected]
+
+    def faulty_step_ignores_flags(dry_run: bool, requested: str = "full", parallel: int = 1, **_ignored) -> int:
+        """Drops the dirty and skip-verify guards: records every passing full run."""
+        return deploy_verify.step_motion_qa(dry_run, requested, parallel)
 
     def faulty_step(dry_run: bool, requested: str = "full", parallel: int = 1) -> int:
         """Records after every run, whatever the tier or exit code."""
@@ -305,6 +360,13 @@ def self_test() -> list[str]:
             return ["full-tier-paths.json is unreadable"]
         paths = config["paths"]
         want_in = ["plugins/sgs-blocks/scripts/motion-qa/probe-marquee.mjs", "plugins/sgs-blocks/src/blocks/brand-strip/render.php"]
+        want_in += ["plugins/sgs-blocks/src/blocks/container/block.json", "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php",
+                    "plugins/sgs-blocks/includes/container-bg-hover-zoom.php", "plugins/sgs-blocks/includes/fx-attributes.php",
+                    "plugins/sgs-blocks/includes/generated-fx-effects.php", "plugins/sgs-blocks/includes/class-sgs-motion-registry.php",
+                    "plugins/sgs-blocks/src/shared/effects/off-switch.js", "plugins/sgs-blocks/src/shared/effects/motion-utils.js",
+                    "plugins/sgs-blocks/src/shared/motion-pause/index.js", "plugins/sgs-blocks/src/shared/effects/gsap/bezier-ease.js",
+                    "plugins/sgs-blocks/webpack.config.js", "plugins/sgs-blocks/package.json", "plugins/sgs-blocks/package-lock.json",
+                    "plugins/sgs-blocks/src/components/motion/generated-motion-defs.json"]
         want_out = ["plugins/sgs-blocks/src/blocks/accordion/render.php", "plugins/sgs-blocks/src/blocks/testimonial/render.php"]
         problems = [f"{f} does not make the full tier mandatory" for f in want_in if not first_match([f], paths)]
         problems += [f"{f} wrongly makes the full tier mandatory" for f in want_out if first_match([f], paths)]
@@ -315,6 +377,56 @@ def self_test() -> list[str]:
                  ("**/x.js", "x.js", True), ("**/x.js", "d/e/x.js", True), ("a/**/b", "a/b", True), ("a/**/b", "a/x/y/b", True),
                  ("a/fx-?.js", "a/fx-1.js", True), ("a/fx-?.js", "a/fx-12.js", False), ("a/b.js", "a/bxjs", False)]
         return [f"{g} vs {f}: got {match(g, f)}, expected {want}" for g, f, want in cases if match(g, f) is not want]
+
+    # F1: files shipped from the working tree count as changed, against a throwaway repo whose HEAD is the recorded commit.
+    marquee_file = "plugins/sgs-blocks/scripts/motion-qa/probe-marquee.mjs"
+
+    def check_uncommitted(resolve) -> list[str]:
+        problems: list[str] = []
+        with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
+            repo = make_temp_repo(Path(td) / "repo", {"README.md": "x\n"})
+            head = head_commit(repo) or ""
+            record = Path(td) / "record.json"
+            record_full_pass(record, head, datetime.now(timezone.utc))
+            saved = os.environ.get(RECORD_ENV)
+            os.environ[RECORD_ENV] = str(record)
+            try:
+                for dirty, want in (([marquee_file], "full"), (["plugins/sgs-blocks/src/blocks/accordion/render.php"], "smoke"), ([], "smoke")):
+                    got = resolve("auto", repo, datetime.now(timezone.utc), dirty)
+                    if got[0] != want:
+                        problems.append(f"uncommitted {dirty} chose {got[0]} ({got[1]}), expected {want}")
+            finally:
+                if saved is None:
+                    os.environ.pop(RECORD_ENV, None)
+                else:
+                    os.environ[RECORD_ENV] = saved
+        return problems
+
+    def faulty_resolve(requested, repo_root, now, uncommitted):
+        return resolve_tier(requested, repo_root, now)  # the commit diff only
+
+    def check_shipped(fn) -> list[str]:
+        with tempfile.TemporaryDirectory(prefix="sgs-qa-tier-") as td:
+            repo = make_temp_repo(Path(td) / "repo", {"plugins/p/blocks/m/a.js": "1\n", "plugins/p/blocks/m/sub/b.js": "2\n"})
+            (repo / "plugins/p/new.php").write_text("3\n", encoding="utf-8")
+            got = fn(["plugins\\p\\x.php"], ["plugins/p/blocks/m", "plugins/p/new.php"], repo)
+        want = ["plugins/p/blocks/m/a.js", "plugins/p/blocks/m/sub/b.js", "plugins/p/new.php", "plugins/p/x.php"]
+        return [] if got == want else [f"expected {want}, got {got}"]
+
+    def faulty_shipped(dirty: list[str], payload: list[str], repo_root: Path) -> list[str]:
+        return sorted(set(dirty + payload))  # a payload folder stays a bare folder name
+
+    # F4: a dry run decides motion QA exactly as a real run does.
+    def check_action(fn) -> list[str]:
+        want = [((True, False, "indus-test", True), "skip-target"), ((True, False, "indus-test", False), "skip-target"),
+                ((True, False, "sandybrown", True), "run"), ((True, True, "sandybrown", False), "none"), ((False, False, "sandybrown", False), "none")]
+        return [f"{args}: {fn(*args)} not {exp}" for args, exp in want if fn(*args) != exp]
+
+    def real_action(blocks: bool, skip: bool, target: str, dry: bool) -> str:
+        return motion_qa_action(blocks, skip, target)
+
+    def faulty_action(blocks: bool, skip: bool, target: str, dry: bool) -> str:
+        return "run" if dry and blocks and not skip else motion_qa_action(blocks, skip, target)
 
     def faulty_match(glob: str, path: str) -> bool:
         return fnmatch.fnmatchcase(path, glob)  # `*` crosses `/`, and `**` means nothing special
@@ -342,6 +454,13 @@ def self_test() -> list[str]:
         ("the record is written after a passing full run only", check_record(deploy_verify.step_motion_qa), check_record(faulty_step)),
         ("the real full-tier-paths.json matches the marquee probe and brand-strip, not accordion or testimonial", check_real_config(real_cfg),
          check_real_config({"paths": []}) + check_real_config({"paths": ["plugins/**"]})),
+        ("files shipped uncommitted count as changed, so a dirty marquee-related file forces full over an empty commit diff",
+         check_uncommitted(resolve_tier), check_uncommitted(faulty_resolve)),
+        ("shipped_uncommitted expands a --payload folder and lists new files and dirty files",
+         check_shipped(shipped_uncommitted), check_shipped(faulty_shipped)),
+        ("no full pass is recorded after a run that shipped uncommitted files or ran under --skip-verify",
+         check_record_flags(deploy_verify.step_motion_qa), check_record_flags(faulty_step_ignores_flags)),
+        ("a dry run for a non-canary target reports SKIPPED exactly as a real run does", check_action(real_action), check_action(faulty_action)),
         ("globs: `*` stays in a segment, `**` crosses them, `?` is one character", check_glob(real_match), check_glob(faulty_match)),
     ]
     for label, real_problems, planted in cases:

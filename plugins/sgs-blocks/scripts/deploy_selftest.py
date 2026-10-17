@@ -19,7 +19,7 @@ import deploy_qa_tier
 import deploy_timing
 import deploy_verify
 
-from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, SNAPSHOT_REL, TARBALL_NAME, TARGETS, THEME_JSON_PAYLOAD_NAME
+from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, REPO_ROOT, SNAPSHOT_REL, TARBALL_NAME, TARGETS, THEME_JSON_PAYLOAD_NAME
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, split_dirty_by_payload, theme_json_guard_decision, uncommitted_snapshot_md5
 from deploy_ship import build_remote_extract_cmd, build_tar_cmd
 from deploy_verify import theme_json_verify_result
@@ -235,9 +235,28 @@ def self_test_timing() -> list[str]:
         with open(path, "a", encoding="utf-8") as fh:
             fh.write(json.dumps(entry) + "\n")
 
+    def check_short_commit(fn) -> list[str]:
+        """fn(repo) must read that repo's HEAD even when the process sits in another repo."""
+        with tempfile.TemporaryDirectory(prefix="sgs-deploy-timing-repo-") as td:
+            repo = deploy_qa_tier.make_temp_repo(Path(td) / "repo", {"a.txt": "1\n"})
+            want = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=repo, capture_output=True, text=True, check=True).stdout.strip()
+            here = os.getcwd()
+            os.chdir(REPO_ROOT)
+            try:
+                got = fn(repo)
+            finally:
+                os.chdir(here)
+        return [] if got == want else [f"read {got!r}, the given directory's HEAD is {want!r}"]
+
+    def faulty_short_commit(repo: Path) -> str:
+        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, check=False)
+        return out.stdout.strip() or "unknown"  # the process cwd, not the given directory
+
     with tempfile.TemporaryDirectory(prefix="sgs-deploy-timing-") as td:
         base = Path(td)
         cases = [
+            ("short_commit reads the given directory's HEAD, not the process cwd", check_short_commit(deploy_timing.short_commit),
+             check_short_commit(faulty_short_commit)),
             ("summary slowest first, percentages about 100", check_summary(deploy_timing.format_summary), check_summary(faulty_fmt)),
             ("a raising stage records its time and re-raises", check_raise(deploy_timing.stage), check_raise(faulty_stage)),
             ("history line is valid JSON with the documented keys", check_entry(deploy_timing.build_entry), check_entry(faulty_entry)),
@@ -507,5 +526,7 @@ def self_test() -> int:
     print(" 21. motion QA tier: auto picks full with no record, a stale record, an unreachable commit or a changed marquee-related "
           "file (named in the reason) and smoke otherwise; explicit tiers are honoured; a corrupt record reads as none; the record is "
           "written after a passing full run only; the real full-tier-paths.json matches the marquee code and not unrelated blocks; "
+          "files shipped uncommitted (dirty or --payload) count as changed, and such a run or a --skip-verify run never records a full pass; "
+          "a dry run for a non-canary target reports SKIPPED as a real run does; deploy_timing.short_commit reads the given checkout; "
           "each check is proven red on a planted fault")
     return 0

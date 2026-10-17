@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterator
 
-from deploy_common import log
+from deploy_common import REPO_ROOT, log
 
 HISTORY_ENV = "SGS_DEPLOY_TIMINGS_FILE"
 OTHER_LABEL = "(other, unaccounted)"
@@ -114,11 +114,11 @@ def append_history(entry: dict[str, Any], path: Path | None = None) -> bool:
         return False
 
 
-def short_commit() -> str:
-    """The short hash of HEAD in the current checkout, or "unknown"."""
+def short_commit(repo_root: Path = REPO_ROOT) -> str:
+    """The short hash of HEAD in `repo_root` (this repo, whatever the process's working directory), or "unknown"."""
     try:
         out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True,
-                             text=True, check=False, timeout=15)
+                             text=True, check=False, timeout=15, cwd=repo_root)
         return out.stdout.strip() if out.returncode == 0 and out.stdout.strip() else "unknown"
     except Exception:  # noqa: BLE001
         return "unknown"

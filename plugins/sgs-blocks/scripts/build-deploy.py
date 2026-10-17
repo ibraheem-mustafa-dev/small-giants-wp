@@ -56,6 +56,7 @@ from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_
 from deploy_selftest import self_test
 from deploy_timing import finish as finish_timings, record as record_stage, stage, timed
 from deploy_ship import run_isolated, step_build, step_local_cleanup, step_remote_extract, step_scp, step_tar
+from deploy_qa_tier import motion_qa_action, shipped_uncommitted
 from deploy_verify import step_motion_qa, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
 
 
@@ -466,14 +467,13 @@ def main() -> int:
                   "is probably NOT what is running (D576).", flush=True)
             return 1
 
-    # Post-deploy LIVE motion gate: do the shipped scroll effects still work?
-    # Runs after the payload gate so a STALE payload is reported before motion is blamed.
-    # The probes measure the sandybrown canary's fixture pages, so on any other target
-    # a pass would say nothing about the site just deployed.
-    if deploy_blocks and not args.skip_motion_qa and not args.dry_run and target_key != "sandybrown":
+    # Post-deploy LIVE motion gate, after the payload gate so a STALE payload is reported first; a dry run decides as a real run does.
+    qa_action = motion_qa_action(deploy_blocks, args.skip_motion_qa, target_key)
+    if qa_action == "skip-target":
         log(f"[motion-qa] SKIPPED: the probes measure the sandybrown canary, not {target_key}")
-    elif deploy_blocks and not args.skip_motion_qa:
-        rc = timed("motion-qa", step_motion_qa, args.dry_run, args.motion_qa_tier, args.motion_qa_parallel)
+    elif qa_action == "run":
+        rc = timed("motion-qa", step_motion_qa, args.dry_run, args.motion_qa_tier, args.motion_qa_parallel,
+                   shipped_uncommitted(dirty, args.payload) if intends_dirty_ship else [], args.skip_verify)
         if rc != 0:
             print("[DEPLOYED-BUT-MOTION-REGRESSED] the deploy completed, the site "
                   "responds and the payload matches, but a live motion probe failed. "

@@ -226,7 +226,8 @@ def motion_qa_command(npm: str, tier: str = "full", parallel: int = 1) -> list[s
     return cmd
 
 
-def step_motion_qa(dry_run: bool, tier: str = "full", parallel: int = 1) -> int:
+def step_motion_qa(dry_run: bool, tier: str = "full", parallel: int = 1, uncommitted: list[str] | None = None,
+                   skip_verify: bool = False) -> int:
     """Post-deploy LIVE motion regression check.
 
     ⛔ WHY THIS IS HERE AND NOT IN `prebuild`. Every motion probe needs a live canary.
@@ -245,10 +246,14 @@ def step_motion_qa(dry_run: bool, tier: str = "full", parallel: int = 1) -> int:
     `tier` (`smoke`, `full` or `auto`) and `parallel` (1 to 8) come from `--motion-qa-tier` and `--motion-qa-parallel`.
     `auto` runs the full set when marquee-related code changed or the last full pass is stale (`deploy_qa_tier.py`), else
     smoke. A passing full run records HEAD; a smoke run never does, and a dry run never writes anything.
+
+    `uncommitted` lists the files this run ships that are not in HEAD; they count as changed when `auto` chooses a tier.
+    A full pass is never recorded when the run shipped uncommitted files (HEAD would not describe the code tested) or
+    when `skip_verify` is set (the deploy never confirmed the live plugin is this payload).
     """
     # npm is a shell shim on Windows; shell=False needs the .cmd form there.
     npm = "npm.cmd" if os.name == "nt" else "npm"
-    chosen, reason = resolve_tier(tier)
+    chosen, reason = resolve_tier(tier, uncommitted=uncommitted)
     log(f"[motion-qa] tier {chosen} ({reason})")
     cmd = motion_qa_command(npm, chosen, parallel)
     if dry_run:
@@ -257,7 +262,12 @@ def step_motion_qa(dry_run: bool, tier: str = "full", parallel: int = 1) -> int:
     log("[motion-qa] running live motion probes against the canary")
     rc = run(cmd, dry_run=False, cwd=PLUGIN_DIR)
     if rc == 0 and chosen == "full":
-        note_full_pass()
+        if uncommitted:
+            log("[motion-qa] full pass not recorded: this run shipped uncommitted files, so HEAD does not describe the code tested")
+        elif skip_verify:
+            log("[motion-qa] full pass not recorded: --skip-verify left the live plugin unconfirmed")
+        else:
+            note_full_pass()
     return rc
 
 
