@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mega panel — drill-down (Small Giants Studio)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MEGA PANEL — DRILL-DOWN  ·  SMALL GIANTS STUDIO
+   Rebuilt. The hover-switcher is gone; this is click-to-open with a back arrow.
+
+   WHY THE OLD ONE WAS BROKEN, not merely ugly:
+     hover-only switching meant the panel reverted the moment you moved the
+     cursor toward the thing you wanted to click. The content was literally
+     unreachable. No amount of styling fixes that — the interaction model
+     was wrong.
+
+   THIS MODEL: four tall tiles are the menu. Click one and its content slides
+   over the top like a drawer, with a back arrow to return and pick another.
+   Works identically with a mouse, a keyboard and a finger — there is no
+   hover state carrying any meaning.
+
+   MECHANISM — pure CSS, zero JS: each drawer is an `:target`. The tiles are
+   real anchors pointing at it; the back arrow points back to the panel root.
+   Every drawer is server-rendered and in the DOM at all times, so all 12
+   links are crawlable with JS disabled and reachable on any device.
+
+   Also fixed from the old version:
+     · greyscale->colour on hover  -> REMOVED. Everything is full colour.
+     · three squat modular boxes   -> tall tiles; the panel uses its height
+     · triggers overlapped         -> nothing moves horizontally into a
+                                      neighbour; the lift is vertical only
+     · mobile listed everything    -> same drill-down, no dead trigger strip
+   ========================================================================== */
+:root {
+  --primary: #0F7E80;
+  --primary-dark: #0A5B5D;
+  --accent: #F87A1F;
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --text-muted: #555555;
+
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius: 14px;
+  --radius-sm: 9px;
+
+  --space-xs: 8px;
+  --space-sm: 14px;
+  --space-md: 22px;
+  --space-lg: 32px;
+
+  --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-drill {
+  --mx: 50%;
+  --my: 40%;
+  position: relative;
+  background:
+    radial-gradient(
+      640px circle at var(--mx) var(--my),
+      color-mix(in srgb, var(--surface) 24%, transparent) 0%,
+      transparent 62%
+    ),
+    var(--accent);
+  color: var(--text);
+  font-family: var(--font-body);
+  padding: var(--space-lg) var(--space-md);
+  overflow: hidden;
+}
+
+.sgs-mega-drill__inner {
+  max-width: var(--content-width);
+  --content-width: 1240px;
+  margin: 0 auto;
+  position: relative;
+  min-height: 430px;
+}
+
+.sgs-mega-drill__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: var(--space-md);
+}
+
+.sgs-mega-drill__eyebrow::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+/* ---- LEVEL 1: the four tall tiles -------------------------------------- */
+.sgs-mega-drill__items {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  transition: opacity 300ms ease, transform 340ms var(--ease);
+}
+
+.sgs-mega-drill__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 360px;              /* the panel finally uses its height */
+  padding: var(--space-md);
+  border: 2px solid var(--text);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--surface);
+  background: var(--primary-dark);
+  isolation: isolate;
+  box-shadow: 5px 5px 0 0 var(--text);
+  transition: transform 280ms var(--spring);
+  will-change: transform;
+}
+
+/* Pre-rendered lift shadow — opacity fades, nothing repaints. */
+.sgs-mega-drill__item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  border-radius: var(--radius);
+  box-shadow: 5px 14px 0 0 var(--primary-dark);
+  opacity: 0;
+  transition: opacity 280ms ease;
+  pointer-events: none;
+}
+
+.sgs-mega-drill__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: -2;
+  transition: transform 620ms var(--ease);   /* transform only — no filter */
+  will-change: transform;
+}
+
+.sgs-mega-drill__item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--text) 92%, transparent) 0%,
+    color-mix(in srgb, var(--text) 66%, transparent) 52%,
+    color-mix(in srgb, var(--text) 34%, transparent) 100%
+  );
+}
+
+.sgs-mega-drill__tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: var(--space-xs);
+}
+
+.sgs-mega-drill__title {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--surface);
+  text-wrap: balance;
+  margin: 0 0 4px;
+}
+
+.sgs-mega-drill__description {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--surface);
+  text-wrap: pretty;
+  margin: 0;
+}
+
+/* Lift is VERTICAL only — a horizontal shift is what made the old tiles
+   creep over their neighbours. */
+.sgs-mega-drill__item:hover,
+.sgs-mega-drill__item:focus-visible { transform: translateY(-7px); }
+
+.sgs-mega-drill__item:hover::after,
+.sgs-mega-drill__item:focus-visible::after { opacity: 1; }
+
+.sgs-mega-drill__item:hover .sgs-mega-drill__image,
+.sgs-mega-drill__item:focus-visible .sgs-mega-drill__image { transform: scale(1.07); }
+
+.sgs-mega-drill__item:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+
+/* ---- LEVEL 2: the drawers --------------------------------------------- */
+.sgs-mega-drill__panel {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 2px solid var(--text);
+  border-radius: var(--radius);
+  box-shadow: 6px 6px 0 0 var(--text);
+  padding: var(--space-md);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(4%);
+  transition: opacity 260ms ease, transform 360ms var(--ease), visibility 260ms;
+}
+
+/* :target is the whole switch. Click a tile -> its drawer opens. */
+.sgs-mega-drill__panel:target {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* Push the tiles back slightly while a drawer is open. */
+.sgs-mega-drill__inner:has(.sgs-mega-drill__panel:target) .sgs-mega-drill__items {
+  opacity: 0.25;
+  transform: scale(0.985);
+}
+
+.sgs-mega-drill__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  align-self: flex-start;
+  padding: 11px 16px 11px 12px;
+  margin-bottom: var(--space-md);
+  border: 2px solid var(--text);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  min-height: 44px;
+  transition: transform 220ms var(--spring), background 200ms ease;
+}
+
+.sgs-mega-drill__cta::before { content: "←"; font-size: 15px; }
+.sgs-mega-drill__cta:hover { transform: translateX(-5px); background: var(--accent); }
+.sgs-mega-drill__cta:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+
+.sgs-mega-drill__panel .sgs-mega-drill__title {
+  font-size: 27px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.sgs-mega-drill__panel .sgs-mega-drill__description {
+  font-size: 14.5px;
+  color: var(--text-muted);
+  max-width: 56ch;
+  margin-bottom: var(--space-md);
+}
+
+/* The drawer's own links — tall cards, not a squat strip. */
+.sgs-mega-drill__links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-top: auto;
+}
+
+.sgs-mega-drill__link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 190px;
+  padding: var(--space-sm);
+  border: 2px solid var(--text);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--surface);
+  background: var(--primary-dark);
+  isolation: isolate;
+  transition: transform 260ms var(--spring);
+  will-change: transform;
+}
+
+.sgs-mega-drill__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  border-radius: var(--radius-sm);
+  box-shadow: 5px 11px 0 0 var(--accent);
+  opacity: 0;
+  transition: opacity 260ms ease;
+  pointer-events: none;
+}
+
+.sgs-mega-drill__link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--text) 92%, transparent) 0%,
+    color-mix(in srgb, var(--text) 58%, transparent) 62%,
+    color-mix(in srgb, var(--text) 28%, transparent) 100%
+  );
+}
+
+.sgs-mega-drill__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--surface);
+}
+
+.sgs-mega-drill__label::after {
+  content: "→";
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: opacity 200ms ease, transform 240ms var(--spring);
+}
+
+.sgs-mega-drill__link:hover,
+.sgs-mega-drill__link:focus-visible { transform: translateY(-6px) rotate(-0.7deg); }
+
+.sgs-mega-drill__link:hover::after,
+.sgs-mega-drill__link:focus-visible::after { opacity: 1; }
+
+.sgs-mega-drill__link:hover .sgs-mega-drill__image,
+.sgs-mega-drill__link:focus-visible .sgs-mega-drill__image { transform: scale(1.08); }
+
+.sgs-mega-drill__link:hover .sgs-mega-drill__label::after,
+.sgs-mega-drill__link:focus-visible .sgs-mega-drill__label::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sgs-mega-drill__link:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* No :has() support — the tiles simply never dim. Everything still works. */
+@supports not selector(:has(*)) {
+  .sgs-mega-drill__items { opacity: 1; }
+}
+
+@media (max-width: 1023px) {
+  .sgs-mega-drill__items { grid-template-columns: repeat(2, 1fr); }
+  .sgs-mega-drill__item { min-height: 240px; }
+  .sgs-mega-drill__inner { min-height: 560px; }
+  .sgs-mega-drill__links { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile: the SAME drill-down. No dead trigger strip, no dumped list. */
+@media (max-width: 767px) {
+  .sgs-mega-drill__items { grid-template-columns: 1fr; }
+  .sgs-mega-drill__item { min-height: 168px; }
+  .sgs-mega-drill__inner { min-height: 740px; }
+  .sgs-mega-drill__panel { padding: var(--space-sm); }
+  .sgs-mega-drill__panel .sgs-mega-drill__title { font-size: 22px; }
+  .sgs-mega-drill__links { grid-template-columns: 1fr; }
+  .sgs-mega-drill__link { min-height: 130px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgs-mega-drill__item,
+  .sgs-mega-drill__image,
+  .sgs-mega-drill__link,
+  .sgs-mega-drill__panel,
+  .sgs-mega-drill__items,
+  .sgs-mega-drill__cta,
+  .sgs-mega-drill__label::after { transition: none; }
+  .sgs-mega-drill__item:hover,
+  .sgs-mega-drill__link:hover { transform: none; }
+  .sgs-mega-drill__item:hover .sgs-mega-drill__image,
+  .sgs-mega-drill__link:hover .sgs-mega-drill__image { transform: none; }
+  .sgs-mega-drill__panel { transform: none; }
+  .sgs-mega-drill { background: var(--accent); }
+}
+</style>
+</head>
+<body>
+
+<section class="sgs-mega-drill" id="sgs-drill">
+  <div class="sgs-mega-drill__inner" id="sgs-drill-root">
+
+    <span class="sgs-mega-drill__eyebrow">What we do</span>
+
+    <div class="sgs-mega-drill__items">
+      <a class="sgs-mega-drill__item" href="#sgs-panel-build">
+        <img class="sgs-mega-drill__image" src="https://picsum.photos/id/180/600/800" alt="" width="600" height="800">
+        <span class="sgs-mega-drill__tag">01</span>
+        <h4 class="sgs-mega-drill__title">Build</h4>
+        <p class="sgs-mega-drill__description">Websites that earn their keep.</p>
+      </a>
+      <a class="sgs-mega-drill__item" href="#sgs-panel-strategy">
+        <img class="sgs-mega-drill__image" src="https://picsum.photos/id/1062/600/800" alt="" width="600" height="800">
+        <span class="sgs-mega-drill__tag">02</span>
+        <h4 class="sgs-mega-drill__title">Strategy</h4>
+        <p class="sgs-mega-drill__description">Know what it has to achieve.</p>
+      </a>
+      <a class="sgs-mega-drill__item" href="#sgs-panel-growth">
+        <img class="sgs-mega-drill__image" src="https://picsum.photos/id/1071/600/800" alt="" width="600" height="800">
+        <span class="sgs-mega-drill__tag">03</span>
+        <h4 class="sgs-mega-drill__title">Growth</h4>
+        <p class="sgs-mega-drill__description">Reach people already looking.</p>
+      </a>
+      <a class="sgs-mega-drill__item" href="#sgs-panel-care">
+        <img class="sgs-mega-drill__image" src="https://picsum.photos/id/1082/600/800" alt="" width="600" height="800">
+        <span class="sgs-mega-drill__tag">04</span>
+        <h4 class="sgs-mega-drill__title">Care</h4>
+        <p class="sgs-mega-drill__description">Looked after, not left alone.</p>
+      </a>
+    </div>
+
+    <div class="sgs-mega-drill__panel" id="sgs-panel-build">
+      <a class="sgs-mega-drill__cta" href="#sgs-drill-root">All services</a>
+      <h4 class="sgs-mega-drill__title">Websites that earn their keep</h4>
+      <p class="sgs-mega-drill__description">Fast, accessible, and built to convert. Live in weeks rather than months.</p>
+      <div class="sgs-mega-drill__links">
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/180/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Web design</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/0/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">E-commerce</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/48/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Booking systems</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="sgs-mega-drill__panel" id="sgs-panel-strategy">
+      <a class="sgs-mega-drill__cta" href="#sgs-drill-root">All services</a>
+      <h4 class="sgs-mega-drill__title">Know what it has to achieve</h4>
+      <p class="sgs-mega-drill__description">Strategy first. We work out the job the site is doing before anyone opens a design tool.</p>
+      <div class="sgs-mega-drill__links">
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/1062/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Discovery</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/119/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Brand &amp; identity</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/160/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Content planning</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="sgs-mega-drill__panel" id="sgs-panel-growth">
+      <a class="sgs-mega-drill__cta" href="#sgs-drill-root">All services</a>
+      <h4 class="sgs-mega-drill__title">Reach the people already looking</h4>
+      <p class="sgs-mega-drill__description">Search, content and local visibility, measured properly rather than guessed at.</p>
+      <div class="sgs-mega-drill__links">
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/1071/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">SEO &amp; content</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/1024/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Local search</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/201/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Analytics</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="sgs-mega-drill__panel" id="sgs-panel-care">
+      <a class="sgs-mega-drill__cta" href="#sgs-drill-root">All services</a>
+      <h4 class="sgs-mega-drill__title">Looked after, not left alone</h4>
+      <p class="sgs-mega-drill__description">Hosting, updates, speed and small changes — so you never have to think about it.</p>
+      <div class="sgs-mega-drill__links">
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/1082/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Monthly care</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/326/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Performance</span>
+        </a>
+        <a class="sgs-mega-drill__link" href="#">
+          <img class="sgs-mega-drill__image" src="https://picsum.photos/id/366/500/500" alt="" width="500" height="500">
+          <span class="sgs-mega-drill__label">Support</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+/* Cursor wash only. Two custom properties, rAF-throttled, skipped under
+   reduced-motion. The panel is fully functional without it. */
+(function () {
+  var el = document.getElementById('sgs-drill');
+  if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var frame = 0;
+  el.addEventListener('mousemove', function (e) {
+    if (frame) return;
+    frame = requestAnimationFrame(function () {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      frame = 0;
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mega panel — SGS, orange ground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MEGA PANEL — SPLIT WITH ASIDE CTA  ·  SMALL GIANTS STUDIO
+   Direction: casual · modern · high-tech-but-not-futuristic
+
+   Deliberately NOT the Editorial Broadsheet direction. What changed and why:
+     · LIGHT ground, not inverted  — approachable rather than authoritative
+     · radius is BACK (12px)       — softness is what reads as casual
+     · no serif anywhere           — serif reads editorial/traditional
+     · mono for micro-labels       — the "high-tech" signal WITHOUT sci-fi;
+                                     it says engineering, not spaceship
+     · soft elevation + tint cards — depth, but warm rather than dramatic
+
+   SGS palette contrast ceiling (measured, this is what drives every choice):
+     accent #F87A1F as TEXT on light = 2.51:1  FAIL — so orange is never type
+     near-black ON accent            = 6.19:1  PASS — orange is a GROUND
+     near-black ON accent-light      = 14.06:1 PASS — soft tint surfaces
+     white ON primary                = 4.87:1  PASS
+     primary-dark as text on light   = 7.32:1  PASS — headings live here
+   ========================================================================== */
+:root {
+  --primary: #0F7E80;
+  --primary-dark: #0A5B5D;
+  --accent: #F87A1F;
+  --surface: #FFFFFF;
+  --surface-alt: #F5F7F7;
+  --text: #1E1E1E;
+  --text-muted: #555555;
+
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --space-xs: 8px;
+  --space-sm: 14px;
+  --space-md: 22px;
+  --space-lg: 32px;
+}
+
+.sgs-mega-split {
+  background: var(--accent);
+  color: var(--text);
+  font-family: var(--font-body);
+  padding: var(--space-lg) var(--space-md);
+}
+
+.sgs-mega-split__inner {
+  max-width: var(--content-width);
+  --content-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: var(--space-lg);
+  align-items: stretch;
+}
+
+/* ---- Left: the navigation ---------------------------------------------- */
+.sgs-mega-split__body { padding: var(--space-sm) 0; }
+
+/* Mono micro-label with a live status dot. This is the whole "high-tech"
+   signal — engineering vernacular, not sci-fi chrome. */
+.sgs-mega-split__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: var(--space-sm);
+}
+
+.sgs-mega-split__eyebrow::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.sgs-mega-split__title {
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 var(--space-sm);
+  color: var(--text);
+}
+
+.sgs-mega-split__description--lead {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+  max-width: 48ch;
+  margin: 0 0 var(--space-lg);
+}
+
+.sgs-mega-split__items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+/* Soft cards rather than ruled rows — this is the casual register. */
+.sgs-mega-split__item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--surface);
+  border: 2px solid var(--text);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-md);
+  min-height: 44px;
+  transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 200ms ease,
+              box-shadow 200ms ease;
+}
+
+.sgs-mega-split__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+/* The arrow slides out on hover — small, friendly, not a whole animation. */
+.sgs-mega-split__label::after {
+  content: "→";
+  color: var(--primary);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.sgs-mega-split__description {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.sgs-mega-split__item:hover {
+  transform: translateY(-2px);
+  background: var(--surface-alt);
+  border-color: var(--primary-dark);
+  box-shadow: 4px 4px 0 0 var(--primary-dark);
+}
+
+.sgs-mega-split__item:hover .sgs-mega-split__label::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sgs-mega-split__item:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ---- Right: the promo -------------------------------------------------- */
+.sgs-mega-split__aside {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--primary-dark);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--surface);
+  min-height: 340px;
+}
+
+.sgs-mega-split__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Teal-weighted scrim rather than neutral black — keeps the promo on-brand
+   whatever photograph sits underneath, and guarantees label contrast. */
+.sgs-mega-split__aside::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--primary-dark) 96%, transparent) 0%,
+    color-mix(in srgb, var(--primary-dark) 82%, transparent) 52%,
+    color-mix(in srgb, var(--primary-dark) 62%, transparent) 100%
+  );
+}
+
+.sgs-mega-split__aside > *:not(.sgs-mega-split__image) { position: relative; z-index: 1; }
+
+/* Orange pill — the one hot moment. Near-black on accent = 6.19:1. */
+.sgs-mega-split__tag {
+  align-self: flex-start;
+  background: var(--accent);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: auto;
+}
+
+.sgs-mega-split__aside .sgs-mega-split__title {
+  font-size: 26px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--surface);
+  margin: 0 0 var(--space-xs);
+}
+
+.sgs-mega-split__aside .sgs-mega-split__description {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--surface);
+  max-width: 30ch;
+  margin: 0 0 var(--space-md);
+}
+
+.sgs-mega-split__cta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 13px 20px;
+  background: var(--accent);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  min-height: 44px;
+  transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-split__cta::after { content: "→"; }
+
+.sgs-mega-split__aside:hover .sgs-mega-split__image { transform: scale(1.05); }
+.sgs-mega-split__aside:hover .sgs-mega-split__cta { transform: translateX(5px); }
+.sgs-mega-split__aside:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+
+@media (max-width: 1023px) {
+  .sgs-mega-split__inner { grid-template-columns: 1.2fr 1fr; }
+  .sgs-mega-split__items { grid-template-columns: 1fr; }
+  .sgs-mega-split__title { font-size: 28px; }
+}
+
+@media (max-width: 767px) {
+  .sgs-mega-split__inner { grid-template-columns: 1fr; }
+  .sgs-mega-split__title { font-size: 26px; }
+  .sgs-mega-split__aside { min-height: 280px; }
+  .sgs-mega-split__aside .sgs-mega-split__title { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgs-mega-split__item,
+  .sgs-mega-split__label::after,
+  .sgs-mega-split__image,
+  .sgs-mega-split__cta { transition: none; }
+  .sgs-mega-split__item:hover { transform: none; }
+  .sgs-mega-split__aside:hover .sgs-mega-split__image { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<section class="sgs-mega-split">
+  <div class="sgs-mega-split__inner">
+
+    <div class="sgs-mega-split__body">
+      <span class="sgs-mega-split__eyebrow">What we do</span>
+      <h3 class="sgs-mega-split__title">Websites that earn their keep</h3>
+      <p class="sgs-mega-split__description--lead">Strategy first, then the build. Pick the bit you need, or start at the top and we will work it out together.</p>
+
+      <div class="sgs-mega-split__items">
+        <a class="sgs-mega-split__item" href="#">
+          <span class="sgs-mega-split__label">Web design</span>
+          <span class="sgs-mega-split__description">Fast, accessible sites built to convert.</span>
+        </a>
+        <a class="sgs-mega-split__item" href="#">
+          <span class="sgs-mega-split__label">Brand &amp; identity</span>
+          <span class="sgs-mega-split__description">Look like the business you are becoming.</span>
+        </a>
+        <a class="sgs-mega-split__item" href="#">
+          <span class="sgs-mega-split__label">SEO &amp; content</span>
+          <span class="sgs-mega-split__description">Get found by the people already looking.</span>
+        </a>
+        <a class="sgs-mega-split__item" href="#">
+          <span class="sgs-mega-split__label">Booking systems</span>
+          <span class="sgs-mega-split__description">Take appointments without the admin.</span>
+        </a>
+        <a class="sgs-mega-split__item" href="#">
+          <span class="sgs-mega-split__label">Care &amp; support</span>
+          <span class="sgs-mega-split__description">We keep it running so you do not have to.</span>
+        </a>
+        <a class="sgs-mega-split__item" href="#">
+          <span class="sgs-mega-split__label">Start a project</span>
+          <span class="sgs-mega-split__description">Tell us what you are trying to do.</span>
+        </a>
+      </div>
+    </div>
+
+    <a class="sgs-mega-split__aside" href="#">
+      <img class="sgs-mega-split__image" src="https://picsum.photos/id/180/800/1000" alt="" width="800" height="1000">
+      <span class="sgs-mega-split__tag">Case study</span>
+      <span class="sgs-mega-split__title">Indus Foods, rebuilt in six weeks</span>
+      <span class="sgs-mega-split__description">A trade supplier with a catalogue problem. Now it sells itself.</span>
+      <span class="sgs-mega-split__cta">Read the story</span>
+    </a>
+
+  </div>
+</section>
+
+</body>
+</html>

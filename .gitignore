@@ -212,3 +212,4 @@ sites/*/build/qa/flows/
 .claude/reports/2026-10-04-route-data-audit/fingerprint/fingerprint-report.json
 .claude/backups/2026-10-08/
 .claude/backups/2026-10-09/
+sites/indus-foods/build/intake/intake.prev.json

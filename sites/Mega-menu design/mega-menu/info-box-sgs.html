@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mega panel — info boxes (Small Giants Studio, orange ground)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MEGA PANEL — INFO BOXES  ·  SMALL GIANTS STUDIO
+   Direction: casual · modern · high-tech-not-futuristic, orange ground
+
+   Techniques taken from the Awwwards/mega-menu research, filtered to the
+   ones that survive a hover-opened nav panel:
+     · ONE dominant structural device per panel — here it is the hard
+       bordered card. Nothing else competes with it.
+     · dotted hairline dividers inside cards (Doss pattern) — groups content
+       without adding a second heavy box
+     · product-card treatment: kicker -> heading -> description -> links -> CTA,
+       a real hierarchy rather than a colour block with text on it
+     · clip-path wipe as the link underline (GPU-cheap, no JS)
+     · text-wrap: balance on headings / pretty on body — free typesetting
+   REJECTED from that research, deliberately: full-screen takeover (cannot
+   full-screen a hover state) and staggered item reveal (breaks tab order).
+
+   Contrast rule driving every colour choice: on orange ONLY near-black
+   passes (6.19:1). Muted tones are illegal on the ground, so all secondary
+   copy lives inside the white cards where --text-muted is legal again.
+   ========================================================================== */
+:root {
+  --primary: #0F7E80;
+  --primary-dark: #0A5B5D;
+  --accent: #F87A1F;
+  --surface: #FFFFFF;
+  --surface-alt: #F5F7F7;
+  --text: #1E1E1E;
+  --text-muted: #555555;
+
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --space-xs: 8px;
+  --space-sm: 14px;
+  --space-md: 22px;
+  --space-lg: 32px;
+}
+
+.sgs-mega-info {
+  background: var(--accent);
+  color: var(--text);
+  font-family: var(--font-body);
+  padding: var(--space-lg) var(--space-md);
+}
+
+.sgs-mega-info__inner {
+  max-width: var(--content-width);
+  --content-width: 1240px;
+  margin: 0 auto;
+}
+
+.sgs-mega-info__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+
+.sgs-mega-info__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: var(--space-xs);
+}
+
+.sgs-mega-info__eyebrow::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.sgs-mega-info__title {
+  font-size: 30px;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  text-wrap: balance;
+  margin: 0;
+}
+
+/* Uneven columns — the middle card is the wide one, so the row never
+   reads as three equals (the named "AI slop" tell). */
+.sgs-mega-info__cards {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  gap: var(--space-sm);
+  align-items: start;
+}
+
+/* THE dominant device: hard border + flat offset shadow. Nothing else in
+   the panel competes with it. */
+.sgs-mega-info__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 2px solid var(--text);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+  box-shadow: 5px 5px 0 0 var(--text);
+  transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-info__card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 0 var(--primary-dark);
+}
+
+.sgs-mega-info__card--feature {
+  background: var(--primary-dark);
+  box-shadow: 5px 5px 0 0 var(--text);
+}
+
+.sgs-mega-info__card--feature:hover { box-shadow: 8px 8px 0 0 var(--text); }
+
+.sgs-mega-info__tag {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary-dark);
+  background: var(--surface-alt);
+  border-radius: 999px;
+  padding: 5px 10px;
+  margin-bottom: var(--space-sm);
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__tag {
+  color: var(--text);
+  background: var(--accent);
+}
+
+.sgs-mega-info__card .sgs-mega-info__title {
+  font-size: 19px;
+  line-height: 1.25;
+  margin-bottom: var(--space-xs);
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__title { color: var(--surface); }
+
+.sgs-mega-info__description {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-wrap: pretty;
+  margin: 0 0 var(--space-sm);
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__description { color: var(--surface); }
+
+/* Dotted hairline divider — groups the links without a second box. */
+.sgs-mega-info__items {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px dotted color-mix(in srgb, var(--text) 40%, transparent);
+  padding-top: var(--space-xs);
+  margin-top: auto;
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__items {
+  border-top-color: color-mix(in srgb, var(--surface) 45%, transparent);
+}
+
+.sgs-mega-info__item {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 0;
+  min-height: 44px;
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__item { color: var(--surface); }
+
+/* clip-path wipe as the underline — GPU-cheap, no JS, and it reads as
+   deliberate where a plain text-decoration reads as default. */
+.sgs-mega-info__item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 7px;
+  width: 100%;
+  height: 2px;
+  background: var(--primary);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__item::after { background: var(--surface); }
+
+.sgs-mega-info__item:hover::after,
+.sgs-mega-info__item:focus-visible::after { clip-path: inset(0 0 0 0); }
+
+.sgs-mega-info__item:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__item:focus-visible { outline-color: var(--accent); }
+
+.sgs-mega-info__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  align-self: flex-start;
+  margin-top: var(--space-sm);
+  padding: 13px 20px;
+  background: var(--text);
+  color: var(--surface);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  min-height: 44px;
+  transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-info__card--feature .sgs-mega-info__cta {
+  background: var(--accent);
+  color: var(--text);
+}
+
+.sgs-mega-info__cta::after { content: "→"; }
+.sgs-mega-info__cta:hover { transform: translateX(5px); }
+.sgs-mega-info__cta:focus-visible { outline: 3px solid var(--surface); outline-offset: 3px; }
+
+@media (max-width: 1023px) {
+  .sgs-mega-info__cards { grid-template-columns: 1fr 1fr; }
+  .sgs-mega-info__card--feature { grid-column: span 2; }
+  .sgs-mega-info__title { font-size: 26px; }
+}
+
+@media (max-width: 767px) {
+  .sgs-mega-info__cards { grid-template-columns: 1fr; }
+  .sgs-mega-info__card--feature { grid-column: auto; }
+  .sgs-mega-info__title { font-size: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgs-mega-info__card,
+  .sgs-mega-info__item::after,
+  .sgs-mega-info__cta { transition: none; }
+  .sgs-mega-info__card:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<section class="sgs-mega-info">
+  <div class="sgs-mega-info__inner">
+
+    <div class="sgs-mega-info__header">
+      <div>
+        <span class="sgs-mega-info__eyebrow">How we work</span>
+        <h3 class="sgs-mega-info__title">Three ways to start with us</h3>
+      </div>
+    </div>
+
+    <div class="sgs-mega-info__cards">
+
+      <div class="sgs-mega-info__card">
+        <span class="sgs-mega-info__tag">01 — Quick</span>
+        <h4 class="sgs-mega-info__title">A site that works</h4>
+        <p class="sgs-mega-info__description">You know what you need. We build it properly, and it goes live in weeks rather than months.</p>
+        <div class="sgs-mega-info__items">
+          <a class="sgs-mega-info__item" href="#">Web design</a>
+          <a class="sgs-mega-info__item" href="#">Booking systems</a>
+          <a class="sgs-mega-info__item" href="#">Care &amp; support</a>
+        </div>
+        <a class="sgs-mega-info__cta" href="#">See packages</a>
+      </div>
+
+      <div class="sgs-mega-info__card sgs-mega-info__card--feature">
+        <span class="sgs-mega-info__tag">02 — Most popular</span>
+        <h4 class="sgs-mega-info__title">Strategy, then the build</h4>
+        <p class="sgs-mega-info__description">We work out what the site actually has to achieve before anyone opens a design tool. Most people end up here.</p>
+        <div class="sgs-mega-info__items">
+          <a class="sgs-mega-info__item" href="#">Discovery workshop</a>
+          <a class="sgs-mega-info__item" href="#">Brand &amp; identity</a>
+          <a class="sgs-mega-info__item" href="#">SEO &amp; content</a>
+          <a class="sgs-mega-info__item" href="#">Full build</a>
+        </div>
+        <a class="sgs-mega-info__cta" href="#">Start a project</a>
+      </div>
+
+      <div class="sgs-mega-info__card">
+        <span class="sgs-mega-info__tag">03 — Ongoing</span>
+        <h4 class="sgs-mega-info__title">Keep it growing</h4>
+        <p class="sgs-mega-info__description">Already have a site. You want it faster, found more often, and looked after.</p>
+        <div class="sgs-mega-info__items">
+          <a class="sgs-mega-info__item" href="#">Performance</a>
+          <a class="sgs-mega-info__item" href="#">Search &amp; visibility</a>
+          <a class="sgs-mega-info__item" href="#">Monthly care</a>
+        </div>
+        <a class="sgs-mega-info__cta" href="#">See how it works</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

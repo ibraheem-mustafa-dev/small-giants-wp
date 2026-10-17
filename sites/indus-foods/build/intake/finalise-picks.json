@@ -1,0 +1,1730 @@
+{
+ "top-bar": [
+  {
+   "key": "Indus Foods Website v2/16#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "phone"
+   },
+   "confidence": 0.85,
+   "reason": "The words are the business phone number, which is Site Info content; sgs/business-info reads it (displayType enum includes phone), matching its email sibling."
+  },
+  {
+   "key": "Indus Foods Website v2/20#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "email"
+   },
+   "confidence": 0.9,
+   "reason": "A mailto link to the business email is Site Info content; sgs/business-info (displayType email) is the top candidate and reads Site Info rather than typed text."
+  }
+ ],
+ "scroll-progress-bar": [
+  {
+   "key": "Indus Foods Website v2/38#0",
+   "block": "sgs/container",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.3,
+   "reason": "A fixed 3px full-width bar that fills with scroll progress; no DB block or fx_effects entry implements a page scroll-progress bar, so this is a placeholder container pending a missing feature."
+  }
+ ],
+ "sticky-header": [
+  {
+   "key": "Indus Foods Website v2/39#0",
+   "block": "sgs/site-header",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.92,
+   "reason": "The surface root header element spanning the full width at every breakpoint is the site header shell; sgs/site-header is the top-scored candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/43#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.92,
+   "reason": "The indus-logo element is the typed brand logo, so it is the logo block; sgs/responsive-logo replaces core/site-logo in the DB."
+  },
+  {
+   "key": "Indus Foods Website v2/48=sgs/text",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A nav item label in a looped button; sgs/text is the only candidate, but the nav itself should be sgs/nav-bar-menu, which renders its own labels, and I cannot see the nav row to confirm."
+  },
+  {
+   "key": "Indus Foods Website v2/52#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.6,
+   "reason": "An empty 2px underline span under the active nav item is the nav's own active-state indicator paint, not a content block."
+  },
+  {
+   "key": "Indus Foods Website v2/50",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The dropdown caret beside a nav label is an icon glyph; sgs/icon fits, though sgs/nav-bar-menu would render its own submenu caret if the nav becomes that block."
+  }
+ ],
+ "about-mega-menu": [
+  {
+   "key": "Indus Foods Website v2/71",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+  },
+  {
+   "key": "Indus Foods Website v2/73",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The bold link title of a repeated mega-menu link; kept as sgs/text rather than a heading so the menu does not add headings to the page outline."
+  },
+  {
+   "key": "Indus Foods Website v2/74",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/78#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/80#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/81#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The bold 22px title of the mega-menu feature panel, followed by its description and a button; sgs/heading fits the title role, though the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/82#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  }
+ ],
+ "sectors-mega-menu": [
+  {
+   "key": "Indus Foods Website v2/89",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/91",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/92",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/93",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A \"read more\" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link."
+  }
+ ],
+ "brands-mega-menu": [
+  {
+   "key": "Indus Foods Website v2/97#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/101",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.8,
+   "reason": "A repeated brand-logo image-slot inside a link; these are partner brand images, not the site logo, so sgs/media (replaces core/image) is the block."
+  },
+  {
+   "key": "Indus Foods Website v2/103#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/104#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  }
+ ],
+ "mobile-tablet-drawer": [
+  {
+   "key": "Indus Foods Website v2/109#0",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low."
+  },
+  {
+   "key": "Indus Foods Website v2/110#0",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low."
+  },
+  {
+   "key": "Indus Foods Website v2/111#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "An aria-hidden radial-gradient layer covering its parent (inset 0) is the parent container's background overlay paint, which the container's overlay settings and Fill carry, not a content block."
+  },
+  {
+   "key": "Indus Foods Website v2/114#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.92,
+   "reason": "The indus-logo element is the typed brand logo, so it is the logo block; sgs/responsive-logo replaces core/site-logo in the DB."
+  },
+  {
+   "key": "Indus Foods Website v2/116#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "phone"
+   },
+   "confidence": 0.75,
+   "reason": "A tel link to the business phone is Site Info content; sgs/business-info (displayType phone) is the top candidate, shown icon-only as the draft does."
+  },
+  {
+   "key": "Indus Foods Website v2/117#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "email"
+   },
+   "confidence": 0.75,
+   "reason": "A mailto link to the business email is Site Info content; sgs/business-info (displayType email) is the top candidate, shown icon-only as the draft does."
+  },
+  {
+   "key": "Indus Foods Website v2/119#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "One of two crossed 2.5px bars that together draw the close (X) glyph of the drawer close button; sgs/icon renders the X as one glyph, so the second bar is removed."
+  },
+  {
+   "key": "Indus Foods Website v2/120#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "The second crossed bar of the close (X) glyph; the first bar is picked as one sgs/icon that draws the whole X, so this stroke is not a separate block."
+  },
+  {
+   "key": "Indus Foods Website v2/126",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+  },
+  {
+   "key": "Indus Foods Website v2/127",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A drawer menu item label in a looped button; sgs/text is the only candidate, but the list should be sgs/nav-drawer-menu, which renders its own labels, and I cannot see that row to confirm."
+  },
+  {
+   "key": "Indus Foods Website v2/128=unresolved",
+   "block": "sgs/container",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A 40px ringed circle that holds the accordion caret of a drawer item; kept as a container so its caret child (picked as sgs/icon) stays inside it, though sgs/nav-drawer-menu would render this toggle itself."
+  },
+  {
+   "key": "Indus Foods Website v2/130",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The rotating caret glyph inside the drawer item toggle is an icon; sgs/icon is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/179#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/198#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The words of a link the draft styles as the drawer call-to-action button; the link parent is proposed as a container, so the words stay sgs/text to avoid a button nested in a link, but the parent should be sgs/button."
+  },
+  {
+   "key": "Indus Foods Website v2/200#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG."
+  }
+ ],
+ "footer": [
+  {
+   "key": "Indus Foods Website v2/654#0",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A 5px full-width gradient strip at the top edge of the footer; sgs/separator is the DB divider block with colour or gradient and responsive thickness."
+  },
+  {
+   "key": "Indus Foods Website v2/655#0",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An aria-hidden 520px radial-gradient glow positioned off the footer corner; sgs/decorative-image is the DB block for free-floating decoration, but this is a gradient, not an image."
+  },
+  {
+   "key": "Indus Foods Website v2/659#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A filled or ringed circle holding an icon glyph; sgs/icon has a shape enum (circle), so the circle is the icon's own shape rather than a wrapper."
+  },
+  {
+   "key": "Indus Foods Website v2/661#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/662#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "phone"
+   },
+   "confidence": 0.85,
+   "reason": "The business phone number is Site Info content, so it is sgs/business-info (displayType phone), never typed text."
+  },
+  {
+   "key": "Indus Foods Website v2/663#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/665#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A filled or ringed circle holding an icon glyph; sgs/icon has a shape enum (circle), so the circle is the icon's own shape rather than a wrapper."
+  },
+  {
+   "key": "Indus Foods Website v2/667#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/668#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "email"
+   },
+   "confidence": 0.85,
+   "reason": "The business email address is Site Info content, so it is sgs/business-info (displayType email), never typed text."
+  },
+  {
+   "key": "Indus Foods Website v2/669#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/672#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/674#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An 8px live status dot whose colour follows the current open or closed state; sgs/icon is the nearest block, but no DB block computes a live open-now status, so the behaviour is a missing feature."
+  },
+  {
+   "key": "Indus Foods Website v2/678",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "hours"
+   },
+   "confidence": 0.55,
+   "reason": "The day column of a looped opening-hours row is Site Info hours, so it is sgs/business-info (displayType hours, rows layout with space-between); the loop parent should collapse to one hours block, which I cannot see from this row."
+  },
+  {
+   "key": "Indus Foods Website v2/679",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "The time column of the looped opening-hours row; sgs/business-info hours renders day and time together (hoursRowJustify space-between), so a separate block would duplicate it."
+  },
+  {
+   "key": "Indus Foods Website v2/680#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A live line computed from today's hours (\"Closes at 5pm today\"); no DB block reads it from Site Info, so it is typed text for now and the live status is a missing feature."
+  },
+  {
+   "key": "Indus Foods Website v2/684#0",
+   "block": "sgs/responsive-logo",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.92,
+   "reason": "The indus-logo element is the typed brand logo, so it is the logo block; sgs/responsive-logo replaces core/site-logo in the DB."
+  },
+  {
+   "key": "Indus Foods Website v2/703#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A footer column title above a list of links; sgs/heading gives the column an outline entry, though its small uppercase style also fits sgs/label."
+  },
+  {
+   "key": "Indus Foods Website v2/707",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row."
+  },
+  {
+   "key": "Indus Foods Website v2/710#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A footer column title above the address and directions; sgs/heading gives the column an outline entry, though its small uppercase style also fits sgs/label."
+  },
+  {
+   "key": "Indus Foods Website v2/717#0",
+   "block": "sgs/button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A standalone Google Maps directions link styled as a call-to-action beside the address block; sgs/button is the candidate that fits a link action, since business-info renders the address itself."
+  },
+  {
+   "key": "Indus Foods Website v2/722#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.7,
+   "reason": "A typed \"|\" divider between bottom-bar items; the parent sgs/container has a separators setting (block_attributes separators) that draws the lines between items."
+  },
+  {
+   "key": "Indus Foods Website v2/723#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "attribution"
+   },
+   "confidence": 0.85,
+   "reason": "A website-credit link is Site Info attribution; sgs/business-info has displayType attribution and is the top candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/724#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.7,
+   "reason": "A typed \"|\" divider between bottom-bar items; the parent sgs/container has a separators setting (block_attributes separators) that draws the lines between items."
+  },
+  {
+   "key": "Indus Foods Website v2/725#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.92,
+   "reason": "\"Placeholder photography via Unsplash\" is a designer's brief line about stock images, not site content."
+  },
+  {
+   "key": "Indus Foods Website v2/727#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A 40px ringed circle holding the back-to-top arrow; sgs/icon has a circle shape enum, so the ring is the icon's own shape."
+  }
+ ],
+ "whatsapp-button": [
+  {
+   "key": "Indus Foods Website v2/729#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "A 22px aria-hidden WhatsApp glyph inside the WhatsApp link is a brand icon, not a content image or the site logo; sgs/icon (iconSource enum includes brand) fits better than the sgs/media candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/731#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The label of the floating WhatsApp link; sgs/text is the only candidate, though the whole link would be sgs/whatsapp-cta (floating button variant) if the parent row became that block."
+  }
+ ],
+ "page-home": [
+  {
+   "key": "Indus Foods Website v2/208#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+  },
+  {
+   "key": "Indus Foods Website v2/214",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row."
+  },
+  {
+   "key": "Indus Foods Website v2/217#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.88,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/225",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.7,
+   "reason": "A repeated brand-logo image-slot inside a link in a strip that starts at x=0; each is sgs/media, though the section may be better as sgs/brand-strip (marquee logo strip), which I cannot see from this row."
+  },
+  {
+   "key": "Indus Foods Website v2/232",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "An aria-hidden radial-gradient layer that follows the pointer (--gx and --gy) is a hover glow effect (cursor-field in the fx_effects table), not content."
+  },
+  {
+   "key": "Indus Foods Website v2/234",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/244",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A 46px icon span at the top of a repeated value card; sgs/icon is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/247",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/251#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/257#0",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A 2px gradient line drawn behind the milestone markers (data-draw); sgs/separator is the DB gradient divider, though the strip may be better as sgs/timeline, whose connector would draw it."
+  },
+  {
+   "key": "Indus Foods Website v2/261",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A year inside a 56px ringed circle marking a milestone; sgs/label is the DB badge block, though sgs/timeline would render the marker itself."
+  },
+  {
+   "key": "Indus Foods Website v2/263",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/264",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/273#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG."
+  },
+  {
+   "key": "Indus Foods Website v2/275#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A large typographic opening quote mark above the testimonial words; kept as sgs/text, though sgs/testimonial or sgs/quote would paint it if the parent became one, which I cannot see."
+  },
+  {
+   "key": "Indus Foods Website v2/279#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.8,
+   "reason": "A circle image-slot (avatar or company logo) beside the testimonial attribution; sgs/media is the DB content image block."
+  },
+  {
+   "key": "Indus Foods Website v2/281#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The attribution name line of the testimonial; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/282#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "The attribution company line of the testimonial; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/284#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "A centred row of looped slider dot buttons whose children are proposed as sgs/button; sgs/multi-button is the top candidate, though a slider block would render its own dots."
+  },
+  {
+   "key": "Indus Foods Website v2/289#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/293#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/297#0",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A dashed 2px line drawn between the numbered steps (data-draw); sgs/separator is the DB styleable divider, though sgs/process-steps would draw this connector itself."
+  },
+  {
+   "key": "Indus Foods Website v2/301",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A step number inside a 72px circle; sgs/label is the DB badge block, though sgs/process-steps would render the numbered marker itself."
+  },
+  {
+   "key": "Indus Foods Website v2/312#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+  }
+ ],
+ "page-about": [
+  {
+   "key": "Indus Foods Website v2/321#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "svg"
+   },
+   "confidence": 0.4,
+   "reason": "An aria-hidden full-cover layer that loads an animation from data-src; sgs/media supports svg and lottie (mediaType enum), but I cannot see the asset format, and it may instead be sgs/decorative-image."
+  },
+  {
+   "key": "Indus Foods Website v2/325#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A \"/\" between breadcrumb links; kept as typed text, but the trail should be sgs/breadcrumbs, which renders its own separator, and I cannot see the parent row to change it."
+  },
+  {
+   "key": "Indus Foods Website v2/327#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A \"/\" between breadcrumb links; kept as typed text, but the trail should be sgs/breadcrumbs, which renders its own separator, and I cannot see the parent row to change it."
+  },
+  {
+   "key": "Indus Foods Website v2/328#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "The current page in the breadcrumb trail; kept as text, but the trail should be sgs/breadcrumbs, which renders the current item itself, and I cannot see the parent row to change it."
+  },
+  {
+   "key": "Indus Foods Website v2/332#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row."
+  },
+  {
+   "key": "Indus Foods Website v2/336#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+  },
+  {
+   "key": "Indus Foods Website v2/361",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A 44px by 3px accent line on the top edge of a stat; sgs/separator is the DB short divider, though it may be the stat card's own decoration."
+  },
+  {
+   "key": "Indus Foods Website v2/362",
+   "block": "sgs/counter",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A large stat number paired with a short label in a repeated stat item; sgs/counter (number with prefix, suffix and label) fits the pattern, but a year like 1962 may not suit a counting animation."
+  },
+  {
+   "key": "Indus Foods Website v2/363",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The short label under a stat number; kept as sgs/text beside the number, as the draft keeps it separate."
+  },
+  {
+   "key": "Indus Foods Website v2/351",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration."
+  },
+  {
+   "key": "Indus Foods Website v2/440#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A live position counter (\"01 / 05\") for a pinned horizontal-scroll section; sgs/text holds the words, but its live update belongs to the pin-scrub effect, which I cannot confirm drives a counter."
+  },
+  {
+   "key": "Indus Foods Website v2/441#0",
+   "block": "sgs/container",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.35,
+   "reason": "A 4px progress track with a fill bar for a pinned horizontal-scroll section; no DB block implements a scroll-linked progress bar, so this is a placeholder container pending a missing feature."
+  },
+  {
+   "key": "Indus Foods Website v2/443#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A short instruction line beside the pinned-section progress bar; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/448",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A very large outlined year (transparent fill) for each pinned chapter; sgs/text holds the words, though it may be a display heading."
+  },
+  {
+   "key": "Indus Foods Website v2/452",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/487",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+  },
+  {
+   "key": "Indus Foods Website v2/489",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/490",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/491",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/493",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A \"read more\" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link."
+  },
+  {
+   "key": "Indus Foods Website v2/516#0",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low."
+  },
+  {
+   "key": "Indus Foods Website v2/517#0",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low."
+  },
+  {
+   "key": "Indus Foods Website v2/518#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "An aria-hidden radial-gradient layer covering its parent (inset 0) is the parent container's background overlay paint, which the container's overlay settings and Fill carry, not a content block."
+  },
+  {
+   "key": "Indus Foods Website v2/521#0",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration."
+  },
+  {
+   "key": "Indus Foods Website v2/526#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "phone",
+    "textBefore": "Call "
+   },
+   "confidence": 0.8,
+   "reason": "A \"Call\" link with the business phone number is Site Info content; sgs/business-info (displayType phone) is the top candidate, with textBefore holding the word \"Call\"."
+  }
+ ],
+ "page-our-story": [
+  {
+   "key": "Indus Foods Website v2/318#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "An aria-hidden radial-gradient layer covering its parent (inset 0) is the parent container's background overlay paint, which the container's overlay settings and Fill carry, not a content block."
+  },
+  {
+   "key": "Indus Foods Website v2/319#0",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low."
+  },
+  {
+   "key": "Indus Foods Website v2/342#0",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/383",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration."
+  },
+  {
+   "key": "Indus Foods Website v2/396",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/391",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row."
+  }
+ ],
+ "page-certifications": [
+  {
+   "key": "Indus Foods Website v2/484",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/402#0",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration."
+  },
+  {
+   "key": "Indus Foods Website v2/411",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+  },
+  {
+   "key": "Indus Foods Website v2/414",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/420",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  }
+ ],
+ "page-careers": [
+  {
+   "key": "Indus Foods Website v2/427",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/428",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/429",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A pill badge naming the role's location (not the business address); sgs/label is the DB badge block."
+  },
+  {
+   "key": "Indus Foods Website v2/419",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG."
+  },
+  {
+   "key": "Indus Foods Website v2/556=sgs/text",
+   "block": null,
+   "remove": true,
+   "confidence": 0.5,
+   "reason": "The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words."
+  },
+  {
+   "key": "Indus Foods Website v2/558",
+   "block": null,
+   "remove": true,
+   "confidence": 0.6,
+   "reason": "The required asterisk of a form label; SGS form-field blocks have a required attribute that renders the marker, so typed text would duplicate it."
+  },
+  {
+   "key": "Indus Foods Website v2/560",
+   "block": "sgs/form-field-text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks."
+  },
+  {
+   "key": "Indus Foods Website v2/562",
+   "block": "sgs/form-field-select",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A select element in an application form; sgs/form-field-select is the DB dropdown field block (parent_block sgs/form)."
+  },
+  {
+   "key": "Indus Foods Website v2/568#0",
+   "block": "sgs/form-field-file",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "An input of type file in an application form; sgs/form-field-file is the DB file upload field block (parent_block sgs/form)."
+  },
+  {
+   "key": "Indus Foods Website v2/566#0",
+   "block": "sgs/form-field-textarea",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A textarea in an application form; sgs/form-field-textarea is the DB multi-line field block (parent_block sgs/form)."
+  },
+  {
+   "key": "Indus Foods Website v2/570#0",
+   "block": "sgs/form-field-consent",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A required checkbox whose label reads \"I agree to Indus Foods contact...\"; sgs/form-field-consent is the DB consent checkbox block (parent_block sgs/form)."
+  },
+  {
+   "key": "Indus Foods Website v2/573#0",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low."
+  },
+  {
+   "key": "Indus Foods Website v2/576#0",
+   "block": "sgs/separator",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration."
+  },
+  {
+   "key": "Indus Foods Website v2/581",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row."
+  }
+ ],
+ "page-food-service": [
+  {
+   "key": "Indus Foods Website v2/368",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "An aria-hidden radial-gradient layer that follows the pointer (--gx and --gy) is a hover glow effect (cursor-field in the fx_effects table), not content."
+  },
+  {
+   "key": "Indus Foods Website v2/369",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "An aria-hidden radial shadow blob positioned off the card corner; sgs/decorative-image is the DB block for free-floating decoration, but this is a gradient, not an image."
+  },
+  {
+   "key": "Indus Foods Website v2/370",
+   "block": "sgs/decorative-image",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low."
+  },
+  {
+   "key": "Indus Foods Website v2/372",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  },
+  {
+   "key": "Indus Foods Website v2/374",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+  },
+  {
+   "key": "Indus Foods Website v2/375",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/376",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/377",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A \"read more\" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link."
+  }
+ ],
+ "page-brands": [
+  {
+   "key": "Indus Foods Website v2/503",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.8,
+   "reason": "A repeated brand-logo image-slot (fit contain); these are partner brand images, not the site logo, so sgs/media is the block."
+  },
+  {
+   "key": "Indus Foods Website v2/505",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/506",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/524#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+  }
+ ],
+ "page-brand-sanam": [
+  {
+   "key": "Indus Foods Website v2/496",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.85,
+   "reason": "An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it."
+  }
+ ],
+ "page-apply": [
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/10#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small uppercase step counter (\"Step 1 of 5\") above the form progress; sgs/label is the DB kicker block, though sgs/form's multi-step mode may render the step count itself."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/13#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.45,
+   "reason": "A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/14#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "A 6px track with a fill bar showing form step progress; sgs/form has progress bar settings (progressBarColour in block_attributes), so its multi-step mode draws this bar."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/19",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A step number inside a 32px circle in the looped step navigation; sgs/label is the DB badge block, though sgs/form-step may render the step markers itself."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/21",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The step name in the looped step navigation; sgs/text holds the words, though sgs/form-step may render step titles itself."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/33=sgs/text",
+   "block": null,
+   "remove": true,
+   "confidence": 0.5,
+   "reason": "The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/35",
+   "block": null,
+   "remove": true,
+   "confidence": 0.6,
+   "reason": "The required asterisk of a form label; SGS form-field blocks have a required attribute that renders the marker, so typed text would duplicate it."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/47",
+   "block": "sgs/form-field-tiles",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A wrapped group of looped option chips that each pick a business type in the application form; sgs/form-field-tiles (visual tile selection, parent_block sgs/form) fits a choice field better than the multi-button candidate, but I cannot see whether one or several can be chosen."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/39",
+   "block": "sgs/form-field-text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/41",
+   "block": "sgs/form-field-select",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A select element in the application form; sgs/form-field-select is the DB dropdown field block (parent_block sgs/form)."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/64",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A hint under a form field; kept as sgs/text, though the field blocks have a helpText attribute that would carry it."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/84#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A short reassurance line beside the Continue button; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/89#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small uppercase title on a disclosure button for the \"have these ready\" checklist; sgs/label is the DB kicker block."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466/96",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A 22px tinted circle holding a check glyph before each checklist line; sgs/icon has a circle shape enum, though the list may be better as sgs/icon-list."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/99#0",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "The title of the \"Need a hand?\" help panel beside the form, followed by text and a phone button; sgs/heading fits the title role."
+  },
+  {
+   "key": "Indus Foods Website v2>TradeApplication@466#0/101#0",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {
+    "displayType": "phone"
+   },
+   "confidence": 0.85,
+   "reason": "A tel link showing the business phone number is Site Info content; sgs/business-info (displayType phone) is the top candidate."
+  }
+ ],
+ "page-delivery": [
+  {
+   "key": "Indus Foods Website v2/590#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+  },
+  {
+   "key": "Indus Foods Website v2/596",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A 32px ringed toggle circle inside an FAQ question button; sgs/icon has a circle shape enum, though sgs/accordion-item would render its own toggle if the FAQ became an accordion."
+  }
+ ],
+ "page-terms": [
+  {
+   "key": "Indus Foods Website v2/641#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.95,
+   "reason": "\"Layout draft: these summaries are placeholders...\" is the designer's brief note, not site content."
+  },
+  {
+   "key": "Indus Foods Website v2/646",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+  },
+  {
+   "key": "Indus Foods Website v2/651",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A section number inside a section heading; kept as sgs/text, though it may belong in the heading's own words."
+  }
+ ],
+ "page-blog": [
+  {
+   "key": "Indus Foods Website v2/601#0",
+   "block": "sgs/multi-button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.65,
+   "reason": "A wrapped row of looped category filter buttons whose children are proposed as sgs/button; sgs/multi-button is the top candidate, though sgs/post-grid has its own AJAX filtering that would replace it."
+  },
+  {
+   "key": "Indus Foods Website v2/608",
+   "block": "sgs/media",
+   "remove": false,
+   "attributes": {
+    "mediaType": "image"
+   },
+   "confidence": 0.8,
+   "reason": "A repeated post-card image-slot; sgs/media is the DB content image block, though the cards may be better as sgs/post-grid."
+  },
+  {
+   "key": "Indus Foods Website v2/611",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/612",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The post date line in a repeated post card; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/613",
+   "block": "sgs/heading",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The title of a repeated post card; sgs/heading fits the title role, though the draft tag is a div so the level is unconfirmed."
+  },
+  {
+   "key": "Indus Foods Website v2/614",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+  },
+  {
+   "key": "Indus Foods Website v2/615",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "A \"read more\" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link."
+  }
+ ],
+ "page-contact": [
+  {
+   "key": "Indus Foods Website v2/532",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "A filled or ringed circle holding an icon glyph; sgs/icon has a shape enum (circle), so the circle is the icon's own shape rather than a wrapper."
+  },
+  {
+   "key": "Indus Foods Website v2/534",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/535",
+   "block": "sgs/business-info",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The value line of a looped contact detail (address, phone or email by item) is Site Info content, so it is sgs/business-info; the display type varies by copy, which I cannot set from one template row."
+  },
+  {
+   "key": "Indus Foods Website v2/536=sgs/text",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A short note under a contact detail (\"Sales, orders and accounts\"); sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/539#0",
+   "block": "sgs/button",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A standalone Google Maps directions link styled as a call-to-action under the map; sgs/button is the candidate that fits a link action, since business-info renders the address itself."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/8#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A step number beside a form section heading; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/10#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "A hint beside a form section heading (\"Choose all that apply\"); sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468/14",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The title of a looped selectable option tile in the enquiry form; kept as sgs/text, though the option set may be better as sgs/form-field-tiles, which I cannot see from this row."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468/15",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.55,
+   "reason": "The description of a looped selectable option tile in the enquiry form; kept as sgs/text, though the option set may be better as sgs/form-field-tiles."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/21#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.6,
+   "reason": "A step number beside a form section heading; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468/26",
+   "block": "sgs/form-field-text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468/27",
+   "block": null,
+   "remove": true,
+   "confidence": 0.5,
+   "reason": "The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/31#0",
+   "block": "sgs/form-field-textarea",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.85,
+   "reason": "A textarea in the enquiry form; sgs/form-field-textarea is the DB multi-line field block (parent_block sgs/form)."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/32#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.5,
+   "reason": "The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/33#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.4,
+   "reason": "A live character counter (\"0 / 800\") for the message field; no form-field attribute in the DB provides a counter, so it is typed text for now and the live count is a missing feature."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/37#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "The label of a reply-preference choice whose options are buttons; kept as sgs/text, though the choice may be better as sgs/form-field-radio, whose label would carry it."
+  },
+  {
+   "key": "Indus Foods Website v2>EnquiryForm@468#0/41#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A privacy reassurance line beside the submit button; sgs/text is the only candidate."
+  }
+ ],
+ "page-post-post-1": [
+  {
+   "key": "Indus Foods Website v2/619#0",
+   "block": "sgs/label",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.8,
+   "reason": "A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/620#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The post date in the article meta row; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/621#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "A 4px dot between article meta items; the parent sgs/container has a separators setting (block_attributes separators) for the marks between items, though it draws lines rather than dots."
+  },
+  {
+   "key": "Indus Foods Website v2/622#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The reading time in the article meta row; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/623#0",
+   "block": null,
+   "remove": true,
+   "confidence": 0.55,
+   "reason": "A 4px dot between article meta items; the parent sgs/container has a separators setting (block_attributes separators) for the marks between items, though it draws lines rather than dots."
+  },
+  {
+   "key": "Indus Foods Website v2/624#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "The byline in the article meta row; sgs/text is the only candidate."
+  },
+  {
+   "key": "Indus Foods Website v2/634#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.5,
+   "reason": "A large typographic opening quote mark inside a blockquote; kept as sgs/text, though sgs/quote would paint it if the blockquote parent became that block."
+  },
+  {
+   "key": "Indus Foods Website v2/635#0",
+   "block": "sgs/text",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.7,
+   "reason": "The pull-quote words inside a blockquote; sgs/text is the only candidate, though the blockquote parent fits sgs/quote."
+  },
+  {
+   "key": "Indus Foods Website v2/638#0",
+   "block": "sgs/icon",
+   "remove": false,
+   "attributes": {},
+   "confidence": 0.75,
+   "reason": "An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG."
+  }
+ ]
+}

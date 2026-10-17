@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mega panel — link columns (Editorial Broadsheet, inverted)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   MEGA PANEL — LINK COLUMNS  ·  v3 "section front"
+   Direction: Editorial Broadsheet, INVERTED (see DESIGN.md)
+
+   The drama comes from four brand-agnostic moves:
+     1. Inversion    — the panel is a dark slab, not a white dropdown
+     2. Scale        — one genuinely large serif heading, in the lead only
+     3. Ghost numerals — huge editorial figures behind each column
+     4. Accent       — the client's vivid colour, finally usable (8.8:1 /
+                       6.5:1 on the dark ground; it fails on light, which is
+                       why the earlier drafts had nowhere to put energy)
+   Still: radius 0 · no shadows · no gradients · no panel-open motion.
+   ========================================================================== */
+:root {
+  --text: #16211f;           /* becomes the panel GROUND when inverted */
+  --text-inverse: #fdfcf8;
+  --accent: #f5d050;         /* vivid highlight — legitimate on dark only */
+
+  --font-display: "DM Serif Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --space-sm: 12px;
+  --space-md: 22px;
+  --space-lg: 36px;
+  --space-xl: 60px;
+}
+
+/* ---- The slab. Inversion is the first thing you notice. ---------------- */
+.sgs-mega-link-columns {
+  position: relative;
+  background: var(--text);
+  color: var(--text-inverse);
+  font-family: var(--font-body);
+  padding: var(--space-xl) var(--space-md) var(--space-lg);
+  border-top: 4px solid var(--accent);
+  overflow: hidden;
+}
+
+.sgs-mega-link-columns__inner {
+  max-width: var(--content-width);
+  --content-width: 1240px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.sgs-mega-link-columns__groups {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1fr 1.1fr;
+  gap: 0;
+  align-items: start;
+}
+
+.sgs-mega-link-columns__group {
+  position: relative;
+  padding: 0 var(--space-lg);
+  border-left: 1px solid color-mix(in srgb, var(--text-inverse) 18%, transparent);
+}
+
+.sgs-mega-link-columns__group:first-child { padding-left: 0; border-left: 0; }
+.sgs-mega-link-columns__group:last-child  { padding-right: 0; }
+
+/* ---- Ghost numerals. Pure typography, no imagery, no brand assumption.
+   This is the texture that replaces photography — it gives the panel
+   depth and editorial swagger while staying industry-neutral.          */
+.sgs-mega-link-columns__eyebrow {
+  position: absolute;
+  top: -34px;
+  right: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: 92px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--text-inverse) 9%, transparent);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.sgs-mega-link-columns__group:first-child .sgs-mega-link-columns__eyebrow {
+  font-size: 150px;
+  top: -58px;
+}
+
+/* ---- Scale. The lead heading is genuinely big; the other three stay
+   compact so panel density survives (a mega menu must be scannable). --- */
+.sgs-mega-link-columns__title {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 1.1;
+  color: var(--text-inverse);
+  margin: 0 0 var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-inverse) 25%, transparent);
+}
+
+.sgs-mega-link-columns__title--lead {
+  font-size: 52px;
+  font-style: italic;
+  line-height: 0.98;
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: var(--space-sm);
+}
+
+/* The accent rule under the lead — one sharp stroke of brand colour. */
+.sgs-mega-link-columns__title--lead::after {
+  content: "";
+  display: block;
+  width: 88px;
+  height: 5px;
+  background: var(--accent);
+  margin-top: var(--space-md);
+}
+
+.sgs-mega-link-columns__description--lead {
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--text-inverse) 78%, transparent);
+  margin: 0 0 var(--space-lg);
+  max-width: 34ch;
+}
+
+/* ---- Items. Hover is a real event: the accent bar grows from zero,
+   the label shifts to accent, the row slides. ------------------------- */
+.sgs-mega-link-columns__item {
+  position: relative;
+  z-index: 1;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: var(--space-sm) 0 var(--space-sm) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--text-inverse) 14%, transparent);
+  min-height: 44px;
+  transition: padding-left 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-link-columns__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: translateY(-50%);
+  transition: width 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-link-columns__label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-inverse);
+  margin-bottom: 3px;
+  transition: color 180ms ease;
+}
+
+.sgs-mega-link-columns__description {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--text-inverse) 65%, transparent);
+}
+
+.sgs-mega-link-columns__item:hover { padding-left: 30px; }
+.sgs-mega-link-columns__item:hover::before { width: 20px; }
+.sgs-mega-link-columns__item:hover .sgs-mega-link-columns__label { color: var(--accent); }
+
+.sgs-mega-link-columns__item:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- CTA: a solid accent block. The one loud element per column. ------ */
+.sgs-mega-link-columns__cta {
+  display: inline-block;
+  margin-top: var(--space-md);
+  padding: 13px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--accent);
+  text-decoration: none;
+  min-height: 44px;
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sgs-mega-link-columns__cta--ghost {
+  background: transparent;
+  color: var(--accent);
+  padding: 13px 0;
+  border-bottom: 2px solid var(--accent);
+}
+
+.sgs-mega-link-columns__cta:hover { transform: translateX(6px); }
+
+.sgs-mega-link-columns__cta:focus-visible {
+  outline: 3px solid var(--text-inverse);
+  outline-offset: 3px;
+}
+
+/* ---- Device tiers only. ------------------------------------------------ */
+@media (max-width: 1023px) {
+  .sgs-mega-link-columns__groups { grid-template-columns: 1.4fr 1fr; row-gap: var(--space-xl); }
+  .sgs-mega-link-columns__group:nth-child(3) { padding-left: 0; border-left: 0; }
+  .sgs-mega-link-columns__title--lead { font-size: 42px; }
+}
+
+@media (max-width: 767px) {
+  .sgs-mega-link-columns { padding: var(--space-lg) var(--space-md); }
+  .sgs-mega-link-columns__groups { grid-template-columns: 1fr; row-gap: var(--space-lg); }
+  .sgs-mega-link-columns__group { padding: 0; border-left: 0; }
+  .sgs-mega-link-columns__title--lead { font-size: 34px; }
+  .sgs-mega-link-columns__eyebrow,
+  .sgs-mega-link-columns__group:first-child .sgs-mega-link-columns__eyebrow {
+    font-size: 64px; top: -26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sgs-mega-link-columns__item,
+  .sgs-mega-link-columns__item::before,
+  .sgs-mega-link-columns__label,
+  .sgs-mega-link-columns__cta { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<section class="sgs-mega-link-columns">
+  <div class="sgs-mega-link-columns__inner">
+    <div class="sgs-mega-link-columns__groups">
+
+      <div class="sgs-mega-link-columns__group">
+        <span class="sgs-mega-link-columns__eyebrow" aria-hidden="true">01</span>
+        <h3 class="sgs-mega-link-columns__title sgs-mega-link-columns__title--lead">Start<br>here</h3>
+        <p class="sgs-mega-link-columns__description--lead">Not sure where to begin? These three routes cover most of what people arrive looking for.</p>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Getting started</span>
+          <span class="sgs-mega-link-columns__description">The short version, if this is your first visit.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Popular choices</span>
+          <span class="sgs-mega-link-columns__description">What most people come here looking for.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta" href="#">See everything</a>
+      </div>
+
+      <div class="sgs-mega-link-columns__group">
+        <span class="sgs-mega-link-columns__eyebrow" aria-hidden="true">02</span>
+        <h3 class="sgs-mega-link-columns__title">By range</h3>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Everyday</span>
+          <span class="sgs-mega-link-columns__description">The core selection, always available.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Seasonal</span>
+          <span class="sgs-mega-link-columns__description">Changes through the year.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Specialist</span>
+          <span class="sgs-mega-link-columns__description">For particular requirements.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta sgs-mega-link-columns__cta--ghost" href="#">Full range</a>
+      </div>
+
+      <div class="sgs-mega-link-columns__group">
+        <span class="sgs-mega-link-columns__eyebrow" aria-hidden="true">03</span>
+        <h3 class="sgs-mega-link-columns__title">Useful to know</h3>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">How it works</span>
+          <span class="sgs-mega-link-columns__description">Step by step, start to finish.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Questions</span>
+          <span class="sgs-mega-link-columns__description">The things people ask most often.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Delivery</span>
+          <span class="sgs-mega-link-columns__description">When to expect things, and the cost.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta sgs-mega-link-columns__cta--ghost" href="#">Read the guides</a>
+      </div>
+
+      <div class="sgs-mega-link-columns__group">
+        <span class="sgs-mega-link-columns__eyebrow" aria-hidden="true">04</span>
+        <h3 class="sgs-mega-link-columns__title">About us</h3>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Our story</span>
+          <span class="sgs-mega-link-columns__description">Who we are and why we started.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Our people</span>
+          <span class="sgs-mega-link-columns__description">The team you will actually deal with.</span>
+        </a>
+        <a class="sgs-mega-link-columns__item" href="#">
+          <span class="sgs-mega-link-columns__label">Get in touch</span>
+          <span class="sgs-mega-link-columns__description">Phone, email, or come and find us.</span>
+        </a>
+        <a class="sgs-mega-link-columns__cta sgs-mega-link-columns__cta--ghost" href="#">More about us</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

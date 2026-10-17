@@ -1,0 +1,678 @@
+[
+  {
+    "route": "home",
+    "slug": "home",
+    "title": "Home",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 1,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "about",
+    "slug": "about",
+    "title": "About Us",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 2,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "our-story",
+    "slug": "our-story",
+    "title": "Our Story",
+    "parent": "about",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 1,
+        "parentItem": "About"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "certifications",
+    "slug": "certifications",
+    "title": "Certifications",
+    "parent": "about",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 2,
+        "parentItem": "About"
+      },
+      {
+        "menu": "footer",
+        "position": 1,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "community",
+    "slug": "community",
+    "title": "Community & Charity",
+    "parent": "about",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 3,
+        "parentItem": "About"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "sustainability",
+    "slug": "sustainability",
+    "title": "Sustainability",
+    "parent": "about",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 4,
+        "parentItem": "About"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "careers",
+    "slug": "careers",
+    "title": "Careers",
+    "parent": "about",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 5,
+        "parentItem": "About"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "food-service",
+    "slug": "food-service",
+    "title": "Food service supply for kitchens that never stop.",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 3,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer",
+        "position": 1,
+        "parentItem": "Sectors"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "manufacturing",
+    "slug": "manufacturing",
+    "title": "Bulk ingredients for food manufacturers.",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 2,
+        "parentItem": "Sectors"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "retail",
+    "slug": "retail",
+    "title": "Retail-ready ranges your customers look for.",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 3,
+        "parentItem": "Sectors"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "wholesale",
+    "slug": "wholesale",
+    "title": "Pallet volumes for wholesalers and cash & carries.",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 4,
+        "parentItem": "Sectors"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "brands",
+    "slug": "brands",
+    "title": "All Brands",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 4,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer",
+        "position": 5,
+        "parentItem": "Brands"
+      },
+      {
+        "menu": "footer",
+        "position": 3,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "brand-sanam",
+    "slug": "brand-sanam",
+    "title": "Sanam",
+    "parent": "brands",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 1,
+        "parentItem": "Brands"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "brand-shan",
+    "slug": "brand-shan",
+    "title": "Shan",
+    "parent": "brands",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 2,
+        "parentItem": "Brands"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "brand-green-leaf",
+    "slug": "brand-green-leaf",
+    "title": "Green Leaf",
+    "parent": "brands",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 3,
+        "parentItem": "Brands"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "brand-lemon-tree",
+    "slug": "brand-lemon-tree",
+    "title": "The Lemon Tree",
+    "parent": "brands",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 4,
+        "parentItem": "Brands"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "apply",
+    "slug": "apply",
+    "title": "Apply for Trade Account",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 5,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer",
+        "position": 1,
+        "parentItem": "Trade"
+      },
+      {
+        "menu": "footer",
+        "position": 2,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "catalogue",
+    "slug": "catalogue",
+    "title": "Request Catalogue",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 2,
+        "parentItem": "Trade"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "delivery",
+    "slug": "delivery",
+    "title": "Delivery & Logistics",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 3,
+        "parentItem": "Trade"
+      },
+      {
+        "menu": "footer",
+        "position": 4,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "terms",
+    "slug": "terms",
+    "title": "Terms & Conditions",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 5,
+        "parentItem": "Trade"
+      },
+      {
+        "menu": "footer",
+        "position": 5,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "blog",
+    "slug": "blog",
+    "title": "Blog",
+    "parent": "about",
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 6,
+        "parentItem": "About"
+      },
+      {
+        "menu": "footer",
+        "position": 6,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "contact",
+    "slug": "contact",
+    "title": "Contact Us",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 6,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "faqs",
+    "slug": "faqs",
+    "title": "FAQs",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "drawer",
+        "position": 4,
+        "parentItem": "Trade"
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "post-post-1",
+    "slug": "supporting-the-trade-through-ramadan",
+    "title": "Supporting the trade through Ramadan",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "post",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "post-post-2",
+    "slug": "falak-rice-exclusive-uk-distribution",
+    "title": "Falak rice: exclusive UK distribution",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "post",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "post-post-3",
+    "slug": "inside-our-birmingham-packing-line",
+    "title": "Inside our Birmingham packing line",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "post",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "post-post-4",
+    "slug": "sixty-years-in-the-balti-triangle",
+    "title": "Sixty years in the Balti Triangle",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "post",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "post-post-5",
+    "slug": "ordering-ahead-for-eid",
+    "title": "Ordering ahead for Eid",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "post",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "post-post-6",
+    "slug": "why-independents-still-matter",
+    "title": "Why independents still matter",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "post",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-enquiry-form",
+    "title": "Enquiry Form",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-careers",
+    "title": "Register your interest",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-catalogue",
+    "title": "Where should we send it?",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "header",
+    "title": "Header",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_header",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "drawer-site-menu",
+    "title": "Site menu",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_drawer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "footer",
+    "title": "Footer",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_footer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "mega-menu-about",
+    "title": "About mega menu",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 2,
+        "parentItem": null
+      }
+    ],
+    "postType": "sgs_mega_menu",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "mega-menu-sectors",
+    "title": "Sectors mega menu",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 3,
+        "parentItem": null
+      }
+    ],
+    "postType": "sgs_mega_menu",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "mega-menu-brands",
+    "title": "Brands mega menu",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 4,
+        "parentItem": null
+      }
+    ],
+    "postType": "sgs_mega_menu",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "mega-menu-trade",
+    "title": "Trade mega menu",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "header",
+        "position": 5,
+        "parentItem": null
+      }
+    ],
+    "postType": "sgs_mega_menu",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-trade-application",
+    "title": "Trade Application",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  }
+]
