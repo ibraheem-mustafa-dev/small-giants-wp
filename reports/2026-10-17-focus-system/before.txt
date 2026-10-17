@@ -44,8 +44,8 @@ css bytes per page (first width): {"5389":825930,"home":856650,"shop":831542,"pr
   FAIL #1 a.skip-link.screen-reader-text "Skip to content": radius 0px -> 3px on focus
   FAIL #2 a.sgs-business-info__link "0121 496 0123": contrast 1.35 < 3
   FAIL #2 a.sgs-business-info__link "0121 496 0123": radius 0px -> 4px on focus
-  FAIL #3 a.sgs-business-info__link "Zainab@mamasmunches.com": contrast 1.35 < 3
-  FAIL #3 a.sgs-business-info__link "Zainab@mamasmunches.com": radius 0px -> 4px on focus
+  FAIL #3 a.sgs-business-info__link "[email]": contrast 1.35 < 3
+  FAIL #3 a.sgs-business-info__link "[email]": radius 0px -> 4px on focus
   FAIL #4 a.sgs-business-socials__link "Instagram": contrast 1.35 < 3
   FAIL #4 a.sgs-business-socials__link "Instagram": radius 0px -> 4px on focus
   FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 1.30 < 3

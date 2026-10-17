@@ -151,7 +151,29 @@ function readFocused() {
 		forced = { highlight, ok: state.outline.style !== 'none' && ow > 0 && state.outline.colour === highlight };
 	}
 	const sig = target.classList.contains( 'sgs-focus--signature' );
+	// The --sgs-focus-* tokens on the focused element, each resolved to a computed colour on a throwaway span. A G2 ground
+	// (duotone, photo or video container) or a signature stop paints its core in the ink, every other stop in the ring.
+	const own = getComputedStyle( target );
+	const resolveToken = ( name ) => {
+		const raw = own.getPropertyValue( name ).trim();
+		if ( ! raw ) return null;
+		const span = document.createElement( 'span' );
+		span.style.color = raw;
+		if ( ! span.style.color ) return null;
+		document.documentElement.appendChild( span );
+		const colour = getComputedStyle( span ).color;
+		span.remove();
+		return colour;
+	};
+	const tokens = {
+		defined: own.getPropertyValue( '--sgs-focus-ring' ).trim() !== '',
+		ring: resolveToken( '--sgs-focus-ring' ),
+		ink: resolveToken( '--sgs-focus-ink' ),
+		inner: resolveToken( '--sgs-focus-inner' ),
+		expect: sig || target.closest( '.sgs-focus--duotone, .sgs-container--has-bg-image, .sgs-container--has-bg-video' ) ? 'ink' : 'ring',
+	};
 	return {
+		tokens,
 		seen: false,
 		label: `${ el.tagName.toLowerCase() }.${ cls( el ).slice( 0, 2 ).join( '.' ) } "${ text }"`,
 		rect: r,
@@ -256,7 +278,9 @@ async function pressTab( page, mode ) {
 
 /**
  * Tab through the current page. `opts`: { maxStops, settle, forcedColors, shotsDir, shotPrefix, scratch }. Returns
- * { stops, ended }. `opts.tabKey` is 'programmatic' in WebKit, which does not Tab to links. Each stop has the fields judgeStop and summarise read.
+ * { stops, ended, capHit }. `capHit` is true when `maxStops` was reached and one more Tab still lands on an unmeasured
+ * element, i.e. the page has focusable elements the cap cut off. `opts.tabKey` is 'programmatic' in WebKit, which does not
+ * Tab to links. Each stop has the fields judgeStop and summarise read.
  */
 export async function tabThrough( page, opts ) {
 	const stops = [];
@@ -318,8 +342,17 @@ export async function tabThrough( page, opts ) {
 			obscured: reading.obscured,
 			forced: reading.forced,
 			signatureAnimation: reading.signatureAnimation,
+			tokens: reading.tokens,
 			contrast: contrastResult,
 		} );
 	}
-	return { stops, ended };
+	let capHit = false;
+	if ( ended === 'max stops' ) {
+		await pressTab( page, opts.tabKey );
+		await page.waitForTimeout( opts.settle );
+		const more = await page.evaluate( readFocused );
+		capHit = more !== null && ! more.seen;
+		if ( ! capHit ) ended = more === null ? 'focus left the document' : 'focus cycle';
+	}
+	return { stops, ended, capHit };
 }

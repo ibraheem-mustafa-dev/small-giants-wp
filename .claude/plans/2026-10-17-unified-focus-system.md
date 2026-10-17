@@ -525,6 +525,7 @@ Before every task: `git status --porcelain -- <the task's paths>` must be empty 
 
 See §5. Run it after the grouped deploy (`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`), and repeat on `indus-test` and `eye-care-test` with `--target sandybrown,indus-test,eye-care-test` once their snapshots are pushed (`push-theme-snapshot.py --client <slug> --target <host>`, dry-run first, owner go/no-go).
 
+- **Fixture coverage at Task 17:** the live fixture (page 5389, about 100 stops, default `--max-stops 130`) carries the inset, signature and duotone buttons and a `sgs/before-after` range input on its light section. It carries no `sgs-focus-source` + `sgs-focus-proxy` pair yet, because no SGS block renders one until the proxy tasks (option-picker, pricing toggle, file label, shop switch) land; after them, rebuild the fixture with `wp-build-page.js` and confirm the option-picker stops report `proxied`. The dual-thumb WooCommerce price slider is not on the fixture because no SGS block renders it (the SGS DB has `sgs/filter-search` but no price-range block; the dual thumb comes from WooCommerce's own filter markup); `/shop/` stands in for it.
 - **Commit:** `focus: verification reports and screenshots` (reports only).
 
 ## 5. Verification plan

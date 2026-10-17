@@ -106,20 +106,25 @@ export function hasSolidHairline( layer ) {
  * per cent along the edge that sit on the straight part (further than the corner radius from either end); an edge too
  * short for that gets its midpoint, which is on the ring for any radius. `kind` is ring, inner or bg.
  * Distances are measured outward from the border box: the ring centre at offset + width / 2, the inner band centre at
- * half the hairline spread, the neighbour 1px outside the ring.
+ * half the hairline spread, the neighbour 1px outside the ring (1px inside the ring for an inset stop).
  */
 export function samplePlan( rect, radius, outline, hairline ) {
 	const o = outline.offset;
 	const w = outline.width;
 	const dRing = o + w / 2;
-	const dBg = o + w + 1;
+	// An inset ring (negative offset) sits on the element's own fill: the neighbour is 1px inside the ring's inner edge.
+	// Either way the neighbour is at least 2px from the element edge, clear of an antialiased fractional edge.
+	const dRaw = o < 0 ? o - 1 : o + w + 1;
+	const dBg = Math.abs( dRaw ) < 2 ? ( dRaw < 0 ? -2 : 2 ) : dRaw;
 	let dInner = null;
 	if ( hairline ) dInner = hairline.inset ? -hairline.spread * 0.75 : hairline.spread / 2;
+	// Every point is moved to the centre of the device pixel it falls in, so a fractional rect never reads a blended pixel.
+	const snap = ( [ x, y ] ) => [ Math.round( x - 0.5 ) + 0.5, Math.round( y - 0.5 ) + 0.5 ];
 	const edges = [
-		{ len: rect.width, at: ( f, d ) => [ rect.x + f * rect.width, rect.y - d ] },
-		{ len: rect.width, at: ( f, d ) => [ rect.x + f * rect.width, rect.y + rect.height + d ] },
-		{ len: rect.height, at: ( f, d ) => [ rect.x - d, rect.y + f * rect.height ] },
-		{ len: rect.height, at: ( f, d ) => [ rect.x + rect.width + d, rect.y + f * rect.height ] },
+		{ len: rect.width, at: ( f, d ) => snap( [ rect.x + f * rect.width, rect.y - d ] ) },
+		{ len: rect.width, at: ( f, d ) => snap( [ rect.x + f * rect.width, rect.y + rect.height + d ] ) },
+		{ len: rect.height, at: ( f, d ) => snap( [ rect.x - d, rect.y + f * rect.height ] ) },
+		{ len: rect.height, at: ( f, d ) => snap( [ rect.x + rect.width + d, rect.y + f * rect.height ] ) },
 	];
 	const points = [];
 	for ( const edge of edges ) {
@@ -137,6 +142,38 @@ export function samplePlan( rect, radius, outline, hairline ) {
 		}
 	}
 	return points;
+}
+
+/** Every layer of a computed box-shadow as { inset, blur, spread, colour }; layers with fewer than two lengths are dropped. */
+export function shadowLayers( computed ) {
+	if ( typeof computed !== 'string' || computed === 'none' ) return [];
+	return splitTop( computed ).map( ( layer ) => firstShadowLayer( layer ) ).filter( Boolean );
+}
+
+/** True when two parsed colours are the same within one 8-bit step per channel and 0.02 alpha. */
+export function sameColour( a, b ) {
+	if ( ! a || ! b ) return false;
+	return [ 0, 1, 2 ].every( ( i ) => Math.abs( a[ i ] - b[ i ] ) <= 1.01 ) && Math.abs( a[ 3 ] - b[ 3 ] ) <= 0.02;
+}
+
+/**
+ * The token check for one stop. `s.tokens` is { defined, ring, ink, inner, expect } (colour strings resolved in the page;
+ * `expect` is 'ink' for a G2 or signature stop, else 'ring'). Returns { status: 'undefined' | 'ok' | 'mismatch', detail }.
+ * 'undefined' means the page has no --sgs-focus-* properties, so nothing is judged.
+ */
+export function judgeTokens( s ) {
+	const t = s.tokens;
+	if ( ! t || ! t.defined ) return { status: 'undefined', detail: 'tokens not defined' };
+	if ( s.noOutline ) return { status: 'ok', detail: '' };
+	const want = parseColour( t.expect === 'ink' ? t.ink : t.ring );
+	const got = parseColour( s.outline.colour );
+	if ( ! sameColour( got, want ) ) {
+		return { status: 'mismatch', detail: `outline-color ${ s.outline.colour } is not the resolved ${ t.expect === 'ink' ? '--sgs-focus-ink' : '--sgs-focus-ring' } ${ t.expect === 'ink' ? t.ink : t.ring }` };
+	}
+	const inner = parseColour( t.inner );
+	const hairline = shadowLayers( s.boxShadow ).some( ( l ) => l.blur === 0 && l.spread > 0 && l.colour && l.colour[ 3 ] > 0.5 && sameColour( l.colour, inner ) );
+	if ( ! hairline ) return { status: 'mismatch', detail: `box-shadow has no solid hairline in the resolved --sgs-focus-inner ${ t.inner } (${ s.boxShadow })` };
+	return { status: 'ok', detail: '' };
 }
 
 /** The pixel index whose centre is nearest a continuous coordinate. */
@@ -171,7 +208,8 @@ export const isExempt = ( s ) => s.kinds.inset || s.kinds.signature;
 /**
  * Judge one stop. Returns the list of failure strings (empty when the stop passes). Rules: contrast under 3 (when
  * measured), clipped and not inset, radius at rest differs from radius on focus, and, in forced-colours mode, a missing
- * Highlight outline. An obscured stop (something else sits over its centre) is reported, never failed on contrast.
+ * Highlight outline, and token-mismatch (the computed outline colour or the box-shadow hairline is not the resolved
+ * --sgs-focus-* token for the stop). An obscured stop (something else sits over its centre) is reported, never failed on contrast.
  */
 export function judgeStop( s, mode ) {
 	const fails = [];
@@ -181,6 +219,10 @@ export function judgeStop( s, mode ) {
 		fails.push( `contrast ${ s.contrast.min.toFixed( 2 ) } < ${ MIN_CONTRAST }` );
 	}
 	if ( s.noOutline && ! mode.forcedColors ) fails.push( 'no outline (the core must be a real outline)' );
+	if ( ! mode.forcedColors ) {
+		const tokens = judgeTokens( s );
+		if ( tokens.status === 'mismatch' ) fails.push( `token-mismatch: ${ tokens.detail }` );
+	}
 	if ( s.clip.clipped && ! s.kinds.inset ) fails.push( `outline clipped by ${ s.clip.by }` );
 	if ( s.radiusRest !== s.radius ) fails.push( `radius ${ s.radiusRest } -> ${ s.radius } on focus` );
 	if ( mode.reducedMotion && s.kinds.signature && s.signatureAnimation !== 'none' ) {
@@ -198,6 +240,8 @@ export function summarise( stops, mode ) {
 	const exempt = [];
 	if ( stops.some( ( s ) => s.kinds.inset ) ) exempt.push( 'inset' );
 	if ( stops.some( ( s ) => s.kinds.signature ) ) exempt.push( 'signature' );
+	const tokenised = stops.filter( ( s ) => s.tokens && s.tokens.defined ).length;
+	const tokenStatus = tokenised === 0 ? 'tokens not defined' : `token match checked on ${ tokenised } of ${ stops.length } stops`;
 	const fails = [];
 	stops.forEach( ( s, i ) => judgeStop( s, mode ).forEach( ( f ) => fails.push( `#${ i + 1 } ${ s.label }: ${ f }` ) ) );
 	if ( looks.size > 1 ) fails.push( `looks ${ looks.size } > 1 (${ [ ...looks ].join( ' ; ' ) })` );
@@ -212,6 +256,9 @@ export function summarise( stops, mode ) {
 		clippedInset: stops.filter( ( s ) => s.clip.clipped && s.kinds.inset ).length,
 		radiusChanged: stops.filter( ( s ) => s.radiusRest !== s.radius ).length,
 		obscured: stops.filter( ( s ) => s.obscured ).length,
+		tokenStatus,
+		tokenised,
+		tokenMismatches: mode.forcedColors ? 0 : stops.filter( ( s ) => judgeTokens( s ).status === 'mismatch' ).length,
 		fails,
 	};
 }
@@ -221,7 +268,7 @@ export function parseArgs( argv ) {
 	const o = {
 		local: false, site: null, pages: [], widths: [ 1440, 768, 375 ], engines: [], css: null,
 		forcedColors: false, reducedMotion: false, axe: false, shots: null, json: null,
-		openDrawer: false, openMega: false, maxStops: 60, settle: 350, pause: 2500,
+		openDrawer: false, openMega: false, maxStops: 130, settle: 350, pause: 2500,
 		negativeControl: false, selfTest: false, help: false,
 	};
 	const value = ( i, flag ) => {
@@ -299,5 +346,31 @@ export function selfTest() {
 	check( 'two looks fail the run', two.looks === 2 && two.fails.length === 1 );
 	const exempt = summarise( [ stop( {} ), stop( { kinds: { signature: true }, outline: { width: '3px', style: 'solid', offset: '9px', colour: 'c' } } ) ], mode );
 	check( 'a signature stop is exempt from the look count', exempt.looks === 1 && exempt.exempt.join() === 'signature' );
+	// Token match (plan section 1: outline-color and box-shadow match the token set for the stop's ground).
+	const rgb = ( r, g, b ) => `rgb(${ r }, ${ g }, ${ b })`;
+	const tok = ( over ) => ( { defined: true, ring: rgb( 190, 123, 19 ), ink: rgb( 26, 32, 44 ), inner: rgb( 250, 249, 246 ), expect: 'ring', ...over } );
+	const shadow = 'rgb(250, 249, 246) 0px 0px 0px 2px, color(srgb 0.96 0.62 0.04 / 0.55) 0px 0px 12px 4px';
+	const ringOutline = ( colour ) => ( { width: '2px', style: 'solid', offset: '2px', colour } );
+	const tokenStop = ( over ) => stop( { outline: ringOutline( rgb( 190, 123, 19 ) ), boxShadow: shadow, tokens: tok( {} ), ...over } );
+	check( 'tokens: a matching ring and hairline pass', judgeStop( tokenStop( {} ), mode ).length === 0 );
+	const rogue = judgeStop( tokenStop( { outline: ringOutline( rgb( 200, 0, 0 ) ) } ), mode );
+	check( 'tokens: a rogue ring colour fails as token-mismatch', rogue.length === 1 && rogue[ 0 ].startsWith( 'token-mismatch' ) );
+	const noHair = judgeStop( tokenStop( { boxShadow: 'rgb(9, 9, 9) 0px 0px 0px 2px' } ), mode );
+	check( 'tokens: a hairline in the wrong colour fails as token-mismatch', noHair.length === 1 && noHair[ 0 ].startsWith( 'token-mismatch' ) );
+	check( 'tokens: a glow with no solid hairline fails', judgeStop( tokenStop( { boxShadow: 'color(srgb 0.96 0.62 0.04 / 0.55) 0px 0px 12px 4px' } ), mode ).length === 1 );
+	const g2 = tokenStop( { outline: ringOutline( rgb( 26, 32, 44 ) ), tokens: tok( { expect: 'ink' } ) } );
+	check( 'tokens: a G2 or signature stop compares with ink', judgeStop( g2, mode ).length === 0 );
+	check( 'tokens: a G2 stop painted in the accent fails', judgeStop( tokenStop( { tokens: tok( { expect: 'ink' } ) } ), mode ).length === 1 );
+	check( 'tokens: undefined tokens judge nothing', judgeStop( tokenStop( { outline: ringOutline( rgb( 1, 2, 3 ) ), tokens: { defined: false } } ), mode ).length === 0 );
+	check( 'tokens: the run says "tokens not defined" when no stop has them', summarise( [ tokenStop( { tokens: { defined: false } } ) ], mode ).tokenStatus === 'tokens not defined' );
+	check( 'tokens: the run counts checked stops when they exist', summarise( [ tokenStop( {} ), tokenStop( {} ) ], mode ).tokenStatus === 'token match checked on 2 of 2 stops' );
+	check( 'tokens: forced colours skips the token match', judgeStop( tokenStop( { forced: { ok: true }, outline: ringOutline( rgb( 0, 0, 0 ) ) } ), { forcedColors: true } ).length === 0 );
+	// Sample geometry: inset stops read the fill inside the ring; fractional rects snap to whole pixels.
+	const inset = samplePlan( { x: 100, y: 100, width: 200, height: 40 }, 4, { width: 2, offset: -2 }, { inset: true, spread: 4 } );
+	check( 'inset: the neighbour sample is 3px INSIDE the element edge, not outside it', inset.find( ( p ) => p.kind === 'bg' ).y === 103.5 );
+	const frac = samplePlan( { x: 100.37, y: 100.62, width: 200.4, height: 40.3 }, 4, { width: 2, offset: 2 }, { inset: false, spread: 2 } );
+	check( 'fractional rect: every sample sits on a pixel centre', frac.every( ( p ) => Math.abs( ( p.x % 1 ) - 0.5 ) < 1e-9 && Math.abs( ( p.y % 1 ) - 0.5 ) < 1e-9 ) );
+	const thin = samplePlan( { x: 100, y: 100, width: 200, height: 40 }, 4, { width: 1, offset: -0.5 }, null );
+	check( 'inset: a neighbour sample is at least 2px from the edge', thin.filter( ( p ) => p.kind === 'bg' ).every( ( p ) => Math.min( Math.abs( p.y - 100 ), Math.abs( p.y - 140 ), Math.abs( p.x - 100 ), Math.abs( p.x - 300 ) ) >= 1.5 ) );
 	return failed;
 }

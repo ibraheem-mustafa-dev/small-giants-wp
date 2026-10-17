@@ -47,8 +47,8 @@
 			"#1 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 			"#2 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 			"#2 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-			"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-			"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#3 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+			"#3 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#4 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 			"#4 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 			"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",
@@ -76,7 +76,7 @@
 			"#21 button.sgs-testimonial-slider__dot \"Go to testimonial 2\": contrast 1.82 < 3",
 			"#22 button.sgs-testimonial-slider__dot \"Go to testimonial 3\": contrast 1.82 < 3",
 			"#23 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#24 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#24 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#25 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 			"#25 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#26 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -153,7 +153,7 @@
 			"#67 a.product-card__title-link.sgs-block-link-source \"SGS Single-Variant Fixture\": radius 0px -> 2px on focus",
 			"#68 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.00 < 3",
 			"#68 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#69 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#69 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#70 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 			"#70 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#71 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -173,8 +173,8 @@
 			"#84 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 			"#85 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 			"#85 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-			"#86 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-			"#86 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#86 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+			"#86 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#87 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 			"#87 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 			"#88 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",
@@ -229,7 +229,7 @@
 			"#115 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": radius 50% -> 4px on focus",
 			"#116 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.18 < 3",
 			"#116 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#117 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#117 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#118 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 			"#118 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#119 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -249,8 +249,8 @@
 			"#132 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 			"#133 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 			"#133 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-			"#134 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-			"#134 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#134 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+			"#134 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#135 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 			"#135 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 			"#136 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",
@@ -276,7 +276,7 @@
 			"#146 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": radius 8px -> 4px on focus",
 			"#147 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.06 < 3",
 			"#147 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#148 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#148 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#149 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 			"#149 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#150 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -296,8 +296,8 @@
 			"#163 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 			"#164 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 			"#164 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-			"#165 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-			"#165 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#165 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+			"#165 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#166 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 			"#166 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 			"#167 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",
@@ -411,7 +411,7 @@
 			"#19 button.sgs-testimonial-slider__dot \"Go to testimonial 2\": contrast 1.82 < 3",
 			"#20 button.sgs-testimonial-slider__dot.sgs-testimonial-slider__dot--active \"Go to testimonial 3\": contrast 1.82 < 3",
 			"#21 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#22 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#22 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#23 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 			"#23 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#24 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -489,7 +489,7 @@
 			"#68 a.product-card__title-link.sgs-block-link-source \"SGS Single-Variant Fixture\": radius 0px -> 2px on focus",
 			"#69 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.00 < 3",
 			"#69 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#70 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#70 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#71 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 			"#71 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#72 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -555,7 +555,7 @@
 			"#113 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": contrast 1.15 < 3",
 			"#113 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": radius 50% -> 4px on focus",
 			"#114 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#115 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#115 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#116 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 			"#116 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#117 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -596,7 +596,7 @@
 			"#142 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": contrast 1.35 < 3",
 			"#142 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": radius 8px -> 4px on focus",
 			"#143 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#144 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#144 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#145 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 			"#145 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#146 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -725,7 +725,7 @@
 			"#19 button.sgs-testimonial-slider__dot \"Go to testimonial 2\": contrast 1.82 < 3",
 			"#20 button.sgs-testimonial-slider__dot.sgs-testimonial-slider__dot--active \"Go to testimonial 3\": contrast 1.82 < 3",
 			"#21 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#22 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#22 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#23 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 			"#23 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#24 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -802,7 +802,7 @@
 			"#68 a.product-card__title-link.sgs-block-link-source \"SGS Single-Variant Fixture\": radius 0px -> 2px on focus",
 			"#69 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.00 < 3",
 			"#69 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#70 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#70 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#71 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 			"#71 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#72 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -870,7 +870,7 @@
 			"#113 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": radius 50% -> 4px on focus",
 			"#114 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.06 < 3",
 			"#114 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#115 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#115 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#116 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 			"#116 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#117 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -911,7 +911,7 @@
 			"#142 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": contrast 1.35 < 3",
 			"#142 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": radius 8px -> 4px on focus",
 			"#143 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-			"#144 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+			"#144 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 			"#145 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 			"#145 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 			"#146 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -1142,7 +1142,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 1265.59375,
 								"y": 16,
@@ -2234,7 +2234,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 211.609375,
 								"y": 775.78125,
@@ -3036,8 +3036,8 @@
 							"#1 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#3 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+							"#3 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#4 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 							"#4 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 							"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",
@@ -3065,7 +3065,7 @@
 							"#21 button.sgs-testimonial-slider__dot \"Go to testimonial 2\": contrast 1.82 < 3",
 							"#22 button.sgs-testimonial-slider__dot \"Go to testimonial 3\": contrast 1.82 < 3",
 							"#23 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#24 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#24 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#25 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 							"#25 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#26 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -4188,7 +4188,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 752.75,
@@ -5014,7 +5014,7 @@
 							"#19 button.sgs-testimonial-slider__dot \"Go to testimonial 2\": contrast 1.82 < 3",
 							"#20 button.sgs-testimonial-slider__dot.sgs-testimonial-slider__dot--active \"Go to testimonial 3\": contrast 1.82 < 3",
 							"#21 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#22 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#22 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#23 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 							"#23 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#24 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -6137,7 +6137,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 496.015625,
@@ -6963,7 +6963,7 @@
 							"#19 button.sgs-testimonial-slider__dot \"Go to testimonial 2\": contrast 1.82 < 3",
 							"#20 button.sgs-testimonial-slider__dot.sgs-testimonial-slider__dot--active \"Go to testimonial 3\": contrast 1.82 < 3",
 							"#21 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#22 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#22 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#23 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 							"#23 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#24 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -8569,7 +8569,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 211.609375,
 								"y": 775.140625,
@@ -9427,7 +9427,7 @@
 							"#29 a.product-card__title-link.sgs-block-link-source \"SGS Single-Variant Fixture\": radius 0px -> 2px on focus",
 							"#30 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.00 < 3",
 							"#30 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#31 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#31 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#32 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 							"#32 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#33 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -11174,7 +11174,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 753.25,
@@ -12086,7 +12086,7 @@
 							"#32 a.product-card__title-link.sgs-block-link-source \"SGS Single-Variant Fixture\": radius 0px -> 2px on focus",
 							"#33 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.00 < 3",
 							"#33 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#34 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#34 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#35 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 							"#35 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#36 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -13833,7 +13833,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 647.625,
@@ -14744,7 +14744,7 @@
 							"#32 a.product-card__title-link.sgs-block-link-source \"SGS Single-Variant Fixture\": radius 0px -> 2px on focus",
 							"#33 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.00 < 3",
 							"#33 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#34 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#34 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#35 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 							"#35 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#36 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -14901,7 +14901,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 1265.59375,
 								"y": 16,
@@ -16513,7 +16513,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 211.609375,
 								"y": 774.96875,
@@ -17315,8 +17315,8 @@
 							"#1 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#3 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+							"#3 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#4 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 							"#4 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 							"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",
@@ -17371,7 +17371,7 @@
 							"#32 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": radius 50% -> 4px on focus",
 							"#33 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.18 < 3",
 							"#33 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#34 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#34 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#35 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 							"#35 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#36 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -18910,7 +18910,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 753.296875,
@@ -19758,7 +19758,7 @@
 							"#28 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": contrast 1.15 < 3",
 							"#28 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": radius 50% -> 4px on focus",
 							"#29 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#30 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#30 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#31 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 							"#31 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#32 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -21297,7 +21297,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 496.25,
@@ -22145,7 +22145,7 @@
 							"#28 button.sgs-product-card__swatch.sgs-product-card__swatch--button \"coconut\": radius 50% -> 4px on focus",
 							"#29 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.06 < 3",
 							"#29 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#30 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#30 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#31 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 							"#31 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#32 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -22289,7 +22289,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 1265.59375,
 								"y": 16,
@@ -23017,7 +23017,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 211.609375,
 								"y": 775.890625,
@@ -23819,8 +23819,8 @@
 							"#1 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#3 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+							"#3 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#4 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 							"#4 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 							"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",
@@ -23846,7 +23846,7 @@
 							"#15 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": radius 8px -> 4px on focus",
 							"#16 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.06 < 3",
 							"#16 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#17 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#17 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#18 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3",
 							"#18 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#19 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -24605,7 +24605,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 752.890625,
@@ -25428,7 +25428,7 @@
 							"#13 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": contrast 1.35 < 3",
 							"#13 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": radius 8px -> 4px on focus",
 							"#14 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#15 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#15 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#16 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 							"#16 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#17 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -26187,7 +26187,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 11.609375,
 								"y": 495.546875,
@@ -27010,7 +27010,7 @@
 							"#13 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": contrast 1.35 < 3",
 							"#13 a.wp-block-button__link.wp-element-button \"Select options for “SGS Single-Varia\": radius 8px -> 4px on focus",
 							"#14 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": radius 0px -> 2px on focus",
-							"#15 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#15 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#16 a.sgs-icon__link \"Instagram\": contrast 1.29 < 3",
 							"#16 a.sgs-icon__link \"Instagram\": radius 0px -> 4px on focus",
 							"#17 a.sgs-icon__link \"WhatsApp\": radius 0px -> 4px on focus",
@@ -27160,7 +27160,7 @@
 							}
 						},
 						{
-							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"label": "a.sgs-business-info__link \"[email]\"",
 							"rect": {
 								"x": 1265.59375,
 								"y": 16,
@@ -30198,8 +30198,8 @@
 							"#1 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": contrast 1.35 < 3",
 							"#2 a.sgs-business-info__link \"0121 496 0123\": radius 0px -> 4px on focus",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": contrast 1.35 < 3",
-							"#3 a.sgs-business-info__link \"Zainab@mamasmunches.com\": radius 0px -> 4px on focus",
+							"#3 a.sgs-business-info__link \"[email]\": contrast 1.35 < 3",
+							"#3 a.sgs-business-info__link \"[email]\": radius 0px -> 4px on focus",
 							"#4 a.sgs-business-socials__link \"Instagram\": contrast 1.35 < 3",
 							"#4 a.sgs-business-socials__link \"Instagram\": radius 0px -> 4px on focus",
 							"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 1.30 < 3",

@@ -98,6 +98,44 @@
 				}
 			},
 			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Inset button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "sgs-focus--inset"
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Signature button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "sgs-focus--signature"
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Duotone button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "sgs-focus--duotone"
+				}
+			},
+			{
+				"name": "sgs/before-after",
+				"attributes": {
+					"beforeImageId": 3457,
+					"beforeImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
+					"beforeImageAlt": "Before",
+					"afterImageId": 3457,
+					"afterImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
+					"afterImageAlt": "After"
+				}
+			},
+			{
 				"name": "sgs/text",
 				"attributes": {
 					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it."

@@ -150,7 +150,11 @@ export async function runSite( browser, opts, scratch ) {
 				scratch,
 			} );
 			await context.close();
-			entry.widths.push( { width, css, notes, stops: run.stops, ended: run.ended, summary: summarise( run.stops, mode ) } );
+			const summary = summarise( run.stops, mode );
+			if ( run.capHit ) {
+				summary.fails.push( `STOP CAP HIT on ${ spec } @${ width }: ${ opts.maxStops } stops measured and more focusable elements follow; raise --max-stops` );
+			}
+			entry.widths.push( { width, css, notes, stops: run.stops, ended: run.ended, capHit: run.capHit, summary } );
 		}
 		out.push( entry );
 	}

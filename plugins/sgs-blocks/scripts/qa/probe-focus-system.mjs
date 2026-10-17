@@ -4,7 +4,8 @@
  *
  *   --local              a generated fixture (light, .sgs-on-dark and .sgs-container--has-bg-image grounds; eight controls
  *                        each) with the focus CSS file, in Chromium, Firefox and WebKit (--engine, repeatable).
- *   --site <target>      a live site: serial Tab-through of --pages at --widths (default 1440,768,375), up to 60 stops.
+ *   --site <target>      a live site: serial Tab-through of --pages at --widths (default 1440,768,375), up to --max-stops (130)
+ *                        stops per page; reaching the cap before the last focusable element prints STOP CAP HIT and exits 1.
  *   --negative-control   runs --local against a deliberately bad CSS (1px outline in the background colour) and passes
  *                        only if the probe fails it.
  *
@@ -17,6 +18,16 @@
  *
  * Flags: --css <path> (default theme/sgs-theme/assets/css/focus.css) --forced-colors --reduced-motion --axe
  * --shots <dir> --json <file> --widths a,b --open-drawer --open-mega --max-stops N --settle ms --pause ms --self-test
+ *
+ * Fixture coverage (page 5389, about 100 stops): light, dark and photo sections each carry SGS buttons, a multi-button, links,
+ * form controls, option picker, accordion, tabs and a slider; the light section also carries `sgs-focus--inset`,
+ * `sgs-focus--signature` and `sgs-focus--duotone` buttons and a before-after range input. Known gaps: no
+ * `sgs-focus-source` + `sgs-focus-proxy` pair (no SGS block renders one until the proxy tasks land), and no dual-thumb price
+ * slider (no SGS block renders it; WooCommerce's own filter markup does, so /shop/ covers it).
+ *
+ * Token check: each stop's computed outline-color must equal the resolved --sgs-focus-ring (--sgs-focus-ink for a signature
+ * stop or a duotone or photo ground) and its box-shadow must carry a solid hairline in the resolved --sgs-focus-inner, else
+ * `token-mismatch`. A page with no --sgs-focus-* properties prints `tokens not defined` and judges nothing.
  *
  * Own headless Playwright from plugins/sgs-blocks/node_modules, never the shared MCP browser.
  *
@@ -50,6 +61,10 @@ function headline( perWidth, extraFails ) {
 		minContrast: mins.length ? Math.min( ...mins ) : null,
 		clipped: perWidth.reduce( ( n, s ) => n + s.clipped, 0 ),
 		radiusChanged: perWidth.reduce( ( n, s ) => n + s.radiusChanged, 0 ),
+		tokenMismatches: perWidth.reduce( ( n, s ) => n + s.tokenMismatches, 0 ),
+		tokenStatus: perWidth.some( ( s ) => s.tokenised > 0 )
+			? `checked on ${ perWidth.reduce( ( n, s ) => n + s.tokenised, 0 ) } of ${ perWidth.reduce( ( n, s ) => n + s.stops, 0 ) } stops`
+			: 'tokens not defined (the page has no --sgs-focus-* properties; nothing judged)',
 		fails: [ ...perWidth.flatMap( ( s ) => s.fails ), ...extraFails ],
 	};
 }
@@ -60,6 +75,7 @@ function printHeadline( h, label ) {
 	console.log( `${ label }min contrast: ${ fmt( h.minContrast ) }` );
 	console.log( `${ label }clipped: ${ h.clipped }` );
 	console.log( `${ label }radius changed on focus: ${ h.radiusChanged }` );
+	console.log( `${ label }token match: ${ h.tokenStatus }${ h.tokenMismatches ? `, ${ h.tokenMismatches } token-mismatch` : '' }` );
 }
 
 async function newScratch( browser ) {
@@ -103,13 +119,15 @@ async function runLive( opts ) {
 		for ( const p of pages ) {
 			for ( const w of p.widths ) {
 				const s = w.summary;
+				if ( w.capHit ) console.log( `STOP CAP HIT ${ p.page } @${ w.width }: ${ s.stops } stops measured, more focusable elements follow (raise --max-stops)` );
 				console.log( `${ p.page } @${ w.width }: ${ s.stops } stops (${ w.ended }), looks ${ s.looks }, min contrast ${ fmt( s.minContrast ) }, clipped ${ s.clipped }, radius changed ${ s.radiusChanged }, css ${ w.css.total } B${ w.notes.length ? `, ${ w.notes.join( ', ' ) }` : '' }` );
 			}
 			if ( p.axe ) console.log( `${ p.page } axe: ${ p.axe.error || p.axe.violations.map( ( v ) => `${ v.id }x${ v.nodes }` ).join( ' ' ) || 'no violations' }` );
 		}
 		// "One look" holds across pages: compare every page's stops together at each width.
 		const perWidth = opts.widths.map( ( width ) => summarise( pages.flatMap( ( p ) => p.widths.filter( ( w ) => w.width === width ).flatMap( ( w ) => w.stops ) ), mode ) );
-		const h = headline( perWidth, [] );
+		const capFails = pages.flatMap( ( p ) => p.widths.filter( ( w ) => w.capHit ).map( ( w ) => `STOP CAP HIT on ${ p.page } @${ w.width }` ) );
+		const h = headline( perWidth, capFails );
 		const cssBytes = Object.fromEntries( pages.map( ( p ) => [ p.page, p.widths[ 0 ].css.total ] ) );
 		console.log( '' );
 		printHeadline( h, '' );
