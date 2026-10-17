@@ -158,17 +158,18 @@ export function sameColour( a, b ) {
 
 /**
  * The token check for one stop. `s.tokens` is { defined, ring, ink, inner, expect } (colour strings resolved in the page;
- * `expect` is 'ink' for a G2 or signature stop, else 'ring'). Returns { status: 'undefined' | 'ok' | 'mismatch', detail }.
+ * `expect` is 'ink' for a G2 or signature stop, 'inner' for a G2 stop on a dark ground, else 'ring'). Returns { status: 'undefined' | 'ok' | 'mismatch', detail }.
  * 'undefined' means the page has no --sgs-focus-* properties, so nothing is judged.
  */
 export function judgeTokens( s ) {
 	const t = s.tokens;
 	if ( ! t || ! t.defined ) return { status: 'undefined', detail: 'tokens not defined' };
 	if ( s.noOutline ) return { status: 'ok', detail: '' };
-	const want = parseColour( t.expect === 'ink' ? t.ink : t.ring );
+	const wantToken = { ink: [ t.ink, '--sgs-focus-ink' ], inner: [ t.inner, '--sgs-focus-inner' ], ring: [ t.ring, '--sgs-focus-ring' ] }[ t.expect ] || [ t.ring, '--sgs-focus-ring' ];
+	const want = parseColour( wantToken[ 0 ] );
 	const got = parseColour( s.outline.colour );
 	if ( ! sameColour( got, want ) ) {
-		return { status: 'mismatch', detail: `outline-color ${ s.outline.colour } is not the resolved ${ t.expect === 'ink' ? '--sgs-focus-ink' : '--sgs-focus-ring' } ${ t.expect === 'ink' ? t.ink : t.ring }` };
+		return { status: 'mismatch', detail: `outline-color ${ s.outline.colour } is not the resolved ${ wantToken[ 1 ] } ${ wantToken[ 0 ] }` };
 	}
 	const inner = parseColour( t.inner );
 	const hairline = shadowLayers( s.boxShadow ).some( ( l ) => l.blur === 0 && l.spread > 0 && l.colour && l.colour[ 3 ] > 0.5 && sameColour( l.colour, inner ) );
@@ -193,7 +194,8 @@ export function judgeContrast( readings ) {
 		} );
 	if ( per.length === 0 ) return { min: null, points: 0 };
 	const worst = per.reduce( ( a, b ) => ( b.value < a.value ? b : a ) );
-	return { min: worst.value, points: per.length, worst: { ring: worst.ring, bg: worst.bg, inner: worst.inner } };
+	const ringMin = Math.min( ...readings.filter( ( r ) => r.ring && r.bg ).map( ( r ) => contrast( r.ring, r.bg ) ) );
+	return { min: worst.value, ringMin, points: per.length, worst: { ring: worst.ring, bg: worst.bg, inner: worst.inner } };
 }
 
 /** The look tuple that must be identical across stops. */
@@ -219,6 +221,15 @@ export function judgeStop( s, mode ) {
 		fails.push( `contrast ${ s.contrast.min.toFixed( 2 ) } < ${ MIN_CONTRAST }` );
 	}
 	if ( s.noOutline && ! mode.forcedColors ) fails.push( 'no outline (the core must be a real outline)' );
+	// A stop that asks for it (data-focus-assert="ring") must have the ring itself, not only the inner band, clear 3:1.
+	if ( s.kinds.assertRing && ! mode.forcedColors && s.contrast && s.contrast.ringMin !== undefined && s.contrast.ringMin < MIN_CONTRAST && ! s.obscured ) {
+		fails.push( `ring contrast ${ s.contrast.ringMin.toFixed( 2 ) } < ${ MIN_CONTRAST } (the ring alone, not the inner band)` );
+	}
+	// A card proxy: one ring, on the card; the source link inside it paints none.
+	if ( s.card ) {
+		if ( ! s.card.cardRing ) fails.push( 'card proxy draws no ring on the card' );
+		if ( s.card.linkRing ) fails.push( 'a second ring paints on the source link inside the card' );
+	}
 	if ( ! mode.forcedColors ) {
 		const tokens = judgeTokens( s );
 		if ( tokens.status === 'mismatch' ) fails.push( `token-mismatch: ${ tokens.detail }` );

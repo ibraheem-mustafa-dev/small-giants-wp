@@ -145,7 +145,9 @@ $sgs_show_pickers = isset( $attributes['showPickers'] ) ? (bool) $attributes['sh
 // showCta: live-data mode's button (View product / Add to cart / Buy now); off for listing grids.
 $sgs_show_cta = isset( $attributes['showCta'] ) ? (bool) $attributes['showCta'] : true;
 
-$classes = array( 'product-card' );
+// The title link is a stretched anchor, so the card holds the one focus ring (focus.css, the card arm); its own
+// overflow:hidden and radius make that ring an inset one.
+$classes = array( 'product-card', 'sgs-focus-card', 'sgs-focus--inset' );
 if ( 'trial' === $variant_style ) {
 	$classes[] = 'trial-card';
 }
@@ -1591,7 +1593,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<div class="sgs-product-card__title-row">
 					<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
 						<?php if ( '' !== $card_permalink && $sgs_pc_title_link ) : ?>
-							<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
+							<a class="product-card__title-link sgs-focus-source" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 						<?php else : ?>
 							<?php echo esc_html( $sgs_resolved_title ); ?>
 						<?php endif; ?>
@@ -1976,7 +1978,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 	<div class="sgs-product-card__title-row">
 		<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
 		<?php if ( '' !== $card_permalink && $sgs_pc_title_link ) : ?>
-			<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
+			<a class="product-card__title-link sgs-focus-source" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 		<?php else : ?>
 			<?php echo esc_html( $sgs_resolved_title ); ?>
 		<?php endif; ?>

@@ -30,7 +30,9 @@ function readFocused() {
 		const scope = el.closest( '.sgs-focus-scope' );
 		if ( next && next.classList.contains( 'sgs-focus-proxy' ) ) target = next;
 		else if ( scope && scope.querySelector( '.sgs-focus-proxy' ) ) target = scope.querySelector( '.sgs-focus-proxy' );
+		else if ( el.closest( '.sgs-focus-card' ) ) target = el.closest( '.sgs-focus-card' );
 	}
+	const cardEl = target !== el && target.classList.contains( 'sgs-focus-card' ) ? target : null;
 	window.__fp = { el, target };
 
 	const isRange = el instanceof HTMLInputElement && el.type === 'range';
@@ -151,6 +153,12 @@ function readFocused() {
 		forced = { highlight, ok: state.outline.style !== 'none' && ow > 0 && state.outline.colour === highlight };
 	}
 	const sig = target.classList.contains( 'sgs-focus--signature' );
+	// A card proxy: the ring must belong to the card, and the source link inside it must paint none of its own.
+	const drawsRing = ( node ) => {
+		const cs = getComputedStyle( node );
+		return cs.outlineStyle !== 'none' && ( Number.parseFloat( cs.outlineWidth ) || 0 ) > 0;
+	};
+	const card = cardEl ? { cardRing: drawsRing( cardEl ), linkRing: drawsRing( el ) } : null;
 	// The --sgs-focus-* tokens on the focused element, each resolved to a computed colour on a throwaway span. A G2 ground
 	// (duotone, photo or video container) or a signature stop paints its core in the ink, every other stop in the ring.
 	const own = getComputedStyle( target );
@@ -170,7 +178,13 @@ function readFocused() {
 		ring: resolveToken( '--sgs-focus-ring' ),
 		ink: resolveToken( '--sgs-focus-ink' ),
 		inner: resolveToken( '--sgs-focus-inner' ),
-		expect: sig || target.closest( '.sgs-focus--duotone, .sgs-container--has-bg-image, .sgs-container--has-bg-video' ) ? 'ink' : 'ring',
+		expect: ( () => {
+			if ( sig ) return 'ink';
+			const g2 = target.closest( '.sgs-focus--duotone, .sgs-container--has-bg-image, .sgs-container--has-bg-video' );
+			if ( ! g2 ) return 'ring';
+			// A G2 element on a dark ground paints its core in the light inner token (focus.css).
+			return g2.closest( '.sgs-on-dark' ) ? 'inner' : 'ink';
+		} )(),
 	};
 	return {
 		tokens,
@@ -181,7 +195,13 @@ function readFocused() {
 		focusVisible: el.matches( ':focus-visible' ),
 		proxied: target !== el,
 		range: isRange,
-		kinds: { inset: target.classList.contains( 'sgs-focus--inset' ), signature: sig, source: el.classList.contains( 'sgs-focus-source' ) },
+		kinds: {
+			inset: target.classList.contains( 'sgs-focus--inset' ),
+			signature: sig,
+			source: el.classList.contains( 'sgs-focus-source' ),
+			assertRing: target.dataset.focusAssert === 'ring',
+		},
+		card,
 		signatureAnimation: sig ? getComputedStyle( target, '::before' ).animationName : null,
 		clip: { clipped, by },
 		obscured,
@@ -335,6 +355,7 @@ export async function tabThrough( page, opts ) {
 			radius: f.radius,
 			radiusRest,
 			kinds: reading.kinds,
+			card: reading.card,
 			proxied: reading.proxied,
 			range: reading.range,
 			focusVisible: reading.focusVisible,

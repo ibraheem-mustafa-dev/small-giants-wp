@@ -16,6 +16,9 @@
  *     whole track as a second ring);
  *   - anchors the signature `::before` outside the host's border box through `--sgs-focus-host-border`, so the G3 band
  *     never lands on the outline ring of a bordered button;
+ *   - carries the card arm (`.sgs-focus-card:has(.sgs-focus-source:focus-visible)`) in the one declaration set and in
+ *     forced colours, and turns the focus source's own outline off while its proxy draws the ring;
+ *   - gives a duotone or photo element on a dark ground a light ring (`--sgs-focus-inner`) and an ink far bloom;
  * and that no other theme stylesheet holds an indicator, apart from the files a later plan task owns (PENDING; an
  * entry that no longer holds a finding fails, so the list only shrinks).
  * Each focus.css check also runs against a planted fault (negative control), so a check that cannot fail fails here.
@@ -151,6 +154,62 @@ const CHECKS = {
 		} );
 		return found ? [] : [ 'the range input keeps the browser default ring beside the thumb ring' ];
 	},
+	cardArmCarriesTheIndicator( root ) {
+		const CARD = '.sgs-focus-card:has(.sgs-focus-source:focus-visible):not(#wpadminbar *)';
+		const problems = [];
+		let base = false;
+		let forced = false;
+		root.walkRules( ( rule ) => {
+			if ( ! rule.selectors.map( norm ).includes( CARD ) ) {
+				return;
+			}
+			const has = ( prop ) => ( rule.nodes || [] ).some( ( n ) => 'decl' === n.type && prop === n.prop );
+			if ( inForced( rule ) ) {
+				forced = has( 'outline' ) && has( 'box-shadow' );
+			} else {
+				base = has( 'outline' ) && has( 'box-shadow' );
+			}
+		} );
+		if ( ! base ) {
+			problems.push( `no indicator arm for ${ CARD }` );
+		}
+		if ( ! forced ) {
+			problems.push( `forced colours does not repeat the card arm ${ CARD }` );
+		}
+		return problems;
+	},
+	sourceDrawsNothing( root ) {
+		let found = false;
+		root.walkRules( ( rule ) => {
+			if ( inForced( rule ) || inSupports( rule ) || ! rule.selectors.map( norm ).includes( '.sgs-focus-source:focus-visible:not(#wpadminbar *)' ) ) {
+				return;
+			}
+			rule.walkDecls( 'outline-style', ( d ) => {
+				found = found || 'none' === d.value.trim();
+			} );
+		} );
+		return found ? [] : [ 'a focus source keeps the browser default ring beside its proxy ring' ];
+	},
+	darkDuotoneRingIsLight( root ) {
+		const WANT = [
+			'.sgs-on-dark.sgs-focus--duotone', '.sgs-on-dark .sgs-focus--duotone',
+			'.sgs-on-dark.sgs-container--has-bg-image', '.sgs-on-dark .sgs-container--has-bg-image',
+			'.sgs-on-dark.sgs-container--has-bg-video', '.sgs-on-dark .sgs-container--has-bg-video',
+		];
+		const got = {};
+		root.walkRules( ( rule ) => {
+			if ( inForced( rule ) || inSupports( rule ) || 'root' !== rule.parent.type ) {
+				return;
+			}
+			const decls = Object.fromEntries( ( rule.nodes || [] ).filter( ( n ) => 'decl' === n.type ).map( ( n ) => [ n.prop, norm( n.value ) ] ) );
+			if ( 'var(--sgs-focus-inner)' === decls[ '--sgs-focus-ring' ] && 'var(--sgs-focus-ink)' === decls[ '--sgs-focus-far' ] ) {
+				rule.selectors.map( norm ).forEach( ( sel ) => {
+					got[ sel ] = true;
+				} );
+			}
+		} );
+		return WANT.filter( ( sel ) => ! got[ sel ] ).map( ( sel ) => `no light ring and ink far bloom for ${ sel }` );
+	},
 	signatureClearsHostBorder( root ) {
 		let found = false;
 		const problems = [];
@@ -200,7 +259,10 @@ describe( 'focus.css, the one focus system', () => {
 			'\t.sgs-focus--signature::before { display: none; }',
 			'}',
 		].join( '\n' ) ),
-		rangeTrackDrawsNoSecondRing: ( text ) => text.replace( /outline-style: none;/, 'outline-style: auto;' ),
+		rangeTrackDrawsNoSecondRing: ( text ) => text.replace( /(input\[type="range"\]:not\(\.sgs-focus-source\):focus-visible:not\(#wpadminbar \*\) \{\s*)outline-style: none;/, '$1outline-style: auto;' ),
+		cardArmCarriesTheIndicator: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\):not\(#wpadminbar \*\)/g, '.sgs-focus-card:focus-visible:not(#wpadminbar *)' ),
+		sourceDrawsNothing: ( text ) => text.replace( /(\n\.sgs-focus-source:focus-visible:not\(#wpadminbar \*\) \{\s*)outline-style: none;/, '$1color: inherit;' ),
+		darkDuotoneRingIsLight: ( text ) => text.replace( /(\.sgs-on-dark \.sgs-focus--duotone[^{]*\{[^}]*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
 		signatureClearsHostBorder: ( text ) => text.replace( /inset: calc\([^;]*--sgs-focus-host-border[^;]*\);/, 'inset: calc(var(--sgs-focus-width) * -3);' ),
 	};
 

@@ -4,6 +4,10 @@
  * button, an outline button, a text link, a text input, a range, a proxied radio (`sgs-focus-source` with an adjacent
  * `sgs-focus-proxy`), an inset tab (`sgs-focus--inset` in a clipping box), a borderless signature button and a
  * signature button with a 2px border that declares it through `--sgs-focus-host-border`.
+ * A fourth block carries the extra stops (EXTRA_STOPS): a duotone button on a dark ground whose ring alone must clear 3:1
+ * (`data-focus-assert="ring"`), a title-link card (an `a.sgs-focus-source` with a stretched `::after` overlay inside an
+ * `.sgs-focus-card`) whose ring must wrap the card and leave the link bare, and the same card with its own
+ * `overflow:hidden`, an `sgs-focus--inset` ring and an `overflow:hidden` parent, which the clip test must not flag.
  *
  * @package SGS\Blocks
  */
@@ -13,6 +17,7 @@ import { summarise } from './focus-probe-lib.mjs';
 import { tabThrough } from './focus-measure.mjs';
 
 export const CONTROLS_PER_GROUND = 9;
+export const EXTRA_STOPS = 3;
 export const GROUNDS = [
 	{ key: 'light', cls: 'sgs-on-light', css: 'background:#ffffff;color:#0b1020' },
 	{ key: 'dark', cls: 'sgs-on-dark', css: 'background:#101828;color:#ffffff' },
@@ -33,10 +38,20 @@ export function fixtureHtml( focusCss ) {
 	<button type="button" class="b b-fill sgs-focus--signature">Signature ${ g.key }</button>
 	<button type="button" class="b b-out b-host-border sgs-focus--signature">Bordered signature ${ g.key }</button>
 </section>`;
+	const darkDuotone = `
+<section class="g sgs-on-dark" data-ground="dark-duotone">
+	<a class="b b-fill sgs-focus--duotone" data-focus-assert="ring" href="#dark-duotone">Duotone on dark</a>
+</section>`;
+	const extras = `
+<section class="g sgs-on-light" data-ground="cards">
+	<div class="cardwrap"><article class="card sgs-focus-card"><p>Product title-link card</p><a class="sgs-focus-source cardlink" href="#card-plain">Card title link</a></article></div>
+	<div class="cardclip"><article class="card card-clipped sgs-focus-card sgs-focus--inset"><p>Overflow-hidden card</p><a class="sgs-focus-source cardlink" href="#card-clipped">Clipped card title link</a></article></div>
+</section>`;
 	return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--wp--preset--color--surface:#ffffff;--wp--preset--color--text:#0b1020;--wp--preset--color--accent:#0e7c86;--wp--preset--color--primary:#1f3a5f;--wp--preset--color--accent-light:#7ad0d8}
 body{margin:0;font:16px/1.4 system-ui,sans-serif}
+${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffffff' }, { key: 'cards', css: 'background:#ffffff;color:#0b1020' } ] ).map( ( g ) => `[data-ground="${ g.key }"]{${ g.css }}` ).join( ' ' ) }
 .g{padding:28px 24px;display:flex;flex-wrap:wrap;gap:28px;align-items:center}
 .b{font:inherit;padding:10px 18px;border:2px solid transparent;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
 .b-fill{background:#0e7c86;color:#ffffff;border-width:0}
@@ -53,9 +68,16 @@ body{margin:0;font:16px/1.4 system-ui,sans-serif}
 .clipbox{overflow:hidden;display:inline-block;line-height:0}
 .clipbox .b{border-radius:0}
 .b-host-border{--sgs-focus-host-border:2px}
+.card{position:relative;box-sizing:border-box;width:240px;padding:20px 16px;border-radius:12px;background:#eef1f5;color:#0b1020}
+.card p{margin:0 0 8px}
+.cardlink{color:inherit;text-decoration:none}
+.cardlink::after{content:"";position:absolute;inset:0;z-index:1}
+.card-clipped{overflow:hidden;border-radius:16px}
+.cardwrap{padding:12px}
+.cardclip{overflow:hidden;display:inline-block}
 </style>
 <style id="focus-under-test">${ focusCss }</style>
-</head><body>${ GROUNDS.map( ground ).join( '' ) }</body></html>`;
+</head><body>${ GROUNDS.map( ground ).join( '' ) }${ darkDuotone }${ extras }</body></html>`;
 }
 
 /** The deliberately bad CSS for the negative control: a 1px outline in the background's own colour, no shadow. */
@@ -92,7 +114,7 @@ export async function runLocalEngine( browser, engine, cssText, opts, scratch ) 
 		await context.close();
 		const summary = summarise( run.stops, mode );
 		if ( run.capHit ) summary.fails.push( `STOP CAP HIT at ${ width }px: ${ opts.maxStops } stops measured and more focusable elements follow; raise --max-stops` );
-		const expected = GROUNDS.length * CONTROLS_PER_GROUND;
+		const expected = GROUNDS.length * CONTROLS_PER_GROUND + EXTRA_STOPS;
 		if ( run.stops.length < expected ) {
 			summary.fails.push( `only ${ run.stops.length } of ${ expected } fixture controls were reached by Tab (${ run.ended })` );
 		}

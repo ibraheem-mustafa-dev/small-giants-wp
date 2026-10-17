@@ -56,6 +56,7 @@
 	 * the operator's choice; the shadow is the card's boundary by default.
 	 */
 	box-shadow: var(--sgs-product-card-shadow, 0 2px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent));
+	--sgs-focus-under: var(--sgs-product-card-shadow, 0 2px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent));
 }
 
 /* Trial variant — re-declare the inherited custom property as transparent
