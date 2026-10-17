@@ -1,0 +1,3149 @@
+{
+	"_meta": {
+		"purpose": "How the computed route recognises, writes and checks each capability in data/capabilities.json, or the exclusion Bean signed (clone coverage plan Phase 1, step 1.3). An entry missing any of the three steps is a gap and names its Phase 4 wave. Gate: node capabilities.mjs --gate and tests/clone-coverage.test.mjs.",
+		"reference": "construct:<kind> (a construct registry kind with a reader) or a repo-relative path with an optional #symbol"
+	},
+	"entries": {
+		"construct:binding": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:data-hook": {
+			"recognise": "construct:data-hook",
+			"write": null,
+			"check": null,
+			"wave": "behaviour recognisers (plan Phase 4)",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"construct:dc-import": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:getter": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:handler": {
+			"recognise": "construct:handler",
+			"write": null,
+			"check": null,
+			"wave": "behaviour recognisers (plan Phase 4)",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"construct:helmet-font": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:helmet-script": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:keyframes": {
+			"recognise": "construct:keyframes",
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"construct:link": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:observer": {
+			"recognise": "construct:observer",
+			"write": null,
+			"check": null,
+			"wave": "behaviour recognisers (plan Phase 4)",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"construct:ref": {
+			"recognise": "construct:ref",
+			"write": null,
+			"check": null,
+			"wave": "behaviour recognisers (plan Phase 4)",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"construct:renderVals-key": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:sc-for": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:sc-if": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:style-hover": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:template-element": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"construct:timer": {
+			"recognise": "construct:timer",
+			"write": null,
+			"check": null,
+			"wave": "behaviour recognisers (plan Phase 4)",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"construct:transition": {
+			"recognise": "construct:transition",
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"construct:waapi": {
+			"recognise": "construct:waapi",
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "read by lib/intake-inventory.mjs#readInventory; no writer or check yet"
+		},
+		"css-at:charset": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:container": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:counter-style": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:document": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:font-face": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:font-feature-values": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:font-palette-values": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:import": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:keyframes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:layer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:media": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:namespace": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:page": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:position-try": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:property": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:scope": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:starting-style": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:supports": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-at:view-transition": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:anchor-positioning": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:animations": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:backgrounds-and-borders": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:basic-user-interface": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:box-alignment": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:box-model": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:box-sizing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:cascading-and-inheritance": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:color": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:compositing-and-blending": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:conditional-rules": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:containment": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:custom-properties-for-cascading-variables": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:display": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:filter-effects": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:flexible-box-layout": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:fonts": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:fragmentation": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:generated-content": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:grid-layout": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:images": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:inline": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:lists-and-counters": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:logical-properties-and-values": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:masking": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:mathml": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:microsoft-extensions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:mobile-text-size-adjustment": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:motion-path": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:mozilla-extensions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:multi-column-layout": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:overflow": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:overscroll-behavior": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:paged-media": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:pointer-events": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:positioned-layout": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:rhythmic-sizing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:ruby": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:scalable-vector-graphics": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:scroll-anchoring": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:scroll-driven-animations": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:scroll-snap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:scrollbars-styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:shapes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:speech": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:table": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:text": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:text-decoration": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:transforms": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:transitions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:values-and-units": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:view-transitions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:viewport": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:webkit-extensions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:will-change": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"css-group:writing-modes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:animation": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:blockLink": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:blockLinkAuto": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:childSizing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:chipGap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:clickEffects": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:conditionalVisibility": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:customCss": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:hover": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:imageControls": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:parallax": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:responsiveVisibility": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"extension:sameTerm": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:a": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:abbr": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:acronym": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:address": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:applet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:area": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:article": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:aside": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:audio": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:b": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:base": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:basefont": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:bdi": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:bdo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:bgsound": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:big": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:blink": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:blockquote": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:body": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:br": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:button": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:canvas": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:caption": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:center": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:cite": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:code": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:col": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:colgroup": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:command": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:content": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:data": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:datalist": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:dd": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:del": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:details": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:dfn": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:dialog": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:dir": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:div": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:dl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:dt": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:element": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:em": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:embed": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:fieldset": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:figcaption": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:figure": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:font": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:footer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:form": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:frame": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:frameset": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:h1": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:h2": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:h3": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:h4": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:h5": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:h6": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:head": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:header": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:hgroup": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:hr": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:html": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:i": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:iframe": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:image": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:img": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:input": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:ins": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:isindex": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:kbd": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:keygen": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:label": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:legend": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:li": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:link": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:listing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:main": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:map": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:mark": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:marquee": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:math": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:menu": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:menuitem": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:meta": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:meter": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:multicol": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:nav": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:nextid": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:nobr": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:noembed": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:noframes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:noscript": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:ol": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:optgroup": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:option": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:output": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:p": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:param": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:picture": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:plaintext": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:pre": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:progress": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:q": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:rb": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:rbc": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:rp": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:rt": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:rtc": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:ruby": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:s": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:samp": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:script": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:search": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:section": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:select": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:shadow": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:slot": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:small": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:source": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:spacer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:span": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:strike": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:strong": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:style": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:sub": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:summary": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:sup": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:svg": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:table": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:tbody": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:td": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:template": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:textarea": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:tfoot": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:th": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:thead": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:time": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:title": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:tr": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:track": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:tt": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:u": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:ul": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:var": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:video": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:wbr": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"html:xmp": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:footer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:header": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:sgs-archive-toolbar": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:sgs-cart-content": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:sgs-checkout-content": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:sgs-order-confirmation-content": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:sgs-pdp-buybox": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"part:sgs-pdp-content": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:about-image-left": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:about-mission": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:about-stats": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:about-story": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:contact-form": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:contact-minimal": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:cta-banner": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:cta-centred": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-anchored-card-stack": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-centred-statement": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-editorial-ghost-list": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-floating-capped-card": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-offset-column": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-scratch": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-solid-brand-light": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-split-zone-serif": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:drawer-two-column-editorial": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:faq-section": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:footer-centred": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:footer-columns": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:footer-compact": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:footer-informational": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:footer-minimal": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:footer-scratch": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:footer-simple": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:framework-drawer-default": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:framework-footer-default": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:framework-header-default": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-centred": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-full": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-minimal": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-scratch": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-search-bar-above": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-search-bar-below": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-search-icon": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:header-top-icons": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:heading-subheading-cluster": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:hero-centred": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:hero-split": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:hero-video-background": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:label-heading-subheading-cluster": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-brands-1": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-compact-links": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-compact-links-numbered": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-general-1col": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-general-2col": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-general-2col-aside": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-links-with-tiles": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:mega-media-cards-1": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:pricing-columns": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:services-alternating": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:services-features": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:services-grid": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:stats-counter": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:team-section": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:testimonials-cards": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:testimonials-highlight": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"pattern:testimonials-large": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"plugin:sgs-accessibility": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"plugin:sgs-blocks": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"plugin:sgs-client-notes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_choice_flow": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_drawer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_footer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_form": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_header": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_mega_menu": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_modal": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"post-type:sgs_product_template": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:animationItems": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:arrayContentLift": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:blockLinkAlways": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:blockLinkAutoHelp": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:blockLinkAutoUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:boxFamilies": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:collection": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:colourExemptions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:containerKind": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:elements": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:enabledExtensions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:fx": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:headerEssential": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:hideExtensions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:hoverDefaults": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:hoverExcludeControls": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:iconPicker": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:imageControls": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:imageControlsExplicit": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:intrinsicColumns": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:is_section_root": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:mediaElements": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:motion": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:motionDelegate": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:motionItems": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:presetManualValues": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:presetSelectors": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:scalarContentLift": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:scalarStylingLift": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:scrim": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:sectionPadding": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:separators": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:shadowLift": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:siteInfoLinkRow": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:spacingAxes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:spacingDefaults": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:specRef": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:sweepEligibility": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:variantAttr": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"sgs-support:variants": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.appearanceTools": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color.custom": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color.customDuotone": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color.customGradient": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color.defaultGradients": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color.defaultPalette": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color.gradients": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.color.palette": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.accentSets": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.borderRadius": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.buttonPresets": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.distance": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.duration": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.easing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.entrance": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.focus": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.footer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.gutter": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.header": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.linkSweep": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.maxWidth": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.measuredDiagramPresets": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.section": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.sgs": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.shadowColour": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.shadowHover": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.custom.transition": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.layout": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.layout.contentSize": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.layout.wideSize": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.lightbox": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.lightbox.allowEditing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.lightbox.enabled": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.shadow": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.shadow.defaultPresets": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.shadow.presets": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing.blockGap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing.customSpacingSize": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing.defaultSpacingSizes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing.margin": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing.padding": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing.spacingSizes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.spacing.units": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.typography": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.typography.defaultFontSizes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.typography.fluid": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.typography.fontFamilies": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.typography.fontSizes": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:settings.useRootPaddingAwareAlignments": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:styles.blocks": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:styles.color": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:styles.css": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:styles.elements": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:styles.spacing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"snapshot-key:styles.typography": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:404": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:archive": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:archive-product": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:cart": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:checkout": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:front-page": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:home": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:index": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:order-confirmation": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:page": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:page-no-title": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:product-search-results": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:search": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:single": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:single-product": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"template:taxonomy-product_attribute": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		}
+	}
+}
