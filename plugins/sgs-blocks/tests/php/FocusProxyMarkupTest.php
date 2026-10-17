@@ -133,5 +133,11 @@ final class FocusProxyMarkupTest extends TestCase {
 			$xp->query( '//*[' . $this->has_class( 'sgs-focus-scope' ) . ']//input[' . $this->has_class( 'sgs-focus-source' ) . ']' )->length,
 			'the range sits inside the scope'
 		);
+		$this->assertSame( 1, $xp->query( '//*[' . $this->has_class( 'sgs-focus-proxy' ) . ']' )->length, 'exactly one element carries sgs-focus-proxy' );
+		$this->assertSame(
+			1,
+			$xp->query( '//*[' . $this->has_class( 'sgs-focus-proxy' ) . ']/following::input[' . $this->has_class( 'sgs-focus-source' ) . ']' )->length,
+			'the handle precedes the range in the DOM, so only the scoped arm (not the adjacent-sibling arm) can reach it'
+		);
 	}
 }

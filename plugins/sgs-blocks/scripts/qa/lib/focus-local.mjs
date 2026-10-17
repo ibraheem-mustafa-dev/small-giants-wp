@@ -21,9 +21,11 @@
 import fs from 'node:fs';
 import { summarise } from './focus-probe-lib.mjs';
 import { tabThrough } from './focus-measure.mjs';
+import { DEFECT_STOPS, checkDefects, defectsHtml } from './focus-local-defects.mjs';
+import { checkBeforeAfterProxy } from './focus-before-after.mjs';
 
 export const CONTROLS_PER_GROUND = 9;
-export const EXTRA_STOPS = 5;
+export const EXTRA_STOPS = 5 + DEFECT_STOPS;
 const SECTION_RING = 'rgb(180, 35, 24)';
 export const GROUNDS = [
 	{ key: 'light', cls: 'sgs-on-light', css: 'background:#ffffff;color:#0b1020' },
@@ -65,6 +67,7 @@ export function fixtureHtml( focusCss ) {
 <section class="g sgs-on-light" data-ground="own-accent">
 	<a class="b b-fill" data-focus-expect-ring="${ SECTION_RING }" href="#own-accent">Section accent preset</a>
 </section>`;
+	const defects = defectsHtml();
 	return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--wp--preset--color--surface:#ffffff;--wp--preset--color--text:#0b1020;--wp--preset--color--accent:#0e7c86;--wp--preset--color--primary:#1f3a5f;--wp--preset--color--accent-light:#7ad0d8}
@@ -94,8 +97,9 @@ ${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffff
 .cardwrap{padding:12px}
 .cardclip{overflow:hidden;display:inline-block}
 </style>
+<style id="defects-css">${ defects.css }</style>
 <style id="focus-under-test">${ focusCss }</style>
-</head><body>${ GROUNDS.map( ground ).join( '' ) }${ darkDuotone }${ extras }${ ownTokens }${ preview }</body></html>`;
+</head><body>${ GROUNDS.map( ground ).join( '' ) }${ darkDuotone }${ extras }${ ownTokens }${ defects.html }${ preview }</body></html>`;
 }
 
 /** The deliberately bad CSS for the negative control: a 1px outline in the background's own colour, no shadow. */
@@ -141,6 +145,13 @@ export async function runLocalEngine( browser, engine, cssText, opts, scratch ) 
 		const page = await context.newPage();
 		await page.setContent( fixtureHtml( cssText ) );
 		const previewProblems = await checkSignaturePreview( page, mode );
+		const defectsPage = await context.newPage();
+		await defectsPage.setContent( fixtureHtml( cssText ) );
+		previewProblems.push( ...( await checkDefects( defectsPage, scratch, mode ) ) );
+		await defectsPage.close();
+		const sliderPage = await context.newPage();
+		previewProblems.push( ...( await checkBeforeAfterProxy( sliderPage, cssText, mode ) ) );
+		await sliderPage.close();
 		const run = await tabThrough( page, {
 			maxStops: opts.maxStops,
 			tabKey: engine === 'webkit' ? 'programmatic' : 'Tab',
