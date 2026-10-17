@@ -6820,13 +6820,6 @@
     },
     {
       "slug": "sgs/filter-search",
-      "attr": "focusRingColour",
-      "fields": {
-        "css_property": "outline-color"
-      }
-    },
-    {
-      "slug": "sgs/filter-search",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -7563,39 +7556,6 @@
         "css_property": "font-weight",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "formFocusRingColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "focus-ring"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "formFocusRingOffset",
-      "fields": {
-        "css_property": "outline-offset",
-        "css_element": "focus-ring"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "formFocusRingOpacity",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_element": "focus-ring"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "formFocusRingWidth",
-      "fields": {
-        "css_property": "outline-width",
-        "css_element": "focus-ring"
       }
     },
     {
@@ -35106,14 +35066,6 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/product-search",
-      "attr": "focusRingColour",
-      "fields": {
-        "css_property": "outline-color",
-        "css_element": "input"
       }
     },
     {
