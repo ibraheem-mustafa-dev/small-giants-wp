@@ -356,6 +356,21 @@ def restore_wp_reference_archive(db_path: Path = None) -> None:
     print("[--rebuild] reference corpus restored\n")
 
 
+def reassert_reference_roles(db_path: Path = None) -> None:
+    """Re-apply the data-file reference rows that stage 1's classifier overwrites.
+
+    ``seed_reference_data.seed_all`` is idempotent; it restores ``role='scalar-media'`` on the
+    rostered attributes after a plain (non-``--rebuild``) run reclassified them, which would
+    otherwise fail ``dbschema/check_value_identity.py`` at the next deploy.
+    """
+    db_path = db_path or SGS_DB
+    dbschema = Path(__file__).resolve().parent / "dbschema"
+    if str(dbschema) not in sys.path:
+        sys.path.insert(0, str(dbschema))
+    import seed_reference_data  # noqa: PLC0415
+    seed_reference_data.seed_all(db_path)
+
+
 def run_module_load_seeders(db_path: Path = None) -> None:
     """Seed the reference tables that /sgs-update's stages do not write.
 
@@ -7378,6 +7393,11 @@ def main() -> None:
         results[stage_num] = dispatch[stage_num]()
 
     conn.close()
+
+    # Stage 1 reclassifies block_attributes.role from the auto-classifier, which overwrites the
+    # 'scalar-media' anchor rows; re-assert them whenever stage 1 ran (not only under --rebuild).
+    if 1 in results and not args.dry_run:
+        reassert_reference_roles(SGS_DB)
 
     # Summary
     print(f"\n{'=' * 50}")
