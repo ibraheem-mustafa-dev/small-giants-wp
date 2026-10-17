@@ -3,6 +3,9 @@
 		"name": "sgs/container",
 		"attributes": {
 			"layout": "stack",
+			"gap": {
+				"desktop": "8px"
+			},
 			"className": "focus-fx-light",
 			"padding": {
 				"desktop": {
@@ -112,7 +115,23 @@
 					"label": "Signature button",
 					"url": "https://example.com/",
 					"inheritStyle": "primary",
-					"className": "sgs-focus--signature"
+					"focusStyle": "signature"
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Bordered signature button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"focusStyle": "signature",
+					"borderWidth": {
+						"top": "2px",
+						"right": "2px",
+						"bottom": "2px",
+						"left": "2px"
+					},
+					"borderColour": "accent"
 				}
 			},
 			{
@@ -121,7 +140,7 @@
 					"label": "Duotone button",
 					"url": "https://example.com/",
 					"inheritStyle": "primary",
-					"className": "sgs-focus--duotone"
+					"focusStyle": "duotone"
 				}
 			},
 			{
@@ -138,7 +157,13 @@
 			{
 				"name": "sgs/text",
 				"attributes": {
-					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it."
+					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it.",
+					"margin": {
+						"desktop": {
+							"top": "24px",
+							"bottom": "24px"
+						}
+					}
 				}
 			},
 			{
@@ -325,6 +350,9 @@
 		"name": "sgs/container",
 		"attributes": {
 			"layout": "stack",
+			"gap": {
+				"desktop": "8px"
+			},
 			"className": "focus-fx-dark",
 			"padding": {
 				"desktop": {
@@ -422,7 +450,13 @@
 			{
 				"name": "sgs/text",
 				"attributes": {
-					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it."
+					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it.",
+					"margin": {
+						"desktop": {
+							"top": "24px",
+							"bottom": "24px"
+						}
+					}
 				}
 			},
 			{
@@ -609,6 +643,9 @@
 		"name": "sgs/container",
 		"attributes": {
 			"layout": "stack",
+			"gap": {
+				"desktop": "8px"
+			},
 			"className": "focus-fx-photo",
 			"padding": {
 				"desktop": {
@@ -712,7 +749,13 @@
 			{
 				"name": "sgs/text",
 				"attributes": {
-					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it."
+					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it.",
+					"margin": {
+						"desktop": {
+							"top": "24px",
+							"bottom": "24px"
+						}
+					}
 				}
 			},
 			{
