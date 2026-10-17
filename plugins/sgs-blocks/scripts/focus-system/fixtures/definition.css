@@ -1,0 +1,15 @@
+/* Fixture: definition. Retired tokens are flagged as legacy-token and never rewritten by the fixer. */
+:root {
+	--sgs-focus-color: var(--wp--preset--color--accent, #d8ca50);
+	--sgs-focus-glow: var(--wp--preset--color--accent);
+}
+
+.fx-panel {
+	border-color: var(--wp--custom--focus-ring--color-primary, currentColor);
+}
+
+/* The proximity-focus motion names are exempt: they are not keyboard focus. */
+.fx-strip {
+	--sgs-focus-s: 1.1;
+	--sgs-focus-op: 0.6;
+}

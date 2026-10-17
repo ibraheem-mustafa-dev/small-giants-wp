@@ -1,0 +1,55 @@
+{
+	"_comment": "Data for focus-system/emitters.js. pairingHelpers: shared PHP helpers that pair the selector they are given with a :hover half (or paint the focus half of a hover pair) and paint state, never the keyboard indicator; a statement calling one is shared-state, or shared-shadow when it paints a shadow. entries: a PHP or JS statement the shape rules cannot classify from the file alone, matched by path and a substring of the statement, each with its category and reason. A stale entry (matching no statement) fails --check.",
+	"pairingHelpers": [
+		{
+			"name": "sgs_hover_state_rules",
+			"reason": "includes/helpers-hover-state.php: emits a touch-guarded :hover rule and an unguarded :focus-visible or :focus-within twin with the same declarations"
+		},
+		{
+			"name": "sgs_text_colour_gradient_fallback_rule",
+			"reason": "includes/helpers-tokens.php: the text-colour fallback rule for the focus half of a hover colour pair"
+		},
+		{
+			"name": "sgs_border_gradient_css",
+			"reason": "includes/helpers-tokens.php: a gradient border painted on :hover and its :focus-within twin"
+		},
+		{
+			"name": "sgs_separators_hover_selectors",
+			"reason": "includes/helpers-separators-hover-css.php: separator selectors for the :hover and :focus states of a list item"
+		},
+		{
+			"name": "sgs_icon_gradient_states_css",
+			"reason": "includes/helpers-svg-gradient.php: icon gradient fill for the hover state and its keyboard twin"
+		},
+		{
+			"name": "sgs_emit_state_colour_css",
+			"reason": "includes/helpers-tokens.php: a resting rule and a touch-guarded :hover / :focus-visible colour pair"
+		}
+	],
+	"entries": [
+		{
+			"path": "plugins/sgs-blocks/includes/helpers-button-style.php",
+			"contains": "return $part . ",
+			"category": "shared-state",
+			"reason": "sgs_button_style_css: the closure builds the :focus-visible half of a hover pair; the hover half is built beside it with SGS_HOVER_NOT_TOUCH and both carry the same hover declarations (or the hover gradient border via sgs_border_gradient_css)."
+		},
+		{
+			"path": "plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php",
+			"contains": "FOCUS_SUFFIX =",
+			"category": "php-emitter",
+			"reason": "The form Focus state paints border-color, background-color and a box-shadow ring on .sgs-form-field__input with this suffix; the ring is a bespoke indicator (plan Task 12 drops it and FALLBACK_RING)."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js",
+			"contains": "FOCUS_SUFFIX =",
+			"category": "js-emitter",
+			"reason": "The editor-canvas twin of class-sgs-motion-focus-state.php: the same box-shadow ring on the same suffix (plan Task 12)."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js",
+			"contains": "document.activeElement.matches(",
+			"category": "not-css",
+			"reason": "A runtime query (Element.matches(':focus-visible')) that sets data-sgs-nav-has-focus; it paints nothing."
+		}
+	]
+}

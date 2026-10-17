@@ -1,0 +1,10 @@
+/* Fixture: edge. A media block left empty by the fixer is dropped with its rule. */
+.fx-tab {
+	padding: 4px;
+}
+
+@media (forced-colors: active) {
+	.fx-card:not(:focus-visible) {
+		outline: 1px solid CanvasText;
+	}
+}

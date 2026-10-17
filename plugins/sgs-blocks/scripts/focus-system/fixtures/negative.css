@@ -1,0 +1,10 @@
+/* Fixture: negative control. Nothing here is a fixer target; the file is byte-identical after --fix. */
+.fx-tile:hover {
+	outline: 2px solid red;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.fx-menu:focus-within {
+	outline: 1px solid blue;
+	background-color: #f5f5f5;
+}

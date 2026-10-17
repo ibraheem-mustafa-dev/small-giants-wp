@@ -1,0 +1,30 @@
+/* Fixture: positive. Bespoke focus indicators the fixer removes. */
+.fx-button {
+	color: #111;
+}
+
+.fx-button:focus-visible {
+	outline: 2px solid red;
+	outline-offset: 2px;
+	color: blue;
+}
+
+/* This comment sits directly above a rule the fixer drops. */
+.fx-link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent);
+	box-shadow: 0 0 8px 2px red;
+}
+
+.fx-input:focus {
+	outline: none;
+	border-color: green;
+}
+
+.fx-chip:focus-visible {
+	border-radius: 4px;
+}
+
+.fx-card:hover,
+.fx-card:focus-visible {
+	color: purple;
+}

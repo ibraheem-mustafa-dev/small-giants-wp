@@ -1,0 +1,14 @@
+// Fixture: edge. An SCSS &:focus-visible and a nested @media.
+.fx-logo {
+	display: inline-block;
+
+	&__link {
+		color: inherit;
+	}
+
+	@media (min-width: 600px) {
+		&__toggle:focus-visible {
+			text-decoration: underline;
+		}
+	}
+}

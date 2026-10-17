@@ -1,0 +1,19 @@
+/* Fixture: positive. Bespoke focus indicators the fixer removes. */
+.fx-button {
+	color: #111;
+}
+
+.fx-button:focus-visible {
+	color: blue;
+}
+
+/* This comment sits directly above a rule the fixer drops. */
+
+.fx-input:focus {
+	border-color: green;
+}
+
+.fx-card:hover,
+.fx-card:focus-visible {
+	color: purple;
+}
