@@ -64,7 +64,7 @@
  * p99 sniff, which decides whether MorphSVGPlugin is enqueued at all.
  *
  * SECURITY. A custom shape pair is TWO media-library attachment IDs, never
- * pasted markup (the `sgs/responsive-logo` `svgAnimationSource` precedent).
+ * pasted markup (the `sgs/responsive-logo` draw layer's `asset` precedent).
  * As with `fx-path-routes.php`, this file never inlines an uploaded file: it
  * extracts the first `<path>`'s `d` string, filters it to the SVG path-data
  * grammar's own character set, and emits it into markup this file builds.

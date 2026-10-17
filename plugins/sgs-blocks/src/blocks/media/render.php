@@ -34,9 +34,6 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-// U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
-// chain, so required directly here (idempotent — require_once).
-require_once dirname( __DIR__, 3 ) . '/includes/lottie-render.php';
 
 // ---------------------------------------------------------------------------
 // 1. Extract shared styling attributes with safe defaults.
@@ -97,10 +94,7 @@ if ( '' === $media_type_raw ) {
 	// Backwards-compat: if a videoUrl is set and no imageUrl, treat as video.
 	$has_video_url  = ! empty( $attributes['videoUrl'] ) || ! empty( $attributes['videoId'] );
 	$has_image_url  = ! empty( $attributes['imageUrl'] ) || ! empty( $attributes['imageId'] );
-	$has_lottie_url = ! empty( $attributes['lottieId'] );
-	if ( $has_lottie_url && ! $has_image_url && ! $has_video_url ) {
-		$media_type_raw = 'lottie';
-	} elseif ( $has_video_url && ! $has_image_url ) {
+	if ( $has_video_url && ! $has_image_url ) {
 		$media_type_raw = 'video';
 	} else {
 		$media_type_raw = 'image';
@@ -1066,14 +1060,6 @@ $svg_html = '';
 if ( 'svg' === $media_type ) {
 	$svg_content_raw = isset( $attributes['svgContent'] ) ? (string) $attributes['svgContent'] : '';
 
-	$allowed_svg_animations = array( 'none', 'pulse', 'float', 'wave' );
-	$svg_animation_raw      = $attributes['svgAnimation'] ?? 'none';
-	$svg_animation          = in_array( $svg_animation_raw, $allowed_svg_animations, true ) ? $svg_animation_raw : 'none';
-
-	$allowed_svg_speeds = array( 'slow', 'medium', 'fast' );
-	$svg_speed_raw      = $attributes['svgAnimationSpeed'] ?? 'medium';
-	$svg_speed          = in_array( $svg_speed_raw, $allowed_svg_speeds, true ) ? $svg_speed_raw : 'medium';
-
 	if ( '' === $svg_content_raw ) {
 		echo '<!-- sgs/media: no SVG content set -->';
 		return;
@@ -1124,26 +1110,14 @@ if ( 'svg' === $media_type ) {
 		$tier_svgs[ strtolower( $sgs_tier ) ] = $tier_clean;
 	}
 
-	// Animation classes are shared by every tier, so a tier override changes the
-	// artwork without silently dropping the animation the operator chose.
-	$svg_anim_classes = array();
-	if ( 'none' !== $svg_animation ) {
-		$svg_anim_classes[] = 'sgs-media__svg--' . esc_attr( $svg_animation );
-		$svg_anim_classes[] = 'sgs-media__svg--speed-' . esc_attr( $svg_speed );
-	}
-
-	$svg_classes = array_merge( array( 'sgs-media__svg' ), $svg_anim_classes );
+	$svg_classes = array( 'sgs-media__svg' );
 	if ( ! empty( $tier_svgs ) ) {
 		$svg_classes[] = 'sgs-media__svg--desktop';
 	}
 
 	$svg_html = '';
 	foreach ( $tier_svgs as $tier_key => $tier_markup ) {
-		$tier_classes = array_merge(
-			array( 'sgs-media__svg' ),
-			$svg_anim_classes,
-			array( 'sgs-media__svg--' . $tier_key )
-		);
+		$tier_classes = array( 'sgs-media__svg', 'sgs-media__svg--' . $tier_key );
 		$svg_html .= sprintf(
 			'<div class="%s" aria-hidden="true">%s</div>',
 			esc_attr( implode( ' ', $tier_classes ) ),
@@ -1169,13 +1143,14 @@ if ( 'svg' === $media_type ) {
 }
 
 // ---------------------------------------------------------------------------
-// 12c. LOTTIE RENDER PATH (U-17, design §3.1/§3.2).
+// 12c. LOTTIE POSTER.
+// The animation itself is a `lottie` effect layer on the `media` part
+// (sgsMotion): the motion renderer prints the layer's attributes on the
+// figure and fx-lottie.js mounts the player over the poster printed here. The
+// poster is also what shows under reduced motion and before the player loads.
 // ---------------------------------------------------------------------------
-$lottie_html       = '';
-$lottie_pause_html = '';
+$lottie_html = '';
 if ( 'lottie' === $media_type ) {
-	$lottie_id = isset( $attributes['lottieId'] ) ? absint( $attributes['lottieId'] ) : 0;
-
 	$lottie_thumbnail    = isset( $attributes['thumbnail'] ) ? (string) $attributes['thumbnail'] : '';
 	$lottie_thumbnail_id = isset( $attributes['thumbnailId'] ) ? absint( $attributes['thumbnailId'] ) : 0;
 	$lottie_poster_url   = '';
@@ -1188,40 +1163,17 @@ if ( 'lottie' === $media_type ) {
 	if ( '' === $lottie_poster_url && '' !== $lottie_thumbnail ) {
 		$lottie_poster_url = $lottie_thumbnail;
 	}
-	$lottie_poster_html = '';
 	if ( '' !== $lottie_poster_url ) {
-		$lottie_poster_html = sprintf(
-			'<img src="%s" alt="" aria-hidden="true" class="sgs-media__img sgs-media-el" loading="lazy" decoding="async" />',
-			esc_url( $lottie_poster_url )
+		// The `meaning` atom (alt text) does not cover 'lottie', so `imageAlt`
+		// names the poster; empty means decorative (aria-hidden), as for every
+		// other media type.
+		$lottie_alt  = isset( $attributes['imageAlt'] ) ? (string) $attributes['imageAlt'] : '';
+		$lottie_html = sprintf(
+			'<img src="%s" alt="%s"%s class="sgs-media__img sgs-media-el sgs-media__lottie" loading="lazy" decoding="async" />',
+			esc_url( $lottie_poster_url ),
+			esc_attr( $lottie_alt ),
+			'' === $lottie_alt ? ' aria-hidden="true"' : ''
 		);
-	}
-
-	// The `meaning` atom (alt text) does not cover 'lottie' — registry.js
-	// `meaning.types` is image/video/svg only, and this block has no dedicated
-	// Lottie alt field. `imageAlt` is reused as the closest existing text
-	// field; empty means decorative (aria-hidden), matching every other media
-	// type's own default.
-	$lottie_alt = isset( $attributes['imageAlt'] ) ? (string) $attributes['imageAlt'] : '';
-
-	$lottie_behaviour = sgs_media_atom_video_behaviour_resolve_lottie( $attributes, '', 'sgs/media' );
-
-	$lottie_result     = sgs_render_lottie(
-		$lottie_id,
-		array(
-			'poster_html' => $lottie_poster_html,
-			'alt'         => $lottie_alt,
-			'trigger'     => $lottie_behaviour['trigger'],
-			'loop'        => $lottie_behaviour['loop'],
-			'speed'       => $lottie_behaviour['speed'],
-			'extra_class' => 'sgs-media__lottie sgs-media-el',
-		)
-	);
-	$lottie_html       = $lottie_result['wrapper'];
-	$lottie_pause_html = $lottie_result['pause'];
-
-	$lottie_aspect_decls = sgs_lottie_aspect_ratio_css( $lottie_id );
-	if ( $lottie_aspect_decls ) {
-		$responsive_css .= $id_wrap . '{' . implode( ';', $lottie_aspect_decls ) . '}';
 	}
 }
 
@@ -1246,12 +1198,7 @@ if ( 'svg' === $media_type ) {
 // operator actually sets an overlay colour/gradient — declaring it alone must
 // not force a `<figure>` wrapper nothing will use. `requires_box()` computes
 // each box atom's real CSS output for THESE attribute values before deciding.
-//
-// The Hover panel's image zoom needs the frame too: the shared rule in
-// assets/css/extensions.css hovers and clips on `.sgs-media-box`, and a naked
-// <img> has no frame to zoom inside.
-$sgs_media_requires_box = ( class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $attributes, '', 'sgs/media', $sgs_media_atoms ) )
-	|| ! empty( $attributes['sgsHoverImageZoom'] );
+$sgs_media_requires_box = class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $attributes, '', 'sgs/media', $sgs_media_atoms );
 if ( $sgs_media_requires_box ) {
 	$wrapper_classes[] = SGS_Media_Element::CLASS_BOX;
 	// Box shape "Fill": the frame is sized by the layout, the picture covers it.
@@ -1402,15 +1349,11 @@ if ( 'image' === $media_type ) {
 		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
 	);
 } elseif ( 'lottie' === $media_type ) {
-	// Lottie: the pause control sits directly after the animation inside the
-	// figure, where fx-lottie.js binds it (the wrapper's parent) and
-	// fx-lottie.css positions it. A figure is not a link, so the control is
-	// not nested in interactive content (the logo prints its own after </a>).
+	// Lottie: the poster inside the figure the layer's player mounts over.
 	printf(
-		'<figure %s>%s%s%s</figure>',
+		'<figure %s>%s%s</figure>',
 		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
-		$lottie_html,        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
-		$lottie_pause_html,  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
+		$lottie_html,        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above from esc_url() and esc_attr().
 		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
 	);
 } else {

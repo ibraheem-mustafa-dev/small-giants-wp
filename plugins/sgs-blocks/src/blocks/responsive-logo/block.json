@@ -39,12 +39,6 @@
 			"blockLinkAutoHelp": "The whole logo block becomes the home link, not just the logo image — so anything else placed inside it (a wordmark, a strapline) is part of the same link. Needs “Link to home” switched on. The Lottie pause button stays clickable on top of it.",
 			"_comment_blockLink": "S10 shared stretched link. The block supplies its own destination (home_url('/')), so blockLinkAutoUrl replaces the Block Link panel's URL field with a single toggle (sgsBlockLinkAuto) and render.php hands the URL over via includes/helpers-stretched-link.php::sgs_stretched_link_handover. The inner <a class=\"sgs-responsive-logo__link\"> is ALWAYS printed while the block links home: it is the real, visible, named link the extension lends the stretched surface to, so the accessible name comes from the logo's own content rather than from $link_aria_label on an empty anchor. The injected overlay is inert (tabindex=\"-1\" aria-hidden=\"true\") and is a mouse hit area only, so opacityHover stays on the inner link where the compiled stylesheet reads it. The pause control already prints as a sibling AFTER the link, which is the shape the overlay needs, and extensions.css raises it above the overlay unchanged.",
 			"headerEssential": true,
-			"fx": {
-				"providesNatively": [
-					"draw"
-				],
-				"_comment_providesNatively": "Spec 38 FR-38-15. This block exposes stroke-draw through its own `animationStyle` enum (draw-on-load | hover-redraw | scroll-trigger). Listing `draw` again in the generic 'Scroll & effects' picker would put TWO controls for ONE capability on this block, which this codebase bans. `generate-fx-qualifying-blocks.py` subtracts every effect named here from the block's derived roster, so the exclusion is a declaration this block OWNS rather than a per-block carve-out in the generator or in fx.js. Any block that natively owns an fx capability declares it the same way."
-			},
 			"boxFamilies": {
 				"padding": [
 					"padding"
@@ -91,7 +85,7 @@
 							}
 						}
 					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width`/`max-height` are declared explicitly so the `image` element does not contend for them (both were plausible owners with no attrMap to disambiguate). Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector, not the <img>) is the target of both — `width` emits `{$sel}{--logo-width:...}`, consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,100%)}` on the wrapper class itself; `maxHeight` (a tier object) is flattened and passed to `sgs_responsive_css_rule()` with `$sel` as the selector argument, emitting `{$sel}{max-height:...}` plus tablet/mobile `@media` siblings. Neither targets `.sgs-responsive-logo__image--desktop`. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) `maxWidth`'s `image`-element attrMap entry is separate. Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). The background-colour pair `backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/`backgroundColourHoverGradient` mirrors sgs/brand-strip's root background pair exactly (`sgs_background_paint_decl()` gradient-wins-flat, scoped to `$sel`, hover via `sgs_hover_state_rules()` on `:focus-within`) so the block's own background tile can be set independently whether it sits in the site header or inside `sgs/nav-drawer`. No box-shadow/gap/aspect-ratio attribute or native support exists (no shadow supports declared on this block) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect), so the block does not opt into supports.sgs.imageControls (universal image extension); the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/svgAnimationSource/logoSwitchMode/animationStyle are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
+					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-responsive-logo — display:inline-block hardcoded, no attribute, so no `layer`/arrangement members). `width`/`max-height` are declared explicitly so the `image` element does not contend for them (both were plausible owners with no attrMap to disambiguate). Traced through render.php: `$sel = '.' . $uid . '.wp-block-sgs-responsive-logo'` (the WRAPPER selector, not the <img>) is the target of both — `width` emits `{$sel}{--logo-width:...}`, consumed by style.scss's `.sgs-responsive-logo{width:var(--logo-width,100%)}` on the wrapper class itself; `maxHeight` (a tier object) is flattened and passed to `sgs_responsive_css_rule()` with `$sel` as the selector argument, emitting `{$sel}{max-height:...}` plus tablet/mobile `@media` siblings. Neither targets `.sgs-responsive-logo__image--desktop`. (`width` is ALSO written as a literal HTML `width=\"...\"` sizing attribute on the <img> tag — an intrinsic-size hint, not a CSS property, so it does not compete for `css:width` ownership.) `maxWidth`'s `image`-element attrMap entry is separate. Empty-string prefix resolves the bare width/maxWidth/maxHeight attrs case-insensitively via the default {suffix} convention (Width/MaxWidth/MaxHeight). The background-colour pair `backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/`backgroundColourHoverGradient` mirrors sgs/brand-strip's root background pair exactly (`sgs_background_paint_decl()` gradient-wins-flat, scoped to `$sel`, hover via `sgs_hover_state_rules()` on `:focus-within`) so the block's own background tile can be set independently whether it sits in the site header or inside `sgs/nav-drawer`. No box-shadow/gap/aspect-ratio attribute or native support exists (no shadow supports declared on this block) — honest gaps. The <img>/<picture> itself has no crop-box scenario (width:100%/max-width:100%, natural aspect), so the block does not opt into supports.sgs.imageControls (universal image extension); the block's own per-device logoId*/logoUrl* art-direction tiers are its real media mechanism. logoId/logoIdTablet/logoIdMobile/logoSwitchMode are media-source/behaviour scalars with no cluster member — deliberately undeclared (no prefix claims them)."
 				},
 				"image": {
 					"surface": true,
@@ -171,56 +165,10 @@
 			"type": "number",
 			"default": 1024
 		},
-		"svgAnimationSource": {
-			"type": "number",
-			"_comment": "Media library ID of a .svg file. NEVER accept inline SVG paste — XSS risk. Force upload via media library only."
-		},
-		"animationStyle": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"draw-on-load",
-				"hover-redraw",
-				"scroll-trigger"
-			]
-		},
-		"animationSubstrate": {
-			"type": "string",
-			"default": "svg-draw",
-			"enum": [
-				"svg-draw",
-				"lottie"
-			],
-			"_comment": "U-17 (design §3.1). 'svg-draw' is the pre-existing svgAnimationSource/animationStyle mechanism (stroke-draw of an uploaded .svg). 'lottie' plays a Bodymovin/Lottie JSON via sgs_render_lottie() instead — animationStyle/svgAnimationSource are ignored when this is 'lottie'."
-		},
-		"lottieId": {
-			"type": "number",
-			"default": 0,
-			"_comment": "U-17 (design §3.1). Lottie JSON attachment ID, used only when animationSubstrate is 'lottie'."
-		},
-		"lottieTrigger": {
-			"type": "string",
-			"default": "load",
-			"enum": [
-				"load",
-				"visible",
-				"hover",
-				"scroll"
-			]
-		},
-		"lottieLoop": {
-			"type": "boolean",
-			"default": false
-		},
-		"lottieSpeed": {
-			"type": "number",
-			"default": 1
-		},
 		"darkLogoId": {
 			"type": "number",
 			"default": 0,
-			"_comment": "U-13 §4.5 (was U-17 design §3.1). Media library attachment ID for a dark-mode logo variant. Shown wherever the logo sits on a dark ground: site dark mode (:root[data-theme=\"dark\"] / :root[data-theme=\"auto\"][data-prefers-dark=\"true\"]), a nearer static section tone (ancestor .sgs-on-dark, stamped by helpers-surface-tone.php), or a header's live scroll state (ancestor .sgs-site-header.is-header-on-dark). A nearer .sgs-on-light ancestor, or the header's own .is-header-on-light state, shows the normal logo even under site dark mode -- live header state outranks a static section class. Independent of animationSubstrate. Interacts with colourTreatment: when this dark variant is showing, colourTreatment 'auto' never applies its white filter to it (the dedicated dark logo always wins over the filter)."
+			"_comment": "U-13 §4.5 (was U-17 design §3.1). Media library attachment ID for a dark-mode logo variant. Shown wherever the logo sits on a dark ground: site dark mode (:root[data-theme=\"dark\"] / :root[data-theme=\"auto\"][data-prefers-dark=\"true\"]), a nearer static section tone (ancestor .sgs-on-dark, stamped by helpers-surface-tone.php), or a header's live scroll state (ancestor .sgs-site-header.is-header-on-dark). A nearer .sgs-on-light ancestor, or the header's own .is-header-on-light state, shows the normal logo even under site dark mode -- live header state outranks a static section class. Interacts with colourTreatment: when this dark variant is showing, colourTreatment 'auto' never applies its white filter to it (the dedicated dark logo always wins over the filter)."
 		},
 		"width": {
 			"type": "number",
@@ -342,8 +290,7 @@
 		"attributes": {
 			"width": 240,
 			"linkToHome": true,
-			"alt": "Acme Co. home",
-			"animationStyle": "none"
+			"alt": "Acme Co. home"
 		}
 	}
 }

@@ -6,9 +6,8 @@
  * This module is what RETIRES Vivus (D408). Vivus was the project's evidence
  * that "no external libraries" was always an approximation — the real rule is
  * "bundle it, never CDN" — and swapping it here removes a dependency rather
- * than adding one: `sgs/responsive-logo`'s `animationStyle` enum keeps exactly
- * the same four values, so stored instances render identically and no
- * `deprecated.js` is involved (D270 forbids one).
+ * than adding one: `sgs/responsive-logo` draws through a `draw` layer on its
+ * wrapper part.
  *
  * ⚠ Same registration contract as every Tier G plugin: core is resolved via
  * `window.gsap` (`DrawSVGPlugin.js:23-24`) and it self-registers at

@@ -35,7 +35,7 @@
  * what decides whether the motion-path module is enqueued at all.
  *
  * SECURITY. A custom route is a MEDIA LIBRARY attachment ID, never pasted
- * markup (the `sgs/responsive-logo` `svgAnimationSource` precedent). Even then
+ * markup (the `sgs/responsive-logo` draw layer's `asset` precedent). Even then
  * this file never inlines the uploaded file: it extracts the first `<path>`'s
  * `d` string and the source `viewBox`, filters both to their own grammars'
  * character sets, and emits them into markup THIS file builds. Nothing an

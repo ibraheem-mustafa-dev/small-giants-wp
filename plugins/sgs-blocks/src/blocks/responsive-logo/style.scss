@@ -32,8 +32,7 @@
 	// nothing shifts there; a text-flow parent now sits the logo flush.
 	line-height: 0;
 	vertical-align: middle;
-	// Anchors the Lottie substrate's WCAG 2.2.2 pause control (U-17), which
-	// prints as a sibling of &__link/&__picture, not nested inside either.
+	// Anchors a Lottie layer's WCAG 2.2.2 pause control.
 	position: relative;
 	// Fill-width default -- `--logo-width`
 	// is only emitted by render.php when the operator has explicitly set a
@@ -133,8 +132,7 @@
 		// Tier 3 (lowest precedence) — site dark mode.
 		:where( :root[ data-theme='dark' ] ) &,
 		:where( :root[ data-theme='auto' ][ data-prefers-dark='true' ] ) & {
-			.sgs-responsive-logo__image--desktop,
-			.sgs-responsive-logo__lottie {
+			.sgs-responsive-logo__image--desktop {
 				display: none;
 			}
 
@@ -145,8 +143,7 @@
 
 		// Tier 2 — nearest static section ground.
 		.sgs-on-dark & {
-			.sgs-responsive-logo__image--desktop,
-			.sgs-responsive-logo__lottie {
+			.sgs-responsive-logo__image--desktop {
 				display: none;
 			}
 
@@ -156,8 +153,7 @@
 		}
 
 		.sgs-on-light & {
-			.sgs-responsive-logo__image--desktop,
-			.sgs-responsive-logo__lottie {
+			.sgs-responsive-logo__image--desktop {
 				display: block;
 			}
 
@@ -168,8 +164,7 @@
 
 		// One level of nesting, explicit both directions.
 		.sgs-on-dark .sgs-on-light & {
-			.sgs-responsive-logo__image--desktop,
-			.sgs-responsive-logo__lottie {
+			.sgs-responsive-logo__image--desktop {
 				display: block;
 			}
 
@@ -179,8 +174,7 @@
 		}
 
 		.sgs-on-light .sgs-on-dark & {
-			.sgs-responsive-logo__image--desktop,
-			.sgs-responsive-logo__lottie {
+			.sgs-responsive-logo__image--desktop {
 				display: none;
 			}
 
@@ -193,8 +187,7 @@
 		// last so an equal-specificity tie against the nesting tier above
 		// resolves in its favour.
 		.sgs-site-header.is-header-on-dark & {
-			.sgs-responsive-logo__image--desktop,
-			.sgs-responsive-logo__lottie {
+			.sgs-responsive-logo__image--desktop {
 				display: none;
 			}
 
@@ -204,8 +197,7 @@
 		}
 
 		.sgs-site-header.is-header-on-light & {
-			.sgs-responsive-logo__image--desktop,
-			.sgs-responsive-logo__lottie {
+			.sgs-responsive-logo__image--desktop {
 				display: block;
 			}
 
@@ -271,16 +263,7 @@
 		}
 	}
 
-	// ── Lottie substrate (U-17, design §3.1) ────────────────────────────────────
-	&__lottie {
-		display: block;
-		width: 100%;
-		line-height: 0;
-	}
-
-	// WCAG 2.2.2 pause control — printed as a SIBLING after the home link
-	// (render.php), never nested inside it. Bottom inline-end corner, above
-	// the logo, matching the shared background-layer pause control's shape.
+	// WCAG 2.2.2 pause control of a Lottie layer. Bottom inline-end corner, above the logo.
 	.sgs-lottie__pause {
 		position: absolute;
 		inset-block-end: 4px;

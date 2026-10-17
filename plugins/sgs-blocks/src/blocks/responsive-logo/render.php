@@ -3,10 +3,11 @@
  * Server-side render for the SGS Responsive Logo block.
  *
  * Outputs a <picture> element with up to three logo slots (desktop / tablet /
- * mobile) or, when svgAnimationSource is set, an inline SVG for desktop with
- * static images for smaller breakpoints.
+ * mobile) or, when a `draw` layer on the wrapper names an SVG, an inline SVG for
+ * desktop with static images for smaller breakpoints. A `lottie` layer on the
+ * wrapper plays over the <picture>, which is its poster.
  *
- * SVG SECURITY NOTE: svgAnimationSource is a media library attachment ID.
+ * SVG SECURITY NOTE: the draw layer's `asset` is a media library attachment ID.
  * The .svg file is fetched via get_attached_file() (a local disk path) and
  * sanitised with wp_kses() before inlining. Operators CANNOT paste raw SVG
  * markup into the block — the editor forces a media library upload.
@@ -50,9 +51,6 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 // render-helpers.php, which is the documented single entry point for every shared
 // helper (see its own docblock).
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-// U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
-// chain, so required directly here (idempotent — require_once).
-require_once dirname( __DIR__, 3 ) . '/includes/lottie-render.php';
 
 // ---------------------------------------------------------------------------
 // Security sanitisers (no-inline contract) — mirrors sgs/label/render.php.
@@ -63,8 +61,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/lottie-render.php';
 $desktop_logo_id  = isset( $attributes['logoId'] ) ? absint( $attributes['logoId'] ) : 0;
 $tablet_logo_id   = isset( $attributes['logoIdTablet'] ) ? absint( $attributes['logoIdTablet'] ) : 0;
 $mobile_logo_id   = isset( $attributes['logoIdMobile'] ) ? absint( $attributes['logoIdMobile'] ) : 0;
-$svg_animation_id = isset( $attributes['svgAnimationSource'] ) ? absint( $attributes['svgAnimationSource'] ) : 0;
-$animation_style  = isset( $attributes['animationStyle'] ) ? sanitize_key( $attributes['animationStyle'] ) : 'none';
 // Fill-width default: `width` carries no `default` in block.json (see that
 // file's own attribute comment), so `isset()` here is a real "did the
 // operator ever set this" check — WP's `prepare_attributes_for_render()` only
@@ -95,47 +91,13 @@ $bg_colour_hover_gradient = isset( $attributes['backgroundColourHoverGradient'] 
 $hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
 $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
 
-// Validate animationStyle against allowed values.
-$allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scroll-trigger' );
-if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
-	$animation_style = 'none';
-}
-
 // A `draw` layer on the wrapper part supplies the SVG and the trigger (Spec 38A FR-38A-52); the motion renderer prints
 // the draw attributes on the block, so the inline SVG span below adds none of its own.
 require_once dirname( __DIR__, 3 ) . '/includes/motion/class-sgs-motion-draw-asset.php';
-$draw_layer = \SGS\Blocks\Motion\Sgs_Motion_Draw_Asset::find( $attributes['sgsMotion']['elements']['wrapper'] ?? null );
-if ( null !== $draw_layer ) {
-	$svg_animation_id = $draw_layer['asset'];
-	$animation_style  = array(
-		'load'   => 'draw-on-load',
-		'scroll' => 'scroll-trigger',
-		'hover'  => 'hover-redraw',
-	)[ $draw_layer['trigger'] ];
-}
+$draw_layer       = \SGS\Blocks\Motion\Sgs_Motion_Draw_Asset::find( $attributes['sgsMotion']['elements']['wrapper'] ?? null );
+$svg_animation_id = null !== $draw_layer ? $draw_layer['asset'] : 0;
 
-// ── Lottie substrate (U-17, design §3.1) ─────────────────────────────────────
-// `animationSubstrate` selects between the pre-existing SVG-draw mechanism
-// (svgAnimationSource/animationStyle) and a Lottie/Bodymovin JSON, played by
-// `sgs_render_lottie()`. `animationStyle`/`svgAnimationSource` are ignored
-// entirely when the substrate is 'lottie'.
-$animation_substrate = isset( $attributes['animationSubstrate'] ) ? sanitize_key( $attributes['animationSubstrate'] ) : 'svg-draw';
-if ( ! in_array( $animation_substrate, array( 'svg-draw', 'lottie' ), true ) ) {
-	$animation_substrate = 'svg-draw';
-}
-$lottie_id      = isset( $attributes['lottieId'] ) ? absint( $attributes['lottieId'] ) : 0;
-$lottie_trigger = isset( $attributes['lottieTrigger'] ) ? sanitize_key( $attributes['lottieTrigger'] ) : 'load';
-if ( ! in_array( $lottie_trigger, array( 'load', 'visible', 'hover', 'scroll' ), true ) ) {
-	$lottie_trigger = 'load';
-}
-$lottie_loop  = ! empty( $attributes['lottieLoop'] );
-$lottie_speed = isset( $attributes['lottieSpeed'] ) ? (float) $attributes['lottieSpeed'] : 1.0;
-if ( $lottie_speed < 0.25 || $lottie_speed > 3 ) {
-	$lottie_speed = 1.0;
-}
-$has_lottie_animation = 'lottie' === $animation_substrate && $lottie_id > 0;
-
-// ── Dark-mode logo variant (U-17, design §3.1) — independent of substrate. ──
+// ── Dark-mode logo variant (U-17, design §3.1). ──
 $dark_logo_id  = isset( $attributes['darkLogoId'] ) ? absint( $attributes['darkLogoId'] ) : 0;
 $dark_logo_url = $dark_logo_id > 0 ? (string) wp_get_attachment_url( $dark_logo_id ) : '';
 
@@ -241,7 +203,7 @@ $link_aria_label = sprintf(
 
 // --- S10 shared stretched link: the WHOLE logo block becomes the home link,
 // not just the logo image. The mechanism is the `blockLink` extension's
-// overlay anchor (includes/hover-effects/link-overlay.php); this block just
+// overlay anchor (`SGS\Blocks\insert_block_link_overlay`); this block just
 // hands it the destination it already knows, so the operator gets a toggle
 // instead of a URL field. `linkToHome` stays the master switch: with it off
 // the logo is not a link at all, whatever the toggle says.
@@ -263,18 +225,18 @@ if ( $link_to_home ) {
 // the block-link extension lends the stretched surface to, so the link's
 // accessible name comes from the logo's own content rather than an
 // operator-typed label on an empty anchor
-// (`includes/hover-effects/link-overlay.php::insert_block_link_overlay`).
+// (`SGS\Blocks\insert_block_link_overlay`).
 $print_inner_link = $link_to_home;
 
 // ── Animation modifier class ──────────────────────────────────────────────────
 
 $animation_modifier = '';
-if ( 'draw-on-load' === $animation_style ) {
-	$animation_modifier = ' sgs-responsive-logo--animate-draw';
-} elseif ( 'hover-redraw' === $animation_style ) {
-	$animation_modifier = ' sgs-responsive-logo--animate-hover';
-} elseif ( 'scroll-trigger' === $animation_style ) {
-	$animation_modifier = ' sgs-responsive-logo--animate-scroll';
+if ( null !== $draw_layer ) {
+	$animation_modifier = ' sgs-responsive-logo--animate-' . array(
+		'load'   => 'draw',
+		'hover'  => 'hover',
+		'scroll' => 'scroll',
+	)[ $draw_layer['trigger'] ];
 }
 
 // ── No-inline scoped box CSS (padding/margin, base + tablet/mobile tiers) ────
@@ -564,21 +526,15 @@ if ( $mobile_decls ) {
 // No `style` key (inline `--var` custom properties are forbidden, no
 // exception). `--logo-width` lives in the scoped uid-class rule above.
 
-// data-animation is present only when an animation is set: get_block_wrapper_attributes()
-// escapes every value it is given, so a falsy value would still print as data-animation="".
 $sgs_rl_wrapper_args = array(
 	'class' => 'sgs-responsive-logo' . $animation_modifier . $has_dark_logo_modifier . $colour_auto_modifier . ' ' . $uid,
 );
-if ( 'none' !== $animation_style ) {
-	$sgs_rl_wrapper_args['data-animation'] = $animation_style;
-}
 $wrapper_attributes = get_block_wrapper_attributes( $sgs_rl_wrapper_args );
 
 // ── SVG inline render (animation mode) ───────────────────────────────────────
 
 $svg_html          = '';
-// 'lottie' ignores animationStyle/svgAnimationSource entirely (design §3.1).
-$has_svg_animation = 'svg-draw' === $animation_substrate && 'none' !== $animation_style && $svg_animation_id > 0;
+$has_svg_animation = $svg_animation_id > 0;
 
 if ( $has_svg_animation ) {
 	$svg_path = get_attached_file( $svg_animation_id );
@@ -596,12 +552,6 @@ if ( $has_svg_animation ) {
 
 // ── Build inner markup ────────────────────────────────────────────────────────
 
-// Lottie pause control (U-17, design §3.1/§3.2) — built OUTSIDE the
-// ob_start() capture below and printed AFTER the closing `</a>` in the final
-// assembly, never nested inside the link (council fix 4: interactive content
-// inside `<a>` is invalid HTML).
-$lottie_pause_html = '';
-
 ob_start();
 
 if ( $print_inner_link ) {
@@ -612,75 +562,12 @@ if ( $print_inner_link ) {
 	);
 }
 
-if ( $has_lottie_animation ) {
-	// Lottie substrate: the desktop <picture> (built the same way the
-	// standard mode builds it) is the POSTER — shown until the player mounts
-	// and always shown under reduced motion. Inside an already-labelled home
-	// link, the lottie span is always `aria-hidden="true"` (design §3.2) so
-	// the accessible name is not announced twice; when the block is not
-	// linked, `alt`/`logoDecorative` drive it exactly as the standard mode
-	// does.
-	$lottie_poster_html = sprintf(
-		'<picture class="sgs-responsive-logo__picture">' .
-		'<source media="(max-width: 767px)" srcset="%1$s">' .
-		'<source media="(max-width: 1023px)" srcset="%2$s">' .
-		'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
-		'</picture>',
-		esc_url( $effective_mobile_url ),
-		esc_url( $effective_tablet_url ),
-		esc_url( $desktop_url ),
-		esc_attr( $img_alt ),
-		absint( $width ),
-		$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
-	);
-
-	$lottie_result = sgs_render_lottie(
-		$lottie_id,
-		array(
-			'poster_html' => $lottie_poster_html,
-			'alt'         => $img_alt,
-			'decorative'  => $link_to_home || $logo_decorative,
-			'trigger'     => $lottie_trigger,
-			'loop'        => $lottie_loop,
-			'speed'       => $lottie_speed,
-			'extra_class' => 'sgs-responsive-logo__lottie',
-		)
-	);
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
-	echo $lottie_result['wrapper'];
-	$lottie_pause_html = $lottie_result['pause'];
-} elseif ( $has_svg_animation && $svg_html ) {
+if ( $has_svg_animation && $svg_html ) {
 	// Animation mode: inline SVG for desktop; static images for tablet + mobile.
 	//
-	// Tier G DrawSVG wiring (Spec 38 FR-38-15). The
-	// `data-sgs-fx="draw"` + `data-sgs-fx-trigger` pair sits on THIS wrapper
-	// span, not on the inlined <svg> itself: the wrapper is markup this file
-	// fully controls, while the <svg> comes from a sanitised media-library
-	// upload whose internal shape this file must not assume. `fx-draw.js`'s
-	// `collectDrawTargets()` searches an fx element's OWN descendants for
-	// drawable shapes, so anchoring the attribute here still reaches every
-	// path/line/polyline/polygon/rect/ellipse/circle inside. `SGS_Motion_Registry`
-	// sniffs this exact `data-sgs-fx="draw"` string out of the rendered block
-	// content (render_block filter, priority 99) to enqueue DrawSVG + this
-	// effect module — no separate JS wiring is needed on this block.
-	//
-	// animationStyle's three animated values map 1:1 onto Spec 38 §11.2's
-	// `load | scroll | hover` trigger grammar.
-	$fx_trigger_by_style = array(
-		'draw-on-load'   => 'load',
-		'scroll-trigger' => 'scroll',
-		'hover-redraw'   => 'hover',
-	);
-	$fx_trigger          = $fx_trigger_by_style[ $animation_style ] ?? 'load';
-
-	if ( null !== $draw_layer ) {
-		echo '<span class="sgs-responsive-logo__svg" aria-hidden="true">';
-	} else {
-		printf(
-			'<span class="sgs-responsive-logo__svg" aria-hidden="true" data-sgs-fx="draw" data-sgs-fx-trigger="%s">',
-			esc_attr( $fx_trigger )
-		);
-	}
+	// The draw layer's attributes sit on the block root (the motion renderer prints them), and `fx-draw.js` searches
+	// that element's descendants for drawable shapes, so this wrapper span only holds the sanitised SVG.
+	echo '<span class="sgs-responsive-logo__svg" aria-hidden="true">';
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitised above via wp_kses.
 	echo $svg_html;
 	echo '</span>';
@@ -757,8 +644,7 @@ if ( $has_lottie_animation ) {
 	}
 }
 
-// Dark-mode logo variant (U-17, design §3.1) — independent of
-// animationSubstrate. Hidden by default; shown (and the light logo hidden)
+// Dark-mode logo variant (U-17, design §3.1). Hidden by default; shown (and the light logo hidden)
 // under :root[data-theme="dark"] / :root[data-theme="auto"][data-prefers-dark="true"]
 // via style.css. No width/height HTML attributes are set on it deliberately
 // — it shares the same box the light logo occupies (style.css positions both
@@ -774,9 +660,6 @@ if ( '' !== $dark_logo_url ) {
 if ( $print_inner_link ) {
 	echo '</a>';
 }
-
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built exclusively by sgs_render_lottie(), which escapes every value itself.
-echo $lottie_pause_html;
 
 $inner_html = ob_get_clean();
 

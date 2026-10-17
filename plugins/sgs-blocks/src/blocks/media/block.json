@@ -19,13 +19,6 @@
 	"supports": {
 		"sgs": {
 			"motion": true,
-			"_comment_hover": "The Hover panel (hover-effects extension) for the image: zoom on hover (inside the frame or the whole image grows, amount, duration, easing — the shared rule in assets/css/extensions.css keys on this block's .sgs-media-box/.sgs-media-el markers), lift, scale, opacity, grayscale. Its hover-shadow picker is excluded: this block's own shadow atom already owns the image's hover shadow (Shadow → hover colour).",
-			"enabledExtensions": [
-				"hover"
-			],
-			"hoverExcludeControls": [
-				"shadow"
-			],
 			"scalarStylingLift": true,
 			"scalarContentLift": true,
 			"_comment_scalarContentLift": "Added 2026-09-08. Without this capability, extraction.py's extract_content() (Case 4: delegates_content==0, no scalar-content-lift, no array-content-lift) emits a loud ContentGap for EVERY sgs/media instance recognised as an atomic leaf (an <img>/<video>/<svg> matched directly via atomic_tag_map, not as a composite-interior column) instead of ever attempting the imageUrl/imageId/videoUrl/thumbnail lift — role='image-object' attrs existed on this block's own schema the whole time with nothing wired to read them for this shape. See resolvers/scalar_content.py's 2026-09-08 fix comment for the companion self-match + flat-trio-explosion changes this capability now reaches.",
@@ -163,25 +156,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"svgAnimation": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"pulse",
-				"float",
-				"wave"
-			]
-		},
-		"svgAnimationSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [
-				"slow",
-				"medium",
-				"fast"
-			]
-		},
 		"videoUrl": {
 			"type": "string",
 			"default": "",
@@ -197,23 +171,6 @@
 		},
 		"videoId": {
 			"type": "integer"
-		},
-		"lottieId": {
-			"type": "integer"
-		},
-		"lottieTrigger": {
-			"type": "string",
-			"enum": [
-				"load",
-				"visible",
-				"hover",
-				"scroll"
-			],
-			"default": "visible"
-		},
-		"lottieSpeed": {
-			"type": "number",
-			"default": 1
 		},
 		"videoMimeType": {
 			"type": "string",

@@ -1,31 +1,22 @@
 /**
- * Media block canvas: Lottie mode (poster with a badge; the editor never plays the animation).
+ * Media block canvas: Lottie mode (poster with a badge; the editor never plays the animation, which is a Lottie effect
+ * layer in the Motion panel).
  */
 import { __ } from '@wordpress/i18n';
-import { Notice } from '@wordpress/components';
 
-export default function LottieCanvas( { blockProps, inspectorControls, lottieId, thumbnail } ) {
+export default function LottieCanvas( { blockProps, inspectorControls, thumbnail } ) {
 	const posterUrl = thumbnail || '';
 	return (
 		<div { ...blockProps }>
 			{ inspectorControls }
-			{ lottieId ? (
+			{ thumbnail ? (
 				<div className="sgs-media-el sgs-media__lottie-preview" style={ { position: 'relative' } }>
-					{ posterUrl ? (
-						<img
-							src={ posterUrl }
-							alt=""
-							aria-hidden="true"
-							style={ { display: 'block', maxWidth: '100%', height: 'auto' } }
-						/>
-					) : (
-						<Notice status="warning" isDismissible={ false }>
-							{ __(
-								'Add a poster image: visitors who prefer reduced motion see it instead.',
-								'sgs-blocks'
-							) }
-						</Notice>
-					) }
+					<img
+						src={ posterUrl }
+						alt=""
+						aria-hidden="true"
+						style={ { display: 'block', maxWidth: '100%', height: 'auto' } }
+					/>
 					<span
 						className="sgs-media__lottie-badge"
 						aria-hidden="true"
@@ -52,7 +43,7 @@ export default function LottieCanvas( { blockProps, inspectorControls, lottieId,
 					</div>
 					<div className="components-placeholder__instructions">
 						{ __(
-							'Select a Lottie JSON file in the block settings panel.',
+							'Add a poster image in the block settings panel, then add a Lottie layer in the Motion panel.',
 							'sgs-blocks'
 						) }
 					</div>

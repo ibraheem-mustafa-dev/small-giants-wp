@@ -6,9 +6,8 @@
  * load, on scroll (scrubbed to the scrollbar), or on hover/focus.
  *
  * THIS MODULE RETIRES VIVUS (D408). `sgs/responsive-logo` is the only current
- * consumer — its `animationStyle` enum (`draw-on-load | hover-redraw |
- * scroll-trigger`) re-backs onto this module unchanged; per D270 there is no
- * `deprecated.js`, so the migration is a runtime swap only. The effect is
+ * consumer — a `draw` layer on its wrapper part (trigger `load`, `scroll` or
+ * `hover`) runs this module. The effect is
  * written generically per Spec 38 §3.4/§4.1 (element scope) so any future
  * SVG-bearing block (`sgs/icon`, `sgs/separator`, `sgs/decorative-image`) can
  * opt in the same way, by carrying `data-sgs-fx="draw"` on its SVG (or a

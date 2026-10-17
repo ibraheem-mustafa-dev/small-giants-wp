@@ -241,27 +241,21 @@ class ResponsiveLogoTest extends TestCase {
 		$this->assertArrayHasKey( 'logoId', $attrs );
 		$this->assertArrayHasKey( 'logoIdTablet', $attrs );
 		$this->assertArrayHasKey( 'logoIdMobile', $attrs );
-		$this->assertArrayHasKey( 'svgAnimationSource', $attrs );
-		$this->assertArrayHasKey( 'animationStyle', $attrs );
 		$this->assertArrayHasKey( 'width', $attrs );
 		$this->assertArrayHasKey( 'linkToHome', $attrs );
 		$this->assertArrayHasKey( 'alt', $attrs );
 	}
 
 	/**
-	 * animationStyle must declare all four valid enum values.
+	 * No attribute carries the draw or Lottie settings: a draw or lottie layer on the wrapper part does.
 	 */
-	public function test_block_json_animation_style_has_enum(): void {
+	public function test_block_json_declares_no_retired_animation_attributes(): void {
 		$data = json_decode(
 			file_get_contents( SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/responsive-logo/block.json' ), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			associative: true
 		);
-		$enum = $data['attributes']['animationStyle']['enum'];
 
-		$this->assertContains( 'none', $enum );
-		$this->assertContains( 'draw-on-load', $enum );
-		$this->assertContains( 'hover-redraw', $enum );
-		$this->assertContains( 'scroll-trigger', $enum );
+		$this->assertSame( array(), preg_grep( '/^(svgAnimation|animationStyle|animationSubstrate|lottie)/', array_keys( $data['attributes'] ) ) );
 	}
 
 	/**
@@ -376,77 +370,61 @@ class ResponsiveLogoTest extends TestCase {
 		$this->assertStringNotContainsString( '<a ', $html );
 	}
 
-	// ── render.php: SVG animation attributes ─────────────────────────────────
+	// ── render.php: draw layer ───────────────────────────────────────────────
 
 	/**
-	 * When animationStyle is set, the root element must carry data-animation.
+	 * Attributes for a logo whose wrapper part carries a draw layer.
+	 *
+	 * @param string $trigger Draw trigger: load, scroll or hover.
+	 * @return array<string,mixed>
 	 */
-	public function test_render_svg_animation_adds_data_animation_attribute(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId'      => 10,
-				'animationStyle'     => 'draw-on-load',
-				'svgAnimationSource' => 99,
-			)
+	private function draw_attributes( string $trigger ): array {
+		$layer = array(
+			'effect'  => 'draw',
+			'trigger' => $trigger,
+			'values'  => array( 'asset' => 99 ),
 		);
+		$part  = 'hover' === $trigger ? array( 'effects' => array( $layer ) ) : array( 'entrance' => array( 'text' => array( $layer ) ) );
 
-		$this->assertStringContainsString( 'data-animation="draw-on-load"', $html );
+		return array(
+			'logoId'    => 10,
+			'sgsMotion' => array( 'elements' => array( 'wrapper' => $part ) ),
+		);
 	}
 
 	/**
-	 * When animationStyle is none, the root element must NOT carry data-animation.
+	 * The retired data-animation attribute is never printed.
 	 */
-	public function test_render_no_animation_omits_data_animation_attribute(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId'  => 10,
-				'animationStyle' => 'none',
-			)
-		);
-
-		$this->assertStringNotContainsString( 'data-animation', $html );
+	public function test_render_prints_no_data_animation_attribute(): void {
+		$this->assertStringNotContainsString( 'data-animation', render_responsive_logo( $this->draw_attributes( 'load' ) ) );
 	}
 
 	/**
-	 * draw-on-load style must add the --animate-draw BEM modifier class.
+	 * A logo with no draw layer carries no animate modifier class.
+	 */
+	public function test_render_without_draw_layer_has_no_animation_modifier(): void {
+		$this->assertStringNotContainsString( 'sgs-responsive-logo--animate', render_responsive_logo( array( 'logoId' => 10 ) ) );
+	}
+
+	/**
+	 * A load draw layer adds the --animate-draw BEM modifier class.
 	 */
 	public function test_render_animation_modifier_class_draw(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId'  => 10,
-				'animationStyle' => 'draw-on-load',
-			)
-		);
-
-		$this->assertStringContainsString( 'sgs-responsive-logo--animate-draw', $html );
+		$this->assertStringContainsString( 'sgs-responsive-logo--animate-draw', render_responsive_logo( $this->draw_attributes( 'load' ) ) );
 	}
 
 	/**
-	 * hover-redraw style must add the --animate-hover BEM modifier class.
+	 * A hover draw layer adds the --animate-hover BEM modifier class.
 	 */
 	public function test_render_animation_modifier_class_hover(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId'  => 10,
-				'animationStyle' => 'hover-redraw',
-			)
-		);
-
-		$this->assertStringContainsString( 'sgs-responsive-logo--animate-hover', $html );
+		$this->assertStringContainsString( 'sgs-responsive-logo--animate-hover', render_responsive_logo( $this->draw_attributes( 'hover' ) ) );
 	}
 
 	/**
-	 * scroll-trigger style must add the --animate-scroll BEM modifier class.
+	 * A scroll draw layer adds the --animate-scroll BEM modifier class.
 	 */
 	public function test_render_animation_modifier_class_scroll(): void {
-		$html = render_responsive_logo(
-			array(
-				'logoId'  => 10,
-				'animationStyle' => 'scroll-trigger',
-			)
-		);
-
-		$this->assertStringContainsString( 'sgs-responsive-logo--animate-scroll', $html );
+		$this->assertStringContainsString( 'sgs-responsive-logo--animate-scroll', render_responsive_logo( $this->draw_attributes( 'scroll' ) ) );
 	}
 
 	// ── render.php: empty state ───────────────────────────────────────────────

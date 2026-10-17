@@ -73,10 +73,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		videoSource,
 		// SVG.
 		svgContent,
-		svgAnimation,
-		svgAnimationSpeed,
-		// Lottie (U-17, design §3.1).
-		lottieId,
+		// Lottie poster.
 		thumbnail,
 	} = attributes;
 
@@ -355,8 +352,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				blockProps={ blockProps }
 				inspectorControls={ inspectorControls }
 				svgContent={ svgContent }
-				svgAnimation={ svgAnimation }
-				svgAnimationSpeed={ svgAnimationSpeed }
 				mediaBoxClassName={ mediaBoxClassName }
 				mediaBoxStyle={ mediaBoxStyle }
 				mediaScopeClass={ mediaScopeClass }
@@ -373,7 +368,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// non-playing preview in this same canvas.
 	// -------------------------------------------------------------------------
 	if ( isLottie ) {
-		return <LottieCanvas blockProps={ blockProps } inspectorControls={ inspectorControls } lottieId={ lottieId } thumbnail={ thumbnail } />;
+		return <LottieCanvas blockProps={ blockProps } inspectorControls={ inspectorControls } thumbnail={ thumbnail } />;
 	}
 
 	// -------------------------------------------------------------------------

@@ -4,7 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { sanitiseSvg } from '../../../utils';
 
-export default function SvgCanvas( { blockProps, inspectorControls, svgContent, svgAnimation, svgAnimationSpeed, mediaBoxClassName, mediaBoxStyle, mediaScopeClass, mediaElementStyle, alignMargins } ) {
+export default function SvgCanvas( { blockProps, inspectorControls, svgContent, mediaBoxClassName, mediaBoxStyle, mediaScopeClass, mediaElementStyle, alignMargins } ) {
 	if ( ! svgContent ) {
 		return (
 			<div { ...blockProps }>
@@ -29,17 +29,6 @@ export default function SvgCanvas( { blockProps, inspectorControls, svgContent, 
 
 	// Editor preview: render SVG inline via dangerouslySetInnerHTML.
 	// This is editor-only — the frontend uses the PHP-sanitised path (render.php).
-	const svgClass = [
-		'sgs-media__svg',
-		svgAnimation && 'none' !== svgAnimation
-			? `sgs-media__svg--${ svgAnimation } sgs-media__svg--speed-${
-					svgAnimationSpeed || 'medium'
-			  }`
-			: '',
-	]
-		.filter( Boolean )
-		.join( ' ' );
-
 	return (
 		<figure
 			{ ...blockProps }
@@ -49,7 +38,7 @@ export default function SvgCanvas( { blockProps, inspectorControls, svgContent, 
 			{ inspectorControls }
 			{ /* eslint-disable-next-line react/no-danger */ }
 			<div
-				className={ [ svgClass, 'sgs-media-el', mediaScopeClass ].filter( Boolean ).join( ' ' ) }
+				className={ [ 'sgs-media__svg', 'sgs-media-el', mediaScopeClass ].filter( Boolean ).join( ' ' ) }
 				style={ { ...mediaElementStyle, ...alignMargins } }
 				aria-hidden="true"
 				dangerouslySetInnerHTML={ { __html: sanitiseSvg( svgContent ) } }
