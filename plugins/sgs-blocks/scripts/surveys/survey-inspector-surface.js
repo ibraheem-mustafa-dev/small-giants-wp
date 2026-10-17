@@ -134,19 +134,13 @@ const RESPONSIVE_DOM_MULTIPLIER = {
 // the file:line each entry was read from). hideKey null = unconditional
 // (no isExtensionHidden() call found in the source for that panel).
 const EXTENSION_PANEL_META = {
-	Animation: { hideKey: 'animation', file: 'animation.js' },
-	'Hover Effects': { hideKey: 'hover', file: 'hover-effects.js' },
 	'Block Link': { hideKey: 'blockLink', file: 'hover-effects.js' },
-	'Click Effects': { hideKey: 'clickEffects', file: 'hover-effects.js' },
-	'Element parallax': { hideKey: 'parallax', file: 'parallax.js' },
 	'Visibility conditions': { hideKey: null, file: 'conditional-visibility.js' },
-	'Scroll & effects': { hideKey: 'fx', file: 'fx.js', gate: 'fxQualifying' },
 	'Image Controls': { hideKey: null, file: 'image-controls.js', gate: 'imageControls' },
 };
 
 const EXTENSION_FILES_WITH_PANELS = [
-	'animation.js', 'hover-effects.js', 'parallax.js',
-	'conditional-visibility.js', 'fx.js', 'image-controls.js',
+	'hover-effects.js', 'conditional-visibility.js', 'image-controls.js',
 ];
 
 // Extension files that inject into InspectorAdvancedControls — folded into
@@ -748,16 +742,7 @@ function scanExtensions( ctx ) {
 	return perFilePanels;
 }
 
-function loadFxQualifyingBlocks() {
-	const p = path.join( EXTENSIONS_DIR, 'generated-fx-qualifying-blocks.json' );
-	try {
-		return new Set( Object.keys( JSON.parse( fs.readFileSync( p, 'utf8' ) ) ) );
-	} catch ( e ) {
-		return new Set();
-	}
-}
-
-function extensionBucketForBlock( block, extensionPanels, fxQualifying ) {
+function extensionBucketForBlock( block, extensionPanels ) {
 	const hideList = ( block.supports.sgs && Array.isArray( block.supports.sgs.hideExtensions ) ) ? block.supports.sgs.hideExtensions : [];
 	const imageControlsOn = !! ( block.supports.sgs && block.supports.sgs.imageControls === true );
 
@@ -773,10 +758,6 @@ function extensionBucketForBlock( block, extensionPanels, fxQualifying ) {
 		}
 		if ( meta.hideKey && hideList.includes( meta.hideKey ) ) {
 			excluded.push( { title: panel.title, reason: `opted out via supports.sgs.hideExtensions: ["${ meta.hideKey }"]` } );
-			continue;
-		}
-		if ( meta.gate === 'fxQualifying' && ! fxQualifying.has( block.slug ) ) {
-			excluded.push( { title: panel.title, reason: 'block not in generated-fx-qualifying-blocks.json' } );
 			continue;
 		}
 		if ( meta.gate === 'imageControls' && ! imageControlsOn ) {
@@ -839,7 +820,7 @@ function analyseBlock( block, sharedCtx ) {
 		cycles: ctx.cycles,
 	};
 
-	const extBucket = extensionBucketForBlock( block, sharedCtx.extensionPanels, sharedCtx.fxQualifying );
+	const extBucket = extensionBucketForBlock( block, sharedCtx.extensionPanels );
 	const core = coreAdvancedBucket( block.supports );
 
 	const domEstimateOwn = domEstimateFromRows( own.rows );
@@ -918,8 +899,7 @@ function buildSharedContext() {
 	const containerKindPanels = buildContainerKindPanels();
 	const baseCtx = { componentIndex, containerKindPanels, unresolvedExpressions: null };
 	const extensionPanels = scanExtensions( { ...baseCtx, visiting: new Set() } );
-	const fxQualifying = loadFxQualifyingBlocks();
-	return { ...baseCtx, extensionPanels, fxQualifying };
+	return { ...baseCtx, extensionPanels };
 }
 
 // ---------------------------------------------------------------------------
@@ -1161,16 +1141,16 @@ export function WidthPanel( props ) {
 	// --- Capability 3: extension reach + hideExtensions opt-out --------------
 	{
 		const fakePanels = [
-			{ title: 'Hover Effects', rowsMax: [ { kind: 'ToolsPanelItem', label: 'x' } ], rowsTotal: [], sourceFile: 'hover-effects.js' },
-			{ title: 'Animation', rowsMax: [ { kind: 'ToolsPanelItem', label: 'y' } ], rowsTotal: [], sourceFile: 'animation.js' },
+			{ title: 'Block Link', rowsMax: [ { kind: 'ToolsPanelItem', label: 'x' } ], rowsTotal: [], sourceFile: 'hover-effects.js' },
+			{ title: 'Visibility conditions', rowsMax: [ { kind: 'ToolsPanelItem', label: 'y' } ], rowsTotal: [], sourceFile: 'conditional-visibility.js' },
 		];
 		const blockNoOptOut = { slug: 'sgs/fake', supports: { sgs: {} } };
-		const bucketA = extensionBucketForBlock( blockNoOptOut, fakePanels, new Set() );
+		const bucketA = extensionBucketForBlock( blockNoOptOut, fakePanels );
 		record( bucketA.panels.length === 2, `extension reach (no opt-out): expected 2 panels, got ${ bucketA.panels.length }` );
 
-		const blockOptOut = { slug: 'sgs/fake', supports: { sgs: { hideExtensions: [ 'hover' ] } } };
-		const bucketB = extensionBucketForBlock( blockOptOut, fakePanels, new Set() );
-		record( bucketB.panels.length === 1 && bucketB.excluded.length === 1, `extension reach (hover opted out): expected 1 panel + 1 excluded, got ${ bucketB.panels.length } panels / ${ bucketB.excluded.length } excluded` );
+		const blockOptOut = { slug: 'sgs/fake', supports: { sgs: { hideExtensions: [ 'blockLink' ] } } };
+		const bucketB = extensionBucketForBlock( blockOptOut, fakePanels );
+		record( bucketB.panels.length === 1 && bucketB.excluded.length === 1, `extension reach (block link opted out): expected 1 panel + 1 excluded, got ${ bucketB.panels.length } panels / ${ bucketB.excluded.length } excluded` );
 	}
 
 	// --- SABOTAGE-AND-RESTORE: prove the detector can genuinely FAIL --------

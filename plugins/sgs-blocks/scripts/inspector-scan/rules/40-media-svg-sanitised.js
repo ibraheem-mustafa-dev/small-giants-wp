@@ -64,7 +64,7 @@
 //     sgs/physics-canvas, sgs/site-footer, sgs/site-header, sgs/trust-bar);
 //     splitSvg / splitSvgTablet / splitSvgMobile (sgs/hero).
 //   STYLING/BEHAVIOUR, never markup (excluded): bgSvgPosition /
-//     bgSvgAnimation / bgSvgAnimationSpeed / bgSvgOpacity / bgSvgMinHeight /
+//     bgSvgOpacity / bgSvgMinHeight /
 //     bgSvgTextShadow (each of the 8 bgSvgContent-declaring blocks carries
 //     this same sextet).
 // The two groups are distinguished purely by name SHAPE: every

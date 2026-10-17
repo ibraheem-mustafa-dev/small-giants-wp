@@ -75,6 +75,7 @@ def _run_apply_with_fake_layer1(conn, fake_layer1: dict):
         patch.object(SGS, "_load_css_property_classifications", return_value=fake_layer1),
         patch.object(SGS, "_collect_boxfamily_overrides", return_value={}),
         patch.object(SGS, "_collect_fx_attr_namespace_overrides", return_value={}),
+        patch.object(SGS, "_collect_extension_attr_overrides", return_value={}),
         patch.object(SGS, "ATTR_CLASSIFICATION_OVERRIDES", {}),
     ):
         return SGS._apply_attr_classification_overrides(
@@ -140,18 +141,18 @@ def test_current_css_element_value_is_reapplied_not_lost():
     conn = _make_db()
     conn.execute(
         "INSERT INTO block_attributes (block_slug, attr_name, attr_type, css_element) "
-        "VALUES ('sgs/card-grid', 'imageZoomHover', 'string', 'stale-old-value')"
+        "VALUES ('sgs/card-grid', 'cardZoomHover', 'string', 'stale-old-value')"
     )
     conn.commit()
 
     fake_layer1 = {
-        ("sgs/card-grid", "imageZoomHover"): {"css_property": "transform", "css_element": "image"}
+        ("sgs/card-grid", "cardZoomHover"): {"css_property": "transform", "css_element": "image"}
     }
     _run_apply_with_fake_layer1(conn, fake_layer1)
 
     row = conn.execute(
         "SELECT css_element FROM block_attributes "
-        "WHERE block_slug='sgs/card-grid' AND attr_name='imageZoomHover'"
+        "WHERE block_slug='sgs/card-grid' AND attr_name='cardZoomHover'"
     ).fetchone()
     assert row[0] == "image", "a still-claimed css_element must be rewritten to this run's value"
 

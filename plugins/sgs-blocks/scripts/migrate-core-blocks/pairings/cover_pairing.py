@@ -33,7 +33,7 @@ theme/sgs-theme/patterns/hero-video-background.php):
     Wrapper-level scalar attrs (variant, backgroundImage, backgroundOverlayColour/
     Opacity — renamed from overlayColour/overlayOpacity, legacy names still
     read as a fallback per WS-4 comment — minHeight, style.spacing/color/
-    border/typography via skip-serialised native supports, bgParallax,
+    border/typography via skip-serialised native supports,
     imageObjectFit/Position, align via supports.align:["wide","full"]) ARE
     still read by render.php and drive the section shell.
 
@@ -81,8 +81,8 @@ MAPPING (cover attr -> hero attr, verb, evidence):
   focalPoint {x,y}    -> imageObjectPosition, converted from 0-1 normalised
                          x/y to a "N% N%" string — plain arithmetic, no shape
                          guessing.
-  hasParallax         -> bgParallax — direct boolean equivalent, same default
-                         (false) on both sides.
+  hasParallax         -> GAP if true (parallax is a sgsMotion layer, not a scalar
+                         attribute — manual review); dropped (no-op) if false.
   isRepeated          -> GAP if true (CSS background-repeat tiling has no
                          sgs/hero equivalent); dropped (no-op) if false.
   backgroundType       -> dropped when 'image'/absent (default; backgroundImage
@@ -350,11 +350,13 @@ def transform(node, text):
         accounting['focalPoint'] = ('mapped', 'imageObjectPosition (0-1 normalised x/y '
                                      '-> percentage string, plain arithmetic)')
 
-    # ── hasParallax -> bgParallax ───────────────────────────────────────
+    # ── hasParallax: no scalar equivalent ──
     if 'hasParallax' in attrs_in:
-        out['bgParallax'] = bool(attrs_in['hasParallax'])
-        accounting['hasParallax'] = ('mapped', 'bgParallax (direct boolean equivalent, '
-                                      'same default false on both sides)')
+        if attrs_in['hasParallax']:
+            raise GapError(
+                'hasParallax:true has no sgs/hero scalar equivalent (parallax is a '
+                'sgsMotion layer) — manual review')
+        accounting['hasParallax'] = ('dropped', 'false = default no-op, nothing to carry')
 
     if 'isRepeated' in attrs_in:
         if attrs_in['isRepeated']:

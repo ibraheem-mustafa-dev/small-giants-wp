@@ -17,7 +17,6 @@
 		"plugins/sgs-blocks/src/blocks/media/**",
 		"plugins/sgs-blocks/src/blocks/container/**",
 		"plugins/sgs-blocks/includes/class-sgs-container-wrapper.php",
-		"plugins/sgs-blocks/includes/fx-attributes.php",
 		"plugins/sgs-blocks/includes/generated-fx-effects.php",
 		"plugins/sgs-blocks/includes/class-sgs-motion-registry.php",
 		"plugins/sgs-blocks/src/shared/effects/off-switch.js",

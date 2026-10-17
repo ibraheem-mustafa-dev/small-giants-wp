@@ -91,7 +91,7 @@ def test_media_playback_toggles_are_behaviour_even_when_a_runtime_reads_their_da
 
 def test_a_visual_effect_runtime_toggle_stays_paint():
     runtime = {"fx_data_consumed": True}
-    for attr in ("bgLottieLoop", "itemMagnetEnabled", "bgParallaxLoop", "heroLottieAutoplay"):
+    for attr in ("heroLottieLoop", "itemMagnetEnabled", "bgParallaxLoop", "heroLottieAutoplay"):
         assert classify(attr, "boolean-visibility", runtime) == ("js", "effect-toggle-runtime"), attr
     # Negative control: a playback toggle no runtime reads is not paint either way.
     assert classify("videoLoop", "boolean-visibility", {"fx_data_consumed": False})[0] == "not"

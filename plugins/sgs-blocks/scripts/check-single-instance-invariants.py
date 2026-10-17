@@ -11,7 +11,7 @@ genuinely repo-wide scans) to justify forcing them into a shared abstraction —
 four share the SAME shape: read one named source file, extract one named code fragment by
 anchoring on its surrounding literal text, assert one property about that fragment. That
 shared shape is what this file factors, as sub-checks A-D, matching the house pattern in
-`check-fx-list-drift.py`'s I1-I7 invariants.
+`check-fx-registration.py`'s R1-R5 rules.
 
   A. mega-panel   — transitions restricted to `transform`/`opacity`, never `box-shadow`/
                      `filter` (measured frame-drop cause; comment at style.css:101).
@@ -30,7 +30,7 @@ Every extraction anchors on literal surrounding text (a class name, a variable n
 comment string) rather than a line number, so a reflow that keeps the code's MEANING
 intact doesn't break the gate. If an anchor goes missing, the sub-check reports that
 explicitly (`ANCHOR NOT FOUND — update this gate`) rather than silently passing — the
-vacuous-parse trap `check-fx-list-drift.py`'s own docstring warns about.
+vacuous-parse trap `check-fx-registration.py`'s own docstring warns about.
 
 GATE SHAPE
 ----------

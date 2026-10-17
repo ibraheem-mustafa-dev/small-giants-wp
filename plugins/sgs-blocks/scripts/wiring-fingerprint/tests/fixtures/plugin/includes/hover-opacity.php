@@ -1,6 +1,6 @@
 <?php
 function sgs_fixture_hover_opacity( $block_content, $block ) {
-	$o = $block['attrs']['sgsHoverOpacity'] ?? 0;
+	$o = $block['attrs']['sgsFixtureHoverOpacity'] ?? 0;
 	if ( ! $o ) {
 		return $block_content;
 	}

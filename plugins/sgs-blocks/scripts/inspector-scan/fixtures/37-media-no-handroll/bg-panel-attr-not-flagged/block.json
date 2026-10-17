@@ -7,7 +7,7 @@
 		"backgroundOverlayColour": { "type": "string", "default": "" },
 		"backgroundOverlayOpacity": { "type": "number", "default": 30 },
 		"backgroundSize": { "type": "string", "default": "cover" },
-		"bgParallax": { "type": "boolean", "default": false },
+		"bgFixedAttachment": { "type": "boolean", "default": false },
 		"unrelatedAttr": { "type": "string", "default": "" }
 	}
 }

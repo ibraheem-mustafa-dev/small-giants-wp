@@ -348,24 +348,24 @@ def self_test() -> int:
 
     # (attr_key, category that MUST appear, why it is load-bearing)
     expected = [
-        ("fxAriaLabel", "a11y-metadata",
+        ("qaAriaLabel", "a11y-metadata",
          "2-hop ternary into a sprintf'd aria-label (sgs/icon.ariaLabel). Needs "
          "multi-hop provenance AND printf_context outranking the statement window."),
-        ("fxCartLabel", "visible-text",
+        ("qaCartLabel", "visible-text",
          "2-hop sanitiser+ternary into esc_html (sgs/buybox.addToCartLabel)."),
-        ("fxPhoneNumber", "value-fragment",
+        ("qaPhoneNumber", "value-fragment",
          "literal-prefixed concatenation into esc_url (sgs/whatsapp-cta.phoneNumber) "
          "must be a fragment veto, never link-href."),
-        ("fxNavLabel", "a11y-metadata",
+        ("qaNavLabel", "a11y-metadata",
          "a DIRECT binding must survive a later conditional reassignment from "
          "unrelated locals."),
-        ("fxFieldName", "NOT-content",
+        ("qaFieldName", "NOT-content",
          "a fragment landing in `name=` is a form-processing key, NOT content — "
          "fragmentation must suppress CONTENT categories only (the 2026-08-06 fix). "
          "If the fragment short-circuit is restored ahead of the func dispatch this "
          "goes back to 'value-fragment' and the seven delegating sgs/form-field-* "
          "blocks silently lose their D1 veto again."),
-        ("fxOrderBy", "NOT-content",
+        ("qaOrderBy", "NOT-content",
          "a WHOLE-VALUE sanitize_key() call (sgs/post-grid.orderBy's real shape) — "
          "the token-normaliser addition (2026-08-06). If FUNC_CATEGORY's "
          "sanitize_key/sanitize_html_class/wp_validate_redirect entries are removed, "
@@ -385,37 +385,37 @@ def self_test() -> int:
     # category. Without this the test would pass on an implementation that
     # emitted BOTH verdicts, and the aggregator takes any content verdict over
     # a non-content one — so link-href would win and the veto would be lost.
-    phone_cats = by_key.get("fxPhoneNumber", set())
+    phone_cats = by_key.get("qaPhoneNumber", set())
     if phone_cats - {"value-fragment"}:
         failures.append(
-            f"fxPhoneNumber ALSO produced whole-value verdict(s) "
+            f"qaPhoneNumber ALSO produced whole-value verdict(s) "
             f"{sorted(phone_cats - {'value-fragment'})}; any content verdict beats "
             f"the veto in fingerprint_content_roles.py, so the fragment rule is inert."
         )
 
     # Paired negative assertion for Shape E: the technical-attribute exemption
-    # must be NARROW. fxFieldName is a fragment that lands in `name=`, so it is
+    # must be NARROW. qaFieldName is a fragment that lands in `name=`, so it is
     # exempt; it must NOT also acquire a whole-value content verdict, or the
     # exemption has leaked past NOT-content into the categories the fragment rule
     # exists to suppress.
-    field_cats = by_key.get("fxFieldName", set())
+    field_cats = by_key.get("qaFieldName", set())
     if field_cats - {"NOT-content"}:
         failures.append(
-            f"fxFieldName ALSO produced {sorted(field_cats - {'NOT-content'})}; the "
+            f"qaFieldName ALSO produced {sorted(field_cats - {'NOT-content'})}; the "
             f"NOT-content exemption must not admit a content category — that would "
             f"reopen the exact hole the fragment rule was written to close."
         )
 
-    # Cross-contamination guard: fxOtherAttr exists only to be the wrong answer
+    # Cross-contamination guard: qaOtherAttr exists only to be the wrong answer
     # for Shape D. If it picked up the aria-label verdict, provenance leaked.
-    if "a11y-metadata" in by_key.get("fxOtherAttr", set()):
+    if "a11y-metadata" in by_key.get("qaOtherAttr", set()):
         failures.append(
-            "fxOtherAttr was credited with the aria-label verdict that belongs to "
-            "fxNavLabel — inherited provenance clobbered a direct binding."
+            "qaOtherAttr was credited with the aria-label verdict that belongs to "
+            "qaNavLabel — inherited provenance clobbered a direct binding."
         )
 
     # NEGATIVE CONTROL for the 2026-08-06 token-normaliser addition (Shape G).
-    # fxDualUse reaches BOTH sanitize_html_class() (NOT-content) and esc_html()
+    # qaDualUse reaches BOTH sanitize_html_class() (NOT-content) and esc_html()
     # (visible-text) at two different usage sites in the fixture. This is the
     # guard the task brief demanded: adding sanitize_key/sanitize_html_class/
     # wp_validate_redirect to D1 must only ever ADD evidence, never let a
@@ -429,10 +429,10 @@ def self_test() -> int:
     # key=_category_rank)` (line ~382). So the real proof imports and runs
     # THAT logic against this fixture's actual raw output, rather than
     # re-asserting an assumption about it here.
-    dual_cats = by_key.get("fxDualUse", set())
+    dual_cats = by_key.get("qaDualUse", set())
     if not {"NOT-content", "visible-text"} <= dual_cats:
         failures.append(
-            f"fxDualUse: got {sorted(dual_cats)}, expected raw facts to include "
+            f"qaDualUse: got {sorted(dual_cats)}, expected raw facts to include "
             f"BOTH 'NOT-content' (the sanitize_html_class site) and 'visible-text' "
             f"(the esc_html site) — if either is missing this fixture no longer "
             f"exercises the dual-reach shape the negative control depends on."
@@ -442,13 +442,13 @@ def self_test() -> int:
             sys.path.insert(0, str(here))
             from fingerprint_content_roles import NON_CONTENT_CATEGORIES, _category_rank  # noqa: E402
         except ImportError as exc:
-            failures.append(f"fxDualUse: could not import the real aggregator to "
+            failures.append(f"qaDualUse: could not import the real aggregator to "
                              f"verify the win — {exc}")
         else:
             survivors = [c for c in dual_cats if c not in NON_CONTENT_CATEGORIES]
             if not survivors:
                 failures.append(
-                    "fxDualUse: fingerprint_content_roles.NON_CONTENT_CATEGORIES "
+                    "qaDualUse: fingerprint_content_roles.NON_CONTENT_CATEGORIES "
                     "filtered out EVERY category, including 'visible-text' — the "
                     "content verdict would be lost, not just outranked."
                 )
@@ -456,14 +456,14 @@ def self_test() -> int:
                 winner = min(survivors, key=_category_rank)
                 if winner != "visible-text":
                     failures.append(
-                        f"fxDualUse: the real aggregator's tie-break picked "
+                        f"qaDualUse: the real aggregator's tie-break picked "
                         f"{winner!r}, not 'visible-text' — the token-sanitiser "
                         f"addition would let a NOT-content verdict beat real "
                         f"visible content for the same attribute."
                     )
 
     # 4 non-`expected`-list checks: phone-fragment negative, field-name-fragment
-    # negative, fxOtherAttr cross-contamination guard, fxDualUse negative control.
+    # negative, qaOtherAttr cross-contamination guard, qaDualUse negative control.
     total_checks = len(expected) + 4
     if failures:
         print(f"SELF-TEST FAILED ({len(failures)} of {total_checks} checks)")

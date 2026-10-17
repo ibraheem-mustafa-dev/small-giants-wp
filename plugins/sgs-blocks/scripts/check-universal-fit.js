@@ -8,7 +8,7 @@
  * attribute nothing renders (a truly dead attr). This script does NOT care
  * whether the attribute is rendered — universal extensions are legitimately
  * consumed by a SHARED system (includes/*.php render_block filters, or the
- * frontend IntersectionObserver for animation), never the block's own
+ * a shared frontend script), never the block's own
  * render.php/save.js/view.js.
  *
  * HEADLINE = two genuinely-actionable signals, not a raw block x extension
@@ -26,30 +26,18 @@
  *      the block itself, so it over-counts and isn't actionable on its
  *      own). The real signal: a FORM-FIELD or purely-structural/utility
  *      block (no styling surface, per roster.json `surfaces.styling`)
- *      carrying `hover` / `blockLink` / `clickEffects` / `parallax` /
- *      `animation` — a form input does not need a hover-scale or a
- *      parallax offset. "Kind" is derived from roster.json
+ *      carrying `blockLink` — a form input does not need a block-link wrap. "Kind" is derived from roster.json
  *      (`category` + `surfaces.styling`), not a hardcoded block-slug list —
  *      see `isInappropriateFitKind()`.
  *
- *   3. NO-OPT-OUT ARCHITECTURAL FINDING — four of the nine extensions
- *      (animation, conditional-visibility, custom-css, responsive-
- *      visibility) have NO `hideExtensions` opt-out slug in source at all.
- *      Of those four, THREE are UTILITY extensions (conditional-visibility,
- *      custom-css, responsive-visibility): Advanced-tab, opt-in-BY-USE
- *      (an operator only sees an effect once they set a condition / write
- *      CSS / hide a device tier — an unused panel is inert, not a bolted-on
- *      styling affordance), and legitimately universal — every block can
- *      meaningfully be conditionally visible, carry custom CSS, or be
- *      hidden per device, the same way every block can have a className.
- *      These are reported separately as "utility — universal by design",
- *      NOT as a gap. The remaining one, `animation`, is a STYLING/
- *      INTERACTION universal (alongside hover / blockLink / clickEffects /
- *      parallax, which DO have opt-out slugs) — a scroll-triggered motion
- *      effect a block did not ask for and cannot turn off is a genuine
- *      poor-fit risk (see the ANIMATION_DENYLIST it already needs to hand-
- *      roll instead of a declarative opt-out). `animation` is therefore the
- *      SOLE real no-opt-out gap this script flags as actionable.
+ *   3. NO-OPT-OUT ARCHITECTURAL FINDING — extensions with NO `hideExtensions`
+ *      opt-out slug in source. The remaining ones (conditional-visibility,
+ *      custom-css, responsive-visibility) are UTILITY extensions: Advanced-tab,
+ *      opt-in-BY-USE (an operator only sees an effect once they set a condition
+ *      / write CSS / hide a device tier — an unused panel is inert), and
+ *      legitimately universal. They are reported separately as "utility —
+ *      universal by design", NOT as a gap. Any non-utility extension that lacks
+ *      an opt-out is flagged as actionable.
  *
  * The full raw block x extension matrix (the old "opt-out candidate" flag —
  * kept for supporting detail + baseline compatibility) is still computed and
@@ -98,7 +86,7 @@ function readIfExists( p ) {
 
 /**
  * Strip line + block comments so an attribute name surviving only in a
- * doc-comment (e.g. a stale "TODO: wire sgsAnimation here" note) does not
+ * doc-comment (e.g. a stale "TODO: wire sgsBlockLink here" note) does not
  * count as real consumption. Handles JS `//` / `/* *\/`, CSS `/* *\/`, and
  * PHP `//` / `#` / `/* *\/`.
  */
@@ -109,7 +97,7 @@ function stripComments( src ) {
 		.replace( /^\s*#[^\n]*/gm, ' ' ); // # ... (PHP line comment)
 }
 
-/** Word-boundary test — `sgsHoverScale` does not match inside `sgsHoverScalePreset`. */
+/** Word-boundary test — `sgsBlockLink` does not match inside `sgsBlockLinkTarget`. */
 function referencesAttr( attr, corpus ) {
 	const re = new RegExp( '\\b' + attr + '\\b' );
 	return re.test( corpus );
@@ -141,26 +129,6 @@ function readBlockOwnCorpus( dir ) {
 // the extension's own universal condition, translated from JS runtime
 // (getBlockType/registerBlockType-time checks) to a static block.json read.
 // ---------------------------------------------------------------------------
-
-// animation.js — ANIMATION_DENYLIST (inner/child blocks that are never
-// scroll targets) + CORE_ANIMATION_BLOCKS (4 core blocks, outside our sgs/*
-// roster so irrelevant to this report's denominator).
-const ANIMATION_DENYLIST = [
-	'sgs/tab',
-	'sgs/accordion-item',
-	'sgs/form-step',
-	'sgs/form-review',
-	'sgs/form-field-text',
-	'sgs/form-field-email',
-	'sgs/form-field-phone',
-	'sgs/form-field-textarea',
-	'sgs/form-field-checkbox',
-	'sgs/form-field-radio',
-	'sgs/form-field-select',
-	'sgs/form-field-tiles',
-	'sgs/form-field-file',
-	'sgs/form-field-consent',
-];
 
 /**
  * Read a block's block.json + derive the gating facts every extension's
@@ -209,7 +177,7 @@ function readBlock( slug, rosterEntry ) {
 			? sgsSupports.hideExtensions
 			: [],
 		// hide-extensions.js: `supports?.sgs?.enabledExtensions` array of slugs
-		// (ALLOWLIST — D551, Phase 2.1: hover/blockLink only, attached ONLY
+		// (ALLOWLIST — D551, Phase 2.1: blockLink only, attached ONLY
 		// when listed).
 		enabledExtensions: Array.isArray( sgsSupports.enabledExtensions )
 			? sgsSupports.enabledExtensions
@@ -230,11 +198,10 @@ function readBlock( slug, rosterEntry ) {
  * the live roster 2026-07-19 — this combination selects exactly the 13
  * `sgs/form-field-*` leaf controls plus `sgs/form-review`; it deliberately
  * excludes `sgs/form` and `sgs/form-step`, which DO carry a styling surface
- * — they are containers an operator legitimately wants to hover/animate —
+ * — they are containers an operator legitimately wants to link —
  * and `sgs/form-field-tiles`, which has its own visual tile styling surface
- * and is a legitimate hover/click target). A form input does not need a
- * hover-scale, a block-link wrap, a click-ripple, a parallax offset, or a
- * scroll-triggered animation.
+ * and is a legitimate link target). A form input does not need a
+ * block-link wrap.
  */
 function isInappropriateFitKind( block ) {
 	return block.category === 'sgs-forms' && block.surfaces.styling === false;
@@ -244,69 +211,26 @@ function isInappropriateFitKind( block ) {
 // as a genuine semantic poor-fit, not merely unproven bespoke wiring — these
 // are all visual/motion affordances a plain form input has no use for.
 const INAPPROPRIATE_FIT_EXTENSION_IDS = new Set( [
-	'animation',
-	'hover',
 	'blockLink',
-	'clickEffects',
-	'parallax',
 ] );
 
 /**
- * The nine universal extension FILES loaded by extensions/index.js
+ * The universal extension FILES loaded by extensions/index.js
  * (hide-extensions.js is the shared opt-out utility they import — it is not
- * itself a universal extension, so it is not listed here). hover-effects.js
- * renders THREE independently-gated panels (hover / blockLink /
- * clickEffects), each with its own hideExtensions slug and attribute set, so
- * it contributes three entries below sharing one `file`.
+ * itself a universal extension, so it is not listed here). hover-effects/
+ * renders the blockLink panel, with its own hideExtensions slug and attribute set, and each
+ * extension below names its own `file`.
  */
 const EXTENSIONS = [
-	{
-		id: 'animation',
-		file: 'animation.js',
-		panel: 'Animation',
-		attrs: [ 'sgsAnimation', 'sgsAnimationDelay', 'sgsAnimationDuration', 'sgsAnimationEasing', 'sgsAnimationDistance', 'sgsAnimationStart', 'sgsAnimationTrigger', 'sgsAnimationStagger', 'sgsAnimationStaggerChildren', 'sgsAnimationStaggerMax' ],
-		hideSlug: 'animation', // declarative opt-out wired 2026-07-19 (Task 4) — mirrors the other extensions.
-		appliesTo: ( b ) =>
-			! ANIMATION_DENYLIST.includes( b.name ) && b.name.startsWith( 'sgs/' ),
-	},
-	{
-		id: 'hover',
-		file: 'hover-effects/',
-		panel: 'Hover Effects',
-		attrs: [
-			'sgsHoverBgColour', 'sgsHoverTextColour', 'sgsHoverBorderColour',
-			'sgsHoverScale', 'sgsHoverScalePreset', 'sgsHoverShadow',
-			'sgsHoverDuration', 'sgsHoverEasing', 'sgsHoverImageZoom',
-			'sgsStaggerDelay', 'sgsHoverGrayscale', 'sgsHoverBorderAccent',
-			'sgsHoverTilt3D',
-		],
-		hideSlug: 'hover',
-		// D551 (Phase 2.1): OPT-IN, not opt-out — disconnected from every
-		// block by default (0 stored usage, 194+ canary pages, measured
-		// 2026-08-10 and re-verified 2026-08-11). Attached only when a block
-		// lists 'hover' in supports.sgs.enabledExtensions. className check
-		// still gates first — mirrors hover-effects.js's own
-		// `type?.supports?.className === false` early return.
-		appliesTo: ( b ) => b.supportsClassName && b.enabledExtensions.includes( 'hover' ),
-		optIn: true,
-	},
 	{
 		id: 'blockLink',
 		file: 'hover-effects/',
 		panel: 'Block Link',
 		attrs: [ 'sgsBlockLink', 'sgsBlockLinkTarget' ],
 		hideSlug: 'blockLink',
-		// D551 (Phase 2.1): OPT-IN, not opt-out — same shape as 'hover' above.
+		// D551 (Phase 2.1): OPT-IN, not opt-out — opt-in.
 		appliesTo: ( b ) => b.supportsClassName && b.enabledExtensions.includes( 'blockLink' ),
 		optIn: true,
-	},
-	{
-		id: 'clickEffects',
-		file: 'hover-effects/',
-		panel: 'Click Effects',
-		attrs: [ 'sgsClickEffect', 'sgsClickRippleColour', 'sgsClickRippleDuration' ],
-		hideSlug: 'clickEffects',
-		appliesTo: ( b ) => b.supportsClassName,
 	},
 	{
 		id: 'conditionalVisibility',
@@ -336,14 +260,6 @@ const EXTENSIONS = [
 		// Legitimately universal (any block can take custom CSS) —
 		// excluded from the "no-opt-out gap" finding.
 		isUtility: true,
-	},
-	{
-		id: 'parallax',
-		file: 'parallax.js',
-		panel: 'Parallax',
-		attrs: [ 'sgsParallax', 'sgsParallaxStrength' ],
-		hideSlug: 'parallax',
-		appliesTo: ( b ) => b.supportsClassName,
 	},
 	{
 		id: 'responsiveVisibility',
@@ -504,8 +420,7 @@ function main() {
 	// -------------------------------------------------------------------
 	// Signal 2: INAPPROPRIATE-FIT — a form-field/utility block (roster
 	// category=sgs-forms, surfaces.styling=false, see isInappropriateFitKind)
-	// carrying a visual/motion universal (hover / blockLink / clickEffects /
-	// parallax / animation) that its own gating rule did not already exclude
+	// carrying an interaction universal (blockLink) that its own gating rule did not already exclude
 	// and that has not already been opted out. Independent of bespoke-
 	// consumption evidence — the poor fit is semantic, not evidentiary.
 	// -------------------------------------------------------------------
@@ -519,7 +434,7 @@ function main() {
 				continue;
 			}
 			if ( ! extension.appliesTo( block ) ) {
-				continue; // extension's own gating rule already excludes this block (e.g. ANIMATION_DENYLIST).
+				continue; // extension's own gating rule already excludes this block (e.g. a class-name support gate).
 			}
 			if ( extension.hideSlug && block.hideExtensions.includes( extension.hideSlug ) ) {
 				continue; // already opted out — not a live gap.
@@ -558,8 +473,7 @@ function main() {
 	// panel), and UTILITY extensions (conditional-visibility / custom-css /
 	// responsive-visibility — Advanced-tab, opt-in-by-use, legitimately
 	// universal by design, see isUtility on each extension's definition
-	// above). `animation` is the sole extension that is BOTH a styling/
-	// motion affordance AND has no opt-out — the one real gap.
+	// above).
 	// -------------------------------------------------------------------
 	const noOptOutExtensions = EXTENSIONS.filter(
 		( extension ) =>
@@ -692,7 +606,7 @@ function main() {
 					.join( '\n' ) +
 				'\n\n' +
 				`INAPPROPRIATE-FIT FLAGS: ${ inappropriateFit.length } (form-field/utility block carrying ` +
-				'hover/blockLink/clickEffects/parallax/animation with no opt-out applied)\n' +
+				'blockLink with no opt-out applied)\n' +
 				( inappropriateFitBlocks.length
 					? inappropriateFitBlocks
 							.map( ( o ) => `  ${ o.block } — ${ o.extensions.join( ', ' ) }` )
@@ -871,9 +785,9 @@ function makeFakeBlock( overrides ) {
 	);
 }
 
-// Reuse the real 'hover' extension definition — always-applicable
+// Reuse the real 'blockLink' extension definition — always-applicable
 // (appliesTo: supportsClassName), has an opt-out slug, and a known attrs list.
-const SELF_TEST_EXTENSION = EXTENSIONS.find( ( e ) => e.id === 'hover' );
+const SELF_TEST_EXTENSION = EXTENSIONS.find( ( e ) => e.id === 'blockLink' );
 
 function runSelfTest() {
 	const cases = [
@@ -883,26 +797,26 @@ function runSelfTest() {
 			expectStatus: 'not-applicable',
 		},
 		{
-			name: 'block opts in but never references any hover attr -> FLAGGED (negative control)',
-			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'hover' ] } ),
+			name: 'block opts in but never references any block-link attr -> FLAGGED (negative control)',
+			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'blockLink' ] } ),
 			expectStatus: 'flagged',
 		},
 		{
-			name: 'block opts in and references sgsHoverScale in its own corpus -> bespoke (pass)',
+			name: 'block opts in and references sgsBlockLink in its own corpus -> bespoke (pass)',
 			block: makeFakeBlock( {
-				ownCorpus: 'style.css uses .self-test { transform: var(--sgsHoverScale); }',
-				enabledExtensions: [ 'hover' ],
+				ownCorpus: 'style.css uses .self-test { transform: var(--sgsBlockLink); }',
+				enabledExtensions: [ 'blockLink' ],
 			} ),
 			expectStatus: 'bespoke',
 		},
 		{
 			name: 'block opts in but also carries the legacy hideExtensions entry -> opted-out (pass — vestigial denylist still short-circuits if present)',
-			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'hover' ], hideExtensions: [ 'hover' ] } ),
+			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'blockLink' ], hideExtensions: [ 'blockLink' ] } ),
 			expectStatus: 'opted-out',
 		},
 		{
 			name: 'block opts in but does not support className -> not-applicable (pass — className gate still wins)',
-			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'hover' ], supportsClassName: false } ),
+			block: makeFakeBlock( { ownCorpus: '', enabledExtensions: [ 'blockLink' ], supportsClassName: false } ),
 			expectStatus: 'not-applicable',
 		},
 	];

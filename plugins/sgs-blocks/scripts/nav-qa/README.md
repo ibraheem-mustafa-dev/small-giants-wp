@@ -396,17 +396,6 @@ apply section-ink-off && node scripts/nav-qa/u13-ink-probe.mjs $URL --expect off
 apply direction-fade && node scripts/nav-qa/m03-direction-probe.mjs $URL
 ```
 
-## 12. `u16-entrance-probe.mjs` + `u16-editor-check.mjs` — entrances beside the block's own motion
-
-Fixture case `entrance` in `qa-item-markup-fixture.php` (same trapped apply-measure-restore rule as §10, ending on `two-bar`): the test header gets a `fade-in` extra-slow entrance with sticky, shrink and hide-on-scroll on at every tier, over page `/qa-entrance/` (rewritten on each apply, kept): an info-box with its own hover and an extra-slow `fade-up`, a 1600px spacer, then an `sgs/site-footer` whose rows fade up 50px at 0, 100 and 200ms, the third with `fxFooterStagger` (its own entrance gives way) around an info-box that keeps one. `u16-entrance-probe.mjs <url>` asserts at 375/768/1440: the header rises from 0 to 1 over at least 650ms with no flash after the first paint; the card's own hover ends within 330ms; shrink, hide-on-scroll and pinning still work; a dropdown opened mid-entrance lands where it settles (1440); footer rows travel 50px to 0 about 100ms apart; reduced motion, JavaScript off and a blocked observer show everything. The page runs Lenis, so the probe scrolls with `window.scrollTo`, never `scrollIntoView`. `u16-editor-check.mjs` (repo root) drives the real inspector at Desktop and Tablet: the 500/800ms delays, the Distance options (hidden for `fade-in`), a save and reload round-trip, and the header's first-appearance notice (not saved).
-
-```bash
-URL=https://sandybrown-nightingale-600381.hostingersite.com/qa-entrance/
-trap restore EXIT   # restore() as in §10
-apply entrance && node scripts/nav-qa/u16-entrance-probe.mjs $URL
-node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs   # from the repo root
-```
-
 ## 13. `u18-copy-probe.mjs` — Gate 3C item 4's copies against their references
 
 Measures a composed header copy while it is the ACTIVE header (an in-page copy sits in a lower stacking layer and misleads) at 375 (mobile-emulated, no scrollbar), 768 and 1440, and screenshots it closed and open. lamalama: the pill, the burger box and its 44x44 tap area, the three bars closed and open (16 long, 3px gaps, one line with 5px travel), the grown drawer against the closed pill, the two drawer CTAs' widths, and the corner "GET IN TOUCH" card (pinned 160x326 at top 16 / right 16 at 1440, absent at 375 and 768). Indus: every mega panel's position at 1440 and, for About and Trade, the aside beside the links rather than below them; the burger and drawer below 1440. Reference values sit in the script's `EXPECT`, from `lamalama.json` and `indus-foods.json`; exits 1 on a miss over 2px. A check whose element is missing FAILS rather than skipping, so an absent bar, CTA, card or aside reads as a failure, never as silence. It runs headed (a real window) with `--hide-scrollbars` by default: the canary's bot challenge answers a headless browser with a 403 "Just a moment" page, and a page that never shows its header now FAILS. Pass `--headless` only against a site without that challenge.

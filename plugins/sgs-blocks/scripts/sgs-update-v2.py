@@ -42,13 +42,10 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
                                last one was DELETED as dead code at 1ac16ec9) from fx_effects
                                (DB, finalised by Stage 1's tail step) + block.json/edit.js/
                                style.css (files). Runs last so it always reads the DB
-                               state this SAME invocation produced. See D432 follow-up,
-                               2026-08-01 — the DB was made the single source for the
-                               fx:* namespace, but nothing regenerated the artefacts THE
-                               DB IS FOR; this stage is that missing writer.
+                               state this SAME invocation produced.
  12. run_audit_scanners     — run audit scanners keyed to DB/roster (report-only).
                               Regenerate roster.json, then run consistency checks
-                              (db-consistency, consistency-gates, fx-list-drift,
+                              (db-consistency, consistency-gates,
                               box-family-guard, inspector-conformance, feature-parity).
                               Findings are informational; never fail the reseed.
  13. export_db_to_csv       — export every live table to CSV in
@@ -2031,18 +2028,14 @@ def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
     prebuild/prestart (`run-motion-fx-generators.js`) — a build-time hook, not
     part of `/sgs-update` at all. That gap is exactly how D432 happened: a
     /sgs-update run (for an unrelated nav-menu box_family fix) created new
-    block_attributes rows for existing fx:* attrs, and nothing about
-    /sgs-update itself knew those rows needed fx:* markers — the marker only
-    ever arrived later, at the next `npm run build`, via a channel the reseed
-    gate couldn't see.
+    block_attributes rows, and nothing about /sgs-update itself knew the
+    motion-fx data needed reconciling — it only arrived later, at the next
+    `npm run build`, via a channel the reseed gate couldn't see.
 
     This tail step seeds `fx_effects` (the Spec 38 §11.2 effect grammar,
     with its `owned_properties` and `panels` columns read from the motion
     schema) — the table seed-motion-fx-registry.py owns that /sgs-update does
-    not otherwise touch. It deliberately does NOT
-    re-seed block_attributes.css_property for fx:* attrs — that write moved
-    INTO this same pipeline run, one step earlier, as layer 2.5 of
-    `_apply_attr_classification_overrides` (see that function's docstring).
+    not otherwise touch. It never writes block_attributes.css_property.
     Running the seeder script itself (rather than importing its module-level
     side effects) keeps this a pure subprocess call, matching
     `_run_composition_role_seed` / `_run_inspector_control_type_seed` exactly
@@ -2375,43 +2368,11 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_
 
 
 # ---------------------------------------------------------------------------
-# fx:* pseudo-namespace channel (D432 integration, 2026-08-01)
-#
-# WHY THIS EXISTS: seed-motion-fx-registry.py's FX_ATTR_CSS_PROPERTY dict (§6.2
-# / §11.3 of Spec 38) maps the fx:* attribute names — fx, fxTrigger, fxStart,
-# fxEnd, fxHold, fxScrub, fxStagger, fxDuration, fxEase, dragMomentum, fxPath,
-# fxPathAsset, fxPathRotate, fxShape, fxPreset — onto their pseudo-CSS-property
-# marker (fx:effect, fx:trigger, ... fx:momentum, ...). Before this change that
-# script wrote block_attributes.css_property directly via a bare UPDATE run at
-# BUILD time (npm prebuild -> run-motion-fx-generators.js), a channel
-# check_css_property_reseed.py's own docstring calls out as the ONLY thing that
-# gets wiped on the next /sgs-update reseed (STOP-24). D432 (2026-07-31) is the
-# incident this caused: seeding box_family for a block required a full
-# /sgs-update, which (correctly) INSERTed the block_attributes rows for
-# sgs/image-sequence's fxStart/fxEnd/fxScrub + the 4 blocks' dragMomentum (they
-# are real block.json-declared attrs), and the NEXT build's motion seeder then
-# wrote css_property='fx:*' onto those brand-new rows via a channel /sgs-update
-# knows nothing about — surfacing as "rogue seed" failures for BOTH tracks at
-# once. The fix declared 7 entries in ATTR_CLASSIFICATION_OVERRIDES by hand.
-#
-# THE INTEGRATION: fx:* becomes a THIRD reseed-durable channel, read the SAME
-# way ATTR_CLASSIFICATION_OVERRIDES is (R-22-1 — import the real dict, never
-# hand-copy it), and merged into `_apply_attr_classification_overrides`'s
-# `combined` dict alongside the derived-classifier layer and box_family. Once
-# /sgs-update itself is the css_property writer for every fx:* attr that
-# exists on a real block_attributes row, the hand-authored override entries
-# for those 7 rows are redundant — removed from attr-classification-
-# overrides.json in the same change (see that file's D432 history). Any FUTURE
-# fx:* attr a block declares is covered automatically — no more per-attr
-# override entries needed for this namespace, ever (R-31-9 universal
-# mechanism: the fx:* namespace map, not a growing per-block override list).
-#
-# seed-motion-fx-registry.py owns fx_effects (a table /sgs-update does not
-# otherwise touch) and no longer
-# writes block_attributes.css_property — see its own module docstring update.
-# It is also now RUN as a Stage 1 tail step (`_run_motion_fx_registry_seed`
-# below), so /sgs-update alone reproduces the full motion-fx DB state; a
-# forgotten standalone run can no longer silently leave fx_effects stale.
+# fx:* pseudo-namespace channel: seed-motion-fx-registry.py's FX_ATTR_CSS_PROPERTY
+# maps the surviving block attributes (dragMomentum, loopCarousel, dragToScroll)
+# onto their pseudo-CSS-property marker. /sgs-update is the only writer of the
+# column (layer 2.5 of `_apply_attr_classification_overrides`), read the same way
+# ATTR_CLASSIFICATION_OVERRIDES is (R-22-1: import the real dict, never hand-copy it).
 # ---------------------------------------------------------------------------
 
 _MOTION_FX_SEEDER_PATH = Path(__file__).resolve().parent / "seed-motion-fx-registry.py"
@@ -2626,151 +2587,6 @@ def _load_css_property_classifications(path: "Path | None" = None) -> dict[tuple
     return out
 
 
-_FX_QUALIFYING_BLOCKS_JSON = (
-    Path(__file__).resolve().parent.parent
-    / "src" / "blocks" / "extensions" / "generated-fx-qualifying-blocks.json"
-)
-
-
-def _load_fx_qualifying_block_slugs(path: Path = _FX_QUALIFYING_BLOCKS_JSON) -> set[str]:
-    """Return the set of block slugs `fx.js`'s own `shouldHaveFx()` treats as
-    fx-capable — i.e. every key of `generated-fx-qualifying-blocks.json` that
-    maps to at least one effect (D432/FR-38-22 investigation, 2026-09-04).
-
-    This is the SAME artefact `fx.js` imports (`qualifyingBlocks`) to decide
-    which blocks get the `fx*` attributes added via its `registerBlockType`
-    filter — reusing it here (rather than re-deriving eligibility from
-    `supports.sgs.enabledExtensions`, which fx capability does not use at all)
-    keeps ONE source of truth for "is this block fx-capable" (R-31-1).
-    Soft-optional: a missing/unreadable file degrades to "seed nothing this
-    run" rather than hard-failing an unrelated /sgs-update.
-    """
-    if not path.exists():
-        return set()
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-        return {slug for slug, effects in data.items() if effects}
-    except Exception as exc:  # noqa: BLE001
-        print(f"Stage 1 (fx-attr-rows): WARN failed to read {path.name}: {exc}")
-        return set()
-
-
-def _load_fx_attr_roster() -> dict[str, dict[str, str]]:
-    """The FULL fx* attribute roster (name -> real JS type + data-attribute name),
-    from ``dbschema/seed_reference_data.py::fx_attr_roster``: sourced from
-    ``includes/fx-attributes.php`` FX_ATTR_MAP + ``includes/extension-attributes.generated.php``.
-    Replaces the narrower ``FX_ATTR_CSS_PROPERTY`` map (29 of ~79 names) as THIS
-    function's eligibility source - that map still exists and is still used
-    unchanged for its own purpose (the fx: css_property classification
-    layer, ``_collect_fx_attr_namespace_overrides``).
-
-    Soft-optional: a missing/unreadable module degrades to an empty roster
-    rather than hard-failing an unrelated /sgs-update run.
-    """
-    try:
-        dbschema = str(Path(__file__).resolve().parent / "dbschema")
-        if dbschema not in sys.path:
-            sys.path.insert(0, dbschema)
-        import seed_reference_data as _srd  # noqa: PLC0415
-
-        return _srd.fx_attr_roster()
-    except Exception as exc:  # noqa: BLE001
-        print(f"Stage 1 (fx-attr-rows): WARN failed to import fx_attr_roster: {exc}")
-        return {}
-
-
-def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
-    """Stage 1 sub-step B2.6 — INSERT missing `block_attributes` rows for the
-    `fx*` attribute set on every fx-capable block (FR-38-22 cloning-lift
-    investigation, 2026-09-04).
-
-    THE GAP THIS CLOSES: `fx*` attrs (`fxTrigger`, `fxPath`, `fxShape`, …) are
-    added to a block's registered schema entirely client-side, via `fx.js`'s
-    `registerBlockType` filter — they appear in NO block.json. Stage 1's
-    normal attribute discovery only reads block.json, so these attrs never
-    got a `block_attributes` row at all (confirmed: `_apply_attr_classification_
-    overrides`'s layer 2.5, `_collect_fx_attr_namespace_overrides`, only
-    classifies rows that ALREADY exist — it has printed "MISSING ROW" for
-    every one of these names since D432, and nothing ever created the row).
-    Without a row, the cloning walker's `block_attrs(slug)` lookup can never
-    see these attrs, so `lift_behavioural_attrs` can never lift them from a
-    draft — this was the actual, previously-undiagnosed reason `fx*` attrs
-    vanish on clone (FR-38-22).
-
-    Deliberately minimal, additive-only INSERT — sets only the columns the
-    readers actually consume (attr_name/attr_type/role/canonical_slot/
-    derived_selector) plus `source`.
-    Leaves `css_property` NULL on insert; the EXISTING layer 2.5 step
-    (`_collect_fx_attr_namespace_overrides`, called right after this from
-    `_apply_attr_classification_overrides`) then classifies it in the SAME
-    run, so there is still exactly one writer of `css_property` — this step
-    only ever creates the row, never sets that column itself.
-
-    ⛔ CORRECTED 2026-09-04 (adversarial-council, same day as the original
-    build): this function originally iterated `FX_ATTR_CSS_PROPERTY` (29
-    names — the css_property classification map, never the attribute
-    roster) and hardcoded `attr_type='string'` for every row. Both were
-    wrong: `fx.js` registers ~79 `fx*` attributes, not 29 — every attr
-    outside that 29-name map (the whole magnet/particle/generative-
-    background/grid-dot/wave family) had the EXACT bug this function exists
-    to fix, unfixed; and `'string'` for every row meant a real
-    `type:'boolean'`/`type:'number'` attr (e.g. `fxDisableTablet`,
-    `fxScrub`) round-trips as the literal string `"true"`/`"0.6"`, which a
-    strict PHP `true === $value` check (as `includes/fx-attributes.php`
-    genuinely uses) never matches — a client's "don't run this on mobile"
-    setting would silently not apply. Now sources both the full name list
-    AND each attr's real type from `seed_reference_data.fx_attr_roster()` (see that
-    function's docstring) — two already-maintained, build-generated
-    artefacts, not hand-derived here.
-
-    ⛔ `source='sgs-fx'`, DELIBERATELY NOT `'sgs'` (D951-adversarial-council
-    fix, 2026-09-04). These rows have no block.json to be validated against —
-    that is the whole point of this function existing. Stage 9's ghost-row
-    prune (`_prune_orphans_on_conn`, category (c)) deletes any
-    `block_attributes` row with `source='sgs'` whose `attr_name` is absent
-    from its block's live block.json `attributes` — unconditionally, no
-    dry-run/conservative escape for this category. Seeding with `source='sgs'`
-    was caught (adversarial-council, before this line existed) as a
-    same-session self-destruct: every row this function inserts would be
-    deleted again the very next full `/sgs-update` run, silently reverting
-    FR-38-22. `source='sgs-fx'` is invisible to that query's `WHERE
-    ba.source = 'sgs'` filter by construction. No other block_attributes
-    query anywhere in this file filters on `source` (only
-    the `blocks` table's own rows use `source='sgs'` as a filter elsewhere) —
-    verified by grep before choosing this fix, not assumed.
-
-    Returns {"fx_attr_rows_inserted": int, "fx_attr_rows_blocks": int}.
-    """
-    c = conn.cursor()
-    roster = _load_fx_attr_roster()
-    slugs = _load_fx_qualifying_block_slugs()
-    inserted = 0
-    touched_blocks: set[str] = set()
-    for slug in sorted(slugs):
-        for attr_name, attr_info in roster.items():
-            exists = c.execute(
-                "SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?",
-                (slug, attr_name),
-            ).fetchone()
-            if exists:
-                continue
-            inserted += 1
-            touched_blocks.add(slug)
-            if not dry_run:
-                # attr_type from the real JS declaration (string/number/
-                # boolean/array), not hardcoded — see docstring correction.
-                c.execute(
-                    "INSERT INTO block_attributes "
-                    "(block_slug, attr_name, attr_type, role, source) "
-                    "VALUES (?, ?, ?, 'behaviour', 'sgs-fx')",
-                    (slug, attr_name, attr_info.get("type", "string")),
-                )
-    return {
-        "fx_attr_rows_inserted": inserted,
-        "fx_attr_rows_blocks": len(touched_blocks),
-    }
-
-
 _EXTENSION_ROSTER_JSON = (
     Path(__file__).resolve().parent.parent
     / "src" / "blocks" / "extensions" / "extension-roster.json"
@@ -2841,8 +2657,7 @@ def _seed_extension_attr_rows(
     (src/blocks/extensions/extension-roster.json) declares each attribute and its opt-in
     rule; this function applies the rule to every `blocks.source='sgs'` block's block.json.
 
-    `source='sgs-ext'`, not `'sgs'`, for the reason `_seed_missing_fx_attr_rows` gives:
-    Stage 9 deletes any `source='sgs'` row whose attribute is absent from block.json.
+    `source='sgs-ext'`, not `'sgs'`, because Stage 9 deletes any `source='sgs'` row whose attribute is absent from block.json.
 
     Authoritative every run: rows absent from the derived set are deleted (a block dropped
     the opt-in, or `hideExtensions` gained the slug), missing rows are inserted, existing
@@ -2957,27 +2772,21 @@ def _apply_attr_classification_overrides(
     dict holds only role/derived_selector/emit-shape/css_property corrections.
     Idempotent; re-applies on every /sgs-update.
 
-    Layering (2026-07-21, Bean-approved; layer 2.5 added D432 2026-08-01 — do
-    not reorder):
+    Layering (2026-07-21, Bean-approved; do not reorder):
       1. DERIVED layer — css-property-classifications.json (classifier output:
          css_property/css_layer/css_element/css_state/css_tier). Applied FIRST.
       2. box_family — declarative block.json source. Merged in (own fields, no
          overlap with layer 1/3/4's fields).
-      2.5. fx:* namespace — FX_ATTR_CSS_PROPERTY (seed-motion-fx-registry.py,
-         Spec 38 §6.2/§11.3), DB-driven (any existing block_attributes row
-         whose attr_name is a declared fx:* name). This is /sgs-update's OWN
-         write of the motion-fx pseudo-property marker — the seeder script no
-         longer writes block_attributes.css_property itself (D432 fix: two
-         writers to the same column was the exact class of bug that broke the
-         build for two co-active tracks at once). Merged in like box_family
-         (own namespace, only ever collides with itself).
+      2.5. fx:* namespace — FX_ATTR_CSS_PROPERTY (seed-motion-fx-registry.py),
+         DB-driven: any existing block_attributes row whose attr_name is a declared
+         fx:* name. Merged in like box_family.
       3. OVERRIDE layer — ATTR_CLASSIFICATION_OVERRIDES (hand-authored JSON truth
-         file). Applied LAST, wins on any field conflict with layers 1/2/2.5.
+         file). Applied LAST, wins on any field conflict with layers 1/2/2.5/2.6.
          Overrides exist to record cases where what the code DOES and what it
          MEANS differ (e.g. sgs/tabs tabIndicatorColour delivers via box-shadow
          but IS a colour value — see attr-classification-overrides.json), not
          to correct classifier accuracy bugs (fix those in the classifier
-         itself) or to declare fx:* markers (that's layer 2.5's job now).
+         itself).
 
     Returns counts dict: {"override_applied": int, "override_missing_row": int}.
     """
@@ -2991,7 +2800,7 @@ def _apply_attr_classification_overrides(
     # Layer 2: declarative box_family (own fields; never overlaps layer 1/3/4's fields).
     for key, fields in _collect_boxfamily_overrides(blocks_dir).items():
         combined.setdefault(key, {}).update(fields)
-    # Layer 2.5: fx:* namespace (D432 integration — see docstring above).
+    # Layer 2.5: fx:* namespace (FX_ATTR_CSS_PROPERTY).
     for key, fields in _collect_fx_attr_namespace_overrides(c).items():
         combined.setdefault(key, {}).update(fields)
     # Layer 2.6: editor-extension attributes (source='sgs-ext'), from extension-roster.json.
@@ -3461,15 +3270,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # twice to converge. JSON-only, no DB mutation, so it is safe this early.
         _run_css_property_classifier_seed(conn)
 
-        # --- Stage 1 sub-step B2.6: create missing fx* block_attributes rows ---
-        # (FR-38-22 cloning-lift fix, 2026-09-04. MUST run BEFORE sub-step C so
-        #  its existing layer-2.5 fx:* classification also reaches the rows
-        #  this step just created, in the SAME run.)
-        fx_row_counts = _seed_missing_fx_attr_rows(conn, dry_run=False)
-        print(
-            f"Stage 1 (fx-attr-rows): inserted={fx_row_counts['fx_attr_rows_inserted']} "
-            f"row(s) across {fx_row_counts['fx_attr_rows_blocks']} block(s)."
-        )
         ext_row_counts = _seed_extension_attr_rows(conn, blocks_dir, dry_run=False)
         print(
             f"Stage 1 (ext-attr-rows): inserted={ext_row_counts['ext_rows_inserted']} "
@@ -3515,10 +3315,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     on-disagreement policy, so this must run every reseed to stay durable. ---
         _run_inspector_control_type_seed(conn)
 
-        # --- Stage 1 tail: seed fx_effects from the motion-fx
-        #     registry (D432, 2026-08-01) — runs AFTER the css_property layers
-        #     above so the fx:* namespace is already correct before this step's
-        #     own table (fx_effects) is reconciled. ---
+        # --- Stage 1 tail: seed fx_effects from the motion-fx registry. ---
         _run_motion_fx_registry_seed(conn)
 
         # --- Stage 1 tail: seed motion_targets and motion_fields (Spec 38A
@@ -3583,12 +3380,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"allowed_blocks_populated={ab_populated} (already stored), "
             f"allowed_blocks_updated={ab_updated} (would drift), "
             f"allowed_blocks_dynamic_skipped={ab_dynamic_skipped}."
-        )
-        fx_row_counts = _seed_missing_fx_attr_rows(conn, dry_run=True)
-        print(
-            f"Stage 1 (fx-attr-rows) [dry-run]: would insert="
-            f"{fx_row_counts['fx_attr_rows_inserted']} row(s) across "
-            f"{fx_row_counts['fx_attr_rows_blocks']} block(s)."
         )
         _seed_extension_attr_rows(conn, blocks_dir, dry_run=True)
         _apply_attr_classification_overrides(conn, blocks_dir, dry_run=True)
@@ -6278,9 +6069,7 @@ def stage_11_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
     motion layer should also update the data into the artefacts for use in the
     actual websites... centralising data in the DB is pointless if the files
     the live websites actually load can silently fall behind it." D432 itself
-    (commit 075baa9b) made the DB the single writer for the fx:* namespace's
-    `block_attributes.css_property` column, but explicitly deferred this half:
-    the DB-authoring-source -> shipped-PHP/JSON regeneration step
+    (commit 075baa9b) deferred this half: the DB-authoring-source -> shipped-PHP/JSON regeneration step
     (`generated-fx-effects.php`, `generated-fx-effect-meta.json`,
     `generated-fx-qualifying-blocks.php`, `generated-fx-qualifying-blocks.json`
     at the time — the `.php` mirror was later DELETED as dead code at 1ac16ec9,
@@ -6401,7 +6190,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         check_fx_qualifying_blocks_stale as sub-gates
 
       Single-purpose DB/source scanners:
-      - check-fx-list-drift.py --check: fx_effects table currency
       - check-box-family-guard.py --report: box_family attribute constraints
       - inspector-scan/run.js --json: inspector_control_type classification (retired
         audit-inspector-conformance.js repointed here 2026-08-06, Spec 35 Task D —
@@ -6496,7 +6284,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         ("consistency/build-roster.py", "build-roster", []),
         ("consistency/run-consistency-gates.py", "consistency-gates", ["--report"]),
         ("db-consistency/run.py", "db-consistency", ["--report"]),
-        ("check-fx-list-drift.py", "fx-list-drift", ["--check"]),
         ("check-box-family-guard.py", "box-family-guard", ["--report"]),
         ("inspector-scan/run.js", "inspector-conformance", ["--json"]),  # Parse JSON for findings by severity (nested rules[].findings shape — see parsing branch below)
         ("audit-feature-parity.py", "feature-parity", ["--check"]),  # exit code signals but don't fail
@@ -6679,7 +6466,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
             combined = stdout + stderr
 
             # INVOCATION GUARD (2026-08-03): a scanner that never RAN must never be
-            # reported as clean. `check-fx-list-drift.py` was invoked with `--report`,
+            # reported as clean. a scanner was once invoked with `--report`,
             # a flag its argparse rejects — it exited non-zero with empty stdout, and
             # the per-label extractor below read that emptiness as "0 findings /
             # completed". The scanner had never executed. Detect the shape explicitly
@@ -6756,16 +6543,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                                 break
                             except ValueError:
                                 pass
-
-            elif label == "fx-list-drift":
-                # check-fx-list-drift.py --check prints "[OK  ]" (pass) or "[FAIL]" (fail) invariant lines
-                # PROOF: "[OK  ] I0 — no duplicate entries...", "GATE PASSED — all six invariants hold"
-                # COORDINATOR FIX: status, findings, and summary must all align (all OK or all FAIL)
-                fail_count = len([ln for ln in stdout.splitlines() if "[FAIL]" in ln])
-                findings_count = fail_count  # Only failures are findings; OK checks are not findings
-                summary_lines = [ln for ln in stdout.splitlines() if "GATE" in ln]
-                summary_line = summary_lines[-1].strip()[:120] if summary_lines else "completed"
-                # Result: findings=0 + "GATE PASSED" + status OK all align (not status=WARN)
 
             elif label == "box-family-guard":
                 # check-box-family-guard.py --check prints "All checks passed — X violations" (PROOF extraction)

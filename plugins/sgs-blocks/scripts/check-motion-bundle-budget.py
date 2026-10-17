@@ -214,7 +214,7 @@ def _save_baseline(baseline_path: Path, modules: dict[str, int], recorded_date: 
 class MotionRegistryParseError(Exception):
     """Raised when `MODULES` cannot be located/parsed in class-sgs-motion-registry.php.
 
-    Same "must not pass vacuously" discipline as check-fx-list-drift.py: a parser that
+    Same "must not pass vacuously" discipline as check-fx-registration.py: a parser that
     silently matched nothing would make --page-budget compare an empty module set
     against the budget and read PASS forever, exactly the failure mode this feature
     exists to close for D479's page allowance.

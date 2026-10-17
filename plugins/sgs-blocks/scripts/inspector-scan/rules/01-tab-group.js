@@ -95,7 +95,7 @@ function countPanels( text, tagNames ) {
 // aspectRatio=real CSS -> whole panel exempt), sgs/multi-button "Layout"
 // (flexDirection/gap/flexWrap, ALL real CSS, no anchor -> stays flagged),
 // sgs/text "Typography" (all real CSS, no anchor -> stays flagged),
-// sgs/image-sequence "Scroll effect" (fxPin/fxStart/fxEnd/fxScrub, all
+// sgs/image-sequence "Scroll effect" (pin/start/end/scrub, all
 // `fx:`-pseudo-property JS config, zero real CSS -> whole panel exempt).
 //
 // Finds each PANEL JSXElement via the AST (Babel already resolves correct

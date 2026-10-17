@@ -1,16 +1,13 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 198,
+  "L3": 193,
   "L2": 4,
   "L5": 15,
   "L3-tier": 1,
   "L6": 1
  },
  "gaps": [
-  "ext/hover-effects/attributes.js::sgsClickEffect::L3",
-  "ext/hover-effects/attributes.js::sgsClickRippleColour::L3",
-  "ext/parallax.js::sgsParallaxStrength::L3",
   "sgs/account::showLatestOrder::L5",
   "sgs/brand-strip::fadeWidth::L2",
   "sgs/brand-strip::fadeWidth::L5",
@@ -34,8 +31,6 @@
   "sgs/gallery::scrimColourGradient::L3",
   "sgs/gallery::scrimOpacity::L3",
   "sgs/google-reviews::scrollbarStyle::L5",
-  "sgs/hero::bgKenBurnsMode::L3",
-  "sgs/hero::bgZoomStart::L3",
   "sgs/hero::shapeDividerBottom::L3",
   "sgs/hero::shapeDividerBottomColour::L3",
   "sgs/hero::shapeDividerBottomColourGradient::L3",

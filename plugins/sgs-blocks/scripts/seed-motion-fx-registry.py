@@ -18,35 +18,15 @@ WHAT THIS SEEDS (§6 numbered list — each item below maps 1:1)
    field comes from, and the REASONED-NOT-STATED flags where the spec does not name
    the value explicitly (honesty over guessing, per the project's root-cause rule).
 
-2. `block_attributes` fx:* pseudo-namespace (§6.2) — sibling of the existing `anim:*`
-   namespace (inspected live before writing this: anim:preset/duration/easing/stagger/
-   parallax/trigger already exist on card-grid/gallery/hero/container/etc, always with
-   css_layer='OUTER'|NULL and css_element='wrapper'|'behaviour'|'animation'). The fx:*
-   attrs (fx, fxTrigger, fxStart, fxEnd, fxScrub, fxStagger, fxDuration, fxEase — the
-   §11.3 block-attr mirror of the §11.2 grammar) are mapped to fx:effect/trigger/start/
-   end/scrub/stagger/duration/ease respectively — via FX_ATTR_CSS_PROPERTY below.
+2. `block_attributes` fx:* pseudo-namespace (§6.2) — the block attributes that carry a drag or
+   loop feature (dragMomentum, loopCarousel, dragToScroll) are mapped to fx:momentum/loop/draggable
+   via FX_ATTR_CSS_PROPERTY (in seed_motion_fx_data.py).
 
-   OWNERSHIP MOVED 2026-08-01 (D432 integration): this seeder no longer WRITES
-   block_attributes.css_property for fx:* attrs. It used to (a bare SQLite UPDATE run
-   only at `npm run build` time), and that write was NOT reseed-durable (STOP-24 /
-   check_css_property_reseed.py Check B) — the next `/sgs-update` had no idea the
-   fx:* markers existed, so any /sgs-update run that happened to touch the same rows
-   (e.g. creating them fresh because a block newly declared an fx:* attr) wiped them,
-   which is exactly what happened in D432 (2026-07-31): seeding an unrelated
-   nav-menu box_family fix required a full /sgs-update, which correctly INSERTed new
-   block_attributes rows for sgs/image-sequence's fxStart/fxEnd/fxScrub + 4 blocks'
-   dragMomentum (all real block.json-declared attrs) — then the NEXT build's seeder
-   run set css_property on those new rows via a channel the reseed gate couldn't see,
-   breaking the build for two co-active tracks at once.
-   FX_ATTR_CSS_PROPERTY (the map itself) stays HERE — this is its one canonical
-   source (R-22-1: sgs-update-v2.py imports it via importlib, never a hand-copied
-   duplicate) — but the actual DB write now happens inside sgs-update-v2.py's
-   `_apply_attr_classification_overrides` (layer 2.5), one step earlier in the SAME
-   `/sgs-update` run that creates the fx:* block_attributes rows in the first place,
-   so the marker can never trail behind by even one run. `_seed_fx_attr_namespace`
-   below is now VERIFY-ONLY: it reports [ok]/[MISMATCH]/[skip] against the DB but
-   never issues an UPDATE — a genuine single-writer guarantee, not just a documented
-   intention.
+   This seeder never WRITES block_attributes.css_property: a write here is not reseed-durable
+   (check_css_property_reseed.py Check B), so sgs-update-v2.py's `_apply_attr_classification_overrides`
+   (layer 2.5) is the one writer, importing FX_ATTR_CSS_PROPERTY through importlib (R-22-1). The
+   `_seed_fx_attr_namespace` step below is VERIFY-ONLY: it reports [ok]/[MISMATCH]/[skip] against the
+   DB and never issues an UPDATE.
 
 3. `block_capabilities` fx-scrub/fx-draggable/fx-flip/fx-svg — EXPLICITLY NOT this
    seeder's job. §6 item 3 states these are "seeded from supports.sgs.fx.* declarations
@@ -69,8 +49,7 @@ WHAT THIS SEEDS (§6 numbered list — each item below maps 1:1)
 CHANGELOG (post-Wave-A additions, newest first)
 ---------------------------------------------------------------------------------------
 - 2026-08-21 (Tier W / D479 / D555): seeded `fx_effects.surface-treatment` (tier='W',
-  the FIRST Tier W row in this table) + its four `fx:*` attr rows (fxTreatment,
-  fxTreatmentIntensity, fxTreatmentShadow, fxTreatmentHighlight). Also corrected the
+  the FIRST Tier W row in this table) + its attr rows. Also corrected the
   `requires` closed-vocabulary comment above, which had drifted behind the earlier
   'surface' (cursor-field) addition — see that comment for detail. Per-row citation
   lives on the `surface-treatment` row itself in FX_EFFECTS below.
@@ -138,7 +117,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN requires TEXT NOT NULL DEFAULT 'none'")
         print("  [set]  fx_effects: added column 'requires' (migration)")
     # D416: pins + triggers. Same gated-on-absence migration shape as above.
-    #  - pins     drives the fxEnd control's WORDING ("how long it stays stuck"
+    #  - pins     drives the end control's WORDING ("how long it stays stuck"
     #             for a pinning effect vs "where it finishes" for a scrubbed one).
     #             owns_scroll_transform is NOT a usable proxy: 5 effects set it,
     #             only 2 pin.
@@ -146,8 +125,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     #             ("load | scroll | hover (per-effect enum)") and drives which
     #             options the "When it starts" control offers, so a client is
     #             never shown a value that effect cannot honour.
-    # Both live here rather than as hand-maintained arrays in fx.js, which
-    # already carries two such lists that no gate cross-checks.
+    # Both live here, in the DB, rather than as hand-maintained arrays in the editor.
     if "pins" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN pins INTEGER NOT NULL DEFAULT 0")
         print("  [set]  fx_effects: added column 'pins' (migration)")
@@ -182,13 +160,8 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
         print("  [set]  fx_effects: added column 'creates_panel' (migration)")
     # 2026-08-02: in_picker. Same gated-on-absence shape as every column above.
     #
-    # WHY THIS COLUMN EXISTS — it is the DB half of the three-list drift gate
-    # (scripts/check-fx-list-drift.py, invariant I1). `fx.js`'s SHIPPED_EFFECTS
-    # array is the editor's on-switch: an effect built correctly in every other
-    # layer is still dead code until its name appears there. `cursor-field` was
-    # omitted from it on first build (FR-38-25) and NOTHING caught it — the
-    # feature was unreachable from the editor while the runtime module, the
-    # registry enqueue, the render layer and the panel were all correctly wired.
+    # WHY THIS COLUMN EXISTS — it records whether the effect is offered in the
+    # generic effects picker; the generated effect-meta JSON carries it to the editor.
     #
     # To gate that, the check needs an independent statement of "which effects
     # SHOULD be in the picker". No existing column supplies one:
@@ -204,9 +177,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     #
     # DEFAULT 0, not 1 (the opposite of `creates_panel`): an effect must be
     # deliberately declared shippable-from-the-picker. A new row that forgets
-    # this key is treated as block-private, which fails CLOSED — the gate then
-    # objects the moment someone adds it to SHIPPED_EFFECTS without seeding it,
-    # instead of silently asserting a picker entry that does not exist.
+    # this key is treated as block-private, which fails CLOSED.
     if "in_picker" not in existing_cols:
         cur.execute("ALTER TABLE fx_effects ADD COLUMN in_picker INTEGER NOT NULL DEFAULT 0")
         print("  [set]  fx_effects: added column 'in_picker' (migration)")

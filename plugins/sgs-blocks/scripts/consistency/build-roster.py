@@ -309,7 +309,7 @@ def self_test() -> int:
     Never touches the real roster.json or the DB — reads the DB once (read-only,
     same as every other mode) to get a real live payload, then does all mutation
     against a throwaway temp copy. Modelled on this project's other --self-test
-    scripts (e.g. check-fx-list-drift.py): perturb a known-good state, assert the
+    scripts (e.g. check-fx-registration.py): perturb a known-good state, assert the
     gate catches it, then assert a fresh write clears it.
     """
     import tempfile

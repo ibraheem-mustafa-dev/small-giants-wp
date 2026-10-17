@@ -40,7 +40,7 @@ script deliberately does not pretend otherwise:
     (D521) precisely because three <video> elements would each begin fetching.
     Migrating those to a tier object may be wrong. The survey flags them with
     an `asset_like` hint so triage starts from evidence.
-  * INDEPENDENT PER-DEVICE FLAGS (sgsHideOn*, fxDisable*) are conjunctive — the
+  * INDEPENDENT PER-DEVICE FLAGS (sgsHideOn*) are conjunctive — the
     operator must see every tier at once — and are NOT a cascade at all.
 
 USAGE

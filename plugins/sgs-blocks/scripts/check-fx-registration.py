@@ -28,13 +28,9 @@ independently. A comment asking nicely is not a gate.
 THE DRIVER IS THE DISK, NOT A LIST
 ----------------------------------------------------------------------------------------
 The set of effects is taken from the `fx-*.js` modules that actually EXIST under
-`src/shared/effects/` and `src/shared/effects/gsap/`. It is deliberately NOT taken from
-`SHIPPED_EFFECTS` in src/blocks/extensions/fx.js: that array is the EDITOR PICKER list,
-and four shipped effects (`draggable`, `image-sequence`, `flip`, `carousel-loop`) have
-modules and webpack entries while being deliberately absent from it. Driving off the
-picker would build a gate blind to exactly those four - a gate that cannot see a quarter
-of its subject. (The picker's own cross-checks are check-fx-list-drift.py's job; the two
-gates are complementary, not duplicates.)
+`src/shared/effects/` and `src/shared/effects/gsap/`. It is deliberately NOT taken from a
+picker list or a database table: a list can omit an effect that still has a module and a
+webpack entry, and a gate driven by it would be blind to exactly those effects.
 
 CSS IS OPT-IN - "EVERY EFFECT HAS A STYLESHEET" IS A FALSE INVARIANT
 ----------------------------------------------------------------------------------------
@@ -206,7 +202,7 @@ def parse_modules(tree: Tree) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Target 2 - the webpack entries. Explicit entries plus two `fxEntries()` globs.
+# Target 2 - the webpack entries. Explicit entries plus two `effectEntries()` globs.
 # ---------------------------------------------------------------------------
 
 # `path.resolve( process.cwd(), 'src', ... )` - the inner `process.cwd()` parentheses
@@ -221,11 +217,11 @@ _EXPLICIT_NAME_RE = re.compile(
     r"'(" + re.escape(ENTRY_PREFIX) + r"[A-Za-z0-9/_-]+)'\s*:\s*path\.resolve\("
 )
 
-# `...fxEntries( 'shared/effects[/gsap]', [ 'src', 'shared', ... ] )`: webpack globs the
+# `...effectEntries( 'shared/effects[/gsap]', [ 'src', 'shared', ... ] )`: webpack globs the
 # `fx-*.js` files of that directory, so every module on disk has an entry named for its
 # tier. The call's prefix and directory segments are what this gate reads.
 _FX_GLOB_CALL_RE = re.compile(
-    r"\.\.\.fxEntries\(\s*'(" + re.escape(ENTRY_PREFIX.rstrip("/")) + r"(?:/gsap)?)'\s*,"
+    r"\.\.\.effectEntries\(\s*'(" + re.escape(ENTRY_PREFIX.rstrip("/")) + r"(?:/gsap)?)'\s*,"
     r"\s*\[([^\]]*)\]\s*\)"
 )
 # The helper's filename filter, so a glob that stopped selecting `fx-*.js` is noticed.
@@ -237,7 +233,7 @@ def parse_webpack_entries(tree: Tree) -> dict[str, str]:
 
     Covers the explicit non-fx `shared/effects/` entries (`gsap/provider`,
     `smooth-scroll`, `scroll-driver`), which R4 checks resolve to real files, and the two
-    `fxEntries()` globs, which are expanded against the `fx-*.js` files on disk exactly as
+    `effectEntries()` globs, which are expanded against the `fx-*.js` files on disk exactly as
     webpack expands them.
     """
     path = tree.webpack_path
@@ -261,12 +257,12 @@ def parse_webpack_entries(tree: Tree) -> dict[str, str]:
 
     if not _FX_GLOB_FILTER_RE.search(text):
         raise VacuousParse(
-            f"{path}: the `fxEntries()` helper no longer filters on /^fx-[a-z0-9-]+\\.js$/. "
+            f"{path}: the `effectEntries()` helper no longer filters on /^fx-[a-z0-9-]+\\.js$/. "
             "Every R2 comparison against its globs would verify nothing. Fix the parser "
             "in check-fx-registration.py."
         )
     calls = _FX_GLOB_CALL_RE.findall(text)
-    _floor(calls, 2, path, "the `...fxEntries( 'shared/effects[/gsap]', [...] )` globs")
+    _floor(calls, 2, path, "the `...effectEntries( 'shared/effects[/gsap]', [...] )` globs")
     for prefix, segment_body in calls:
         segments = re.findall(r"'([^']+)'", segment_body)
         directory = tree.root.joinpath(*segments)
@@ -587,7 +583,7 @@ def evaluate(tree: Tree) -> list[Violation]:
                 f"`build/{wanted}.js` is therefore never produced, so the MODULES row "
                 "that registers it points at a file that does not exist on the server. "
                 "The build passes green and the effect does nothing.",
-                f"Make sure an `fxEntries( '{(ENTRY_PREFIX + tier).rstrip('/')}', [...] )` "
+                f"Make sure an `effectEntries( '{(ENTRY_PREFIX + tier).rstrip('/')}', [...] )` "
                 f"glob in webpack.config.js covers "
                 f"`src/{ENTRY_PREFIX}{tier + '/' if tier else ''}` and emits '{wanted}'.",
             ))
@@ -802,9 +798,9 @@ _CASES = (
     _Case(
         # The gsap glob pointed at a directory that holds no modules: every Tier G
         # effect then has no webpack entry.
-        "R2", "point the gsap fxEntries glob at a directory with no modules",
+        "R2", "point the gsap effectEntries glob at a directory with no modules",
         "webpack_js",
-        r"(\.\.\.fxEntries\(\s*'shared/effects/gsap',\s*\[\s*'src',\s*'shared',\s*'effects',\s*)'gsap'",
+        r"(\.\.\.effectEntries\(\s*'shared/effects/gsap',\s*\[\s*'src',\s*'shared',\s*'effects',\s*)'gsap'",
         r"\1'gsap-missing'",
     ),
     _Case(
@@ -812,8 +808,8 @@ _CASES = (
         # but at a path MODULES does not register.
         "R2", "emit the root-tier fx entries under the wrong output prefix",
         "webpack_js",
-        r"\.\.\.fxEntries\(\s*'shared/effects',",
-        "...fxEntries( 'shared/effects/gsap',",
+        r"\.\.\.effectEntries\(\s*'shared/effects',",
+        "...effectEntries( 'shared/effects/gsap',",
     ),
     _Case(
         "R3", "make the resolver look for a different file naming",
@@ -869,10 +865,10 @@ _CASES = (
     ),
     _Case(
         # Renaming the helper leaves no glob call for the parse to find.
-        "VACUOUS", "rename the fxEntries glob helper so its parse matches nothing",
+        "VACUOUS", "rename the effectEntries glob helper so its parse matches nothing",
         "webpack_js",
-        r"fxEntries",
-        "fxEntriesRenamedBySelftest",
+        r"effectEntries",
+        "effectEntriesRenamedBySelftest",
         min_hits=3,
     ),
     _Case(

@@ -325,7 +325,7 @@
         "wave": "Wave-parity-1"
       },
       "hasParallax": {
-        "reason": "Equivalent to `bgParallax`.",
+        "reason": "Equivalent to the motion model parallax layer.",
         "wave": "over-report"
       },
       "isDark": {

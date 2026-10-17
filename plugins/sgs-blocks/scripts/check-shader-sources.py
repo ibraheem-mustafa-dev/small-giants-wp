@@ -48,7 +48,7 @@ provably broken in the ONE way this project has actually hit.
 NO NEW NPM DEPENDENCY. No GLSL parser, no WebGL context, no headless browser — every
 check below is a plain-text/regex structural assertion.
 
-GATE SHAPE (matches check-fx-list-drift.py / check-motion-bundle-budget.py)
+GATE SHAPE (matches check-fx-registration.py / check-motion-bundle-budget.py)
 ----------------------------------------------------------------------------------------
 - Default (no flag): observational report, exit 0 regardless of findings.
 - --check:     gating mode. Exit 1 on any assertion failure, including a vacuous glob.

@@ -21,6 +21,8 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 sys.stdout.reconfigure(encoding="utf-8") if hasattr(sys.stdout, "reconfigure") else None
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -37,6 +39,35 @@ def _load_seeder():
 
 
 SGS = _load_seeder()
+
+# The real roster has no extension that a block can hide and none that carries hover routing, so these two
+# synthetic extensions keep the `denylist` + `hideSlug` and the hover-routing paths of the seeder covered.
+FIXTURE_MOTION_EXTENSION = {
+    "id": "fixtureMotion",
+    "file": "fixture-motion.js",
+    "rule": {"mode": "denylist", "hideSlug": "fixtureMotion"},
+    "attributes": {
+        "sgsFixtureMotion": {"type": "string", "default": "none", "role": "behaviour"},
+        "sgsFixtureMotionStart": {"type": "string", "default": "", "role": "behaviour"},
+    },
+}
+FIXTURE_HOVER_EXTENSION = {
+    "id": "fixtureHover",
+    "file": "fixture-hover.js",
+    "rule": {"mode": "allowlist", "enabledSlug": "fixtureHover", "requiresClassName": True},
+    "attributes": {
+        "sgsFixtureLift": {"type": "number", "default": 0, "role": "visual", "css_property": "transform", "css_state": "hover"},
+        "sgsFixtureIndent": {"type": "number", "default": 0, "role": "visual", "css_property": "padding-left", "css_state": "hover"},
+    },
+}
+_REAL_LOAD_ROSTER = SGS._load_extension_roster
+
+
+@pytest.fixture(autouse=True)
+def _roster_with_fixture_extensions():
+    roster = [*_REAL_LOAD_ROSTER(), FIXTURE_MOTION_EXTENSION, FIXTURE_HOVER_EXTENSION]
+    with patch.object(SGS, "_load_extension_roster", return_value=roster):
+        yield
 
 
 def _make_db(blocks: list[str]) -> sqlite3.Connection:
@@ -81,11 +112,11 @@ def _write_block(blocks_dir: Path, slug: str, supports_sgs: dict | None = None, 
 
 
 def _fixture(tmp_path: Path):
-    """sgs/container opts into childSizing + hover; sgs/plain opts into nothing;
-    sgs/quiet opts out of animation, parallax and click effects."""
-    _write_block(tmp_path, "sgs/container", {"enabledExtensions": ["childSizing", "hover"]})
+    """sgs/container opts into childSizing + the fixture hover extension; sgs/plain opts into nothing;
+    sgs/quiet opts out of the fixture motion extension."""
+    _write_block(tmp_path, "sgs/container", {"enabledExtensions": ["childSizing", "fixtureHover"]})
     _write_block(tmp_path, "sgs/plain")
-    _write_block(tmp_path, "sgs/quiet", {"hideExtensions": ["animation", "parallax", "clickEffects"]})
+    _write_block(tmp_path, "sgs/quiet", {"hideExtensions": ["fixtureMotion"]})
     return _make_db(["sgs/container", "sgs/plain", "sgs/quiet"])
 
 
@@ -140,19 +171,17 @@ def test_block_without_the_opt_in_gets_no_child_sizing(tmp_path):
     SGS._seed_extension_attr_rows(conn, tmp_path)
     assert "sgsChildSizing" not in _attrs(conn, "sgs/plain")
     assert "sgsChildSizing" not in _attrs(conn, "sgs/quiet")
-    assert not {a for a in _attrs(conn, "sgs/plain") if a.startswith("sgsHover")}, "hover is opt-in"
+    assert not {a for a in _attrs(conn, "sgs/plain") if a.startswith("sgsFixture") and a != "sgsFixtureMotion" and a != "sgsFixtureMotionStart"}, "hover is opt-in"
 
 
 def test_hide_extensions_blocks_get_none_of_the_hidden_extension(tmp_path):
     conn = _fixture(tmp_path)
     SGS._seed_extension_attr_rows(conn, tmp_path)
     quiet = _attrs(conn, "sgs/quiet")
-    assert not {a for a in quiet if a.startswith("sgsAnimation")}, "animation is hidden on sgs/quiet"
-    assert not {"sgsParallax", "sgsParallaxStrength"} & quiet
-    assert not {"sgsClickEffect", "sgsClickRippleColour", "sgsClickRippleDuration"} & quiet
+    assert not {a for a in quiet if a.startswith("sgsFixtureMotion")}, "the fixture motion extension is hidden on sgs/quiet"
     # Positive control: the same block still gets the extensions it did not hide.
     assert "sgsHideOnMobile" in quiet and "sgsCustomCss" in quiet
-    assert "sgsAnimation" in _attrs(conn, "sgs/plain"), "an unhidden block gets animation"
+    assert "sgsFixtureMotion" in _attrs(conn, "sgs/plain"), "an unhidden block gets the fixture motion extension"
 
 
 def test_rows_survive_the_stage_9_prune(tmp_path):
@@ -177,13 +206,13 @@ def test_existing_block_declared_row_is_never_touched(tmp_path):
     conn = _fixture(tmp_path)
     conn.execute(
         "INSERT INTO block_attributes (block_slug, attr_name, attr_type, default_value, source) "
-        "VALUES ('sgs/container', 'sgsAnimation', 'string', '\"fade-in\"', 'sgs')"
+        "VALUES ('sgs/container', 'sgsFixtureMotion', 'string', '\"fade-in\"', 'sgs')"
     )
     SGS._seed_extension_attr_rows(conn, tmp_path)
-    row = _row(conn, "sgs/container", "sgsAnimation")
+    row = _row(conn, "sgs/container", "sgsFixtureMotion")
     assert (row["source"], row["default_value"]) == ("sgs", '"fade-in"')
     assert conn.execute(
-        "SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/container' AND attr_name='sgsAnimation'"
+        "SELECT COUNT(*) FROM block_attributes WHERE block_slug='sgs/container' AND attr_name='sgsFixtureMotion'"
     ).fetchone()[0] == 1
 
 
@@ -219,16 +248,15 @@ def test_routing_columns_come_from_layer_2_6_and_survive_the_reset(tmp_path):
     assert (width["css_property"], width["role"]) == (None, "layout"), "a width slot a block can already own stays NULL"
     sizing = _row(conn, "sgs/container", "sgsChildSizing")
     assert sizing["css_property"] is None, "a discovered enum has no css_property"
-    lift = _row(conn, "sgs/container", "sgsHoverLift")
+    lift = _row(conn, "sgs/container", "sgsFixtureLift")
     assert (lift["css_property"], lift["css_state"]) == ("transform", "hover")
-    for attr in ("sgsHoverOpacity", "sgsHoverIndent"):
+    for attr in ("sgsFixtureLift", "sgsFixtureIndent"):
         row = _row(conn, "sgs/container", attr)
         assert row["css_property"] and row["css_state"] == "hover", f"{attr}: a hover row needs css_state"
     hide = {a: _row(conn, "sgs/plain", a) for a in ("sgsHideOnMobile", "sgsHideOnTablet", "sgsHideOnDesktop")}
     assert [r["css_tier"] for r in hide.values()] == ["mobile", "tablet", "desktop"], "one tier each, or the slot is ambiguous"
-    assert _row(conn, "sgs/plain", "sgsClickRippleColour")["css_property"] is None
     assert all(r[0] is None for r in conn.execute("SELECT css_layer FROM block_attributes").fetchall())
-    assert _row(conn, "sgs/plain", "sgsAnimationStart")["css_property"] is None
+    assert _row(conn, "sgs/plain", "sgsFixtureMotionStart")["css_property"] is None
 
 
 def test_every_declared_role_is_an_existing_role():

@@ -246,9 +246,8 @@ function collectSetAttributesKeys( node, out ) {
  * The discriminator is mechanism, never the attribute's name or its control's
  * component: does any SINGLE expression reference two or more tier siblings of
  * the same base? Proven against both live instances on 2026-08-10 —
- * fx.js:1305-1307 (`attributes.fxDisableTablet || attributes.fxDisableMobile`)
- * and its `onDeselect` writing `{ fxDisableTablet: false, fxDisableMobile: false }`
- * in one object; conditional-visibility.js computes a combined `visibleOn`
+ * responsive-visibility.js (`attributes.sgsHideOnTablet || attributes.sgsHideOnMobile`)
+ * and its `onDeselect` writing both flags in one object; conditional-visibility.js computes a combined `visibleOn`
  * summary line from all three tiers.
  *
  * ⛔ These two were NOT baselined. A baseline entry records accepted debt; a

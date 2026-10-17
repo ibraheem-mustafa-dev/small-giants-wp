@@ -33,8 +33,6 @@ NOT_LENGTH_LABEL_RE = re.compile(r"letter spacing|word spacing|line spacing|line
 
 # (path suffix, label substring, reason)
 ALLOW: list[tuple[str, str, str]] = [
-    ("blocks/extensions/fx.js", "Spacing", "dot pitch of the grid-cell effect (12 to 200 px between drawn dots), an effect parameter, not a layout spacing token"),
-    ("components/GridDotFieldRowControls.js", "Spacing", "dot pitch of the dot-grid field effect, an effect parameter, not a layout spacing token"),
     ("blocks/image-sequence/edit.js", "Filename zero-padding", "the digit count of a frame filename (frame-001), not a CSS length"),
 ]
 

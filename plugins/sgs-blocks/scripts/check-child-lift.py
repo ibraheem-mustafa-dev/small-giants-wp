@@ -42,8 +42,8 @@ For every child-lift rule found anywhere in the scanned corpus:
 Plus an anti-vacuity floor: finding FEWER than `_FLOOR` child-lift rules means the
 scan has gone blind (files moved, the shape changed, a glob broke) and the gate
 FAILS CLOSED rather than reporting a cheerful zero. A gate that cannot see its
-input has verified nothing — the doctrine is copied verbatim from
-`check-fx-list-drift.py`, and this repo has shipped a guard with a stray backspace
+input has verified nothing — the doctrine is shared with
+`check-fx-registration.py`, and this repo has shipped a guard with a stray backspace
 in its regex that matched nothing and passed green for hours.
 
 GATE SHAPE (matches check-container-child-lift.py)

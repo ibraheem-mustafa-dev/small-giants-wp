@@ -8,15 +8,15 @@
  * must be resolved by the real control in edit.js.
  */
 
-$fx      = isset( $attributes['fx'] ) ? $attributes['fx'] : '';
-$dot     = isset( $attributes['fxGridDotColour'] ) ? $attributes['fxGridDotColour'] : '';
-$scale   = isset( $attributes['sgsHoverScale'] ) ? $attributes['sgsHoverScale'] : '';
+$css     = isset( $attributes['sgsCustomCss'] ) ? $attributes['sgsCustomCss'] : '';
+$hide    = isset( $attributes['sgsHideOnMobile'] ) ? $attributes['sgsHideOnMobile'] : '';
+$sizing  = isset( $attributes['sgsChildSizing'] ) ? $attributes['sgsChildSizing'] : '';
 $heading = isset( $attributes['headingText'] ) ? $attributes['headingText'] : '';
 
 printf(
-	'<div data-sgs-fx="%s" data-sgs-fx-grid-colour="%s" data-sgs-hover-scale="%s"><h2>%s</h2></div>',
-	esc_attr( $fx ),
-	esc_attr( $dot ),
-	esc_attr( $scale ),
+	'<div data-css="%s" data-hide="%s" data-sizing="%s"><h2>%s</h2></div>',
+	esc_attr( $css ),
+	esc_attr( $hide ),
+	esc_attr( $sizing ),
 	esc_html( $heading )
 );

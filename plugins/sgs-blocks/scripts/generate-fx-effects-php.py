@@ -214,26 +214,17 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
     # Editor-side mirror (D416).
     #
     # The inspector needs two per-effect facts to build its controls:
-    #   · pins     — chooses the fxEnd control's WORDING ("how long it stays
+    #   · pins     — chooses the end control's WORDING ("how long it stays
     #                stuck" vs "where it finishes")
     #   · triggers — the per-effect enum (Spec 38 §11.2) deciding which "When it
     #                starts" options a client is offered, so no dead option ever
     #                renders
     #   · owns_scroll_transform — drives the §4.3 entrance-exclusion Notice and
-    #                the scrub-smoothing control's visibility. ADDED 2026-07-31:
-    #                fx.js carried this as a hand-typed array (SCROLL_OWNING_FX)
-    #                whose own comment conceded the DB was authoritative, which
-    #                meant the editor could tell a client entrance animation was
-    #                still on while the render layer had already suppressed it,
-    #                with no gate anywhere to catch the disagreement. Mirroring
-    #                it here makes the two sides read the same row. The PHP map
-    #                above has always carried it; this only closes the JS half.
+    #                the scrub-smoothing control's visibility. The PHP map
+    #                above carries it too; the JSON mirror makes the editor and
+    #                the render layer read the same row.
     #
-    # Emitted as JSON rather than duplicated as hand-maintained arrays in fx.js.
-    # That file used to carry two such lists (SHIPPED_EFFECTS, SCROLL_OWNING_FX)
-    # that no gate cross-checked; SCROLL_OWNING_FX is now derived from this file
-    # and gone, leaving SHIPPED_EFFECTS — which is deliberately hand-kept,
-    # because it records which JS MODULES exist and no DB column knows that.
+    # Emitted as JSON rather than duplicated as hand-maintained arrays in the editor.
     # webpack bundles .json imports natively, so this needs no codegen step —
     # same route generated-fx-qualifying-blocks.json already uses.
     #
@@ -241,15 +232,7 @@ def _render(rows: list[tuple], levels: dict[str, list[str]]) -> tuple[str, str]:
     # load-bearing for build-deploy's dirty gate.
     # ------------------------------------------------------------------
     #   · in_picker — whether this effect is offered from the generic "Scroll &
-    #                effects" SelectControl at all. ADDED 2026-08-02 as the DB
-    #                half of the three-list drift gate: `fx.js`'s
-    #                SHIPPED_EFFECTS array is the editor's on-switch, and an
-    #                effect built correctly everywhere else stays dead code
-    #                until its name appears there (`cursor-field` shipped that
-    #                way on first build, unreachable from the editor, and no
-    #                gate caught it). `check-fx-list-drift.py` invariant I1
-    #                compares SHIPPED_EFFECTS against this flag in BOTH
-    #                directions. Mirrored here rather than read from the DB so
+    #                effects" SelectControl at all. Mirrored here rather than read from the DB so
     #                the gate needs no database — a clean checkout must still
     #                be able to run `npm run build`.
     #   · owned_properties, panels — Spec 38A section 6.4: the channels and paint slots an

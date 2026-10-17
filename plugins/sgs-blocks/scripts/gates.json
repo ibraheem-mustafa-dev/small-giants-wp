@@ -54,15 +54,6 @@
     "order": 5
   },
   {
-    "id": "check-fx-list-drift",
-    "cmd": "python scripts/check-fx-list-drift.py --check",
-    "tier": "fast",
-    "added_D": "D465",
-    "added_commit": "4f07a72a",
-    "budget_ms": 195,
-    "order": 6
-  },
-  {
     "id": "check-dead-controls",
     "cmd": "node scripts/check-dead-controls.js --check",
     "tier": "fast",

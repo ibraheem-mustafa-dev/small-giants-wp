@@ -31,13 +31,6 @@
  *               fallback). section-ink-off is the same with section ink off (the negative control).
  *   direction-fade  M-03 on the same page: fantasy's header, a black fill at 0.5 fading top to bottom
  *               that fades out while scrolling down past 100px and returns on any upward scroll of 8px.
- *   entrance    U-16 (design .claude/reports/2026-09-26-u16-entrance-design.md): the drawer's exit-cells items (the
- *               bar keeps its own collapse point, so 1440 shows its dropdown) plus the reference site's header
- *               entrance (fade-in, extra slow) on a sticky header with shrink and hide-on-scroll on at every tier,
- *               over page /qa-entrance/ (rewritten on each apply, kept): an info-box with its own hover lift and an
- *               extra-slow fade-up entrance, a tall spacer, then a footer whose rows fade up 50px (dogstudio) at
- *               0, 100 and 200ms, the third row also carrying the footer stagger toggle (its own entrance gives
- *               way to the scroll reveal) with an info-box inside that keeps its entrance.
  *   restore     put the pre-fixture bodies back.
  */
 
@@ -78,7 +71,7 @@ if ( 'restore' === $case ) {
 	return;
 }
 
-if ( ! in_array( $case, array( 'exit-cells', 'two-bar', 'header-row', 'detach-chip', 'section-ink', 'section-ink-off', 'direction-fade', 'entrance' ), true ) ) {
+if ( ! in_array( $case, array( 'exit-cells', 'two-bar', 'header-row', 'detach-chip', 'section-ink', 'section-ink-off', 'direction-fade' ), true ) ) {
 	echo "unknown case {$case}\n";
 	return;
 }
@@ -262,63 +255,6 @@ if ( 'section-ink' === $case || 'section-ink-off' === $case ) {
 					'post_status'  => 'publish',
 					'post_title'   => 'QA section ink',
 					'post_name'    => 'qa-section-ink',
-					'post_content' => $content,
-				)
-			)
-		);
-	}
-}
-
-if ( 'entrance' === $case ) {
-	// The bar keeps its own collapse point, so at 1440 the mega trigger is in the bar for the mid-entrance check.
-	$bar_set    = array();
-	$all_tiers  = static function ( $value ) {
-		return array( 'desktop' => $value, 'tablet' => $value, 'mobile' => $value );
-	};
-	$header_set = array(
-		'headerSticky'         => $all_tiers( 'on' ),
-		'headerShrink'         => $all_tiers( 'on' ),
-		'headerHideOnScroll'   => $all_tiers( 'on' ),
-		'sgsAnimation'         => 'fade-in',
-		'sgsAnimationDuration' => 'extra-slow',
-	);
-
-	$entrance_page = get_page_by_path( 'qa-entrance' );
-	{
-		$card = static function ( string $heading, array $extra ): string {
-			// The info-box's own default template children (edit.js::INFO_BOX_TEMPLATE): a heading and a text.
-			$attrs = array_merge( array( 'effectHover' => 'lift' ), $extra );
-			return '<!-- wp:sgs/info-box ' . serialize_block_attributes( $attrs ) . ' -->'
-				. '<!-- wp:sgs/heading ' . serialize_block_attributes( array( 'level' => 'h2', 'headingRole' => 'heading', 'content' => $heading ) ) . ' /-->'
-				. '<!-- wp:sgs/text ' . serialize_block_attributes( array( 'text' => 'Entrance and hover on one card.' ) ) . ' /-->'
-				. '<!-- /wp:sgs/info-box -->';
-		};
-		$row = static function ( array $attrs, string $inner ): string {
-			return '<!-- wp:sgs/site-footer-row ' . serialize_block_attributes( $attrs ) . ' -->' . $inner . '<!-- /wp:sgs/site-footer-row -->';
-		};
-		$fade = static function ( string $delay ): array {
-			return array(
-				'sgsAnimation'         => 'fade-up',
-				'sgsAnimationDistance' => '50',
-				'sgsAnimationDelay'    => $delay,
-				'sgsAnimationDuration' => 'slow',
-			);
-		};
-		$content  = $card( 'Card with a lift', array( 'sgsAnimation' => 'fade-up', 'sgsAnimationDuration' => 'extra-slow' ) );
-		$content .= '<!-- wp:sgs/container {"minHeight":{"desktop":"1600px"}} --><!-- wp:paragraph --><p>Spacer</p><!-- /wp:paragraph --><!-- /wp:sgs/container -->';
-		$content .= '<!-- wp:sgs/site-footer -->'
-			. $row( $fade( '0' ), '<!-- wp:paragraph --><p>Footer row one</p><!-- /wp:paragraph -->' )
-			. $row( $fade( '100' ), '<!-- wp:paragraph --><p>Footer row two</p><!-- /wp:paragraph -->' )
-			. $row( array_merge( $fade( '200' ), array( 'fxFooterStagger' => true ) ), $card( 'Card inside a staggered row', array( 'sgsAnimation' => 'fade-up', 'sgsAnimationDistance' => '50' ) ) )
-			. '<!-- /wp:sgs/site-footer -->';
-		wp_insert_post(
-			wp_slash(
-				array(
-					'ID'           => $entrance_page ? $entrance_page->ID : 0,
-					'post_type'    => 'page',
-					'post_status'  => 'publish',
-					'post_title'   => 'QA entrance',
-					'post_name'    => 'qa-entrance',
 					'post_content' => $content,
 				)
 			)

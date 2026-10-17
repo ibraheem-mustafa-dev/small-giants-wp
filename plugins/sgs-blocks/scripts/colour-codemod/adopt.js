@@ -802,8 +802,8 @@ function runSelfTest() {
 	};
 
 	// --- textRow adoption: plan + apply + round-trip + idempotence ---
-	const fxText = makeFixture( tmpRoot, 'fixture-text', FIXTURE_HEADER + FIXTURE_TEXT_ROW + FIXTURE_FOOTER );
-	const editFileText = path.join( fxText, 'edit.js' );
+	const fixtText = makeFixture( tmpRoot, 'fixture-text', FIXTURE_HEADER + FIXTURE_TEXT_ROW + FIXTURE_FOOTER );
+	const editFileText = path.join( fixtText, 'edit.js' );
 
 	let planText;
 	check( 'textRow row plans as adoptable (gradientCapable:true -> textRow)', () => {
@@ -882,8 +882,8 @@ function runSelfTest() {
 	// of THIS test asserted the broken emit as correct, so the suite stayed green
 	// while producing it. If a border row helper is ever restored, re-point the
 	// branches in decideHelper() and this fixture in the SAME commit.
-	const fxBorder = makeFixture( tmpRoot, 'fixture-border', FIXTURE_HEADER + FIXTURE_BORDER_ROW + FIXTURE_FOOTER );
-	const editFileBorder = path.join( fxBorder, 'edit.js' );
+	const fixtBorder = makeFixture( tmpRoot, 'fixture-border', FIXTURE_HEADER + FIXTURE_BORDER_ROW + FIXTURE_FOOTER );
+	const editFileBorder = path.join( fixtBorder, 'edit.js' );
 
 	check( 'border row is refused by name, file byte-identical, no borderRow emitted', () => {
 		const before = fs.readFileSync( editFileBorder, 'utf8' );
@@ -915,8 +915,8 @@ function runSelfTest() {
 	} );
 
 	// --- Refusal control: computed states array ---
-	const fxComputed = makeFixture( tmpRoot, 'fixture-computed', FIXTURE_HEADER + FIXTURE_COMPUTED_STATES + FIXTURE_FOOTER );
-	const editFileComputed = path.join( fxComputed, 'edit.js' );
+	const fixtComputed = makeFixture( tmpRoot, 'fixture-computed', FIXTURE_HEADER + FIXTURE_COMPUTED_STATES + FIXTURE_FOOTER );
+	const editFileComputed = path.join( fixtComputed, 'edit.js' );
 
 	check( 'refusal control: computed states array is refused by name, file byte-identical', () => {
 		const before = fs.readFileSync( editFileComputed, 'utf8' );
@@ -947,9 +947,9 @@ function runSelfTest() {
 				},
 			] }
 		/>`;
-	const fxExtra = makeFixture( tmpRoot, 'fixture-extra-prop', FIXTURE_HEADER + FIXTURE_EXTRA_PROP + FIXTURE_FOOTER );
+	const fixtExtra = makeFixture( tmpRoot, 'fixture-extra-prop', FIXTURE_HEADER + FIXTURE_EXTRA_PROP + FIXTURE_FOOTER );
 	check( 'refusal control: an extra row property is refused by name', () => {
-		const plan = planFile( dbPlain, path.join( fxExtra, 'edit.js' ) );
+		const plan = planFile( dbPlain, path.join( fixtExtra, 'edit.js' ) );
 		assert( plan.adopted.length === 0, 'expected 0 adoptable rows' );
 		assert( plan.refusals[ 0 ].reason === 'REFUSED:extra-row-props:disabled', 'wrong reason: ' + plan.refusals[ 0 ].reason );
 	} );
@@ -962,9 +962,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { titleColour } = attributes;
 	return (
 ` + FIXTURE_TEXT_ROW + FIXTURE_FOOTER;
-	const fxNoImport = makeFixture( tmpRoot, 'fixture-no-import', FIXTURE_NO_IMPORT );
+	const fixtNoImport = makeFixture( tmpRoot, 'fixture-no-import', FIXTURE_NO_IMPORT );
 	check( 'refusal control: no ../../components import refuses the whole file', () => {
-		const plan = planFile( dbPlain, path.join( fxNoImport, 'edit.js' ) );
+		const plan = planFile( dbPlain, path.join( fixtNoImport, 'edit.js' ) );
 		assert( plan.adopted.length === 0, 'expected 0 adoptable rows when there is no components import' );
 		assert( plan.refusals.length === 1 && plan.refusals[ 0 ].reason === 'REFUSED:no-components-import', 'wrong refusal: ' + JSON.stringify( plan.refusals ) );
 	} );
@@ -994,16 +994,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { fillColour } = attributes;
 	return (
 `;
-	const fxFill = makeFixture( tmpRoot, 'fixture-fill', fillHeader + FIXTURE_FILL_ROW + FIXTURE_FOOTER );
+	const fixtFill = makeFixture( tmpRoot, 'fixture-fill', fillHeader + FIXTURE_FILL_ROW + FIXTURE_FOOTER );
 	check( 'mechanism resolution: css_property=background-color -> fillRow', () => {
-		const plan = planFile( dbPlain, path.join( fxFill, 'edit.js' ) );
+		const plan = planFile( dbPlain, path.join( fixtFill, 'edit.js' ) );
 		assert( plan.adopted.length === 1, 'expected 1 adoptable row, refusals: ' + JSON.stringify( plan.refusals ) );
 		assert( plan.adopted[ 0 ].helper === 'fillRow', 'expected fillRow, got ' + plan.adopted[ 0 ].helper );
 	} );
 
 	check( 'mechanism resolution: unresolved css_property is REFUSED, never guessed', () => {
 		const dbUnresolved = { 'sgs/fixture-fill': { fillColour: null } };
-		const plan = planFile( dbUnresolved, path.join( fxFill, 'edit.js' ) );
+		const plan = planFile( dbUnresolved, path.join( fixtFill, 'edit.js' ) );
 		assert( plan.adopted.length === 0, 'expected 0 adoptable rows when the mechanism is unresolved' );
 		assert( plan.refusals[ 0 ].reason === 'REFUSED:mechanism-unresolved', 'wrong reason: ' + plan.refusals[ 0 ].reason );
 	} );

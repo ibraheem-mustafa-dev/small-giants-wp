@@ -12,7 +12,7 @@ TARGET SHAPE (settled by Spec 38A, no client-visible change)
                            el.getAttribute( 'data-sgs-fx' ) === 'x' ->  same token test
     PHP comparison         'x' !== $p->get_attribute( 'data-sgs-fx' ) ->  ! sgs_fx_has_effect( $p->get_attribute( 'data-sgs-fx' ), 'x' )
     PHP markup pre-filter  false === strpos( $html, 'data-sgs-fx="x"' ) ->  ! sgs_fx_markup_has_effect( $html, 'x' )
-    (helpers: includes/fx-token-match.php, loaded by includes/fx-attributes.php)
+    (helpers: includes/fx-token-match.php, loaded by includes/class-sgs-blocks.php)
 
 NOT READERS (never flagged): comments; emitters such as `' data-sgs-fx="draggable"'` or
 `set_attribute( 'data-sgs-fx', 'flip' )`; presence checks (`null !== get_attribute( 'data-sgs-fx' )`,

@@ -134,15 +134,12 @@ _load_fx_attr_css_property_map = _seeder_mod._load_fx_attr_css_property_map
 def _legitimate_sources(conn: sqlite3.Connection) -> dict[tuple[str, str], dict[str, object]]:
     """Return {(block_slug, attr): fields} for EVERY (slug, attr) declared in any of
     the FOUR reseed-durable channels — the derived layer (base), the fx:* namespace
-    (DB-driven), and the override layer (wins on conflict) — exactly mirroring
+    (DB-driven), the editor-extension roster, and the override layer (wins on conflict) — exactly mirroring
     `_apply_attr_classification_overrides`'s own merge order in sgs-update-v2.py.
     Used by Check B: a DB row is "rogue" only if it is NOT explainable by any of the
     four channels.
 
-    Takes the live connection (added 2026-08-01, D432) because the fx:* channel is
-    DB-driven — it can only be computed by querying which block_attributes rows
-    already declare an fx:* attr_name, unlike the other two channels which are pure
-    file reads.
+    Takes the live connection because the fx:* and extension channels are DB-driven.
     """
     combined: dict[tuple[str, str], dict[str, object]] = {
         k: dict(v) for k, v in _load_css_property_classifications().items()

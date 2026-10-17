@@ -183,7 +183,7 @@ def test_a_value_list_is_not_a_declaration():
 # ---- 7-8. population: extension attributes and show/hide toggles
 
 def test_extension_attributes_enter_the_paint_population(report):
-    rec = record(report, "ext/hover-opacity.js", "sgsHoverOpacity")
+    rec = record(report, "ext/hover-opacity.js", "sgsFixtureHoverOpacity")
     assert rec["category"] == "css"
     assert report["summary"]["attributes"] == len(report["records"])
 
@@ -197,7 +197,7 @@ def test_show_hide_toggle_paints_only_through_a_class_rule_or_custom_property():
     assert pc.classify(row, {"utility_class_rule": True})[0] == "css"
     effect = {"attr_name": "shadowLiftOnHover", "role": "boolean-visibility", "css_property": None}
     assert pc.classify(effect, {"decl_channel": True}) == ("css", "effect-toggle-decl")
-    runtime = {"attr_name": "bgLottieLoop", "role": "boolean-visibility", "css_property": None}
+    runtime = {"attr_name": "heroLottieLoop", "role": "boolean-visibility", "css_property": None}
     assert pc.classify(runtime, {"fx_data_consumed": True})[0] == "js"
     mode = {"attr_name": "mediaSizing", "role": "enum-mode", "css_property": None}
     assert pc.classify(mode, {"decl_channel": True})[0] == "css"

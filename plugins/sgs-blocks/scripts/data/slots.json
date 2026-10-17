@@ -250,9 +250,9 @@
     [
       "animation",
       "element",
-      "[\"motion\", \"sgsAnimation\", \"stagger\", \"staggerDelay\"]",
+      "[\"motion\", \"stagger\"]",
       null,
-      "Animation motion concept (incl. sgsAnimation)",
+      "Animation motion concept",
       null,
       null
     ],

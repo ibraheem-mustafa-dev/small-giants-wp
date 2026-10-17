@@ -548,7 +548,7 @@ const CASES = [
 		input:
 			"import {\n" +
 			"\t// The `__experimental` prefix is REQUIRED, and aliasing it is the\n" +
-			"\t// pattern in five callers (nav-menu/edit.js:38-39, fx.js:39-40,\n" +
+			"\t// pattern in five callers (nav-menu/edit.js:38-39, gallery/edit.js:39-40,\n" +
 			"\t// before-after/BooleanResponsiveControl.js:44-45). The unprefixed\n" +
 			"\t// names are NOT exported, which React reports as error #130.\n" +
 			"\t__experimentalToggleGroupControl as ToggleGroupControl,\n" +

@@ -113,40 +113,11 @@ NATIVE = {
     'align', 'className', 'style', 'lock', 'metadata', 'anchor', 'layout',
 }
 
-# SGS universal extensions injected server-side (device-visibility, animation,
+# SGS universal extensions injected server-side (device-visibility,
 # custom CSS) — real, just not per-block declarations. Genuinely universal:
 # applied identically to every block, so a blanket prefix match is sound.
-EXT_PREFIXES = ('sgsHideOn', 'sgsAnim')
+EXT_PREFIXES = ('sgsHideOn',)
 EXT_EXACT = {'sgsCustomCss'}
-
-# `fx` (Spec 38 FR-38-4/§11.2, Motion Wave D) is the Tier G motion-preset
-# extension — but unlike EXT_PREFIXES above it is NOT universal: `fx.js`
-# `addFxAttributes()` registers the `fx*` attribute family via a
-# `blocks.registerBlockType` filter gated on `shouldHaveFx()`, which is
-# `fxOptionsForBlock(name).length > 1` — true only for blocks listed in
-# `generated-fx-qualifying-blocks.json`. A block absent from that roster
-# never gets the filter, so `fx*` on it is exactly the D338 trap: WordPress
-# discards it silently. A bare prefix match here would blind the gate to the
-# one failure mode it exists to catch — so the fx branch is block-aware
-# (`load_fx_qualifying_blocks()`, reading that same generated artefact) as
-# well as name-aware (`FX_ATTR_NAMES`).
-#
-# FX_ATTR_NAMES is hardcoded, not generated: `generated-fx-qualifying-blocks
-# .json` enumerates which BLOCKS qualify and for which EFFECTS, not the
-# attribute names themselves. Those are defined once in `fx.js`'s own
-# `addFxAttributes()` attribute-registration block and mirrored in
-# `includes/fx-attributes.php`'s `FX_ATTR_MAP` — there is no generated/DB
-# artefact naming them, so R-31-1 (DB-first, but only where a source exists)
-# permits hardcoding here with the source cited.
-FX_QUALIFYING_BLOCKS_PATH = (
-    REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks' / 'extensions'
-    / 'generated-fx-qualifying-blocks.json'
-)
-FX_ATTR_NAMES = {
-    'fx', 'fxTrigger', 'fxStart', 'fxEnd', 'fxHold', 'fxScrub', 'fxStagger',
-    'fxDuration', 'fxEase', 'fxSplit', 'fxMask', 'fxPath', 'fxPathAsset',
-    'fxPathRotate', 'fxPreset',
-}
 
 BLOCK_RE = re.compile(r'<!--\s*wp:(sgs/[a-z0-9-]+)\s*(\{.*?\})?\s*/?-->', re.S)
 
@@ -348,18 +319,7 @@ def find_dead_native_preset_attrs(attrs: dict, supports: dict, declared: dict) -
     return dead
 
 
-def load_fx_qualifying_blocks() -> dict:
-    try:
-        return json.loads(FX_QUALIFYING_BLOCKS_PATH.read_text(encoding='utf-8'))
-    except (OSError, json.JSONDecodeError):
-        # Missing/unreadable artefact fails CLOSED: no block is treated as
-        # fx-qualifying, so a real fx attr would be flagged as a false
-        # positive (loud, fixable) rather than a gap swallowing a true
-        # discard (silent, the exact failure this gate exists to catch).
-        return {}
-
-
-def is_legit(key: str, declared: dict, block_name: str, fx_qualifying: dict) -> bool:
+def is_legit(key: str, declared: dict, block_name: str, supports: dict) -> bool:
     # NATIVE_PRESET_ATTR_MAP keys (backgroundColor/textColor/gradient/fontSize/
     # fontFamily/borderColor) are recognised here so the generic undeclared-attr
     # loop never double-flags them — find_dead_native_preset_attrs() is the one
@@ -367,8 +327,11 @@ def is_legit(key: str, declared: dict, block_name: str, fx_qualifying: dict) -> 
     # own `native-preset-undeclared` kind.
     if key in declared or key in NATIVE or key in EXT_EXACT or key in NATIVE_PRESET_ATTR_MAP:
         return True
-    if key in FX_ATTR_NAMES:
-        return block_name in fx_qualifying
+    if key == 'sgsMotion':
+        # The motion model attribute is added client- and server-side to a block whose
+        # block.json declares `supports.sgs.motion` (extensions/motion/register.js).
+        sgs_supports = supports.get('sgs')
+        return isinstance(sgs_supports, dict) and bool(sgs_supports.get('motion'))
     return key.startswith(EXT_PREFIXES)
 
 
@@ -454,7 +417,7 @@ def find_border_without_style(attrs: dict, block_specs: dict):
 
 
 def scan_source(src: str, rel: str, schemas: dict, specs: dict,
-                supports_map: dict, fx_qualifying: dict) -> list:
+                supports_map: dict) -> list:
     """Findings for one file's text. Split out of scan() so --self-test drives
     the real detection path against fixture markup and synthetic schemas."""
     findings = []
@@ -491,7 +454,7 @@ def scan_source(src: str, rel: str, schemas: dict, specs: dict,
                 if reason:
                     findings.append((rel, line, name, key, 'type-enum-mismatch', reason))
                 continue
-            if is_legit(key, declared, name, fx_qualifying):
+            if is_legit(key, declared, name, block_supports):
                 continue
             findings.append((rel, line, name, key, 'undeclared'))
     return findings
@@ -501,14 +464,13 @@ def scan() -> list:
     schemas = load_schemas()
     specs = load_attr_specs()
     supports_map = load_block_supports()
-    fx_qualifying = load_fx_qualifying_blocks()
     findings = []
     for path in sorted(THEME_DIR.rglob('*')):
         if path.suffix not in ('.php', '.html') or not path.is_file():
             continue
         src = path.read_text(encoding='utf-8', errors='replace')
         rel = path.relative_to(REPO).as_posix()
-        findings.extend(scan_source(src, rel, schemas, specs, supports_map, fx_qualifying))
+        findings.extend(scan_source(src, rel, schemas, specs, supports_map))
     return findings
 
 
@@ -730,7 +692,7 @@ def self_test() -> int:
 
     def run_fixture(attrs_json: str) -> list:
         markup = f'<!-- wp:sgs/st-heading {attrs_json} /-->'
-        return scan_source(markup, 'fixture.php', fx_schemas, fx_specs, {}, {})
+        return scan_source(markup, 'fixture.php', fx_schemas, fx_specs, {})
 
     for bad in ('{"level":3}', '{"level":"h9"}', '{"count":"abc"}', '{"count":true}'):
         got = [f for f in run_fixture(bad) if f[4] == 'type-enum-mismatch']
@@ -742,6 +704,14 @@ def self_test() -> int:
         got = run_fixture(good)
         if got:
             failures.append(f'TYPE-ENUM mustNotFlag control failed: {good} was flagged: {got}.')
+
+    # sgsMotion is legit only on a block that declares supports.sgs.motion.
+    mo_markup = '<!-- wp:sgs/st-motion {"sgsMotion":{}} /--><!-- wp:sgs/st-plain {"sgsMotion":{}} /-->'
+    mo_schemas = {'sgs/st-motion': {}, 'sgs/st-plain': {}}
+    mo_supports = {'sgs/st-motion': {'sgs': {'motion': True}}, 'sgs/st-plain': {'sgs': {}}}
+    mo_got = [(f[2], f[4]) for f in scan_source(mo_markup, 'fixture.php', mo_schemas, {}, mo_supports)]
+    if mo_got != [('sgs/st-plain', 'undeclared')]:
+        failures.append(f'MOTION control failed: expected only sgs/st-plain flagged, got {mo_got}.')
 
     bd_specs = {'sgs/st-box': {
         'borderStyle': {'type': 'string', 'default': ''},
@@ -756,7 +726,7 @@ def self_test() -> int:
 
     def run_border(block: str, attrs_json: str) -> list:
         markup = f'<!-- wp:{block} {attrs_json} /-->'
-        return [f for f in scan_source(markup, 'fixture.php', bd_schemas, bd_specs, {}, {})
+        return [f for f in scan_source(markup, 'fixture.php', bd_schemas, bd_specs, {})
                 if f[4] == 'border-without-style']
 
     for bad in ('{"borderWidth":{"top":"1px"},"borderColour":"primary"}', '{"borderColour":"primary"}',
