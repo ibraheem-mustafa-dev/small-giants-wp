@@ -111,7 +111,9 @@
 						"text"
 					],
 					"prefix": "cardTitle",
-					"_note": "Card titles share the headings colour (headingColour); only their typography is separate."
+					"_note": "Card titles share the headings colour (headingColour); only their typography is separate.",
+					"absentIn": [ "logged-out" ],
+					"absentWhy": "The card titles, status chip and order progress track print only on the logged-in dashboard (includes/account/templates/dashboard.php); a visitor sees the login form and the tracking card."
 				},
 				"chip": {
 					"text": true,
@@ -126,7 +128,9 @@
 						"css:color": "chipTextColour",
 						"css:background-color": "chipBackgroundColour",
 						"css:background-image": "chipBackgroundColourGradient"
-					}
+					},
+					"absentIn": [ "logged-out" ],
+					"absentWhy": "The card titles, status chip and order progress track print only on the logged-in dashboard (includes/account/templates/dashboard.php); a visitor sees the login form and the tracking card."
 				},
 				"track": {
 					"selector": ".sgs-account__progress-step",
@@ -137,7 +141,9 @@
 					],
 					"attrMap": {
 						"css:border-color": "trackColour"
-					}
+					},
+					"absentIn": [ "logged-out" ],
+					"absentWhy": "The card titles, status chip and order progress track print only on the logged-in dashboard (includes/account/templates/dashboard.php); a visitor sees the login form and the tracking card."
 				},
 				"trackDone": {
 					"motion": false,

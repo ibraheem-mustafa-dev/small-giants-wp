@@ -202,21 +202,27 @@
 					"label": "Avatar image",
 					"order": 6,
 					"clusters": [],
-					"_note": "37-media-no-handroll remediation (2026-09-03) — REVERSES the 2026-08-17 note this used to carry. The circular cover-crop is still the component-owned DEFAULT (style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet now paints the identical default), but it is no longer immovable — a client can override it per instance via the `avatar` mediaElements entry above (`avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile`, auto-registered server-side from supports.sgs.mediaElements — see includes/media-element-attrs-register.php). Border-radius:50% stays a genuine fixed constant (a non-circular avatar is not a supported shape here). Rendered inside a plain `<div>` (render.php) — the marker classes are added explicitly via SGS_Media_Element::element_classes(), not via the generic render_block guessing injector, so the plain-`<div>` wrapper is no longer a reachability problem."
+					"_note": "37-media-no-handroll remediation (2026-09-03) — REVERSES the 2026-08-17 note this used to carry. The circular cover-crop is still the component-owned DEFAULT (style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet now paints the identical default), but it is no longer immovable — a client can override it per instance via the `avatar` mediaElements entry above (`avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile`, auto-registered server-side from supports.sgs.mediaElements — see includes/media-element-attrs-register.php). Border-radius:50% stays a genuine fixed constant (a non-circular avatar is not a supported shape here). Rendered inside a plain `<div>` (render.php) — the marker classes are added explicitly via SGS_Media_Element::element_classes(), not via the generic render_block guessing injector, so the plain-`<div>` wrapper is no longer a reachability problem.",
+					"absentIn": [ "corporate-logo", "minimal-quote" ],
+					"absentWhy": "The corporate-logo and minimal-quote variants print no avatar."
 				},
 				"org-logo-image": {
 					"selector": ".sgs-testimonial__logo",
 					"label": "Organisation logo",
 					"order": 7,
 					"clusters": [],
-					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:101-107 fixes object-fit:contain — a logo must never be cropped, so this is a component-owned constant, not a client-overridable style. Same 'plain `<div>` wrapper, never reached by the generic mechanism anyway' reasoning as avatar-image above."
+					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:101-107 fixes object-fit:contain — a logo must never be cropped, so this is a component-owned constant, not a client-overridable style. Same 'plain `<div>` wrapper, never reached by the generic mechanism anyway' reasoning as avatar-image above.",
+					"absentIn": [ "avatar-spotlight", "minimal-quote" ],
+					"absentWhy": "The avatar-spotlight and minimal-quote variants print no organisation logo."
 				},
 				"work-media": {
 					"selector": ".sgs-testimonial__work",
 					"label": "Work / case-study media",
 					"order": 8,
 					"clusters": [],
-					"_note": "37-media-no-handroll remediation (2026-09-03) — migrated off the old block-level imageControls/imageControlsExplicit + sgs_media_position_css() mechanism (design decision, 2026-08-17) onto the independently-scoped `work` mediaElements entry above (object-fit + focal-point), matching sgs/before-after's Wave 5b precedent 1:1. Still the one image slot with a genuine per-instance crop need — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots. SGS_Media_Element::element_classes()/style() target the same known `.sgs-testimonial__work img, .sgs-testimonial__work video` selector explicitly in render.php; the generic render_block guessing injector is still never relied on."
+					"_note": "37-media-no-handroll remediation (2026-09-03) — migrated off the old block-level imageControls/imageControlsExplicit + sgs_media_position_css() mechanism (design decision, 2026-08-17) onto the independently-scoped `work` mediaElements entry above (object-fit + focal-point), matching sgs/before-after's Wave 5b precedent 1:1. Still the one image slot with a genuine per-instance crop need — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots. SGS_Media_Element::element_classes()/style() target the same known `.sgs-testimonial__work img, .sgs-testimonial__work video` selector explicitly in render.php; the generic render_block guessing injector is still never relied on.",
+					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "pull-quote-editorial", "rating-led", "rating-scale" ],
+					"absentWhy": "The work media prints only in the case-study-media variant."
 				},
 				"rating": {
 					"label": "Rating",
@@ -237,7 +243,9 @@
 							}
 						}
 					},
-					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful.",
+					"absentIn": [ "case-study-media", "minimal-quote" ],
+					"absentWhy": "The case-study-media and minimal-quote variants print no rating."
 				},
 				"summary": {
 					"text": true,
@@ -260,7 +268,9 @@
 							}
 						}
 					},
-					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful.",
+					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "rating-led", "rating-scale" ],
+					"absentWhy": "The summary phrase prints only in the pull-quote-editorial and case-study-media variants."
 				}
 			},
 			"variantAttr": "variant",

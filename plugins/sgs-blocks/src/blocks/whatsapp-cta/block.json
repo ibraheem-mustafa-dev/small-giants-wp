@@ -100,7 +100,9 @@
 					"attrMap": {
 						"css:color": "cardTitleColour"
 					},
-					"_note": "Card variant only (contract §B3: rendered inside the same single <a> root as `button`, never a wrapper of its own). `prefix: cardTitle` resolves cardTitleFontSize/Unit/FontWeight/FontStyle/LineHeight/Unit via the standard {prefix}{Suffix} convention (no explicit attrMap entry needed, mirrors sgs/pricing-table's `title` element). cardTitle itself (the RichText content) carries `role: content` on the attribute, not an element mapping."
+					"_note": "Card variant only (contract §B3: rendered inside the same single <a> root as `button`, never a wrapper of its own). `prefix: cardTitle` resolves cardTitleFontSize/Unit/FontWeight/FontStyle/LineHeight/Unit via the standard {prefix}{Suffix} convention (no explicit attrMap entry needed, mirrors sgs/pricing-table's `title` element). cardTitle itself (the RichText content) carries `role: content` on the attribute, not an element mapping.",
+					"absentIn": [ "floating", "inline" ],
+					"absentWhy": "The card title and subline print only in the card variant."
 				},
 				"card-subline": {
 					"label": "Card sub-line",
@@ -112,7 +114,9 @@
 					"attrMap": {
 						"css:color": "cardSublineColour"
 					},
-					"_note": "Card variant only, same rationale as `card-title` above."
+					"_note": "Card variant only, same rationale as `card-title` above.",
+					"absentIn": [ "floating", "inline" ],
+					"absentWhy": "The card title and subline print only in the card variant."
 				}
 			}
 		},

@@ -32,21 +32,9 @@ final class PostGridImagePriorityTest extends TestCase {
 			define( 'ABSPATH', $dir . '/' );
 		}
 		require_once $dir . '/scripts/qa/lib/wp-stubs.php';
-		if ( ! function_exists( 'has_post_thumbnail' ) ) {
-			function has_post_thumbnail( $post = null ) {
-				return true;
-			}
-		}
-		if ( ! function_exists( 'get_the_post_thumbnail' ) ) {
-			/** The featured image `<img>`, carrying exactly the attributes the card passed. */
-			function get_the_post_thumbnail( $post = null, $size = 'post-thumbnail', $attr = '' ) {
-				$out = '<img';
-				foreach ( (array) $attr as $name => $value ) {
-					$out .= ' ' . $name . '="' . $value . '"';
-				}
-				return $out . '>';
-			}
-		}
+		// Post 5 with a featured image: the shared stubs' get_the_post_thumbnail() prints the attributes the card passes.
+		$GLOBALS['sgs_qa_post']        = (object) array( 'ID' => 5, 'post_type' => 'post', 'thumbnail_id' => 9 );
+		$GLOBALS['sgs_qa_attachments'] = array( '9' => 'https://example.test/featured.jpg' );
 		require_once $dir . '/includes/class-post-grid-rest.php';
 	}
 

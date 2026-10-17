@@ -189,7 +189,9 @@
 							}
 						}
 					},
-					"_note": "The prev/next slider-arrow button (.sgs-google-reviews__arrow). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'arrow', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. arrowColourTextGradient/arrowColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true (with bg_layer_positioned=true, as .sgs-google-reviews__arrow already carries its own position:absolute in style.css) so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling."
+					"_note": "The prev/next slider-arrow button (.sgs-google-reviews__arrow). Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'arrow', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. arrowColourTextGradient/arrowColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since render.php now passes bg_layer=true (with bg_layer_positioned=true, as .sgs-google-reviews__arrow already carries its own position:absolute in style.css) so this element's background paints on a separate ::after layer instead of this selector, freeing the text for a gradient sibling.",
+					"absentIn": [ "grid", "no-header" ],
+					"absentWhy": "Arrows print only for the slider variant with more than one review."
 				},
 				"write-review": {
 					"text": true,
@@ -242,7 +244,9 @@
 						"css:border-color": "headerDividerColour",
 						"css:border-width": "headerDividerWidth"
 					},
-					"_note": "headerDividerColour / headerDividerWidth are the header row's bottom divider (the row draws one edge only, border-bottom); they register on the border-colour / border-width members because the vocabulary has no per-edge bottom member."
+					"_note": "headerDividerColour / headerDividerWidth are the header row's bottom divider (the row draws one edge only, border-bottom); they register on the border-colour / border-width members because the vocabulary has no per-edge bottom member.",
+					"absentIn": [ "no-header" ],
+					"absentWhy": "The aggregate header prints only when showAggregate is on."
 				},
 				"source-label": {
 					"text": true,
@@ -255,7 +259,9 @@
 					"prefix": "sourceLabel",
 					"attrMap": {
 						"css:color": "sourceLabelColour"
-					}
+					},
+					"absentIn": [ "no-header" ],
+					"absentWhy": "The aggregate header prints only when showAggregate is on."
 				},
 				"average": {
 					"selector": ".sgs-google-reviews__score",
@@ -269,7 +275,9 @@
 					"attrMap": {
 						"css:color": "scoreColour"
 					},
-					"_note": "css_element is 'average', not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so the draft's star run (annotated __rating) would resolve to this element through the alias group instead of to the star element. The attribute prefix stays 'score'."
+					"_note": "css_element is 'average', not 'score': the slots table lists 'score' as an alias of the 'rating' slot, so the draft's star run (annotated __rating) would resolve to this element through the alias group instead of to the star element. The attribute prefix stays 'score'.",
+					"absentIn": [ "no-header" ],
+					"absentWhy": "The aggregate header prints only when showAggregate is on."
 				},
 				"count": {
 					"label": "Review count",
@@ -281,7 +289,9 @@
 					"prefix": "count",
 					"attrMap": {
 						"css:color": "countColour"
-					}
+					},
+					"absentIn": [ "no-header" ],
+					"absentWhy": "The aggregate header prints only when showAggregate is on."
 				},
 				"aggregate-star": {
 					"selector": ".sgs-google-reviews__aggregate-stars",
@@ -295,7 +305,9 @@
 					"attrMap": {
 						"css:height": "aggregateStarSize",
 						"css:width": "aggregateStarSize"
-					}
+					},
+					"absentIn": [ "no-header" ],
+					"absentWhy": "The aggregate header prints only when showAggregate is on."
 				},
 				"review": {
 					"restingShadow": true,

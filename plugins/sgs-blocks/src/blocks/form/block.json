@@ -185,7 +185,9 @@
 							}
 						}
 					},
-					"_note": "The multi-step form's Previous button (.sgs-form__button--prev), distinct from submit-button. Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'prev', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation."
+					"_note": "The multi-step form's Previous button (.sgs-form__button--prev), distinct from submit-button. Added 2026-09-03 alongside the hover-colour + gradient migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'prev', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				},
 				"progress-bar": {
 					"label": "Progress bar",
@@ -206,7 +208,9 @@
 							}
 						}
 					},
-					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls). progressBarColourHover/progressBarColourHoverGradient (2026-09-06, hover-sibling closeout) feed the -hover/-hover-gradient custom-property siblings via the SAME 5-arg sgs_custom_property_gradient_decls() call, consumed by a new :hover/:focus-visible rule in style.css."
+					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls). progressBarColourHover/progressBarColourHoverGradient (2026-09-06, hover-sibling closeout) feed the -hover/-hover-gradient custom-property siblings via the SAME 5-arg sgs_custom_property_gradient_decls() call, consumed by a new :hover/:focus-visible rule in style.css.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				},
 				"field-input": {
 					"motion": false,
@@ -530,7 +534,9 @@
 						"css:column-count": "stepLabelTextColumns",
 						"css:writing-mode": "stepLabelWritingMode"
 					},
-					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue."
+					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				},
 				"file-button": {
 					"motion": false,
@@ -640,7 +646,9 @@
 						"css:column-count": "stepNumberTextColumns",
 						"css:writing-mode": "stepNumberWritingMode"
 					},
-					"_note": "Typography only (stepNumber* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-number). The number inside each multi-step progress bubble."
+					"_note": "Typography only (stepNumber* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-number). The number inside each multi-step progress bubble.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				}
 			}
 		}

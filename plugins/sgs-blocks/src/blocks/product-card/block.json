@@ -516,7 +516,7 @@
 					"_note": "The secondary learn-more link (.sgs-product-card__cta--secondary typed, .product-card__cta-secondary bound). cta2TextAlign is emitted by render.php through sgs_button_element_text_align()."
 				},
 				"noImageLabel": {
-					"absentIn": ["typed", "live-wc-simple", "live-cpt", "readonly-variable"],
+					"absentIn": ["typed", "live-wc-simple", "live-cpt", "readonly-variable", "interactive-variable"],
 					"absentWhy": "The label sits in the no-photo box, which the live card prints in place of the image only for a product with no photo (live-wc-no-photo); a typed card without an image and the read-only card print no media box at all.",
 					"selector": ".product-card__no-image-label",
 					"label": "No-photo label",

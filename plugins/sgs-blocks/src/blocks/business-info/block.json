@@ -756,7 +756,9 @@
 					},
 					"_note_gradient": "textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's numberColourGradient.",
 					"_note_ownership": "css:color -> textColour is mapped explicitly — without it, placement-reach's cluster fallback would misroute textColour to the 'icon' element (icon also declares the 'text' cluster for its own iconColour). textColour is this element's own base colour, sibling to the explicit textColourGradient.",
-					"_note_hover": "textColourHover/textColourHoverGradient give the top SgsColourPanel's 'Text colour' row the framework's 2-state standard (sgs_text_states_css()). render.php emits both states via that shared helper, scoped to the same wrapper selector as the base colour."
+					"_note_hover": "textColourHover/textColourHoverGradient give the top SgsColourPanel's 'Text colour' row the framework's 2-state standard (sgs_text_states_css()). render.php emits both states via that shared helper, scoped to the same wrapper selector as the base colour.",
+					"absentIn": [ "hours" ],
+					"absentWhy": "The hours display prints the opening-hours table, not the single labelled value, icon and link of the other display types."
 				},
 				"label": {
 					"label": "Label",
@@ -776,7 +778,9 @@
 							}
 						}
 					},
-					"_note_gradient": "labelColourGradient is the text-colour gradient sibling to labelColour, same background-clip:text mechanism. labelColour currently only paints .sgs-business-hours__day (the 'hours' displayType) — the gradient sibling follows the same real paint target."
+					"_note_gradient": "labelColourGradient is the text-colour gradient sibling to labelColour, same background-clip:text mechanism. labelColour currently only paints .sgs-business-hours__day (the 'hours' displayType) — the gradient sibling follows the same real paint target.",
+					"absentIn": [ "hours" ],
+					"absentWhy": "The hours display prints the opening-hours table, not the single labelled value, icon and link of the other display types."
 				},
 				"icon": {
 					"label": "Icon",
@@ -800,7 +804,9 @@
 						}
 					},
 					"_note": "iconColour resolves via css:color (style.css `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to `iconColourGradient` — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php).",
-					"_note_hover": "iconColourHover/iconColourHoverGradient mirror sgs/button's icon element exactly (same Lucide stroke-based icon painted via ancestor `color:`, same helpers-svg-gradient.php stroke-gradient mechanism) — see block.json's button icon element for the identical states.hover shape."
+					"_note_hover": "iconColourHover/iconColourHoverGradient mirror sgs/button's icon element exactly (same Lucide stroke-based icon painted via ancestor `color:`, same helpers-svg-gradient.php stroke-gradient mechanism) — see block.json's button icon element for the identical states.hover shape.",
+					"absentIn": [ "hours" ],
+					"absentWhy": "The hours display prints the opening-hours table, not the single labelled value, icon and link of the other display types."
 				},
 				"hours-row": {
 					"selector": ".sgs-business-hours__row",
@@ -814,7 +820,9 @@
 						"css:padding": "hoursRowPadding",
 						"css:justify-content": "hoursRowJustify"
 					},
-					"_note": "The `<div class=\"sgs-business-hours__row\">` of the opening-hours definition list (displayType 'hours', stacked rows). hoursRowPadding reaches it as --sgs-bi-hours-row-pad-{top|right|bottom|left} on the block root; style.css reads each with the original 0.35em / 0 fallback."
+					"_note": "The `<div class=\"sgs-business-hours__row\">` of the opening-hours definition list (displayType 'hours', stacked rows). hoursRowPadding reaches it as --sgs-bi-hours-row-pad-{top|right|bottom|left} on the block root; style.css reads each with the original 0.35em / 0 fallback.",
+					"absentIn": [ "phone" ],
+					"absentWhy": "Opening-hours rows print only for the hours display type."
 				},
 				"link": {
 					"label": "Link",
@@ -827,7 +835,9 @@
 						"css:color": "attributionHoverColourFallback",
 						"css:text-decoration-link": "linkUnderline",
 						"css:text-decoration-thickness-link": "linkUnderlineThickness"
-					}
+					},
+					"absentIn": [ "hours" ],
+					"absentWhy": "The hours display prints the opening-hours table, not the single labelled value, icon and link of the other display types."
 				}
 			}
 		}

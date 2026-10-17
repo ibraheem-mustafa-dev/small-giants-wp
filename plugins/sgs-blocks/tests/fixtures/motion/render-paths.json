@@ -1,29 +1,480 @@
 {
- "_why": "Render paths per motion block, for scripts/check-motion-part-render-paths.py. Curated by hand because which attribute set selects a different branch of a render.php is read from the code, not derivable from block.json (framework rule R-31-1 allows a curated list only as data with the reason). Each block is either `single` (the reason it is checked as one path by check-motion-part-selectors.py) or `paths`; a path's id is what block.json `supports.sgs.elements.<part>.absentIn` names. Contents are fixture inputs, never real client data.",
+ "_why": "Render paths per motion block, for scripts/check-motion-part-render-paths.py. Curated by hand because which attribute set selects a different branch of a render.php is read from the code, not derivable from block.json (framework rule R-31-1 allows a curated list only as data with the reason). Every entry is `paths`, at least one of them rendered through the real render.php (a path the harness cannot render says why in `unrendered`); each path says which branch it reaches in `why`, and an entry's `pathsWhy` names the branch conditions read from the render that make its paths the complete set of part-bearing branches. A path's id is what block.json `supports.sgs.elements.<part>.absentIn` names. Contents are fixture inputs, never real client data.",
  "blocks": {
   "accordion": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "accordionStyle": "bordered",
+    "iconPosition": "right",
+    "iconRotation": 90
+   },
+   "paths": {
+    "default": {
+     "why": "the only part-bearing branch: render.php wraps $content in the layout wrapper (content band); the turning icon is printed by each sgs/accordion-item child, so it needs item markup in the content",
+     "attrs": {},
+     "content": "<details class=\"wp-block-sgs-accordion-item sgs-accordion-item\"><summary class=\"sgs-accordion-item__header\"><span class=\"sgs-accordion-item__title\">Question</span></summary><div class=\"sgs-accordion-item__answer\"><p>Answer</p></div></details>",
+     "unexercised": {
+      "turning-icon": "the element is printed by the sgs/accordion-item child render.php (iconRotation above 0 or a turning-icon layer), and sgs/accordion only echoes $content, so the harness has no real child render to supply it"
+     }
+    }
+   },
+   "pathsWhy": "render.php has no attribute-driven branch that changes which parts print: it builds scoped CSS and calls SGS_Container_Wrapper::render over $content; faqSchema only appends a JSON-LD script after the wrapper. The turning icon belongs to the accordion-item child."
   },
   "account": {
-   "single": "Its parts are printed by the logged-out tracking card and by includes/account/templates/dashboard.php, the logged-in dashboard (a WooCommerce template override reached through the WooCommerce shortcode); the harness renders no WooCommerce account endpoint, and without WooCommerce the block prints an editor notice only."
+   "base": {},
+   "paths": {
+    "logged-out": {
+     "why": "a visitor (is_user_logged_in false) with showOrderTracking: the tracking card (sgs-account__card, sgs-account__heading) and the guest line around WooCommerce's login form",
+     "attrs": {
+      "showOrderTracking": true
+     },
+     "stubWoocommerce": true
+    },
+    "logged-in-dashboard": {
+     "why": "logged in: WC_Shortcode_My_Account prints the dashboard from includes/account/templates/dashboard.php (cards, titles, chip, progress track)",
+     "attrs": {},
+     "unrendered": "the dashboard (includes/account/templates/dashboard.php: card titles, the status chip, the progress track) prints only through WooCommerce's account shortcode for a logged-in customer; the harness marks the shortcode present but runs no WooCommerce template or user session"
+    }
+   },
+   "pathsWhy": "Read render.php: without the WooCommerce class it prints an editor notice only; with it, the markup is WooCommerce's shortcode output (login forms when logged out, dashboard.php when logged in) plus a tracking card and guest line only when logged out."
   },
   "before-after": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "showLabels": true,
+    "beforeLabel": "Before",
+    "afterLabel": "After",
+    "beforeMediaType": "image",
+    "afterMediaType": "image",
+    "beforeImageUrl": "https://example.test/before.jpg",
+    "beforeImageAlt": "Before view",
+    "afterImageUrl": "https://example.test/after.jpg",
+    "afterImageAlt": "After view"
+   },
+   "paths": {
+    "image-labelled": {
+     "why": "both slots resolve to images and showLabels with label text prints the labels strip alongside the divider, line and handle",
+     "attrs": {}
+    }
+   },
+   "pathsWhy": "render.php returns early unless both slots have content (sgs_before_after_resolve_media), so media type (image, video, SVG) only changes the slot markup; the labels strip is gated by showLabels plus non-empty beforeLabel/afterLabel; divider, divider-line and handle print unconditionally, and handleIconSource only changes the handle's inner icon."
   },
   "brand-strip": {
-   "single": "Its modes print mode-specific parts under their own names (brand-text in text mode, logo in logo mode, tile and name only with captions); no part's element is printed under another class in another mode, so the static check covers it."
+   "base": {
+    "logos": [
+     {
+      "name": "Alpha",
+      "media": {
+       "url": "https://example.test/a.png",
+       "type": "image",
+       "id": 0,
+       "alt": "Alpha",
+       "mime": "image/png",
+       "width": 120,
+       "height": 60
+      }
+     },
+     {
+      "name": "Beta",
+      "media": {
+       "url": "https://example.test/b.png",
+       "type": "image",
+       "id": 0,
+       "alt": "Beta",
+       "mime": "image/png",
+       "width": 120,
+       "height": 60
+      }
+     }
+    ]
+   },
+   "paths": {
+    "logos": {
+     "why": "brandDisplay logos without captions: a bare item wrapping the logo image, no tile and no name",
+     "attrs": {
+      "brandDisplay": "logos",
+      "showNames": false
+     }
+    },
+    "logos-captioned": {
+     "why": "brandDisplay logos with showNames: each item sits in a tile with a name caption under it",
+     "attrs": {
+      "brandDisplay": "logos",
+      "showNames": true
+     }
+    },
+    "text": {
+     "why": "brandDisplay text: each item prints the brand name as brand-text instead of an image",
+     "attrs": {
+      "brandDisplay": "text"
+     }
+    }
+   },
+   "pathsWhy": "render.php branches per logo on brandDisplay (sgs_brand_strip_is_text_item: text, logo-else-text, logos) and on showNames (has_caption, text mode never captions): text mode prints brand-text, image mode prints the logo, and only a captioned image item prints tile and name; logo-else-text is the union of the two item shapes and the empty-logos case prints only the track."
   },
   "breadcrumbs": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "showHome": true,
+    "homeLabel": "Home",
+    "showCurrentCrumb": true
+   },
+   "paths": {
+    "default": {
+     "why": "the home crumb as the only crumb (the harness has no current page, so is_singular, is_archive, is_search and is_404 are all false)",
+     "attrs": {},
+     "unexercised": {
+      "separator": "the separator prints after every non-last crumb, so it needs two crumbs, and the harness stubs is_singular, is_archive, is_search and is_404 to false, leaving the home crumb alone"
+     }
+    }
+   },
+   "pathsWhy": "render.php builds its crumb list from showHome plus the page context (is_singular post, ancestors, product categories and brands, is_archive, is_search, is_404) and returns early on an empty list; the separator prints after every non-last crumb, so it needs two crumbs, which needs a page context the harness cannot supply."
   },
   "business-info": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "showIcon": true
+   },
+   "paths": {
+    "phone": {
+     "why": "displayType phone: an icon, a label and the number wrapped in a tel link (needs stored Site Info; the frontend prints nothing without it)",
+     "attrs": {
+      "displayType": "phone"
+     },
+     "options": {
+      "sgs_site_info": {
+       "phone": "0121 000 0000",
+       "opening_hours": {
+        "mon": "9:00-17:00",
+        "tue": "9:00-17:00",
+        "wed": "9:00-17:00",
+        "thu": "9:00-17:00",
+        "fri": "9:00-17:00",
+        "sat": "10:00-14:00",
+        "sun": "Closed"
+       }
+      }
+     }
+    },
+    "hours": {
+     "why": "displayType hours with hoursLayout condensed: a definition list of folded day rows (the rows layout reuses render.php's loop variable $slug, which overwrites the harness's own $slug and blanks every motion target)",
+     "attrs": {
+      "displayType": "hours",
+      "hoursLayout": "condensed"
+     },
+     "options": {
+      "sgs_site_info": {
+       "phone": "0121 000 0000",
+       "opening_hours": {
+        "mon": "9:00-17:00",
+        "tue": "9:00-17:00",
+        "wed": "9:00-17:00",
+        "thu": "9:00-17:00",
+        "fri": "9:00-17:00",
+        "sat": "10:00-14:00",
+        "sun": "Closed"
+       }
+      }
+     }
+    }
+   },
+   "pathsWhy": "render.php switches on displayType (phone, email, address, hours, socials, copyright, attribution, description, map, open-status); phone, email and address print the icon, label, text and link classes, hours prints the hours-row classes, and every case bails out with no DOM on the frontend when its Site Info field is unset, so each path needs seeded Site Info (path key options, which the gate does not yet pass as SGS_QA_OPTIONS). email and address reuse phone's classes."
   },
   "button": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "label": "Get started",
+    "icon": "arrow-right"
+   },
+   "paths": {
+    "link": {
+     "why": "an anchor button with the icon after the label (default iconPosition)",
+     "attrs": {
+      "url": "https://example.test/",
+      "iconPosition": "after"
+     }
+    },
+    "submit": {
+     "why": "a native <button type=submit> (isSubmit) with the icon before the label",
+     "attrs": {
+      "isSubmit": true,
+      "iconPosition": "before"
+     }
+    }
+   },
+   "pathsWhy": "render.php chooses the tag (a when a url is set, button for isSubmit or no url) and places the icon by iconPosition (before, after, only) only when an icon resolves; the icon span carries one class in every placement, and the face wrapper depends on scaleHoverTarget, not on a part."
   },
   "buybox": {
-   "single": "Only the main path prints buybox markup, and it needs a Product_Manifest built from real variations, which the harness does not fake (scripts/qa/lib/wp-stubs.php, DELIBERATELY NOT STUBBED). The five fallback paths (no WooCommerce, not a WC_Product, a simple product, no manifest, a context over 24 KB) hand the page to core WooCommerce blocks, so no buybox part exists there by design."
+   "base": {
+    "productId": 52,
+    "rrpMetaKey": "_sgs_rrp",
+    "showLadder": true,
+    "gallerySavingBadge": true
+   },
+   "paths": {
+    "main": {
+     "why": "a published variable WooCommerce product with a Product_Manifest (served through Product_Manifest::build()'s read-through cache, scripts/qa/lib/manifest-stub.php): the buybox's own markup, gallery column, pickers, value ladder, stock line and add to cart",
+     "product": {
+      "id": 52,
+      "name": "Sample product",
+      "price_html": "<span class=\"woocommerce-Price-amount amount\">£9</span>",
+      "price": "9",
+      "type": "variable",
+      "image_id": 7,
+      "image_url": "https://example.test/single.jpg",
+      "short_description": "A sample product.",
+      "in_stock": true,
+      "average_rating": "4.5",
+      "review_count": 3,
+      "variation_price_min": "9",
+      "variation_price_max": "48",
+      "meta": {
+       "_sgs_rrp": "12",
+       "_sgs_base_price_pence": "1000",
+       "_sgs_base_price_attested": "1"
+      },
+      "attributes": [
+       {
+        "name": "pa_pack-size",
+        "visible": true
+       }
+      ]
+     },
+     "manifest": {
+      "decimals": 2,
+      "currencySymbol": "£",
+      "generatedAt": 1767225600,
+      "axes": [
+       {
+        "taxonomy": "pa_pack-size",
+        "label": "Pack size",
+        "variesBy": "",
+        "terms": [
+         {
+          "slug": "single",
+          "label": "Single"
+         },
+         {
+          "slug": "six-pack",
+          "label": "Six pack"
+         }
+        ]
+       }
+      ],
+      "combos": {
+       "pa_pack-size:single": {
+        "variationId": 61,
+        "priceMinor": 900,
+        "regularMinor": 1000,
+        "saleMinor": 900,
+        "pctOff": 10,
+        "pctDisplay": "",
+        "inStock": true,
+        "imageUrl": "https://example.test/single.jpg",
+        "hasOwnImage": true,
+        "exMinor": 900,
+        "taxMinor": 0,
+        "regularExMinor": 1000,
+        "unitDivisor": 1,
+        "unitLabel": "each",
+        "discountLabel": "",
+        "incMinor": 900,
+        "sku": "SAMPLE-61",
+        "gtin": "",
+        "saleEndDate": "",
+        "gallery": [
+         {
+          "url": "https://example.test/single.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product"
+         },
+         {
+          "url": "https://example.test/single-2.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product, side"
+         }
+        ]
+       },
+       "pa_pack-size:six-pack": {
+        "variationId": 62,
+        "priceMinor": 4800,
+        "regularMinor": 4800,
+        "saleMinor": 0,
+        "pctOff": 0,
+        "pctDisplay": "",
+        "inStock": false,
+        "imageUrl": "https://example.test/six.jpg",
+        "hasOwnImage": true,
+        "exMinor": 4800,
+        "taxMinor": 0,
+        "regularExMinor": 4800,
+        "unitDivisor": 6,
+        "unitLabel": "each",
+        "discountLabel": "",
+        "incMinor": 4800,
+        "sku": "SAMPLE-62",
+        "gtin": "",
+        "saleEndDate": "",
+        "gallery": [
+         {
+          "url": "https://example.test/six.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product"
+         },
+         {
+          "url": "https://example.test/six-2.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product, side"
+         }
+        ]
+       }
+      },
+      "defaultKey": "pa_pack-size:single",
+      "defaultAxes": {
+       "pa_pack-size": "single"
+      }
+     },
+     "context": {
+      "postId": 52
+     }
+    },
+    "guided": {
+     "why": "buyboxLayout guided: the pickers render as guided steps (includes/buybox-guided.php::sgs_buybox_guided_render) with the step meter and group titles",
+     "attrs": {
+      "buyboxLayout": "guided"
+     },
+     "product": {
+      "id": 52,
+      "name": "Sample product",
+      "price_html": "<span class=\"woocommerce-Price-amount amount\">£9</span>",
+      "price": "9",
+      "type": "variable",
+      "image_id": 7,
+      "image_url": "https://example.test/single.jpg",
+      "short_description": "A sample product.",
+      "in_stock": true,
+      "average_rating": "4.5",
+      "review_count": 3,
+      "variation_price_min": "9",
+      "variation_price_max": "48",
+      "meta": {
+       "_sgs_rrp": "12",
+       "_sgs_base_price_pence": "1000",
+       "_sgs_base_price_attested": "1"
+      },
+      "attributes": [
+       {
+        "name": "pa_pack-size",
+        "visible": true
+       }
+      ]
+     },
+     "manifest": {
+      "decimals": 2,
+      "currencySymbol": "£",
+      "generatedAt": 1767225600,
+      "axes": [
+       {
+        "taxonomy": "pa_pack-size",
+        "label": "Pack size",
+        "variesBy": "",
+        "terms": [
+         {
+          "slug": "single",
+          "label": "Single"
+         },
+         {
+          "slug": "six-pack",
+          "label": "Six pack"
+         }
+        ]
+       }
+      ],
+      "combos": {
+       "pa_pack-size:single": {
+        "variationId": 61,
+        "priceMinor": 900,
+        "regularMinor": 1000,
+        "saleMinor": 900,
+        "pctOff": 10,
+        "pctDisplay": "",
+        "inStock": true,
+        "imageUrl": "https://example.test/single.jpg",
+        "hasOwnImage": true,
+        "exMinor": 900,
+        "taxMinor": 0,
+        "regularExMinor": 1000,
+        "unitDivisor": 1,
+        "unitLabel": "each",
+        "discountLabel": "",
+        "incMinor": 900,
+        "sku": "SAMPLE-61",
+        "gtin": "",
+        "saleEndDate": "",
+        "gallery": [
+         {
+          "url": "https://example.test/single.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product"
+         },
+         {
+          "url": "https://example.test/single-2.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product, side"
+         }
+        ]
+       },
+       "pa_pack-size:six-pack": {
+        "variationId": 62,
+        "priceMinor": 4800,
+        "regularMinor": 4800,
+        "saleMinor": 0,
+        "pctOff": 0,
+        "pctDisplay": "",
+        "inStock": false,
+        "imageUrl": "https://example.test/six.jpg",
+        "hasOwnImage": true,
+        "exMinor": 4800,
+        "taxMinor": 0,
+        "regularExMinor": 4800,
+        "unitDivisor": 6,
+        "unitLabel": "each",
+        "discountLabel": "",
+        "incMinor": 4800,
+        "sku": "SAMPLE-62",
+        "gtin": "",
+        "saleEndDate": "",
+        "gallery": [
+         {
+          "url": "https://example.test/six.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product"
+         },
+         {
+          "url": "https://example.test/six-2.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product, side"
+         }
+        ]
+       }
+      },
+      "defaultKey": "pa_pack-size:single",
+      "defaultAxes": {
+       "pa_pack-size": "single"
+      }
+     },
+     "context": {
+      "postId": 52
+     }
+    },
+    "core-fallback": {
+     "unrendered": "no WooCommerce, not a WC_Product, a simple product, no manifest or a context over 24 KB: render.php echoes core WooCommerce blocks through do_blocks() (not stubbed) and prints none of the buybox's own markup, so no buybox part exists there by design"
+    }
+   },
+   "pathsWhy": "render.php's guards (class_exists WooCommerce, wc_get_product, is_type variable, Product_Manifest::build, the 24 KB context cap) all hand the page to the same core fallback; only the main path prints buybox markup."
   },
   "card-grid": {
    "base": {
@@ -63,16 +514,175 @@
    }
   },
   "cart": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "iconName": "shopping-cart",
+    "showZero": true,
+    "pillLabel": "Basket",
+    "panelShowCount": true,
+    "panelTaxNote": "Shipping and taxes calculated at checkout."
+   },
+   "paths": {
+    "icon-link": {
+     "why": "displayMode link with triggerStyle icon: the trigger is an anchor holding the icon (sgs-cart__icon) and the count badge, and no panel is built",
+     "stubWoocommerce": true,
+     "attrs": {
+      "displayMode": "link",
+      "triggerStyle": "icon"
+     }
+    },
+    "pill-link": {
+     "why": "triggerStyle pill: the icon is replaced by the pill label and the count badge (sgs-cart__pill-label, sgs-cart__badge--pill), still an anchor with no panel",
+     "stubWoocommerce": true,
+     "attrs": {
+      "displayMode": "link",
+      "triggerStyle": "pill",
+      "pillCountStyle": "bubble"
+     }
+    },
+    "drawer-panel": {
+     "why": "displayMode drawer: the trigger is a button and a dialog panel with head, close button, items, footer and note is printed (needs WC())",
+     "stubWoocommerce": true,
+     "attrs": {
+      "displayMode": "drawer",
+      "triggerStyle": "icon"
+     },
+     "unexercised": {
+      "panel": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelFrame": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelHead": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelTitle": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelCount": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelClose": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelBody": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelFooter": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "subtotal": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "subtotalValue": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "checkout": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelNote": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists"
+     }
+    },
+    "flyout-panel": {
+     "why": "displayMode flyout: the trigger is a button and a disclosure panel with the same body but no close button is printed (needs WC())",
+     "stubWoocommerce": true,
+     "attrs": {
+      "displayMode": "flyout",
+      "triggerStyle": "icon"
+     },
+     "unexercised": {
+      "panel": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelFrame": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelHead": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelTitle": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelCount": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelBody": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelFooter": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "subtotal": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "subtotalValue": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "checkout": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists",
+      "panelNote": "the harness defines no WC() function, so the block's wc_active is false and it never builds the flyout or drawer panel (sgs_cart_panel_wrapper_html); only the stubbed empty WooCommerce class exists"
+     }
+    }
+   },
+   "pathsWhy": "Read render.php: early return without the WooCommerce class; displayMode (link/flyout/drawer) with has_panel and effective_mode decide whether a panel prints and whether the close button prints (drawer only); triggerStyle icon/pill swaps the icon for the pill label; hideOnCartCheckoutPages only forces link on cart or checkout pages. The panel body skeleton is shared by flyout and drawer, and cart items are drawn by view.js, not the PHP."
   },
   "choice-flow": {
-   "single": "One render path: a linked flow renders the referenced flow's sgs/choice-flow, which re-enters this render.php on its main path; a broken reference prints a notice only."
+   "base": {
+    "title": "Sample flow"
+   },
+   "paths": {
+    "compact": {
+     "why": "flowLayout compact (default): body, inner content, then the footer bar that always holds the back button",
+     "attrs": {
+      "flowLayout": "compact"
+     },
+     "content": "<div class=\"sgs-choice-flow-question\"></div>"
+    },
+    "showcase": {
+     "why": "flowLayout showcase: adds the step indicator and stage panel; the footer and back button are the same",
+     "attrs": {
+      "flowLayout": "showcase"
+     },
+     "content": "<div class=\"sgs-choice-flow-question\"></div>"
+    }
+   },
+   "pathsWhy": "render.php: flowIsLinked with a flowId re-enters this render.php on the referenced flow's own sgs/choice-flow (or prints only a fallback notice when the reference is broken); the unlinked path prints sgs_choice_flow_footer_html, which always holds .sgs-choice-flow__nav-back, whatever the flowLayout (compact or showcase), showPricePanel or progressStyle."
   },
   "choice-flow-question": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "question": "Which size?",
+    "intro": "Pick the size that suits you."
+   },
+   "paths": {
+    "typed-options": {
+     "why": "typed options array: the question heading, intro paragraph, options list and one li per option (with badge, image, description and help text variants)",
+     "attrs": {
+      "options": [
+       {
+        "label": "Small",
+        "value": "s",
+        "nextStepId": "",
+        "badge": "Popular",
+        "helpText": "Sample help text."
+       },
+       {
+        "label": "Large",
+        "value": "l",
+        "description": "Bigger",
+        "image": {
+         "url": "https://example.test/o.jpg",
+         "alt": "Large"
+        }
+       }
+      ]
+     }
+    },
+    "list-layout": {
+     "why": "layout list swaps the options modifier class; the option li is unchanged",
+     "attrs": {
+      "layout": "list",
+      "options": [
+       {
+        "label": "Small",
+        "value": "s",
+        "nextStepId": "",
+        "badge": "Popular",
+        "helpText": "Sample help text."
+       },
+       {
+        "label": "Large",
+        "value": "l",
+        "description": "Bigger",
+        "image": {
+         "url": "https://example.test/o.jpg",
+         "alt": "Large"
+        }
+       }
+      ]
+     }
+    }
+   },
+   "pathsWhy": "render.php prints the options list either from the generated product-attribute options (productAttribute with a resolved WooCommerce product) or from the typed options array, both with the same li.sgs-choice-flow-question__option markup; with neither, no list prints. The heading prints when question is set, the intro when intro is set. With empty options and no product attribute only the heading and intro print (option and options absent); that empty case is not given a path."
   },
   "collapsible-text": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "text": "<p>Sample paragraph text that is long enough to need collapsing on a narrow screen.</p>"
+   },
+   "paths": {
+    "collapsible": {
+     "why": "collapsible true: the body plus the Read more toggle button",
+     "attrs": {
+      "collapsible": true,
+      "collapsedLines": 3
+     }
+    },
+    "plain": {
+     "why": "collapsible false: a plain wrapper around the body, with no toggle",
+     "attrs": {
+      "collapsible": false
+     }
+    }
+   },
+   "pathsWhy": "render.php returns early on empty text and otherwise branches only on collapsible: both branches print the same body class, and only the collapsible one adds a toggle (not an offered part)."
   },
   "container": {
    "base": {
@@ -98,19 +708,195 @@
    }
   },
   "countdown-timer": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "showDays": true,
+    "showHours": true,
+    "showMinutes": true,
+    "showSeconds": true,
+    "expiredMessage": "This offer has expired."
+   },
+   "paths": {
+    "live": {
+     "why": "evergreenMode true: a running countdown with the grid shown and the expired message hidden",
+     "attrs": {
+      "evergreenMode": true,
+      "evergreenHours": 24
+     }
+    },
+    "expired": {
+     "why": "a past targetDate: is_expired is true, so the grid is hidden and the expired message is shown",
+     "attrs": {
+      "evergreenMode": false,
+      "targetDate": "2020-01-01T00:00:00"
+     }
+    }
+   },
+   "pathsWhy": "render.php computes is_expired from targetDate (or evergreenMode) and prints the grid, number, label and expired elements in both states, toggling only their hidden attribute; the show* toggles drop units, never the parts."
   },
   "counter": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "number": 1200,
+    "prefix": "",
+    "suffix": "+",
+    "label": "Happy customers",
+    "duration": 2000
+   },
+   "paths": {
+    "with-icon": {
+     "why": "the icon placeholder prints when the icon attribute is set; number and label always print",
+     "attrs": {
+      "icon": "star"
+     }
+    }
+   },
+   "pathsWhy": "render.php has one markup branch: the icon placeholder prints only when the icon attribute is non-empty (content, not a separate layout); number and label always print, accentStroke only adds a root modifier class, and there are no early returns."
   },
   "filter-search": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "threshold": 2,
+    "placeholder": "Type to filter"
+   },
+   "paths": {
+    "chips-taxonomy": {
+     "why": "searchMode attribute-chips with a product taxonomy and enough terms (total >= threshold): the search input prints",
+     "attrs": {
+      "searchMode": "attribute-chips",
+      "taxonomy": "product_cat"
+     },
+     "taxonomies": {
+      "product_cat": {
+       "label": "Category",
+       "object_types": [
+        "product"
+       ],
+       "terms": [
+        {
+         "term_id": 1,
+         "slug": "alpha",
+         "name": "Alpha",
+         "count": 3
+        },
+        {
+         "term_id": 2,
+         "slug": "beta",
+         "name": "Beta",
+         "count": 2
+        },
+        {
+         "term_id": 3,
+         "slug": "gamma",
+         "name": "Gamma",
+         "count": 1
+        }
+       ]
+      }
+     }
+    },
+    "terms-list": {
+     "why": "searchMode taxonomy-terms: the input prints and the term list is rendered inside the block",
+     "attrs": {
+      "searchMode": "taxonomy-terms",
+      "taxonomy": "product_cat",
+      "showCounts": true
+     },
+     "taxonomies": {
+      "product_cat": {
+       "label": "Category",
+       "object_types": [
+        "product"
+       ],
+       "terms": [
+        {
+         "term_id": 1,
+         "slug": "alpha",
+         "name": "Alpha",
+         "count": 3
+        },
+        {
+         "term_id": 2,
+         "slug": "beta",
+         "name": "Beta",
+         "count": 2
+        },
+        {
+         "term_id": 3,
+         "slug": "gamma",
+         "name": "Gamma",
+         "count": 1
+        }
+       ]
+      }
+     },
+     "unrendered": "the harness lacks remove_query_arg(), which the taxonomy-terms resolver calls; the path is the same input as chips-taxonomy plus a term list"
+    }
+   },
+   "pathsWhy": "render.php returns early when the resolver finds no taxonomy or fewer terms than the threshold (nothing prints), otherwise the input prints in both searchMode branches (attribute-chips adds nothing else, taxonomy-terms also prints the term list); the input is the only offered part."
   },
   "form": {
-   "single": "One render path: a linked form renders the definition's sgs/form, which re-enters this render.php on its main path; a broken reference prints a notice only."
+   "base": {
+    "formName": "Sample enquiry",
+    "submitLabel": "Send"
+   },
+   "paths": {
+    "single-step": {
+     "why": "fewer than two sgs/form-step inner blocks: is_multi_step false, so no progress wrapper and no prev/next buttons; fields, inner wrapper, actions bar and submit button print",
+     "attrs": {},
+     "content": "<div class=\"sgs-form-field sgs-form-field--text\"><label class=\"sgs-form-field__label\" for=\"f1\">Name</label><input type=\"text\" id=\"f1\" name=\"name\" class=\"sgs-form-field__input\" /></div><div class=\"sgs-form-field sgs-form-field--text\"><label class=\"sgs-form-field__label\" for=\"f2\">Name</label><input type=\"text\" id=\"f2\" email=\"email\" class=\"sgs-form-field__input\" /></div>"
+    },
+    "multi-step": {
+     "why": "two sgs/form-step inner blocks: is_multi_step true adds the progress wrapper (bar, step number, step label) and the prev/next buttons",
+     "attrs": {},
+     "innerBlocks": [
+      {
+       "name": "sgs/form-step",
+       "attributes": {
+        "label": "Your details"
+       },
+       "html": ""
+      },
+      {
+       "name": "sgs/form-step",
+       "attributes": {
+        "label": "Your message"
+       },
+       "html": ""
+      }
+     ],
+     "content": "<div class=\"sgs-form-step\"><div class=\"sgs-form-field sgs-form-field--text\"><label class=\"sgs-form-field__label\" for=\"f1\">Name</label><input type=\"text\" id=\"f1\" name=\"name\" class=\"sgs-form-field__input\" /></div></div><div class=\"sgs-form-step\"><div class=\"sgs-form-field sgs-form-field--text\"><label class=\"sgs-form-field__label\" for=\"f2\">Name</label><input type=\"text\" id=\"f2\" name=\"name\" class=\"sgs-form-field__input\" /></div></div>"
+    }
+   },
+   "pathsWhy": "render.php: a formIsLinked form resolves the saved form post and re-enters this render.php on the definition (unlinked) so its parts print on the single-step or multi-step path; a broken reference prints only a fallback notice and returns. On the unlinked path the only part-changing branch is is_multi_step (count of sgs/form-step inner blocks > 1: progress bar, step number, step label, prev button). The linked path is not given a path: the harness has no SGS\\Blocks\\Sgs_Block_CPTs, so a linked form would only reach the broken-reference notice."
   },
   "form-field-tiles": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "fieldName": "interest",
+    "label": "What are you interested in?",
+    "tiles": [
+     {
+      "label": "Option one",
+      "value": "one",
+      "icon": "star"
+     },
+     {
+      "label": "Option two",
+      "value": "two",
+      "image": "https://example.test/t.jpg"
+     }
+    ]
+   },
+   "paths": {
+    "default": {
+     "why": "the only part-bearing branch: a fieldset of tile labels, each with an icon or image, label and check; multiSelect only changes the input type",
+     "attrs": {}
+    },
+    "multi-select": {
+     "why": "multiSelect true switches the tile inputs to checkboxes; the tile label markup is the same",
+     "attrs": {
+      "multiSelect": true
+     }
+    }
+   },
+   "pathsWhy": "render.php prints one label.sgs-form-tile per tiles entry inside the fieldset; the branches read (multiSelect input type, required, helpText, lucide or text icon, image) change only the content inside each tile, never the tile or fieldset classes. With no tiles the fieldset is empty (no part by design)."
   },
   "gallery": {
    "base": {
@@ -214,10 +1000,97 @@
    }
   },
   "google-rating-badge": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "dataSource": "manual",
+    "rating": 4.8,
+    "reviewCount": 120
+   },
+   "paths": {
+    "linked-count": {
+     "why": "manual data with a listing URL and showCount: the badge is an <a> and the caption carries the review count",
+     "attrs": {
+      "badgeStyle": "pill",
+      "listingUrl": "https://example.test/reviews",
+      "showCount": true
+     }
+    },
+    "card-source-only": {
+     "why": "card preset, no listing URL (badge is a <span>), caption shows only the source text",
+     "attrs": {
+      "badgeStyle": "card",
+      "showCount": false,
+      "showSource": true
+     }
+    },
+    "stacked-floating": {
+     "why": "stacked preset in the floating position with count and source",
+     "attrs": {
+      "badgeStyle": "stacked",
+      "position": "floating",
+      "floatingCorner": "bottom-left",
+      "showCount": true,
+      "showSource": true
+     }
+    }
+   },
+   "pathsWhy": "render.php returns early only when no rating resolves; otherwise the badge, score and stars always print, the badge tag is a or span by listing URL, and the caption prints only when showCount (with a count) or showSource is on; badgeStyle and position change root classes only. The synced source needs live Google data the harness stub never supplies and prints the same classes."
   },
   "google-reviews": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "dataSource": "placeholder",
+    "showAggregate": true,
+    "showDate": true,
+    "showCardLogo": true,
+    "showReviewLink": true,
+    "reviewLinkLabel": "Read more",
+    "reviewRequestUrl": "https://example.test/write",
+    "seeAllUrl": "https://example.test/all",
+    "sourceLabel": "Google reviews",
+    "footnote": "Verified by Google",
+    "showBreakdown": true,
+    "showArrows": true
+   },
+   "paths": {
+    "slider": {
+     "why": "dataSource placeholder (the inline source cannot render: the harness lacks sanitize_textarea_field), variant slider with more than one review: the slider navigation prints (arrow), header, cards, breakdown and actions",
+     "attrs": {
+      "variant": "slider"
+     },
+     "unexercised": {
+      "star-empty": "the placeholder reviews and aggregate are all 5 stars, so no empty star prints; the inline source that could carry a lower rating cannot render in the harness (sanitize_textarea_field is undefined)",
+      "meta": "only inline reviews carry a meta line and the inline source cannot render in the harness (sanitize_textarea_field is undefined)",
+      "review-link": "needs a review url, which only inline or synced reviews carry; the inline source cannot render in the harness (sanitize_textarea_field is undefined)",
+      "maps-link": "printed only for the synced source (googleMapsUri on the place or a review), and the harness stub Google_Reviews_Settings::fetch_reviews returns no data"
+     }
+    },
+    "grid": {
+     "why": "variant grid: the same card markup without the slider navigation",
+     "attrs": {
+      "variant": "grid"
+     },
+     "unexercised": {
+      "star-empty": "the placeholder reviews and aggregate are all 5 stars, so no empty star prints; the inline source that could carry a lower rating cannot render in the harness (sanitize_textarea_field is undefined)",
+      "meta": "only inline reviews carry a meta line and the inline source cannot render in the harness (sanitize_textarea_field is undefined)",
+      "review-link": "needs a review url, which only inline or synced reviews carry; the inline source cannot render in the harness (sanitize_textarea_field is undefined)",
+      "maps-link": "printed only for the synced source (googleMapsUri on the place or a review), and the harness stub Google_Reviews_Settings::fetch_reviews returns no data"
+     }
+    },
+    "no-header": {
+     "why": "showAggregate off: no aggregate header, so the attribution and the action buttons print below the cards instead",
+     "attrs": {
+      "variant": "list",
+      "showAggregate": false,
+      "showBreakdown": true
+     },
+     "unexercised": {
+      "star-empty": "the placeholder reviews and aggregate are all 5 stars, so no empty star prints; the inline source that could carry a lower rating cannot render in the harness (sanitize_textarea_field is undefined)",
+      "meta": "only inline reviews carry a meta line and the inline source cannot render in the harness (sanitize_textarea_field is undefined)",
+      "review-link": "needs a review url, which only inline or synced reviews carry; the inline source cannot render in the harness (sanitize_textarea_field is undefined)",
+      "maps-link": "printed only for the synced source (googleMapsUri on the place or a review), and the harness stub Google_Reviews_Settings::fetch_reviews returns no data"
+     }
+    }
+   },
+   "pathsWhy": "render.php returns early when sgs_reviews_resolve finds no reviews (nothing prints). Otherwise render-interior.php branches on showAggregate (aggregate header vs attribution and actions below), showBreakdown, variant slider with more than one review (slider nav and arrows) vs other variants, per-review fields (photo, meta, date, text, reviewUrl, googleMapsUri) and showCardLogo/showReviewLink. The synced source (maps-link on the place and on cards, from googleMapsUri) needs live Google data that the harness stub Google_Reviews_Settings::fetch_reviews never returns."
   },
   "hero": {
    "base": {
@@ -279,25 +1152,205 @@
    }
   },
   "icon-list": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "items": [
+     {
+      "iconSource": "lucide",
+      "iconName": "check",
+      "text": "First item",
+      "url": "https://example.test/a",
+      "description": "About the first"
+     },
+     {
+      "iconSource": "lucide",
+      "iconName": "star",
+      "text": "Second item",
+      "url": "https://example.test/b",
+      "description": "About the second"
+     }
+    ]
+   },
+   "paths": {
+    "icon-headed": {
+     "why": "markerType icon with a heading and linked items with descriptions: heading wrapper, icon, link and description all print",
+     "attrs": {
+      "markerType": "icon",
+      "heading": "Quick links",
+      "headingLevel": "h3",
+      "renderLandmark": true
+     }
+    },
+    "bullet-plain": {
+     "why": "markerType bullet: the list prints no marker icon span; the heading, item links and descriptions print as on the icon path",
+     "attrs": {
+      "markerType": "bullet",
+      "heading": "Quick links",
+      "headingLevel": "h3"
+     }
+    }
+   },
+   "pathsWhy": "render.php resolves typed or menu items into one shape, then branches on the marker type (the icon span prints only for icon and emoji), on a non-empty heading (heading element and wrapper), on a url per item (item-link anchor) and on a description per item. The menu source prints the same classes and needs a registered nav menu the harness lacks."
   },
   "image-sequence": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "thumbnail": {
+     "url": "https://example.test/thumb.jpg",
+     "id": 0
+    },
+    "thumbnailAlt": "A sequence still",
+    "desktopFramesUrl": "https://example.test/frames/d-",
+    "desktopFrameCount": 30
+   },
+   "paths": {
+    "default": {
+     "why": "thumbnail set with desktop frames: stage, thumbnail and canvas all print",
+     "attrs": {}
+    },
+    "art-directed": {
+     "why": "tablet and mobile thumbnails and frame tiers set: extra thumbnail images print beside the desktop one",
+     "attrs": {
+      "thumbnailTablet": {
+       "url": "https://example.test/thumb-t.jpg",
+       "id": 0
+      },
+      "thumbnailMobile": {
+       "url": "https://example.test/thumb-m.jpg",
+       "id": 0
+      },
+      "tabletFramesUrl": "https://example.test/frames/t-",
+      "tabletFrameCount": 20,
+      "mobileFramesUrl": "https://example.test/frames/m-",
+      "mobileFrameCount": 10
+     }
+    }
+   },
+   "pathsWhy": "render.php returns early only without a thumbnail url; otherwise the stage, the desktop thumbnail and the canvas always print, and tablet or mobile thumbnails only add images with the same base class plus a tier modifier; frame tiers only add data attributes on the canvas."
   },
   "language-switch": {
-   "single": "Its modes print mode-specific parts under their own names (separator only in the list display); no part's element is printed under another class in another mode, so the static check covers it."
+   "base": {
+    "languages": [
+     {
+      "code": "en",
+      "url": "https://example.test/en/",
+      "customLabel": "English"
+     },
+     {
+      "code": "fr",
+      "url": "https://example.test/fr/",
+      "customLabel": "Francais"
+     },
+     {
+      "code": "de",
+      "url": "https://example.test/de/",
+      "customLabel": "Deutsch"
+     }
+    ],
+    "separator": "/"
+   },
+   "paths": {
+    "inline": {
+     "why": "display inline: links with separators between them",
+     "attrs": {
+      "display": "inline"
+     }
+    },
+    "single-link": {
+     "why": "display single-link: one link to the first non-current language, no separator",
+     "attrs": {
+      "display": "single-link"
+     }
+    },
+    "disclosure": {
+     "why": "display disclosure: trigger button and a panel list of links, no separator",
+     "attrs": {
+      "display": "disclosure"
+     }
+    }
+   },
+   "pathsWhy": "render.php returns early with no languages or (single-link) no non-current target; otherwise display selects the markup: inline prints links and separators, single-link one link, disclosure a trigger plus panel of links with no separator."
   },
   "local-time": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "timeZone": "Europe/London",
+    "label": "London"
+   },
+   "paths": {
+    "label-before": {
+     "why": "labelPosition before: the label span, a separator span and the time element print in that order",
+     "attrs": {
+      "labelPosition": "before",
+      "separator": ":"
+     }
+    },
+    "label-above": {
+     "why": "labelPosition above: the label span sits above the time element and the separator is suppressed",
+     "attrs": {
+      "labelPosition": "above"
+     }
+    }
+   },
+   "pathsWhy": "render.php only reorders the label, separator and time elements by labelPosition (before, after, above) and drops the label when label is empty; it has no early return, so the two paths (separator-bearing and above) cover the distinct markup shapes and every offered part (label, time) prints on both."
   },
   "media": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "caption": "A sample caption"
+   },
+   "paths": {
+    "image-figure": {
+     "why": "mediaType image with a caption leaves naked mode, so the image prints inside a figure followed by the figcaption",
+     "attrs": {
+      "mediaType": "image",
+      "imageUrl": "https://example.test/photo.jpg",
+      "imageAlt": "Sample"
+     }
+    },
+    "video-file": {
+     "why": "mediaType video with a direct file URL prints a video element inside a figure followed by the caption",
+     "attrs": {
+      "mediaType": "video",
+      "videoSource": "external",
+      "videoUrl": "https://example.test/clip.mp4",
+      "videoMimeType": "video/mp4"
+     }
+    },
+    "video-embed": {
+     "why": "mediaType video with a YouTube URL prints the embed branch inside the same figure followed by the caption",
+     "attrs": {
+      "mediaType": "video",
+      "videoSource": "external",
+      "videoUrl": "https://www.youtube.com/watch?v=abcdefghijk"
+     }
+    }
+   },
+   "pathsWhy": "Only the caption part is offered (media is the wrapper). The caption prints for mediaType image and video only (svg and lottie never print it by design), and an image with no caption, link or box atom takes naked mode (no figure); so one captioned image path, plus the direct-file and embed video branches, cover every branch where the caption can print."
   },
   "mega-panel": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {},
+   "paths": {
+    "brands": {
+     "why": "variant brands with brandsEyebrow text prints the eyebrow paragraph above the content row",
+     "attrs": {
+      "variant": "brands",
+      "brandsEyebrow": "Featured brands"
+     },
+     "content": "<div class=\"sgs-mega-group\">Sample</div>"
+    }
+   },
+   "pathsWhy": "The eyebrow is printed only when variant is brands and brandsEyebrow is non-empty (eyebrow_html in render.php); general and media-cards print no eyebrow by design and no other attribute changes which parts print, so brands is the only part-bearing path."
   },
   "modal": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {},
+   "paths": {
+    "default": {
+     "why": "triggerStyle primary prints the trigger button, the dialog and its close button",
+     "attrs": {
+      "triggerStyle": "primary",
+      "triggerText": "Open",
+      "closeStyle": "icon"
+     }
+    }
+   },
+   "pathsWhy": "The trigger prints unless triggerStyle is none (by design no trigger then); the dialog and close button always print, closeStyle only swaps the close glyph; backdrop is motion false. render.php has no early return, so one path reaches every offered part."
   },
   "multi-button": {
    "base": {
@@ -323,19 +1376,165 @@
    }
   },
   "nav-bar-menu": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "ref": 7
+   },
+   "paths": {
+    "dropdown": {
+     "why": "a wp_navigation menu with a badge-carrying item and a submenu item prints the bar, items, badge, dropdown panel wrap, submenu, sub-items and sub-links, with the default three-bar burger glyph",
+     "post": {
+      "ID": 7,
+      "post_type": "wp_navigation",
+      "post_content": "<!-- wp:core/navigation-link {\"label\": \"Home\", \"url\": \"https://example.test/\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu -->"
+     },
+     "unexercised": {
+      "mega-item": "mega panel columns are classed only inside a rendered sgs_mega_menu panel post; get_post() in the harness returns the one global post for every ID and there is no WP_Post, so the panel post cannot be supplied",
+      "mega-row": "mega panel rows are classed only inside a rendered sgs_mega_menu panel post (see mega-item); the harness cannot supply a second post or a WP_Post"
+     }
+    }
+   },
+   "pathsWhy": "render.php resolves one menu (SGS_Nav_Menu_Source::get_menu_blocks) and always renders the flat bar through sgs_nav_bar_menu_render_items; an empty menu returns '' (no parts). Items fork on type: a plain link, a submenu item (dropdown panel wrap, submenu, sub-items, sub-links), a sgs_mega_menu item (mega panel wrap, mega-item and mega-row classes) and a disabled item (non-motion part). The burger prints the three-bar default glyph (burger-icon, burger-bar) unless a custom triggerIcon replaces it, and is dropped when showBurger is off. The dropdown path reaches every part except the mega columns and rows, which need a mega panel post the harness cannot supply."
   },
   "nav-drawer": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {},
+   "paths": {
+    "chrome-full": {
+     "why": "a chrome logo, a heading slot and the Google rating all configured print the three optional chrome elements beside the close button, with the body, close button and chrome row",
+     "attrs": {
+      "chromeLogoUrl": "https://example.test/logo.png",
+      "chromeSlotType": "heading",
+      "chromeSlotText": "Menu",
+      "chromeRating": true
+     }
+    }
+   },
+   "pathsWhy": "The chrome logo prints when a tier has a logo URL or id, the slot when chromeSlotType is a non-icons type with text (a button also needs a URL), the rating when chromeRating is on and the badge renders; the body, close and chrome row always print."
   },
   "nav-drawer-menu": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "ref": 7
+   },
+   "pathsWhy": "render.php resolves one menu and renders sgs_nav_drawer_menu_render_items; an empty menu returns ''. Accordion and drill-down share identical server markup, so the submenu model context does not change which parts print. Row options fork the markup: itemOrnament icon or index prints the ornament (with a hover swap glyph), itemMedia featured-image prints the media thumbnail for items linked to a post with a featured image, itemTrailingIcons prints the trailing icon on its item, a submenu item prints the accordion row with the expander caret, a sgs_mega_menu item in panel mode prints the mega-body row, and a disabled or featured item changes only non-motion classes. One path with every option on reaches every part except the mega body, which needs a mega panel post the harness cannot supply.",
+   "paths": {
+    "default": {
+     "why": "a menu with a badge item, a page item with a featured image, a submenu item, a trailing icon and an icon ornament with a hover glyph prints every drawer-menu part except the mega body",
+     "unexercised": {
+      "mega-body": "the mega body row holds a rendered sgs_mega_menu panel post; get_post() in the harness returns one global post for every ID and there is no WP_Post, so the panel post cannot be supplied"
+     },
+     "post": [
+      {
+       "ID": 7,
+       "post_type": "wp_navigation",
+       "post_content": "<!-- wp:core/navigation-link {\"label\": \"About\", \"url\": \"https://example.test/about\", \"kind\": \"post-type\", \"type\": \"page\", \"id\": 21} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu --><!-- wp:core/navigation-link {\"label\": \"Closed\", \"url\": \"https://example.test/closed\", \"kind\": \"custom\"} /-->"
+      },
+      {
+       "ID": 21,
+       "post_type": "page",
+       "post_title": "About",
+       "thumbnail_id": 55
+      }
+     ],
+     "attachments": {
+      "55": "https://example.test/thumb.jpg"
+     },
+     "attrs": {
+      "itemOrnament": {
+       "desktop": "icon",
+       "tablet": "icon",
+       "mobile": "icon"
+      },
+      "itemOrnamentIconHover": {
+       "source": "lucide",
+       "name": "arrow-up-right"
+      },
+      "itemMedia": "featured-image",
+      "itemTrailingIcons": {
+       "label:Sale": {
+        "source": "lucide",
+        "name": "star"
+       }
+      },
+      "disabledItemIds": [
+       "label:Closed"
+      ],
+      "featuredItemIds": [
+       "label:Sale"
+      ]
+     }
+    }
+   }
   },
   "notice-banner": {
-   "single": "Its modes print mode-specific parts under their own names (arrows only in the enhanced rotating banner); no part's element is printed under another class in another mode, so the static check covers it."
+   "base": {
+    "text": "Sample notice"
+   },
+   "paths": {
+    "rotate-arrows": {
+     "why": "messageMode rotate with two sgs/notice-message children and showMessageArrows prints the messages wrapper and the prev and next arrow buttons",
+     "attrs": {
+      "displayMode": "announcement",
+      "messageMode": "rotate",
+      "showMessageArrows": true
+     },
+     "content": "<p>One</p><p>Two</p>",
+     "innerBlocks": [
+      {
+       "name": "sgs/notice-message",
+       "attributes": {},
+       "html": "<p>One</p>"
+      },
+      {
+       "name": "sgs/notice-message",
+       "attributes": {},
+       "html": "<p>Two</p>"
+      }
+     ]
+    }
+   },
+   "pathsWhy": "The icon prints when showIcon and an icon resolve; the arrows print only when messageMode is rotate, there are two or more notice-message children and showMessageArrows is on (sgs_nb_enhanced and sgs_nb_show_arrows); random mode and static mode never print them by design."
   },
   "option-picker": {
-   "single": "Its modes print mode-specific parts under their own names (the visible label only with showLabel; otherwise the legend is screen-reader only); no part's element is printed under another class in another mode, so the static check covers it."
+   "base": {
+    "label": "Choose an option",
+    "optionItems": [
+     {
+      "key": "s",
+      "label": "Small"
+     },
+     {
+      "key": "m",
+      "label": "Medium"
+     },
+     {
+      "key": "l",
+      "label": "Large"
+     }
+    ],
+    "defaultSelected": "m"
+   },
+   "paths": {
+    "labelled": {
+     "why": "showLabel true: the legend prints as sgs-option-picker__label above the pills",
+     "attrs": {
+      "showLabel": true,
+      "pillStyle": "outlined"
+     },
+     "unexercised": {
+      "sub-label": "the second line needs a WooCommerce attribute taxonomy with term meta; the harness lacks wc_get_attribute_taxonomy_names, get_term_by and get_term_meta"
+     }
+    },
+    "hidden-label": {
+     "why": "showLabel false: the legend prints as screen-reader-only sgs-sr-only, not sgs-option-picker__label",
+     "attrs": {
+      "showLabel": false,
+      "pillStyle": "tile"
+     },
+     "unexercised": {
+      "sub-label": "the second line needs a WooCommerce attribute taxonomy with term meta; the harness lacks wc_get_attribute_taxonomy_names, get_term_by and get_term_meta"
+     }
+    }
+   },
+   "pathsWhy": "Read render.php: it returns when optionItems is empty or has no valid key; showLabel picks the visible legend class or sr-only; pill markup is one loop whatever pillStyle; swatch, image, term badge and sub-label only add optional inner elements and need a WooCommerce taxonomy."
   },
   "physics-canvas": {
    "base": {
@@ -361,13 +1560,327 @@
    }
   },
   "post-grid": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "showImage": true,
+    "showTitle": true,
+    "showExcerpt": true,
+    "showDate": true,
+    "showAuthor": true,
+    "showCategory": true,
+    "showReadMore": true,
+    "pagination": "none"
+   },
+   "paths": {
+    "card-badge": {
+     "why": "cardStyle card with a featured image and a category: the badge (sgs-post-grid__badge sgs-post-grid__category-badge) prints over the image, before the content wrapper",
+     "attrs": {
+      "cardStyle": "card"
+     },
+     "post": [
+      {
+       "ID": 101,
+       "post_type": "post",
+       "post_title": "Sample post one",
+       "post_content": "Sample content.",
+       "post_excerpt": "A short sample excerpt.",
+       "post_status": "publish",
+       "thumbnail_id": 201,
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-01 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      },
+      {
+       "ID": 102,
+       "post_type": "post",
+       "post_title": "Sample post two",
+       "post_content": "More sample content.",
+       "post_excerpt": "Another sample excerpt.",
+       "post_status": "publish",
+       "thumbnail_id": 202,
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-02 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      }
+     ],
+     "attachments": {
+      "201": "https://example.test/t1.jpg",
+      "202": "https://example.test/t2.jpg"
+     }
+    },
+    "overlay-badge": {
+     "why": "cardStyle overlay takes the same badge-on-image branch as card, under the card--overlay modifier",
+     "attrs": {
+      "cardStyle": "overlay"
+     },
+     "post": [
+      {
+       "ID": 101,
+       "post_type": "post",
+       "post_title": "Sample post one",
+       "post_content": "Sample content.",
+       "post_excerpt": "A short sample excerpt.",
+       "post_status": "publish",
+       "thumbnail_id": 201,
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-01 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      },
+      {
+       "ID": 102,
+       "post_type": "post",
+       "post_title": "Sample post two",
+       "post_content": "More sample content.",
+       "post_excerpt": "Another sample excerpt.",
+       "post_status": "publish",
+       "thumbnail_id": 202,
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-02 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      }
+     ],
+     "attachments": {
+      "201": "https://example.test/t1.jpg",
+      "202": "https://example.test/t2.jpg"
+     }
+    },
+    "flat-inline-category": {
+     "why": "cardStyle flat prints the category as an inline label (sgs-post-grid__category sgs-post-grid__category-badge) inside the content wrapper, not on the image",
+     "attrs": {
+      "cardStyle": "flat"
+     },
+     "post": [
+      {
+       "ID": 101,
+       "post_type": "post",
+       "post_title": "Sample post one",
+       "post_content": "Sample content.",
+       "post_excerpt": "A short sample excerpt.",
+       "post_status": "publish",
+       "thumbnail_id": 201,
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-01 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      },
+      {
+       "ID": 102,
+       "post_type": "post",
+       "post_title": "Sample post two",
+       "post_content": "More sample content.",
+       "post_excerpt": "Another sample excerpt.",
+       "post_status": "publish",
+       "thumbnail_id": 202,
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-02 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      }
+     ],
+     "attachments": {
+      "201": "https://example.test/t1.jpg",
+      "202": "https://example.test/t2.jpg"
+     }
+    },
+    "minimal-no-image": {
+     "why": "cardStyle minimal with posts that have no featured image prints no image link and no placeholder, plus the inline category label",
+     "attrs": {
+      "cardStyle": "minimal"
+     },
+     "post": [
+      {
+       "ID": 101,
+       "post_type": "post",
+       "post_title": "Sample post one",
+       "post_content": "Sample content.",
+       "post_excerpt": "A short sample excerpt.",
+       "post_status": "publish",
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-01 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      },
+      {
+       "ID": 102,
+       "post_type": "post",
+       "post_title": "Sample post two",
+       "post_content": "More sample content.",
+       "post_excerpt": "Another sample excerpt.",
+       "post_status": "publish",
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-02 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      }
+     ]
+    },
+    "card-placeholder": {
+     "why": "a non-minimal card whose post has no featured image prints the placeholder image div (sgs-post-grid__image--placeholder) instead of an img",
+     "attrs": {
+      "cardStyle": "card"
+     },
+     "post": [
+      {
+       "ID": 101,
+       "post_type": "post",
+       "post_title": "Sample post one",
+       "post_content": "Sample content.",
+       "post_excerpt": "A short sample excerpt.",
+       "post_status": "publish",
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-01 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      },
+      {
+       "ID": 102,
+       "post_type": "post",
+       "post_title": "Sample post two",
+       "post_content": "More sample content.",
+       "post_excerpt": "Another sample excerpt.",
+       "post_status": "publish",
+       "categories": [
+        "News"
+       ],
+       "post_date": "2026-01-02 09:00:00",
+       "author": {
+        "display_name": "Sam Sample"
+       }
+      }
+     ]
+    }
+   },
+   "pathsWhy": "Post_Grid_REST::render_card (includes/class-post-grid-rest.php) is the only place parts print: cardStyle picks where the category badge goes (card and overlay on the image, flat and minimal inline; both carry sgs-post-grid__category-badge), has_post_thumbnail picks image, placeholder or (minimal only) nothing, and the show* toggles drop single elements. layout, pagination and the carousel controls add siblings of the parts, never a part's element; render-interior.php's empty-query branch prints only the optional empty-message notice."
   },
   "pricing-table": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "plans": [
+     {
+      "name": "Starter",
+      "price": "£9",
+      "priceYearly": "£90",
+      "period": "monthly",
+      "description": "Everything to get started.",
+      "features": [
+       {
+        "text": "5 projects",
+        "included": true
+       },
+       {
+        "text": "Email support",
+        "included": false
+       }
+      ],
+      "ctaText": "Get started",
+      "ctaUrl": "https://example.test/start",
+      "highlighted": true,
+      "iconName": "star",
+      "savingsBadgeText": "Save 17%"
+     },
+     {
+      "name": "Team",
+      "price": "£29",
+      "priceYearly": "£290",
+      "period": "monthly",
+      "description": "For growing teams.",
+      "features": [
+       "Unlimited projects",
+       "Priority support"
+      ],
+      "ctaText": "Choose Team",
+      "ctaUrl": "https://example.test/team",
+      "highlighted": false,
+      "ribbonText": "Best value",
+      "ribbonColour": "accent",
+      "savingsBadgeText": "Save 17%"
+     }
+    ],
+    "columns": 2
+   },
+   "paths": {
+    "toggle-mixed": {
+     "why": "billingToggle monthly-yearly with one highlighted plan (prints the badge) and one non-highlighted plan with ribbonText (prints the ribbon); yearly price and savings badge print",
+     "attrs": {
+      "billingToggle": "monthly-yearly"
+     }
+    },
+    "no-toggle": {
+     "why": "billingToggle none: no toggle and no yearly price element, but every other plan part still prints",
+     "attrs": {
+      "billingToggle": "none"
+     }
+    }
+   },
+   "pathsWhy": "The branches in render.php are billingToggle (show_toggle and show_yearly: yearly price, savings badge, toggle), plan highlighted (badge) versus ribbonText without highlight (ribbon, only when not highlighted), iconName (icon) and the features and CTA guards; these are per plan and per attribute, so one two-plan path covers the badge and the ribbon together and the second path covers the toggle-off side. pricingTableStyle and ctaStyle only change modifier classes."
   },
   "process-steps": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "steps": [
+     {
+      "icon": "search",
+      "title": "Discover",
+      "description": "We learn what you need."
+     },
+     {
+      "icon": "pencil",
+      "title": "Plan",
+      "description": "We agree the approach."
+     },
+     {
+      "icon": "check",
+      "title": "Deliver",
+      "description": "We build and hand over."
+     }
+    ]
+   },
+   "paths": {
+    "row-numbered": {
+     "why": "layout row with numberStyle circle: each step prints icon, number, title and description",
+     "attrs": {
+      "layout": "row",
+      "numberStyle": "circle",
+      "connectorStyle": "line"
+     }
+    },
+    "list-numbered": {
+     "why": "layout list prints the same step markup under the layout-list modifier",
+     "attrs": {
+      "layout": "list",
+      "numberStyle": "circle"
+     }
+    }
+   },
+   "pathsWhy": "The step loop prints icon only when the step has an icon, number unless numberStyle is none, and description only when non-empty; layout (row or list) and connectorStyle change classes on the wrapper and no part's element. The numberStyle none branch removes the number part by design and has no path of its own."
   },
   "product-card": {
    "base": {
@@ -546,15 +2059,207 @@
      }
     },
     "interactive-variable": {
-     "unrendered": "the configurator card needs WC_VERSION and a Product_Manifest built from real variations (scripts/qa/lib/wp-stubs.php, DELIBERATELY NOT STUBBED); its markup carries the same part classes as the live default card (render.php, the variable branch)"
+     "why": "a WooCommerce variable product with the configurator supported (WC_VERSION at the floor) and a Product_Manifest: the interactive configurator card (render.php, the live variable-product branch)",
+     "attrs": {
+      "sourceMode": "wc-product",
+      "productId": 52,
+      "rrpMetaKey": "_sgs_rrp",
+      "showLadder": true
+     },
+     "product": {
+      "id": 52,
+      "name": "Sample product",
+      "price_html": "<span class=\"woocommerce-Price-amount amount\">£9</span>",
+      "price": "9",
+      "type": "variable",
+      "image_id": 7,
+      "image_url": "https://example.test/single.jpg",
+      "short_description": "A sample product.",
+      "in_stock": true,
+      "average_rating": "4.5",
+      "review_count": 3,
+      "variation_price_min": "9",
+      "variation_price_max": "48",
+      "meta": {
+       "_sgs_rrp": "12",
+       "_sgs_base_price_pence": "1000",
+       "_sgs_base_price_attested": "1"
+      },
+      "attributes": [
+       {
+        "name": "pa_pack-size",
+        "visible": true
+       }
+      ],
+      "terms": {
+       "product_tag": [
+        "oak"
+       ]
+      }
+     },
+     "manifest": {
+      "decimals": 2,
+      "currencySymbol": "£",
+      "generatedAt": 1767225600,
+      "axes": [
+       {
+        "taxonomy": "pa_pack-size",
+        "label": "Pack size",
+        "variesBy": "",
+        "terms": [
+         {
+          "slug": "single",
+          "label": "Single"
+         },
+         {
+          "slug": "six-pack",
+          "label": "Six pack"
+         }
+        ]
+       }
+      ],
+      "combos": {
+       "pa_pack-size:single": {
+        "variationId": 61,
+        "priceMinor": 900,
+        "regularMinor": 1000,
+        "saleMinor": 900,
+        "pctOff": 10,
+        "pctDisplay": "",
+        "inStock": true,
+        "imageUrl": "https://example.test/single.jpg",
+        "hasOwnImage": true,
+        "exMinor": 900,
+        "taxMinor": 0,
+        "regularExMinor": 1000,
+        "unitDivisor": 1,
+        "unitLabel": "each",
+        "discountLabel": "",
+        "incMinor": 900,
+        "sku": "SAMPLE-61",
+        "gtin": "",
+        "saleEndDate": "",
+        "gallery": [
+         {
+          "url": "https://example.test/single.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product"
+         },
+         {
+          "url": "https://example.test/single-2.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product, side"
+         }
+        ]
+       },
+       "pa_pack-size:six-pack": {
+        "variationId": 62,
+        "priceMinor": 4800,
+        "regularMinor": 4800,
+        "saleMinor": 0,
+        "pctOff": 0,
+        "pctDisplay": "",
+        "inStock": false,
+        "imageUrl": "https://example.test/six.jpg",
+        "hasOwnImage": true,
+        "exMinor": 4800,
+        "taxMinor": 0,
+        "regularExMinor": 4800,
+        "unitDivisor": 6,
+        "unitLabel": "each",
+        "discountLabel": "",
+        "incMinor": 4800,
+        "sku": "SAMPLE-62",
+        "gtin": "",
+        "saleEndDate": "",
+        "gallery": [
+         {
+          "url": "https://example.test/six.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product"
+         },
+         {
+          "url": "https://example.test/six-2.jpg",
+          "w": 800,
+          "h": 800,
+          "alt": "Sample product, side"
+         }
+        ]
+       }
+      },
+      "defaultKey": "pa_pack-size:single",
+      "defaultAxes": {
+       "pa_pack-size": "single"
+      }
+     }
     }
    }
   },
   "product-search": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "placeholder": "Search products",
+    "buttonLabel": "Search"
+   },
+   "paths": {
+    "inline-bar": {
+     "why": "displayMode inline-bar: the form is printed directly in the wrapper",
+     "attrs": {
+      "displayMode": "inline-bar"
+     }
+    },
+    "icon-expand": {
+     "why": "displayMode icon-expand: the same form sits inside a details disclosure panel",
+     "attrs": {
+      "displayMode": "icon-expand"
+     }
+    },
+    "full-screen-overlay": {
+     "why": "displayMode full-screen-overlay: the form is moved into a dialog body behind an icon toggle",
+     "attrs": {
+      "displayMode": "full-screen-overlay"
+     }
+    },
+    "command-palette": {
+     "why": "displayMode command-palette: the same dialog with the cmdk modifier class",
+     "attrs": {
+      "displayMode": "command-palette"
+     }
+    }
+   },
+   "pathsWhy": "Read render.php: displayMode (inline-bar, icon-expand, full-screen-overlay, command-palette) chooses the container around one shared form buffer (form_html), so input and results print in every mode."
   },
   "quote": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "attribution": "A. Customer",
+    "attributionEnabled": true
+   },
+   "paths": {
+    "footer": {
+     "why": "attributionTag footer (default): the attribution prints as a footer with class wp-block-sgs-quote__attribution",
+     "attrs": {
+      "attributionTag": "footer"
+     },
+     "content": "<p>A sample quotation.</p>"
+    },
+    "cite": {
+     "why": "attributionTag cite prints the same class on a cite element",
+     "attrs": {
+      "attributionTag": "cite"
+     },
+     "content": "<p>A sample quotation.</p>"
+    },
+    "div": {
+     "why": "attributionTag div prints the same class on a div",
+     "attrs": {
+      "attributionTag": "div"
+     },
+     "content": "<p>A sample quotation.</p>"
+    }
+   },
+   "pathsWhy": "render.php returns nothing when there is neither body nor attribution, and prints the attribution element only when attributionEnabled and the text is non-empty; attributionTag only swaps the element name (footer, div, cite), always under wp-block-sgs-quote__attribution."
   },
   "responsive-logo": {
    "base": {
@@ -625,7 +2330,17 @@
    }
   },
   "site-footer-row": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {},
+   "paths": {
+    "default": {
+     "why": "a row with inner content: SGS_Container_Wrapper prints the content band (sgs-site-footer-row__content-band) when a motion layer targets it",
+     "attrs": {
+      "rowSlot": "columns"
+     },
+     "content": "<div class=\"wp-block-paragraph\">Row item</div>"
+    }
+   },
+   "pathsWhy": "render.php returns an empty string for empty inner content (no parts) and otherwise hands the content to SGS_Container_Wrapper::render in one branch; rowSlot only adds a modifier class, so one path covers the only part-bearing branch."
   },
   "site-header": {
    "base": {
@@ -651,7 +2366,17 @@
    }
   },
   "site-header-row": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {},
+   "paths": {
+    "default": {
+     "why": "a row with inner content: SGS_Container_Wrapper prints the content band (sgs-site-header-row__content-band) when a motion layer targets it",
+     "attrs": {
+      "rowSlot": "middle"
+     },
+     "content": "<div class=\"wp-block-paragraph\">Row item</div>"
+    }
+   },
+   "pathsWhy": "render.php returns an empty string for empty inner content (no parts) and otherwise hands the content to SGS_Container_Wrapper::render in one branch; rowSlot only adds a modifier class, so one path covers the only part-bearing branch."
   },
   "star-rating": {
    "base": {
@@ -672,22 +2397,306 @@
    }
   },
   "store-selector": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "triggerPrefix": "Store:",
+    "stores": [
+     {
+      "label": "Store One",
+      "url": "https://example.test/one/",
+      "flagUrl": "https://example.test/flag-one.png"
+     },
+     {
+      "label": "Store Two",
+      "url": "https://example.test/two/",
+      "flagUrl": "https://example.test/flag-two.png"
+     }
+    ]
+   },
+   "paths": {
+    "default": {
+     "why": "two stores with flags: the trigger button, the list (panel) and one li per store (item)",
+     "attrs": {
+      "panelAlign": "start"
+     }
+    }
+   },
+   "pathsWhy": "Read render.php: it returns nothing when no store has a URL (no parts), otherwise prints the same trigger, list and item markup; panelAlign and the flag/prefix only add a modifier class or an optional inner element."
   },
   "table-of-contents": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "title": "On this page"
+   },
+   "paths": {
+    "plain": {
+     "why": "collapsible off: the title is a p with class sgs-toc__title above the list",
+     "attrs": {
+      "collapsible": false
+     },
+     "postContent": "<!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">First section</h2><!-- /wp:core/heading --><!-- wp:core/paragraph --><p>Text.</p><!-- /wp:core/paragraph --><!-- wp:core/heading {\"level\":3} --><h3 class=\"wp-block-heading\">A subsection</h3><!-- /wp:core/heading --><!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">Second section</h2><!-- /wp:core/heading -->"
+    },
+    "collapsible": {
+     "why": "collapsible on: the title is the summary (class sgs-toc__title) of a details element",
+     "attrs": {
+      "collapsible": true
+     },
+     "postContent": "<!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">First section</h2><!-- /wp:core/heading --><!-- wp:core/paragraph --><p>Text.</p><!-- /wp:core/paragraph --><!-- wp:core/heading {\"level\":3} --><h3 class=\"wp-block-heading\">A subsection</h3><!-- /wp:core/heading --><!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">Second section</h2><!-- /wp:core/heading -->"
+    },
+    "unordered": {
+     "why": "listStyle bullets: the list is a ul instead of an ol, links unchanged",
+     "attrs": {
+      "listStyle": "bullets",
+      "collapsible": false
+     },
+     "postContent": "<!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">First section</h2><!-- /wp:core/heading --><!-- wp:core/paragraph --><p>Text.</p><!-- /wp:core/paragraph --><!-- wp:core/heading {\"level\":3} --><h3 class=\"wp-block-heading\">A subsection</h3><!-- /wp:core/heading --><!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">Second section</h2><!-- /wp:core/heading -->"
+    }
+   },
+   "pathsWhy": "render.php returns nothing without a global post, with empty post content, or with no headings (no parts); otherwise the title prints as a p (not collapsible) or a summary (collapsible), and each heading prints one sgs-toc__link; listStyle only swaps ol and ul, tocStyle only changes a modifier class. An empty title in the non-collapsible branch drops the title part by design and has no path."
   },
   "tabs": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {},
+   "paths": {
+    "horizontal": {
+     "why": "orientation horizontal (default), underline style: tablist buttons and one panel each",
+     "attrs": {
+      "orientation": "horizontal",
+      "tabStyle": "underline"
+     },
+     "innerBlocks": [
+      {
+       "name": "sgs/tab",
+       "attributes": {
+        "label": "Overview"
+       },
+       "html": "<div class=\"wp-block-sgs-tab\"><p>First panel.</p></div>"
+      },
+      {
+       "name": "sgs/tab",
+       "attributes": {
+        "label": "Details"
+       },
+       "html": "<div class=\"wp-block-sgs-tab\"><p>Second panel.</p></div>"
+      },
+      {
+       "name": "sgs/tab",
+       "attributes": {
+        "label": "Reviews"
+       },
+       "html": "<div class=\"wp-block-sgs-tab\"><p>Third panel.</p></div>"
+      }
+     ]
+    },
+    "vertical": {
+     "why": "orientation vertical: same tab and panel elements, aria-orientation vertical",
+     "attrs": {
+      "orientation": "vertical",
+      "tabStyle": "pills"
+     },
+     "innerBlocks": [
+      {
+       "name": "sgs/tab",
+       "attributes": {
+        "label": "Overview"
+       },
+       "html": "<div class=\"wp-block-sgs-tab\"><p>First panel.</p></div>"
+      },
+      {
+       "name": "sgs/tab",
+       "attributes": {
+        "label": "Details"
+       },
+       "html": "<div class=\"wp-block-sgs-tab\"><p>Second panel.</p></div>"
+      },
+      {
+       "name": "sgs/tab",
+       "attributes": {
+        "label": "Reviews"
+       },
+       "html": "<div class=\"wp-block-sgs-tab\"><p>Third panel.</p></div>"
+      }
+     ]
+    }
+   },
+   "pathsWhy": "render.php collects sgs/tab children, drops empty ones when hideEmptyTabs, returns nothing when no tab is left (no parts), and otherwise prints one sgs-tabs__tab button and one sgs-tabs__panel per tab; orientation, tabStyle and tabAlignment only change modifier classes and aria-orientation."
   },
   "team-member": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "name": "Alex Example",
+    "role": "Head of Sample",
+    "bio": "Sample biography text for the team member card.",
+    "photo": {
+     "url": "https://example.test/p.jpg",
+     "alt": "Alex",
+     "id": 0
+    },
+    "socialLinks": [
+     {
+      "platform": "linkedin",
+      "url": "https://example.test/in"
+     },
+     {
+      "platform": "email",
+      "url": "alex@example.test"
+     }
+    ]
+   },
+   "paths": {
+    "full": {
+     "why": "displayMode full, no hover overlay: photo, name, role, bio and the social row all print",
+     "attrs": {
+      "displayMode": "full"
+     }
+    },
+    "overlay": {
+     "why": "overlayHover on a full card: the photo wrapper takes the overlay variant (photo--has-overlay holding the bio) while name, role, bio and social still print",
+     "attrs": {
+      "displayMode": "full",
+      "overlayHover": true
+     }
+    },
+    "compact": {
+     "why": "displayMode compact: is_compact drops the bio paragraph and the whole social row, photo/name/role remain",
+     "attrs": {
+      "displayMode": "compact"
+     }
+    }
+   },
+   "pathsWhy": "Branches read in render.php: displayMode compact (drops bio_html and social_html), overlayHover with photo (photo wrapper variant), photo present or not, socialLinks empty or not, name/role/bio emptiness; early returns none."
   },
   "testimonial": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "quote": "A sample quote about the service.",
+    "summaryPhrase": "Sample summary phrase",
+    "reviewerName": "Sam Sample",
+    "reviewerRole": "Director",
+    "orgName": "Example Ltd",
+    "avatarMedia": {
+     "url": "https://example.test/a.jpg",
+     "alt": "Sam",
+     "id": 0
+    },
+    "orgLogo": {
+     "url": "https://example.test/l.jpg",
+     "alt": "Example Ltd",
+     "id": 0
+    },
+    "workMedia": {
+     "url": "https://example.test/w.jpg",
+     "alt": "Work",
+     "id": 0
+    },
+    "showRating": true,
+    "ratingType": "stars",
+    "ratingStars": 4.5,
+    "reviewDate": "2026-01-01",
+    "verified": true,
+    "sourcePlatform": "Google"
+   },
+   "paths": {
+    "classic-card": {
+     "why": "variant classic-card (and the default): rating, quote, footer with avatar, name, role, org and logo",
+     "attrs": {
+      "variant": "classic-card"
+     }
+    },
+    "pull-quote-editorial": {
+     "why": "variant pull-quote-editorial: summary phrase leads, then quote, rating and footer",
+     "attrs": {
+      "variant": "pull-quote-editorial"
+     }
+    },
+    "rating-led": {
+     "why": "variant rating-led: rating and meta row lead, then quote and footer",
+     "attrs": {
+      "variant": "rating-led"
+     }
+    },
+    "avatar-spotlight": {
+     "why": "variant avatar-spotlight: avatar leads, quote, rating, attribution (no logo, no footer wrapper)",
+     "attrs": {
+      "variant": "avatar-spotlight"
+     }
+    },
+    "corporate-logo": {
+     "why": "variant corporate-logo: org logo leads, quote, rating, attribution (no avatar)",
+     "attrs": {
+      "variant": "corporate-logo"
+     }
+    },
+    "case-study-media": {
+     "why": "variant case-study-media: work media and summary lead, quote, footer (no rating)",
+     "attrs": {
+      "variant": "case-study-media"
+     }
+    },
+    "minimal-quote": {
+     "why": "variant minimal-quote: quote and attribution only, no media or rating",
+     "attrs": {
+      "variant": "minimal-quote"
+     }
+    },
+    "rating-scale": {
+     "why": "ratingType scale in the classic card: the numeric score replaces the stars inside the same rating element",
+     "attrs": {
+      "variant": "classic-card",
+      "ratingType": "scale",
+      "ratingScale": 9.2,
+      "ratingScaleMax": "10"
+     }
+    }
+   },
+   "pathsWhy": "render.php assembles the same gated nodes per variant in a switch (pull-quote-editorial, rating-led, avatar-spotlight, corporate-logo, case-study-media, minimal-quote, classic-card/default); each node is gated on its own attribute (summaryPhrase, quote, reviewerName/Role/orgName, avatarMedia, orgLogo, workMedia, showRating with ratingType stars or scale). The variant can also come from block context sgs/testimonialVariant, which is the slider path. The only early return is when no node has content."
   },
   "testimonial-slider": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "slidesVisible": 1,
+    "autoplay": false
+   },
+   "paths": {
+    "slides": {
+     "why": "inner testimonials present with showArrows and showDots on: the stage prints the prev/next arrows, the track and the dots",
+     "attrs": {
+      "showArrows": true,
+      "showDots": true
+     },
+     "innerBlocks": [
+      {
+       "name": "sgs/testimonial",
+       "attributes": {
+        "name": "Sam Sample",
+        "quote": "A sample quote.",
+        "ratingStars": 5
+       },
+       "html": "<div class=\"sgs-testimonial\"><blockquote class=\"sgs-testimonial__quote\">A sample quote.</blockquote></div>"
+      },
+      {
+       "name": "sgs/testimonial",
+       "attributes": {
+        "name": "Alex Example",
+        "quote": "Another sample quote."
+       },
+       "html": "<div class=\"sgs-testimonial\"><blockquote class=\"sgs-testimonial__quote\">Another sample quote.</blockquote></div>"
+      }
+     ]
+    },
+    "controls-off": {
+     "why": "showArrows and showDots false: no arrow buttons and no dots, only the track and its slides print",
+     "attrs": {
+      "showArrows": false,
+      "showDots": false
+     },
+     "innerBlocks": [
+      {
+       "name": "sgs/testimonial",
+       "attributes": {
+        "name": "Sam Sample",
+        "quote": "A sample quote."
+       },
+       "html": "<div class=\"sgs-testimonial\"><blockquote class=\"sgs-testimonial__quote\">A sample quote.</blockquote></div>"
+      }
+     ]
+    }
+   },
+   "pathsWhy": "render.php gates the arrows on showArrows and total_testimonials > 0, the dots on showDots and total_testimonials > 0, and always prints the track; the only other branches (autoplay pause button, schema script) add elements that are not offered parts. With no testimonials only the track prints, the same element as on the slides path."
   },
   "theme-toggle": {
    "base": {
@@ -725,7 +2734,35 @@
    }
   },
   "timeline": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "entries": [
+     {
+      "date": "2020-01-01",
+      "title": "Founded",
+      "description": "The sample company began."
+     },
+     {
+      "date": "2022",
+      "title": "Grew",
+      "description": "A second sample milestone."
+     }
+    ]
+   },
+   "paths": {
+    "progress": {
+     "why": "connectorProgressFill on: the scroll-driven progress li (glow and fill) is printed last in the list, after the entries",
+     "attrs": {
+      "connectorProgressFill": true
+     }
+    },
+    "plain": {
+     "why": "connectorProgressFill off: entries only, no progress li",
+     "attrs": {
+      "connectorProgressFill": false
+     }
+    }
+   },
+   "pathsWhy": "The entry li, its date (time) and title always print per entry; the only branch that changes which offered parts print is connectorProgressFill (progress li). orientation, contentLayout, mobileLayout, scrollEffect and milestoneSize change classes and CSS only. No early return on empty entries was found, so the empty case prints no entry parts and is not a useful path."
   },
   "trust-bar": {
    "base": {
@@ -791,16 +2828,124 @@
    }
   },
   "trustpilot-reviews": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "dataSource": "inline",
+    "reviews": [
+     {
+      "author": "Alex Sample",
+      "rating": 5,
+      "datePublished": "2026-01-05T10:00:00+00:00",
+      "reviewBody": "Great service.",
+      "title": "Excellent",
+      "isVerified": true
+     },
+     {
+      "author": "Sam Example",
+      "rating": 4,
+      "datePublished": "2026-01-06T10:00:00+00:00",
+      "reviewBody": "Good value.",
+      "title": "Good",
+      "isVerified": true
+     }
+    ],
+    "trustScore": 4.5,
+    "trustScoreLabel": "Excellent",
+    "totalReviews": 2,
+    "reviewsAverage": 4.5,
+    "showSourceHeader": true,
+    "showTrustpilotLogo": true,
+    "showVerifiedBadge": true,
+    "showDate": true,
+    "showAuthor": true,
+    "showArrows": true,
+    "showDots": true,
+    "businessUnitUrl": "https://example.test/tp"
+   },
+   "paths": {
+    "carousel": {
+     "why": "variant carousel: wrapper content-band plus cards with a title",
+     "attrs": {
+      "variant": "carousel"
+     }
+    },
+    "grid": {
+     "why": "variant grid: the same cards in a plain grid",
+     "attrs": {
+      "variant": "grid"
+     }
+    },
+    "placeholder": {
+     "why": "dataSource placeholder: sample cards, some with an empty title",
+     "attrs": {
+      "dataSource": "placeholder",
+      "variant": "list"
+     }
+    }
+   },
+   "pathsWhy": "render.php resolves reviews per dataSource (synced, inline, placeholder, woocommerce) and returns early or prints the coming-soon note only when synced or WooCommerce data is empty (no parts). Otherwise the content-band comes from SGS_Container_Wrapper on every variant and a card title prints only for a review with a non-empty title; variant only changes root classes and the carousel arrows, dots and track attributes."
   },
   "whatsapp-cta": {
-   "single": "Its modes print mode-specific parts under their own names (card-title and card-subline only in the card variant); no part's element is printed under another class in another mode, so the static check covers it."
+   "base": {
+    "phoneNumber": "+441234567890",
+    "message": "Hello",
+    "label": "Chat to us",
+    "cardTitle": "Chat on WhatsApp",
+    "cardSubline": "We reply within an hour"
+   },
+   "paths": {
+    "floating": {
+     "why": "variant floating: icon svg plus a label span; no card text",
+     "attrs": {
+      "variant": "floating"
+     }
+    },
+    "inline": {
+     "why": "any non-card, non-floating variant: icon svg plus the plain label span",
+     "attrs": {
+      "variant": "inline"
+     }
+    },
+    "card": {
+     "why": "variant card: sgs_whatsapp_cta_card_markup prints the icon badge, card title and card sub-line",
+     "attrs": {
+      "variant": "card"
+     }
+    }
+   },
+   "pathsWhy": "render.php returns early when phoneNumber is empty (no parts). Otherwise variant card prints sgs_whatsapp_cta_card_markup (icon badge, card-title, card-subline), and every other variant prints the bare icon svg plus a label span. The inline path stands for the inline and banner variants, which share the non-card branch."
   },
   "wishlist-link": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "label": "Wishlist",
+    "showLabel": true,
+    "showCount": true
+   },
+   "paths": {
+    "default": {
+     "why": "the only markup branch: one anchor with the icon span, the label and, with showCount, the count badge; showLabel only changes scoped CSS",
+     "attrs": {
+      "iconName": "heart",
+      "showCount": true
+     }
+    }
+   },
+   "pathsWhy": "Read render.php: iconSource only falls back to the heart icon, wishlistUrl and the saved-items page only change the href, showCount adds the badge and showLabel changes only the scoped CSS, so one path prints every part."
   },
   "wishlist-panel": {
-   "single": "One render path: its early returns (bail-outs, empty or editor notices) print none of the block's parts, and its branches only add or drop an element for its own content, never print a part's element under another class."
+   "base": {
+    "heading": "Saved for later"
+   },
+   "paths": {
+    "default": {
+     "why": "the server prints one shell (heading, view-all link, status, items container) for every layout; items, prices and buttons are drawn by view.js",
+     "attrs": {
+      "layout": "grid",
+      "showCount": true,
+      "showPrice": true
+     }
+    }
+   },
+   "pathsWhy": "Read render.php: layout grid/list/strip only changes the root modifier class and the other show* attributes only become data attributes, so the server markup never varies; the only offered part with PHP markup is heading."
   }
  }
 }

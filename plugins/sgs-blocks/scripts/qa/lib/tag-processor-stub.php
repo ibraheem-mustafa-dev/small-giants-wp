@@ -15,7 +15,7 @@ declare(strict_types=1);
 // phpcs:disable
 
 if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
-	/** Opening tags in document order; has_class(), set_attribute(), add_class() and get_updated_html(). */
+	/** Tags in document order (closers too when asked); get_tag(), is_tag_closer(), has_self_closing_flag(), has_class(), set_attribute(), add_class() and get_updated_html(). */
 	class WP_HTML_Tag_Processor {
 		private string $html;
 		private int $start = -1;
@@ -24,12 +24,24 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 			$this->html = (string) $html;
 		}
 		public function next_tag( $query = null ): bool {
-			if ( ! preg_match( '/<[a-zA-Z][a-zA-Z0-9-]*\b[^>]*>/', $this->html, $m, PREG_OFFSET_CAPTURE, $this->start + 1 ) ) {
+			// `tag_closers => visit` (what the motion markup walk asks) stops on closing tags too.
+			$visit = is_array( $query ) && 'visit' === ( $query['tag_closers'] ?? '' );
+			$tag   = $visit ? '/<\/?[a-zA-Z][a-zA-Z0-9-]*\b[^>]*>/' : '/<[a-zA-Z][a-zA-Z0-9-]*\b[^>]*>/';
+			if ( ! preg_match( $tag, $this->html, $m, PREG_OFFSET_CAPTURE, $this->start + 1 ) ) {
 				return false;
 			}
 			$this->start = (int) $m[0][1];
 			$this->len   = strlen( $m[0][0] );
 			return true;
+		}
+		public function get_tag(): ?string {
+			return 1 === preg_match( '/^<\/?([a-zA-Z][a-zA-Z0-9-]*)/', substr( $this->html, $this->start, $this->len ), $m ) ? strtoupper( $m[1] ) : null;
+		}
+		public function is_tag_closer(): bool {
+			return '/' === ( $this->html[ $this->start + 1 ] ?? '' );
+		}
+		public function has_self_closing_flag(): bool {
+			return str_ends_with( substr( $this->html, $this->start, $this->len ), '/>' );
 		}
 		public function has_class( $class_name ): bool {
 			$open = substr( $this->html, $this->start, $this->len );

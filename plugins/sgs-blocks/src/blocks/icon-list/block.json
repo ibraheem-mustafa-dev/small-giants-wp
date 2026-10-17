@@ -107,7 +107,9 @@
 								"css:stroke": "iconColourHoverGradient"
 							}
 						}
-					}
+					},
+					"absentIn": [ "bullet-plain" ],
+					"absentWhy": "The icon span prints only for the icon and emoji marker types; bullet and number markers are list styling."
 				},
 				"item": {
 					"label": "Each item row",

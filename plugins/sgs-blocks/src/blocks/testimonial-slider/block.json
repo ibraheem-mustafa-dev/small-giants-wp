@@ -79,13 +79,17 @@
 					"label": "Prev/next arrow",
 					"order": 3,
 					"clusters": [],
-					"_note": "showArrows toggles visibility only — no colour/size/style attrs exist per-arrow; styling comes from static style.css theme defaults."
+					"_note": "showArrows toggles visibility only — no colour/size/style attrs exist per-arrow; styling comes from static style.css theme defaults.",
+					"absentIn": [ "controls-off" ],
+					"absentWhy": "Arrows and dots print only when showArrows and showDots are on."
 				},
 				"dot": {
 					"label": "Navigation dot",
 					"order": 4,
 					"clusters": [],
-					"_note": "showDots toggles visibility only — no colour/size attrs exist per-dot."
+					"_note": "showDots toggles visibility only — no colour/size attrs exist per-dot.",
+					"absentIn": [ "controls-off" ],
+					"absentWhy": "Arrows and dots print only when showArrows and showDots are on."
 				},
 				"track": {
 					"label": "Slide track",

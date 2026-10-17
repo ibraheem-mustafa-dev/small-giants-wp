@@ -71,7 +71,9 @@
 					],
 					"attrMap": {
 						"css:color": "separatorColour"
-					}
+					},
+					"absentIn": [ "single-link", "disclosure" ],
+					"absentWhy": "Separators print only between the links of the inline display."
 				}
 			}
 		}

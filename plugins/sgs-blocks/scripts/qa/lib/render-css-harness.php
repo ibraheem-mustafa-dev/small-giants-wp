@@ -296,6 +296,8 @@ if ( $motion_targets ) {
 	require_once __DIR__ . '/motion-targets-stubs.php';
 	require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-custom-target.php';
 	require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-targets.php';
+	// Real SGS code: the nav bar's motion-model path marks its items through Sgs_Motion_Markup.
+	require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-markup.php';
 	$attributes = sgs_qa_apply_attribute_defaults( $attributes, null !== $block_type ? $block_type->attributes : array() );
 	$block      = new SGS_QA_Motion_Block( $slug, $attributes, $context, $block_type );
 } else {
@@ -483,9 +485,26 @@ if ( isset( $args['taxonomies-file'] ) ) {
 if ( isset( $args['stub-woocommerce'] ) && ! class_exists( 'WooCommerce', false ) ) {
 	class WooCommerce {} // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound -- opt-in presence marker.
 }
+// The same opt-in marks WooCommerce's account and order-tracking shortcodes present (sgs/account wraps them in its own
+// markup); their output() prints nothing, so only the SGS markup around them renders.
+if ( isset( $args['stub-woocommerce'] ) && ! class_exists( 'WC_Shortcode_My_Account', false ) ) {
+	class WC_Shortcode_My_Account { // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound -- opt-in presence marker.
+		public static function output( $atts = array() ) {}
+	}
+}
+if ( isset( $args['stub-woocommerce'] ) && ! class_exists( 'WC_Shortcode_Order_Tracking', false ) ) {
+	class WC_Shortcode_Order_Tracking { // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound -- opt-in presence marker.
+		public static function output( $atts = array() ) {}
+	}
+}
 // --content stands in for rendered InnerBlocks (a composite block with no inner
 // content renders nothing, so its colours are never emitted).
 $content = isset( $args['content'] ) ? (string) $args['content'] : '';
+
+// What the targets step below reads, taken before the render: render.php runs in this scope, so a variable it assigns
+// (sgs/business-info's hours loop writes `$slug`) must not reach the resolver.
+$harness_slug     = $slug;
+$harness_elements = null !== $block_type && is_array( $block_meta['supports']['sgs']['elements'] ?? null ) ? $block_meta['supports']['sgs']['elements'] : array();
 
 $html  = '';
 $error = null;
@@ -519,10 +538,9 @@ $result = array(
 // Every declared part resolved by the real resolver, relative to a placeholder scope class the caller maps onto the
 // rendered root. A part the resolver does not offer (`"motion": false`) resolves to null.
 if ( $motion_targets ) {
-	$targets  = array();
-	$elements = null !== $block_type && is_array( $block_meta['supports']['sgs']['elements'] ?? null ) ? $block_meta['supports']['sgs']['elements'] : array();
-	foreach ( array_keys( $elements ) as $part ) {
-		$targets[ (string) $part ] = \SGS\Blocks\Motion\Sgs_Motion_Targets::resolve( $slug, 'sgs-qa-scope', (string) $part, array() );
+	$targets = array();
+	foreach ( array_keys( $harness_elements ) as $part ) {
+		$targets[ (string) $part ] = \SGS\Blocks\Motion\Sgs_Motion_Targets::resolve( $harness_slug, 'sgs-qa-scope', (string) $part, array() );
 	}
 	$result['targets'] = (object) $targets;
 }

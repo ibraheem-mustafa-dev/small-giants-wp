@@ -11,8 +11,8 @@ class appears somewhere in the block's source; this gate renders each path and a
 HOW
   The paths are data, in plugins/sgs-blocks/tests/fixtures/motion/render-paths.json (curated: which attribute sets
   select a different branch is read from each render.php, not derivable from block.json). Every motion block with an
-  offered part (not the root, not `"motion": false`) has an entry: either `single` (a reason: one render path, or only
-  bail-out / notice paths that print none of the block's parts, so the static gate covers it) or `paths`. Each path
+  offered part (not the root, not `"motion": false`) has an entry of `paths`, at least one of them rendered (a block
+  with one part-bearing branch still renders that one path, so no claim about a render goes unchecked). Each path
   renders the REAL render.php through scripts/qa/lib/render-css-harness.php --motion-targets with the entry's `base`
   attributes, the path's `attrs`, and a hover layer on every offered part (a layer on `inner` / `content-band` is what
   makes the container wrapper print its band, so the band is only reachable when a layer asks for it). The harness
@@ -32,13 +32,14 @@ ABSENT BY DESIGN
 
 MODES
   --check      exit 1 on any failure above, a motion block with no fixture entry, an entry for a block that is not a
-               motion block, or a path whose render fails
+               motion block, an entry with no rendered path (or a `single` claim instead of paths), or a path whose
+               render fails
   --survey     every block and path with each part's verdict
   --self-test  planted controls on synthetic renders (no PHP): a modifier-only class (caught), a part printed on one
                path but not another (caught), an absentIn naming an unknown path (caught), a stale absentIn (caught), an
                absentIn on every path (caught), an absentIn with no reason (caught), an unexercised part that matches (caught), a band part reached only as a
-               direct child (a grandchild is caught), a descendant selector whose ancestor is missing (caught), and the
-               matching positives
+               direct child (a grandchild is caught), a descendant selector whose ancestor is missing (caught), a
+               `single` claim (caught), an entry with no rendered path (caught), and the matching positives
 
 Run from the repo root:  python plugins/sgs-blocks/scripts/check-motion-part-render-paths.py --check|--survey|--self-test
 """
@@ -47,6 +48,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -197,21 +199,34 @@ def path_attrs(entry: dict, path: dict, parts: dict[str, dict]) -> dict:
 def php_render(slug: str, attrs: dict, path: dict, workdir: Path) -> dict:
     """The harness result ({ok, html, targets} or {ok: false, error})."""
     files = {"attrs-file": attrs}
-    for key, flag in (("product", "product-file"), ("post", "post-file"), ("context", "context-file"),
+    for key, flag in (("product", "product-file"), ("manifest", "manifest-file"), ("queried", "queried-file"),
+                      ("post", "post-file"), ("context", "context-file"),
                       ("innerBlocks", "inner-blocks-file"), ("attachments", "attachments-file"),
                       ("globalSettings", "global-settings-file")):
         if key in path:
             files[flag] = path[key]
     cmd = ["php", str(HARNESS), "--slug", f"sgs/{slug}", "--motion-targets"]
+    if "taxonomies" in path:
+        files["taxonomies-file"] = path["taxonomies"]
     for flag, value in files.items():
         f = workdir / f"{slug}-{abs(hash(json.dumps(path, sort_keys=True)))}-{flag}.json"
         f.write_text(json.dumps(value), encoding="utf-8")
         cmd += [f"--{flag}", str(f)]
+    if "postContent" in path:
+        f = workdir / f"{slug}-{abs(hash(json.dumps(path, sort_keys=True)))}-post-content.html"
+        f.write_text(path["postContent"], encoding="utf-8")
+        cmd += ["--post-content-file", str(f)]
     if "content" in path:
         cmd += ["--content", path["content"]]
-    if path.get("stubWoocommerce"):
-        cmd += ["--stub-woocommerce"]
-    done = subprocess.run(cmd, cwd=PLUGIN, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
+    for key, flag in (("stubWoocommerce", "--stub-woocommerce"), ("renderChildren", "--render-children"),
+                      ("firstSection", "--first-section")):
+        if path.get(key):
+            cmd += [flag]
+    env = None
+    if "options" in path:
+        # Site options (Site Info and the rest) the render reads through get_option(), as wp-stubs.php takes them.
+        env = {**os.environ, "SGS_QA_OPTIONS": json.dumps(path["options"])}
+    done = subprocess.run(cmd, cwd=PLUGIN, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120, env=env)
     start = done.stdout.find('{"ok"')
     try:
         return json.loads(done.stdout[start:]) if start >= 0 else {"ok": False, "error": (done.stdout + done.stderr).strip()[-400:]}
@@ -267,7 +282,7 @@ def evaluate(fixture: dict, blocks: dict[str, dict], results: dict[str, dict[str
             continue
         entry = entries.get(slug)
         if entry is None:
-            errors.append(f"[{slug}] motion block with offered parts has no entry in {FIXTURE.relative_to(REPO).as_posix()} (declare its `paths`, or `single` with the reason it has one)")
+            errors.append(f"[{slug}] motion block with offered parts has no entry in {FIXTURE.relative_to(REPO).as_posix()} (declare its `paths`, at least one rendered)")
             continue
         for slug_path, res in (results.get(slug) or {}).items():
             if not res.get("ok"):
@@ -284,9 +299,10 @@ def evaluate(fixture: dict, blocks: dict[str, dict], results: dict[str, dict[str
             continue
         parts = offered_parts(blocks[slug])
         paths = entry.get("paths") or {}
-        single = entry.get("single")
-        if bool(single) == bool(paths):
-            errors.append(f"[{slug}] fixture entry needs exactly one of `single` (a reason) or `paths`")
+        if "single" in entry:
+            errors.append(f"[{slug}] fixture entry claims `single` without rendering it: declare the block's `paths` (one path for one part-bearing branch)")
+        if not any("unrendered" not in path for path in paths.values()):
+            errors.append(f"[{slug}] fixture entry renders no path: at least one path must render through the real render.php")
         for part, spec in parts.items():
             absent = spec.get("absentIn")
             if absent is None:
@@ -298,7 +314,7 @@ def evaluate(fixture: dict, blocks: dict[str, dict], results: dict[str, dict[str
                 errors.append(f"[{slug}:{part}] absentIn without an absentWhy saying why the element does not exist there")
             for a in absent:
                 if a not in paths:
-                    errors.append(f"[{slug}:{part}] absentIn names {a!r}, which is not a render path of the block in the fixture (paths: {sorted(paths) or 'none, the entry is single'})")
+                    errors.append(f"[{slug}:{part}] absentIn names {a!r}, which is not a render path of the block in the fixture (paths: {sorted(paths) or 'none'})")
             if paths and set(paths) <= set(absent):
                 errors.append(f"[{slug}:{part}] absentIn covers every render path: the part is never reachable, so mark it \"motion\": false")
         for pid, path in paths.items():
@@ -399,8 +415,12 @@ def self_test() -> int:
     cases.append(("an unexercised part that matches is caught (stale)", any("unexercised" in x and "stale" in x for x in e)))
     e = evaluate({"blocks": {}}, {"t": block({"thing": {}})}, {})[0]
     cases.append(("a motion block with no fixture entry is caught", any("no entry" in x for x in e)))
-    e = evaluate({"blocks": {"t": {"single": "one path", "paths": {"a": {}}}}}, {"t": block({"thing": {}})}, {"t": {"a": res('<div><i class="sgs-t__thing"></i></div>', t)}})[0]
-    cases.append(("an entry with both single and paths is caught", any("exactly one" in x for x in e)))
+    e = evaluate({"blocks": {"t": {"single": "one path"}}}, {"t": block({"thing": {}})}, {})[0]
+    cases.append(("a `single` claim (an unrendered reading of the render) is caught", any("claims `single`" in x for x in e)))
+    e = evaluate({"blocks": {"t": {"paths": {"a": {"unrendered": "no stub"}}}}}, {"t": block({"thing": {}})}, {})[0]
+    cases.append(("an entry whose every path is unrendered is caught", any("renders no path" in x for x in e)))
+    e = evaluate({"blocks": {"t": {"paths": {"a": {}, "b": {"unrendered": "no stub"}}}}}, {"t": block({"thing": {}})}, {"t": {"a": res('<div><i class="sgs-t__thing"></i></div>', t)}})[0]
+    cases.append(("an entry with one rendered path and one unrendered path passes", e == []))
     e = evaluate({"blocks": {"t": {"paths": {"a": {}}}}}, {"t": block({"thing": {}})}, {"t": {"a": {"ok": False, "error": "boom"}}})[0]
     cases.append(("a path whose render fails is caught", any("did not render" in x for x in e)))
     failures = 0

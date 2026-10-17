@@ -105,7 +105,9 @@
 							}
 						}
 					},
-					"_note_shadow_hover": "tileShadowHover added 2026-09-07 (hover SHAPE capability, Bean's shape+colour-per-state ruling) — sibling of the pre-existing tileShadowColourHover. Composed together by sgs_shadow_decls() in render.php (map key 'hover'), mirroring sgs/button's boxShadow/boxShadowHover pair."
+					"_note_shadow_hover": "tileShadowHover added 2026-09-07 (hover SHAPE capability, Bean's shape+colour-per-state ruling) — sibling of the pre-existing tileShadowColourHover. Composed together by sgs_shadow_decls() in render.php (map key 'hover'), mirroring sgs/button's boxShadow/boxShadowHover pair.",
+					"absentIn": [ "logos", "text" ],
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
 				},
 				"logo": {
 					"label": "Logo image only",
@@ -117,7 +119,9 @@
 						"css:object-fit": "logoFit",
 						"css:max-width": "logoMaxWidth"
 					},
-					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares no clusters. logoFit's attrMap entry added 2026-09-03 to close a db-consistency 'undeclared-subelement' finding (the classifier had no manifest signal to trace logoFit's element/selector to)."
+					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares no clusters. logoFit's attrMap entry added 2026-09-03 to close a db-consistency 'undeclared-subelement' finding (the classifier had no manifest signal to trace logoFit's element/selector to).",
+					"absentIn": [ "text" ],
+					"absentWhy": "Text mode prints each brand as text, with no logo image."
 				},
 				"caption": {
 					"selector": ".sgs-brand-strip__name",
@@ -132,7 +136,9 @@
 						"css:font-weight": "nameFontWeight",
 						"css:color": "nameColour",
 						"css:color-gradient": "nameColourGradient"
-					}
+					},
+					"absentIn": [ "logos", "text" ],
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
 				},
 				"name": {
 					"label": "Caption text-align",
@@ -148,7 +154,9 @@
 							}
 						}
 					},
-					"_note_hover": "Hover colour declared 2026-09-05. Was previously a bare `color:` in the root $root_hover_decls bucket, colliding with textColourHover's own `color:` in the same rule and never reaching this element (which sets its own explicit resting colour). render.php now emits an ancestor-hover rule on this element's selector, so the declaration is truthful."
+					"_note_hover": "Hover colour declared 2026-09-05. Was previously a bare `color:` in the root $root_hover_decls bucket, colliding with textColourHover's own `color:` in the same rule and never reaching this element (which sets its own explicit resting colour). render.php now emits an ancestor-hover rule on this element's selector, so the declaration is truthful.",
+					"absentIn": [ "logos", "text" ],
+					"absentWhy": "A tile, caption and name print only for a logo item with a caption (showNames on); a plain logo row and the text mode print none."
 				},
 				"item": {
 					"label": "Each logo tile (the whole tile when names are off)",
@@ -182,8 +190,10 @@
 							"css:color": "brandTextColourHover"
 						}
 					}
-				}
-			},
+				},
+					"absentIn": [ "logos", "logos-captioned" ],
+					"absentWhy": "The brand text prints only in text mode (brandDisplay text, or logo-else-text for an item without a logo)."
+				},
 			"track": {
 					"label": "Marquee track",
 					"order": 6,

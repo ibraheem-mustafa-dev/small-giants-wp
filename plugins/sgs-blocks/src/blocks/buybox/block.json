@@ -415,7 +415,9 @@
 						"css:column-count": "guidedMeterTextColumns",
 						"css:writing-mode": "guidedMeterWritingMode"
 					},
-					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step."
+					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step.",
+					"absentIn": [ "main" ],
+					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided)."
 				},
 				"guidedGroupTitle": {
 					"text": true,
@@ -440,7 +442,9 @@
 						"css:column-count": "guidedGroupTitleTextColumns",
 						"css:writing-mode": "guidedGroupTitleWritingMode"
 					},
-					"_note": "Guided layout: the heading above each question (.sgs-buybox-guided__group-title)."
+					"_note": "Guided layout: the heading above each question (.sgs-buybox-guided__group-title).",
+					"absentIn": [ "main" ],
+					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided)."
 				}
 			},
 			"fx": {

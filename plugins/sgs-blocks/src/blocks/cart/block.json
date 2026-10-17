@@ -133,7 +133,9 @@
 							}
 						}
 					},
-					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover."
+					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to iconColourGradient — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover.",
+					"absentIn": [ "pill-link" ],
+					"absentWhy": "The pill trigger shows its label and count in place of the icon."
 				},
 				"badge": {
 					"label": "Item-count badge",
@@ -176,7 +178,9 @@
 							}
 						}
 					},
-					"_note": "FR-36-19 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings use the same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry). panelTextColourHover/panelTextColourHoverGradient are safe for the same reason as the badge above — the panel's own background always lives on its ::after layer."
+					"_note": "FR-36-19 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings use the same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry). panelTextColourHover/panelTextColourHoverGradient are safe for the same reason as the badge above — the panel's own background always lives on its ::after layer.",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"pill": {
 					"selector": ".sgs-cart__trigger",
@@ -250,7 +254,9 @@
 						"css:transition-duration": "panelSlideDuration",
 						"css:transition-timing-function": "panelSlideEasing"
 					},
-					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing are the slide-in transition's duration and curve (panelSlideEasingCustom holds a hand-typed curve)."
+					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing are the slide-in transition's duration and curve (panelSlideEasingCustom holds a hand-typed curve).",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"panelHead": {
 					"selector": ".sgs-cart__panel-header",
@@ -263,7 +269,9 @@
 					"attrMap": {
 						"css:padding": "panelHeadPadding",
 						"css:border-color": "panelHeadBorderColour"
-					}
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"panelTitle": {
 					"text": true,
@@ -274,7 +282,9 @@
 						"text"
 					],
 					"prefix": "panelTitle",
-					"attrMap": {}
+					"attrMap": {},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"panelCount": {
 					"selector": ".sgs-cart__panel-count",
@@ -287,7 +297,9 @@
 					"attrMap": {
 						"css:color": "panelCountColour"
 					},
-					"_note": "The bracketed live item count after the heading; shown when panelShowCount is on."
+					"_note": "The bracketed live item count after the heading; shown when panelShowCount is on.",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"panelClose": {
 					"selector": ".sgs-cart__panel-close",
@@ -301,7 +313,9 @@
 					"attrMap": {
 						"css:color": "panelCloseColour",
 						"css:width": "panelCloseSize"
-					}
+					},
+					"absentIn": [ "icon-link", "pill-link", "flyout-panel" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel. The close button is drawer-only; a flyout panel closes on outside click and Escape."
 				},
 				"panelBody": {
 					"selector": ".sgs-cart__panel-items",
@@ -314,7 +328,9 @@
 					"attrMap": {
 						"css:padding": "panelBodyPadding",
 						"css:gap": "panelBodyGap"
-					}
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"panelEmpty": {
 					"motion": false,
@@ -473,7 +489,9 @@
 						"css:background-color": "panelFooterBg",
 						"css:padding": "panelFooterPadding",
 						"css:border-color": "panelFooterBorderColour"
-					}
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"subtotal": {
 					"selector": ".sgs-cart__panel-subtotal",
@@ -486,7 +504,9 @@
 					"attrMap": {
 						"css:color": "subtotalLabelColour"
 					},
-					"_note": "subtotalLabelColour colours the label and row; the amount on the right is its own element (subtotalValue)."
+					"_note": "subtotalLabelColour colours the label and row; the amount on the right is its own element (subtotalValue).",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"subtotalValue": {
 					"selector": ".sgs-cart__panel-subtotal-value",
@@ -498,7 +518,9 @@
 					"prefix": "subtotalValue",
 					"attrMap": {
 						"css:color": "subtotalValueColour"
-					}
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"freeDeliveryText": {
 					"motion": false,
@@ -550,7 +572,9 @@
 							}
 						}
 					},
-					"_note": "Hover: checkoutBgHover / checkoutColourHover."
+					"_note": "Hover: checkoutBgHover / checkoutColourHover.",
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"panelNote": {
 					"text": true,
@@ -563,7 +587,9 @@
 					"prefix": "panelNote",
 					"attrMap": {
 						"css:color": "panelNoteColour"
-					}
+					},
+					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				}
 			}
 		}

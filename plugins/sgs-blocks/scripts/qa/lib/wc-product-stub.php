@@ -14,7 +14,8 @@
  *
  * Product file keys: id, name, price_html, price, type ("simple" | "variable"), image_id, image_url (what
  * wp_get_attachment_image_url() answers for image_id), short_description, in_stock, average_rating, review_count,
- * variation_price_min, variation_price_max, terms (taxonomy => term slugs, read by has_term() in wp-stubs.php).
+ * variation_price_min, variation_price_max, terms (taxonomy => term slugs, read by has_term() in wp-stubs.php),
+ * attributes (a list of {name, visible}: the product's taxonomy attributes, read by get_attributes()).
  *
  * A product file holding a JSON list is a catalogue (`$GLOBALS['sgs_qa_products']`): `wc_get_product()` finds each
  * product by ID, `wc_get_products()` returns every ID, and `$GLOBALS['sgs_qa_product']` (what the other stubs read for
@@ -76,9 +77,38 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		public function get_variation_attributes() {
 			return array();
 		}
+		/** The product file's `attributes` ({name, visible}, each a taxonomy attribute), as WooCommerce's objects. */
+		public function get_attributes() {
+			$out = array();
+			foreach ( (array) ( $this->data['attributes'] ?? array() ) as $attr ) {
+				$out[ (string) ( $attr['name'] ?? '' ) ] = new WC_Product_Attribute( (string) ( $attr['name'] ?? '' ), (bool) ( $attr['visible'] ?? true ) );
+			}
+			return $out;
+		}
 		/** A variable product's lowest or highest variation price: the file's variation_price_min / _max. */
 		public function get_variation_price( $min_or_max = 'min', $for_display = false ) {
 			return (string) ( $this->data[ 'max' === $min_or_max ? 'variation_price_max' : 'variation_price_min' ] ?? '' );
+		}
+	}
+}
+
+if ( ! class_exists( 'WC_Product_Attribute' ) ) {
+	/** A taxonomy product attribute: its name (`pa_*`) and whether it shows on the product page. */
+	class WC_Product_Attribute {
+		private string $name;
+		private bool $visible;
+		public function __construct( string $name = '', bool $visible = true ) {
+			$this->name    = $name;
+			$this->visible = $visible;
+		}
+		public function get_name() {
+			return $this->name;
+		}
+		public function is_taxonomy() {
+			return 0 === strpos( $this->name, 'pa_' );
+		}
+		public function get_visible() {
+			return $this->visible;
 		}
 	}
 }

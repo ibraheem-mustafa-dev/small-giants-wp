@@ -358,9 +358,144 @@ if ( ! function_exists( 'render_block' ) ) {
 	}
 }
 
+/**
+ * The --post-file post (one of the posts every WP_Query returns) with this ID, or the current post for null; null when
+ * no such post exists. The post stand-ins below read only the keys a post file gives them.
+ *
+ * @param mixed $post Post ID, post object or null.
+ * @return object|null
+ */
+function sgs_qa_find_post( $post = null ) {
+	$current = $GLOBALS['sgs_qa_post'] ?? null;
+	if ( null === $post || 0 === $post ) {
+		return is_object( $current ) ? $current : null;
+	}
+	$id = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+	foreach ( array_merge( $GLOBALS['sgs_qa_posts'] ?? array(), array( $current ) ) as $candidate ) {
+		if ( is_object( $candidate ) && (int) ( $candidate->ID ?? 0 ) === $id ) {
+			return $candidate;
+		}
+	}
+	return null;
+}
+
 if ( ! function_exists( 'get_post_thumbnail_id' ) ) {
+	// The post file's `thumbnail_id`, else 0 (no featured image).
 	function get_post_thumbnail_id( $post = null ) {
-		return 0;
+		$found = sgs_qa_find_post( $post );
+		return (int) ( $found->thumbnail_id ?? 0 );
+	}
+}
+
+if ( ! function_exists( 'has_post_thumbnail' ) ) {
+	function has_post_thumbnail( $post = null ): bool {
+		return get_post_thumbnail_id( $post ) > 0;
+	}
+}
+
+if ( ! function_exists( 'get_the_post_thumbnail' ) ) {
+	// Core's featured-image <img>: the src, its attachment and size classes, and every attribute the caller passes
+	// (loading, fetchpriority, a class that replaces core's), when the attachments file names the thumbnail's URL; ''
+	// otherwise, as core prints for a post with no featured image.
+	function get_the_post_thumbnail( $post = null, $size = 'post-thumbnail', $attr = '' ): string {
+		$url = wp_get_attachment_image_url( get_post_thumbnail_id( $post ), $size );
+		if ( '' === $url ) {
+			return '';
+		}
+		$size_name = is_string( $size ) ? $size : 'post-thumbnail';
+		$attrs     = array_merge(
+			array(
+				'src'   => $url,
+				'class' => 'attachment-' . $size_name . ' size-' . $size_name . ' wp-post-image',
+				'alt'   => '',
+			),
+			is_array( $attr ) ? $attr : array()
+		);
+		$out = '<img';
+		foreach ( $attrs as $name => $value ) {
+			$out .= ' ' . $name . '="' . esc_attr( (string) $value ) . '"';
+		}
+		return $out . '>';
+	}
+}
+
+if ( ! function_exists( 'get_the_category' ) ) {
+	// The post file's `categories` (names), as core's term objects.
+	function get_the_category( $post = 0 ): array {
+		$found = sgs_qa_find_post( $post ?: null );
+		$out   = array();
+		foreach ( (array) ( $found->categories ?? array() ) as $i => $name ) {
+			$out[] = (object) array( 'term_id' => $i + 1, 'name' => (string) $name, 'slug' => strtolower( preg_replace( '/[^A-Za-z0-9]+/', '-', (string) $name ) ) );
+		}
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'get_the_date' ) ) {
+	// The post file's `post_date` in the given format (core's default `j F Y` when none is given).
+	function get_the_date( $format = '', $post = null ) {
+		$found = sgs_qa_find_post( $post );
+		$date  = (string) ( $found->post_date ?? '' );
+		return '' === $date ? false : gmdate( '' !== $format ? (string) $format : 'j F Y', (int) strtotime( $date ) );
+	}
+}
+
+if ( ! function_exists( 'get_post_field' ) ) {
+	function get_post_field( $field, $post = null, $context = 'display' ) {
+		$found = sgs_qa_find_post( $post );
+		return is_object( $found ) && isset( $found->$field ) ? $found->$field : '';
+	}
+}
+
+if ( ! function_exists( 'get_the_author_meta' ) ) {
+	// The current post file's `author` fields (display_name and the rest), else ''.
+	function get_the_author_meta( $field = '', $user_id = false ) {
+		$found = sgs_qa_find_post( null );
+		return (string) ( ( (array) ( $found->author ?? array() ) )[ $field ] ?? '' );
+	}
+}
+
+if ( ! function_exists( 'get_post_type' ) ) {
+	function get_post_type( $post = null ) {
+		$found = sgs_qa_find_post( $post );
+		return is_object( $found ) && isset( $found->post_type ) ? (string) $found->post_type : false;
+	}
+}
+
+if ( ! function_exists( 'get_post_type_object' ) ) {
+	// The harness registers no post types; every post type a post file names behaves as core's public `post` and `page`.
+	function get_post_type_object( $post_type ) {
+		return '' === (string) $post_type ? null : (object) array(
+			'name'               => (string) $post_type,
+			'public'             => true,
+			'publicly_queryable' => true,
+			'labels'             => (object) array( 'singular_name' => ucfirst( (string) $post_type ) ),
+		);
+	}
+}
+
+if ( ! function_exists( 'get_post_mime_type' ) ) {
+	// An attachment's MIME type from its URL's extension in the attachments file; false for an unknown attachment.
+	function get_post_mime_type( $post = null ) {
+		$url = (string) ( $GLOBALS['sgs_qa_attachments'][ (string) (int) $post ] ?? '' );
+		if ( '' === $url ) {
+			return false;
+		}
+		$types = array( 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp', 'gif' => 'image/gif', 'svg' => 'image/svg+xml', 'mp4' => 'video/mp4' );
+		return $types[ strtolower( pathinfo( (string) parse_url( $url, PHP_URL_PATH ), PATHINFO_EXTENSION ) ) ] ?? 'application/octet-stream';
+	}
+}
+
+if ( ! function_exists( 'wp_get_nav_menu_object' ) ) {
+	// The harness site has no classic menus (nav_menu terms); menus come from a wp_navigation post (--post-file).
+	function wp_get_nav_menu_object( $menu ) {
+		return false;
+	}
+}
+
+if ( ! function_exists( 'wp_get_nav_menu_items' ) ) {
+	function wp_get_nav_menu_items( $menu, $args = array() ) {
+		return array();
 	}
 }
 
@@ -465,6 +600,13 @@ if ( ! function_exists( 'admin_url' ) ) {
 if ( ! function_exists( 'home_url' ) ) {
 	function home_url( string $path = '' ): string {
 		return 'https://example.test/' . ltrim( $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'is_user_logged_in' ) ) {
+	// The harness request has no user, as a visitor's has.
+	function is_user_logged_in(): bool {
+		return false;
 	}
 }
 
