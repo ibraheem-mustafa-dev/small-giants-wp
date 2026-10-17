@@ -13,7 +13,10 @@
  *   - the reduced-motion block zeroes hover movement and every delay;
  *   - a channel with plain `inputs` (the clip reveal's uniform amount over its four edge owners) gives every owner its
  *     own holder falling back to each input, in every entrance keyframe and in the hidden start;
- *   - the stylesheet's token readers carry no M2.2 allow-list entry.
+ *   - the stylesheet's token readers carry no M2.2 allow-list entry;
+ *   - no rule paints `box-shadow` or `outline` on :focus-visible, and every arm of the focus system's indicator rule
+ *     (theme focus.css) outranks the box-shadow channel's base rule, so on a focused element the focus indicator
+ *     replaces the hover ring and accent line.
  * Each check is also run against planted faults (negative controls) so a check that cannot fail fails here.
  *
  * MOTION_CSS_FILE overrides the stylesheet path, for a manual negative control on a planted copy.
@@ -328,56 +331,136 @@ describe( 'negative controls: each planted fault is caught', () => {
 	} );
 } );
 
-describe( 'keyboard focus keeps the theme focus glow beside the hover ring and accent line', () => {
-	const THEME_CSS = path.resolve( PLUGIN, '..', '..', 'theme', 'sgs-theme', 'assets', 'css' );
-	const boxShadowOf = ( css, selector ) => {
-		let value = null;
+describe( 'no motion rule paints on :focus-visible, and the focus system outranks the box-shadow channel', () => {
+	const FOCUS_CSS = path.resolve( PLUGIN, '..', '..', 'theme', 'sgs-theme', 'assets', 'css', 'focus.css' );
+	const CHANNEL = '[data-sgs-mc~="box-shadow"]';
+	const INDICATOR = /^(?:box-shadow|outline(?:-[a-z]+)*)$/;
+	const selectorParser = require( 'postcss-selector-parser' );
+
+	/** Every motion.css rule on a :focus-visible selector that declares the indicator (`box-shadow` or `outline*`). */
+	const focusPainters = ( css ) => {
+		const hits = [];
 		postcss.parse( css ).walkRules( ( rule ) => {
-			if ( rule.selector === selector ) {
-				rule.walkDecls( 'box-shadow', ( decl ) => {
-					value = norm( decl.value );
-				} );
+			if ( ! /:focus-visible/.test( rule.selector ) ) {
+				return;
 			}
+			rule.walkDecls( ( decl ) => {
+				if ( INDICATOR.test( decl.prop ) ) {
+					hits.push( `${ norm( rule.selector ) } { ${ decl.prop } }` );
+				}
+			} );
 		} );
-		return value;
+		return hits;
 	};
 
-	test( 'the focused element draws the theme glow first, then the same ring and accent the channel draws', () => {
-		const persistent = boxShadowOf( CSS, '[data-sgs-mc~="box-shadow"]' );
-		expect( persistent ).not.toBeNull();
-		expect( boxShadowOf( CSS, '[data-sgs-mc~="box-shadow"]:focus-visible' ) ).toBe(
-			`var(--sgs-focus-shadow, 0 0 0 0 transparent), ${ persistent }`
-		);
+	/**
+	 * Selectors Level 4 specificity as [ ids, classes, types ]: :is(), :not() and :has() take their most specific
+	 * argument, :where() counts nothing, pseudo-elements count as types.
+	 */
+	const specificityOf = ( selectorText ) => {
+		const add = ( a, b ) => [ a[ 0 ] + b[ 0 ], a[ 1 ] + b[ 1 ], a[ 2 ] + b[ 2 ] ];
+		const max = ( list ) => list.reduce( ( best, s ) => ( compare( s, best ) > 0 ? s : best ), [ 0, 0, 0 ] );
+		const ofSelector = ( sel ) =>
+			sel.nodes.reduce( ( acc, node ) => {
+				switch ( node.type ) {
+					case 'id':
+						return add( acc, [ 1, 0, 0 ] );
+					case 'class':
+					case 'attribute':
+						return add( acc, [ 0, 1, 0 ] );
+					case 'tag':
+						return add( acc, [ 0, 0, 1 ] );
+					case 'pseudo': {
+						const name = node.value.toLowerCase();
+						if ( ':where' === name ) {
+							return acc;
+						}
+						if ( [ ':is', ':not', ':has', ':matches' ].includes( name ) ) {
+							return add( acc, max( node.nodes.map( ofSelector ) ) );
+						}
+						return add( acc, name.startsWith( '::' ) ? [ 0, 0, 1 ] : [ 0, 1, 0 ] );
+					}
+					default:
+						return acc;
+				}
+			}, [ 0, 0, 0 ] );
+		let result = null;
+		selectorParser( ( root ) => {
+			result = max( root.nodes.map( ofSelector ) );
+		} ).processSync( selectorText );
+		return result;
+	};
+	function compare( a, b ) {
+		for ( let i = 0; i < 3; i++ ) {
+			if ( a[ i ] !== b[ i ] ) {
+				return a[ i ] - b[ i ];
+			}
+		}
+		return 0;
+	}
+
+	/** The focus system's indicator arms: the selectors of the rule that declares `outline` outside every at-rule. */
+	const indicatorArms = ( css ) => {
+		const arms = [];
+		postcss.parse( css ).walkRules( ( rule ) => {
+			const atTop = 'root' === rule.parent.type;
+			if ( atTop && rule.nodes.some( ( n ) => 'decl' === n.type && 'outline' === n.prop ) && ! /::/.test( rule.selector ) ) {
+				arms.push( ...rule.selectors.map( norm ) );
+			}
+		} );
+		return arms;
+	};
+
+	/** The arms that do NOT outrank the channel's base rule (empty when every arm wins on specificity). */
+	const losingArms = ( focusCss, motionCss ) => {
+		const channel = [];
+		postcss.parse( motionCss ).walkRules( ( rule ) => {
+			if ( rule.selector === CHANNEL ) {
+				channel.push( specificityOf( rule.selector ) );
+			}
+		} );
+		if ( 1 !== channel.length ) {
+			return [ `want one ${ CHANNEL } rule in motion.css, found ${ channel.length }` ];
+		}
+		const arms = indicatorArms( focusCss );
+		if ( 0 === arms.length ) {
+			return [ 'no indicator arm found in focus.css' ];
+		}
+		return arms.filter( ( arm ) => compare( specificityOf( arm ), channel[ 0 ] ) <= 0 );
+	};
+
+	const FOCUS = fs.readFileSync( FOCUS_CSS, 'utf8' );
+
+	test( 'no :focus-visible box-shadow rule in motion.css (nor any outline)', () => {
+		expect( focusPainters( CSS ) ).toEqual( [] );
 	} );
 
-	// The glow is defined inside each focus rule rather than on :root: an unregistered custom property substitutes its
-	// var()s where it is declared, so a :root definition would freeze --sgs-focus-glow at the root value and a section
-	// that overrides the glow colour would no longer change it. Defined on the focused element, it reads that element's
-	// own --sgs-focus-glow, and motion.css's `[data-sgs-mc~="box-shadow"]:focus-visible` reads the same value.
-	test( 'every theme :focus-visible glow defines --sgs-focus-shadow from --sgs-focus-glow in its own rule and reads it', () => {
-		const glows = [];
-		const elsewhere = [];
-		for ( const file of [ 'core-blocks-critical.css', 'utilities.css' ] ) {
-			postcss.parse( fs.readFileSync( path.join( THEME_CSS, file ), 'utf8' ) ).walkRules( ( rule ) => {
-				const decls = rule.nodes.filter( ( node ) => 'decl' === node.type );
-				const defined = decls.filter( ( decl ) => '--sgs-focus-shadow' === decl.prop );
-				if ( ! /:focus-visible/.test( rule.selector ) ) {
-					defined.forEach( () => elsewhere.push( `${ file } ${ rule.selector }` ) );
-					return;
-				}
-				decls
-					.filter( ( decl ) => 'box-shadow' === decl.prop && /--sgs-focus-glow|focus-shadow/.test( decl.value ) )
-					.forEach( ( decl ) =>
-						glows.push( {
-							where: `${ file } ${ rule.selector }`,
-							reads: /^var\(--sgs-focus-shadow\b/.test( norm( decl.value ) ),
-							defines: defined.length === 1 && /var\(--sgs-focus-glow\b/.test( defined[ 0 ].value ),
-						} )
-					);
-			} );
-		}
-		expect( elsewhere ).toEqual( [] );
-		expect( glows.length ).toBeGreaterThanOrEqual( 4 );
-		expect( glows.filter( ( g ) => ! g.reads || ! g.defines ).map( ( g ) => g.where ) ).toEqual( [] );
+	test( 'the channel base rule still draws the ring and accent line on hover', () => {
+		expect( CSS ).toMatch( /\[data-sgs-mc~="box-shadow"\] \{\n\tbox-shadow: 0 0 0 var\(--sgs-mh-ring\)/ );
+	} );
+
+	test( 'every focus system indicator arm, the element arm first, outranks the box-shadow channel', () => {
+		const arms = indicatorArms( FOCUS );
+		expect( arms[ 0 ] ).toMatch( /^:focus-visible:not\(#wpadminbar \*/ );
+		expect( specificityOf( arms[ 0 ] ) ).toEqual( [ 1, 1, 0 ] );
+		expect( specificityOf( CHANNEL ) ).toEqual( [ 0, 1, 0 ] );
+		expect( losingArms( FOCUS, CSS ) ).toEqual( [] );
+	} );
+
+	test( 'negative control: a :focus-visible box-shadow rule in motion.css is caught', () => {
+		const planted = `${ CSS }\n${ CHANNEL }:focus-visible { box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c); }\n`;
+		expect( focusPainters( planted ) ).toEqual( [ `${ CHANNEL }:focus-visible { box-shadow }` ] );
+	} );
+
+	test( 'negative control: an element arm with no weight (wrapped in :where()) loses to the channel', () => {
+		const planted = FOCUS.replace( /^:focus-visible:not\(#wpadminbar \*[^\n]*,$/m, ':where(:focus-visible),' );
+		expect( planted ).not.toBe( FOCUS );
+		expect( losingArms( planted, CSS ) ).toEqual( [ ':where(:focus-visible)' ] );
+	} );
+
+	test( 'negative control: the specificity count is not vacuous', () => {
+		expect( specificityOf( ':not(#a *, .b)' ) ).toEqual( [ 1, 0, 0 ] );
+		expect( specificityOf( ':is(.a, .b .c)' ) ).toEqual( [ 0, 2, 0 ] );
+		expect( specificityOf( ':where(#a) p::before' ) ).toEqual( [ 0, 0, 2 ] );
 	} );
 } );

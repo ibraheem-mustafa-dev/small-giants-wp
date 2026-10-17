@@ -199,11 +199,6 @@
 [data-sgs-mc~="box-shadow"] {
 	box-shadow: 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c), inset 0 calc(-1 * var(--sgs-mh-accent)) 0 0 var(--sgs-mh-accent-c);
 }
-/* Keyboard focus plays the hover state, so the ring must still show on a focused element; the theme's focus glow
-   (--sgs-focus-shadow) is listed first so the focus indicator stays beside it. */
-[data-sgs-mc~="box-shadow"]:focus-visible {
-	box-shadow: var(--sgs-focus-shadow, 0 0 0 0 transparent), 0 0 0 var(--sgs-mh-ring) var(--sgs-mh-ring-c), inset 0 calc(-1 * var(--sgs-mh-accent)) 0 0 var(--sgs-mh-accent-c);
-}
 [data-sgs-mc~="background-position"] {
 	background-position: calc(50% + var(--sgs-plx-bg-x)) calc(50% + var(--sgs-plx-bg-y));
 }

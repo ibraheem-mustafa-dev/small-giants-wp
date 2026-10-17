@@ -9,16 +9,6 @@
 			"category": "legacy-token",
 			"group": "editor"
 		},
-		"bespoke | plugins/sgs-blocks/assets/css/motion.css |  | [data-sgs-mc~=\"box-shadow\"]:focus-visible | box-shadow": {
-			"count": 1,
-			"category": "bespoke",
-			"group": "motion"
-		},
-		"legacy-token | plugins/sgs-blocks/assets/css/motion.css |  | /* Keyboard focus plays the hover state, so the ring must still show on a focused e */ | --sgs-focus-shadow": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "motion"
-		},
 		"php-emitter | plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php |  | §:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)) | ": {
 			"count": 1,
 			"category": "php-emitter",
