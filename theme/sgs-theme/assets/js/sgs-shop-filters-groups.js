@@ -63,7 +63,7 @@
 		options.forEach( function ( opt ) {
 			const button = document.createElement( 'button' );
 			button.type = 'button';
-			button.className = 'sgs-shop-filters__segment';
+			button.className = 'sgs-shop-filters__segment sgs-focus--inset';
 			button.textContent = opt.label;
 			button.setAttribute( 'aria-pressed', opt.value === current ? 'true' : 'false' );
 			button.addEventListener( 'click', function () {

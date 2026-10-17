@@ -55,12 +55,12 @@
 		const input = document.createElement( 'input' );
 		input.type = 'checkbox';
 		input.setAttribute( 'role', 'switch' );
-		input.className = 'sgs-shop-filters__bool-filter-input';
+		input.className = 'sgs-shop-filters__bool-filter-input sgs-focus-source';
 		input.checked = isChecked;
 		input.setAttribute( 'aria-checked', isChecked ? 'true' : 'false' );
 
 		const track = document.createElement( 'span' );
-		track.className = 'sgs-shop-filters__bool-filter-switch';
+		track.className = 'sgs-shop-filters__bool-filter-switch sgs-focus-proxy';
 		track.setAttribute( 'aria-hidden', 'true' );
 
 		const text = document.createElement( 'span' );
