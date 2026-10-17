@@ -12,7 +12,9 @@
  * twin is src/blocks/button/focus-style.js, which disables the option with the same reason.
  *
  * A signature button with a border also sets `--sgs-focus-host-border` to that border's width, so focus.css anchors
- * the band outside the ring rather than over it.
+ * the band outside the ring rather than over it. A preset-less button with no border of its own takes the border of its
+ * sgs/multi-button group default (`childBtnBorderWidth` / `childBtnBorderStyle`, provided as block context), which
+ * style.css paints through `:where(.sgs-multi-button) .sgs-button`.
  *
  * @package SGS\Blocks
  */
@@ -146,5 +148,29 @@ if ( ! function_exists( 'sgs_button_focus_host_border' ) ) {
 			return "var(--wp--custom--button-presets--{$preset}--border-width,2px)";
 		}
 		return '';
+	}
+}
+
+if ( ! function_exists( 'sgs_button_focus_group_host_border' ) ) {
+	/**
+	 * The `--sgs-focus-host-border` value a preset-less button takes from its sgs/multi-button group default border.
+	 *
+	 * The group's width box is a four-value shorthand in CSS, which `calc()` cannot use, so the width is resolved here
+	 * from the block context the group provides (`sgs/childBtnBorderWidth`, `sgs/childBtnBorderStyle`), through the same
+	 * resolver as a button's own border. `''` when there is no context, no group border or the group style is none/hidden.
+	 *
+	 * @param array $context Block context of the button.
+	 * @return string
+	 */
+	function sgs_button_focus_group_host_border( array $context ): string {
+		$box = $context['sgs/childBtnBorderWidth'] ?? null;
+		if ( ! is_array( $box ) ) {
+			return '';
+		}
+		$widths = array();
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			$widths[] = is_scalar( $box[ $side ] ?? null ) ? sgs_css_length_value( $box[ $side ] ) : '';
+		}
+		return sgs_button_focus_host_border( $widths, sgs_border_style_keyword( $context['sgs/childBtnBorderStyle'] ?? '' ), '' );
 	}
 }

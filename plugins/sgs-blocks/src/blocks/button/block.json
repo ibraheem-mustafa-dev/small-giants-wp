@@ -122,6 +122,7 @@
 			}
 		}
 	},
+	"usesContext": [ "sgs/childBtnBorderWidth", "sgs/childBtnBorderStyle" ],
 	"attributes": {
 		"shadowLiftOnHover": {
 			"type": "boolean",

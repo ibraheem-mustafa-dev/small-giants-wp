@@ -26,6 +26,10 @@ export const FOCUS_STYLE_CLASSES = Object.freeze( {
 // The presets whose stylesheet rule gives the button a border (style.css `.sgs-button--<preset>`).
 const BORDERED_PRESETS = Object.freeze( [ 'primary', 'secondary', 'outline' ] );
 
+// Set on the sgs/multi-button canvas wrapper (multi-button/edit.js) from the group's default border.
+export const GROUP_HOST_BORDER_PROPERTY =
+	'--sgs-mb-btn-focus-host-border-default';
+
 const ZERO_LENGTH = /^0+(?:\.0+)?(?:[a-z%]+)?$/i;
 
 /**
@@ -164,7 +168,31 @@ export function focusHostBorder( { borderWidth, borderStyle, inheritStyle } ) {
 			? distinct[ 0 ]
 			: `max(${ sides.join( ',' ) })`;
 	}
-	return BORDERED_PRESETS.includes( inheritStyle )
-		? `var(--wp--custom--button-presets--${ inheritStyle }--border-width,2px)`
-		: '';
+	if ( BORDERED_PRESETS.includes( inheritStyle ) ) {
+		return `var(--wp--custom--button-presets--${ inheritStyle }--border-width,2px)`;
+	}
+	// A preset-less button with no border of its own paints its sgs/multi-button group's default border, which the
+	// group publishes as a single length in this property (outside a group the property is unset and focus.css
+	// falls back to 0px). The canvas cannot read the group's block context from edit.js, so it reads the property.
+	return 'custom' === inheritStyle ? `var(${ GROUP_HOST_BORDER_PROPERTY })` : '';
+}
+
+/**
+ * The group default border width as one length (the twin of `sgs_button_focus_group_host_border()`): the widest
+ * side when the sides differ; `''` without a border or when the group style is none/hidden.
+ *
+ * @param {Object} attrs                       The multi-button attributes the width reads.
+ * @param {Object} [attrs.childBtnBorderWidth] `{ top, right, bottom, left }`.
+ * @param {string} [attrs.childBtnBorderStyle] The stored group border style.
+ * @return {string} The width.
+ */
+export function groupFocusHostBorder( {
+	childBtnBorderWidth,
+	childBtnBorderStyle,
+} ) {
+	return focusHostBorder( {
+		borderWidth: childBtnBorderWidth,
+		borderStyle: childBtnBorderStyle,
+		inheritStyle: '',
+	} );
 }

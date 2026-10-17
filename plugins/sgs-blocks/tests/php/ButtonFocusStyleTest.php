@@ -239,4 +239,99 @@ final class ButtonFocusStyleTest extends TestCase {
 		);
 		$this->assertStringContainsString( '--sgs-focus-host-border:max(1px,0px,3px,0px)', $out['css'] );
 	}
+
+	/**
+	 * The block context a sgs/multi-button provides to its buttons.
+	 *
+	 * @param array<string,string> $width Group default border width box.
+	 * @param string               $style Group default border style.
+	 * @return array<string,mixed>
+	 */
+	private function group_context( array $width, string $style = '' ): array {
+		return array(
+			'sgs/childBtnBorderWidth' => $width,
+			'sgs/childBtnBorderStyle' => $style,
+		);
+	}
+
+	public function test_group_default_border_sets_the_host_border_width(): void {
+		$out = $this->render_block(
+			'sgs/button',
+			array(
+				'label'        => 'Go',
+				'focusStyle'   => 'signature',
+				'inheritStyle' => 'custom',
+			),
+			$this->group_context(
+				array(
+					'top'    => '2px',
+					'right'  => '2px',
+					'bottom' => '2px',
+					'left'   => '2px',
+				)
+			)
+		);
+		$this->assertMatchesRegularExpression( '/\.sgs-btn-[0-9a-f]{8}\.sgs-button\{--sgs-focus-host-border:2px;?\}/', $out['css'] );
+	}
+
+	public function test_group_default_uneven_border_takes_the_widest_side(): void {
+		$out = $this->render_block(
+			'sgs/button',
+			array(
+				'label'        => 'Go',
+				'focusStyle'   => 'signature',
+				'inheritStyle' => 'custom',
+			),
+			$this->group_context(
+				array(
+					'top'    => '2px',
+					'right'  => '0',
+					'bottom' => '2px',
+					'left'   => '0',
+				)
+			)
+		);
+		$this->assertStringContainsString( '--sgs-focus-host-border:max(2px,0px,2px,0px)', $out['css'] );
+	}
+
+	public function test_group_default_without_a_border_sets_no_host_border(): void {
+		$cases = array(
+			array( 'ctx' => $this->group_context( array() ) ),
+			array( 'ctx' => $this->group_context( array( 'top' => '2px' ), 'none' ) ),
+			array( 'ctx' => $this->group_context( array( 'top' => '0', 'right' => '0', 'bottom' => '0', 'left' => '0' ) ) ),
+		);
+		foreach ( $cases as $case ) {
+			$out = $this->render_block( 'sgs/button', array( 'label' => 'Go', 'focusStyle' => 'signature', 'inheritStyle' => 'custom' ), $case['ctx'] );
+			$this->assertStringNotContainsString( '--sgs-focus-host-border', $out['css'], (string) json_encode( $case['ctx'] ) );
+		}
+	}
+
+	public function test_own_border_and_preset_beat_the_group_default(): void {
+		$group = $this->group_context( array( 'top' => '5px', 'right' => '5px', 'bottom' => '5px', 'left' => '5px' ) );
+		$own   = $this->render_block(
+			'sgs/button',
+			array(
+				'label'        => 'Go',
+				'focusStyle'   => 'signature',
+				'inheritStyle' => 'custom',
+				'borderWidth'  => array( 'top' => '1px', 'right' => '1px', 'bottom' => '1px', 'left' => '1px' ),
+			),
+			$group
+		);
+		$this->assertStringContainsString( '--sgs-focus-host-border:1px', $own['css'] );
+		$this->assertStringNotContainsString( '5px', $own['css'] );
+		$preset = $this->render_block( 'sgs/button', array( 'label' => 'Go', 'focusStyle' => 'signature', 'inheritStyle' => 'outline' ), $group );
+		$this->assertStringContainsString( '--sgs-focus-host-border:var(--wp--custom--button-presets--outline--border-width,2px)', $preset['css'] );
+		$link = $this->render_block( 'sgs/button', array( 'label' => 'Go', 'focusStyle' => 'signature', 'inheritStyle' => 'link' ), $group );
+		$this->assertStringNotContainsString( '--sgs-focus-host-border', $link['css'] );
+	}
+
+	public function test_negative_control_group_default_is_ignored_without_signature(): void {
+		$out = $this->render_block(
+			'sgs/button',
+			array( 'label' => 'Go', 'focusStyle' => 'duotone', 'inheritStyle' => 'custom' ),
+			$this->group_context( array( 'top' => '2px', 'right' => '2px', 'bottom' => '2px', 'left' => '2px' ) )
+		);
+		$this->assertStringNotContainsString( '--sgs-focus-host-border', $out['css'] );
+	}
 }

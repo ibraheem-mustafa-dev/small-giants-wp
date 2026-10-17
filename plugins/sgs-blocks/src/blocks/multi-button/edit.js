@@ -21,6 +21,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import { BUTTON_PRESETS } from '../button/presets';
+import { GROUP_HOST_BORDER_PROPERTY, groupFocusHostBorder } from '../button/focus-style';
 
 const CHILD_PRESET_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
@@ -245,6 +246,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		...( boxShorthand( childBtnBorderWidth ) && {
 			'--sgs-mb-btn-border-width-default': boxShorthand( childBtnBorderWidth ),
 			'--sgs-mb-btn-border-style-default': resolveBorderStyle( childBtnBorderStyle ),
+		} ),
+		...( groupFocusHostBorder( { childBtnBorderWidth, childBtnBorderStyle } ) && {
+			[ GROUP_HOST_BORDER_PROPERTY ]: groupFocusHostBorder( { childBtnBorderWidth, childBtnBorderStyle } ),
 		} ),
 		...borderRadiusProperties( childBtnBorderRadius, previewTier, '--sgs-mb-btn-radius-' ),
 		...( childBtnFontSize && {

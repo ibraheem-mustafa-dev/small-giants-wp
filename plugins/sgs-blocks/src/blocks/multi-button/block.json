@@ -137,6 +137,10 @@
       }
     }
   },
+  "providesContext": {
+    "sgs/childBtnBorderWidth": "childBtnBorderWidth",
+    "sgs/childBtnBorderStyle": "childBtnBorderStyle"
+  },
   "attributes": {
     "separators": {
       "type": "object",

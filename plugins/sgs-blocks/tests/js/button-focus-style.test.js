@@ -33,6 +33,8 @@ const Edit = require( '../../src/blocks/button/edit' ).default;
 const {
 	focusStyleClass,
 	focusHostBorder,
+	groupFocusHostBorder,
+	GROUP_HOST_BORDER_PROPERTY,
 	signatureRefusal,
 	beforeSlotOwner,
 } = require( '../../src/blocks/button/focus-style' );
@@ -154,5 +156,21 @@ describe( 'the editor twin of helpers-button-focus.php', () => {
 		expect( focusHostBorder( { inheritStyle: 'link' } ) ).toBe( '' );
 		expect( focusHostBorder( { inheritStyle: 'primary', borderStyle: 'none' } ) ).toBe( '' );
 		expect( focusHostBorder( { borderWidth: { top: '0', left: '0px' } } ) ).toBe( '' );
+	} );
+
+	it( 'a preset-less button reads the group default border through the group property', () => {
+		expect( GROUP_HOST_BORDER_PROPERTY ).toBe( '--sgs-mb-btn-focus-host-border-default' );
+		expect( focusHostBorder( { inheritStyle: 'custom' } ) ).toBe( `var(${ GROUP_HOST_BORDER_PROPERTY })` );
+		expect( focusHostBorder( { inheritStyle: 'custom', borderWidth: { top: '1px', right: '1px', bottom: '1px', left: '1px' } } ) ).toBe( '1px' );
+		expect( focusHostBorder( { inheritStyle: 'link' } ) ).toBe( '' );
+	} );
+
+	it( 'the group default border resolves to one length like the PHP helper', () => {
+		const two = { top: '2px', right: '2px', bottom: '2px', left: '2px' };
+		expect( groupFocusHostBorder( { childBtnBorderWidth: two } ) ).toBe( '2px' );
+		expect( groupFocusHostBorder( { childBtnBorderWidth: { top: '2px', right: '0', bottom: '2px', left: '0' } } ) ).toBe( 'max(2px,0px,2px,0px)' );
+		expect( groupFocusHostBorder( { childBtnBorderWidth: two, childBtnBorderStyle: 'none' } ) ).toBe( '' );
+		expect( groupFocusHostBorder( { childBtnBorderWidth: {} } ) ).toBe( '' );
+		expect( groupFocusHostBorder( {} ) ).toBe( '' );
 	} );
 } );
