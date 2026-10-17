@@ -1,0 +1,2118 @@
+{
+	"_meta": {
+		"tool": "plugins/sgs-blocks/scripts/check-focus-system.js",
+		"shape": "Ratcheted ceiling (migration-method Step 8). Keys are content keys 'category | path | context | selector | property' with a count. --check fails on a finding above its count and on an entry no longer reproduced; --prune-baseline lowers entries to the live count and never adds or raises one. Written once from the 2026-10-17 census (Task 1); each focus task prunes it; Task 15 deletes this file and the gate becomes binary."
+	},
+	"findings": {
+		"php-emitter | plugins/sgs-accessibility/includes/class-frontend.php |  | <style id=\"sgs-a11y-skip-link-css\"> .sgs-skip-link { position: absolute; top: -9999px; left: -9999px; z-index: 99999; padding: 8px 16px; background: #000; color | outline": {
+			"count": 1,
+			"category": "php-emitter",
+			"group": "php"
+		},
+		"php-emitter | plugins/sgs-accessibility/includes/class-frontend.php |  | <style id=\"sgs-a11y-skip-link-css\"> .sgs-skip-link { position: absolute; top: -9999px; left: -9999px; z-index: 99999; padding: 8px 16px; background: #000; color | outline-offset": {
+			"count": 1,
+			"category": "php-emitter",
+			"group": "php"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/device-toggle.css |  | .sgs-device-cue__dismiss:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/device-toggle.css |  | .sgs-device-cue__dismiss:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-block-link-overlay:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-block-link-overlay:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-block-link-source:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-block-link-source:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-has-focus-ring:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "focus-ring-attr"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-has-focus-ring:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "focus-ring-attr"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | a.sgs-field-fallback:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | a.sgs-field-fallback:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/fx-generative-background.css |  | .sgs-generative-background__toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/fx-generative-background.css |  | .sgs-generative-background__toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/fx-lottie.css |  | .sgs-lottie__pause:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/fx-lottie.css |  | .sgs-lottie__pause:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/fx-marquee.css |  | [data-sgs-fx~=\"marquee\"][data-sgs-marquee-lane=\"on\"] > .sgs-motion-pause:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/fx-wave-gradient.css |  | .sgs-wave-gradient__toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/fx-wave-gradient.css |  | .sgs-wave-gradient__toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/motion-pause.css |  | .sgs-motion-pause:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/motion-pause.css |  | .sgs-motion-pause:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/motion-pause.css |  | .sgs-motion-pause--overlay-end:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"legacy-token | plugins/sgs-blocks/assets/css/motion-thumbnails.css |  | .sgs-motion-thumbs__item.components-button:focus-visible | outline": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/motion.css |  | [data-sgs-mc~=\"box-shadow\"]:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "motion"
+		},
+		"legacy-token | plugins/sgs-blocks/assets/css/motion.css |  | /* Keyboard focus plays the hover state, so the ring must still show on a focused e */ | --sgs-focus-shadow": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "motion"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/slider-nav.css |  | .sgs-slider-nav__arrow:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/assets/css/slider-nav.css |  | .sgs-slider-nav__arrow:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/assets/floating-ui/floating-ui.css |  | .sgs-floating-ui__back-to-top:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/floating-ui/floating-ui.css |  | .sgs-floating-ui__back-to-top:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/toast/toast.css |  | .sgs-toast__action:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/toast/toast.css |  | .sgs-toast__action:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/toast/toast.css |  | .sgs-toast__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/assets/toast/toast.css |  | .sgs-toast__close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"php-emitter | plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php |  | §:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)) | ": {
+			"count": 1,
+			"category": "php-emitter",
+			"group": "motion"
+		},
+		"legacy-token | plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --sgs-focus-ring-colour": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "motion"
+		},
+		"legacy-token | plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --wp--custom--focus-ring--color-primary": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "motion"
+		},
+		"php-emitter | plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php |  | § .§__sublink:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent, currentColor));outline-offset:-2px;} | outline": {
+			"count": 1,
+			"category": "php-emitter",
+			"group": "php"
+		},
+		"php-emitter | plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php |  | § .§__sublink:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent, currentColor));outline-offset:-2px;} | outline-offset": {
+			"count": 1,
+			"category": "php-emitter",
+			"group": "php"
+		},
+		"legacy-token | plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php |  | § .§__sublink:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent, currentColor));outline-offset:-2px;} | --wp--custom--focus-ring--color-primary": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "php"
+		},
+		"php-emitter | plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php |  | § .§__subtoggle:focus-visible{outline:2px solid currentColor;outline-offset:-2px;} | outline": {
+			"count": 1,
+			"category": "php-emitter",
+			"group": "php"
+		},
+		"php-emitter | plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php |  | § .§__subtoggle:focus-visible{outline:2px solid currentColor;outline-offset:-2px;} | outline-offset": {
+			"count": 1,
+			"category": "php-emitter",
+			"group": "php"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/accordion/style.css |  | .sgs-accordion-item__header:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/accordion/style.css |  | .sgs-accordion-item__header:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/account/style.css |  | .sgs-account nav.woocommerce-MyAccount-navigation a:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/account/style.css |  | .sgs-account nav.woocommerce-MyAccount-navigation a:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/account/style.css |  | .sgs-account form input.input-text:focus-visible, .sgs-account form select:focus-visible, .sgs-account form textarea:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/account/style.css |  | .sgs-account form input.input-text:focus-visible, .sgs-account form select:focus-visible, .sgs-account form textarea:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/editor.css |  | .sgs-audio-style-btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/editor.css |  | .sgs-audio-style-btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/style.css |  | .sgs-audio__play:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/style.css |  | .sgs-audio__play:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/style.css |  | .sgs-audio__seek:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/style.css |  | .sgs-audio__seek:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/style.css |  | .sgs-audio__toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/audio/style.css |  | .sgs-audio__toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/before-after/style.css |  | .wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle, .wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/before-after/style.css |  | .wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle, .wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/before-after/style.css |  | .wp-block-sgs-before-after__video-toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/before-after/style.css |  | .wp-block-sgs-before-after__video-toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/brand-strip/style.css |  | .sgs-brand-strip__item a:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/brand-strip/style.css |  | .sgs-brand-strip__item a:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/brand-strip/style.css |  | .sgs-brand-strip__item a:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/breadcrumbs/style.css |  | .sgs-breadcrumbs__item a:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/breadcrumbs/style.css |  | .sgs-breadcrumbs__item a:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/breadcrumbs/style.css |  | .sgs-breadcrumbs__item a:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/button/style.css |  | .sgs-button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/button/style.css |  | .sgs-button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox .buybox__add-to-cart:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox .buybox__add-to-cart:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox .sgs-buybox__picker-label-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox .sgs-buybox__picker-label-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox__notify-email:focus | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox__notify-email:focus | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox__notify-email:focus | border-color": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox__notify-submit:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox__notify-submit:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox .product-card__thumb:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox .product-card__thumb:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox-guided__meter-btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox-guided__meter-btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox-guided__nav-btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/buybox/style.css |  | .sgs-buybox-guided__nav-btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/card-grid/style.css |  | a.sgs-card-grid__item:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/card-grid/style.css |  | a.sgs-card-grid__item:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__trigger:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__trigger:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__trigger:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__trigger:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__panel-close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__panel-close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__panel-empty-cta:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__panel-empty-cta:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-qty-input:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-qty-input:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-save-for-later:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-save-for-later:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-add-options:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-add-options:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-remove:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__item-remove:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__panel-view:focus-visible, .sgs-cart__panel-checkout:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css |  | .sgs-cart__panel-view:focus-visible, .sgs-cart__panel-checkout:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/cart/style.css | @media (forced-colors: active) | .sgs-cart__panel-close:focus-visible, .sgs-cart__panel-view:focus-visible, .sgs-cart__panel-checkout:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/cart/style.css |  | /* * WCAG 2.4.7 — focus must always be visible. * * Reads the shared `--sgs-focus-* */ | --sgs-focus-color": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "buttons"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/choice-flow-question/style.css |  | .sgs-choice-flow-question__option-button:focus-visible | border-color": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow-question/style.css |  | .sgs-choice-flow-question__option-button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow-question/style.css |  | .sgs-choice-flow-question__option-button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow-result/style.css |  | .sgs-choice-flow-result__email-input:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow-result/style.css |  | .sgs-choice-flow-result__email-input:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__nav-back:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__nav-back:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__continue:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__continue:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__add-to-basket:focus-visible, .sgs-choice-flow__buy-now:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__add-to-basket:focus-visible, .sgs-choice-flow__buy-now:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__chrome-close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__chrome-close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__summary-toggle > summary:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow__summary-toggle > summary:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"suppress | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow--layout-showcase:focus | outline": {
+			"count": 1,
+			"category": "suppress",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/choice-flow/style.css |  | .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/collapsible-text/style.css |  | .sgs-collapsible-text__toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/collapsible-text/style.css |  | .sgs-collapsible-text__toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/collapsible-text/style.css |  | .sgs-collapsible-text__toggle:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/diagram-dimension/editor.css |  | .sgs-diagram-dimension__handle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/diagram-dimension/editor.css |  | .sgs-diagram-dimension__handle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"js-emitter | plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js |  | §:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)) | ": {
+			"count": 1,
+			"category": "js-emitter",
+			"group": "motion"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --sgs-focus-ring-colour": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "motion"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --wp--custom--focus-ring--color-primary": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "motion"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/filter-search/edit.js |  | §--sgs-filter-search-focus§ | --sgs-filter-search-focus": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/filter-search/render.php |  | // `:focus-visible{outline:2px solid var(--sgs-filter-search-focus,...)}` is | --sgs-filter-search-focus": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/filter-search/render.php |  | §--sgs-filter-search-focus:§focusRingColour; | --sgs-filter-search-focus": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/filter-search/style.css |  | .sgs-filter-search__input:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/filter-search/style.css |  | .sgs-filter-search__input:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/filter-search/style.css |  | .sgs-filter-search__term-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/filter-search/style.css |  | .sgs-filter-search__term-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/filter-search/style.css |  | /* The ticked box uses the theme's primary colour directly. It must NOT borrow --sg */ | --sgs-filter-search-focus": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/render.php |  | §--sgs-focus-ring-width:§px;--sgs-focus-ring-colour:§;--sgs-focus-ring-opacity:§;--sgs-focus-ring-offset:§px | --sgs-focus-ring-width": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/render.php |  | §--sgs-focus-ring-width:§px;--sgs-focus-ring-colour:§;--sgs-focus-ring-opacity:§;--sgs-focus-ring-offset:§px | --sgs-focus-ring-colour": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/render.php |  | §--sgs-focus-ring-width:§px;--sgs-focus-ring-colour:§;--sgs-focus-ring-opacity:§;--sgs-focus-ring-offset:§px | --sgs-focus-ring-opacity": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/render.php |  | §--sgs-focus-ring-width:§px;--sgs-focus-ring-colour:§;--sgs-focus-ring-opacity:§;--sgs-focus-ring-offset:§px | --sgs-focus-ring-offset": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__input:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__input:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__input:focus-visible | border-color": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__input:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__input:focus:not(:focus-visible) | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__input:focus:not(:focus-visible) | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__input:focus:not(:focus-visible) | border-color": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__file-input:focus-visible + .sgs-form-field__file-label, .sgs-form-field__file-input:focus + .sgs-form-field__file-label | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form-field__file-input:focus-visible + .sgs-form-field__file-label, .sgs-form-field__file-input:focus + .sgs-form-field__file-label | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form__progress-step:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form__progress-step:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form__progress-step:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form__button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/form/style.css |  | .sgs-form__button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/style.css |  | /* * D454 — the ring's opacity modulates the RING, never the input. * * D459 (2026- */ | --sgs-focus-ring-colour": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/style.css |  | /* * D454 — the ring's opacity modulates the RING, never the input. * * D459 (2026- */ | --sgs-focus-underlay-colour": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/form/style.css |  | /* * D454 — the ring's opacity modulates the RING, never the input. * * D459 (2026- */ | --sgs-focus-ring-opacity": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/editor.css |  | .sgs-gallery-editor__thumb-remove:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/editor.css |  | .sgs-gallery-editor__thumb-remove:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__item-btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__item-btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__item-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__item-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__lightbox-close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__lightbox-close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__lightbox-prev:focus-visible, .sgs-gallery__lightbox-next:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/gallery/style.css |  | .sgs-gallery__lightbox-prev:focus-visible, .sgs-gallery__lightbox-next:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/google-reviews/style.css |  | .sgs-google-reviews__maps-link:focus-visible, a.sgs-google-reviews__author:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/google-reviews/style.css |  | .sgs-google-reviews__maps-link:focus-visible, a.sgs-google-reviews__author:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/google-reviews/style.css |  | .sgs-google-reviews .sgs-google-reviews__arrow:focus-visible, .sgs-google-reviews .sgs-google-reviews__pause:focus-visible, .sgs-google-reviews .sgs-google-reviews__write-review:focus-visible, .sgs-google-reviews .sgs-google-reviews__see-all:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/google-reviews/style.css |  | .sgs-google-reviews .sgs-google-reviews__arrow:focus-visible, .sgs-google-reviews .sgs-google-reviews__pause:focus-visible, .sgs-google-reviews .sgs-google-reviews__write-review:focus-visible, .sgs-google-reviews .sgs-google-reviews__see-all:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/google-reviews/style.css |  | .sgs-google-reviews__dot:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/google-reviews/style.css |  | .sgs-google-reviews__dot:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/icon/style.css |  | .sgs-icon__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/icon/style.css |  | .sgs-icon__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/info-box/style.css |  | .sgs-info-box__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/info-box/style.css |  | .sgs-info-box__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/info-box/style.css |  | .sgs-info-box__link:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/language-switch/style.css |  | .sgs-language-switch__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/language-switch/style.css |  | .sgs-language-switch__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/language-switch/style.css |  | .sgs-language-switch__trigger:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/language-switch/style.css |  | .sgs-language-switch__trigger:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video__centre:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video__centre:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video__btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video__btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video__scrub:focus-visible, .sgs-video__vol:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/media/style.css |  | .sgs-video__scrub:focus-visible, .sgs-video__vol:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/mega-group/style.css |  | .sgs-mega-group--link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/mega-group/style.css |  | .sgs-mega-group--link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/modal/style.css |  | .sgs-modal__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/modal/style.css |  | .sgs-modal__close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css |  | .sgs-nav-bar-menu :focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css |  | .sgs-nav-bar-menu :focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css | @media (forced-colors: active) | .sgs-nav-bar-menu :focus-visible | outline-color": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css |  | .sgs-nav-drawer-menu :focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css |  | .sgs-nav-drawer-menu :focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css |  | .sgs-nav-drawer-menu__accordion-summary:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css |  | .sgs-nav-drawer-menu__accordion-summary:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css |  | .sgs-nav-drawer-menu__drill-back-btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css |  | .sgs-nav-drawer-menu__drill-back-btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer/style.css |  | .sgs-nav-drawer__chrome-logo:focus-visible, .sgs-nav-drawer__chrome-slot--button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer/style.css |  | .sgs-nav-drawer__chrome-logo:focus-visible, .sgs-nav-drawer__chrome-slot--button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer/style.css |  | .sgs-nav-drawer__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer/style.css |  | .sgs-nav-drawer__close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/nav-drawer/style.css | @media (forced-colors: active) | .sgs-nav-drawer__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/notice-banner/style.css |  | .sgs-notice-banner__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/notice-banner/style.css |  | .sgs-notice-banner__close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/notice-banner/style.css |  | .sgs-notice-banner__pause:focus-visible, .sgs-notice-banner__prev:focus-visible, .sgs-notice-banner__next:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/notice-banner/style.css |  | .sgs-notice-banner__pause:focus-visible, .sgs-notice-banner__prev:focus-visible, .sgs-notice-banner__next:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/option-picker/style.css |  | .sgs-option-picker__option input[type=\"radio\"]:focus-visible ~ .sgs-option-picker__pill | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/option-picker/style.css |  | .sgs-option-picker__option input[type=\"radio\"]:focus-visible ~ .sgs-option-picker__pill | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/pricing-table/style.css |  | .sgs-pricing-table__cta:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/pricing-table/style.css |  | .sgs-pricing-table__cta:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/pricing-table/style.css |  | .sgs-pricing-table__toggle-input:focus-visible + .sgs-pricing-table__toggle-label | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/pricing-table/style.css |  | .sgs-pricing-table__toggle-input:focus-visible + .sgs-pricing-table__toggle-label | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .product-card--live .product-card__title-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .product-card--live .product-card__title-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .product-card--live .product-card__title-link:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .product-card--live .product-card__thumb:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .product-card--live .product-card__thumb:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .sgs-product-card__swatch--button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .sgs-product-card__swatch--button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .sgs-product-card__wishlist:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-card/style.css |  | .sgs-product-card__wishlist:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-faq/style.css |  | .sgs-product-faq-item__question:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-faq/style.css |  | .sgs-product-faq-item__question:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"legacy-token | plugins/sgs-blocks/src/blocks/product-search/edit.js |  | --sgs-ps-focus-ring§ | --sgs-ps-focus-ring": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search__input:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search__input:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search__submit:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search__submit:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search--icon summary.sgs-product-search__icon-toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search--icon summary.sgs-product-search__icon-toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible, .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible, .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search__dialog .sgs-product-search__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/product-search/style.css |  | .sgs-product-search__dialog .sgs-product-search__close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/responsive-logo/style.scss |  | .sgs-responsive-logo__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/responsive-logo/style.scss |  | .sgs-responsive-logo__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/responsive-logo/style.scss |  | .sgs-responsive-logo__link:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/store-selector/style.css |  | .sgs-store-selector__trigger:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/store-selector/style.css |  | .sgs-store-selector__trigger:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/store-selector/style.css |  | .sgs-store-selector__trigger:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/store-selector/style.css |  | .sgs-store-selector__item a:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/store-selector/style.css |  | .sgs-store-selector__item a:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/store-selector/style.css |  | .sgs-store-selector__item a:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "nav"
+		},
+		"suppress | plugins/sgs-blocks/src/blocks/tabs/style.css |  | .sgs-tabs__tab | outline": {
+			"count": 1,
+			"category": "suppress",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/tabs/style.css |  | .sgs-tabs__tab:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/tabs/style.css |  | .sgs-tabs__tab:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/team-member/style.css |  | .sgs-team-member__social-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/team-member/style.css |  | .sgs-team-member__social-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/testimonial-slider/style.css |  | .sgs-testimonial-slider__arrow:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/testimonial-slider/style.css |  | .sgs-testimonial-slider__arrow:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/testimonial-slider/style.css |  | .sgs-testimonial-slider__dot:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/testimonial-slider/style.css |  | .sgs-testimonial-slider__dot:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/testimonial-slider/style.css |  | .sgs-testimonial-slider__pause:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/testimonial-slider/style.css |  | .sgs-testimonial-slider__pause:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trust-bar/style.css |  | a.sgs-trust-bar__badge:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trust-bar/style.css |  | a.sgs-trust-bar__badge:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"radius-on-focus | plugins/sgs-blocks/src/blocks/trust-bar/style.css |  | a.sgs-trust-bar__badge:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__track:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__track:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews--theme-dark .sgs-trustpilot-reviews__track:focus-visible | outline-color": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__header-logo-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__header-logo-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__arrow:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__arrow:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__dot:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css |  | .sgs-trustpilot-reviews__dot:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "widgets"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css |  | .sgs-whatsapp-cta__btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css |  | .sgs-whatsapp-cta__btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-link/style.css |  | .sgs-wishlist-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-link/style.css |  | .sgs-wishlist-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-panel/style.css |  | .sgs-wishlist-panel__choose-options:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-panel/style.css |  | .sgs-wishlist-panel__choose-options:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-panel/style.css |  | .sgs-wishlist-panel__move-to-basket:focus-visible, .sgs-wishlist-panel__remove:focus-visible, .sgs-wishlist-panel__notify-toggle:focus-visible, .sgs-save-for-later:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-panel/style.css |  | .sgs-wishlist-panel__move-to-basket:focus-visible, .sgs-wishlist-panel__remove:focus-visible, .sgs-wishlist-panel__notify-toggle:focus-visible, .sgs-save-for-later:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-panel/style.css |  | .sgs-wishlist-panel__share-toggle:focus-visible, .sgs-wishlist-panel__share-controls button:focus-visible, .sgs-wishlist-panel__sort select:focus-visible, .sgs-wishlist-panel__view-all:focus-visible, .sgs-wishlist-panel__guest-prompt .wp-element-button:focus-visible, .sgs-wishlist-panel__add-to-mine:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/blocks/wishlist-panel/style.css |  | .sgs-wishlist-panel__share-toggle:focus-visible, .sgs-wishlist-panel__share-controls button:focus-visible, .sgs-wishlist-panel__sort select:focus-visible, .sgs-wishlist-panel__view-all:focus-visible, .sgs-wishlist-panel__guest-prompt .wp-element-button:focus-visible, .sgs-wishlist-panel__add-to-mine:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "buttons"
+		},
+		"bespoke | plugins/sgs-blocks/src/components/IconPicker/editor.css |  | .sgs-icon-picker__cat-btn:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/components/IconPicker/editor.css |  | .sgs-icon-picker__cat-btn:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/components/IconPicker/editor.css |  | .sgs-icon-grid__cell:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/components/IconPicker/editor.css |  | .sgs-icon-grid__cell:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/components/colour-picker/color-picker/editor.scss |  | .sgs-colour-picker__colorful-wrapper .react-colorful__interactive:focus .react-colorful__pointer | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "editor"
+		},
+		"bespoke | plugins/sgs-blocks/src/shared/info-toggle.css |  | .sgs-info-toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"bespoke | plugins/sgs-blocks/src/shared/info-toggle.css |  | .sgs-info-toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "links-other"
+		},
+		"suppress | plugins/sgs-client-notes/assets/css/frontend.css |  | .sgs-cn-reply-input:focus | outline": {
+			"count": 1,
+			"category": "suppress",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-client-notes/assets/css/frontend.css |  | .sgs-cn-reply-input:focus | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"suppress | plugins/sgs-client-notes/assets/css/frontend.css |  | .sgs-cn-form-group textarea:focus, .sgs-cn-form-group select:focus | outline": {
+			"count": 1,
+			"category": "suppress",
+			"group": "forms"
+		},
+		"bespoke | plugins/sgs-client-notes/assets/css/frontend.css |  | .sgs-cn-form-group textarea:focus, .sgs-cn-form-group select:focus | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "forms"
+		},
+		"legacy-token | sites/eye-care-ward-end/theme-snapshot.json |  | settings.custom.focus-ring | focus-ring": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "json"
+		},
+		"json-focus | sites/eye-care-ward-end/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
+			"count": 1,
+			"category": "json-focus",
+			"group": "json"
+		},
+		"json-focus | sites/helping-doctors/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
+			"count": 1,
+			"category": "json-focus",
+			"group": "json"
+		},
+		"legacy-token | sites/indus-foods/theme-snapshot.json |  | settings.custom.focus-ring | focus-ring": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "json"
+		},
+		"json-focus | sites/indus-foods/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
+			"count": 1,
+			"category": "json-focus",
+			"group": "json"
+		},
+		"legacy-token | sites/mamas-munches-redesign/theme-snapshot.json |  | settings.custom.focus-ring | focus-ring": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "json"
+		},
+		"json-focus | sites/mamas-munches-redesign/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
+			"count": 1,
+			"category": "json-focus",
+			"group": "json"
+		},
+		"json-focus | sites/mamas-munches/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
+			"count": 1,
+			"category": "json-focus",
+			"group": "json"
+		},
+		"legacy-token | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :root | --sgs-focus-color": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "theme-core"
+		},
+		"legacy-token | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :root | --sgs-focus-glow": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :focus-visible | --sgs-focus-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) | --sgs-focus-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | :root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | .wp-block-navigation .wp-block-navigation-item__content:focus-visible, .wp-block-navigation a:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | .wp-block-navigation .wp-block-navigation-item__content:focus-visible, .wp-block-navigation a:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | .wp-block-navigation .wp-block-navigation-item__content:focus-visible, .wp-block-navigation a:focus-visible | --sgs-focus-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | .wp-block-navigation .wp-block-navigation-item__content:focus-visible, .wp-block-navigation a:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | .wp-block-button__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css |  | .wp-block-button__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css | @media (prefers-contrast: more) | :focus-visible | outline-width": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css | @media (prefers-contrast: more) | :focus-visible | outline-style": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks-critical.css | @media (prefers-contrast: more) | :focus-visible | outline-color": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"legacy-token | theme/sgs-theme/assets/css/core-blocks-critical.css |  | /* --sgs-focus-shadow is the glow every focus rule draws, defined here on the focus */ | --sgs-focus-shadow": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "theme-core"
+		},
+		"legacy-token | theme/sgs-theme/assets/css/core-blocks-critical.css |  | /* --sgs-focus-shadow is the glow every focus rule draws, defined here on the focus */ | --sgs-focus-glow": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .sgs-link-list__nav .wp-block-navigation-item__content:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .sgs-link-list__nav .wp-block-navigation-item__content:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-social-links .wp-block-social-link a:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-social-links .wp-block-social-link a:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-social-links .wp-block-social-link a:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .sgs-link-list__items a:focus-visible, .sgs-link-list__nav .wp-block-navigation-item__content:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .sgs-link-list__items a:focus-visible, .sgs-link-list__nav .wp-block-navigation-item__content:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/core-blocks.css |  | .sgs-link-list__items a:focus-visible, .sgs-link-list__nav .wp-block-navigation-item__content:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-primary .wp-block-button__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-primary .wp-block-button__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-primary .wp-block-button__link:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-secondary .wp-block-button__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-secondary .wp-block-button__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-secondary .wp-block-button__link:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-accent .wp-block-button__link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-accent .wp-block-button__link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-button.is-style-sgs-accent .wp-block-button__link:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-navigation__responsive-close:focus-within | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-navigation__responsive-close:focus-within | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-navigation__responsive-container-close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-navigation__responsive-container-close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-navigation__responsive-container-close:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-query-pagination .page-numbers:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-next:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-previous:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-query-pagination .page-numbers:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-next:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-previous:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/core-blocks.css |  | .wp-block-query-pagination .page-numbers:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-next:focus-visible, .wp-block-query-pagination .wp-block-query-pagination-previous:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/dark-mode.css |  | .sgs-dark-mode-toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | theme/sgs-theme/assets/css/dark-mode.css |  | .sgs-dark-mode-toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | theme/sgs-theme/assets/css/dark-mode.css |  | .sgs-theme-toggle--segmented [role=\"radio\"]:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"bespoke | theme/sgs-theme/assets/css/dark-mode.css |  | .sgs-theme-toggle--segmented [role=\"radio\"]:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "nav"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/utilities.css |  | .skip-link:not(.screen-reader-text):focus, .skip-link:not(.screen-reader-text):focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/utilities.css |  | .skip-link:not(.screen-reader-text):focus, .skip-link:not(.screen-reader-text):focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/utilities.css |  | .skip-link:not(.screen-reader-text):focus, .skip-link:not(.screen-reader-text):focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/utilities.css |  | *:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/utilities.css |  | *:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/utilities.css |  | *:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/utilities.css |  | *:focus-visible | --sgs-focus-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/utilities.css |  | *:focus-visible | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "theme-core"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-mini-cart__button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-mini-cart__button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-mini-cart__button:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-button.wc-block-components-drawer__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-button.wc-block-components-drawer__close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-mini-cart__footer-checkout.wc-block-components-button:focus-visible, .wc-block-mini-cart__footer-checkout.wp-element-button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-mini-cart__footer-checkout.wc-block-components-button:focus-visible, .wc-block-mini-cart__footer-checkout.wp-element-button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-mini-cart__footer-cart.wc-block-components-button:focus-visible, .wc-block-mini-cart__footer-cart.wp-element-button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-mini-cart__footer-cart.wc-block-components-button:focus-visible, .wc-block-mini-cart__footer-cart.wp-element-button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button:focus-visible, .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button:focus-visible, .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"legacy-token | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-text-input input:focus, .wc-block-components-text-input select:focus, .wc-block-components-select select:focus | border-color": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-text-input input:focus, .wc-block-components-text-input select:focus, .wc-block-components-select select:focus | box-shadow": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"suppress | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-text-input input:focus, .wc-block-components-text-input select:focus, .wc-block-components-select select:focus | outline": {
+			"count": 1,
+			"category": "suppress",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-checkout-place-order-button.wc-block-components-button:focus-visible, .wp-block-woocommerce-checkout-actions-block .wp-element-button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-checkout-place-order-button.wc-block-components-button:focus-visible, .wp-block-woocommerce-checkout-actions-block .wp-element-button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-quantity-selector__button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-components-quantity-selector__button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-cart-item__remove-link:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-cart-item__remove-link:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"suppress | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__heading:focus:not(:focus-visible) | outline": {
+			"count": 1,
+			"category": "suppress",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__close:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__close:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css | @media ( max-width: 781px ) | body.is-enhanced .sgs-shop-filters__toggle:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css | @media ( max-width: 781px ) | body.is-enhanced .sgs-shop-filters__toggle:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__apply:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__apply:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__clear-all:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__clear-all:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__sticky-trigger:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__sticky-trigger:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-product-filter-active__remove:focus-visible, .wc-block-components-filter-reset-button__remove:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-product-filter-active__remove:focus-visible, .wc-block-components-filter-reset-button__remove:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/woocommerce.css |  | .wc-block-product-filter-active__remove:focus-visible, .wc-block-components-filter-reset-button__remove:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css | @container sgs-shop-grid (max-width: 495px) | :where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card:has( .product-card__title-link:focus-visible ) | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css | @container sgs-shop-grid (max-width: 495px) | :where(body:not(.sgs-shop-narrow-grid)) .sgs-shop-layout .product-card:has( .product-card__title-link:focus-visible ) | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-components-product-filter-chips__item button:focus-visible, .sgs-shop-filters .wc-block-product-filter-chips__item button:focus-visible, .sgs-shop-filters .wc-block-components-product-filter-chips__button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-components-product-filter-chips__item button:focus-visible, .sgs-shop-filters .wc-block-product-filter-chips__item button:focus-visible, .sgs-shop-filters .wc-block-components-product-filter-chips__button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:focus-visible, .sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:focus-visible, .sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-product-filters__apply-button:focus-visible, .sgs-shop-filters .wc-block-product-filter-clear-button:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-product-filters__apply-button:focus-visible, .sgs-shop-filters .wc-block-product-filter-clear-button:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__group-summary:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__group-summary:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"radius-on-focus | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__group-summary:focus-visible | border-radius": {
+			"count": 1,
+			"category": "radius-on-focus",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__segment:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__segment:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__bool-filter-input:focus-visible + .sgs-shop-filters__bool-filter-switch | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters__bool-filter-input:focus-visible + .sgs-shop-filters__bool-filter-switch | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-toolbar select:focus-visible, select.orderby:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-toolbar select:focus-visible, select.orderby:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]:focus-visible::-webkit-slider-thumb | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]:focus-visible::-webkit-slider-thumb | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]:focus-visible::-moz-range-thumb | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]:focus-visible::-moz-range-thumb | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-product-rail .product-card:has( .product-card__title-link:focus-visible ) | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-product-rail .product-card:has( .product-card__title-link:focus-visible ) | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-chosen__pill:focus-visible, .sgs-shop-chosen__clear:focus-visible | outline": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"bespoke | theme/sgs-theme/assets/css/woocommerce.css |  | .sgs-shop-chosen__pill:focus-visible, .sgs-shop-chosen__clear:focus-visible | outline-offset": {
+			"count": 1,
+			"category": "bespoke",
+			"group": "woocommerce"
+		},
+		"legacy-token | theme/sgs-theme/theme.json |  | settings.custom.focus-ring | focus-ring": {
+			"count": 1,
+			"category": "legacy-token",
+			"group": "json"
+		},
+		"json-focus | theme/sgs-theme/theme.json |  | styles.elements.button.:focus | :focus": {
+			"count": 1,
+			"category": "json-focus",
+			"group": "json"
+		}
+	}
+}
