@@ -61,14 +61,19 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 	class="product-card__media"
 >
 <?php if ( '' !== $buybox_img_src ) : ?>
+	<?php
+	// Only the page's likely LCP image loads eagerly at high priority (helpers-media.php, Spec 38A §9): a buybox in the
+	// page's first section, or its own product page's buybox, which the product template prints before the post content.
+	$buybox_main_img_priority = sgs_content_image_claims_priority( is_singular( 'product' ) && (int) get_queried_object_id() === (int) $buybox_post_id );
+	?>
 	<img
 		class="<?php echo esc_attr( $buybox_main_img_classes ); ?>"
 		src="<?php echo esc_url( $buybox_img_src ); ?>"
 		alt="<?php echo esc_attr( $buybox_img_alt ); ?>"
 		<?php echo $buybox_def_img_w > 0 ? 'width="' . esc_attr( (string) $buybox_def_img_w ) . '"' : ''; ?>
 		<?php echo $buybox_def_img_h > 0 ? 'height="' . esc_attr( (string) $buybox_def_img_h ) . '"' : ''; ?>
-		loading="eager"
-		fetchpriority="high"
+		loading="<?php echo $buybox_main_img_priority ? 'eager' : 'lazy'; ?>"
+		fetchpriority="<?php echo $buybox_main_img_priority ? 'high' : 'auto'; ?>"
 		decoding="async"
 		data-wp-bind--src="context.imageSrc"
 		data-wp-bind--alt="context.imageAlt"

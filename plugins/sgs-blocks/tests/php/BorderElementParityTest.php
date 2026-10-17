@@ -44,9 +44,10 @@ final class BorderElementParityTest extends TestCase {
 	/**
 	 * Every target as array( block folder, attribute prefix ).
 	 *
-	 * Not here, because the render harness cannot run it: buybox (a variable WooCommerce product is needed
-	 * before it prints any CSS; without WooCommerce it echoes core fallback blocks that carry none). Its root
-	 * border is the same single sgs_border_element_decls() call and is read on the live site instead.
+	 * Not here: buybox, which prints its CSS only on its main path (a variable product and its manifest, the
+	 * harness's --product-file and --manifest-file inputs, which these targets do not pass; without them it echoes core
+	 * fallback blocks that carry none). Its root border is the same single sgs_border_element_decls() call and is read
+	 * on the live site instead.
 	 */
 	private const TARGETS = array(
 		array( 'quote', '' ),

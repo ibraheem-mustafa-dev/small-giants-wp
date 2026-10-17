@@ -50,11 +50,14 @@
  *       map: every declared part resolved by the real Sgs_Motion_Targets::resolve. The
  *       motion part render-path gate, scripts/check-motion-part-render-paths.py, reads it.)
  *   --product-file product.json   a minimal WooCommerce product (wc-product-stub.php)
+ *   --manifest-file manifest.json a variable product's Product_Manifest, read through build()'s cache (manifest-stub.php)
  *   --post-file post.json         the global post get_post() returns (an object: ID, post_type, ...), or a list of
  *                                 them: the posts every WP_Query returns, each the current post while its child renders
  *   --attachments-file a.json     attachment ID => image URL (the harness has no media library)
  *   --render-children             render_block() renders sgs/* children through their real render.php
  *   --first-section               the block sits in the page's first top-level section (first-section-stub.php)
+ *   --queried-file q.json         the request's queried post ({"id": N, "post_type": "..."}): is_singular() and
+ *                                 get_queried_object_id() answer as on that post's own page
  *
  * @package SGS\Blocks\QA
  */
@@ -123,6 +126,18 @@ require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-delegate.php';
 // Real SGS code: sgs/product-card's bound paths call sgs_product_card_has_real_image() (the no-photo box), which the
 // plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
 require_once $sgs_blocks_dir . '/includes/product-card-no-photo.php';
+
+// Real SGS code: the configurator paths of sgs/product-card and sgs/buybox call sgs_price_trim_zeros_applies(), which
+// the plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
+require_once $sgs_blocks_dir . '/includes/price-trim-zeros.php';
+
+// Real SGS code: sgs/buybox asks Sgs_Toast::request() for its add-to-cart toast during its render, which the plugin
+// bootstrap loads from this file (sgs-blocks.php). register() only hooks the footer print, so it is not called here.
+require_once $sgs_blocks_dir . '/includes/class-sgs-toast.php';
+
+// Real SGS code: sgs/buybox's notify-me form asks Turnstile::is_configured(), which the plugin bootstrap loads from this
+// file (sgs-blocks.php). register() only hooks the admin settings page, so it is not called here.
+require_once $sgs_blocks_dir . '/includes/class-turnstile.php';
 
 /**
  * Parse --flag value / --flag=value style CLI args.
@@ -329,12 +344,29 @@ if ( isset( $args['product-file'] ) ) {
 	require_once __DIR__ . '/wc-product-stub.php';
 }
 
+// --manifest-file: a variable product's Product_Manifest, served through build()'s own read-through cache
+// (manifest-stub.php documents what it answers); pair it with a --product-file whose product is "type": "variable".
+if ( isset( $args['manifest-file'] ) ) {
+	if ( ! is_file( $args['manifest-file'] ) ) {
+		harness_fail( 'manifest-file not found: ' . $args['manifest-file'] );
+	}
+	$manifest_tree = json_decode( (string) file_get_contents( $args['manifest-file'] ), true );
+	if ( ! is_array( $manifest_tree ) ) {
+		harness_fail( 'invalid JSON for manifest-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_manifest'] = $manifest_tree;
+	require_once __DIR__ . '/manifest-stub.php';
+}
+
+// WP_HTML_Tag_Processor on every render: a block that prints its own items tags them with their loop index
+// (Sgs_Motion_Loop_Delays::tag_by_class: form fields, form tiles, choice-flow options), and a delegating render tags the
+// children it prints.
+require_once __DIR__ . '/tag-processor-stub.php';
+
 // --render-children: render_block() renders an sgs/* child through its real render.php in this process (what a block
 // that delegates to another block's render, such as a products-mode sgs/card-grid, prints), with a catalogue product
 // file's matching product as the current product. Without it render_block() prints a placeholder comment.
 if ( isset( $args['render-children'] ) ) {
-	// The delegating render tags the children it prints with WP_HTML_Tag_Processor.
-	require_once __DIR__ . '/tag-processor-stub.php';
 	$GLOBALS['sgs_qa_render_child'] = static function ( array $parsed_block ) use ( $sgs_blocks_dir ): string {
 		$child_slug = (string) ( $parsed_block['blockName'] ?? '' );
 		$child_path = harness_resolve_render_path( $child_slug, $sgs_blocks_dir );
@@ -361,6 +393,19 @@ if ( isset( $args['render-children'] ) ) {
 		};
 		return $render( $child_attrs, '', new SGS_QA_Stub_Block( $child_attrs, array(), $child_type ), $child_path );
 	};
+}
+
+// --queried-file: the request's queried post ({"id": N, "post_type": "..."}), which is_singular() and
+// get_queried_object_id() answer from (wp-stubs.php), as on that post's own page.
+if ( isset( $args['queried-file'] ) ) {
+	if ( ! is_file( $args['queried-file'] ) ) {
+		harness_fail( 'queried-file not found: ' . $args['queried-file'] );
+	}
+	$queried_tree = json_decode( (string) file_get_contents( $args['queried-file'] ), true );
+	if ( ! is_array( $queried_tree ) ) {
+		harness_fail( 'invalid JSON for queried-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_queried'] = $queried_tree;
 }
 
 // --first-section: the block renders inside the page's first top-level section (first-section-stub.php).

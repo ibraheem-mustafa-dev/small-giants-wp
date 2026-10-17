@@ -1,7 +1,8 @@
 <?php
 /**
- * A minimal WP_HTML_Tag_Processor for the render harness, loaded only by `--render-children`: the opening-tag walk a
- * delegating render (a products-mode sgs/card-grid) runs over the children it prints to tag each item. It reads
+ * A minimal WP_HTML_Tag_Processor for the render harness, loaded on every render: the opening-tag walk
+ * Sgs_Motion_Loop_Delays::tag_by_class runs over the items a block prints (form fields, form tiles, choice-flow options)
+ * and a delegating render (a products-mode sgs/card-grid) runs over the children it prints, to tag each item. It reads
  * double-quoted class attributes only, which is all an SGS render prints.
  *
  * Test scaffolding only; nothing here is shipped.
@@ -14,7 +15,7 @@ declare(strict_types=1);
 // phpcs:disable
 
 if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
-	/** Opening tags in document order; has_class(), set_attribute() and get_updated_html(). */
+	/** Opening tags in document order; has_class(), set_attribute(), add_class() and get_updated_html(). */
 	class WP_HTML_Tag_Processor {
 		private string $html;
 		private int $start = -1;
@@ -41,6 +42,19 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 			$this->html = substr_replace( $this->html, $new, $this->start, $this->len );
 			$this->len  = strlen( $new );
 			return true;
+		}
+		public function add_class( $class_name ): bool {
+			$open = substr( $this->html, $this->start, $this->len );
+			if ( 1 === preg_match( '/\sclass="([^"]*)"/', $open, $m ) ) {
+				if ( in_array( $class_name, preg_split( '/\s+/', trim( $m[1] ) ), true ) ) {
+					return true;
+				}
+				$new = str_replace( $m[0], ' class="' . trim( $m[1] . ' ' . htmlspecialchars( (string) $class_name, ENT_QUOTES ) ) . '"', $open );
+				$this->html = substr_replace( $this->html, $new, $this->start, $this->len );
+				$this->len  = strlen( $new );
+				return true;
+			}
+			return $this->set_attribute( 'class', $class_name );
 		}
 		public function get_updated_html(): string {
 			return $this->html;

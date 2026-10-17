@@ -8,9 +8,9 @@
  * description, stock, rating) answering with the values in the product file, and the `wc_get_product()` lookup that
  * returns it for its own ID. Every value is the fixture's input, never computed commerce: no tax, no variations, no
  * cart. A variable product (`"type": "variable"`) answers `is_type( 'variable' )` and its two variation prices and
- * nothing more, so it renders the read-only card (WC_VERSION is undefined) and the branches that build a
- * `Product_Manifest` stay out of reach (see wp-stubs.php "DELIBERATELY NOT STUBBED: sgs/buybox"
- * for why that object graph is not faked here).
+ * nothing more, so on its own it renders the read-only card (WC_VERSION is undefined); with `--manifest-file`
+ * (manifest-stub.php) its Product_Manifest comes from the fixture through `Product_Manifest::build()`'s cache, which
+ * reaches the product card's configurator and sgs/buybox's main path.
  *
  * Product file keys: id, name, price_html, price, type ("simple" | "variable"), image_id, image_url (what
  * wp_get_attachment_image_url() answers for image_id), short_description, in_stock, average_rating, review_count,

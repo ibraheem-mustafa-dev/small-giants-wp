@@ -109,14 +109,20 @@ function sgs_next_background_image_index(): int {
  * (`sgs_next_background_image_index()`, shared with sgs/hero and SGS_Container_Wrapper's background images). So a
  * repeating grid outside the first section claims nothing, a first-section grid claims it for its first photo only,
  * and the editor's block-renderer preview (no first section) claims nothing. The slot is consumed only by a claim made
- * inside the first section, so refused claims never move it.
+ * inside the first section (or by the page's lead image, below), so refused claims never move it.
+ *
+ * `$leads_page` is for an image that is its page's lead content although it renders outside the post content, where no
+ * first section is armed: a product page's own sgs/buybox, which single-product.html prints before the post content. It
+ * claims the free slot as a first-section image would.
  *
  * Call it once per image, only when the image will actually print.
  *
+ * @param bool $leads_page Whether the image is its page's lead content outside the post content.
  * @return bool True when this image takes the page's priority slot.
  */
-function sgs_content_image_claims_priority(): bool {
-	if ( ! class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Renderer' ) || ! \SGS\Blocks\Motion\Sgs_Motion_Renderer::in_first_section() ) {
+function sgs_content_image_claims_priority( bool $leads_page = false ): bool {
+	$in_first = class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Renderer' ) && \SGS\Blocks\Motion\Sgs_Motion_Renderer::in_first_section();
+	if ( ! $in_first && ! $leads_page ) {
 		return false;
 	}
 	return 1 === sgs_next_background_image_index();

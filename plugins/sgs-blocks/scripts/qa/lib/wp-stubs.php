@@ -42,6 +42,50 @@ if ( ! function_exists( 'sanitize_text_field' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sanitize_textarea_field' ) ) {
+	// Core keeps line breaks in a textarea value; tags go, as in sanitize_text_field().
+	function sanitize_textarea_field( $val ): string {
+		return trim( strip_tags( (string) $val ) );
+	}
+}
+
+if ( ! function_exists( 'wp_parse_args' ) ) {
+	// Core: an array, an object's properties or a query string, merged over the defaults.
+	function wp_parse_args( $args, $defaults = array() ) {
+		if ( is_object( $args ) ) {
+			$parsed = get_object_vars( $args );
+		} elseif ( is_array( $args ) ) {
+			$parsed = $args;
+		} else {
+			parse_str( (string) $args, $parsed );
+		}
+		return is_array( $defaults ) && $defaults ? array_merge( $defaults, $parsed ) : $parsed;
+	}
+}
+
+if ( ! function_exists( 'remove_query_arg' ) ) {
+	// Core: the URL (the current request's when none is given) without the named query keys.
+	function remove_query_arg( $key, $query = false ) {
+		$url   = false === $query ? (string) ( $_SERVER['REQUEST_URI'] ?? '/' ) : (string) $query;
+		$parts = explode( '?', $url, 2 );
+		if ( 2 !== count( $parts ) ) {
+			return $url;
+		}
+		parse_str( $parts[1], $args );
+		foreach ( (array) $key as $k ) {
+			unset( $args[ $k ] );
+		}
+		return $parts[0] . ( $args ? '?' . http_build_query( $args ) : '' );
+	}
+}
+
+if ( ! function_exists( 'get_privacy_policy_url' ) ) {
+	// Core returns '' when the site has no published privacy policy page; the harness site has none.
+	function get_privacy_policy_url(): string {
+		return '';
+	}
+}
+
 if ( ! function_exists( 'sanitize_html_class' ) ) {
 	function sanitize_html_class( $val, $fallback = '' ): string {
 		$sanitized = preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $val );
@@ -424,6 +468,20 @@ if ( ! function_exists( 'home_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_login_url' ) ) {
+	// The core login URL, with core's redirect_to query when a redirect is given.
+	function wp_login_url( string $redirect = '', bool $force_reauth = false ): string {
+		return 'https://example.test/wp-login.php' . ( '' !== $redirect ? '?redirect_to=' . rawurlencode( $redirect ) : '' );
+	}
+}
+
+if ( ! function_exists( 'wp_timezone' ) ) {
+	// The site's zone; the harness site has no timezone_string set, so it is UTC (core's default).
+	function wp_timezone(): DateTimeZone {
+		return new DateTimeZone( 'UTC' );
+	}
+}
+
 if ( ! function_exists( 'wp_create_nonce' ) ) {
 	function wp_create_nonce( string $action = '-1' ): string {
 		return 'harness-nonce';
@@ -466,14 +524,19 @@ if ( ! function_exists( 'wp_kses' ) ) {
 
 if ( ! function_exists( 'is_singular' ) ) {
 	function is_singular( $post_types = '' ): bool {
-		// The harness runs outside any WP_Query — there is no current page.
-		return false;
+		// The harness runs outside any WP_Query: there is no current page unless `--queried-file` names the request's
+		// queried post ({"id": N, "post_type": "..."}), as core answers on that post's singular view.
+		$queried = $GLOBALS['sgs_qa_queried'] ?? null;
+		if ( ! is_array( $queried ) ) {
+			return false;
+		}
+		return '' === $post_types || array() === $post_types || in_array( (string) ( $queried['post_type'] ?? '' ), (array) $post_types, true );
 	}
 }
 
 if ( ! function_exists( 'get_queried_object_id' ) ) {
 	function get_queried_object_id(): int {
-		return 0;
+		return (int) ( $GLOBALS['sgs_qa_queried']['id'] ?? 0 );
 	}
 }
 
@@ -800,53 +863,12 @@ if ( ! function_exists( 'get_nav_menu_locations' ) ) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// DELIBERATELY NOT STUBBED: sgs/buybox (2026-09-03, A6 investigation).
-//
-// buybox/render.php's WooCommerce-absent fallback calls the WP core function
-// do_blocks() (undefined here), so the block reports NOT RUN today. That
-// looks like a one-line fix (stub do_blocks() to a no-op) — it is not,
-// and stubbing it would make the harness WORSE, not better:
-//
-// do_blocks() only fires on buybox's WC-ABSENT/simple-product/manifest-null
-// fallback branch, which renders ZERO of the block's own markup and emits
-// NO <style> tag at all (it just echoes core WC block placeholders). Making
-// that branch "run" would produce a permanently vacuous harness result —
-// every CSS assertion against it would fail, on the TRUE claim and the
-// FALSE claim alike, because no scoped <style> is ever printed on that path.
-// That is a false unblock (see the harness README's discrimination
-// requirement), not a real one, so it was rejected.
-//
-// Reaching buybox's REAL CSS-emitting code (the backgroundColour/textColour/
-// border scoped <style> block, guarded behind `class_exists('WooCommerce')`
-// AND a variable product AND a non-null Product_Manifest::build() result)
-// would require fabricating a working WC_Product_Variable with real child
-// variations — wc_get_product(), ->is_type('variable'), ->get_children(),
-// ->get_variation_attributes(), plus, inside Product_Manifest::build()
-// itself (plugins/sgs-blocks/includes/class-product-manifest.php, read in
-// full for this investigation): $wpdb tax-rate + post_modified queries,
-// get_transient()/set_transient(), wc_get_price_decimals(),
-// wc_get_price_to_display(), wc_get_price_excluding_tax(),
-// wc_get_price_including_tax(), ->is_on_sale(), ->is_in_stock(),
-// ->get_image_id(), get_term_by(), get_term_meta(), wc_attribute_label(),
-// and Configurator_Meta's sanitisers — a real product/variation/pricing
-// object graph, not a thin WP/external-API boundary stand-in.
-//
-// That is not "minimum structure for the render path to execute" (the
-// WP_Query one-empty-post-set stub above, or the google-reviews class stub
-// below, are that). It is reconstructing a working slice of WooCommerce's
-// own commerce data model inside a test harness — exactly the kind of
-// fabrication this file's own header rules out ("Real SGS logic ... is
-// NEVER stubbed here"; Product_Manifest::build() IS real SGS logic, and the
-// commerce values it produces would be invented, not computed). Even though
-// none of those invented values (price, stock, variation attrs) would
-// directly satisfy a COLOUR assertion, building and maintaining that much
-// fabricated commerce surface is not something a future reader could audit
-// for CSS-safety with confidence, and it is disproportionate to what a CSS-
-// effect harness needs.
-//
-// Verdict: sgs/buybox stays NOT RUN. An honest NOT RUN — and exit non-zero
-// — is the correct outcome per this harness's own documented contract, not
-// a gap to paper over with a fake product graph.
+// sgs/buybox: no product graph is faked here. The block's own markup needs WooCommerce, a variable product and a
+// non-null Product_Manifest::build() result; the harness reaches it with --product-file (a "type": "variable" product,
+// wc-product-stub.php) and --manifest-file (manifest-stub.php), which serves the fixture's manifest through build()'s
+// own read-through cache, so build() runs unchanged and no price, stock or variation value is computed here. Without
+// those inputs the block takes its core WooCommerce fallback, which calls do_blocks() (not stubbed) and prints none of
+// the block's own markup.
 // ─────────────────────────────────────────────────────────────────────────
 
 // google-reviews/render.php calls two static methods on the real
