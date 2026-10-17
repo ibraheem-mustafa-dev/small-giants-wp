@@ -25,63 +25,109 @@
  * are still runnable by hand and are NOT claimed to be covered here. Promoting one means
  * giving it a stable fixture and a negative control, then adding it to PROBES below.
  *
+ * TIERS (measured serially on the live canary, 2026-10-17, 735s for the 8 probes): marquee 366.7s, looping-media 127.1s,
+ * motion-model 112.5s, scroll-progress 44.7s, ambient-float 41.9s, good-by-default 20.7s, motion-path-repeat 18.0s,
+ * morph-geometry 3.9s. Marquee and looping-media are 494s of that and are the two slowest, and they only concern the marquee,
+ * Ken Burns, SVG loop, Lottie and logo-draw code, so they are `tiers: [ 'full' ]` and the smoke tier (the other six, about
+ * 242s) skips them. The deploy chooses the tier itself (`deploy_qa_tier.py`): full when marquee-related code changed since
+ * the last full pass, or when that pass is older than a day; smoke otherwise. `--tier full` here is still the default.
+ *
+ * ⛔ DO NOT RAISE --parallel ABOVE 1 AGAINST THE HOSTINGER CANARY. On 2026-10-17 running 4 probes at once cut the wall
+ * clock to 444s but two probes then failed (fixture pages not answering HTTP 200) and the host's CDN (Server: hcdn) answered
+ * 403 to every request: its bot protection treats the burst as an attack. The mechanism stays for hosts without such
+ * protection; the runner prints a warning whenever N is above 1.
+ *
  * Timing: each probe's wall-clock seconds print after it finishes, and a closing table (probe, seconds,
- * pass/fail, slowest first, plus the total) prints before the PASS/FAIL line. To test that code without the
- * live canary, set SGS_MOTION_QA_PROBES_JSON to a JSON array of { file, what, args } (file may be an
- * absolute path); it replaces the probe list. Unset, the list below runs.
+ * pass/fail, slowest first, plus the total) prints before the PASS/FAIL line.
+ *
+ * Options (all optional; with none given the run is exactly the serial full run it has always been):
+ *   --tier smoke|full   run the probes whose `tiers` list the tier (default full). Marquee and looping-media are full only.
+ *   --parallel N        run up to N probes at once, 1 to 8 (default 1 = serial, inherited output). With N above 1 each
+ *                       probe's output is captured and printed as one block when it finishes, and the closing table is
+ *                       in roster order with the wall-clock total and the sum of per-probe seconds. A probe marked
+ *                       `serial: true` runs alone, after the parallel batch. SGS_HEADED=1 forces serial, because
+ *                       headed browsers share the one physical pointer.
+ *   --only <file>       run just that probe (repeatable), for investigating one.
+ *   --list              print the probes the other options select, one per line, and exit 0 without running any
+ *                       (no browser, no network).
+ * A bad option exits 2 before any probe starts. Scheduling lives in `probe-scheduler.mjs`; the offline test is
+ * `node scripts/motion-qa/run-live-probes.selftest.mjs`.
+ *
+ * To test without the live canary, set SGS_MOTION_QA_PROBES_JSON to the path of a JSON file holding an array of
+ * { file, what, args, dir, tiers, serial } that replaces the probe list (`dir` is where `file` is resolved from,
+ * default this folder; `file` may be absolute). A value starting with `[` is read as the JSON itself. Real runs
+ * never set it.
  *
  * Run:  npm run qa:motion
+ *       npm run qa:motion -- --tier smoke --parallel 3
  */
 
 import { spawn } from 'node:child_process';
+import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { formatParallelTable, parseRunnerArgs, printBlock, probePath, runCaptured, schedule, selectProbes, unknownOnly } from './probe-scheduler.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 
 const REAL_PROBES = [
 	{
 		file: 'probe-morph-geometry.mjs',
+		tiers: [ 'smoke', 'full' ],
 		what: 'fx-morph actually changes SVG geometry (D452 close-out, page 2113)',
 	},
 	{
 		file: 'probe-motion-path-repeat.mjs',
+		tiers: [ 'smoke', 'full' ],
 		what: 'motion-path re-animates on a second pass (D451 close-out, page 2109)',
 	},
 	{
 		file: 'probe-good-by-default.mjs',
+		tiers: [ 'smoke', 'full' ],
 		what: 'scrub/scramble/split-reveal/pin-scrub are safe by default (pages 2103, 2603)',
 	},
 	{
 		file: 'probe-motion-model.mjs',
+		tiers: [ 'smoke', 'full' ],
 		what: 'Spec 38A motion model: hover, entrances, reveal, keyframes, tilt, asset guard, scroll driver across engines (pages 5223, 5226, 5229)',
 		args: [ '--page', '5223', '--page', '5226', '--page', '5229', '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
 	},
 	{
 		file: 'probe-scroll-progress.mjs',
+		tiers: [ 'smoke', 'full' ],
 		what: 'Spec 38A FR-38A-36 scroll progress on fixture page 5250: bar scale and counter text equal page progress, section bar, reduced motion, asset guard',
 		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
 	},
 	{
 		file: 'probe-ambient-float.mjs',
+		tiers: [ 'smoke', 'full' ],
 		what: 'Spec 38A FR-38A-37 ambient float on fixture page 5297: stored timing, three-time samples, phases, pause button, focus pause, reduced motion',
 		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
 	},
 	{
 		file: 'probe-looping-media.mjs',
+		tiers: [ 'full' ],
+		// Runs alone in parallel mode: draw-load is a wall-clock span judged within 8% (header), so CPU contention would distort it.
+		serial: true,
 		what: 'Spec 38A FR-38A-52 looping media on fixture page 5303: Ken Burns zoom-out-once and hold, SVG pulse, pause buttons, Lottie on scroll, logo draw on load, reduced motion, asset guard',
 		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
 	},
 	{
 		file: 'probe-marquee.mjs',
+		tiers: [ 'full' ],
+		// Runs alone in parallel mode: the rate is the painted speed over wall-clock time, judged within 2%, and hover drives a mouse (header).
+		serial: true,
 		what: 'Spec 38A FR-38A-44 marquee on fixture page 5305: three reference drafts within 2% (45px/s, 24s, 64s, 30s), hover rate, touch pause, edge fade, pause buttons, breakpoint range, reduced motion; 375 runs the below-breakpoint marquees',
 		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440', '--width', '375' ],
 	},
 ];
 
-const PROBES = process.env.SGS_MOTION_QA_PROBES_JSON
-	? JSON.parse( process.env.SGS_MOTION_QA_PROBES_JSON )
-	: REAL_PROBES;
+const loadProbes = () => {
+	const override = process.env.SGS_MOTION_QA_PROBES_JSON;
+	if ( ! override ) return REAL_PROBES;
+	return JSON.parse( override.trimStart().startsWith( '[' ) ? override : fs.readFileSync( override, 'utf8' ) );
+};
+const PROBES = loadProbes();
 
 /** The closing table: one row per probe (name, seconds, pass/fail), slowest first, then the total. */
 const formatProbeTable = ( results, totalSeconds ) => {
@@ -98,36 +144,75 @@ const formatProbeTable = ( results, totalSeconds ) => {
 	].join( '\n' );
 };
 
-const run = ( file, args = [] ) =>
+const run = ( probe ) =>
 	new Promise( ( resolve ) => {
-		const child = spawn( process.execPath, [ path.resolve( HERE, file ), ...args ], {
+		const child = spawn( process.execPath, [ probePath( probe, HERE ), ...( probe.args ?? [] ) ], {
 			stdio: 'inherit',
 		} );
 		child.on( 'close', ( code ) => resolve( code ?? 1 ) );
 		child.on( 'error', () => resolve( 1 ) );
 	} );
 
-console.log( `[motion-qa] running ${ PROBES.length } live probe(s) against the canary\n` );
+const options = parseRunnerArgs( process.argv.slice( 2 ) );
+if ( options.error ) {
+	console.error( `[motion-qa] ${ options.error }` );
+	process.exit( 2 );
+}
+const unknown = unknownOnly( PROBES, options.only );
+if ( unknown.length ) {
+	console.error( `[motion-qa] --only names no probe in the roster: ${ unknown.join( ', ' ) }. Roster: ${ PROBES.map( ( p ) => p.file ).join( ', ' ) }` );
+	process.exit( 2 );
+}
+const SELECTED = selectProbes( PROBES, options );
+if ( options.list ) {
+	console.log( `[motion-qa] --list tier ${ options.tier }: ${ SELECTED.length } of ${ PROBES.length } probe(s); nothing was run.` );
+	SELECTED.forEach( ( probe ) => console.log( `  ${ probe.file }` ) );
+	process.exit( 0 );
+}
+if ( ! SELECTED.length ) {
+	console.error( `[motion-qa] no probe matches --tier ${ options.tier }${ options.only.length ? ' with --only' : '' }; nothing was run.` );
+	process.exit( 2 );
+}
+// Headed browsers share the one physical pointer, so parallel headed runs would fight over it.
+const parallel = process.env.SGS_HEADED ? 1 : options.parallel;
+
+console.log( `[motion-qa] running ${ SELECTED.length } live probe(s) against the canary
+` );
+if ( options.tier !== 'full' || options.only.length ) {
+	console.log( `[motion-qa] tier ${ options.tier }${ options.only.length ? ', --only' : '' }: ${ SELECTED.length } of ${ PROBES.length } probe(s)
+` );
+}
+if ( options.parallel > 1 ) {
+	console.log( '[motion-qa] WARNING: --parallel above 1 tripped the Hostinger canary CDN bot protection on 2026-10-17 (fixture pages stopped answering, then 403 for every request); do not use it against the canary.\n' );
+}
+if ( options.parallel > 1 && parallel === 1 ) {
+	console.log( '[motion-qa] SGS_HEADED is set: running serially, headed browsers share one pointer\n' );
+}
 
 const failed = [];
 const results = [];
 const runStarted = performance.now();
-for ( const probe of PROBES ) {
-	console.log( `[motion-qa] --- ${ probe.file }: ${ probe.what }` );
-	const probeStarted = performance.now();
-	const code = await run( probe.file, probe.args );
-	const seconds = ( performance.now() - probeStarted ) / 1000;
-	console.log( `[motion-qa] ${ probe.file } took ${ seconds.toFixed( 1 ) }s` );
-	results.push( { file: probe.file, seconds, passed: code === 0 } );
-	if ( code !== 0 ) failed.push( probe.file );
-	console.log( '' );
+if ( parallel === 1 ) {
+	for ( const probe of SELECTED ) {
+		console.log( `[motion-qa] --- ${ probe.file }: ${ probe.what }` );
+		const probeStarted = performance.now();
+		const code = await run( probe );
+		const seconds = ( performance.now() - probeStarted ) / 1000;
+		console.log( `[motion-qa] ${ probe.file } took ${ seconds.toFixed( 1 ) }s` );
+		results.push( { file: probe.file, seconds, passed: code === 0 } );
+		if ( code !== 0 ) failed.push( probe.file );
+		console.log( '' );
+	}
+	console.log( formatProbeTable( results, ( performance.now() - runStarted ) / 1000 ) + '\n' );
+} else {
+	const captured = await schedule( SELECTED, parallel, ( probe ) => runCaptured( probe, HERE ), printBlock );
+	captured.forEach( ( r, i ) => r.code !== 0 && failed.push( SELECTED[ i ].file ) );
+	console.log( formatParallelTable( SELECTED, captured, ( performance.now() - runStarted ) / 1000, parallel ) + '\n' );
 }
-
-console.log( formatProbeTable( results, ( performance.now() - runStarted ) / 1000 ) + '\n' );
 
 if ( failed.length ) {
 	console.error(
-		`[motion-qa] FAIL — ${ failed.length } of ${ PROBES.length } probe(s) failed:\n` +
+		`[motion-qa] FAIL — ${ failed.length } of ${ SELECTED.length } probe(s) failed:\n` +
 			failed.map( ( f ) => `  ${ f }` ).join( '\n' ) +
 			'\n\n  A probe fails for one of two reasons and they need different responses:\n' +
 			'  1. A real motion regression — the effect stopped working on the live site.\n' +
@@ -140,4 +225,4 @@ if ( failed.length ) {
 	process.exit( 1 );
 }
 
-console.log( `[motion-qa] PASS — all ${ PROBES.length } live probe(s) green.` );
+console.log( `[motion-qa] PASS — all ${ SELECTED.length } live probe(s) green.` );

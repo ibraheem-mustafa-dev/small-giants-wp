@@ -13,6 +13,7 @@ from pathlib import Path
 
 from deploy_common import PLUGIN_DIR, REPO_ROOT, ROLLBACK_HINT, err, log, run, ssh_base_cmd, urlopen_tls
 from deploy_guards import _remote_md5
+from deploy_qa_tier import note_full_pass, resolve_tier
 
 
 def theme_json_verify_result(expected_md5: str, live_md5: str | None) -> bool:
@@ -212,7 +213,20 @@ def step_scoped_selector_audit(page_id: str, dry_run: bool) -> int:
     return rc
 
 
-def step_motion_qa(dry_run: bool) -> int:
+def motion_qa_command(npm: str, tier: str = "full", parallel: int = 1) -> list[str]:
+    """The `npm run qa:motion` command line. Tier and parallelism are appended only when they differ from the
+    defaults (full, 1), so a default deploy runs the byte-identical command it always has."""
+    cmd = [npm, "run", "qa:motion"]
+    if tier != "full" or parallel != 1:
+        cmd += ["--"]
+        if tier != "full":
+            cmd += ["--tier", tier]
+        if parallel != 1:
+            cmd += ["--parallel", str(parallel)]
+    return cmd
+
+
+def step_motion_qa(dry_run: bool, tier: str = "full", parallel: int = 1) -> int:
     """Post-deploy LIVE motion regression check.
 
     ⛔ WHY THIS IS HERE AND NOT IN `prebuild`. Every motion probe needs a live canary.
@@ -227,14 +241,24 @@ def step_motion_qa(dry_run: bool) -> int:
     ⚠ Probes under `scripts/motion-qa/` that `package.json` does not reference are
     "built but never wired": they run on no build. Opting out with
     `--skip-motion-qa` leaves them unrun.
+
+    `tier` (`smoke`, `full` or `auto`) and `parallel` (1 to 8) come from `--motion-qa-tier` and `--motion-qa-parallel`.
+    `auto` runs the full set when marquee-related code changed or the last full pass is stale (`deploy_qa_tier.py`), else
+    smoke. A passing full run records HEAD; a smoke run never does, and a dry run never writes anything.
     """
-    if dry_run:
-        log("[motion-qa] SKIPPED (--dry-run)")
-        return 0
-    log("[motion-qa] running live motion probes against the canary")
     # npm is a shell shim on Windows; shell=False needs the .cmd form there.
     npm = "npm.cmd" if os.name == "nt" else "npm"
-    return run([npm, "run", "qa:motion"], dry_run=False, cwd=PLUGIN_DIR)
+    chosen, reason = resolve_tier(tier)
+    log(f"[motion-qa] tier {chosen} ({reason})")
+    cmd = motion_qa_command(npm, chosen, parallel)
+    if dry_run:
+        log(f"[motion-qa] SKIPPED (--dry-run); would run: {' '.join(cmd)}")
+        return 0
+    log("[motion-qa] running live motion probes against the canary")
+    rc = run(cmd, dry_run=False, cwd=PLUGIN_DIR)
+    if rc == 0 and chosen == "full":
+        note_full_pass()
+    return rc
 
 
 def step_verify_payload(use_alias: bool, wp_content: str, blocks: bool) -> int:

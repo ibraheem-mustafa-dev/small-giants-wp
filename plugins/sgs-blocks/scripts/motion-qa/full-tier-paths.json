@@ -1,0 +1,32 @@
+{
+	"max_age_hours": 24,
+	"paths": [
+		"plugins/sgs-blocks/src/shared/effects/fx-marquee.js",
+		"plugins/sgs-blocks/src/shared/effects/fx-ken-burns.js",
+		"plugins/sgs-blocks/src/shared/effects/fx-svg-loop.js",
+		"plugins/sgs-blocks/src/shared/effects/fx-lottie.js",
+		"plugins/sgs-blocks/src/shared/effects/lottie-*.js",
+		"plugins/sgs-blocks/src/shared/effects/loop-*.js",
+		"plugins/sgs-blocks/src/shared/effects/gsap/fx-draw.js",
+		"plugins/sgs-blocks/src/vendor-modules/lottie-light.js",
+		"plugins/sgs-blocks/assets/css/fx-marquee.css",
+		"plugins/sgs-blocks/assets/css/fx-lottie.css",
+		"plugins/sgs-blocks/src/blocks/brand-strip/**",
+		"plugins/sgs-blocks/src/blocks/trust-bar/**",
+		"plugins/sgs-blocks/src/blocks/responsive-logo/**",
+		"plugins/sgs-blocks/src/blocks/media/**",
+		"plugins/sgs-blocks/includes/motion/**",
+		"plugins/sgs-blocks/includes/helpers-trust-bar-marquee.php",
+		"plugins/sgs-blocks/includes/lottie-render.php",
+		"plugins/sgs-blocks/schemas/motion.schema.json",
+		"plugins/sgs-blocks/tests/fixtures/motion/pages/marquee.json",
+		"plugins/sgs-blocks/tests/fixtures/motion/pages/looping-media.json",
+		"plugins/sgs-blocks/scripts/motion-qa/probe-marquee.mjs",
+		"plugins/sgs-blocks/scripts/motion-qa/probe-looping-media.mjs",
+		"plugins/sgs-blocks/scripts/motion-qa/probe-loop-lib.mjs",
+		"plugins/sgs-blocks/scripts/motion-qa/probe-motion-model-lib.mjs",
+		"plugins/sgs-blocks/scripts/motion-qa/run-live-probes.mjs",
+		"plugins/sgs-blocks/scripts/motion-qa/probe-scheduler.mjs",
+		"plugins/sgs-blocks/scripts/motion-qa/full-tier-paths.json"
+	]
+}

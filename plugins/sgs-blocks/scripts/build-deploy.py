@@ -187,6 +187,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--skip-motion-qa", action="store_true",
                    help="skip the post-deploy live motion probes. Doing so is "
                         "the D338 mistake: it makes the probes unreachable again.")
+    p.add_argument("--motion-qa-tier", choices=["smoke", "full", "auto"], default="auto",
+                   help="live motion probes: smoke, full, or auto = full when marquee code changed or the last full pass is over 24h old (default auto).")
+    p.add_argument("--motion-qa-parallel", type=int, choices=range(1, 9), default=1, metavar="N",
+                   help="run N motion probes at once, 1 to 8 (default 1). Above 1 tripped the Hostinger canary CDN bot protection (2026-10-17): do not use.")
     p.add_argument("--skip-purge", action="store_true",
                    help="Skip the post-deploy cache purge (OPcache + LiteSpeed). "
                         "NOT recommended: the deploy still lands, but warm caches "
@@ -468,8 +472,8 @@ def main() -> int:
     # a pass would say nothing about the site just deployed.
     if deploy_blocks and not args.skip_motion_qa and not args.dry_run and target_key != "sandybrown":
         log(f"[motion-qa] SKIPPED: the probes measure the sandybrown canary, not {target_key}")
-    elif deploy_blocks and not args.skip_motion_qa and not args.dry_run:
-        rc = timed("motion-qa", step_motion_qa, args.dry_run)
+    elif deploy_blocks and not args.skip_motion_qa:
+        rc = timed("motion-qa", step_motion_qa, args.dry_run, args.motion_qa_tier, args.motion_qa_parallel)
         if rc != 0:
             print("[DEPLOYED-BUT-MOTION-REGRESSED] the deploy completed, the site "
                   "responds and the payload matches, but a live motion probe failed. "

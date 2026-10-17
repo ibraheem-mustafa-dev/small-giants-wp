@@ -15,7 +15,9 @@ import tempfile
 from pathlib import Path
 import deploy_cache
 import deploy_multi
+import deploy_qa_tier
 import deploy_timing
+import deploy_verify
 
 from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, SNAPSHOT_REL, TARBALL_NAME, TARGETS, THEME_JSON_PAYLOAD_NAME
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, split_dirty_by_payload, theme_json_guard_decision, uncommitted_snapshot_md5
@@ -254,6 +256,81 @@ def self_test_timing() -> list[str]:
     return failures
 
 
+def self_test_motion_qa_args() -> list[str]:
+    """Self-test case 20: the motion-QA tier and parallel flags reach `npm run qa:motion` only when set (no deploy, no network).
+
+    Each check runs against the real `step_motion_qa` and against a planted faulty one (must find something).
+    """
+    failures: list[str] = []
+    base = ["npm", "run", "qa:motion"]
+
+    def captured(step, *args) -> list[list[str]]:
+        """Run `step` with deploy_verify.run replaced by a recorder, so no npm process ever starts."""
+        seen: list[list[str]] = []
+        original, saved_env = deploy_verify.run, os.environ.get("SGS_MOTION_QA_FULL_FILE")
+        deploy_deadend = tempfile.mkdtemp(prefix="sgs-qa-record-")  # a full run records its pass: keep that off the real file
+        os.environ["SGS_MOTION_QA_FULL_FILE"] = str(Path(deploy_deadend) / "record.json")
+        deploy_verify.run = lambda cmd, **kw: seen.append(list(cmd)) or 0
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                step(False, *args)
+        finally:
+            deploy_verify.run = original
+            shutil.rmtree(deploy_deadend, ignore_errors=True)
+            if saved_env is None:
+                os.environ.pop("SGS_MOTION_QA_FULL_FILE", None)
+            else:
+                os.environ["SGS_MOTION_QA_FULL_FILE"] = saved_env
+        return [[("npm" if c in ("npm", "npm.cmd") else c) for c in cmd] for cmd in seen]
+
+    def check_default(step) -> list[str]:
+        got = captured(step)
+        return [] if got == [base] else [f"default command is {got}, not {[base]}"]
+
+    def check_flags(step) -> list[str]:
+        got = captured(step, "smoke", 3)
+        want = [base + ["--", "--tier", "smoke", "--parallel", "3"]]
+        return [] if got == want else [f"flagged command is {got}, not {want}"]
+
+    def check_one_flag(step) -> list[str]:
+        got = captured(step, "full", 4)
+        want = [base + ["--", "--parallel", "4"]]
+        return [] if got == want else [f"a parallel-only command is {got}, not {want}"]
+
+    def check_dry(step) -> list[str]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            step(True, "smoke", 3)
+        text = buf.getvalue()
+        return [] if "qa:motion -- --tier smoke --parallel 3" in text else [f"dry run did not log the command: {text!r}"]
+
+    def faulty_step(dry_run, tier="full", parallel=1):
+        """Always appends both arguments, even at the defaults."""
+        return deploy_verify.run(base + ["--", "--tier", tier, "--parallel", str(parallel)], dry_run=False) if not dry_run else 0
+
+    def faulty_dry(dry_run, tier="full", parallel=1):
+        """Dry run logs nothing about the command."""
+        if dry_run:
+            return 0
+        return deploy_verify.step_motion_qa(False, tier, parallel)
+
+    real = deploy_verify.step_motion_qa
+    cases = [
+        ("defaults leave the npm command line unchanged", check_default(real), check_default(faulty_step)),
+        ("--tier smoke --parallel 3 adds exactly those arguments after --", check_flags(real), check_flags(lambda d, t="full", p=1: deploy_verify.step_motion_qa(d, "full", p))),
+        ("a parallel-only change adds only --parallel", check_one_flag(real), check_one_flag(faulty_step)),
+        ("a dry run logs the command it would run", check_dry(real), check_dry(faulty_dry)),
+    ]
+    for label, real_problems, planted_problems in cases:
+        print(f"  [motion-qa args case] {label}: real={'GREEN' if not real_problems else 'RED'}; "
+              f"planted fault={'RED' if planted_problems else 'GREEN (check is vacuous)'}"
+              + (f" ({planted_problems[0]})" if planted_problems else ""))
+        failures.extend(f"motion-qa args: {label}: {p}" for p in real_problems)
+        if not planted_problems:
+            failures.append(f"motion-qa args NEGATIVE CONTROL: {label}: the planted fault was not detected, so the check cannot fail")
+    return failures
+
+
 def self_test() -> int:
     """Prove the payload-scoped dirty gate REJECTS the unsafe case, not just the happy path.
 
@@ -391,6 +468,8 @@ def self_test() -> int:
     failures.extend(deploy_cache.self_test())
     failures.extend(deploy_multi.self_test())
     failures.extend(self_test_timing())
+    failures.extend(self_test_motion_qa_args())
+    failures.extend(deploy_qa_tier.self_test())
 
     if failures:
         print("[SELF-TEST FAIL]")
@@ -423,4 +502,10 @@ def self_test() -> int:
     print(" 19. deploy_timing: the summary is slowest first and sums to about 100%, a raising stage still records its time "
           "and re-raises, the history line is valid JSON with the documented keys, an unwritable history path logs one "
           "line and never raises, a dry run writes nothing; each check is proven red on a planted fault")
+    print(" 20. motion QA flags: defaults leave the npm command line unchanged, --motion-qa-tier and --motion-qa-parallel add "
+          "exactly their arguments after --, a dry run logs the command; each check is proven red on a planted fault")
+    print(" 21. motion QA tier: auto picks full with no record, a stale record, an unreachable commit or a changed marquee-related "
+          "file (named in the reason) and smoke otherwise; explicit tiers are honoured; a corrupt record reads as none; the record is "
+          "written after a passing full run only; the real full-tier-paths.json matches the marquee code and not unrelated blocks; "
+          "each check is proven red on a planted fault")
     return 0
