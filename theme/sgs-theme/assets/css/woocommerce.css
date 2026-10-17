@@ -2534,6 +2534,13 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 	   "fix" upstream. A filter panel never scrolls sideways by design, so the
 	   axis is simply turned off. */
 	overflow-x: hidden;
+	/* Hidden overflow clips at the padding box, so a control flush with the
+	   panel's inline edge lost the side of its focus ring (ring width, gap and
+	   the 2px hairline). The room below sits inside the clip as padding and is
+	   taken back as an equal negative margin, so no control moves. The modal
+	   sheet below re-declares both for its own inset. */
+	padding-inline: calc(var(--sgs-focus-width, 2px) * 2 + 2px);
+	margin-inline: calc((var(--sgs-focus-width, 2px) * 2 + 2px) * -1);
 }
 
 /* ── 8h. Two things WooCommerce paints that the panel must own ──
