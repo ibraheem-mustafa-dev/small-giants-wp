@@ -16,6 +16,11 @@
  * wp_get_attachment_image_url() answers for image_id), short_description, in_stock, average_rating, review_count,
  * variation_price_min, variation_price_max, terms (taxonomy => term slugs, read by has_term() in wp-stubs.php).
  *
+ * A product file holding a JSON list is a catalogue (`$GLOBALS['sgs_qa_products']`): `wc_get_product()` finds each
+ * product by ID, `wc_get_products()` returns every ID, and `$GLOBALS['sgs_qa_product']` (what the other stubs read for
+ * meta, permalinks, images and terms) is the first product until `--render-children` switches it to the product the
+ * child card being rendered is bound to.
+ *
  * Test scaffolding only; nothing here is shipped.
  *
  * @package SGS\Blocks\QA
@@ -80,9 +85,24 @@ if ( ! class_exists( 'WC_Product' ) ) {
 
 if ( ! function_exists( 'wc_get_product' ) ) {
 	function wc_get_product( $the_product = false ) {
-		$data = $GLOBALS['sgs_qa_product'] ?? null;
-		$id   = is_object( $the_product ) && method_exists( $the_product, 'get_id' ) ? $the_product->get_id() : absint( $the_product );
-		return is_array( $data ) && (int) ( $data['id'] ?? 0 ) === $id ? new WC_Product( $data ) : false;
+		$id = is_object( $the_product ) && method_exists( $the_product, 'get_id' ) ? $the_product->get_id() : absint( $the_product );
+		foreach ( $GLOBALS['sgs_qa_products'] ?? array( $GLOBALS['sgs_qa_product'] ?? null ) as $data ) {
+			if ( is_array( $data ) && (int) ( $data['id'] ?? 0 ) === $id ) {
+				return new WC_Product( $data );
+			}
+		}
+		return false;
+	}
+}
+
+if ( ! function_exists( 'wc_get_products' ) ) {
+	/** Every product in a list product file, in file order, as IDs (the only return shape the grid asks for). */
+	function wc_get_products( $args = array() ) {
+		$ids = array();
+		foreach ( $GLOBALS['sgs_qa_products'] ?? array() as $data ) {
+			$ids[] = (int) ( $data['id'] ?? 0 );
+		}
+		return $ids;
 	}
 }
 

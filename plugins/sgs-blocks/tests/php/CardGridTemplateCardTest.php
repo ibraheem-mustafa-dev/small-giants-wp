@@ -1,0 +1,196 @@
+<?php
+/**
+ * Tests: a products-mode sgs/card-grid renders every product through the one template sgs/product-card it holds
+ * (the Query Loop post-template model), so the card's own controls reach every card the grid prints.
+ *
+ *   (a) The template never prints itself: the grid registers with `skip_inner_blocks`, and its render ignores any
+ *       `$content` it is handed.
+ *   (b) A template-only setting reaches every card: the CTA button's resting and hover colours.
+ *   (c) Each card keeps its own product: the template's productId and sourceMode never reach a card.
+ *   The page ItemList never counts the template as a product.
+ *
+ * The grid renders through the REAL render.php in the QA harness (a child process) with `--render-children`, so each
+ * card is the real sgs/product-card render.php, over a two-product catalogue (wc-product-stub.php).
+ *
+ * Run with:
+ *   vendor/bin/phpunit --filter CardGridTemplateCardTest
+ *
+ * @package SGS\Blocks\Tests
+ */
+
+declare( strict_types=1 );
+
+// PHPUnit test, not shipped code.
+// phpcs:disable
+
+use PHPUnit\Framework\TestCase;
+
+#[\PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses]
+final class CardGridTemplateCardTest extends TestCase {
+
+	private const PRODUCTS = array(
+		array( 'id' => 52, 'name' => 'Oak table', 'price_html' => '£120', 'price' => '120', 'type' => 'simple', 'image_id' => 0, 'short_description' => 'Solid oak.', 'in_stock' => true ),
+		array( 'id' => 53, 'name' => 'Ash chair', 'price_html' => '£60', 'price' => '60', 'type' => 'simple', 'image_id' => 0, 'short_description' => 'Ash.', 'in_stock' => true ),
+	);
+
+	/** What core would hand the grid as `$content` had it rendered the template. */
+	private const TEMPLATE_MARK = 'sgs-qa-template-card-printed';
+
+	private const TEMPLATE = array(
+		'sourceMode'                 => 'typed',
+		'productId'                  => 999,
+		'anchor'                     => 'template-card',
+		'ctaColourBackground'        => '#123456',
+		'ctaColourBackgroundHover'   => '#abcdef',
+		'ctaColourText'              => '#fedcba',
+		'ctaColourTextHover'         => '#0f0f0f',
+	);
+
+	/**
+	 * The grid's real render with its template card and the two-product catalogue.
+	 *
+	 * @param array<string,mixed> $template The template card's saved attributes.
+	 * @return array{html:string,css:string}
+	 */
+	private function render_grid( array $template ): array {
+		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
+		$files   = array();
+		foreach ( array(
+			'attrs'   => array( 'source' => 'wc-product' ),
+			'product' => self::PRODUCTS,
+			'inner'   => array( array( 'name' => 'sgs/product-card', 'attributes' => (object) $template, 'html' => '<div class="' . self::TEMPLATE_MARK . '"></div>' ) ),
+		) as $key => $tree ) {
+			$files[ $key ] = tempnam( sys_get_temp_dir(), 'sgscg' );
+			file_put_contents( $files[ $key ], json_encode( $tree, JSON_THROW_ON_ERROR ) );
+		}
+		try {
+			$cmd = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness )
+				. ' --slug sgs/card-grid --attrs-file ' . escapeshellarg( $files['attrs'] )
+				. ' --product-file ' . escapeshellarg( $files['product'] )
+				. ' --inner-blocks-file ' . escapeshellarg( $files['inner'] )
+				. ' --content ' . escapeshellarg( '<div class="' . self::TEMPLATE_MARK . '"></div>' )
+				. ' --render-children 2>&1';
+			$out = (string) shell_exec( $cmd );
+		} finally {
+			foreach ( $files as $file ) {
+				@unlink( $file );
+			}
+		}
+		$decoded = json_decode( $out, true );
+		$this->assertIsArray( $decoded, 'harness did not return JSON: ' . $out );
+		$this->assertTrue( $decoded['ok'] ?? false, 'render.php failed: ' . ( $decoded['error'] ?? $out ) );
+		return array( 'html' => (string) $decoded['html'], 'css' => (string) $decoded['css'] );
+	}
+
+	/**
+	 * Each printed card root's scope class, in document order (the harness prints no wp-block-* wrapper class, so the
+	 * root is the element carrying the card's own `product-card` class).
+	 *
+	 * @return string[]
+	 */
+	private static function card_uids( string $html ): array {
+		preg_match_all( '/<[a-z]+\b[^>]*\bclass="(?:[^"]*\s)?product-card\s(?:[^"]*\s)?(sgs-pc-[a-z0-9]+)(?:\s[^"]*)?"/', $html, $m );
+		return $m[1];
+	}
+
+	/**
+	 * The declarations of every rule whose selector names the card's CTA under one scope class, in one state: the
+	 * text (the CTA itself) or the background (its ::after layer), at rest or on hover.
+	 */
+	private static function cta_decls( string $css, string $uid, string $state, string $layer ): string {
+		$decls = '';
+		preg_match_all( '/([^{}]+)\{([^{}]*)\}/', $css, $rules, PREG_SET_ORDER );
+		foreach ( $rules as $rule ) {
+			foreach ( explode( ',', $rule[1] ) as $selector ) {
+				if ( ! str_contains( $selector, '.' . $uid . ' .product-card__view' ) ) {
+					continue;
+				}
+				if ( ( 'hover' === $state ) === str_contains( $selector, ':hover' ) && ( 'background' === $layer ) === str_contains( $selector, '::after' ) ) {
+					$decls .= $rule[2] . ';';
+				}
+			}
+		}
+		return strtolower( $decls );
+	}
+
+	public function test_the_template_card_never_prints(): void {
+		$out = $this->render_grid( self::TEMPLATE );
+		$this->assertSame( 0, substr_count( $out['html'], self::TEMPLATE_MARK ), 'the grid ignores the $content core would hand it' );
+		$this->assertCount( 2, self::card_uids( $out['html'] ), 'one card per product, none for the template' );
+	}
+
+	public function test_the_grid_registers_with_skip_inner_blocks(): void {
+		if ( ! function_exists( 'add_filter' ) ) {
+			function add_filter( ...$args ) { return true; }
+		}
+		require_once dirname( __DIR__, 2 ) . '/includes/class-card-grid-template.php';
+		$settings = \SGS\Blocks\Card_Grid_Template::metadata_settings( array(), array( 'name' => 'sgs/card-grid' ) );
+		$this->assertTrue( $settings['skip_inner_blocks'] ?? false, 'core never renders the template before the grid render' );
+		$other = \SGS\Blocks\Card_Grid_Template::metadata_settings( array(), array( 'name' => 'sgs/product-card' ) );
+		$this->assertArrayNotHasKey( 'skip_inner_blocks', $other, 'only the grid skips its inner blocks' );
+		$this->assertStringContainsString( 'class-card-grid-template.php', (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/class-sgs-blocks.php' ), 'the filter loads before the blocks register' );
+	}
+
+	public function test_every_card_carries_the_template_cta_colours_in_both_states(): void {
+		$out  = $this->render_grid( self::TEMPLATE );
+		$uids = self::card_uids( $out['html'] );
+		$this->assertCount( 2, $uids );
+		foreach ( $uids as $uid ) {
+			$this->assertStringContainsString( 'color:#fedcba', self::cta_decls( $out['css'], $uid, 'rest', 'text' ), $uid . ' resting text colour' );
+			$this->assertStringContainsString( 'color:#0f0f0f', self::cta_decls( $out['css'], $uid, 'hover', 'text' ), $uid . ' hover text colour' );
+			$this->assertStringContainsString( 'background-color:#123456', self::cta_decls( $out['css'], $uid, 'rest', 'background' ), $uid . ' resting background colour' );
+			$this->assertStringContainsString( 'background-color:#abcdef', self::cta_decls( $out['css'], $uid, 'hover', 'background' ), $uid . ' hover background colour' );
+		}
+	}
+
+	public function test_each_card_keeps_its_own_product(): void {
+		$out = $this->render_grid( self::TEMPLATE );
+		$this->assertSame( 1, substr_count( $out['html'], '>Oak table<' ), 'product 52 prints its title once' );
+		$this->assertSame( 1, substr_count( $out['html'], '>Ash chair<' ), 'product 53 prints its title once' );
+		$this->assertSame( 1, substr_count( $out['html'], '"productId":"52"' ), 'one card binds to product 52' );
+		$this->assertSame( 1, substr_count( $out['html'], '"productId":"53"' ), 'one card binds to product 53' );
+		$this->assertStringNotContainsString( 'id="template-card"', $out['html'], 'the template anchor never repeats on the cards' );
+		$this->assertStringNotContainsString( '999', $out['html'], 'no card binds to the template productId' );
+	}
+
+	public function test_the_card_attrs_merge_order(): void {
+		if ( ! function_exists( 'add_filter' ) ) {
+			function add_filter( ...$args ) { return true; }
+		}
+		require_once dirname( __DIR__, 2 ) . '/includes/class-card-grid-template.php';
+		$template = new \stdClass();
+		$template->parsed_block = array( 'innerBlocks' => array( array( 'blockName' => 'sgs/product-card', 'attrs' => self::TEMPLATE + array( 'showLadder' => true ) ) ) );
+		$attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
+			array( 'showLadder' => false, 'ctaBehaviour' => 'learn-more' ),
+			\SGS\Blocks\Card_Grid_Template::template_attrs( $template ),
+			array( 'sourceMode' => 'wc-product', 'productId' => 52 )
+		);
+		$this->assertSame( 52, $attrs['productId'] );
+		$this->assertSame( 'wc-product', $attrs['sourceMode'] );
+		$this->assertTrue( $attrs['showLadder'], 'the template setting beats the grid-forwarded default' );
+		$this->assertSame( 'learn-more', $attrs['ctaBehaviour'], 'a forwarded setting the template leaves unset stays' );
+		$this->assertArrayNotHasKey( 'anchor', $attrs );
+	}
+
+	public function test_the_item_list_never_counts_the_template(): void {
+		if ( ! function_exists( 'SGS\Blocksdd_filter' ) && ! function_exists( 'add_filter' ) ) {
+			function add_filter( ...$args ) { return true; }
+		}
+		if ( ! function_exists( 'get_post_status' ) ) {
+			function get_post_status( $id ) { return 'publish'; }
+		}
+		require_once dirname( __DIR__, 2 ) . '/includes/class-product-item-list.php';
+		$blocks = array(
+			array(
+				'blockName'   => 'sgs/card-grid',
+				'attrs'       => array( 'source' => 'cpt-collection' ),
+				'innerBlocks' => array( array( 'blockName' => 'sgs/product-card', 'attrs' => array( 'sourceMode' => 'wc-product', 'productId' => 77 ), 'innerBlocks' => array() ) ),
+			),
+		);
+		$ids         = array();
+		$contributed = false;
+		$collect     = new \ReflectionMethod( \SGS\Blocks\Product_Item_List::class, 'collect' );
+		$collect->invokeArgs( null, array( $blocks, &$ids, &$contributed ) );
+		$this->assertSame( array(), $ids, 'the template card inside a products-mode grid is not a page product' );
+	}
+}

@@ -94,6 +94,10 @@ export {
 	__experimentalWritingModeControl as WritingModeControl,
 } from '@wordpress/block-editor';
 
+// The read-only block preview hook core's Query Loop post-template renders each non-active loop item with
+// (sgs/card-grid's products-mode canvas does the same).
+export { __experimentalUseBlockPreview as useBlockPreview } from '@wordpress/block-editor';
+
 // STABLE, unprefixed exports — no `__experimental` alias to absorb, so they do
 // NOT strictly need to route through this barrel. They are here anyway so that
 // the whole native-typography family is named in ONE place: if core ever

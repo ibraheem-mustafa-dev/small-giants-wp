@@ -302,6 +302,9 @@ if ( ! class_exists( 'WP_Query' ) ) {
 
 if ( ! function_exists( 'render_block' ) ) {
 	function render_block( array $parsed_block ): string {
+		if ( isset( $GLOBALS['sgs_qa_render_child'] ) && is_callable( $GLOBALS['sgs_qa_render_child'] ) ) {
+			return ( $GLOBALS['sgs_qa_render_child'] )( $parsed_block );
+		}
 		return '<!-- harness stub: render_block() not implemented, block=' . esc_attr( $parsed_block['blockName'] ?? '' ) . ' -->';
 	}
 }

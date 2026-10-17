@@ -52,6 +52,7 @@
  *   --product-file product.json   a minimal WooCommerce product (wc-product-stub.php)
  *   --post-file post.json         the global post get_post() returns (an object: ID, post_type, ...)
  *   --attachments-file a.json     attachment ID => image URL (the harness has no media library)
+ *   --render-children             render_block() renders sgs/* children through their real render.php
  *   --first-section               the block sits in the page's first top-level section (first-section-stub.php)
  *
  * @package SGS\Blocks\QA
@@ -116,6 +117,7 @@ require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-stagger.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-emitter.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-delays.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-inherit.php';
+require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-delegate.php';
 
 // Real SGS code: sgs/product-card's bound paths call sgs_product_card_has_real_image() (the no-photo box), which the
 // plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
@@ -285,7 +287,8 @@ if ( $motion_targets ) {
 }
 
 // --inner-blocks-file: JSON list of {name, attributes, html}; each becomes a $block->inner_blocks
-// entry whose render() returns html (what a composite parent such as sgs/tabs iterates).
+// entry whose render() returns html (what a composite parent such as sgs/tabs iterates) and a
+// $block->parsed_block['innerBlocks'] row {blockName, attrs} (the saved attributes a parent reads).
 if ( isset( $args['inner-blocks-file'] ) ) {
 	if ( ! is_file( $args['inner-blocks-file'] ) ) {
 		harness_fail( 'inner-blocks-file not found: ' . $args['inner-blocks-file'] );
@@ -295,6 +298,10 @@ if ( isset( $args['inner-blocks-file'] ) ) {
 		harness_fail( 'invalid JSON for inner-blocks-file: ' . json_last_error_msg() );
 	}
 	foreach ( $inner_rows as $row ) {
+		$block->parsed_block['innerBlocks'][] = array(
+			'blockName' => (string) ( $row['name'] ?? '' ),
+			'attrs'     => is_array( $row['attributes'] ?? null ) ? $row['attributes'] : array(),
+		);
 		$block->inner_blocks[] = new SGS_QA_Stub_Inner_Block(
 			(string) ( $row['name'] ?? '' ),
 			is_array( $row['attributes'] ?? null ) ? $row['attributes'] : array(),
@@ -312,8 +319,42 @@ if ( isset( $args['product-file'] ) ) {
 	if ( ! is_array( $product_tree ) ) {
 		harness_fail( 'invalid JSON for product-file: ' . json_last_error_msg() );
 	}
-	$GLOBALS['sgs_qa_product'] = $product_tree;
+	if ( array_is_list( $product_tree ) ) {
+		$GLOBALS['sgs_qa_products'] = $product_tree;
+		$GLOBALS['sgs_qa_product']  = $product_tree[0] ?? array();
+	} else {
+		$GLOBALS['sgs_qa_product'] = $product_tree;
+	}
 	require_once __DIR__ . '/wc-product-stub.php';
+}
+
+// --render-children: render_block() renders an sgs/* child through its real render.php in this process (what a block
+// that delegates to another block's render, such as a products-mode sgs/card-grid, prints), with a catalogue product
+// file's matching product as the current product. Without it render_block() prints a placeholder comment.
+if ( isset( $args['render-children'] ) ) {
+	// The delegating render tags the children it prints with WP_HTML_Tag_Processor.
+	require_once __DIR__ . '/tag-processor-stub.php';
+	$GLOBALS['sgs_qa_render_child'] = static function ( array $parsed_block ) use ( $sgs_blocks_dir ): string {
+		$child_slug = (string) ( $parsed_block['blockName'] ?? '' );
+		$child_path = harness_resolve_render_path( $child_slug, $sgs_blocks_dir );
+		if ( ! str_starts_with( $child_slug, 'sgs/' ) || ! is_file( $child_path ) ) {
+			return '<!-- harness stub: no render.php for block=' . esc_attr( $child_slug ) . ' -->';
+		}
+		$child_attrs = is_array( $parsed_block['attrs'] ?? null ) ? $parsed_block['attrs'] : array();
+		foreach ( $GLOBALS['sgs_qa_products'] ?? array() as $catalogue_product ) {
+			if ( (int) ( $catalogue_product['id'] ?? 0 ) === (int) ( $child_attrs['productId'] ?? 0 ) ) {
+				$GLOBALS['sgs_qa_product'] = $catalogue_product;
+			}
+		}
+		$child_meta = is_file( dirname( $child_path ) . '/block.json' ) ? json_decode( (string) file_get_contents( dirname( $child_path ) . '/block.json' ), true ) : array();
+		$child_type = (object) array( 'attributes' => is_array( $child_meta['attributes'] ?? null ) ? $child_meta['attributes'] : array() );
+		$render     = static function ( array $attributes, string $content, object $block, string $render_path ): string {
+			ob_start();
+			require $render_path;
+			return (string) ob_get_clean();
+		};
+		return $render( $child_attrs, '', new SGS_QA_Stub_Block( $child_attrs, array(), $child_type ), $child_path );
+	};
 }
 
 // --first-section: the block renders inside the page's first top-level section (first-section-stub.php).

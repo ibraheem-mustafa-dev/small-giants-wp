@@ -32,6 +32,7 @@ import {
 	wrapperPreview,
 } from '../../utils';
 import { cardGridPreview } from './preview-style';
+import { forwardedCardSettings } from './template-preview';
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
@@ -51,6 +52,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		source,
 		overlayColour,
 		overlayGradient,
+		showPickers,
+		ctaBehaviour,
+		showLadder,
+		productShowLadder,
 	} = attributes;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
@@ -68,6 +73,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const isQueryMode = source === 'query';
 	const isWcProductMode = source === 'wc-product';
 	const isCptCollectionMode = source === 'cpt-collection';
+	// The card settings the grid forwards to every products-mode card, under the template card's own.
+	const cardForwarded = useMemo(
+		() => forwardedCardSettings( { source, showPickers, ctaBehaviour, showLadder, productShowLadder } ),
+		[ source, showPickers, ctaBehaviour, showLadder, productShowLadder ]
+	);
 
 	// Contrast check for card text (title/subtitle) against the card's
 	// background. `contrastAgainst` only accepts a FLAT colour/token, so this
@@ -111,8 +121,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const [ palette ] = useSettings( 'color.palette' );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 	const cardPreview = cardGridPreview( attributes, previewTier, palette );
-	// In the products and collection modes the server preview prints the whole grid, its layout classes included, so
-	// the editor wrapper carries none: its own grid rule would put that preview in one column of three.
+	// In the products and collection modes the template-card canvas prints its own grid element, so the editor
+	// wrapper carries none of the grid's layout classes: its own grid rule would put that canvas in one column of three.
 	const blockProps = useBlockProps(
 		isWcProductMode || isCptCollectionMode ? {} : { className }
 	);
@@ -224,7 +234,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				<LayoutBorderPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
-			<CardGridCanvas attributes={ attributes } isWcProductMode={ isWcProductMode } isCptCollectionMode={ isCptCollectionMode } blockProps={ blockProps } pageButtonPreviewCss={ pageButtonPreviewCss } wrapper={ wrapper } gridStyle={ gridStyle } items={ items } cardPreview={ cardPreview } titleStyle={ titleStyle } subtitleStyle={ subtitleStyle } HeadingTag={ HeadingTag } />
+			<CardGridCanvas attributes={ attributes } clientId={ clientId } cardForwarded={ cardForwarded } isWcProductMode={ isWcProductMode } isCptCollectionMode={ isCptCollectionMode } blockProps={ blockProps } pageButtonPreviewCss={ pageButtonPreviewCss } wrapper={ wrapper } gridStyle={ gridStyle } items={ items } cardPreview={ cardPreview } titleStyle={ titleStyle } subtitleStyle={ subtitleStyle } HeadingTag={ HeadingTag } />
 		</>
 	);
 }

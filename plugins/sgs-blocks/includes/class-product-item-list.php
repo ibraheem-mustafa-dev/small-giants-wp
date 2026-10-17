@@ -30,6 +30,7 @@ defined( 'ABSPATH' ) || exit;
 // Own dependencies (shared-helper-must-require-its-own-deps): the product
 // query builder + the ItemList schema builder both live here.
 require_once __DIR__ . '/class-card-grid-products.php';
+require_once __DIR__ . '/class-card-grid-template.php';
 // The shared XSS-safe JSON-LD encoder (FR-30-9). require_once is idempotent, and
 // this file is required from several entry points (sgs-blocks.php, configurator-head,
 // class-card-grid-products), so it must not rely on another file having loaded it.
@@ -245,7 +246,9 @@ final class Product_Item_List {
 				}
 			}
 
-			if ( ! empty( $block['innerBlocks'] ) && \is_array( $block['innerBlocks'] ) ) {
+			// A products-mode grid's only inner block is its template card, which names no product of its own.
+			$is_product_grid = 'sgs/card-grid' === $name && Card_Grid_Template::is_product_source( (string) ( $attrs['source'] ?? '' ) );
+			if ( ! $is_product_grid && ! empty( $block['innerBlocks'] ) && \is_array( $block['innerBlocks'] ) ) {
 				self::collect( $block['innerBlocks'], $product_ids, $grid_contributed );
 			}
 		}

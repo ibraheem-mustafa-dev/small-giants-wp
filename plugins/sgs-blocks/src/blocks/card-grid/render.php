@@ -8,7 +8,7 @@
  *                     renders each as an sgs/product-card in wc-product mode.
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    Inner block content (unused — block is fully dynamic).
+ * @var string   $content    Unused: the grid registers with skip_inner_blocks, so its template card never renders into it.
  * @var \WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -19,6 +19,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-products.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-template.php';
 // WooCommerce-INDEPENDENT collection engine + shared pagination markup.
 // Card_Grid_Products above returns an empty array without WooCommerce, so
 // this second engine is what keeps a product collection working on a bare

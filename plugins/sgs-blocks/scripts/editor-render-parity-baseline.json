@@ -359,6 +359,76 @@
       "attr": "bgZoomStart",
       "disposition": "by-design",
       "reason": "Register row 51 (2026-10-07): the starting zoom of the hero's one-off 'zoom out once' load animation. The hero canvas deliberately previews no ken-burns motion at all (hero/edit.js comment above backgroundPreview(): a second animated background would mount), and an entrance that plays once on page load has nothing to show in a static editor canvas."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "subtitleColourHover",
+      "disposition": "accepted-debt",
+      "reason": "Pre-existing desync made visible on 2026-10-17: the grid's products modes now preview through the template-card canvas (ProductTemplateCanvas) instead of a ServerSideRender of the whole block, so the block lost the checker's whole-block ServerSideRender exemption. This attribute belongs to the manual or query mode, whose canvas never previewed it before."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "queryPostType",
+      "disposition": "accepted-debt",
+      "reason": "Pre-existing desync made visible on 2026-10-17: the grid's products modes now preview through the template-card canvas (ProductTemplateCanvas) instead of a ServerSideRender of the whole block, so the block lost the checker's whole-block ServerSideRender exemption. This attribute belongs to the manual or query mode, whose canvas never previewed it before."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "queryPostsPerPage",
+      "disposition": "accepted-debt",
+      "reason": "Pre-existing desync made visible on 2026-10-17: the grid's products modes now preview through the template-card canvas (ProductTemplateCanvas) instead of a ServerSideRender of the whole block, so the block lost the checker's whole-block ServerSideRender exemption. This attribute belongs to the manual or query mode, whose canvas never previewed it before."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "queryCategory",
+      "disposition": "accepted-debt",
+      "reason": "Pre-existing desync made visible on 2026-10-17: the grid's products modes now preview through the template-card canvas (ProductTemplateCanvas) instead of a ServerSideRender of the whole block, so the block lost the checker's whole-block ServerSideRender exemption. This attribute belongs to the manual or query mode, whose canvas never previewed it before."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "imageZoomHover",
+      "disposition": "accepted-debt",
+      "reason": "Pre-existing desync made visible on 2026-10-17: the grid's products modes now preview through the template-card canvas (ProductTemplateCanvas) instead of a ServerSideRender of the whole block, so the block lost the checker's whole-block ServerSideRender exemption. This attribute belongs to the manual or query mode, whose canvas never previewed it before."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "grayscaleHover",
+      "disposition": "accepted-debt",
+      "reason": "Pre-existing desync made visible on 2026-10-17: the grid's products modes now preview through the template-card canvas (ProductTemplateCanvas) instead of a ServerSideRender of the whole block, so the block lost the checker's whole-block ServerSideRender exemption. This attribute belongs to the manual or query mode, whose canvas never previewed it before."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "staggerDelay",
+      "disposition": "accepted-debt",
+      "reason": "Pre-existing desync made visible on 2026-10-17: the grid's products modes now preview through the template-card canvas (ProductTemplateCanvas) instead of a ServerSideRender of the whole block, so the block lost the checker's whole-block ServerSideRender exemption. This attribute belongs to the manual or query mode, whose canvas never previewed it before."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "contentType",
+      "disposition": "detector-limitation",
+      "reason": "The cpt-collection canvas (ProductTemplateCanvas) posts the grid's whole attribute object to POST /sgs/v1/card-grid-items, whose CPT_Collection_Query::get_results() reads this attribute to pick the products the canvas shows; the checker sees only destructured reads in edit.js, not the object handed to the request."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "selectionRule",
+      "disposition": "detector-limitation",
+      "reason": "The cpt-collection canvas (ProductTemplateCanvas) posts the grid's whole attribute object to POST /sgs/v1/card-grid-items, whose CPT_Collection_Query::get_results() reads this attribute to pick the products the canvas shows; the checker sees only destructured reads in edit.js, not the object handed to the request."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/card-grid",
+      "attr": "emptyMessage",
+      "disposition": "accepted-debt",
+      "reason": "The products-mode canvas (ProductTemplateCanvas) shows its own editor notice above the template card when no product matches, not the client's empty-state message; the page prints the message. Surfaced on 2026-10-17 when the block lost its whole-block ServerSideRender exemption."
     }
   ]
 }

@@ -1,14 +1,13 @@
 /**
- * Card Grid — Card grid canvas: the server-side preview for product and collection modes, or the manual card grid.
+ * Card Grid — Card grid canvas: the template-card canvas for product and collection modes, or the manual card grid.
  */
 
 import { __ } from '@wordpress/i18n';
-import { Spinner } from '@wordpress/components';
-import { SsrPreviewGuard, IconPreview } from '../../../components';
+import { IconPreview } from '../../../components';
 import { colourVar, focalPointToObjectPosition, BandWrap } from '../../../utils';
-import ServerSideRender from '../../../components/ServerSideRender';
+import ProductTemplateCanvas from './ProductTemplateCanvas';
 
-export default function CardGridCanvas( { attributes, isWcProductMode, isCptCollectionMode, blockProps, pageButtonPreviewCss, wrapper, gridStyle, items, cardPreview, titleStyle, subtitleStyle, HeadingTag } ) {
+export default function CardGridCanvas( { attributes, clientId, cardForwarded, isWcProductMode, isCptCollectionMode, blockProps, pageButtonPreviewCss, wrapper, gridStyle, items, cardPreview, titleStyle, subtitleStyle, HeadingTag } ) {
 	const {
 		variant,
 		effectHover,
@@ -26,27 +25,13 @@ export default function CardGridCanvas( { attributes, isWcProductMode, isCptColl
 
 	return (
 		<>
-			{ /* Card-delegating modes (WooCommerce products / CPT collection): live
-			     server-side preview, so the operator sees the real query result —
-			     the same server-side preview pattern for both modes. */ }
+			{ /* Card-delegating modes (WooCommerce products / CPT collection): each product rendered as the grid's
+			     template card, the products from the same server queries the page runs. */ }
 			{ isWcProductMode || isCptCollectionMode ? (
-				<div { ...blockProps }>
+				<>
 					{ pageButtonPreviewCss && <style>{ pageButtonPreviewCss }</style> }
-					<SsrPreviewGuard>
-						<ServerSideRender
-							block="sgs/card-grid"
-							attributes={ attributes }
-							LoadingResponsePlaceholder={ () => (
-								<div style={ { padding: '2rem', textAlign: 'center' } }>
-									<Spinner />
-									<p style={ { marginTop: 8, color: '#6b7280' } }>
-										{ __( 'Loading products…', 'sgs-blocks' ) }
-									</p>
-								</div>
-							) }
-						/>
-					</SsrPreviewGuard>
-				</div>
+					<ProductTemplateCanvas attributes={ attributes } clientId={ clientId } blockProps={ blockProps } gridStyle={ gridStyle } forwarded={ cardForwarded } />
+				</>
 			) : (
 				<div { ...blockProps } style={ { ...blockProps.style, ...wrapper.style, ...gridStyle } }>
 				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>

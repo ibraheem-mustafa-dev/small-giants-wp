@@ -48,6 +48,10 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-post-grid-rest.php';
 		Post_Grid_REST::register();
 
+		// Card Grid products-mode results for the editor canvas (POST /sgs/v1/card-grid-items, editors only).
+		require_once SGS_BLOCKS_PATH . 'includes/class-card-grid-items-rest.php';
+		Card_Grid_Items_Rest::register();
+
 		// Global Block Defaults — REST API, editor injection, admin settings page.
 		require_once SGS_BLOCKS_PATH . 'includes/class-block-defaults.php';
 		Block_Defaults::register();
@@ -240,6 +244,9 @@ final class SGS_Blocks {
 		if ( ! is_dir( $blocks_dir ) ) {
 			return;
 		}
+
+		// Registers sgs/card-grid with skip_inner_blocks before the blocks below register.
+		require_once SGS_BLOCKS_PATH . 'includes/class-card-grid-template.php';
 
 		$block_dirs = array_filter(
 			scandir( $blocks_dir ),

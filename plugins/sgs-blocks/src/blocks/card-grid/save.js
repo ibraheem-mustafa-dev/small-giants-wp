@@ -1,7 +1,9 @@
+import { InnerBlocks } from '@wordpress/block-editor';
+
 /**
- * Card Grid save — returns null because this block is server-side rendered.
- * The old static save output is NOT preserved - all deprecations were deleted at D271.
+ * Card Grid save: the grid renders on the server; only its inner blocks are saved (the one template
+ * sgs/product-card a products-mode grid renders every product with).
  */
 export default function Save() {
-	return null;
+	return <InnerBlocks.Content />;
 }
