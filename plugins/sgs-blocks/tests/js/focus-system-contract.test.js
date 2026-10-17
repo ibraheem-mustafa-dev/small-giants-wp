@@ -26,6 +26,8 @@
  *   - registers the three per-element override properties (`--sgs-focus-offset`, `--sgs-focus-halo`, `--sgs-focus-under`)
  *     with `@property` and `inherits: false`, so an inset or shadowed card never hands its inset ring, halo or shadow to a
  *     focusable descendant that carries no such class of its own;
+ *   - gives a signature button on a dark ground the light inner token as its core (the ink core would score about 1.3:1),
+ *     in the focus and editor-preview arms, after the signature rule it overrides;
  *   - rings a card's block-link overlay (`.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay`)
  *     in the one declaration set and in forced colours, and gives it the inset offset and halo on an inset card: the card's
  *     own outline paints below its positioned children, so the overlay carries the ring over a photo;
@@ -299,6 +301,42 @@ const CHECKS = {
 		}
 		return problems;
 	},
+	signatureCoreIsLightOnDark( root ) {
+		const want = [
+			'.sgs-on-dark .sgs-focus--signature:focus-visible:not(#wpadminbar *)',
+			'.sgs-on-dark.sgs-focus--signature:focus-visible:not(#wpadminbar *)',
+			'.sgs-on-dark .sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)',
+			'.sgs-on-dark.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)',
+		];
+		let found = null;
+		let sigAt = -1;
+		let darkAt = -1;
+		let i = 0;
+		root.walkRules( ( rule ) => {
+			i++;
+			const sels = rule.selectors.map( norm );
+			if ( sels.includes( '.sgs-focus--signature:focus-visible:not(#wpadminbar *)' ) && -1 === sigAt && rule.some( ( n ) => 'decl' === n.type && '--sgs-focus-ring' === n.prop ) ) {
+				sigAt = i;
+			}
+			if ( want.every( ( w ) => sels.includes( w ) ) ) {
+				found = rule;
+				darkAt = i;
+			}
+		} );
+		if ( ! found ) {
+			return [ 'no rule gives the signature core the light inner token on a dark ground (all four arms)' ];
+		}
+		const problems = [];
+		let value = '';
+		found.walkDecls( '--sgs-focus-ring', ( d ) => { value = norm( d.value ); } );
+		if ( 'var(--sgs-focus-inner)' !== value ) {
+			problems.push( `the dark-ground signature core is ${ value }, want var(--sgs-focus-inner)` );
+		}
+		if ( darkAt < sigAt ) {
+			problems.push( 'the dark-ground signature rule comes before the signature rule it must override' );
+		}
+		return problems;
+	},
 	cardOverlayCarriesTheRing( root ) {
 		const OVERLAY = '.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay:not(#wpadminbar *)';
 		const INSET = '.sgs-focus--inset.sgs-focus-card > .sgs-block-link-overlay';
@@ -385,6 +423,7 @@ describe( 'focus.css, the one focus system', () => {
 		darkDuotoneRingIsLight: ( text ) => text.replace( /(\.sgs-on-dark \.sgs-focus--duotone[^{]*\{[^}]*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
 		signaturePreviewMirrorsFocus: ( text ) => text.replace( /\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\)::before/g, '.sgs-focus--signature.sgs-focus-preview-x:not(#wpadminbar *)::before' ),
 		noHasFallbackKeepsAFocusRing: ( text ) => text.replace( /@supports not selector\(:has\(\*\)\)/, '@supports not selector(:is(*))' ),
+		signatureCoreIsLightOnDark: ( text ) => text.replace( /(\.sgs-on-dark\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\) \{\s*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
 		cardOverlayCarriesTheRing: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\) > \.sgs-block-link-overlay/g, '.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay-x' ),
 		overridePropertiesDoNotInherit: ( text ) => text.replace( /@property --sgs-focus-halo \{[^}]*\}/, '@property --sgs-focus-halo { syntax: "*"; inherits: true; }' ),
 		signatureClearsHostBorder: ( text ) => text.replace( /inset: calc\([^;]*--sgs-focus-host-border[^;]*\);/, 'inset: calc(var(--sgs-focus-width) * -3);' ),
