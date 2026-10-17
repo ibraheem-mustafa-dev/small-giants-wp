@@ -1,12 +1,12 @@
 {
   "summary": {
-    "non_css_attrs_examined": 633,
+    "non_css_attrs_examined": 632,
     "input_type_groups_count": 12,
     "behaviour_families_count": 11,
     "genuinely_unique_count": 18,
     "true_unique_semantic_settings": 31,
-    "collapse_ratio": "282 attrs Phase 1b called 'block-specific, do NOT standardise' (content_text=53 + behaviour_toggles=56 + enum_select=26 + media_urls=28 + unclassified=123, ~4 short of the 286 total non-property attrs it examined) -> 12 true semantic INPUT-TYPES across all 633 non-CSS-property attrs in this re-classification (515, a wider net than Phase 1b's 282 since it also re-examined the slot:/role: groups Phase 1b didn't bucket), further split into 11 named BEHAVIOUR FAMILIES for the recurring boolean/enum toggles.",
-    "note": "Phase 1b bucketed by NAME (content_text_attributes=53, behaviour_toggles=56, enum_select_controls=26, media_urls_assets=28, other_unclassified=123) and called all of it 'block-specific, do not standardise' without ever testing what INPUT each attr represents. Re-classifying by SEMANTIC INPUT TYPE (text-content / rich-text / media-source / colour-value / url-link / icon / number / enum-select / boolean-toggle / code-svg / json-config / date / system-internal) collapses all 633 non-CSS-property attrs into just 12 input patterns. The boolean/enum members of those further collapse into 11 named recurring BEHAVIOUR FAMILIES (slider-carousel, disclosure, visibility-responsive, media-playback, scroll-reveal-animation, hover-effect, form-validation-conditional, dismissible, link-target-behaviour, sticky-header-nav-behaviour, show-hide-display-toggle). Only 18 attrs resisted every pattern (see `genuinely_unique`) \u2014 every one of Bean's 4 example challenges (decorMedia / placeholder / carouselShowDots / 'the 123 unclassified') is answered directly in `answers_to_bean` below."
+    "collapse_ratio": "282 attrs Phase 1b called 'block-specific, do NOT standardise' (content_text=53 + behaviour_toggles=56 + enum_select=26 + media_urls=28 + unclassified=123, ~4 short of the 286 total non-property attrs it examined) -> 12 true semantic INPUT-TYPES across all 632 non-CSS-property attrs in this re-classification (515, a wider net than Phase 1b's 282 since it also re-examined the slot:/role: groups Phase 1b didn't bucket), further split into 11 named BEHAVIOUR FAMILIES for the recurring boolean/enum toggles.",
+    "note": "Phase 1b bucketed by NAME (content_text_attributes=53, behaviour_toggles=56, enum_select_controls=26, media_urls_assets=28, other_unclassified=123) and called all of it 'block-specific, do not standardise' without ever testing what INPUT each attr represents. Re-classifying by SEMANTIC INPUT TYPE (text-content / rich-text / media-source / colour-value / url-link / icon / number / enum-select / boolean-toggle / code-svg / json-config / date / system-internal) collapses all 632 non-CSS-property attrs into just 12 input patterns. The boolean/enum members of those further collapse into 11 named recurring BEHAVIOUR FAMILIES (slider-carousel, disclosure, visibility-responsive, media-playback, scroll-reveal-animation, hover-effect, form-validation-conditional, dismissible, link-target-behaviour, sticky-header-nav-behaviour, show-hide-display-toggle). Only 18 attrs resisted every pattern (see `genuinely_unique`) \u2014 every one of Bean's 4 example challenges (decorMedia / placeholder / carouselShowDots / 'the 123 unclassified') is answered directly in `answers_to_bean` below."
   },
   "input_type_groups": [
     {
@@ -712,7 +712,6 @@
         "evergreenHours",
         "evergreenMinutes",
         "excerptLength",
-        "formFocusRingOffset",
         "fxScrub",
         "iconCircleSize",
         "maxRating",
@@ -793,7 +792,7 @@
         "sgs/trust-bar",
         "sgs/trustpilot-reviews"
       ],
-      "count": 62
+      "count": 61
     },
     {
       "type": "colour-value",
@@ -3450,7 +3449,6 @@
     },
     "sgs/form": {
       "form": [
-        "formFocusRingOffset",
         "formId",
         "formName"
       ],
@@ -5859,16 +5857,6 @@
       ],
       "n_blocks": 1,
       "why": "attr_type=boolean"
-    },
-    "formFocusRingOffset": {
-      "input_type": "number",
-      "behaviour_family": null,
-      "element": "form",
-      "blocks": [
-        "sgs/form"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type number/integer or Range/NumberControl"
     },
     "formId": {
       "input_type": "text-content",
