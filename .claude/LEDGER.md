@@ -32,7 +32,7 @@ last_updated: 2026-10-17
 
 **State:** Spec 48 (`specs/48-CLONING-SYSTEM.md`) is being built for Indus from `plans/2026-10-11-spec48-indus-build.md`; steps 1 to 14b are done and step 15 (your intake review) is paused until Spec 38A is finished. Your decisions so far are in `sites/indus-foods/build/intake/approved-decisions.json`, and the ones that generalise are standing rules in `scripts/computed-route/data/skeleton-decisions.json` (`node scripts/computed-route/check-approved.mjs indus-foods` must exit 0). The committed `intake.json` and `review.md` are the 12 October run; re-run intake (`intake.mjs indus-foods --record`, then `--rerun-skeletons`) before the review resumes. Route open items: Spec 48 §5.4 Residual.
 
-**Handover standard** (`plans/2026-10-10-claude-design-handover-standard.md`, Spec 48A v0.1, `handoff-check.mjs`): **B0, time-critical:** export every Claude Design project as a "Project archive" and test the artifact-based Claude Design once before 14 December 2026; Spec 48A goes to 1.0 after it. **B5 open:** edit the Eye Care draft to mirror the live site (prompt `prompts/2026-10-11-eye-care-draft-mirror.md`).
+**Handover standard** (`plans/2026-10-10-claude-design-handover-standard.md`, Spec 48A v0.1, `handoff-check.mjs`): **B0, time-critical:** export every Claude Design project as a "Project archive" and test the artifact-based Claude Design once before 14 December 2026; Spec 48A goes to 1.0 after it. **B5 open:** edit the Eye Care draft to mirror the live site (task 2 of `prompts/Track 2 Eye Care review.md`).
 
 **Resume from:** `prompts/Track 1 Indus review.md` once S7 closes.
 
