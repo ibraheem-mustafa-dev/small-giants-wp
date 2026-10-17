@@ -83,49 +83,6 @@ html {
 	scroll-padding-top: 5rem; /* Offset for sticky header — WCAG 2.2 SC 2.4.12 (#272) */
 }
 
-/* ─── FOCUS INDICATORS — WCAG 2.2 AA compliant (C5) ─── */
-
-/*
- * The site's --accent token (#d8ca50) has only 1.68:1 contrast on white
- * and 1.00:1 on the yellow section background — both WCAG 1.4.11 failures.
- *
- * WCAG 2.2 SC 2.4.11 requires the focus indicator to have at least 3:1
- * contrast against the adjacent background colour. We use --primary-dark
- * (#076a8e / teal-dark) as the OUTLINE colour: 5.54:1 on white, 3.93:1 on
- * the yellow section bg, and 3.0:1 on the navy footer bg — all passing.
- *
- * D459 (2026-08-01) — a soft --accent GLOW layers on top via box-shadow,
- * matching the sgs/form input default (form/style.css D459) and the button
- * focus rings (core-blocks.css D459).
- *
- * ⛔ D467 (2026-08-02) — THE OUTLINE IS NOW --accent, NOT --primary-dark.
- * Everything above this line describing --primary-dark as the outline colour
- * that "carries the WCAG floor" is SUPERSEDED. Bean's ruling, verbatim:
- * "the focus outline should be accent since it's supposed to be a glow effect
- * and not a dark high contrast object", and separately: "it just needs to be
- * accurate to the site's global colours — it's a default, not a magical
- * setting… this isn't text, it just needs to be discernable clearly which is
- * more like a 2:1".
- *
- * So the acceptance criterion for this token is PALETTE ACCURACY and clear
- * discernability, NOT the 3:1 figure in ~/.claude/rules/visual-standards.md.
- * That was raised twice (D463 and again here) and ruled on twice. **Do not
- * "fix" this back to a dark high-contrast outline on the strength of a
- * contrast audit** — that is a decision already made, not an oversight.
- *
- * Both tokens now resolve from the CLIENT's own palette, so a re-theme
- * re-colours the focus ring automatically. They deliberately point at the same
- * source: outline = accent, glow = the same accent softened, giving one
- * coherent glow rather than a ring plus an unrelated halo.
- *
- * WCAG 2.2 SC 2.4.11 also requires the focus indicator area to be at least
- * as large as a 2px perimeter — 3px outline exceeds this safely.
- */
-:root {
-	--sgs-focus-color: var(--wp--preset--color--accent, #d8ca50);
-	--sgs-focus-glow: var(--wp--preset--color--accent, #d8ca50);
-}
-
 /* ─── REMOVE INTER-SECTION GAPS ─── */
 
 /*
@@ -296,35 +253,6 @@ html {
 	margin-block-end: 0;
 }
 
-/* Universal focus ring — catches anything without a specific rule.
-   3px width ensures WCAG 2.4.11 compliance. Never suppress with outline: 0. */
-/* --sgs-focus-shadow is the glow every focus rule draws, defined here on the focused element (not on :root) so it
-   reads that element's own --sgs-focus-glow; a block that paints its own box-shadow on focus (the motion hover ring)
-   lists it first so the glow stays. */
-:focus-visible {
-	outline: 3px solid var(--sgs-focus-color);
-	outline-offset: 2px;
-	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
-	box-shadow: var(--sgs-focus-shadow);
-}
-
-/* WordPress core buttons */
-:root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) {
-	outline: 3px solid var(--sgs-focus-color) !important;
-	outline-offset: 2px;
-	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
-	box-shadow: var(--sgs-focus-shadow) !important;
-}
-
-/* WordPress core navigation links */
-.wp-block-navigation .wp-block-navigation-item__content:focus-visible,
-.wp-block-navigation a:focus-visible {
-	outline: 3px solid var(--sgs-focus-color);
-	outline-offset: 2px;
-	--sgs-focus-shadow: 0 0 8px 2px color-mix(in srgb, var(--sgs-focus-glow) 40%, transparent);
-	box-shadow: var(--sgs-focus-shadow);
-}
-
 /* ─── HEADER TOP BAR CONTRAST ─── */
 
 /*
@@ -380,11 +308,6 @@ html {
 
 .wp-block-button__link:active {
 	transform: translateY(0) scale(0.97);
-}
-
-.wp-block-button__link:focus-visible {
-	outline: 3px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
-	outline-offset: 2px;
 }
 
 /* ─── HERO BLOCK ─── */
@@ -502,19 +425,11 @@ header.wp-block-template-part {
  *   - Borders: minimum 2px solid, no subtle/transparent variants
  *   - Backgrounds: no gradients, no transparency
  *   - Text shadows: removed (they reduce legibility at high contrast)
- *   - Focus rings: thicker (4px)
  *
  * Browser support: 93%+ (Baseline 2022). Pure progressive enhancement —
  * older browsers receive the standard styles unmodified.
  */
 @media (prefers-contrast: more) {
-	/* Thicker, fully opaque focus ring */
-	:focus-visible {
-		outline-width: 4px !important;
-		outline-style: solid !important;
-		outline-color: var(--sgs-focus-color, #076a8e) !important;
-	}
-
 	/* Strip all gradient backgrounds — replace with solid surface colour */
 	.sgs-card-grid__overlay,
 	.sgs-post-grid__card--overlay .sgs-post-grid__content,

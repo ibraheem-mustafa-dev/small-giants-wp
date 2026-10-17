@@ -92,6 +92,8 @@ body.admin-bar html {
 	clip-path: inset(50%);
 	white-space: nowrap;
 	border: 0;
+	/* Set at rest so the corners do not change when the link appears on focus. */
+	border-radius: var(--wp--custom--border-radius--medium, 4px);
 }
 
 .skip-link:not(.screen-reader-text):focus,
@@ -117,9 +119,6 @@ body.admin-bar html {
 	font-size: 1rem;
 	font-weight: 700;
 	text-decoration: none;
-	border-radius: var(--wp--custom--border-radius--medium, 4px);
-	outline: 3px solid var(--wp--preset--color--surface, #ffffff);
-	outline-offset: 2px;
 }
 
 /* Text alignment helpers */
@@ -278,36 +277,6 @@ body.admin-bar html {
 .sgs-hover-highlight-fill:focus-visible {
 	background-color: var(--sgs-link-hover-bg, var(--wp--preset--color--primary));
 	color: var(--sgs-link-hover-text, #fff);
-}
-
-/* Global keyboard-focus ring (WCAG 2.2 AA). Framework a11y default for EVERY client — migrated
-   out of the per-client theme snapshot (Spec 32 Part C, D322) where it was mislocated; it is not
-   client-specific, so it belongs in the theme, applied on every site. Uses the client's own
-   --text token so the ring reads against their palette. */
-/*
- * D467 (2026-08-02) — token RAISED, rule KEPT.
- *
- * This used to paint `--wp--preset--color--text`, which made it the single
- * biggest source of focus-colour divergence on the page: 15 of 25 focusable
- * elements rendered a dark ring while the rest rendered the brand one, because
- * this rule and `core-blocks-critical.css`'s `:focus-visible` are EQUAL
- * specificity (0,1,0) and this file loads later, so it won every tie.
- *
- * A QC council proposed DELETING it. That was REJECTED, and the rejection is
- * why this comment exists: the two rules being equal specificity means deleting
- * this one does NOT hand those elements to the critical rule — it hands them to
- * the browser default. D322 also put this here deliberately as the framework
- * a11y guarantee for EVERY client, covering elements no component rule reaches.
- * So the rule stays and its TOKEN moves, which fixes the divergence without
- * giving up the safety net.
- */
-*:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--accent, #d8ca50));
-	outline-offset: 2px;
-	border-radius: 4px;
-	--sgs-focus-shadow: 0 0 8px 2px
-		color-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent);
-	box-shadow: var(--sgs-focus-shadow);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
