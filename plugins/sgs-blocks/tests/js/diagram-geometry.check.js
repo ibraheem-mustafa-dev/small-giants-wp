@@ -6,7 +6,7 @@
  * a pass here means the canvas draws the draft's lines. The PHP twin reads the
  * same file (tests/php/diagram-geometry.php).
  *
- * Run with: node tests/js/diagram-geometry.test.js
+ * Run with: node tests/js/diagram-geometry.check.js
  */
 
 const fs = require( 'fs' );

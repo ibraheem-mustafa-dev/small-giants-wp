@@ -2,7 +2,7 @@
 /**
  * Measured diagram geometry: the PHP twin reproduces every shared fixture.
  *
- * Reads the same fixtures as tests/js/diagram-geometry.test.js, so the page
+ * Reads the same fixtures as tests/js/diagram-geometry.check.js, so the page
  * and the editor canvas draw identical lines.
  *
  * Run with: php tests/php/diagram-geometry.php
