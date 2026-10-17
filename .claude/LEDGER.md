@@ -9,7 +9,7 @@ last_updated: 2026-10-17
 ## Summary for Bean
 
 - **Motion model (Spec 38A, Front M):** sessions S1 to S5 are done; S6 (remove the old motion code, re-migrate the active header and drawer) is next, then S7 (literals sweep, final acceptance).
-- **Cloning (Spec 48, Front H):** the Indus clone is paused at your intake review (plan step 15) until Spec 38A is finished, so the draft's motion transfers to the clone too. Claude Design's standalone site deletes its projects on **14 December 2026** (task B0).
+- **Cloning (Spec 48, Front H):** the Indus clone is paused at your intake review (plan step 15) until Spec 38A is finished, so the draft's motion transfers to the clone too.
 - **Eye Care (Front F):** built by hand and live on eye-care-test; it is the cloning system's answer key. Next: run Spec 48's intake on it and close the fix register's open rows.
 - **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
 - **Need you:** the rulings under Parked, and the Spec 36 and Spec 38 choices under Front N.
@@ -32,7 +32,7 @@ last_updated: 2026-10-17
 
 **State:** Spec 48 (`specs/48-CLONING-SYSTEM.md`) is being built for Indus from `plans/2026-10-11-spec48-indus-build.md`; steps 1 to 14b are done and step 15 (your intake review) is paused until Spec 38A is finished. Your decisions so far are in `sites/indus-foods/build/intake/approved-decisions.json`, and the ones that generalise are standing rules in `scripts/computed-route/data/skeleton-decisions.json` (`node scripts/computed-route/check-approved.mjs indus-foods` must exit 0). The committed `intake.json` and `review.md` are the 12 October run; re-run intake (`intake.mjs indus-foods --record`, then `--rerun-skeletons`) before the review resumes. Route open items: Spec 48 §5.4 Residual.
 
-**Handover standard** (`plans/2026-10-10-claude-design-handover-standard.md`, Spec 48A v0.1, `handoff-check.mjs`): **B0, time-critical:** export every Claude Design project as a "Project archive" and test the artifact-based Claude Design once before 14 December 2026; Spec 48A goes to 1.0 after it. **B5 open:** edit the Eye Care draft to mirror the live site (task 2 of `prompts/Track 2 Eye Care review.md`).
+**Handover standard:** Spec 48A v1.0 (`handoff-check.mjs`); B0 is done (every Claude Design project exported, the artifact-based Claude Design tested). **B5 open:** edit the Eye Care draft to mirror the live site (task 2 of `prompts/Track 2 Eye Care review.md`).
 
 **Resume from:** `prompts/Track 1 Indus review.md` once S7 closes.
 

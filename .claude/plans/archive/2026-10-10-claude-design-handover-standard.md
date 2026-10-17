@@ -3,7 +3,7 @@ doc_type: plan
 title: "Claude Design handover standard and the unified cloning spec"
 spec: .claude/specs/48-CLONING-SYSTEM.md and .claude/specs/48A-CLAUDE-DESIGN-HANDOFF-FOLDER.md
 created: 2026-10-10
-status: in progress
+status: closed 2026-10-17; B0 done (Spec 48A 1.0), B5 is task 2 of .claude/prompts/Track 2 Eye Care review.md, the final-council backlog judged (Res 53 kept, the rest already built or cut)
 ---
 
 # Claude Design handover standard and the unified cloning spec
@@ -55,7 +55,7 @@ The split: the prompt carries the steps, because a pasted prompt is a direct ins
 
 ## Task B: three exports, clean client folders, the new spec
 
-**B0. Before 14 December 2026 (time-critical).**
+**B0. Before 14 December 2026 (done 2026-10-17).**
 - Bean downloads a "Project archive" of every standalone Claude Design project worth keeping (Indus, Eye Care, the Mama's Munches redesign and any others) and migrates design systems from the Artifacts page; standalone projects are deleted after that date.
 - Test the new artifact-based Claude Design once (~15 min): make or open a small design, run "Handoff to Claude Code" (it produces a `.dc.html` draft), and check whether it runs on the same runtime (`handoff-check.mjs` reports an unknown `support.js` and `--probe-runtime` tests it), whether a README and the inventory files come with it, and whether account-level Skills load there. Spec 48A becomes version 1.0 once this confirms the format.
 - The inventory is produced in Claude Code at intake by following `handoff-schema/METHOD.md` (deterministic, validated, fails loudly); anything Claude Design writes is cross-checked against it, never trusted alone.

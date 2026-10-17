@@ -1,7 +1,7 @@
 """Prove every ID the Spec 32 and Spec 47 section ledgers carry lands in a live spec.
 
 Spec 47 retires into Spec 48 and Spec 32 is rewritten slim (plan
-.claude/plans/2026-10-10-claude-design-handover-standard.md, Task B4). Neither is edited in place, so this
+.claude/plans/archive/2026-10-10-claude-design-handover-standard.md, Task B4). Neither is edited in place, so this
 check proves nothing the ledgers keep was lost in the rewrite. It reads scripts/spec-id-landing.json and
 asserts, against the live specs in .claude/specs/ (never archive/ or _draft/):
 

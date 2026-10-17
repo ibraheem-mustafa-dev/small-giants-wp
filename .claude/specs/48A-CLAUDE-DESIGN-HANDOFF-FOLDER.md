@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 48A
-spec_version: "0.1"
+spec_version: "1.0"
 title: The Claude Design handoff folder
 project: small-giants-wp
-status: draft
-last_verified: 2026-10-11
+status: active
+last_verified: 2026-10-17
 authors: Bean + Claude
 parent_spec: Spec 48 (`.claude/specs/48-CLONING-SYSTEM.md`, the cloning system)
 ---
@@ -14,7 +14,7 @@ parent_spec: Spec 48 (`.claude/specs/48-CLONING-SYSTEM.md`, the cloning system)
 
 A client design drafted in Claude Design reaches Claude Code as one folder of known files. This spec fixes what that folder holds, how it is checked, where it lives and which tool reads each file. Spec 48 (the cloning system) is written around it. Draft status: version 1.0 waits for plan task B0 (the artifact-based Claude Design tested once, every standalone project downloaded before 14 December 2026).
 
-Evidence: `.claude/plans/2026-10-10-claude-design-handover-standard.md` (Task A table, B1 comparison of the Indus, Eye Care and Mama's Munches exports) and `.claude/reports/2026-10-11-48a-council/` (`DESIGN.md`, the adversarial council's `REPORT.md`, Bean's decisions of 2026-10-11).
+Evidence: `.claude/plans/archive/2026-10-10-claude-design-handover-standard.md` (Task A table, B1 comparison of the Indus, Eye Care and Mama's Munches exports) and `.claude/reports/2026-10-11-48a-council/` (`DESIGN.md`, the adversarial council's `REPORT.md`, Bean's decisions of 2026-10-11).
 
 ## 1. How a draft works (the facts this spec rests on)
 
@@ -80,7 +80,7 @@ Status: SVG and size checks in `handoff-check.mjs` (`lib/svg-screen.mjs`); the b
 ### FR-48A-11 -- Near-finished sites
 A client whose site is already built from an earlier draft (Eye Care) is not put through intake. Its draft is the answer key the cloning pipeline is measured against, so it must show what the live site deliberately does: Claude Code edits the draft in `sites/<client>/handoff/` to mirror every difference Bean has decided (Eye Care's are in `sites/eye-care-ward-end/build/qa/divergences.json` and `.claude/plans/2026-10-02-eye-care-fix-register.md`), compares each change in a browser at 375, 768 and 1440, then regenerates `animations.json`, `surfaces.json` and `MANIFEST.json` so the folder passes the check. Claude Design cannot open the live site to compare, which is why we make these edits (Bean, 2026-10-11). Bean uploads the edited drafts and any new asset files into the Claude Design project, so a later export starts from the mirrored version. Features built beyond the draft (the account area, Spec 27 FR-30-14) are framework code and need no draft.
 
-Status: specified; the Eye Care mirror is plan task B5.
+Status: specified; the Eye Care mirror is task 2 of `.claude/prompts/Track 2 Eye Care review.md`.
 
 ### FR-48A-12 -- The producer's instructions
 `.claude/claude-design-handoff/` holds the one pasted prompt (`PROMPT.txt`), the project `CLAUDE.md` (standing facts, runtime traps, the folder map) and `handoff-schema/`. They are the only copies that get edited, and a change to this spec updates them in the same commit. The folder map in `CLAUDE.md` lists exactly the files FR-48A-2 and FR-48A-3 allow.
