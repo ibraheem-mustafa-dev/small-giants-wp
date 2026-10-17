@@ -324,6 +324,29 @@
 		"sheen",
 		"split-reveal"
 	],
+	"sgs/mega-panel": [
+		"ambient-float",
+		"cursor-field",
+		"curtain",
+		"follow-pointer",
+		"generative-background",
+		"glare",
+		"grid-dots",
+		"horizontal-panel",
+		"ken-burns",
+		"lottie",
+		"magnet",
+		"morph",
+		"motion-path",
+		"parallax",
+		"particles",
+		"pin-scrub",
+		"ripple",
+		"scroll-progress",
+		"scrub",
+		"sheen",
+		"wave-gradient"
+	],
 	"sgs/multi-button": [
 		"ambient-float",
 		"cursor-field",
@@ -471,6 +494,7 @@
 	"sgs/responsive-logo": [
 		"ambient-float",
 		"curtain",
+		"draw",
 		"follow-pointer",
 		"glare",
 		"lottie",

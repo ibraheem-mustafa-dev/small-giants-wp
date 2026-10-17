@@ -5614,29 +5614,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "bgHoverZoomDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "bgHoverZoomEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "bgSvgMinHeight",
       "fields": {
         "css_property": "min-height",
@@ -6552,14 +6529,6 @@
       "slug": "sgs/decorative-image",
       "attr": "flipX",
       "fields": {}
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "fx",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER"
-      }
     },
     {
       "slug": "sgs/decorative-image",
@@ -9228,15 +9197,6 @@
     },
     {
       "slug": "sgs/gallery",
-      "attr": "staggerDelay",
-      "fields": {
-        "css_property": "anim:stagger",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
       "attr": "tileColour",
       "fields": {
         "css_property": "background-color",
@@ -11766,25 +11726,9 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "bgSvgOpacity",
       "fields": {
         "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "bgZoomStart",
-      "fields": {
-        "css_property": "transform"
       }
     },
     {
@@ -12073,15 +12017,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "splitMediaAspectRatio",
       "fields": {
         "css_property": "aspect-ratio",
@@ -12235,6 +12170,20 @@
       "attr": "textWrap",
       "fields": {
         "css_property": "text-wrap"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "transitionDuration",
+      "fields": {
+        "css_property": "transition-duration"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "transitionEasing",
+      "fields": {
+        "css_property": "transition-timing-function"
       }
     },
     {
@@ -12440,24 +12389,6 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "label-text"
-      }
-    },
-    {
-      "slug": "sgs/icon",
-      "attr": "opacityHover",
-      "fields": {
-        "css_property": "opacity",
-        "css_element": "link",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/icon",
-      "attr": "scaleHover",
-      "fields": {
-        "css_property": "transform",
-        "css_element": "shape",
-        "css_state": "hover"
       }
     },
     {
@@ -14786,27 +14717,6 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "animation"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "bgHoverZoomDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "bgHoverZoomEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "bgSvgMinHeight",
       "fields": {
         "css_property": "min-height",
@@ -15042,22 +14952,6 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
-      "attr": "burgerMorphDuration",
-      "fields": {
-        "css_property": "transition-duration",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "burgerMorphEasing",
-      "fields": {
-        "css_property": "transition-timing-function",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
       "attr": "burgerSize",
       "fields": {
         "css_property": "height",
@@ -15158,20 +15052,6 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
-      "attr": "submenuAnimationDuration",
-      "fields": {
-        "css_property": "animation,transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "submenuAnimationEasing",
-      "fields": {
-        "css_property": "animation,transition-timing-function"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
       "attr": "submenuCaretSize",
       "fields": {
         "css_property": "height,width"
@@ -15189,42 +15069,6 @@
       "attr": "submenuCaretTurnEasingCustom",
       "fields": {
         "css_property": "transition-timing-function"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "submenuExitDuration",
-      "fields": {
-        "css_property": "transition-duration",
-        "css_element": "panel-motion"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "submenuItemStagger",
-      "fields": {
-        "css_property": "animation-delay"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "submenuItemStaggerDistance",
-      "fields": {
-        "css_property": "translate"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "submenuItemStaggerDuration",
-      "fields": {
-        "css_property": "animation"
-      }
-    },
-    {
-      "slug": "sgs/nav-bar-menu",
-      "attr": "submenuItemStaggerMax",
-      "fields": {
-        "css_property": "animation-delay,translate"
       }
     },
     {
@@ -15573,52 +15417,6 @@
       "fields": {
         "css_property": "color",
         "role": "color",
-        "css_layer": "GRID",
-        "css_element": "body"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "entryDuration",
-      "fields": {
-        "css_property": "animation,animation-duration",
-        "css_layer": "GRID",
-        "css_element": "body"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "entryEasing",
-      "fields": {
-        "css_property": "animation,animation-timing-function",
-        "css_layer": "GRID",
-        "css_element": "body"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "entryFade",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "exitDuration",
-      "fields": {
-        "css_property": "animation,animation-duration"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "itemStaggerAxis",
-      "fields": {
-        "css_property": "translate"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "itemStaggerDuration",
-      "fields": {
-        "css_property": "animation",
         "css_layer": "GRID",
         "css_element": "body"
       }
@@ -16007,6 +15805,22 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuAnimationDuration",
+      "fields": {
+        "css_property": "transition",
+        "css_element": "accordion"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "submenuAnimationEasing",
+      "fields": {
+        "css_property": "transition",
+        "css_element": "accordion"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuCaretGap",
       "fields": {
         "css_property": "gap",
@@ -16033,21 +15847,6 @@
       "fields": {
         "css_property": "transition",
         "css_element": "accordion"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer-menu",
-      "attr": "submenuItemStaggerDistance",
-      "fields": {
-        "css_property": "translate"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer-menu",
-      "attr": "submenuItemStaggerDuration",
-      "fields": {
-        "css_property": "animation",
-        "css_element": "subitem"
       }
     },
     {
@@ -16769,27 +16568,6 @@
       "attr": "backgroundSize",
       "fields": {
         "css_property": "background-size,object-fit"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "animation"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "bgHoverZoomDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "bgHoverZoomEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
       }
     },
     {
@@ -21756,29 +21534,6 @@
     },
     {
       "slug": "sgs/site-footer",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "bgHoverZoomDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "bgHoverZoomEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -22227,29 +21982,6 @@
     },
     {
       "slug": "sgs/site-header",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "bgHoverZoomDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "bgHoverZoomEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -22642,13 +22374,6 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "label"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "childIconScaleHover",
-      "fields": {
-        "css_property": "transform"
       }
     },
     {
@@ -24352,28 +24077,20 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "shadowColourHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "shadowHover",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
-      "attr": "shadowHoverColour",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
-      "attr": "staggerDelay",
-      "fields": {
-        "css_property": "anim:stagger",
-        "css_element": "wrapper"
       }
     },
     {
@@ -25427,27 +25144,6 @@
       "fields": {
         "css_property": "height,width",
         "css_element": "badge-img"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "animation"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "bgHoverZoomDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "bgHoverZoomEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
       }
     },
     {
@@ -27331,15 +27027,6 @@
     },
     {
       "slug": "sgs/brand-strip",
-      "attr": "fadeWidth",
-      "fields": {
-        "css_property": "width",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
       "attr": "logoFit",
       "fields": {
         "css_property": "object-fit",
@@ -28006,42 +27693,6 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "staggerDelay",
-      "fields": {
-        "css_property": "anim:stagger",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
       "attr": "subtitleColourGradient",
       "fields": {
         "css_property": "background-image",
@@ -28432,15 +28083,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "bgParallax",
-      "fields": {
-        "css_property": "anim:parallax",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -28806,14 +28448,6 @@
         "css_property": "color-gradient",
         "css_element": "number",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "parallaxStrength",
-      "fields": {
-        "css_property": "anim:parallax",
-        "css_element": "wrapper"
       }
     },
     {
@@ -29550,33 +29184,6 @@
     },
     {
       "slug": "sgs/gallery",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
       "attr": "tileBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -30062,33 +29669,6 @@
     },
     {
       "slug": "sgs/google-reviews",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
       "attr": "sourceLabelColour",
       "fields": {
         "css_property": "color",
@@ -30278,15 +29858,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "bgParallax",
-      "fields": {
-        "css_property": "anim:parallax",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -30455,13 +30026,6 @@
         "css_property": "background-image",
         "css_layer": "GRID_AREA",
         "css_element": "media-overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaParallax",
-      "fields": {
-        "css_element": "media"
       }
     },
     {
@@ -30734,30 +30298,6 @@
       "attr": "borderRadius",
       "fields": {
         "css_property": "border-radius",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/info-box",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/info-box",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/info-box",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
         "css_element": "wrapper"
       }
     },
@@ -32856,23 +32396,6 @@
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "curtainColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "curtain"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "curtainColourGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "curtain"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
       "attr": "drawerGap",
       "fields": {
         "css_property": "gap",
@@ -34326,33 +33849,6 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -34452,30 +33948,6 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "price"
-      }
-    },
-    {
-      "slug": "sgs/pricing-table",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_element": "behaviour"
-      }
-    },
-    {
-      "slug": "sgs/pricing-table",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_element": "behaviour"
-      }
-    },
-    {
-      "slug": "sgs/pricing-table",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_element": "behaviour"
       }
     },
     {
@@ -35474,15 +34946,6 @@
     },
     {
       "slug": "sgs/site-footer",
-      "attr": "bgParallax",
-      "fields": {
-        "css_property": "anim:parallax",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -35602,15 +35065,6 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "scrolled"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "bgParallax",
-      "fields": {
-        "css_property": "anim:parallax",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -35897,22 +35351,6 @@
         "css_property": "background-image",
         "css_element": "label",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "childIconTransitionDuration",
-      "fields": {
-        "css_property": "transition-duration",
-        "css_element": "shape"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "childIconTransitionEasing",
-      "fields": {
-        "css_property": "transition-timing-function",
-        "css_element": "shape"
       }
     },
     {
@@ -36620,30 +36058,6 @@
         "role": "color",
         "css_element": "reviewer-role",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_element": "wrapper"
       }
     },
     {
