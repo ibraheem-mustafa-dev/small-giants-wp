@@ -13,8 +13,18 @@ Measures a rendered design draft and writes block settings through the framework
 | File | Job |
 |---|---|
 | `README.md` | This index. |
-| `package.json` | The route's own third-party packages at exact versions (FR-48-75): `playwright`, `ajv`, `ajv-formats`, `saxes`, `@babel/parser`. Route code imports them from `scripts/computed-route/node_modules` only (`npm ci` here installs them). |
+| `package.json` | The route's own third-party packages at exact versions (FR-48-75): `playwright`, `ajv`, `ajv-formats`, `saxes`, `@babel/parser`, `html-tag-names` and `mdn-data` (the web platform's element, at-rule and CSS property lists for the capability inventory). Route code imports them from `scripts/computed-route/node_modules` only (`npm ci` here installs them). |
 | `package-lock.json` | The lock file for `package.json`. |
+| `capabilities.mjs` | Clone coverage plan Phase 1: `--write` regenerates `data/capabilities.json` (DB sections need the framework DB; without it they keep the committed entries), `--check` fails when it is out of date (skips without the DB), `--seed` adds an `unassigned` gap stub for every inventory ID with no coverage entry (never changes an existing one), `--gaps` prints the gap list as Markdown, `--gate` prints every coverage problem and exits 1 on any. |
+| `data/capabilities.json` | The capability inventory: sections of stable IDs (framework: `block-setting`, `fx`, `motion-preset` from the DB; `sgs-support`, `extension`, `template`, `part`, `pattern`, `post-type`, `plugin`, `snapshot-key` from the code; draft: `html`, `css-at`, `css-group` from the web platform packages, `construct` from the construct registry), each with its status (`ok` or `absent`). Generated; never hand-edited. |
+| `data/clone-coverage.json` | The clone coverage map: per capability ID its `recognise`, `write` and `check` references (`construct:<kind>` or a repo path with `#symbol`), a gap's `wave` and `waiting: "phase-0"` for motion, or Bean's signed `excluded`. |
+| `data/clone-coverage.schema.json` | The coverage map's schema. |
+| `lib/capabilities.mjs` | Builds the capability inventory from its sources, never a hand-written list (R-31-1). |
+| `lib/clone-coverage.mjs` | Loads the coverage map and gates it against the inventory. |
+| `tests/capabilities.test.mjs` | Phase 1 steps 1.1 and 1.2: sections derived from a fixture DB and the code; MUST FAIL: a planted block setting and a planted draft tag each become a new entry. |
+| `tests/clone-coverage.test.mjs` | Phase 1 step 1.4, the gate over the committed inventory and map; MUST FAIL controls 1 to 4: a planted setting, a planted tag, a missing writer or reader, an unsigned exclusion, a wave-less gap, a motion gap not waiting on Phase 0, an unknown ID. |
+| `tests/intake-coverage-rows.test.mjs` | `lib/intake-missing.mjs` rule 3: one seen-but-unsupported row per uncovered capability; MUST FAIL: an uncovered element is never dropped. |
+| `tests/fixtures/framework-db.mjs` | A temp framework DB built from `plugins/sgs-blocks/scripts/dbschema/schema.sql` for tests that cannot use the real one. |
 | `lint.mjs` | The route's gate: README index, plugins/sgs-blocks/scripts import ban, `plugins/sgs-blocks/node_modules` ban (FR-48-75), no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, resolves each fixture's site references from the target's `refs` and checks each referenced object exists on the site (a block with an unsupplied or missing reference is reported and not built), builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes two files, each only when due (`cache/<block>.json`, the site-independent slot map: kept when its key is current or another site measured it, unless `--recalibrate`; `cache/<site>/<block>.paint.json`, that site's default paint: kept only when its own file carries the current `paintKey`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
@@ -1096,6 +1106,19 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `parseLogic(text, { startLine, startColumn, sourceType })` → the Babel tree; `walkAst(node, visit)`; `cssDecls(css)` (split as the runtime's `cssToObj` does); `motionKind(prop)` → `transition`, `keyframes` or null.
 - `classMembers(cls)` → each member classified or `unknown`; `logicRows(source)` → `{ rows, gaps, model }`; `callSiteRows(ast, ctx)` → timers, observers, `.animate(` calls, listeners and motion written from code; `scriptRows({ component, text })` → the same for a helmet script file.
 
+### `lib/capabilities.mjs`
+- `REPO`, `CAPABILITIES_FILE`; `buildInventory({ root?, dbFile?, registry?, css?, tags? })` → `{ sections: { <name>: { side, source, status, entries: [{ id, label, count, examples, motion }] } } }`.
+- `settingKind(row)` → `motion`, `styling`, `mode` or the attribute type; `dbSections(db)`, `codeSections(root?)`, `draftSections({ registry?, css?, tags? })`; `snapshotKeyPaths(snapshots)`.
+- `sectionOf(id)`, `allEntries(inventory)`, `mergeInventory(fresh, committed)` (an absent section keeps the committed one), `readInventoryFile(file?)`.
+
+### `lib/clone-coverage.mjs`
+- `COVERAGE_FILE`, `COVERAGE_SCHEMA`, `STEPS`; `loadCoverage(file?)` throws listing every schema problem.
+- `statusOf(entry)` → `covered`, `gap` or `excluded`; `referenceProblem(ref, { root?, registry? })` → a sentence or null.
+- `coverageProblems(inventory, coverage, { root?, registry? })` → every gate problem as a sentence; `gapList(inventory, coverage)`; `seedGaps(inventory, coverage, note)` → `{ coverage, added }`.
+
+### `tests/fixtures/framework-db.mjs`
+- `fixtureDb(rows)` → the path of a temp DB built from the committed schema and filled with `rows`; `BASE_ROWS`.
+
 ### `lib/intake-registry.mjs`
 - `REGISTRY_FILE`, `REGISTRY_SCHEMA`; `loadRegistry(file?)` throws listing every schema problem; `readerFor(entry, { root })` → the reader function, throwing on a missing module or function.
 
@@ -1189,7 +1212,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/intake-missing.mjs`
 - `INSTRUMENT_DEBT`, `BEHAVIOURS`; `mainFlowOf(...)`, `draftIdOfKey(key)`, `skeletonMissing(...)`, `bodyEvidence(...)`, `behaviourOf(...)`, `heldBy(...)`, `censusMissing(...)`.
-- `proposeMissingFeatures({ skeletonRows, census, facts, registry? })` → `{ rows: [{ rowId: 'missing:<…>', draftId, construct, line, mainFlow, why }], held }`.
+- `coverageMissing({ skeletonRows, census, coverage })` → rule 3's rows: one per `html:<tag>` or `construct:<kind>` the coverage map does not cover (`from: 'coverage'`, with `count`).
+- `proposeMissingFeatures({ skeletonRows, census, facts, registry?, coverage? })` → `{ rows: [{ rowId: 'missing:<…>', draftId, construct, line, mainFlow, why }], held }`; rule 3 runs only when `coverage` is passed.
 
 ### `lib/intake-state.mjs`
 - `setDraftState(page, { component, keys })` → instances set (0 = not mounted); `snapshotDraftState(page, slot?)`, `restoreDraftState(page, slot?)`, `draftStateChanged(page, slot?)` → counts (`slot` names a separate snapshot).
