@@ -2,6 +2,7 @@
 // storage shape, or returns a gap. Covers §3.1's done line: heading line-height as a tier object with its unit,
 // container padding as a box inside a tier object, a flat_sibling background image, and an unknown property.
 import test from 'node:test';
+import { DatabaseSync } from 'node:sqlite';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { resolve, resolveDiscovered, resolveViaAncestor, blockContext, splitProperty, tiersOf, fluidForm, timeToMs } from '../lib/resolve.mjs';
@@ -266,16 +267,18 @@ test( 'a yes/no setting is never written from a measured display value', () => {
 	assert.equal( r.writes, undefined );
 } );
 
-// L1.2's keyword guard. sgs/card-grid::sgsAnimationDuration carries css_property 'anim:duration' and is reachable now
-// that the namespace is understood, but block.json declares it `{ type: 'string', default: 'medium' }` with no enum
-// while includes/animation-timing-clamp.php clamps it to instant / fast / medium / slow / extra-slow. Writing the
-// measured "0.3s" would be coerced back to the default on render, silently.
+// L1.2's keyword guard. A pseudo-namespaced setting (`anim:duration`) holds a keyword slug that the block clamps to its
+// own list while block.json declares it `{ type: 'string', default: 'medium' }` with no enum. Writing the measured
+// "0.3s" would be coerced back to the default on render, silently. The fixture database holds one such row.
 test( 'MUST FAIL TO WRITE: a measured duration is never written into a keyword setting', () => {
-	const calibration = cal( { sgsAnimationDuration: { slot: '', slots: [ '' ], property: 'animation-duration' } } );
-	const r = resolve( { block: 'sgs/card-grid', slot: '', prop: 'animation-duration', perWidth: { 375: '0.3s', 768: '0.3s', 1440: '0.3s' } }, { db, snapshot, calibration } );
+	const fixture = new DatabaseSync( ':memory:' );
+	fixture.exec( 'CREATE TABLE block_attributes (block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role)' );
+	fixture.exec( "INSERT INTO block_attributes (block_slug, attr_name, attr_type, default_value, css_property, source) VALUES ('sgs/card-grid', 'fixtureKeywordDuration', 'string', '\"medium\"', 'anim:duration', 'sgs-ext')" );
+	const calibration = cal( { fixtureKeywordDuration: { slot: '', slots: [ '' ], property: 'animation-duration' } } );
+	const r = resolve( { block: 'sgs/card-grid', slot: '', prop: 'animation-duration', perWidth: { 375: '0.3s', 768: '0.3s', 1440: '0.3s' } }, { db: fixture, snapshot, calibration } );
 	assert.equal( r.gap, 'shape' );
 	assert.equal( r.writes, undefined );
-	assert.match( r.detail, /animation-timing-clamp\.php/ );
+	assert.match( r.detail, /keyword/ );
 } );
 
 // L1.3: slots compare under the same loose rule as every other path comparison, so a setting discovered on the
@@ -293,9 +296,9 @@ test( 'MUST FAIL: a discovered slot matches a client path under anyIndex, and a 
 	assert.deepEqual( at( { anyIndex: true } ).writes, [ { attr: 'sgsChildSizing', value: 'fill', merge: 'replace' } ] );
 	// A hover row consults discovery, and an entry recording no state answers rest rows only.
 	assert.equal( at( { anyIndex: true, state: 'hover' } ), null );
-	const stated = { discovered: { sgsHoverDuration: { 'transition-duration': { slots: [ '' ], state: 'hover', values: { fast: { 1440: '0.15s' } } } } } };
+	const stated = { discovered: { hoverFadeDuration: { 'transition-duration': { slots: [ '' ], state: 'hover', values: { fast: { 1440: '0.15s' } } } } } };
 	assert.deepEqual( resolveDiscovered( { slot: '', prop: 'transition-duration', perWidth: { 1440: '0.15s' }, state: 'hover' }, stated ).writes,
-		[ { attr: 'sgsHoverDuration', value: 'fast', merge: 'replace' } ] );
+		[ { attr: 'hoverFadeDuration', value: 'fast', merge: 'replace' } ] );
 	assert.equal( resolveDiscovered( { slot: '', prop: 'transition-duration', perWidth: { 1440: '0.15s' } }, stated ), null, 'a hover discovery never answers a rest row' );
 } );
 

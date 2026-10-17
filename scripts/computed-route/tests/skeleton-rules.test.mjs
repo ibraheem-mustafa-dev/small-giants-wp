@@ -213,16 +213,16 @@ test( 'clientBuiltSurface: every row of a surface the client built as a post nam
 	assert.ok( run( tree, { kind: 'drawer', built, facts: facts( 'clientBuiltSurface' ) } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule ) );
 } );
 
-test( 'marquee: a strip whose own animation loops a translate for ever is a scrolling brand strip (logos) or trust bar (labels); MUST FAIL without the rule or the motion record', () => {
+test( 'marquee: a strip whose own animation loops a translate for ever is a brand strip (logos) or trust bar (labels); MUST FAIL without the rule or the motion record', () => {
 	const logos = section( [ E( 'div', {}, [ E( 'a', { attrs: { href: '/a' } }, [ E( 'image-slot' ) ] ), E( 'a', { attrs: { href: '/b' } }, [ E( 'image-slot' ) ] ) ] ) ] );
 	const loopKey = 'Root/2';
 	const strip = byTag( run( logos, { motion: new Set( [ loopKey ] ) } ), 'div' );
-	assert.deepEqual( [ strip.block, strip.rule, strip.attributes.scrolling ], [ 'sgs/brand-strip', 'marquee', true ] );
+	assert.deepEqual( [ strip.block, strip.rule, strip.attributes ], [ 'sgs/brand-strip', 'marquee', {} ] );
 	assert.notEqual( byTag( run( logos ), 'div' ).rule, 'marquee', 'no motion record, no marquee (never read from a name)' );
 	assert.notEqual( byTag( run( logos, { motion: new Set( [ loopKey ] ), facts: facts( 'marquee' ) } ), 'div' ).rule, 'marquee' );
 	const labels = section( [ E( 'div', {}, [ E( 'span', { words: 'Free delivery' } ), E( 'span', { words: 'Next day' } ) ] ) ] );
 	const ticker = byTag( run( labels, { motion: new Set( [ loopKey ] ) } ), 'div' );
-	assert.deepEqual( [ ticker.block, ticker.attributes.autoScroll ], [ 'sgs/trust-bar', true ] );
+	assert.deepEqual( [ ticker.block, ticker.attributes ], [ 'sgs/trust-bar', {} ] );
 } );
 
 test( 'trustBar: a row of short labels naming a trust-bar capability is a trust bar; hours rows, numbered steps and job tags are not; MUST FAIL without the rule', () => {
@@ -256,13 +256,13 @@ test( 'hero and heroInner: a page\'s first section holding its h1 is the split h
 	assert.notEqual( byTag( run( page, { kind: 'header' } ), 'section' ).rule, 'hero', 'a hero is a page section' );
 } );
 
-test( 'marqueeFrame: the frame that clips and fades a logo marquee goes and the strip fades its own edges; MUST FAIL without the rule', () => {
+test( 'marqueeFrame: the frame that clips and fades a logo marquee goes; MUST FAIL without the rule', () => {
 	const tree = section( [ E( 'div', { style: 'overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)' }, [ E( 'div', {}, [ E( 'a', { attrs: { href: '/a' } }, [ E( 'image-slot' ) ] ), E( 'a', { attrs: { href: '/b' } }, [ E( 'image-slot' ) ] ) ] ) ] ) ] );
 	const motion = new Set( [ 'Root/3' ] );
 	const r = run( tree, { motion } );
 	assert.deepEqual( settled( r.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'marqueeFrame' } );
 	const strip = r.skeleton[ 0 ].innerBlocks[ 0 ];
-	assert.deepEqual( [ strip.name, strip.attributes.scrolling, strip.attributes.fadeEdges ], [ 'sgs/brand-strip', true, true ], 'the mask becomes the strip\'s own edge fade' );
+	assert.deepEqual( [ strip.name, strip.attributes ], [ 'sgs/brand-strip', {} ], 'the strip carries no old scrolling or edge-fade attribute' );
 	assert.notEqual( run( tree, { motion, facts: facts( 'marqueeFrame' ) } ).proposal.rows[ 1 ].action, 'unwrap' );
 } );
 

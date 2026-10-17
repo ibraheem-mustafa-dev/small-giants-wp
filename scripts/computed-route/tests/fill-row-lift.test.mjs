@@ -24,7 +24,6 @@ const ROW_CAL = {
 		childIconBorderColour: at( SHAPE, 'border-color', [ 'hex', 'slug' ] ),
 		childIconBorderWidth: at( SHAPE, 'border-width' ),
 		childIconBorderStyle: at( SHAPE, 'border-style' ),
-		childIconTransitionDuration: at( SHAPE, 'transition-duration' ),
 		childIconShapeSize: at( SHAPE, 'width' ),
 		childIconSize: at( GLYPH, 'width' ),
 	},
@@ -53,7 +52,7 @@ function run( { linkOf = () => LINK } = {} ) {
 	return { tree, out, nodes };
 }
 
-const ROW_ATTRS = [ 'childIconBackground', 'childIconBorderColour', 'childIconBorderWidth', 'childIconBorderStyle', 'childIconTransitionDuration', 'childIconShapeSize', 'childIconSize' ];
+const ROW_ATTRS = [ 'childIconBackground', 'childIconBorderColour', 'childIconBorderWidth', 'childIconBorderStyle', 'childIconShapeSize', 'childIconSize' ];
 const CHILD_STYLE = [ 'iconSize', 'shapeSize', 'backgroundColour', 'borderColour', 'borderWidth', 'borderStyle' ];
 
 test( 'expandSiteInfoRows names each generated icon\'s glyph inside its draft link', () => {

@@ -176,7 +176,7 @@ function nonLengthTiers( prop, def ) {
 // the setting's own type (a number or a digit string); the easing is a keyword that differs from the default.
 // A row qualifies on two facts together: its css_property names the timing longhand (or is a bare `transition`), and
 // its name ends in Duration, Easing or EasingCustom, whatever comes before it (transitionDuration, panelSlideDuration,
-// bgHoverZoomEasing, submenuCaretTurnEasingCustom). The suffix is needed because css_property alone also lists
+// panelSlideEasing, submenuCaretTurnEasingCustom). The suffix is needed because css_property alone also lists
 // transition-duration on a setting that only triggers a transition, whose value is not a time (a hover lift), and
 // the DB holds no column that separates the two: role is `motion` for both and inspector_control_type is null on
 // most of these rows.

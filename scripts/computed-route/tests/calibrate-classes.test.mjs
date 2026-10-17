@@ -32,8 +32,8 @@ test( 'MUST FAIL (noMarker, media object): a background image is marked with the
 
 test( 'MUST FAIL (noMarker, transform family): rotation, scale and lift get values in the setting type', () => {
 	assert.equal( mk( { attr_name: 'iconRotation', css_property: 'transform' }, { iconRotation: { type: 'number', default: 0 } } )[ 0 ].attrs.iconRotation, 37 );
-	assert.equal( mk( { attr_name: 'scaleHover', css_property: 'transform' }, { scaleHover: { type: 'string', default: '' } } )[ 0 ].attrs.scaleHover, '1.1' );
-	assert.equal( mk( { attr_name: 'liftHover', css_property: 'translate' }, { liftHover: { type: 'number', default: 0 } } )[ 0 ].attrs.liftHover, 7 );
+	assert.equal( mk( { attr_name: 'iconScale', css_property: 'transform' }, { iconScale: { type: 'string', default: '' } } )[ 0 ].attrs.iconScale, '1.1' );
+	assert.equal( mk( { attr_name: 'iconLift', css_property: 'translate' }, { iconLift: { type: 'number', default: 0 } } )[ 0 ].attrs.iconLift, 7 );
 } );
 
 test( 'MUST FAIL (noMarker, lengths the regex missed): letter-spacing and a free margin are marked', () => {

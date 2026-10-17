@@ -1,4 +1,4 @@
-// Entrance start (Spec 38, sgsAnimationStart): a block with an entrance that the draft shows at rest while live still
+// Entrance start (Spec 38A): a block with an entrance that the draft shows at rest while live still
 // holds it hidden is one whose draft plays its entrance on page load, where live waits for the block to scroll into
 // view (About, 2026-10-04: the credential column at 375 sat below the fold, opacity 1 on the draft and 0 live).
 
@@ -39,19 +39,10 @@ const inFirstViewport = ( rects ) => {
 };
 
 // g: a writable group (lib/solve-rows.mjs::writableGroups); node: its tree node; perWidth: the draft values; rects: the
-// live element's rect per width at scrollY 0 (`groupRects`; defaults to g.rects). Returns the resolver's shape
-// ({ writes }) when the group is an entrance waiting to be scrolled to INSIDE THE FIRST VIEWPORT, else null: a block
-// below the fold reads hidden live because its entrance is armed (the walker's settle skips a paused pose), which is no
-// reason to start it on load.
+// live element's rect per width at scrollY 0 (`groupRects`; defaults to g.rects). The cloning route writes no motion
+// between Spec 38A M6.6 and M7 (the only motion attribute is `sgsMotion`, written by the M7 route), so this always
+// returns null: no attribute is written for an entrance that the draft shows at rest and live holds hidden.
 export function entranceStart( g, node, perWidth, rects = g.rects ) {
-	const a = node.attributes || {};
-	if ( g.state || '' !== g.path || ! SHOWN[ g.prop ] || ! a.sgsAnimation || 'load' === a.sgsAnimationStart ) {
-		return null;
-	}
-	const draft = Object.values( perWidth || {} ).filter( ( v ) => undefined !== v );
-	const live = ( g.rows || [] ).map( ( r ) => r.live );
-	if ( ! draft.length || ! live.length || ! draft.every( SHOWN[ g.prop ] ) || ! live.every( HIDDEN[ g.prop ] ) || ! inFirstViewport( rects ) ) {
-		return null;
-	}
-	return { writes: [ { attr: 'sgsAnimationStart', value: 'load', merge: 'replace' } ] };
+	void g; void node; void perWidth; void rects;
+	return null;
 }

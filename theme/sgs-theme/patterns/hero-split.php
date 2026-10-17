@@ -10,7 +10,7 @@
 ?>
 
 <!-- wp:sgs/hero {"variant":"split","alignment":"left","minHeight":{"desktop":"520px"},"templateLock":"contentOnly"} -->
-	<!-- wp:sgs/heading {"content":"Build Something Amazing Today","level":"h1","className":"sgs-hero__headline","fx":"scrub","fxTrigger":"load","fxStart":"top 85%","fxEnd":"top center","fxScrub":0.3,"fxEase":"power1.out"} /-->
+	<!-- wp:sgs/heading {"content":"Build Something Amazing Today","level":"h1","className":"sgs-hero__headline","sgsMotion":{"v":1,"elements":{"root":{"effects":[{"id":"scrub","effect":"scrub","trigger":"load"}]}}}} /-->
 
 	<!-- wp:sgs/text {"text":"We help businesses create stunning digital experiences that convert visitors into customers.","className":"sgs-hero__subheadline"} /-->
 

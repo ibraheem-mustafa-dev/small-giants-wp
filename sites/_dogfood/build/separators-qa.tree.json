@@ -624,7 +624,6 @@
   "attributes": {
    "source": "manual",
    "brandDisplay": "text",
-   "scrolling": false,
    "separators": {
     "column": {
      "style": "solid",
@@ -860,7 +859,6 @@
   "attributes": {
    "source": "manual",
    "brandDisplay": "text",
-   "scrolling": true,
    "separators": {
     "column": {
      "style": "solid",
@@ -901,7 +899,25 @@
      "alt": "Foxtrot",
      "_key": "s6"
     }
-   ]
+   ],
+   "sgsMotion": {
+    "v": 1,
+    "elements": {
+     "root": {
+      "effects": [
+       {
+        "id": "marquee",
+        "effect": "marquee",
+        "values": {
+         "duration": 30000,
+         "hoverRate": 0,
+         "pauseOnTouch": true
+        }
+       }
+      ]
+     }
+    }
+   }
   }
  },
  {

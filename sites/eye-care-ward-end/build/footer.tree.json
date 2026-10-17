@@ -97,7 +97,6 @@
                   "logoId": 1467,
                   "width": 111,
                   "linkToHome": true,
-                  "opacityHover": 1,
                   "className": "cr-ref-footer-3"
                 },
                 "innerBlocks": []
@@ -188,7 +187,21 @@
                         }
                       },
                       "className": "cr-ref-footer-36",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   {
@@ -207,7 +220,21 @@
                         }
                       },
                       "className": "cr-ref-footer-41",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   {
@@ -226,7 +253,21 @@
                         }
                       },
                       "className": "cr-ref-footer-34",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   {
@@ -245,7 +286,21 @@
                         }
                       },
                       "className": "cr-ref-footer-35",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   {
@@ -264,7 +319,21 @@
                         }
                       },
                       "className": "cr-ref-footer-37",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   {
@@ -283,7 +352,21 @@
                         }
                       },
                       "className": "cr-ref-footer-38",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   {
@@ -302,7 +385,21 @@
                         }
                       },
                       "className": "cr-ref-footer-39",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   {
@@ -321,7 +418,21 @@
                         }
                       },
                       "className": "cr-ref-footer-40",
-                      "scaleHover": 1
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "shape": {
+                            "hover": {
+                              "state": {
+                                "source": "root",
+                                "values": {
+                                  "scale": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 ]

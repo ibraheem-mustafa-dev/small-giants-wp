@@ -152,16 +152,16 @@ test( 'MUST FAIL: a minimum size marks above the 44px touch-target floor', () =>
 import { MARKER_DURATION_MS, MARKER_EASING } from '../lib/calibrate.mjs';
 
 const snap = { palette: [] };
-const durRow = ( over = {} ) => ( { attr_name: 'transitionDuration', attr_type: 'string', default_value: '"300"', enum_values: null, css_property: 'transition,transition-duration', ...over } );
-const easeRow = ( over = {} ) => ( { attr_name: 'transitionEasing', attr_type: 'string', default_value: '"ease-in-out"', enum_values: null, css_property: 'transition,transition-timing-function', ...over } );
+const durRow = ( over = {} ) => ( { attr_name: 'badgeFadeDuration', attr_type: 'string', default_value: '"300"', enum_values: null, css_property: 'transition,transition-duration', ...over } );
+const easeRow = ( over = {} ) => ( { attr_name: 'badgeFadeEasing', attr_type: 'string', default_value: '"ease-in-out"', enum_values: null, css_property: 'transition,transition-timing-function', ...over } );
 
 test( 'MUST FAIL ON REVERT: the duration marker is the integer millisecond 437, never a CSS time', () => {
 	const [ m ] = markersFor( durRow(), {}, snap );
 	assert.equal( MARKER_DURATION_MS, 437 );
-	assert.equal( m.attrs.transitionDuration, '437' );
-	assert.match( m.attrs.transitionDuration, /^[0-9]+$/ );
+	assert.equal( m.attrs.badgeFadeDuration, '437' );
+	assert.match( m.attrs.badgeFadeDuration, /^[0-9]+$/ );
 	const [ n ] = markersFor( durRow( { attr_type: 'number', default_value: '0', css_property: 'transition-duration' } ), {}, snap );
-	assert.strictEqual( n.attrs.transitionDuration, 437 );
+	assert.strictEqual( n.attrs.badgeFadeDuration, 437 );
 	assert.equal( n.expect[ 1440 ], '0.437s' );
 } );
 
@@ -169,7 +169,7 @@ test( 'MUST FAIL ON REVERT: the easing marker is whitelisted and is never ease-i
 	const allowed = [ 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' ];
 	for ( const def of [ '"ease-in-out"', '"ease"', '"linear"' ] ) {
 		const [ m ] = markersFor( easeRow( { default_value: def } ), {}, snap );
-		const v = m.attrs.transitionEasing;
+		const v = m.attrs.badgeFadeEasing;
 		assert.ok( allowed.includes( v ) );
 		assert.notEqual( v, 'ease-in-out' );
 		assert.notEqual( v, JSON.parse( def ) );
@@ -193,15 +193,15 @@ test( 'NO OVER-REACH: a block with no transition attribute produces no marker', 
 } );
 
 test( 'MUST FAIL ON REVERT: a timing setting named for what it moves gets a marker, not only one named transition*', () => {
-	// 37 of the 64 timing rows in the DB carry no "Transition" in their name (cart, nav menus, the bgHoverZoom family).
+	// 37 of the 64 timing rows in the DB carry no "Transition" in their name (cart, nav menus, the surfaceZoom family).
 	const [ slide ] = markersFor( { attr_name: 'panelSlideDuration', attr_type: 'number', default_value: '0', enum_values: null, css_property: 'transition-duration' }, {}, snap );
 	assert.equal( slide.label, 'duration-ms' );
 	assert.strictEqual( slide.attrs.panelSlideDuration, 437 );
 	assert.equal( slide.expect[ 768 ], '0.437s' );
 	const [ caret ] = markersFor( { attr_name: 'submenuCaretTurnEasingCustom', attr_type: 'string', default_value: '""', enum_values: null, css_property: 'transition-timing-function' }, {}, snap );
 	assert.equal( caret.label, 'easing' );
-	const [ exit ] = markersFor( { attr_name: 'submenuExitDuration', attr_type: 'number', default_value: '150', enum_values: null, css_property: 'transition' }, {}, snap );
-	assert.strictEqual( exit.attrs.submenuExitDuration, 437 );
+	const [ exit ] = markersFor( { attr_name: 'menuExitDuration', attr_type: 'number', default_value: '150', enum_values: null, css_property: 'transition' }, {}, snap );
+	assert.strictEqual( exit.attrs.menuExitDuration, 437 );
 } );
 
 test( 'MUST FAIL ON REVERT: a duration held in seconds gets its marker in seconds, never 437 seconds', () => {

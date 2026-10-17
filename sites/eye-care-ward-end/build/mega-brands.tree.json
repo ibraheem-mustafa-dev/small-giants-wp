@@ -119,8 +119,6 @@
                           "left": "14px"
                         }
                       },
-                      "effectHover": "none",
-                      "shadowLiftOnHover": false,
                       "titleFontFamily": "heading",
                       "titleFontWeight": "500",
                       "titleFontSize": {
@@ -288,8 +286,6 @@
                           "objectFit": "scale-down"
                         }
                       ],
-                      "transitionDuration": "250",
-                      "transitionEasing": "ease",
                       "gridTemplateColumns": {
                         "desktop": "repeat(5,minmax(0,1fr))",
                         "tablet": "repeat(3,minmax(0,1fr))",

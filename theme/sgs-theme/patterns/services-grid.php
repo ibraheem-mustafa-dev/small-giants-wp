@@ -15,7 +15,7 @@
 
 	<!-- wp:sgs/text {"text":"Comprehensive solutions tailored to your unique business needs.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
 
-	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"},"fx":"scrub","fxStart":"top 70%","fxEnd":"top center","fxScrub":0.8} -->
+	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"},"sgsMotion":{"v":1,"elements":{"root":{"effects":[{"id":"scrub","effect":"scrub"}]}}}} -->
 
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","borderRadius":{"desktop":"12px"}} -->

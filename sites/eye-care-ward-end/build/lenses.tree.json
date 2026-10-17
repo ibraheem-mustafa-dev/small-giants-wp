@@ -41,11 +41,32 @@
               "bottom": "10px"
             }
           },
-          "sgsAnimation": "fade-up",
-          "sgsAnimationDuration": "500",
-          "sgsAnimationDistance": "18",
-          "sgsAnimationEasing": "ease",
-          "className": "cr-ref-lenses-1"
+          "className": "cr-ref-lenses-1",
+          "sgsMotion": {
+            "v": 1,
+            "elements": {
+              "root": {
+                "entrance": {
+                  "base": {
+                    "preset": "entrance-fade-up",
+                    "trigger": "scroll",
+                    "values": {
+                      "from": {
+                        "opacity": 0,
+                        "translateY": 18
+                      },
+                      "to": {
+                        "opacity": 1,
+                        "translateY": 0
+                      },
+                      "duration": 500,
+                      "easing": "ease"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
       {
@@ -65,17 +86,38 @@
           },
           "maxWidth": 18,
           "maxWidthUnit": "ch",
-          "sgsAnimation": "fade-up",
-          "sgsAnimationDuration": "600",
-          "sgsAnimationDistance": "18",
-          "sgsAnimationEasing": "ease",
           "className": "cr-ref-lenses-2",
           "lineHeight": {
             "mobile": 1.02,
             "tablet": 1.02,
             "desktop": 1.02
           },
-          "textWrap": "pretty"
+          "textWrap": "pretty",
+          "sgsMotion": {
+            "v": 1,
+            "elements": {
+              "root": {
+                "entrance": {
+                  "base": {
+                    "preset": "entrance-fade-up",
+                    "trigger": "scroll",
+                    "values": {
+                      "from": {
+                        "opacity": 0,
+                        "translateY": 18
+                      },
+                      "to": {
+                        "opacity": 1,
+                        "translateY": 0
+                      },
+                      "duration": 600,
+                      "easing": "ease"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
       {
@@ -93,12 +135,33 @@
               "bottom": "48px"
             }
           },
-          "sgsAnimation": "fade-up",
-          "sgsAnimationDuration": "700",
-          "sgsAnimationDistance": "18",
-          "sgsAnimationEasing": "ease",
           "className": "cr-ref-lenses-3",
-          "textWrap": "pretty"
+          "textWrap": "pretty",
+          "sgsMotion": {
+            "v": 1,
+            "elements": {
+              "root": {
+                "entrance": {
+                  "base": {
+                    "preset": "entrance-fade-up",
+                    "trigger": "scroll",
+                    "values": {
+                      "from": {
+                        "opacity": 0,
+                        "translateY": 18
+                      },
+                      "to": {
+                        "opacity": 1,
+                        "translateY": 0
+                      },
+                      "duration": 700,
+                      "easing": "ease"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
       {
