@@ -3,7 +3,9 @@
  * earlier run's animation is cancelled, exactly one new run plays, and the earlier run's settle does not take the
  * entrance attributes, `data-sgs-in` or the loop items' indices off while the new run plays. Covered for a multi-keyframe
  * entrance (played through the shared WAAPI module, `assets/js/motion-keyframes.js`) and a two-state one (the CSS
- * animation `data-sgs-in` starts). Positive control: a single press plays once and returns the element to rest.
+ * animation `data-sgs-in` starts). A marker the server already printed with the value the plan writes comes off for the
+ * reflow and goes back on, so the first press restarts it, and returns to rest afterwards. Positive control: a single
+ * press plays once and returns the element to rest.
  */
 jest.mock( '@wordpress/data', () => ( { dispatch: () => ( { createNotice: () => {} } ) } ) );
 jest.mock( '@wordpress/i18n', () => ( { __: ( text ) => text } ) );
@@ -121,6 +123,32 @@ describe( 'a second Replay press while a keyframed Replay runs', () => {
 		expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( false );
 		expect( el.hasAttribute( 'data-sgs-me-kf' ) ).toBe( false );
 		expect( items().some( ( item ) => item.hasAttribute( ITEM_ATTR ) ) ).toBe( false );
+	} );
+} );
+
+describe( 'the first Replay press on a marker the server already printed', () => {
+	// A block preview the server rendered carries the entrance marker at rest, with the value the plan writes; a CSS
+	// animation restarts only when the marker comes off, a reflow runs, and it goes back on.
+	test.each( [
+		[ 'a same-value marker', { 'data-sgs-me': 'load translate opacity' } ],
+		[ 'a same-value keyframed marker', { 'data-sgs-me': 'load translate opacity', 'data-sgs-me-keyframes': FRAMES } ],
+	] )( '%s comes off for the reflow and goes back on with data-sgs-in', async ( label, attrs ) => {
+		const el = mount( attrs );
+		Object.entries( attrs ).forEach( ( [ name, value ] ) => el.setAttribute( name, value ) );
+		const atReflow = [];
+		el.getBoundingClientRect = () => {
+			atReflow.push( Object.keys( attrs ).filter( ( name ) => el.hasAttribute( name ) ) );
+			return { top: 0, left: 0, width: 0, height: 0 };
+		};
+		const playing = replay( CLIENT, 'root' );
+		expect( atReflow ).toEqual( [ [] ] );
+		Object.entries( attrs ).forEach( ( [ name, value ] ) => expect( el.getAttribute( name ) ).toBe( value ) );
+		expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( true );
+		live.forEach( ( anim ) => anim.finish() );
+		await playing;
+		// At rest again: the server's own marker stays, the play's signal goes.
+		Object.entries( attrs ).forEach( ( [ name, value ] ) => expect( el.getAttribute( name ) ).toBe( value ) );
+		expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( false );
 	} );
 } );
 

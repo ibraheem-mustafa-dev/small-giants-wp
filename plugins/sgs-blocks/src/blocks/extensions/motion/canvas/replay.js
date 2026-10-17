@@ -44,27 +44,33 @@ const currentReplay = new Map();
 
 // Play one element's entrance: write the plan's entrance attributes, set `data-sgs-in`, and when the play ends take off
 // `data-sgs-in` and the attributes it wrote. An entrance marker already on the element (a block preview rendered by the
-// server) plays from those attributes, which stay: they come off for the reflow and go back on with `data-sgs-in`,
-// because a `load` marker already holds its finished animation at rest (`motion.css` names the animation for
-// `[data-sgs-me~="load"]`), so only a fresh marker restarts it. A multi-keyframe entrance plays through the module's
+// server) plays from those attributes, which stay: every marker, a planned one whose value is unchanged included, comes
+// off for the reflow and goes back on with `data-sgs-in`, because a `load` marker already holds its finished animation
+// at rest (`motion.css` names the animation for `[data-sgs-me~="load"]`), so only a fresh marker restarts it, and when the
+// play ends a planned marker returns to the value it had at rest. A multi-keyframe entrance plays through the module's
 // `replay`, which cancels the run it started before, so a second press restarts the entrance rather than stacking a
 // second animation on the first.
 function playOn( el, attrs ) {
-	const run = {};
+	// The element's resting entrance markers, read before the first of any overlapping runs touched them.
+	const resting =
+		currentRun.get( el )?.resting ||
+		Object.fromEntries( ENTRANCE_ATTRS.map( ( name ) => [ name, el.getAttribute( name ) ] ) );
+	const run = { resting };
 	currentRun.set( el, run );
 	const win = el.ownerDocument.defaultView || window;
 	const written = ENTRANCE_ATTRS.filter(
 		( name ) => attrs[ name ] !== undefined
 	);
-	const carried = ENTRANCE_ATTRS.filter(
-		( name ) => ! written.includes( name ) && el.hasAttribute( name )
-	).map( ( name ) => [ name, el.getAttribute( name ) ] );
-	written.forEach( ( name ) => el.setAttribute( name, attrs[ name ] ) );
-	carried.forEach( ( [ name ] ) => el.removeAttribute( name ) );
+	// Every marker on the element comes off for the reflow, a planned one whose value is unchanged included: setting
+	// an attribute to the value it already holds restarts no animation.
+	const markers = ENTRANCE_ATTRS.filter(
+		( name ) => written.includes( name ) || el.hasAttribute( name )
+	).map( ( name ) => [ name, written.includes( name ) ? attrs[ name ] : el.getAttribute( name ) ] );
+	markers.forEach( ( [ name ] ) => el.removeAttribute( name ) );
 	el.removeAttribute( 'data-sgs-me-kf' );
 	el.removeAttribute( 'data-sgs-in' );
 	el.getBoundingClientRect();
-	carried.forEach( ( [ name, value ] ) => el.setAttribute( name, value ) );
+	markers.forEach( ( [ name, value ] ) => el.setAttribute( name, value ) );
 	el.setAttribute( 'data-sgs-in', '' );
 	const keyframes = win.sgsMotionKeyframes;
 	if ( el.hasAttribute( 'data-sgs-me-keyframes' ) && keyframes?.replay ) {
@@ -82,8 +88,12 @@ function playOn( el, attrs ) {
 			return;
 		}
 		currentRun.delete( el );
-		[ ...written, 'data-sgs-in', 'data-sgs-me-kf' ].forEach( ( name ) =>
-			el.removeAttribute( name )
+		el.removeAttribute( 'data-sgs-in' );
+		el.removeAttribute( 'data-sgs-me-kf' );
+		// A planned marker returns to its resting value: off when the element had none, back on when the server
+		// printed it (a block preview's own marker).
+		written.forEach( ( name ) =>
+			null === resting[ name ] ? el.removeAttribute( name ) : el.setAttribute( name, resting[ name ] )
 		);
 	} );
 }
