@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from wf_css import CssIndex, data_consumed, own_modifier
+from wf_css import CssIndex, data_consumed, own_modifier, own_utility
 from wf_paint import PaintClassifier
 from wf_pass import BlockResult
 from wf_tokens import Channel
@@ -76,7 +76,7 @@ class Resolver:
             "cp_reader": any(css.cp_read(cp) for cp in ch.cps),
             "decl_channel": ch.decl or ch.gate_decl,
             # State utility modifiers the framework styles (`sgs-on-dark`, `sgs-has-hover-overlay`).
-            "utility_class_rule": any(css.has_class(c) for c in ch.classes if c.startswith(("sgs-on-", "sgs-has-"))),
+            "utility_class_rule": any(css.has_class(c) for c in ch.classes if own_utility(c)),
             "toggle_paint": toggle,
             "data_consumed": data_consumed(ch.fx_data, css, js),
             "fx_data_consumed": data_consumed(ch.fx_data, css, js),

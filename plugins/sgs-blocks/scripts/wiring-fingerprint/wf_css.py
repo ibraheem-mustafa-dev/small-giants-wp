@@ -25,15 +25,34 @@ DECL_PROP_RE = re.compile(r"(?:^|;)\s*([a-z-]+)\s*:")
 EDITOR_SHEET_RE = re.compile(r"(^|/)editor[^/]*\.s?css$")
 # Used only when package.json exists but its postbuild cannot be read (a loud warning names why).
 FALLBACK_INJECTOR_GLOBS = ("scripts/shadow-lift/*.js", "scripts/shadow-fallback/*.js", "scripts/hover-guard/*.js")
-# Modifier classes the framework's shared systems put on every element of a kind (the focus
-# ring's `sgs-focus--inset`, `sgs-focus--duotone`). They are not the setting's own modifier, so
-# a setting that merely guards the element carrying one has not been shown to paint.
-SHARED_SYSTEM_MODIFIER_PREFIXES = ("sgs-focus--",)
+# Classes the framework's shared systems put on elements whatever any setting says. A setting
+# that merely guards the element carrying one has not been shown to paint, so they never count
+# as the setting's own modifier or utility class. One list; each family names where it is defined.
+#   focus modifiers  `sgs-focus--*`   theme/sgs-theme/assets/css/focus.css (the focus system)
+#   ground markers   `sgs-on-dark`, `sgs-on-light`   includes/helpers-surface-tone.php::sgs_surface_tone_class
+#                    (the only two values it returns), styled in focus.css and the dark-shadow sheet
+#   focus proxies    `sgs-focus-source`, `sgs-focus-proxy`, `sgs-focus-scope`, `sgs-focus-card`
+#                    theme/sgs-theme/assets/css/focus.css (a card's focus proxy and its scope)
+SHARED_SYSTEM_CLASS_PREFIXES = ("sgs-focus--",)
+SHARED_SYSTEM_CLASSES = frozenset({
+    "sgs-on-dark", "sgs-on-light",
+    "sgs-focus-source", "sgs-focus-proxy", "sgs-focus-scope", "sgs-focus-card",
+})
+
+
+def is_shared_system_class(token: str) -> bool:
+    """A class a shared framework system applies everywhere, never one setting's own."""
+    return token in SHARED_SYSTEM_CLASSES or token.startswith(SHARED_SYSTEM_CLASS_PREFIXES)
 
 
 def own_modifier(token: str) -> bool:
-    """A BEM modifier class a setting can own: not one a shared system (focus) applies everywhere."""
-    return "--" in token and not token.startswith(SHARED_SYSTEM_MODIFIER_PREFIXES)
+    """A BEM modifier class a setting can own."""
+    return "--" in token and not is_shared_system_class(token)
+
+
+def own_utility(token: str) -> bool:
+    """A state utility class (`sgs-on-*`, `sgs-has-*`) a setting can own: not the shared ground markers."""
+    return token.startswith(("sgs-on-", "sgs-has-")) and not is_shared_system_class(token)
 
 
 POSTBUILD_NODE_RE = re.compile(r"\bnode\s+(\S+\.js)((?:\s+--?[\w-]+)*)")

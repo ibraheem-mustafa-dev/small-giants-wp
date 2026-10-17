@@ -25,4 +25,12 @@ if ( ! empty( $attributes['showCaption'] ) ) {
 if ( ! empty( $attributes['enableOpen'] ) ) {
 	echo '<button class="sgs-toggle-paint__open sgs-focus--inset" type="button">Open</button>';
 }
+// Shared ground classes (sgs_surface_tone_class) on a guarded dialog: not this switch's paint.
+if ( ! empty( $attributes['enableGround'] ) ) {
+	echo '<dialog class="sgs-toggle-paint__dialog sgs-on-dark"></dialog><div class="sgs-on-light"></div>';
+}
+// Negative control: a modifier this block owns, with its own rule, is the switch's paint.
+if ( ! empty( $attributes['openStyle'] ) ) {
+	echo '<div class="sgs-toggle-paint__panel sgs-toggle-paint--open"></div>';
+}
 echo '<style>' . implode( '', $css ) . '</style>';

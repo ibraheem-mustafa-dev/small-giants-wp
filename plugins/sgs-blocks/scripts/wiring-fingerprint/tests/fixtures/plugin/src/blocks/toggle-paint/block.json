@@ -8,6 +8,8 @@
   "smartContrast": { "type": "boolean", "default": false },
   "showCaption": { "type": "boolean", "default": false },
   "enableOpen": { "type": "boolean", "default": true },
+  "enableGround": { "type": "boolean", "default": true },
+  "openStyle": { "type": "boolean", "default": false },
   "itemColour": { "type": "string" },
   "labelColour": { "type": "string" }
  }

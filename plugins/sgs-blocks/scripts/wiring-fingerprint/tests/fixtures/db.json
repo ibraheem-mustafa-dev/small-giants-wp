@@ -371,6 +371,24 @@
   },
   {
    "block_slug": "sgs/toggle-paint",
+   "attr_name": "enableGround",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
+   "attr_name": "openStyle",
+   "attr_type": "boolean",
+   "css_property": null,
+   "css_state": null,
+   "role": "boolean-visibility",
+   "tier_shape": null
+  },
+  {
+   "block_slug": "sgs/toggle-paint",
    "attr_name": "itemColour",
    "attr_type": "string",
    "css_property": "color",

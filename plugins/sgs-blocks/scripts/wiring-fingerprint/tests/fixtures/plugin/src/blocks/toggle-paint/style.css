@@ -1,3 +1,10 @@
 .sgs-focus--inset:focus-visible {
 	outline-offset: -4px;
 }
+.sgs-on-dark,
+.sgs-on-light {
+	color: inherit;
+}
+.sgs-toggle-paint--open {
+	margin: 0;
+}

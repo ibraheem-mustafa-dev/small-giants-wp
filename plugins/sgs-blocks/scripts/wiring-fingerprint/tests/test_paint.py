@@ -53,3 +53,27 @@ def test_shared_focus_modifier_is_not_a_switchs_own_paint(report):
     modifier every focusable element gets) is a behaviour switch, not a painting setting."""
     rec = record(report, "sgs/toggle-paint", "enableOpen")
     assert (rec["category"], rec["basis"]) == ("not", "role:boolean-visibility")
+
+
+def test_shared_ground_classes_are_not_a_switchs_own_paint(report):
+    """`sgs-on-dark` / `sgs-on-light` (sgs_surface_tone_class) on a guarded element is the ground's, not the switch's."""
+    rec = record(report, "sgs/toggle-paint", "enableGround")
+    assert (rec["category"], rec["basis"]) == ("not", "role:boolean-visibility")
+
+
+def test_a_modifier_the_block_owns_still_paints(report):
+    """Negative control: the exclusion is only for shared system classes."""
+    rec = record(report, "sgs/toggle-paint", "openStyle")
+    assert (rec["category"], rec["basis"]) == ("css", "class-modifier-rule")
+
+
+def test_every_shared_system_class_family_is_excluded():
+    from wf_css import is_shared_system_class, own_modifier
+
+    for token in ("sgs-focus--inset", "sgs-focus--duotone", "sgs-on-dark", "sgs-on-light",
+                  "sgs-focus-source", "sgs-focus-proxy", "sgs-focus-scope", "sgs-focus-card"):
+        assert is_shared_system_class(token), token
+        assert not own_modifier(token), token
+    for token in ("sgs-gallery--lightbox-open", "sgs-has-hover", "sgs-on-hover-card", "sgs-gallery__lightbox"):
+        assert not is_shared_system_class(token), token
+    assert own_modifier("sgs-gallery--lightbox-open")
