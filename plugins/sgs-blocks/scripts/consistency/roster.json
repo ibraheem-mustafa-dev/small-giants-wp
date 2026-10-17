@@ -132,10 +132,10 @@
         "colour": true,
         "link": true,
         "media": true,
-        "animation": true
+        "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 18,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     },
