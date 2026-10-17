@@ -728,11 +728,11 @@ Status: PARTLY BUILT (the derivation and the theme mapping are built; 6 of its t
 
 Every focusable element in the framework shows one keyboard focus look, defined in one theme file and re-coloured per client only through `settings.custom.focus` in the snapshot.
 
-**The ruling (owner, 2026-10-17).** The default look (G1) is a solid core plus an accent glow; a two-tone dark and light look (G2) is the fallback; an animated, client-coloured border glow (G3, "Signature") is an opt-in per `sgs/button`. All three keep a solid core. The core must reach 3:1 against what is next to it (WCAG 1.4.11 and technique C40), so a 2:1 accent ring is not enough; the glow is never counted towards the 3:1. Where the client's accent is too pale for its light grounds, the ring is darkened (and on dark grounds lightened) only as far as 3:1 needs, keeping the client's hue; the bloom stays the true accent.
+**The ruling (owner, 2026-10-17).** The default look (G1) is a solid core plus an accent glow; a two-tone dark and light look (G2) is the fallback; an animated, client-coloured border glow (G3, "Signature") is an opt-in per `sgs/button`. All three keep a solid core. The core must reach 3:1 against what is next to it (WCAG 1.4.11 and technique C40), so a 2:1 accent ring is not enough; the glow is never counted towards the 3:1. The core ring on light grounds is the brand's dark primary (`primary-dark`), the framework fallback when a client sets no `ring`; where that fails 3:1 on a client's worst light ground the client sets a darker `ring` of the same hue. On dark grounds the accent is lightened only as far as 3:1 needs, keeping the client's hue; the bloom stays the true accent.
 
 **The design.**
 
-- **G1 (default).** A thin inner hairline in the site's surface colour, a 2px ring in the client's accent (adjusted as above) and a soft bloom in the true accent.
+- **G1 (default).** A thin inner hairline in the site's surface colour, a 2px ring in the brand's dark primary (adjusted as above) and a soft bloom in the true accent.
 - **G2 (fallback, and always behind photos and video).** The same four layers drawn in the site's dark ink with a light inner line. A site with no accent uses it everywhere.
 - **G3 (opt-in).** A G2 core plus a rotating conic border in the client's own colours (`signatureA`, `signatureB`, `signatureC`). It stops under `prefers-reduced-motion: reduce`.
 - **The core is a real `outline`; the hairline and the bloom are `box-shadow` layers.** The compliant part therefore sits on a property no block paints at rest, and forced colours repaint it in `Highlight` with no extra trick. The look never changes the element's `border-radius`.
@@ -767,7 +767,7 @@ Every focusable element in the framework shows one keyboard focus look, defined 
 | `width` | `2px` | `2px` | the core and hairline width |
 | `inner` | `var(--wp--preset--color--surface)` | same | the hairline, the G2 light band |
 | `ink` | `var(--wp--preset--color--text)` | same | the G2 ring, duotone, `prefers-contrast: more` |
-| `ring` | `var(--wp--preset--color--accent)` | the accent, darkened only as far as needed for 3:1 on the worst light ground, written as a literal hex; the site's ink if the shifted colour keeps no hue | the core on light grounds |
+| `ring` | `var(--wp--preset--color--primary-dark)` | unset where `primary-dark` already reaches 3:1 on the worst light ground; otherwise a darker literal hex of the same hue; the site's ink if no hue survives | the core on light grounds |
 | `near` | `var(--wp--preset--color--accent)` | the true accent | the inner bloom on light grounds |
 | `far` | `var(--wp--preset--color--accent)` | the true accent | the outer bloom on light grounds |
 | `ringOnDark` | `var(--wp--preset--color--accent)` | the accent, lightened only if it fails 3:1 on the worst dark ground | the core on `sgs-on-dark` grounds |

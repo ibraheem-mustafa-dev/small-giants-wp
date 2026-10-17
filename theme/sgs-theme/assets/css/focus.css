@@ -24,7 +24,7 @@
 	--sgs-focus-width: var(--wp--custom--focus--width, 2px);
 	--sgs-focus-inner: var(--wp--custom--focus--inner, var(--wp--preset--color--surface, #fff));
 	--sgs-focus-ink: var(--wp--custom--focus--ink, var(--wp--preset--color--text, #0b1020));
-	--sgs-focus-ring: var(--wp--custom--focus--ring, var(--wp--preset--color--accent, var(--sgs-focus-ink)));
+	--sgs-focus-ring: var(--wp--custom--focus--ring, var(--wp--preset--color--primary-dark, var(--sgs-focus-ink)));
 	--sgs-focus-ground-core: var(--sgs-focus-ink);
 	--sgs-focus-near: var(--wp--custom--focus--near, var(--sgs-focus-ring));
 	--sgs-focus-far: var(--wp--custom--focus--far, var(--sgs-focus-ring));
