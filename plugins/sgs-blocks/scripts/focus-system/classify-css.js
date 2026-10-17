@@ -16,10 +16,12 @@
  *                    chrome, a decorative shape) is resting-outline.
  *   radius-on-focus  border-radius in a rule whose every member is a focus selector; a target.
  *   legacy-token     a retired token (plan §2.3) in the property or value; a target, fixed by hand.
+ *   hover-outline    an outline whose WIDTH or STYLE is set (outline, outline-width, outline-style) on a
+ *                    :hover + :focus pair; a target. Never deleted by --fix, because that would also
+ *                    delete the hover effect: --fix reports the rule as a hand edit.
  *   shared-shadow    box-shadow on a :hover + :focus pair; allowed, listed (hand in --sgs-focus-under).
- *   shared-outline   an outline on a :hover + :focus pair; allowed, listed: the system owns the
- *                    outline on keyboard focus, so only the hover half still paints. Never deleted
- *                    by --fix, because that would also delete the hover effect.
+ *   shared-outline   outline-color or outline-offset (no width or style) on a :hover + :focus pair;
+ *                    allowed, listed: the hover half only recolours an outline the system draws.
  *   shared-state     any other declaration on a focus selector (colour, background, transform, a
  *                    hover/focus pair, a floating label); allowed.
  *   container        a :focus-within (or :has( :focus… )) state on a container that is not itself a
@@ -43,10 +45,10 @@ const postcssScss = require( 'postcss-scss' );
 const { SYSTEM_FILE, RETIRED_TOKEN_RE, INDICATOR_PROPS, groupOf } = require( './config.js' );
 const { norm, resolveSelector, contextOf, selectorInfo, countFocus } = require( './selector.js' );
 
-const TARGET_CATEGORIES = new Set( [ 'bespoke', 'suppress', 'radius-on-focus', 'legacy-token', 'php-emitter', 'js-emitter', 'json-focus', 'unrecognised' ] );
+const TARGET_CATEGORIES = new Set( [ 'bespoke', 'suppress', 'radius-on-focus', 'hover-outline', 'legacy-token', 'php-emitter', 'js-emitter', 'json-focus', 'unrecognised' ] );
 const FIXABLE = new Set( [ 'bespoke', 'suppress', 'radius-on-focus' ] );
 
-const RULE_PRIORITY = [ 'system', 'allow', 'bespoke', 'suppress', 'radius-on-focus', 'php-emitter', 'js-emitter', 'json-focus', 'legacy-token', 'shared-outline', 'shared-shadow', 'shared-state', 'container', 'forced-resting', 'resting-outline', 'unrecognised' ];
+const RULE_PRIORITY = [ 'system', 'allow', 'bespoke', 'suppress', 'radius-on-focus', 'hover-outline', 'php-emitter', 'js-emitter', 'json-focus', 'legacy-token', 'shared-outline', 'shared-shadow', 'shared-state', 'container', 'forced-resting', 'resting-outline', 'unrecognised' ];
 
 const RADIUS_RE = /^border(?:-(?:top|bottom|start|end)-(?:left|right|start|end))?-radius$/;
 
@@ -66,6 +68,18 @@ function isSuppress( prop, value ) {
 		return /^0(px)?$/.test( v );
 	}
 	return false;
+}
+
+/** True when an outline declaration sets the outline's width or style (not only its colour or offset). */
+function setsOutlineShape( prop, value ) {
+	if ( 'outline-width' === prop || 'outline-style' === prop ) {
+		return true;
+	}
+	if ( 'outline' !== prop ) {
+		return false;
+	}
+	const STYLES = /\b(auto|dotted|dashed|solid|double|groove|ridge|inset|outset)\b/i;
+	return STYLES.test( value ) || /(^|\s)[0-9.]+[a-z%]*(\s|$)|\b(thin|medium|thick)\b/i.test( value );
 }
 
 /**
@@ -89,7 +103,10 @@ function declCategory( prop, value, sel, context ) {
 		}
 		if ( indicator ) {
 			if ( sel.anyHover ) {
-				return 'box-shadow' === prop ? 'shared-shadow' : 'shared-outline';
+				if ( 'box-shadow' === prop ) {
+					return 'shared-shadow';
+				}
+				return setsOutlineShape( prop, value ) ? 'hover-outline' : 'shared-outline';
 			}
 			return 'bespoke';
 		}
@@ -180,7 +197,7 @@ function classifyUnit( unit, rel, opts ) {
 			cat = 'system';
 		} else if ( allowed ) {
 			cat = hasRetired( `${ prop }:${ d.value }` ) ? 'legacy-token' : 'allow';
-		} else if ( opts.emitter && ( 'bespoke' === cat || 'suppress' === cat || 'radius-on-focus' === cat ) ) {
+		} else if ( opts.emitter && ( 'bespoke' === cat || 'suppress' === cat || 'radius-on-focus' === cat || 'hover-outline' === cat ) ) {
 			cat = opts.emitter;
 		}
 		decls.push( { prop, value: norm( d.value ), category: cat, node: d.node } );

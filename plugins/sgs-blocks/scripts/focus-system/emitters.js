@@ -17,18 +17,17 @@
  * @package SGS\Blocks
  */
 
-const fs = require( 'fs' );
-const path = require( 'path' );
-
 const { RETIRED_TOKEN_RE, RETIRED_JSON_KEYS, groupOf } = require( './config.js' );
 const { classifyUnit, findingKey, TARGET_CATEGORIES, RULE_PRIORITY } = require( './classify-css.js' );
 const { lex, statements, reconstruct, HOLE } = require( './lexer.js' );
 const { splitTop, norm, selectorInfo, countFocus } = require( './selector.js' );
 
-const REGISTRY = JSON.parse( fs.readFileSync( path.join( __dirname, 'emitter-registry.json' ), 'utf8' ) );
+const { loadRegistry } = require( './json-io.js' );
 
 /** Shared helpers that pair the selector they are given with a `:hover` half themselves. */
-const PAIRING_HELPERS = REGISTRY.pairingHelpers.map( ( h ) => h.name );
+function pairingHelpers() {
+	return loadRegistry().pairingHelpers.map( ( h ) => h.name );
+}
 
 function tokensIn( text ) {
 	RETIRED_TOKEN_RE.lastIndex = 0;
@@ -71,9 +70,14 @@ function fragments( css ) {
 	return out;
 }
 
-function shapeCategory( sel, recon, fullText, helper ) {
+function shapeCategory( sel, recon, fullText, helper, emitter ) {
 	const shadow = /shadow/i.test( fullText );
 	if ( sel.anyFocus && ( sel.anyHover || helper ) ) {
+		// A pairing helper or hover pair that paints an outline declaration (any outline property) or the
+		// focus-shadow token draws its own keyboard indicator: fixed by hand, like any emitter.
+		if ( /(?:^|[^\w-])(?:outline(?:-[a-z]+)?|--sgs-focus-shadow)\s*:/i.test( fullText ) ) {
+			return emitter;
+		}
 		return shadow ? 'shared-shadow' : 'shared-state';
 	}
 	if ( sel.anyWithin || sel.anyHasFocus ) {
@@ -86,7 +90,7 @@ function shapeCategory( sel, recon, fullText, helper ) {
 }
 
 function registryHit( rel, text ) {
-	return REGISTRY.entries.find( ( e ) => e.path === rel && text.includes( e.contains ) ) || null;
+	return loadRegistry().entries.find( ( e ) => e.path === rel && text.includes( e.contains ) ) || null;
 }
 
 /**
@@ -135,7 +139,7 @@ function analyseCode( text, rel, lang, opts ) {
 
 		if ( focusCount > 0 ) {
 			const reg = registryHit( rel, full );
-			const helper = PAIRING_HELPERS.some( ( h ) => full.includes( `${ h }(` ) );
+			const helper = pairingHelpers().some( ( h ) => full.includes( `${ h }(` ) );
 			const frags = fragments( recon ).filter( ( f ) => f.selector.includes( ':focus' ) );
 			if ( reg ) {
 				cats.push( reg.category );
@@ -158,12 +162,12 @@ function analyseCode( text, rel, lang, opts ) {
 							form = form || unit.form;
 						}
 					} else {
-						cats.push( shapeCategory( selectorInfo( members ), recon, full, helper ) || 'unrecognised' );
+						cats.push( shapeCategory( selectorInfo( members ), recon, full, helper, emitter ) || 'unrecognised' );
 					}
 				}
 			} else {
 				const members = splitTop( recon.replace( /[{}]/g, ',' ), ',' ).map( norm ).filter( ( m ) => m.includes( ':focus' ) );
-				cats.push( shapeCategory( selectorInfo( members ), recon, full, helper ) || 'unrecognised' );
+				cats.push( shapeCategory( selectorInfo( members ), recon, full, helper, emitter ) || 'unrecognised' );
 			}
 			if ( ! reg || 'not-css' !== reg.category ) {
 				classifiedFocus += 1;

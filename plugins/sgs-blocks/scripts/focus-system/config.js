@@ -31,7 +31,7 @@ function findRoot( start ) {
 const ROOT = findRoot( __dirname );
 
 const SCRIPTS_DIR = path.resolve( __dirname, '..' );
-const ALLOW_FILE = path.join( SCRIPTS_DIR, 'check-focus-system-allow.json' );
+const ALLOW_FILE = process.env.FOCUS_SYSTEM_ALLOW_FILE || path.join( SCRIPTS_DIR, 'check-focus-system-allow.json' );
 const BASELINE_FILE = path.join( SCRIPTS_DIR, 'check-focus-system-baseline.json' );
 const CENSUS_FILE = path.join( ROOT, 'reports', 'migrations', 'focus-system-census.json' );
 
@@ -60,8 +60,8 @@ const INCLUDE = [
  */
 const EXCLUDE = [
 	{ re: /(^|\/)tests\//, tracked: true, probe: 'plugins/sgs-blocks/tests/', reason: 'test code and fixtures, not shipped' },
-	{ re: /(^|\/)scripts\//, tracked: true, probe: 'plugins/sgs-blocks/scripts/', reason: 'tooling, including hover-guard/test-fixtures and this detector\'s fixtures' },
-	{ re: /(^|\/)scripts\/hover-guard\/test-fixtures\//, tracked: true, probe: 'plugins/sgs-blocks/scripts/hover-guard/test-fixtures/', reason: 'hover-guard fixture copies of shipped stylesheets' },
+	{ re: /^(plugins\/[^/]+\/)?scripts\//, tracked: true, probe: 'plugins/sgs-blocks/scripts/', reason: 'tooling, including hover-guard/test-fixtures and this detector\'s fixtures' },
+	{ re: /^plugins\/[^/]+\/scripts\/hover-guard\/test-fixtures\//, tracked: true, probe: 'plugins/sgs-blocks/scripts/hover-guard/test-fixtures/', reason: 'hover-guard fixture copies of shipped stylesheets' },
 	{ re: /(^|\/)vendor\//, tracked: true, probe: 'plugins/sgs-client-notes/assets/vendor/', reason: 'third-party bundles' },
 	{ re: /\.min\.(css|js)$/, tracked: true, probe: 'plugins/sgs-client-notes/assets/vendor/html2canvas.min.js', reason: 'minified copies' },
 	{ re: /(^|\/)build\//, tracked: false, reason: 'compiled output of the src files already in the corpus' },

@@ -35,10 +35,12 @@ const { runCheck, baselineFromCensus, pruneBaseline } = require( './focus-system
 const { runSelfTest } = require( './focus-system/self-test.js' );
 const { RULE_PRIORITY } = require( './focus-system/classify-css.js' );
 
-const NOTES = JSON.parse( fs.readFileSync( path.join( __dirname, 'focus-system', 'census-notes.json' ), 'utf8' ) );
+const { FocusInputError, readJsonFile } = require( './focus-system/json-io.js' );
 
-function readJson( file ) {
-	return JSON.parse( fs.readFileSync( file, 'utf8' ) );
+const readJson = readJsonFile;
+
+function notes() {
+	return readJson( path.join( __dirname, 'focus-system', 'census-notes.json' ) );
 }
 
 /** Write via a .tmp sibling then rename, so an interrupted write never leaves a truncated file. */
@@ -121,7 +123,7 @@ function censusJson( census, width ) {
 			corpusControl: { dumbTotal: census.control.dumbTotal, classifiedTotal: census.control.classifiedTotal, gap: census.control.gap, failures: census.control.failures },
 			outsideCorpus: width.outside,
 		},
-		notes: NOTES.notes,
+		notes: notes().notes,
 		items: census.items.map( ( i ) => ( { category: i.category, group: i.group, kind: i.kind, path: i.path, context: i.context, selector: i.selector, form: i.form || undefined } ) ),
 		findings: census.findings.map( ( f ) => ( { key: f.key, category: f.category, group: f.group } ) ),
 	};
@@ -146,26 +148,31 @@ function main( args ) {
 		const apply = args.includes( '--apply' );
 		let decls = 0;
 		let changed = 0;
-		const notes = [];
+		let handEdited = 0;
+		const orphans = [];
 		for ( const rel of files.filter( ( f ) => /\.s?css$/.test( f ) && ( ! re || re.test( f ) ) ) ) {
 			const abs = path.join( ROOT, rel );
 			const before = fs.readFileSync( abs, 'utf8' );
 			const res = fixText( before, rel, { allow, filter: ( f ) => ! group || f.group === group } );
+			for ( const h of res.handEdits ) {
+				handEdited++;
+				process.stdout.write( `# HAND EDIT ${ h.path } | ${ h.selector } | ${ h.prop }: hover-outline, --fix keeps the hover half; split the focus half out by hand\n` );
+			}
 			if ( res.text === before ) {
 				continue;
 			}
 			changed++;
 			decls += res.removed;
-			notes.push( ...res.orphanComments );
+			orphans.push( ...res.orphanComments );
 			process.stdout.write( unifiedDiff( before, res.text, rel ) );
 			if ( apply ) {
 				writeAtomic( abs, res.text );
 			}
 		}
-		for ( const n of notes ) {
+		for ( const n of orphans ) {
 			console.log( `NOTE ${ n.path }: the comment "${ n.comment }" sat directly above the dropped "${ n.above }"; delete it by hand if it only described that rule` );
 		}
-		console.log( `fix: ${ decls } declarations in ${ changed } files${ apply ? ' (applied)' : ' (dry run; add --apply to write)' }` );
+		console.log( `fix: ${ decls } declarations in ${ changed } files, ${ handEdited } hover-outline declarations need a hand edit${ apply ? ' (applied)' : ' (dry run; add --apply to write)' }` );
 		return 0;
 	}
 
@@ -174,7 +181,7 @@ function main( args ) {
 			console.error( 'baseline exists; the ratchet only goes down (--prune-baseline). Delete it by hand only as a stated staleness correction.' );
 			return 1;
 		}
-		writeAtomic( BASELINE_FILE, JSON.stringify( { _meta: NOTES.baselineMeta, ...baselineFromCensus( census ) }, null, '\t' ) + '\n' );
+		writeAtomic( BASELINE_FILE, JSON.stringify( { _meta: notes().baselineMeta, ...baselineFromCensus( census ) }, null, '\t' ) + '\n' );
 		console.log( `baseline written: ${ Object.keys( baselineFromCensus( census ).findings ).length } keys` );
 		return 0;
 	}
@@ -217,7 +224,15 @@ if ( require.main === module ) {
 	if ( process.stdout._handle && process.stdout._handle.setBlocking ) {
 		process.stdout._handle.setBlocking( true );
 	}
-	process.exitCode = main( process.argv.slice( 2 ) );
+	try {
+		process.exitCode = main( process.argv.slice( 2 ) );
+	} catch ( err ) {
+		if ( ! ( err instanceof FocusInputError ) ) {
+			throw err;
+		}
+		console.error( `check-focus-system: ${ err.message }` );
+		process.exitCode = 2;
+	}
 }
 
 module.exports = { main };

@@ -4,7 +4,9 @@
  * The --fix transform for check-focus-system.js. Deletes `bespoke`, `suppress` and
  * `radius-on-focus` declarations from CSS and SCSS, then drops any rule or at-rule the deletion
  * left empty (a rule that was already empty is left alone). A comment directly above a dropped
- * node is never deleted: it is reported so the implementer deletes it by hand.
+ * node is never deleted: it is reported so the implementer deletes it by hand. A `hover-outline`
+ * declaration is never deleted either (that would delete the hover effect): it is returned in
+ * `handEdits` for the implementer to split by hand.
  *
  * Edits are byte ranges cut from the original text (each node's source offsets plus the
  * whitespace before it), never a re-stringified AST, so every untouched byte is preserved
@@ -71,17 +73,18 @@ function cut( text, ranges ) {
  * @param {string} text
  * @param {string} rel
  * @param {{ allow?: Array, filter?: (finding: Object) => boolean }} opts
- * @returns {{ text: string, removed: number, orphanComments: Array<{path:string,comment:string,above:string}> }}
+ * @returns {{ text: string, removed: number, orphanComments: Array<{path:string,comment:string,above:string}>, handEdits: Array<{path:string,selector:string,prop:string}> }}
  */
 function fixText( text, rel, opts ) {
 	if ( ! /\.s?css$/.test( rel ) ) {
-		return { text, removed: 0, orphanComments: [] };
+		return { text, removed: 0, orphanComments: [], handEdits: [] };
 	}
 	const { findings } = analyseCss( text, rel, opts || {} );
 	const filter = ( opts && opts.filter ) || ( () => true );
+	const handEdits = findings.filter( ( f ) => 'hover-outline' === f.category && filter( f ) ).map( ( f ) => ( { path: rel, selector: f.selector, prop: f.prop } ) );
 	const targets = findings.filter( ( f ) => FIXABLE.has( f.category ) && f.node && filter( f ) );
 	if ( 0 === targets.length ) {
-		return { text, removed: 0, orphanComments: [] };
+		return { text, removed: 0, orphanComments: [], handEdits };
 	}
 	const ranges = targets.map( ( f ) => rangeOf( f.node ) );
 	const touched = new Set();
@@ -95,7 +98,7 @@ function fixText( text, rel, opts ) {
 		dropEmpty( parent, rel, dropped, notes );
 	}
 	ranges.push( ...dropped.map( rangeOf ) );
-	return { text: cut( text, ranges ), removed: targets.length, orphanComments: notes };
+	return { text: cut( text, ranges ), removed: targets.length, orphanComments: notes, handEdits };
 }
 
 module.exports = { fixText };

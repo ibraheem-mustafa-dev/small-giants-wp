@@ -18,7 +18,7 @@ const { analyseCss } = require( './classify-css.js' );
 const { analyseCode, analyseJson } = require( './emitters.js' );
 const { countFocus } = require( './selector.js' );
 
-const REGISTRY = JSON.parse( fs.readFileSync( path.join( __dirname, 'emitter-registry.json' ), 'utf8' ) );
+const { loadRegistry } = require( './json-io.js' );
 
 function bump( obj, key, n ) {
 	obj[ key ] = ( obj[ key ] || 0 ) + ( undefined === n ? 1 : n );
@@ -124,7 +124,7 @@ function buildCensus( { root, files, allow } ) {
 		allCssRules: cssRules.length,
 	};
 
-	const staleRegistry = REGISTRY.entries.filter( ( e ) => ! ( texts[ e.path ] || '' ).includes( e.contains ) ).map( ( e ) => `${ e.path } :: ${ e.contains }` );
+	const staleRegistry = loadRegistry().entries.filter( ( e ) => ! ( texts[ e.path ] || '' ).includes( e.contains ) ).map( ( e ) => `${ e.path } :: ${ e.contains }` );
 	const allowUsed = new Set( items.filter( ( i ) => 'allow' === i.category ).map( ( i ) => `${ i.path } :: ${ i.selector }` ) );
 	const staleAllow = ( allow || [] ).filter( ( a ) => ! [ ...allowUsed ].some( ( u ) => u.startsWith( `${ a.path } :: ` ) && u.includes( a.selector.replace( /\s+/g, ' ' ).trim() ) ) ).map( ( a ) => `${ a.path } :: ${ a.selector }` );
 

@@ -1,0 +1,4 @@
+.a:hover, .a:focus-visible { outline: 2px solid red; }
+.b:hover, .b:focus-visible { outline-color: red; }
+.c:hover, .c:focus-visible { outline-width: 3px; }
+.d:hover, .d:focus-visible { outline-style: dashed; }
