@@ -6,8 +6,9 @@
   --check             exit 1 on a missing key, a core ring under 3:1 on its grounds, or inner/ink under 9:1
   --self-test         the rule against built-in cases (no repository file is read)
 
-`--client <folder>` limits any mode to one snapshot (`framework` is theme/sgs-theme/theme.json). Rules and
-maths live in snapshot_focus_tokens.py. UK English.
+`--client <folder>` limits any mode to one snapshot (`framework` is theme/sgs-theme/theme.json: the generic base, which
+keeps the palette-reference defaults and skips the 3:1 ring test; only client snapshots get a darkened or lightened ring).
+Rules and maths live in snapshot_focus_tokens.py. UK English.
 """
 from __future__ import annotations
 
@@ -26,9 +27,12 @@ sys.stdout.reconfigure(encoding="utf-8")
 REPO = roster.REPO_ROOT
 
 
+FRAMEWORK = "framework"
+
+
 def targets(only: list[str] | None) -> list[tuple[str, Path]]:
     found = [(p.parent.name, p) for p in sorted((REPO / "sites").glob("*/theme-snapshot.json"))]
-    found.append(("framework", roster.FRAMEWORK_THEME_JSON))
+    found.append((FRAMEWORK, roster.FRAMEWORK_THEME_JSON))
     if only:
         found = [t for t in found if t[0] in only]
         unknown = set(only) - {t[0] for t in found}
@@ -71,7 +75,7 @@ def survey_one(name: str, path: Path) -> None:
         print(f"  accent {accent} against grounds: " + ", ".join(f"{s} {fmt(ft.ratio(accent, h))}" for s, h, _ in gs))
         print(f"  accent as ring, light: {verdict(accent, light)}")
         print(f"  accent as ring, dark:  {verdict(accent, dark)}")
-    focus, notes = ft.derive_focus(snap)
+    focus, notes = ft.derive_focus(snap, framework=name == FRAMEWORK)
     for key, grounds_of in (("ring", light), ("ringOnDark", dark)):
         print(f"  {key} ({'current' if key not in missing else 'fixer would write'}): "
               f"{focus[key]} -> {verdict(ft.resolve(focus[key], palette), grounds_of)}")
@@ -93,7 +97,7 @@ def cmd_fix(only: list[str] | None, apply: bool) -> int:
     changed = 0
     for name, path in targets(only):
         old = read(path)
-        focus, notes = ft.derive_focus(json.loads(old))
+        focus, notes = ft.derive_focus(json.loads(old), framework=name == FRAMEWORK)
         new = ft.write_focus(old, focus)
         label = path.relative_to(REPO).as_posix()
         if new == old:
@@ -117,7 +121,7 @@ def cmd_fix(only: list[str] | None, apply: bool) -> int:
 def cmd_check(only: list[str] | None) -> int:
     failed = 0
     for name, path in targets(only):
-        problems = ft.check_snapshot(json.loads(read(path)))
+        problems = ft.check_snapshot(json.loads(read(path)), framework=name == FRAMEWORK)
         if problems:
             failed += 1
             print(f"FAIL {name}: " + "; ".join(problems))
@@ -225,6 +229,25 @@ def self_test() -> int:
     except ValueError:
         refused = True
     expect(refused, "rewrite: a shape it cannot edit line by line (inline empty custom) is refused, not mangled")
+
+    # 8. the framework file is the generic base: palette references, never a darkened literal
+    snap = make_snapshot("#f59e0b")
+    fw, fw_notes = ft.derive_focus(snap, framework=True)
+    expect(fw["ring"] == ft.var("accent") and fw["ringOnDark"] == ft.var("accent") and not fw_notes,
+           "framework: ring and ringOnDark are the accent reference, nothing is shifted")
+    expect(all(fw[k] == ft.var("accent") for k in ("near", "far", "nearOnDark", "farOnDark"))
+           and (fw["inner"], fw["ink"]) == (ft.var("surface"), ft.var("text"))
+           and (fw["signatureA"], fw["signatureB"], fw["signatureC"]) == (ft.var("primary"), ft.var("accent"), ft.var("accent-light")),
+           "framework: bloom, inner, ink and signature keys follow plan 2.3")
+    expect(ft.derive_focus(snap)[0]["ring"].startswith("#"), "framework: the same accent in a client snapshot still gets the darkened ring")
+    snap["settings"]["custom"]["focus"] = fw
+    expect(ft.check_snapshot(snap, framework=True) == [], "framework: --check is clean with the undarkened accent ring")
+    expect(any("ring" in p and "under 3.0:1" in p for p in ft.check_snapshot(snap)), "framework: a client snapshot with that ring still fails --check")
+    broken = copy.deepcopy(snap)
+    broken["settings"]["custom"]["focus"]["ink"] = ft.var("surface")
+    expect(any("inner/ink" in p for p in ft.check_snapshot(broken, framework=True)), "framework: --check still fails inner/ink under 9:1")
+    del broken["settings"]["custom"]["focus"]["far"]
+    expect(any("missing key far" in p for p in ft.check_snapshot(broken, framework=True)), "framework: --check still fails a missing key")
 
     print(f"{'FAILED' if failures else 'PASSED'}: {len(failures)} failing")
     return 1 if failures else 0

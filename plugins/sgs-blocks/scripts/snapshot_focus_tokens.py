@@ -10,7 +10,10 @@ guard (`push-theme-snapshot.py::roster_guard`):
     lightness, the shortest distance that reaches 3:1, and written as a literal hex; the bloom keys stay the true accent;
   * when the shifted colour keeps less than `CHROMA_FLOOR` OKLCH chroma the hue is gone, so the ring falls back to a
     neutral that reaches 3:1 (the site's ink on light grounds, its surface or ink on dark grounds);
-  * a hand-set value (any key already present and non-empty) is checked and never overwritten.
+  * a hand-set value (any key already present and non-empty) is checked and never overwritten;
+  * the framework file (`theme/sgs-theme/theme.json`) is the generic base, not a client: it keeps the palette-reference
+    defaults of plan section 2.3 (`ring` and `ringOnDark` are `var(--wp--preset--color--accent)`), is never shifted, and is
+    exempt from the 3:1 ring test (its keys and `inner`/`ink` ratio are still checked). Only client snapshots are derived.
 
 No client is named or excluded anywhere in this file.
 """
@@ -151,8 +154,9 @@ def _decide_ring(accent: str, ground_hexes: list[tuple[str, str]], direction: in
     return pick
 
 
-def derive_focus(snapshot: dict) -> tuple[dict, list[str]]:
-    """The full `settings.custom.focus` object for this snapshot (hand-set values kept) and the decisions taken."""
+def derive_focus(snapshot: dict, framework: bool = False) -> tuple[dict, list[str]]:
+    """The full `settings.custom.focus` object for this snapshot (hand-set values kept) and the decisions taken.
+    `framework=True` writes the palette-reference defaults of plan section 2.3 and shifts no ring."""
     notes: list[str] = []
     palette = roster.palette_map(snapshot)
     existing = ((snapshot.get("settings") or {}).get("custom") or {}).get("focus")
@@ -177,9 +181,13 @@ def derive_focus(snapshot: dict) -> tuple[dict, list[str]]:
         derived.update(ring=ink, near=inner, far=ink, ringOnDark=ink, nearOnDark=inner, farOnDark=ink)
     else:
         a = var("accent")
-        derived["ring"] = _decide_ring(accent, light, -1, [ink, inner], scratch, "ring", notes)
+        if framework:
+            derived["ring"] = derived["ringOnDark"] = a
+        else:
+            derived["ring"] = _decide_ring(accent, light, -1, [ink, inner], scratch, "ring", notes)
         derived.update(near=a, far=a)
-        derived["ringOnDark"] = _decide_ring(accent, dark, 1, [inner, ink], scratch, "ringOnDark", notes)
+        if not framework:
+            derived["ringOnDark"] = _decide_ring(accent, dark, 1, [inner, ink], scratch, "ringOnDark", notes)
         derived.update(nearOnDark=a, farOnDark=a)
     derived.update(signatureA=var("primary"), signatureB=var("accent"), signatureC=var("accent-light"))
 
@@ -208,15 +216,15 @@ def missing_focus_keys(snapshot: dict) -> list[str]:
     return [k for k in FOCUS_KEYS if not (isinstance(focus.get(k), str) and focus[k].strip())]
 
 
-def check_snapshot(snapshot: dict) -> list[str]:
-    """Problems with this snapshot's focus tokens (empty when it passes)."""
+def check_snapshot(snapshot: dict, framework: bool = False) -> list[str]:
+    """Problems with this snapshot's focus tokens (empty when it passes). `framework=True` skips the 3:1 ring test."""
     problems = [f"missing key {k}" for k in missing_focus_keys(snapshot)]
     palette = roster.palette_map(snapshot)
     focus = focus_of(snapshot)
     gs = grounds(snapshot)
     absent = set(missing_focus_keys(snapshot))
     for key, want in (("ring", "light"), ("ringOnDark", "dark")):
-        if key in absent:
+        if key in absent or framework:
             continue
         value = resolve(focus[key], palette)
         if value is None:
