@@ -2,8 +2,8 @@
 name: research-council
 description: >-
   This skill should be used when the user needs a wide, peer-reviewed survey
-  with formal accountability. Multiple biased researchers + a cross-read round
-  loop + Council Head with scoring and revision power. Triggers: "council",
+  with formal accountability. Multiple biased researchers + a cross-read
+  round + Council Head with scoring and revision power. Triggers: "council",
   "peer review", "formal research", "comprehensive survey", or when 10+
   sources with fact-checking and formal quality gates are required. Do NOT
   invoke for: quick factual answers (use `research-check`), cutting-edge +
