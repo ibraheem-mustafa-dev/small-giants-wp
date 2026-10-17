@@ -329,6 +329,10 @@ $box_shadow_decls = sgs_shadow_decls(
 	),
 	$block->name ?? ''
 );
+// The focus system out-ranks this block's rules, so the button hands each shadow it draws
+// (rest and hover) in as --sgs-focus-under and the focus ring composes over it.
+$box_shadow_decls['normal'] = sgs_focus_under_decls( $box_shadow_decls['normal'] );
+$box_shadow_decls['hover']  = sgs_focus_under_decls( $box_shadow_decls['hover'] );
 
 // Effects.
 $hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;

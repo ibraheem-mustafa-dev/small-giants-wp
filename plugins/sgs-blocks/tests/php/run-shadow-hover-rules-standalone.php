@@ -48,7 +48,10 @@ $GLOBALS['sgs_test_hover_map'] = array(
 	'soft'    => 'lifted',
 );
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
-	function wp_get_global_settings( array $path ) {
+	function wp_get_global_settings( array $path = array() ) {
+		if ( array() === $path ) {
+			return array( 'custom' => array( 'shadowHover' => $GLOBALS['sgs_test_hover_map'] ) );
+		}
 		if ( 'custom' === $path[0] && 'shadowHover' === ( $path[1] ?? null ) ) {
 			return $GLOBALS['sgs_test_hover_map'];
 		}
@@ -117,6 +120,18 @@ ok( str_contains( $rule, 'hover: hover' ) && str_contains( $rule, 'pointer: fine
 ok( str_contains( $rule, 'sgs-touch-input' ), 'the lift rule carries the layer-2 touch guard' );
 ok( str_contains( $rule, ':focus-visible' ), 'the lift rule carries an unguarded :focus-visible companion' );
 ok( ! str_contains( $rule, 'transition' ), 'MUST-PASS: no transition declaration is added (Council ruling)' );
+
+// --- the focus system composes over the lifted shadow (--sgs-focus-under hand-in) -----
+$lifted = 'var(--wp--preset--shadow--soft)';
+ok( str_contains( $rule, 'box-shadow:' . $lifted . ';--sgs-focus-under:' . $lifted ), 'the lift hands its shadow to the focus system: --sgs-focus-under carries the same value as box-shadow' );
+ok( substr_count( $rule, 'box-shadow:' ) === substr_count( $rule, '--sgs-focus-under:' ), 'every box-shadow in the lift output has a matching --sgs-focus-under' );
+ok( ! str_contains( $rule, 'outline' ), 'MUST-PASS: the lift output declares no outline (the focus system owns it)' );
+
+// --- sgs_focus_under_decls(): the resting/explicit-hover pairing used by the button ----
+$paired = sgs_focus_under_decls( array( 'color:red', 'box-shadow:0 1px 2px #000', '@media (forced-colors:active){}' ) );
+ok( array( 'color:red', 'box-shadow:0 1px 2px #000', '--sgs-focus-under:0 1px 2px #000', '@media (forced-colors:active){}' ) === $paired, 'sgs_focus_under_decls() puts --sgs-focus-under straight after each drawn box-shadow and leaves the rest in order' );
+ok( array( 'box-shadow:none' ) === sgs_focus_under_decls( array( 'box-shadow:none' ) ), 'negative control: a box-shadow of none is not handed in' );
+ok( array() === sgs_focus_under_decls( array() ), 'no declarations in, none out' );
 
 // --- nothing when the switch is off ---------------------------------------------------
 $off = sgs_shadow_hover_rules( '.sgs-fixture', 'whisper', '', array( 'shadowLiftOnHover' => false ), '' );

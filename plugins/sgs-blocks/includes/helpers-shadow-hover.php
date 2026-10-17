@@ -248,6 +248,30 @@ function sgs_shadow_lift_enabled( array $attributes, string $block_name = '', st
 }
 
 /**
+ * Pair every `box-shadow:X` declaration with `--sgs-focus-under:X`.
+ *
+ * The focus system (theme `focus.css`) draws its indicator on `box-shadow` and out-ranks block
+ * rules, so a block's own shadow would vanish on focus. `--sgs-focus-under` is the one channel
+ * the system composes beneath its ring; a block that paints a shadow on a focusable element
+ * hands the same value in here. A `none` shadow and every other declaration pass through
+ * unchanged, in their original order.
+ *
+ * @param string[] $decls Declarations, each a bare `prop:value` string (no trailing `;`).
+ * @return string[] The same declarations with a `--sgs-focus-under` after each drawn shadow.
+ */
+function sgs_focus_under_decls( array $decls ): array {
+	$out = array();
+	foreach ( $decls as $decl ) {
+		$out[] = $decl;
+		// sgs-shadow-fallback: re-emits a declaration the caller already built with its fallback.
+		if ( 1 === preg_match( '/^box-shadow:\s*(.+)$/s', (string) $decl, $m ) && 'none' !== strtolower( trim( $m[1] ) ) ) {
+			$out[] = '--sgs-focus-under:' . trim( $m[1] );
+		}
+	}
+	return $out;
+}
+
+/**
  * The complete touch-safe hover RULE for a resting shadow (design H4).
  *
  * '' when: the switch is off, the block type opts out (`sgs_shadow_lift_enabled()`), or the
@@ -276,9 +300,11 @@ function sgs_shadow_hover_rules( string $selector, string $shape, string $colour
 		return '';
 	}
 
+	// --sgs-focus-under hands the lifted shadow to the focus system (focus.css) so the focus
+	// indicator composes over it instead of replacing it.
 	// sgs-shadow-fallback: hover state only; the caller's own resting rule carries the
 	// forced-colours fallback (every caller of this shared helper already emits one).
-	return sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' );
+	return sgs_hover_state_rules( $selector, 'box-shadow:' . $hover . ';--sgs-focus-under:' . $hover, ':focus-visible' );
 }
 
 /**
