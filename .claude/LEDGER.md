@@ -85,7 +85,7 @@ Open owed items:
 
 **Blockers:** none. **Bean decisions (open):** whether the focus ring on light grounds stays the darkened brand tone (current: 3:1 on every palette ground, so Mama's Munches reads near-black brown with a gold bloom) or softens towards the accent; whether the focus keys are pushed to indus-test and eye-care-test (`push-theme-snapshot.py`, dry run first). Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
 
-**Resume from:** `reports/2026-10-17-focus-system/after2/SUMMARY.md` (five open focus-probe stops, owner Spec 32 FR-32-22's done-when: shop slider thumbs and Brand summary, inset tab fills, three title-link cards, the before-after probe artefact, per-card stagger with a section above), then S5 (M5.W, M6.5), then S6.
+**Resume from:** `reports/2026-10-17-focus-system/after3/ (main.txt, fixture.txt)` (the 1440 focus probe passes; open: 768 and 375 runs, the before-after handle reads unmeasurable, the 5229 motion asset guard red since the 29e841f37 deploy, per-card stagger with a section above), then S5 (M5.W, M6.5), then S6.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
@@ -102,7 +102,7 @@ Open owed items:
 ## Parked
 
 - **Unwired scripts (Bean to rule):** `plugins/sgs-blocks/scripts/audit-live-script-closure.py` lists every script no live root reaches. Council-checked keepers stay (operator tools, fixtures a gate reads by folder, tools that specs, rules or plans name, `dbschema/retire_table.py`, `rebuild_compare.py`, `data/retired/*.json.gz`). Kept on purpose: `migrate-border-control.js` with `border-control-codemod/` (blocks still declare native `__experimentalBorder` and `survey-border-control-migration` counts them), `generative-background/flip-probe.mjs` (runnable ground truth that `harness-lib.mjs` serves), `probes/build-*` and `extend-page-3145-video-svg.py` with the page-id files (they build the pages the kept `probes/probe-*` read), and the nav-qa `u13`, `m03` and `u16` probes (they re-verify shipped Spec 37 requirements against cases in the kept `qa-item-markup-fixture.php`). Still open for Bean: nav-qa `u1-owed-probe.mjs` with `qa-u1-owed-fixture.php` (a finished owed-checks pair; README sections 10 to 12 share its restore step) and the other `motion-qa` probes whose target pages no doc registers.
-- **Keyboard focus:** live on sandybrown at `6d2ff6893`; open stops are in `reports/2026-10-17-focus-system/after2/SUMMARY.md` (Spec 32 FR-32-22); plan `plans/2026-10-17-unified-focus-system.md`.
+- **Keyboard focus:** live on sandybrown at `29e841f37`; 1440 probe passes, open items in `reports/2026-10-17-focus-system/after3/ (main.txt, fixture.txt)` (Spec 32 FR-32-22); plan `plans/2026-10-17-unified-focus-system.md`.
 - **CR12, PARKED pending Bean:** the deriver hard-refuses Eye Care on contrast; 3 design options sit on its register row (`plans/2026-10-02-eye-care-fix-register.md`).
 - **PARKED (Bean):** 24 `product-card::valueLadder*::L3` rows need a bound-mode canvas mirror (triage §6).
 - **Canvas cross-check rulings:** decisions D-52..D-71 are ledger entries; the 72 confirmed gaps are register CR23, "Bean's call" (`plans/2026-10-02-eye-care-fix-register.md`).

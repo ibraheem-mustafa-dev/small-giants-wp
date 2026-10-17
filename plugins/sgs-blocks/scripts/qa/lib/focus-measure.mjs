@@ -288,14 +288,17 @@ function clipFor( rect, viewport ) {
  * or { blocked, neighbour } naming the element in the way; a point outside the viewport is `off-screen`.
  */
 function hitTestPoints( points ) {
-	const { target } = window.__fp;
+	const { target, el } = window.__fp;
 	const vw = document.documentElement.clientWidth;
 	const vh = window.innerHeight;
 	const describe = ( n ) => `${ n.tagName.toLowerCase() }${ typeof n.className === 'string' && n.className.trim() ? '.' + n.className.trim().split( /\s+/ )[ 0 ] : '' }`;
 	const focusable = 'a[href], button, input, select, textarea, summary, [tabindex]';
+	// A focus source measured on its proxy is visually hidden and paints nothing (the before-after range lies over the
+	// whole stage, handle included), so the hit test looks through it to what paints at the point.
+	const seeThrough = el !== target ? el : null;
 	return points.map( ( [ x, y ] ) => {
 		if ( x < 0 || y < 0 || x >= vw || y >= vh ) return { blocked: 'off-screen', neighbour: false };
-		const top = document.elementsFromPoint( x, y )[ 0 ];
+		const top = document.elementsFromPoint( x, y ).find( ( n ) => n !== seeThrough );
 		if ( ! top || top === target || top.contains( target ) || target.contains( top ) ) return null;
 		return { blocked: describe( top ), neighbour: top.matches( focusable ) || Boolean( top.closest( focusable ) ) };
 	} );

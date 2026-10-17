@@ -1,0 +1,33 @@
+loading home @1440 (https://sandybrown-nightingale-600381.hostingersite.com/)
+loading shop @1440 (https://sandybrown-nightingale-600381.hostingersite.com/shop/)
+loading product @1440 (https://sandybrown-nightingale-600381.hostingersite.com/product/qa-photo-swap-target/)
+loading cart @1440 (https://sandybrown-nightingale-600381.hostingersite.com/cart/)
+
+home @1440: 38 stops (focus left the document), looks 1, min contrast 6.62, clipped 0, radius changed 0, css 904507 B
+shop @1440: 45 stops (focus left the document), looks 1, min contrast 3.06, clipped 0, radius changed 0, css 847291 B
+product @1440: 48 stops (focus left the document), looks 1, min contrast 3.09, clipped 0, radius changed 0, css 884773 B
+cart @1440: 31 stops (focus left the document), looks 1, min contrast 9.34, clipped 0, radius changed 0, css 966455 B
+
+looks: 1 (+ inset)   [wider tuple incl. colour, shadow shape, radius: 11]
+min contrast: 3.06
+clipped: 0
+radius changed on focus: 0 (exempt: 3 stops on visually hidden at rest (.screen-reader-text, .skip-link), no rest-versus-focus comparison)
+focus sources: 13 measured on their proxy, 0 with no proxy
+unmeasurable (under 6 usable sample points, neither pass nor fail): 27; unsettled (two shots never matched): 0; neighbour overlaps: 46
+  unmeasurable a.skip-link.screen-reader-text "Skip to content": 0 of 20 sample points usable (under 6), the others sit under header.sgs-container, div.sgs-container__inner
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "vanilla": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "Chocolate": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "strawberry": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "mango": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "Chocolate": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  neighbour overlap a.sgs-business-info__link "0121 496 0123" overlaps a.sgs-business-info__link
+  neighbour overlap a.sgs-business-info__link "Zainab@mamasmunches.com" overlaps a.sgs-business-info__link, a.sgs-business-socials__link
+  neighbour overlap a.sgs-business-info__link "Zainab@mamasmunches.com" overlaps span.sgs-icon__shape, span.sgs-icon__label-text, a.sgs-icon__link
+  neighbour overlap a.sgs-icon__link "Instagram" overlaps span.sgs-business-info__label, a.sgs-business-info__link
+  neighbour overlap a.sgs-icon__link "WhatsApp" overlaps span.sgs-business-info__label, a.sgs-business-info__link
+  neighbour overlap input.min "Filter products by minimum price" overlaps input.min
+token match: checked on 162 of 162 stops
+css bytes per page (first width): {"home":904507,"shop":847291,"product":884773,"cart":966455}
+
+focus system (sandybrown): PASS
+json: reports/2026-10-17-focus-system/after3/main.json

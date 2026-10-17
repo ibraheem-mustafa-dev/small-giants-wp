@@ -1,0 +1,23 @@
+loading 5389 @1440 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+
+5389 @1440: 95 stops (focus left the document), looks 1, min contrast 3.14, clipped 0, radius changed 0, css 883053 B
+
+looks: 1 (+ inset, signature)   [wider tuple incl. colour, shadow shape, radius: 17]
+min contrast: 3.14
+clipped: 0
+radius changed on focus: 0 (exempt: 1 stop on visually hidden at rest (.screen-reader-text, .skip-link), no rest-versus-focus comparison)
+focus sources: 2 measured on their proxy, 0 with no proxy
+unmeasurable (under 6 usable sample points, neither pass nor fail): 2; unsettled (two shots never matched): 0; neighbour overlaps: 11
+  unmeasurable a.skip-link.screen-reader-text "Skip to content": 0 of 20 sample points usable (under 6), the others sit under header.sgs-container, div.sgs-container__inner
+  unmeasurable input.wp-block-sgs-before-after__range.sgs-focus-source "": 5 of 8 sample points usable (under 6), the others sit under div.wp-block-sgs-before-after__after-wrap
+  neighbour overlap a.sgs-business-info__link "0121 496 0123" overlaps a.sgs-business-info__link
+  neighbour overlap a.sgs-business-info__link "Zainab@mamasmunches.com" overlaps a.sgs-business-info__link, a.sgs-business-socials__link
+  neighbour overlap summary.sgs-accordion-item__header "First question" overlaps summary.sgs-accordion-item__header
+  neighbour overlap summary.sgs-accordion-item__header "Second question" overlaps summary.sgs-accordion-item__header
+  neighbour overlap summary.sgs-accordion-item__header "First question" overlaps summary.sgs-accordion-item__header
+  neighbour overlap summary.sgs-accordion-item__header "Second question" overlaps summary.sgs-accordion-item__header
+token match: checked on 95 of 95 stops
+css bytes per page (first width): {"5389":883053}
+
+focus system (sandybrown): PASS
+json: reports/2026-10-17-focus-system/after3/fixture.json

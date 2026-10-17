@@ -1,0 +1,7262 @@
+{
+	"when": "2026-10-17T14:43:45.244Z",
+	"host": "Ibraheem-Mustafa",
+	"options": {
+		"local": false,
+		"site": "sandybrown",
+		"pages": [
+			"5389"
+		],
+		"widths": [
+			1440
+		],
+		"engines": [
+			"chromium"
+		],
+		"css": null,
+		"forcedColors": false,
+		"reducedMotion": false,
+		"axe": false,
+		"shots": null,
+		"json": "reports/2026-10-17-focus-system/after3/fixture.json",
+		"openDrawer": false,
+		"openMega": false,
+		"maxStops": 130,
+		"settle": 1200,
+		"pause": 2500,
+		"negativeControl": false,
+		"determinism": false,
+		"selfTest": false,
+		"help": false
+	},
+	"failed": false,
+	"headline": {
+		"looks": 1,
+		"looksFull": 17,
+		"exempt": [
+			"inset",
+			"signature"
+		],
+		"minContrast": 3.1391017605072515,
+		"clipped": 0,
+		"radiusChanged": 0,
+		"radiusExempt": 1,
+		"radiusExemptReasons": [
+			"visually hidden at rest (.screen-reader-text, .skip-link)"
+		],
+		"measuredOnProxy": 2,
+		"noProxy": 0,
+		"unmeasurable": 2,
+		"unmeasurableReasons": [
+			"a.skip-link.screen-reader-text \"Skip to content\": 0 of 20 sample points usable (under 6), the others sit under header.sgs-container, div.sgs-container__inner",
+			"input.wp-block-sgs-before-after__range.sgs-focus-source \"\": 5 of 8 sample points usable (under 6), the others sit under div.wp-block-sgs-before-after__after-wrap"
+		],
+		"unsettled": 0,
+		"neighbourOverlaps": [
+			"a.sgs-business-info__link \"0121 496 0123\" overlaps a.sgs-business-info__link",
+			"a.sgs-business-info__link \"Zainab@mamasmunches.com\" overlaps a.sgs-business-info__link, a.sgs-business-socials__link",
+			"summary.sgs-accordion-item__header \"First question\" overlaps summary.sgs-accordion-item__header",
+			"summary.sgs-accordion-item__header \"Second question\" overlaps summary.sgs-accordion-item__header",
+			"summary.sgs-accordion-item__header \"First question\" overlaps summary.sgs-accordion-item__header",
+			"summary.sgs-accordion-item__header \"Second question\" overlaps summary.sgs-accordion-item__header",
+			"summary.sgs-accordion-item__header \"First question\" overlaps summary.sgs-accordion-item__header",
+			"summary.sgs-accordion-item__header \"Second question\" overlaps summary.sgs-accordion-item__header",
+			"a.sgs-business-info__link \"Zainab@mamasmunches.com\" overlaps span.sgs-icon__shape, span.sgs-icon__label-text, a.sgs-icon__link",
+			"a.sgs-icon__link \"Instagram\" overlaps span.sgs-business-info__label, a.sgs-business-info__link",
+			"a.sgs-icon__link \"WhatsApp\" overlaps span.sgs-business-info__label, a.sgs-business-info__link"
+		],
+		"tokenMismatches": 0,
+		"tokenStatus": "checked on 95 of 95 stops",
+		"fails": []
+	},
+	"pages": [
+		{
+			"page": "5389",
+			"url": "https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389",
+			"axe": null,
+			"widths": [
+				{
+					"width": 1440,
+					"css": {
+						"linked": 789875,
+						"inline": 93178,
+						"total": 883053,
+						"unreadable": 0
+					},
+					"notes": [],
+					"stops": [
+						{
+							"label": "a.skip-link.screen-reader-text \"Skip to content\"",
+							"rect": {
+								"x": 4,
+								"y": 4,
+								"width": 163.515625,
+								"height": 49
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "3px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": "visually hidden at rest (.screen-reader-text, .skip-link)",
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": null,
+								"points": 0,
+								"planned": 20,
+								"usable": 0,
+								"neighbours": [],
+								"unmeasurable": "0 of 20 sample points usable (under 6), the others sit under header.sgs-container, div.sgs-container__inner"
+							}
+						},
+						{
+							"label": "a.sgs-business-info__link \"0121 496 0123\"",
+							"rect": {
+								"x": 1224.78125,
+								"y": 16,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.337406788441038,
+								"ringMin": 9.337406788441038,
+								"points": 9,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 9,
+								"neighbours": [
+									"a.sgs-business-info__link"
+								]
+							}
+						},
+						{
+							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"rect": {
+								"x": 1265.59375,
+								"y": 16,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.337406788441038,
+								"ringMin": 9.337406788441038,
+								"points": 6,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 6,
+								"neighbours": [
+									"a.sgs-business-info__link",
+									"a.sgs-business-socials__link"
+								]
+							}
+						},
+						{
+							"label": "a.sgs-business-socials__link \"Instagram\"",
+							"rect": {
+								"x": 1316,
+								"y": 16,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.337406788441038,
+								"ringMin": 9.337406788441038,
+								"points": 15,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\"",
+							"rect": {
+								"x": 80,
+								"y": 60,
+								"width": 180,
+								"height": 60.1875
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.337406788441038,
+								"ringMin": 9.337406788441038,
+								"points": 15,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-nav-bar-menu__burger.sgs-nav-bar-menu__burger--icon-and-text \"MenuClose\"",
+							"rect": {
+								"x": 747.609375,
+								"y": 68.09375,
+								"width": 80.78125,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "8px",
+							"radiusRest": "8px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.337406788441038,
+								"ringMin": 9.337406788441038,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-cart__trigger \"View your cart (0 items in cart)\"",
+							"rect": {
+								"x": 1316,
+								"y": 68.09375,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.337406788441038,
+								"ringMin": 9.337406788441038,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Primary\"",
+							"rect": {
+								"x": 80,
+								"y": 267.375,
+								"width": 108.796875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 18,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--secondary \"Secondary\"",
+							"rect": {
+								"x": 200.796875,
+								"y": 267.375,
+								"width": 130.671875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 18,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--outline \"Outline\"",
+							"rect": {
+								"x": 343.46875,
+								"y": 267.96875,
+								"width": 100.484375,
+								"height": 48.796875
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 16,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 16,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--link \"Link style\"",
+							"rect": {
+								"x": 455.953125,
+								"y": 268.375,
+								"width": 69.4375,
+								"height": 48
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Single SGS button\"",
+							"rect": {
+								"x": 80,
+								"y": 325.375,
+								"width": 182.546875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 18,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Core-styled button\"",
+							"rect": {
+								"x": 80,
+								"y": 383.375,
+								"width": 220.59375,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "8px",
+							"radiusRest": "8px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Inset button\"",
+							"rect": {
+								"x": 80,
+								"y": 448.96875,
+								"width": 138.71875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.1545344554836365,
+								"ringMin": 4.1545344554836365,
+								"points": 18,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										230,
+										138,
+										149
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Signature button\"",
+							"rect": {
+								"x": 80,
+								"y": 506.96875,
+								"width": 172.8125,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(58, 46, 38)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.901961 0.541176 0.584314 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": true,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": "sgs-focus-spin",
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(58, 46, 38)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ink",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 13.1357197227291,
+								"ringMin": 13.1357197227291,
+								"points": 18,
+								"worst": {
+									"ring": [
+										58,
+										46,
+										38
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Bordered signature button\"",
+							"rect": {
+								"x": 80,
+								"y": 564.96875,
+								"width": 241.8125,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(58, 46, 38)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.901961 0.541176 0.584314 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": true,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": "sgs-focus-spin",
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(58, 46, 38)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ink",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 13.1357197227291,
+								"ringMin": 13.1357197227291,
+								"points": 18,
+								"worst": {
+									"ring": [
+										58,
+										46,
+										38
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Duotone button\"",
+							"rect": {
+								"x": 80,
+								"y": 622.96875,
+								"width": 164.453125,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(58, 46, 38)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(58, 46, 38)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ink",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 13.1357197227291,
+								"ringMin": 13.1357197227291,
+								"points": 18,
+								"worst": {
+									"ring": [
+										58,
+										46,
+										38
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input.wp-block-sgs-before-after__range.sgs-focus-source \"\"",
+							"rect": {
+								"x": 698,
+								"y": 677.96875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "50%",
+							"radiusRest": "50%",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": true,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": true,
+							"measuredOn": "proxy",
+							"proxyKind": "scoped",
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": null,
+								"points": 0,
+								"planned": 8,
+								"usable": 5,
+								"neighbours": [],
+								"unmeasurable": "5 of 8 sample points usable (under 6), the others sit under div.wp-block-sgs-before-after__after-wrap"
+							}
+						},
+						{
+							"label": "a. \"a text link\"",
+							"rect": {
+								"x": 214.234375,
+								"y": 507.96875,
+								"width": 72.296875,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.1391017605072515,
+								"ringMin": 1.0447587101639555,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										199,
+										124,
+										58
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"a second text link\"",
+							"rect": {
+								"x": 323.765625,
+								"y": 507.96875,
+								"width": 132.5625,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 8.765427936933929,
+								"ringMin": 8.765427936933929,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										235,
+										180
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input.sgs-form-field__input \"sgs-field-name_light\"",
+							"rect": {
+								"x": 80,
+								"y": 587.5625,
+								"width": 1280,
+								"height": 47
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "select.sgs-form-field__input \"Option AOption B\"",
+							"rect": {
+								"x": 80,
+								"y": 678.953125,
+								"width": 1280,
+								"height": 45
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input. \"agree_light[]\"",
+							"rect": {
+								"x": 100,
+								"y": 785.9375,
+								"width": 20,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input. \"pick_light\"",
+							"rect": {
+								"x": 101,
+								"y": 880.421875,
+								"width": 20,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 14,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 14,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-form__button.sgs-form__button--submit \"Send\"",
+							"rect": {
+								"x": 1261.3125,
+								"y": 495.921875,
+								"width": 98.6875,
+								"height": 45
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "summary.sgs-accordion-item__header \"First question\"",
+							"rect": {
+								"x": 81,
+								"y": 632.3125,
+								"width": 1278,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 15,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": [
+									"summary.sgs-accordion-item__header"
+								]
+							}
+						},
+						{
+							"label": "summary.sgs-accordion-item__header \"Second question\"",
+							"rect": {
+								"x": 81,
+								"y": 690.90625,
+								"width": 1278,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 16,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": [
+									"summary.sgs-accordion-item__header"
+								]
+							}
+						},
+						{
+							"label": "button.sgs-tabs__tab.sgs-focus--inset \"Tab one\"",
+							"rect": {
+								"x": 80,
+								"y": 757.5,
+								"width": 100.8125,
+								"height": 46.390625
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 16,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 16,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "div.sgs-tabs__panel.sgs-tabs__panel--active \"Panel one.\"",
+							"rect": {
+								"x": 80,
+								"y": 805.890625,
+								"width": 1280,
+								"height": 73.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 16,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__arrow.sgs-testimonial-slider__arrow--prev \"Previous testimonial\"",
+							"rect": {
+								"x": 80,
+								"y": 495.671875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "50%",
+							"radiusRest": "50%",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.189741513751457,
+								"ringMin": 9.189741513751457,
+								"points": 8,
+								"worst": {
+									"ring": [
+										84,
+										71,
+										15
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										242,
+										233,
+										206
+									]
+								},
+								"planned": 8,
+								"usable": 8,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "div.sgs-testimonial-slider__track \"Second testimonial quote.Reviewer Tw\"",
+							"rect": {
+								"x": 132,
+								"y": 457.484375,
+								"width": 1176,
+								"height": 120.390625
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__arrow.sgs-testimonial-slider__arrow--next \"Next testimonial\"",
+							"rect": {
+								"x": 1316,
+								"y": 495.671875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "50%",
+							"radiusRest": "50%",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.189741513751457,
+								"ringMin": 9.189741513751457,
+								"points": 8,
+								"worst": {
+									"ring": [
+										84,
+										71,
+										15
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										242,
+										233,
+										206
+									]
+								},
+								"planned": 8,
+								"usable": 8,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__dot.sgs-testimonial-slider__dot--active \"Go to testimonial 1\"",
+							"rect": {
+								"x": 672,
+								"y": 593.875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__dot \"Go to testimonial 2\"",
+							"rect": {
+								"x": 724,
+								"y": 593.875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(77, 63, 8)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(77, 63, 8)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 10.344495562024429,
+								"ringMin": 10.344495562024429,
+								"points": 20,
+								"worst": {
+									"ring": [
+										77,
+										63,
+										8
+									],
+									"bg": [
+										255,
+										255,
+										255
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Primary\"",
+							"rect": {
+								"x": 80,
+								"y": 778.671875,
+								"width": 108.796875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 15.877747456726352,
+								"ringMin": 11.848541554010502,
+								"points": 18,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										250,
+										242,
+										219
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--secondary \"Secondary\"",
+							"rect": {
+								"x": 200.796875,
+								"y": 778.671875,
+								"width": 130.671875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 15.877747456726352,
+								"ringMin": 11.848541554010502,
+								"points": 18,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										250,
+										242,
+										219
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--outline \"Outline\"",
+							"rect": {
+								"x": 343.46875,
+								"y": 779.265625,
+								"width": 100.484375,
+								"height": 48.796875
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 15.877747456726352,
+								"ringMin": 11.848541554010502,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										250,
+										242,
+										219
+									]
+								},
+								"planned": 16,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--link \"Link style\"",
+							"rect": {
+								"x": 455.953125,
+								"y": 779.671875,
+								"width": 69.4375,
+								"height": 48
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Single SGS button\"",
+							"rect": {
+								"x": 80,
+								"y": 836.671875,
+								"width": 182.546875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 15.728567370989985,
+								"ringMin": 11.848541554010502,
+								"points": 18,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										249,
+										241,
+										217
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Core-styled button\"",
+							"rect": {
+								"x": 80,
+								"y": 842.671875,
+								"width": 220.59375,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "8px",
+							"radiusRest": "8px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 14,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 14,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"a text link\"",
+							"rect": {
+								"x": 214.234375,
+								"y": 508.265625,
+								"width": 72.296875,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 12.349254003770126,
+								"ringMin": 9.1342656106625,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										46,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"a second text link\"",
+							"rect": {
+								"x": 323.765625,
+								"y": 508.265625,
+								"width": 132.5625,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 15.808323758781079,
+								"ringMin": 11.69280573773684,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										26,
+										39
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input.sgs-form-field__input \"sgs-field-name_dark\"",
+							"rect": {
+								"x": 80,
+								"y": 587.859375,
+								"width": 1280,
+								"height": 47
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "select.sgs-form-field__input \"Option AOption B\"",
+							"rect": {
+								"x": 80,
+								"y": 679.25,
+								"width": 1280,
+								"height": 45
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input. \"agree_dark[]\"",
+							"rect": {
+								"x": 100,
+								"y": 786.234375,
+								"width": 20,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input. \"pick_dark\"",
+							"rect": {
+								"x": 101,
+								"y": 879.71875,
+								"width": 20,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 14,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 14,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-form__button.sgs-form__button--submit \"Send\"",
+							"rect": {
+								"x": 1261.3125,
+								"y": 495.21875,
+								"width": 98.6875,
+								"height": 45
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "summary.sgs-accordion-item__header \"First question\"",
+							"rect": {
+								"x": 81,
+								"y": 631.609375,
+								"width": 1278,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 15,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": [
+									"summary.sgs-accordion-item__header"
+								]
+							}
+						},
+						{
+							"label": "summary.sgs-accordion-item__header \"Second question\"",
+							"rect": {
+								"x": 81,
+								"y": 690.203125,
+								"width": 1278,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": [
+									"summary.sgs-accordion-item__header"
+								]
+							}
+						},
+						{
+							"label": "button.sgs-tabs__tab.sgs-focus--inset \"Tab one\"",
+							"rect": {
+								"x": 80,
+								"y": 756.796875,
+								"width": 100.8125,
+								"height": 46.390625
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 16,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "div.sgs-tabs__panel.sgs-tabs__panel--active \"Panel one.\"",
+							"rect": {
+								"x": 80,
+								"y": 805.1875,
+								"width": 1280,
+								"height": 73.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__arrow.sgs-testimonial-slider__arrow--prev \"Previous testimonial\"",
+							"rect": {
+								"x": 80,
+								"y": 495.96875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "50%",
+							"radiusRest": "50%",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 14.652289119808874,
+								"ringMin": 11.229212180252235,
+								"points": 8,
+								"worst": {
+									"ring": [
+										238,
+										203,
+										78
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										243,
+										233,
+										204
+									]
+								},
+								"planned": 8,
+								"usable": 8,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "div.sgs-testimonial-slider__track \"Second testimonial quote.Reviewer Tw\"",
+							"rect": {
+								"x": 132,
+								"y": 457.78125,
+								"width": 1176,
+								"height": 120.390625
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__arrow.sgs-testimonial-slider__arrow--next \"Next testimonial\"",
+							"rect": {
+								"x": 1316,
+								"y": 495.96875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "50%",
+							"radiusRest": "50%",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 14.652289119808874,
+								"ringMin": 11.229212180252235,
+								"points": 8,
+								"worst": {
+									"ring": [
+										238,
+										203,
+										78
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										243,
+										233,
+										204
+									]
+								},
+								"planned": 8,
+								"usable": 8,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__dot.sgs-testimonial-slider__dot--active \"Go to testimonial 1\"",
+							"rect": {
+								"x": 672,
+								"y": 594.171875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__dot \"Go to testimonial 2\"",
+							"rect": {
+								"x": 724,
+								"y": 594.171875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 16.01887392609863,
+								"ringMin": 11.848541554010502,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										16,
+										24,
+										40
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Primary\"",
+							"rect": {
+								"x": 80,
+								"y": 778.96875,
+								"width": 108.796875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 8.465633494351014,
+								"ringMin": 8.465633494351014,
+								"points": 18,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										69,
+										70,
+										78
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--secondary \"Secondary\"",
+							"rect": {
+								"x": 200.796875,
+								"y": 778.96875,
+								"width": 130.671875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 8.360626382894784,
+								"ringMin": 8.360626382894784,
+								"points": 18,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										69,
+										71,
+										79
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--outline \"Outline\"",
+							"rect": {
+								"x": 343.46875,
+								"y": 779.5625,
+								"width": 100.484375,
+								"height": 48.796875
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 9.590549285053235,
+								"ringMin": 9.590549285053235,
+								"points": 16,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										64,
+										61,
+										71
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 16,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--link \"Link style\"",
+							"rect": {
+								"x": 455.953125,
+								"y": 779.96875,
+								"width": 69.4375,
+								"height": 48
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.400851779033829,
+								"ringMin": 11.400851779033829,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										56,
+										49,
+										55
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Single SGS button\"",
+							"rect": {
+								"x": 80,
+								"y": 836.96875,
+								"width": 182.546875,
+								"height": 50
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 8.360626382894784,
+								"ringMin": 8.360626382894784,
+								"points": 18,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										69,
+										71,
+										79
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 18,
+								"usable": 18,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Core-styled button\"",
+							"rect": {
+								"x": 80,
+								"y": 841.96875,
+								"width": 220.59375,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "8px",
+							"radiusRest": "8px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 8.138725322424012,
+								"ringMin": 8.138725322424012,
+								"points": 14,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										73,
+										72,
+										81
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 14,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"a text link\"",
+							"rect": {
+								"x": 214.234375,
+								"y": 507.5625,
+								"width": 72.296875,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.536347854999795,
+								"ringMin": 4.536347854999795,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										118,
+										109,
+										109
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"a second text link\"",
+							"rect": {
+								"x": 323.765625,
+								"y": 507.5625,
+								"width": 132.5625,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.196770796402714,
+								"ringMin": 4.196770796402714,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										131,
+										112,
+										112
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input.sgs-form-field__input \"sgs-field-name_photo\"",
+							"rect": {
+								"x": 80,
+								"y": 587.15625,
+								"width": 1280,
+								"height": 47
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.318568772206594,
+								"ringMin": 4.318568772206594,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										133,
+										110,
+										94
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "select.sgs-form-field__input \"Option AOption B\"",
+							"rect": {
+								"x": 80,
+								"y": 678.546875,
+								"width": 1280,
+								"height": 45
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.299007997321037,
+								"ringMin": 4.299007997321037,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										134,
+										110,
+										95
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input. \"agree_photo[]\"",
+							"rect": {
+								"x": 100,
+								"y": 785.53125,
+								"width": 20,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 6.700005732907872,
+								"ringMin": 6.700005732907872,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										96,
+										82,
+										83
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input. \"pick_photo\"",
+							"rect": {
+								"x": 101,
+								"y": 880.015625,
+								"width": 20,
+								"height": 20
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 6.437891109894249,
+								"ringMin": 6.437891109894249,
+								"points": 14,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										100,
+										84,
+										86
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 14,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-form__button.sgs-form__button--submit \"Send\"",
+							"rect": {
+								"x": 1261.3125,
+								"y": 495.515625,
+								"width": 98.6875,
+								"height": 45
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 5.581451914088264,
+								"ringMin": 5.581451914088264,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										102,
+										96,
+										93
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "input.sgs-focus-source \"sgs-op-b29d8516-choice\"",
+							"rect": {
+								"x": 80,
+								"y": 582.15625,
+								"width": 72.484375,
+								"height": 37.5
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "8px",
+							"radiusRest": "8px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": true,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": true,
+							"measuredOn": "proxy",
+							"proxyKind": "adjacent",
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 7.084320115516904,
+								"ringMin": 7.084320115516904,
+								"points": 16,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										94,
+										78,
+										78
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 16,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "summary.sgs-accordion-item__header \"First question\"",
+							"rect": {
+								"x": 81,
+								"y": 631.90625,
+								"width": 1278,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.5408692483653716,
+								"ringMin": 3.5408692483653716,
+								"points": 15,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										153,
+										124,
+										80
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": [
+									"summary.sgs-accordion-item__header"
+								]
+							}
+						},
+						{
+							"label": "summary.sgs-accordion-item__header \"Second question\"",
+							"rect": {
+								"x": 81,
+								"y": 690.5,
+								"width": 1278,
+								"height": 57.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.299007997321037,
+								"ringMin": 4.299007997321037,
+								"points": 16,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										134,
+										110,
+										95
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": [
+									"summary.sgs-accordion-item__header"
+								]
+							}
+						},
+						{
+							"label": "button.sgs-tabs__tab.sgs-focus--inset \"Tab one\"",
+							"rect": {
+								"x": 80,
+								"y": 757.09375,
+								"width": 100.8125,
+								"height": 46.390625
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.903898610460548,
+								"ringMin": 4.903898610460548,
+								"points": 16,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										119,
+										103,
+										88
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 16,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "div.sgs-tabs__panel.sgs-tabs__panel--active \"Panel one.\"",
+							"rect": {
+								"x": 80,
+								"y": 805.484375,
+								"width": 1280,
+								"height": 73.59375
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.315015695081108,
+								"ringMin": 4.315015695081108,
+								"points": 16,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										133,
+										110,
+										95
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__arrow.sgs-testimonial-slider__arrow--prev \"Previous testimonial\"",
+							"rect": {
+								"x": 80,
+								"y": 496.265625,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "50%",
+							"radiusRest": "50%",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 8.956453157615178,
+								"ringMin": 8.956453157615178,
+								"points": 8,
+								"worst": {
+									"ring": [
+										245,
+										236,
+										214
+									],
+									"bg": [
+										70,
+										61,
+										60
+									],
+									"inner": [
+										244,
+										235,
+										214
+									]
+								},
+								"planned": 8,
+								"usable": 8,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "div.sgs-testimonial-slider__track \"Second testimonial quote.Reviewer Tw\"",
+							"rect": {
+								"x": 132,
+								"y": 458.078125,
+								"width": 1176,
+								"height": 120.390625
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 4.299007997321037,
+								"ringMin": 4.299007997321037,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										134,
+										110,
+										95
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__arrow.sgs-testimonial-slider__arrow--next \"Next testimonial\"",
+							"rect": {
+								"x": 1316,
+								"y": 496.265625,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "50%",
+							"radiusRest": "50%",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 6.461106755780222,
+								"ringMin": 6.461106755780222,
+								"points": 8,
+								"worst": {
+									"ring": [
+										245,
+										237,
+										215
+									],
+									"bg": [
+										85,
+										84,
+										84
+									],
+									"inner": [
+										244,
+										236,
+										214
+									]
+								},
+								"planned": 8,
+								"usable": 8,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__dot.sgs-testimonial-slider__dot--active \"Go to testimonial 1\"",
+							"rect": {
+								"x": 672,
+								"y": 594.46875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 12.502133692941506,
+								"ringMin": 12.502133692941506,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										72,
+										33,
+										34
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "button.sgs-testimonial-slider__dot \"Go to testimonial 2\"",
+							"rect": {
+								"x": 724,
+								"y": 594.46875,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(251, 243, 220)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.984314 0.952941 0.862745 / 0.55) 0px 0px 12px 4px, color(srgb 0.227451 0.180392 0.14902 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(251, 243, 220)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "inner",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 12.121047135504451,
+								"ringMin": 12.121047135504451,
+								"points": 20,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										75,
+										35,
+										35
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\"",
+							"rect": {
+								"x": 220,
+								"y": 738.46875,
+								"width": 305,
+								"height": 102
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 14,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 14,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a.sgs-business-info__link \"Zainab@mamasmunches.com\"",
+							"rect": {
+								"x": 211.609375,
+								"y": 775.234375,
+								"width": 237.046875,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 8,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 8,
+								"neighbours": [
+									"span.sgs-icon__shape",
+									"span.sgs-icon__label-text",
+									"a.sgs-icon__link"
+								]
+							}
+						},
+						{
+							"label": "a.sgs-icon__link \"Instagram\"",
+							"rect": {
+								"x": 220,
+								"y": 808.4375,
+								"width": 116.1875,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 6,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 6,
+								"neighbours": [
+									"span.sgs-business-info__label",
+									"a.sgs-business-info__link"
+								]
+							}
+						},
+						{
+							"label": "a.sgs-icon__link \"WhatsApp\"",
+							"rect": {
+								"x": 348.1875,
+								"y": 808.4375,
+								"width": 118.84375,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 7,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 7,
+								"neighbours": [
+									"span.sgs-business-info__label",
+									"a.sgs-business-info__link"
+								]
+							}
+						},
+						{
+							"label": "a. \"All Products\"",
+							"rect": {
+								"x": 720,
+								"y": 630.265625,
+								"width": 79.4375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Zookies\"",
+							"rect": {
+								"x": 720,
+								"y": 658.265625,
+								"width": 52.234375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 15,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Trial Pack (£5)\"",
+							"rect": {
+								"x": 720,
+								"y": 686.265625,
+								"width": 95.734375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Gift Ideas\"",
+							"rect": {
+								"x": 720,
+								"y": 714.265625,
+								"width": 62.953125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 15,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Send to Ward\"",
+							"rect": {
+								"x": 720,
+								"y": 742.265625,
+								"width": 89.265625,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 16,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Our Story\"",
+							"rect": {
+								"x": 720,
+								"y": 770.265625,
+								"width": 63.375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 17,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 17,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"FAQs\"",
+							"rect": {
+								"x": 720,
+								"y": 798.265625,
+								"width": 34.28125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Privacy Policy\"",
+							"rect": {
+								"x": 988,
+								"y": 630.265625,
+								"width": 92.578125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 15,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Shipping Info\"",
+							"rect": {
+								"x": 988,
+								"y": 658.265625,
+								"width": 87.1875,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 15,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Terms & Conditions\"",
+							"rect": {
+								"x": 988,
+								"y": 686.265625,
+								"width": 129.03125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 15,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 15,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Allergen Information\"",
+							"rect": {
+								"x": 988,
+								"y": 714.265625,
+								"width": 134.046875,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 17,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 17,
+								"neighbours": []
+							}
+						},
+						{
+							"label": "a. \"Contact Us\"",
+							"rect": {
+								"x": 988,
+								"y": 742.265625,
+								"width": 73.734375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"measuredOn": "element",
+							"proxyKind": null,
+							"noProxy": false,
+							"radiusExempt": null,
+							"settled": true,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 20,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								},
+								"planned": 20,
+								"usable": 20,
+								"neighbours": []
+							}
+						}
+					],
+					"ended": "focus left the document",
+					"capHit": false,
+					"summary": {
+						"stops": 95,
+						"looks": 1,
+						"looksList": [
+							"2px solid 2px"
+						],
+						"looksFull": 17,
+						"exempt": [
+							"inset",
+							"signature"
+						],
+						"minContrast": 3.1391017605072515,
+						"clipped": 0,
+						"clippedInset": 0,
+						"radiusChanged": 0,
+						"radiusExempt": 1,
+						"radiusExemptReasons": [
+							"visually hidden at rest (.screen-reader-text, .skip-link)"
+						],
+						"measuredOnProxy": 2,
+						"noProxy": 0,
+						"unmeasurable": 2,
+						"unmeasurableReasons": [
+							"a.skip-link.screen-reader-text \"Skip to content\": 0 of 20 sample points usable (under 6), the others sit under header.sgs-container, div.sgs-container__inner",
+							"input.wp-block-sgs-before-after__range.sgs-focus-source \"\": 5 of 8 sample points usable (under 6), the others sit under div.wp-block-sgs-before-after__after-wrap"
+						],
+						"unsettled": 0,
+						"neighbourOverlaps": [
+							"a.sgs-business-info__link \"0121 496 0123\" overlaps a.sgs-business-info__link",
+							"a.sgs-business-info__link \"Zainab@mamasmunches.com\" overlaps a.sgs-business-info__link, a.sgs-business-socials__link",
+							"summary.sgs-accordion-item__header \"First question\" overlaps summary.sgs-accordion-item__header",
+							"summary.sgs-accordion-item__header \"Second question\" overlaps summary.sgs-accordion-item__header",
+							"summary.sgs-accordion-item__header \"First question\" overlaps summary.sgs-accordion-item__header",
+							"summary.sgs-accordion-item__header \"Second question\" overlaps summary.sgs-accordion-item__header",
+							"summary.sgs-accordion-item__header \"First question\" overlaps summary.sgs-accordion-item__header",
+							"summary.sgs-accordion-item__header \"Second question\" overlaps summary.sgs-accordion-item__header",
+							"a.sgs-business-info__link \"Zainab@mamasmunches.com\" overlaps span.sgs-icon__shape, span.sgs-icon__label-text, a.sgs-icon__link",
+							"a.sgs-icon__link \"Instagram\" overlaps span.sgs-business-info__label, a.sgs-business-info__link",
+							"a.sgs-icon__link \"WhatsApp\" overlaps span.sgs-business-info__label, a.sgs-business-info__link"
+						],
+						"obscured": 0,
+						"tokenStatus": "token match checked on 95 of 95 stops",
+						"tokenised": 95,
+						"tokenMismatches": 0,
+						"fails": []
+					}
+				}
+			]
+		}
+	],
+	"cssBytes": {
+		"5389": 883053
+	}
+}
