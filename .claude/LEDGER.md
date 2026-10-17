@@ -85,7 +85,7 @@ Open owed items:
 
 **Blockers:** none. **Ruled 2026-10-17:** the focus ring stays the darkened brand tone (3:1 on every ground); the focus keys are not pushed to indus-test or eye-care-test yet (`push-theme-snapshot.py`, dry run first, when wanted). Ruled 2026-10-15: stored brand-strip and trust-bar marquees stay static until the sweep reaches them; the all-effects stress page's weight is accepted.
 
-**Resume from:** `reports/2026-10-17-focus-system/after3/SUMMARY.md` (1440 focus probe PASS, clipped 0; open: 768 and 375 runs, the before-after handle reads unmeasurable, per-card stagger with a section above), then S6.
+**Resume from:** `reports/2026-10-17-focus-system/after3/SUMMARY.md` (1440 focus probe PASS, clipped 0; before-after handle closed by the live screenshot). Cut 2026-10-17 by Bean's time and token budget: the 768 and 375 focus runs and the S4 `/qc-council`. Deferred to a motion session: per-card stagger with a section above (needs a fixture page). Next: S6.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
