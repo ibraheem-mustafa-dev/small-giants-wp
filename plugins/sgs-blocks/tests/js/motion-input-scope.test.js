@@ -14,7 +14,10 @@
  *
  * A loop item's stagger delay is the one input meant to reach the entrances inside the item (a post template's `<li>`
  * holds no entrance of its own), so the loop rules also write the inheriting carriers `--sgs-me-loop-delay` and
- * `--sgs-me-loop-close-delay`, read as the delay's fallback: an entrance's own delay wins, else its loop item's.
+ * `--sgs-me-loop-close-delay`, read as the delay's fallback: an entrance's own delay wins, else its loop item's. The
+ * entrance owns all eight animation longhands through its `--sgs-me-a-*` custom properties (FR-38A-52): the winning delay
+ * is `--sgs-me-a-delay`, which `--sgs-me-a-list-delay` repeats once per channel and `animation-delay` reads, so the
+ * carriers are asserted on `--sgs-me-a-delay` and the chain from there to `animation-delay` is asserted too.
  *
  * The browser proof (computed values) is `scripts/motion-qa/probe-entrance-input-scope.mjs`.
  */
@@ -36,12 +39,19 @@ const INPUT =
 // (`assets/js/motion-reveal.js`).
 const SCRIPT_READS = [ '--sgs-me-start' ];
 const CARRIERS = {
-	'--sgs-me-loop-delay': [ 'animation-delay', 'var(--sgs-me-delay, var(--sgs-me-loop-delay, 0ms))' ],
+	'--sgs-me-loop-delay': [ '--sgs-me-a-delay', 'var(--sgs-me-delay, var(--sgs-me-loop-delay, 0ms))' ],
 	'--sgs-me-loop-close-delay': [
-		'animation-delay',
+		'--sgs-me-a-delay',
 		'var(--sgs-me-close-delay, var(--sgs-me-loop-close-delay, 0ms))',
 	],
 };
+
+// The chain that turns the winning delay into the element's animation-delay: the declaration, then the per-channel list it reads.
+const DELAY_CHAIN = [
+	[ 'motion.css', 'animation-delay', 'var(--sgs-me-a-list-delay)' ],
+	[ 'motion-triggers.css', 'animation-delay', 'var(--sgs-me-a-list-delay)' ],
+	[ 'motion.css', '--sgs-me-a-list-delay', /var\(--sgs-me-a-delay\)/ ],
+];
 
 const norm = ( value ) => value.replace( /\s+/g, ' ' ).trim();
 const stripComments = ( css ) => css.replace( /\/\*[\s\S]*?\*\//g, '' );
@@ -131,6 +141,16 @@ function scopeErrors( sheets ) {
 			errors.push( `no ${ prop } reads ${ value }` );
 		}
 	}
+	for ( const [ name, prop, expected ] of DELAY_CHAIN ) {
+		let found = false;
+		postcss.parse( sheets[ name ] ).walkDecls( prop, ( d ) => {
+			const value = norm( d.value );
+			found = found || ( expected instanceof RegExp ? expected.test( value ) : value === expected );
+		} );
+		if ( ! found ) {
+			errors.push( `${ name } has no ${ prop } reading ${ expected }` );
+		}
+	}
 	return errors;
 }
 
@@ -161,6 +181,21 @@ describe( 'per-element motion inputs never inherit', () => {
 			'motion.css',
 			/var\(--sgs-me-delay, var\(--sgs-me-loop-delay, 0ms\)\)/,
 			'var(--sgs-me-delay, 0ms)',
+		],
+		'a close delay that ignores the loop item': [
+			'motion-triggers.css',
+			/var\(--sgs-me-close-delay, var\(--sgs-me-loop-close-delay, 0ms\)\)/,
+			'var(--sgs-me-close-delay, 0ms)',
+		],
+		'an animation-delay that stops reading the entrance delay list': [
+			'motion.css',
+			/animation-delay: var\(--sgs-me-a-list-delay\)/g,
+			'animation-delay: 0s',
+		],
+		'a delay list that stops repeating the entrance delay': [
+			'motion.css',
+			/var\(--sgs-me-a-delay\)/g,
+			'0s',
 		],
 	};
 	test.each( Object.entries( plants ) )( 'negative control: %s is caught', ( _label, [ sheet, find, replace ] ) => {
