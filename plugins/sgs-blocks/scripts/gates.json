@@ -1375,12 +1375,12 @@
     "order": 152
   },
   {
-    "id": "check-focus-ring-token",
-    "cmd": "python ../../scripts/check-focus-ring-token.py --check",
+    "id": "check-focus-system",
+    "cmd": "node scripts/check-focus-system.js --check",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
-    "budget_ms": 4098,
+    "budget_ms": null,
     "order": 153
   },
   {
@@ -1672,5 +1672,14 @@
     "added_commit": null,
     "budget_ms": 4962,
     "order": 187
+  },
+  {
+    "id": "check-focus-system-self-test",
+    "cmd": "node scripts/check-focus-system.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 188
   }
 ]

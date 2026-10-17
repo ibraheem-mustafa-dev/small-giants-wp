@@ -73,8 +73,7 @@ def strip_comments(css: str) -> str:
 
 
 def iter_rules(css: str) -> Iterator[Tuple[str, str]]:
-    """Yield (selector, body) for every leaf rule, descending into @media/@supports/@layer.
-    Same walker as scripts/check-focus-ring-token.py::iter_rules."""
+    """Yield (selector, body) for every leaf rule, descending into @media/@supports/@layer."""
     css = strip_comments(css)
     stack: List[Tuple[int, int]] = []
     prelude_start = 0
