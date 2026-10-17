@@ -6,7 +6,6 @@ import {
 	ShadowControl,
 	shadowAttrKeys,
 } from '../../components';
-import { SelectControl } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -23,9 +22,6 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  * drawer's own block.json does NOT declare an attribute for. Rendering these
  * unconditionally would write to attributes the drawer's manifest doesn't
  * declare — a dead control (D338), which `check-dead-controls.js` bans:
- *   - "Open animation" (`submenuAnimation`) — BAR-only HERE. The drawer
- *     declares the same attribute with its own values (none, fade, fade-lift,
- *     height) and edits it in its own "Section motion" panel.
  *   - "Distance below the bar" (`submenuTopOffset`) — BAR-only; meaningless
  *     for a row that flows inline rather than floating.
  *   - "Minimum width" (`submenuMinWidth`) — not on the drawer. The drawer's
@@ -61,10 +57,6 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  *                                                  `sgs/nav-drawer-menu` (see docblock above).
  * @param {boolean}  [root0.showBoxControls]        True on `sgs/nav-drawer-menu`: shows the section's
  *                                                  corner radius and box shadow without the bar-only sizing controls.
- * @param {boolean}  [root0.showAnimationControl]   Whether the bar shows its old "Open and close animation"
- *                                                  select (default true). `sgs/nav-bar-menu` passes false: its
- *                                                  panels move on the Entrance and reveal panel (Spec 38A FR-38A-51).
- * @param {string}   [root0.submenuAnimation]       `submenuAnimation` — bar only.
  * @param {string}   [root0.submenuTopOffset]       `submenuTopOffset` — bar only.
  * @param {string}   [root0.submenuMinWidth]        `submenuMinWidth` — bar only.
  * @param {Object}   root0.submenuPadding           `submenuPadding` — responsive tier object, BOTH.
@@ -83,8 +75,6 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 export default function DropdownStylePanel( {
 	showSizingControls,
 	showBoxControls = false,
-	showAnimationControl = true,
-	submenuAnimation,
 	submenuTopOffset,
 	submenuMinWidth,
 	submenuPadding,
@@ -104,9 +94,6 @@ export default function DropdownStylePanel( {
 				setAttributes( {
 					...( showSizingControls
 						? {
-								...( showAnimationControl
-									? { submenuAnimation: 'none' }
-									: {} ),
 								submenuTopOffset: '',
 								submenuMinWidth: '',
 						  }
@@ -118,35 +105,6 @@ export default function DropdownStylePanel( {
 				} )
 			}
 		>
-			{ showSizingControls && showAnimationControl && (
-				<ToolsPanelItem
-					hasValue={ () => !! submenuAnimation && 'none' !== submenuAnimation }
-					label={ __( 'Open and close animation', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { submenuAnimation: 'none' } ) }
-				>
-					<SelectControl
-						label={ __( 'Open and close animation', 'sgs-blocks' ) }
-						help={ __(
-							'Applies to every dropdown and mega panel. Timing and item stagger are in the Panel motion panel.',
-							'sgs-blocks'
-						) }
-						value={ submenuAnimation || 'none' }
-						options={ [
-							{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-							{ label: __( 'Fade', 'sgs-blocks' ), value: 'fade' },
-							{ label: __( 'Fade and lift', 'sgs-blocks' ), value: 'fade-lift' },
-							{ label: __( 'Slide down', 'sgs-blocks' ), value: 'slide-down' },
-							{ label: __( 'Grow downwards', 'sgs-blocks' ), value: 'grow' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { submenuAnimation: val || 'none' } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</ToolsPanelItem>
-			) }
-
 			{ showSizingControls && (
 				<ToolsPanelItem
 					hasValue={ () => !! submenuTopOffset }

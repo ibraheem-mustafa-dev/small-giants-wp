@@ -4,7 +4,7 @@
  *
  * Drawer: the side and header-content anchors, anchorOffset, their motion and
  * default edge (nav-drawer/render.php::$sgs_nd_geometry_for_anchor and the
- * default-edge section, includes/helpers-nav-drawer-motion.php, store.js).
+ * default-edge section, includes/helpers-nav-drawer-motion-model.php, store.js).
  * Menu: the per-tier item gap, the shared panel placement vocabulary, the gap
  * below the header and the hover bridge (includes/nav-menu-*.php, block.json).
  *
@@ -136,13 +136,12 @@ $edge_cont = $run_edge( array( 'anchor' => array( 'desktop' => 'container' ) ), 
 ok( false !== strpos( $edge_cont, 'border-radius:20px;' ) && false !== strpos( $edge_cont, 'border:1px solid var(--wp--preset--color--primary);' ), 'container: the card edge (20px corners, 1px line)' );
 ok( '' === $run_edge( array(), 'modal' ), 'NEGATIVE CONTROL: a modal full-screen drawer still gets no default edge' );
 
-// ── 3. Motion: auto follows the new anchors ───────────────────────────────
+// ── 3. Motion: the panel's transform origin follows the anchor ────────────
 require_once $plugin . '/includes/helpers-motion-easing.php';
-require_once $plugin . '/includes/helpers-nav-drawer-motion.php';
-ok( 'sgs-nav-drawer-slide-start-in' === sgs_nav_drawer_motion_keyframes( 'auto', 'side-start' )['in'], 'auto on a side-start panel slides in from the start edge' );
-ok( 'sgs-nav-drawer-slide-end-in' === sgs_nav_drawer_motion_keyframes( 'auto', 'side-end' )['in'], 'auto on a side-end panel slides in from the end edge' );
-ok( 'sgs-nav-drawer-expand-down-in' === sgs_nav_drawer_motion_keyframes( 'auto', 'container' )['in'], 'auto on a container panel expands down from the header' );
-ok( false === strpos( old_file( $rel . 'includes/helpers-nav-drawer-motion.php' ), "'side-start' =>" ), 'NEGATIVE CONTROL: the pre-change auto map had no side anchors' );
+require_once $plugin . '/includes/helpers-nav-drawer-motion-model.php';
+ok( 'center' === sgs_nav_drawer_anchor_origin( 'side-start' ) && 'center' === sgs_nav_drawer_anchor_origin( 'side-end' ), 'a side panel scales around its centre' );
+ok( 'top center' === sgs_nav_drawer_anchor_origin( 'container' ) && 'top center' === sgs_nav_drawer_anchor_origin( 'header' ), 'a container or header panel expands down from the header edge' );
+ok( 'top right' === sgs_nav_drawer_anchor_origin( 'trigger' ) && 'center' === sgs_nav_drawer_anchor_origin( 'full-screen' ), 'a trigger panel scales from its corner; full-screen is centred' );
 
 // ── 4. store.js measurements ──────────────────────────────────────────────
 $store     = (string) file_get_contents( $plugin . '/src/shared/nav-interactivity/store.js' );

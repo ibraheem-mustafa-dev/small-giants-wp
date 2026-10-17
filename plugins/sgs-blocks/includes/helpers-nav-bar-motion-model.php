@@ -3,8 +3,7 @@
  * Nav bar panels on the Entrance model (Spec 38A FR-38A-51, unit M4.6): what `sgs/nav-bar-menu` reads from its
  * motion layers.
  *
- * During the overlap (build plan, "One model per block during the overlap") a bar whose `sgsMotion` holds elements or
- * stagger settings is on the new model. Every dropdown and mega panel it renders is then a motion state host:
+ * Every dropdown and mega panel the bar renders is a motion state host:
  *
  * - each panel wrap (`.sgs-nav-bar-menu__panel-motion`, the `panel` part) prints `data-sgs-motion-state=""`, and
  *   `panel-motion-state.js` sets `open` and `close` on it as its trigger's `aria-expanded` flips, so the `open`
@@ -19,12 +18,8 @@
  * - a closing panel stays displayed while its host carries `close`, so the close values play; it takes no pointer
  *   hits and sits below an opening panel, so a move from one trigger to the next never lands on the closing one.
  *
- * The old U-5 panel motion (the `--{shape}` panel classes, the `--sgs-nbm-*` values and the item ladders keyed on
- * `.sgs-nav-bar-menu--panel-stagger`) is skipped for a bar on the model: its panels print the `--none` shape and the
- * stagger classes are never printed. A bar with no `sgsMotion` keeps the old motion until the M6.5 sweep.
- *
  * Panels moved to `<body>` by `mega-disclosure.js` (a bar placed in page content, outside the site header) leave the
- * scoped root, so neither the old rules nor the scoped motion rules reach them; that limitation is unchanged.
+ * scoped root, so the scoped motion rules do not reach them.
  *
  * @package SGS\Blocks
  */
@@ -46,27 +41,6 @@ if ( ! function_exists( 'sgs_nav_bar_motion_item_parts' ) ) {
 			'mega-item' => array( 'sgs-mega-panel__content', 'sgs-nav-bar-menu__mega-item' ),
 			'mega-row'  => array( 'sgs-mega-group', 'sgs-nav-bar-menu__mega-row' ),
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_nav_bar_uses_motion_model' ) ) {
-	/**
-	 * Whether the bar's panels are on the Entrance model: its `sgsMotion` holds stagger settings or a layer on a part
-	 * other than `burger`. A layer on the burger alone (the morph's speed and easing, includes/helpers-state-motion-model.php)
-	 * leaves the panels on the old motion until the M6.5 sweep.
-	 *
-	 * @param array $attributes Block attributes.
-	 * @return bool
-	 */
-	function sgs_nav_bar_uses_motion_model( array $attributes ): bool {
-		if ( ! sgs_nav_drawer_uses_motion_model( $attributes ) ) {
-			return false;
-		}
-		$motion = $attributes['sgsMotion'];
-		if ( ! empty( $motion['stagger'] ) ) {
-			return true;
-		}
-		return array() !== array_diff( array_keys( is_array( $motion['elements'] ?? null ) ? $motion['elements'] : array() ), array( 'burger' ) );
 	}
 }
 

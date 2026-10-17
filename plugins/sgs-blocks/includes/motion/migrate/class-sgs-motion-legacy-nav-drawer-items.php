@@ -2,7 +2,7 @@
 /**
  * The old `sgs/nav-drawer` item stagger attributes (Wave 3C U-5) read as an Entrance layer (Spec 38A §13.1, §13.2,
  * FR-38A-51), for `mappers/class-sgs-motion-map-nav-drawer.php`: `itemStagger`, `itemStaggerMax`,
- * `itemStaggerDuration`, `itemStaggerDistance` and `itemStaggerAxis` (the multipliers of `sgs_nav_drawer_stagger_axes()`)
+ * `itemStaggerDuration`, `itemStaggerDistance` and `itemStaggerAxis` (the multipliers of `Sgs_Motion_Legacy_Nav_Drawer::STAGGER_AXES`)
  * become the item entrance; `itemStaggerOnClose` gives the items their own close, and without it they hold their
  * resting values while the panel closes, as they did. The clip item reveal has no destination and is reported.
  *
@@ -13,7 +13,6 @@ namespace SGS\Blocks\Motion;
 
 defined( 'ABSPATH' ) || exit;
 
-require_once dirname( __DIR__, 2 ) . '/helpers-nav-drawer-stagger-shape.php';
 require_once __DIR__ . '/class-sgs-motion-legacy-nav-drawer.php';
 
 /**
@@ -69,7 +68,7 @@ final class Sgs_Motion_Legacy_Nav_Drawer_Items {
 			return $out;
 		}
 		$clip  = 'clip' === ( $attrs['itemStaggerReveal'] ?? 'translate' );
-		$axes  = sgs_nav_drawer_stagger_axes();
+		$axes  = Sgs_Motion_Legacy_Nav_Drawer::STAGGER_AXES;
 		$tiers = array();
 		foreach ( Sgs_Motion_Legacy_Nav_Drawer::TIERS as $tier ) {
 			$axis = (string) Sgs_Motion_Legacy_Nav_Drawer::tier( $attrs['itemStaggerAxis'] ?? array(), $tier, 'vertical' );

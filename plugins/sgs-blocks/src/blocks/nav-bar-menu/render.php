@@ -204,7 +204,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * @param array  $submenu      Submenu settings: align (start|center|end),
 		 *                             caret (bool), close_grace (int ms),
 		 *                             intent_delay (int ms), open_on (hover|click),
-		 *                             animation (none|fade|slide-down).
+		 *                             label_roll ('' | up | up-scale).
 		 */
 		public function __construct( array $featured_ids, string $uid = '', array $submenu = array() ) {
 			$this->featured_ids = array_map( 'strval', $featured_ids );
@@ -230,14 +230,6 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				// Same values as block.json::submenuOpenOn's enum; anything else is hover.
 				'open_on'      => 'click' === ( $submenu['open_on'] ?? '' ) ? 'click' : 'hover',
 
-				// PHP-validated, not a JSON enum (block.json::submenuAnimation is
-				// plain string) -- an out-of-list stored value coerces to the
-				// no-animation default rather than emitting an unstyled modifier
-				// class the CSS (style.css) never defines.
-				'animation'   => in_array( $submenu['animation'] ?? '', array( 'fade', 'fade-lift', 'slide-down', 'grow' ), true )
-					? (string) $submenu['animation']
-					: 'none',
-
 				// Wave 3C U-6 (M-25): the item label roll, '' | up | up-scale.
 				'label_roll'  => sgs_label_roll_value( $submenu['label_roll'] ?? '' ),
 			);
@@ -250,7 +242,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * $this->submenu directly. This getter exposes the existing validated
 		 * state; it does not compute anything new.
 		 *
-		 * @return array{align: string, caret: bool, close_grace: int, animation: string}
+		 * @return array{align: string, caret: bool, close_grace: int, intent_delay: int, open_on: string, label_roll: string}
 		 */
 		public function get_submenu(): array {
 			return $this->submenu;
@@ -443,11 +435,6 @@ $menu_blocks  = SGS_Nav_Menu_Source::get_menu_blocks( $ref, true );
 $featured_ids = is_array( $attributes['featuredItemIds'] ?? null ) ? $attributes['featuredItemIds'] : array();
 // Wave B: identifiers rendered as non-interactive text (Disabled items panel).
 $disabled_ids = is_array( $attributes['disabledItemIds'] ?? null ) ? $attributes['disabledItemIds'] : array();
-// One motion model per bar during the Spec 38A overlap: a bar whose sgsMotion
-// holds elements or stagger settings is on the Entrance model (FR-38A-51), so
-// its panels print the `none` shape and the old U-5 panel rules never reach them
-// (includes/helpers-nav-bar-motion-model.php).
-$sgs_nm_motion_model = sgs_nav_bar_uses_motion_model( $attributes );
 $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 	$featured_ids,
 	$uid,
@@ -457,7 +444,6 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 		'close_grace' => (int) ( $attributes['submenuCloseGrace'] ?? 170 ),
 		'intent_delay' => (int) ( $attributes['submenuIntentDelay'] ?? 80 ),
 		'open_on'     => (string) ( $attributes['submenuOpenOn'] ?? 'hover' ),
-		'animation'   => $sgs_nm_motion_model ? 'none' : (string) ( $attributes['submenuAnimation'] ?? 'none' ),
 		'label_roll'  => (string) ( $attributes['labelRoll'] ?? '' ),
 	)
 );
@@ -513,13 +499,11 @@ if ( '' === $items_html ) {
 	return '';
 }
 
-// On the Entrance model every dropdown and mega panel is a motion state host
-// and its items carry their index in their own panel; the bar's stored stagger
+// Every dropdown and mega panel is a motion state host (Spec 38A FR-38A-51) and
+// its items carry their index in their own panel; the bar's stored stagger
 // settings become one delay rule per index (never `:nth-child`).
-$sgs_nm_panels = $sgs_nm_motion_model ? sgs_nav_bar_motion_panels( $items_html, $uid, $attributes ) : null;
-if ( null !== $sgs_nm_panels ) {
-	$items_html = $sgs_nm_panels['html'];
-}
+$sgs_nm_panels = sgs_nav_bar_motion_panels( $items_html, $uid, $attributes );
+$items_html    = $sgs_nm_panels['html'];
 
 // ── 3. Burger + drawer-toggle context. ──────────────────────────────────────
 //
@@ -904,32 +888,15 @@ if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
 }
 
 /*
- * ── Wave 3C U-9 (§4.4) — burger morph duration + easing custom properties. ──
+ * ── Burger morph duration + easing custom properties. ──
  * `style.css`'s base rules read `--sgs-nbm-burger-morph-duration`/`-easing`
- * with today's exact hardcoded values as their `var()` fallbacks (200ms /
- * ease), so this block only writes a property when the operator has moved
- * OFF that default — an untouched nav ships nothing extra and renders
- * byte-identical CSS to before this attribute pair existed.
+ * with 200ms / ease as their `var()` fallbacks; the burger part's layer writes
+ * them (helpers-state-motion-model.php), so an untouched nav ships nothing extra.
  *
- * Naming ruling (Spec 35/32 audit SHOULD 4, 2026-09-24): FR-32-4's canonical
- * form is `--sgs-{block}-{role}`, which for this block would be
- * `--sgs-nav-bar-menu-*`. `nbm` is an ABBREVIATION of the block slug, same as
- * `sgs/nav-drawer`'s own shipped `--sgs-drawer-*` custom properties abbreviate
- * theirs — this is the established convention within the nav-* block family,
- * not a one-off. Kept as `--sgs-nbm-*` for consistency with that sibling
- * rather than renamed to the longer canonical form.
+ * `nbm` abbreviates the block slug, as `sgs/nav-drawer`'s `--sgs-drawer-*`
+ * custom properties abbreviate theirs: the convention within the nav-* family.
  */
-$sgs_nm_morph_duration = isset( $attributes['burgerMorphDuration'] ) ? (int) $attributes['burgerMorphDuration'] : 200;
-$sgs_nm_morph_duration = max( 0, min( 1200, $sgs_nm_morph_duration ) );
-$sgs_nm_morph_easing_css = sgs_motion_easing_css( (string) ( $attributes['burgerMorphEasing'] ?? 'ease' ), (string) ( $attributes['burgerMorphEasingCustom'] ?? '' ) );
-$sgs_nm_morph_vars = '';
-if ( 200 !== $sgs_nm_morph_duration ) {
-	$sgs_nm_morph_vars .= '--sgs-nbm-burger-morph-duration:' . $sgs_nm_morph_duration . 'ms;';
-}
-if ( 'ease' !== $sgs_nm_morph_easing_css ) {
-	$sgs_nm_morph_vars .= '--sgs-nbm-burger-morph-easing:' . $sgs_nm_morph_easing_css . ';';
-}
-$sgs_nm_morph_vars = sgs_nav_bar_burger_morph_vars( $attributes, $sgs_nm_morph_vars ); // Spec 38A FR-38A-53: a burger layer's timing replaces the three attributes.
+$sgs_nm_morph_vars = sgs_nav_bar_burger_morph_vars( $attributes, '' ); // Spec 38A FR-38A-53: the burger layer's timing.
 if ( '' !== $sgs_nm_morph_vars ) {
 	$css .= $uid_sel . '{' . $sgs_nm_morph_vars . '}';
 }
@@ -1042,39 +1009,14 @@ $inner_html = $bar_html . $toggle_html;
 // state, which stays inside this <nav> even when its panel is reparented
 // elsewhere (mega-disclosure.js), so one selector covers dropdowns and mega
 // panels alike. See includes/helpers-scrim.php::sgs_scrim_render().
-// ── Panel motion (Wave 3C U-5): open and close time, speed curve and item
-// stagger for every dropdown and mega panel, as values the rules in style.css
-// read. The scrim fades with the panels. On the Entrance model the panels and
-// items move on their layers instead (helpers-nav-bar-motion-model.php), the
-// panel layer's timing times the scrim (null keeps the scrim's own default)
-// and none of these values is written.
-if ( $sgs_nm_motion_model ) {
-	$sgs_nm_timing     = sgs_nav_bar_motion_timing( $attributes );
-	$sgs_nm_panel_in   = $sgs_nm_timing['enter_ms'];
-	$sgs_nm_panel_out  = $sgs_nm_timing['exit_ms'];
-	$sgs_nm_panel_ease = $sgs_nm_timing['easing'];
-	$sgs_nm_stagger    = 0;
-	$sgs_nm_panel_vars = '';
-	$css              .= $sgs_nm_panels['css'] ?? '';
-} else {
-	$sgs_nm_panel_in    = sgs_flat_duration_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
-	$sgs_nm_panel_out   = sgs_flat_duration_ms( $attributes['submenuExitDuration'] ?? 150, 150 );
-	$sgs_nm_panel_ease  = sgs_motion_easing_css( (string) ( $attributes['submenuAnimationEasing'] ?? 'ease-out-css' ), (string) ( $attributes['submenuAnimationEasingCustom'] ?? '' ), 'ease-out' );
-	$sgs_nm_panel_vars  = '--sgs-nbm-panel-dur:' . $sgs_nm_panel_in . 'ms;--sgs-nbm-panel-exit-dur:' . $sgs_nm_panel_out . 'ms;--sgs-nbm-panel-ease:' . $sgs_nm_panel_ease . ';';
-	$sgs_nm_stagger     = sgs_flat_duration_ms( $attributes['submenuItemStagger'] ?? 0, 0, 1000 );
-}
-if ( ! $sgs_nm_motion_model && $sgs_nm_stagger > 0 ) {
-	$sgs_nm_stagger_dur = sgs_flat_duration_ms( $attributes['submenuItemStaggerDuration'] ?? 0, 0 );
-	$sgs_nm_stagger_max = sgs_flat_duration_ms( $attributes['submenuItemStaggerMax'] ?? 0, 0, 10000 );
-	$sgs_nm_stagger_d   = is_numeric( $attributes['submenuItemStaggerDistance'] ?? null ) ? max( -400, min( 400, (int) round( (float) $attributes['submenuItemStaggerDistance'] ) ) ) : 8;
-	$sgs_nm_panel_vars .= '--sgs-nbm-stagger-step:' . $sgs_nm_stagger . 'ms;'
-		. '--sgs-nbm-stagger-dur:' . ( $sgs_nm_stagger_dur > 0 ? $sgs_nm_stagger_dur : $sgs_nm_panel_in ) . 'ms;'
-		. '--sgs-nbm-stagger-dist:' . $sgs_nm_stagger_d . 'px;'
-		. ( $sgs_nm_stagger_max > 0 ? '--sgs-nbm-stagger-max:' . $sgs_nm_stagger_max . 'ms;' : '' );
-}
-if ( ! $sgs_nm_motion_model ) {
-	$css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
-}
+// ── Panel motion: the panels and their items move on their layers
+// (helpers-nav-bar-motion-model.php); the panel layer's timing times the scrim
+// (null keeps the scrim's own default). The scrim fades with the panels.
+$sgs_nm_timing     = sgs_nav_bar_motion_timing( $attributes );
+$sgs_nm_panel_in   = $sgs_nm_timing['enter_ms'];
+$sgs_nm_panel_out  = $sgs_nm_timing['exit_ms'];
+$sgs_nm_panel_ease = $sgs_nm_timing['easing'];
+$css              .= $sgs_nm_panels['css'];
 
 // I-M4 (U-18): `scrimFadeDuration` — mirrors sgs/nav-drawer's own attribute.
 // 0 (default) keeps today's behaviour, fading the scrim WITH the panel's own
@@ -1101,7 +1043,7 @@ $css .= sgs_scrim_render(
 if ( '' !== $css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( $css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via the shared helpers + esc_attr/sanitize_html_class fragments above; wp_strip_all_tags guards </style>.
 }
-if ( null !== $sgs_nm_panels && '' !== $sgs_nm_panels['style'] ) {
+if ( '' !== $sgs_nm_panels['style'] ) {
 	echo $sgs_nm_panels['style']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and sanitised classes by Sgs_Motion_Loop_Delays.
 }
 
@@ -1110,14 +1052,6 @@ if ( null !== $sgs_nm_panels && '' !== $sgs_nm_panels['style'] ) {
 // rule above is a silent render no-op. `sgs-nav-bar-menu` is this block's own
 // BEM root; `$uid` is the per-instance scope.
 $nav_root_classes = array( 'sgs-nav-bar-menu', $uid );
-if ( $sgs_nm_stagger > 0 ) {
-	$nav_root_classes[] = 'sgs-nav-bar-menu--panel-stagger';
-	// G-5 (U-18): 'rows' staggers each mega column's own link rows/cards
-	// instead of the columns themselves — style.css's own modifier class.
-	if ( 'rows' === (string) ( $attributes['submenuItemStaggerScope'] ?? 'columns' ) ) {
-		$nav_root_classes[] = 'sgs-nav-bar-menu--panel-stagger-rows';
-	}
-}
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here —
 // on the element carrying the role. Exactly one <nav> per instance and exactly

@@ -14,8 +14,6 @@
  *   item-duration       each column's open animation runs for the stored item duration
  *   close-timing        on close the panel's close animation runs for its stored close duration with the host on
  *                       "close", and the panel is hidden once it ends (host back to empty, display none)
- *   ladder-never-stacks with the old ladder class and step forced onto the bar, the columns keep their stored delays;
- *                       its control is a probe-only element with no entrance, which the ladder DOES animate
  *   reduced-motion      under `prefers-reduced-motion: reduce` every column opens with 0s delay, no running animation,
  *                       opacity 1 and no translate
  *
@@ -43,8 +41,6 @@ import {
 	judgeReduced,
 } from './probe-motion-nav-drawer.mjs';
 import {
-	LADDER_KEYFRAME,
-	LADDER_STEP_MS,
 	readExpectations,
 	COLUMNS,
 	READ_COLUMNS,
@@ -261,62 +257,6 @@ async function checkWidth( rep, browser, args, width, exp ) {
 			measured: close.duration,
 			expected: exp.panelClose * 2,
 			red: close.duration !== exp.panelClose * 2,
-		} );
-	}
-	await ctx.close();
-
-	// The old ladder never stacks: force its class and step, plus a probe-only control column with no entrance.
-	( { ctx, page } = await context( browser, width, 'no-preference' ) );
-	await page.goto( url, { waitUntil: 'load' } );
-	await page.evaluate( ( step ) => {
-		const bar = document.querySelector( '.m46-bar' );
-		const content = bar?.querySelector( '.sgs-mega-panel__content' );
-		if ( ! content ) {
-			return;
-		}
-		bar.classList.add( 'sgs-nav-bar-menu--panel-stagger' );
-		bar.style.setProperty( '--sgs-nbm-stagger-step', `${ step }ms` );
-		const control = document.createElement( 'p' );
-		control.className = 'm46-ladder-control';
-		control.textContent = 'ladder control';
-		content.append( control );
-	}, LADDER_STEP_MS );
-	const forced = await openMega( page );
-	if ( forced.opened ) {
-		const rows = await page.evaluate( READ_COLUMNS, COLUMNS );
-		const measured = rows.map( ( r ) => toMs( r.delay ) );
-		const ladderNamed = rows.filter( ( r ) =>
-			r.name
-				.split( ',' )
-				.map( ( n ) => n.trim() )
-				.includes( LADDER_KEYFRAME )
-		).length;
-		rep.check( 'ladder-never-stacks', {
-			...where,
-			property: 'animation-delay, animation-name',
-			measured: { delays: measured, ladderNamed },
-			expected: { delays: exp.delays, ladderNamed: 0 },
-			pass: judgeList( measured, exp.delays ) && 0 === ladderNamed,
-		} );
-		const control = await page.evaluate( () => {
-			const el = document.querySelector( '.m46-ladder-control' );
-			return el ? getComputedStyle( el ).animationName : null;
-		} );
-		rep.control( 'ladder-never-stacks', {
-			...where,
-			property: 'animation-name',
-			measured: control,
-			expected: `${ LADDER_KEYFRAME } on the control only`,
-			red: null === control ? null : control === LADDER_KEYFRAME,
-			why: null === control ? 'the control element was not found' : '',
-		} );
-	} else {
-		rep.check( 'ladder-never-stacks', {
-			...where,
-			measured: null,
-			expected: null,
-			pass: null,
-			why: forced.why,
 		} );
 	}
 	await ctx.close();

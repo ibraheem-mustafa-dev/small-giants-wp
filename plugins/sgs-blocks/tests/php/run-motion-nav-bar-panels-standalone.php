@@ -132,7 +132,7 @@ $bar  = array(
 );
 
 // 1. Hosts and per-panel indices.
-$ok( sgs_nav_bar_uses_motion_model( $bar ) && ! sgs_nav_bar_uses_motion_model( array( 'submenuItemStagger' => 26 ) ) && ! sgs_nav_bar_uses_motion_model( array( 'sgsMotion' => array( 'v' => 1 ) ) ), 'on the model only with layers or stagger settings (NEGATIVE CONTROL: a bar holding only the old attributes is off it)' );
+$ok( ! function_exists( 'sgs_nav_bar_uses_motion_model' ), 'every bar renders its panels as motion state hosts: the overlap gate is gone' );
 $reset();
 $out = sgs_nav_bar_motion_panels( $html, 'sgs-nav-bar-menu-abc', $bar );
 $ok( 3 === substr_count( $out['html'], 'data-sgs-motion-state=""' ) && 0 === substr_count( $html, 'data-sgs-motion-state' ), 'every panel wrap (two dropdowns, one mega) becomes a motion state host' );

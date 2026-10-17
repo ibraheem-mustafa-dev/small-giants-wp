@@ -1,7 +1,7 @@
 <?php
 /**
  * `sgs/nav-drawer-menu` — the accordion SECTION: row alignment, the open
- * section's box (radius, shadow) and its open/close motion and row stagger.
+ * section's box (radius, shadow) and its open/close motion.
  *
  * The bar's equivalents are `justifyContent`, `submenuBorderRadius`/`submenuShadow`
  * (`includes/nav-menu-submenu-css.php`) and the panel motion block in
@@ -10,6 +10,8 @@
  * `::details-content` transitions, the per-row index) lives in
  * `nav-drawer-menu/style.css`, keyed on the root modifier classes and the
  * custom properties this file returns; nothing structural is emitted per instance.
+ * The open/close motion runs on the `<details>` element's `::details-content`
+ * pseudo-element, which the motion model cannot target, so it stays on CSS.
  *
  * @package SGS\Blocks
  */
@@ -80,12 +82,12 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_section_box_css' ) ) {
 
 if ( ! function_exists( 'sgs_nav_drawer_menu_section_motion' ) ) {
 	/**
-	 * The section's open/close animation and row stagger.
+	 * The section's open/close animation.
 	 *
 	 * Accordion mode only: a drill-down section is an overlay that slides in from
 	 * the side, and animating its height as well would fight that. Returns the root
 	 * modifier classes style.css keys on, plus the custom-property values it reads.
-	 * Nothing is returned for an untouched drawer (`submenuAnimation` none, stagger 0).
+	 * Nothing is returned for an untouched drawer (`submenuAnimation` none).
 	 *
 	 * `submenuAnimation` values: `none`, `fade` (opacity), `fade-lift` (opacity and
 	 * an 8px rise), `height` (the section's height collapses and grows). The bar's
@@ -114,23 +116,6 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_section_motion' ) ) {
 			$vars            .= '--sgs-ndm-acc-in:' . $in . 'ms;'
 				. '--sgs-ndm-acc-out:' . sgs_flat_duration_ms( $attributes['submenuExitDuration'] ?? 150, 150 ) . 'ms;'
 				. '--sgs-ndm-acc-ease:' . $ease . ';';
-		}
-
-		$step = sgs_flat_duration_ms( $attributes['submenuItemStagger'] ?? 0, 0, 1000 );
-		if ( $step > 0 ) {
-			$dur              = sgs_flat_duration_ms( $attributes['submenuItemStaggerDuration'] ?? 0, 0 );
-			$max              = sgs_flat_duration_ms( $attributes['submenuItemStaggerMax'] ?? 0, 0, 10000 );
-			$dist             = is_numeric( $attributes['submenuItemStaggerDistance'] ?? null )
-				? max( -400, min( 400, (int) round( (float) $attributes['submenuItemStaggerDistance'] ) ) ) : 8;
-			$out['classes'][] = 'sgs-nav-drawer-menu--acc-stagger';
-			if ( 'rows' === (string) ( $attributes['submenuItemStaggerScope'] ?? 'columns' ) ) {
-				$out['classes'][] = 'sgs-nav-drawer-menu--acc-stagger-rows';
-			}
-			$vars .= '--sgs-ndm-stag-step:' . $step . 'ms;'
-				. '--sgs-ndm-stag-dur:' . ( $dur > 0 ? $dur : $in ) . 'ms;'
-				. '--sgs-ndm-stag-dist:' . $dist . 'px;'
-				. '--sgs-ndm-stag-ease:' . $ease . ';'
-				. ( $max > 0 ? '--sgs-ndm-stag-max:' . $max . 'ms;' : '' );
 		}
 
 		if ( '' !== $vars ) {

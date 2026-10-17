@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import EasingAtom from '../../components/motion/EasingAtom';
 import {
 	PanelBody,
 	SelectControl,
@@ -8,7 +9,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { useEntityRecords } from '@wordpress/core-data';
-import { ResponsiveOverride, MotionEasingControl, SgsLengthControl } from '../../components';
+import { ResponsiveOverride, SgsLengthControl } from '../../components';
 import CreateDrawerControl from './CreateDrawerControl';
 import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
 
@@ -355,7 +356,7 @@ export default function DropdownSettingsPanel( {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<MotionEasingControl
+						<EasingAtom vocab="nav"
 							label={ __( 'Arrow turn curve', 'sgs-blocks' ) }
 							value={ submenuCaretTurnEasing }
 							custom={ submenuCaretTurnEasingCustom }

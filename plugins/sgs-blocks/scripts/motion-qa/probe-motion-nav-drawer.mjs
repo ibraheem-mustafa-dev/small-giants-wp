@@ -14,12 +14,8 @@
  *                       delay, the panel's for its stored close duration, and the dialog stays open until they end
  *   reduced-motion      under `prefers-reduced-motion: reduce` every item opens with 0s delay, no running animation
  *                       and no movement (opacity 1, translate at rest)
- *   ladder-never-stacks with the old ladder class forced onto the drawer, the items still show their stored delays;
- *                       its control is a probe-only element with no entrance, which the ladder DOES animate at a
- *                       different delay (proving the ladder is live and the exclusion is what protects the items)
  *
- * The probe changes nothing it does not restore: the ladder class, the custom property and the control element are
- * added in the browser only, on a page load that is discarded.
+ * The probe changes nothing on the page it measures.
  *
  * Usage:
  *   node scripts/motion-qa/probe-motion-nav-drawer.mjs --page <id> [--width 375 --width 768 --width 1440]
@@ -47,9 +43,6 @@ import { openDrawer as openVisibleDrawer } from './probe-drawer-open.mjs';
 const BROWSERS = { chromium, firefox, webkit };
 const HEIGHT = 900;
 const TREE = path.join( FIXTURE_DIR, 'nav-drawer-stagger.json' );
-const LADDER_KEYFRAME = 'sgs-nav-drawer-menu-item-in';
-const LADDER_STEP_MS = 70;
-const LADDER_INDEX = 3;
 
 // ---- Pure judges ---------------------------------------------------------------------------------------------
 
@@ -238,10 +231,6 @@ function selfTest() {
 				items.map( ( i ) => i.closeDelay ),
 				[ 200, 150, 100, 50 ]
 			)
-	);
-	ok(
-		'control: the ladder delay for the control element differs from every stored delay',
-		exp.items.every( ( i ) => i.delay !== LADDER_INDEX * LADDER_STEP_MS )
 	);
 	for ( const row of out ) {
 		console.log(
@@ -469,76 +458,6 @@ async function checkWidth( rep, browser, args, width, exp ) {
 				durations,
 				exp.items.map( ( i ) => i.closeDuration * 2 )
 			),
-		} );
-	}
-	await context.close();
-
-	// The old ladder never stacks: force its class and step, plus a probe-only control element with no entrance.
-	context = await browser.newContext( {
-		viewport: { width, height: HEIGHT },
-		reducedMotion: 'no-preference',
-	} );
-	page = await context.newPage();
-	await page.goto( url, { waitUntil: 'load' } );
-	await page.evaluate(
-		( { step, index } ) => {
-			const drawer = document.querySelector( '.m45-drawer' );
-			if ( ! drawer ) {
-				return;
-			}
-			drawer.classList.add( 'sgs-nav-drawer--stagger' );
-			drawer.style.setProperty( '--sgs-nd-stagger-step', `${ step }ms` );
-			const control = document.createElement( 'p' );
-			control.className = 'm45-ladder-control';
-			control.textContent = 'ladder control';
-			control.style.setProperty( '--sgs-nd-last-i', String( index ) );
-			drawer.querySelector( '.sgs-nav-drawer__body' )?.append( control );
-		},
-		{ step: LADDER_STEP_MS, index: LADDER_INDEX }
-	);
-	const forced = await openDrawer( page );
-	if ( forced.opened ) {
-		const rows = await readOpen( page );
-		const measured = rows.map( ( r ) => toMs( r.delay ) );
-		const ladderNamed = rows.filter( ( r ) =>
-			r.name
-				.split( ',' )
-				.map( ( n ) => n.trim() )
-				.includes( LADDER_KEYFRAME )
-		).length;
-		rep.check( 'ladder-never-stacks', {
-			...where,
-			property: 'animation-delay, animation-name',
-			measured: { delays: measured, ladderNamed },
-			expected: { delays: expectedOpen, ladderNamed: 0 },
-			pass: judgeList( measured, expectedOpen ) && ladderNamed === 0,
-		} );
-		const control = await page.evaluate( () => {
-			const el = document.querySelector( '.m45-ladder-control' );
-			const cs = el ? getComputedStyle( el ) : null;
-			return cs
-				? { delay: cs.animationDelay, name: cs.animationName }
-				: null;
-		} );
-		const controlMs = control ? toMs( control.delay ) : NaN;
-		rep.control( 'ladder-never-stacks', {
-			...where,
-			property: 'animation-delay',
-			measured: control,
-			expected: `the stored delays ${ JSON.stringify( expectedOpen ) }`,
-			red: control
-				? control.name === LADDER_KEYFRAME &&
-				  ! expectedOpen.includes( controlMs )
-				: null,
-			why: control ? '' : 'the control element was not found',
-		} );
-	} else {
-		rep.check( 'ladder-never-stacks', {
-			...where,
-			measured: null,
-			expected: null,
-			pass: null,
-			why: forced.why,
 		} );
 	}
 	await context.close();

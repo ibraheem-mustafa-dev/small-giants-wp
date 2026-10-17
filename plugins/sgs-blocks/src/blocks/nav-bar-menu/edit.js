@@ -48,6 +48,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
+import EasingAtom from '../../components/motion/EasingAtom';
 import { useRef } from 'react';
 import { useBlockProps, useSettings, InspectorControls } from '@wordpress/block-editor';
 import { Notice, RangeControl } from '@wordpress/components';
@@ -60,8 +61,7 @@ import {
 	textRow,
 	ScrimControls,
 	scrimColourRow,
-	MotionEasingControl,
-} from '../../components';
+	} from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTier } from '../../utils';
 import {
@@ -160,9 +160,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		triggerMagnetStrength,
 		burgerBarCount,
 		burgerMorph,
-		burgerMorphDuration,
-		burgerMorphEasing,
-		burgerMorphEasingCustom,
 		submenuAlign,
 		megaAlign,
 		submenuCaret,
@@ -651,9 +648,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					triggerMagnetStrength={ triggerMagnetStrength }
 					burgerBarCount={ burgerBarCount }
 					burgerMorph={ burgerMorph }
-					burgerMorphDuration={ burgerMorphDuration }
-					burgerMorphEasing={ burgerMorphEasing }
-					burgerMorphEasingCustom={ burgerMorphEasingCustom }
 					setAttributes={ setAttributes }
 				/>
 
@@ -801,7 +795,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<DropdownStylePanel
 					showSizingControls={ true }
-					showAnimationControl={ false }
 					submenuTopOffset={ submenuTopOffset }
 					submenuMinWidth={ submenuMinWidth }
 					submenuPadding={ submenuPadding }
@@ -885,7 +878,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { scrimFadeEasing: '', scrimFadeEasingCustom: '' } )
 						}
 					>
-						<MotionEasingControl
+						<EasingAtom vocab="nav"
 							label={ __( 'Backdrop fade easing', 'sgs-blocks' ) }
 							value={ scrimFadeEasing }
 							custom={ scrimFadeEasingCustom }

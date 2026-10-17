@@ -7,10 +7,9 @@ import {
 } from '@wordpress/components';
 import { useBlockEditContext, store as blockEditorStore } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { SgsLengthControl, IconPicker, MotionEasingControl, ResponsiveOverride, ResponsiveBoxControl, SgsBorderControl } from '../../components';
+import { SgsLengthControl, IconPicker, ResponsiveOverride, ResponsiveBoxControl, SgsBorderControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTier } from '../../utils';
-import { partHasEntranceLayer } from '../extensions/motion/part-layer';
 
 /**
  * Wave 3C U-9 (§4.4) — burger morph pose options.
@@ -66,10 +65,6 @@ const BURGER_MORPH_OPTIONS = [
  * @param {number}   root0.triggerMagnetStrength `triggerMagnetStrength`.
  * @param {number}   root0.burgerBarCount         `burgerBarCount` — 3 | 2.
  * @param {string}   root0.burgerMorph            `burgerMorph` — x | x-rotate | line | none.
- * @param {number}   root0.burgerMorphDuration     `burgerMorphDuration`, ms, 0–1200.
- * @param {string}   root0.burgerMorphEasing       `burgerMorphEasing`.
- * @param {string}   root0.burgerMorphEasingCustom `burgerMorphEasingCustom` — read only
- *                                                  when `burgerMorphEasing` is 'custom'.
  * @param {Function} root0.setAttributes         The block's attribute setter.
  */
 export default function BurgerPanel( {
@@ -85,9 +80,6 @@ export default function BurgerPanel( {
 	triggerMagnetStrength,
 	burgerBarCount,
 	burgerMorph,
-	burgerMorphDuration,
-	burgerMorphEasing,
-	burgerMorphEasingCustom,
 	setAttributes,
 } ) {
 	// FR-U18-G1: this panel's `edit.js` caller does not pass `burgerWidth`
@@ -109,17 +101,6 @@ export default function BurgerPanel( {
 		( select ) => select( blockEditorStore ).getBlockAttributes( clientId )?.burgerIconHeight,
 		[ clientId ]
 	);
-	// Spec 38A FR-38A-53: a burger holding an Entrance layer takes the morph's speed and easing from it, so the two
-	// controls below would do nothing; they give way to a pointer to the Motion panel.
-	const morphOnModel = useSelect(
-		( select ) =>
-			partHasEntranceLayer(
-				select( blockEditorStore ).getBlockAttributes( clientId ),
-				'burger'
-			),
-		[ clientId ]
-	);
-
 	// Menu button box controls (padding, corner radius, border, bar gap) —
 	// same reason as `burgerWidth` above: read off the stored attributes.
 	const burgerBox = useSelect(
@@ -540,44 +521,13 @@ export default function BurgerPanel( {
 				</ToggleGroupControl>
 			) }
 
-			{ showsIcon && 'none' !== morph && morphOnModel && (
+			{ showsIcon && 'none' !== morph && (
 				<p>
 					{ __(
 						'The morph speed and easing are set by the Motion panel on the Burger toggle part (Entrance, trigger State).',
 						'sgs-blocks'
 					) }
 				</p>
-			) }
-
-			{ showsIcon && 'none' !== morph && ! morphOnModel && (
-				<>
-					<RangeControl
-						label={ __( 'Morph speed', 'sgs-blocks' ) }
-						value={
-							typeof burgerMorphDuration === 'number' ? burgerMorphDuration : 200
-						}
-						min={ 0 }
-						max={ 1200 }
-						onChange={ ( val ) =>
-							setAttributes( {
-								burgerMorphDuration: typeof val === 'number' ? val : 200,
-							} )
-						}
-						help={ __( 'Milliseconds. 200 matches the original speed.', 'sgs-blocks' ) }
-						allowReset
-						resetFallbackValue={ 200 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-
-					<MotionEasingControl
-						label={ __( 'Morph easing', 'sgs-blocks' ) }
-						value={ burgerMorphEasing }
-						custom={ burgerMorphEasingCustom }
-						onChange={ ( val ) => setAttributes( { burgerMorphEasing: val } ) }
-						onCustomChange={ ( val ) => setAttributes( { burgerMorphEasingCustom: val } ) }
-					/>
-				</>
 			) }
 		</PanelBody>
 	);

@@ -1,10 +1,8 @@
 /**
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — Styles tab: "Section motion".
- * How an accordion section opens and closes, and how its rows arrive. The
- * drawer counterpart of the bar's "Open and close animation" select
- * (DropdownStylePanel) plus its "Panel motion" panel (PanelMotionPanel), with
- * the same attributes and a values list that suits an inline accordion:
- * none, fade, fade and lift, height. Render side:
+ * How an accordion section opens and closes: none, fade, fade and lift, height.
+ * It runs on the `<details>` element's `::details-content` pseudo-element, which
+ * the motion model cannot target, so it keeps its own attributes. Render side:
  * `includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_motion`
  * and the end of `style.css`. Accordion mode only: a drill-down section slides
  * in as an overlay and keeps its own motion.
@@ -13,8 +11,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import EasingAtom from '../../components/motion/EasingAtom';
 import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
-import { MotionEasingControl } from '../../components';
 
 /**
  * @param {Object}   props               Props.
@@ -29,11 +27,6 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 		submenuExitDuration,
 		submenuAnimationEasing,
 		submenuAnimationEasingCustom,
-		submenuItemStagger,
-		submenuItemStaggerDuration,
-		submenuItemStaggerMax,
-		submenuItemStaggerDistance,
-		submenuItemStaggerScope,
 	} = attributes;
 	const animated = !! submenuAnimation && 'none' !== submenuAnimation;
 
@@ -87,80 +80,13 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 						10,
 						__( '0 closes instantly.', 'sgs-blocks' )
 					) }
-					<MotionEasingControl
+					<EasingAtom vocab="nav"
 						label={ __( 'Speed curve', 'sgs-blocks' ) }
 						value={ submenuAnimationEasing }
 						custom={ submenuAnimationEasingCustom }
 						fallback="ease-out-css"
 						onChange={ ( value ) => setAttributes( { submenuAnimationEasing: value } ) }
 						onCustomChange={ ( value ) => setAttributes( { submenuAnimationEasingCustom: value } ) }
-					/>
-				</>
-			) }
-			{ range(
-				__( 'Row stagger (ms between rows)', 'sgs-blocks' ),
-				'submenuItemStagger',
-				submenuItemStagger,
-				0,
-				0,
-				1000,
-				1,
-				__( 'The rows of a section arrive one after another when it opens. 0 turns this off.', 'sgs-blocks' )
-			) }
-			{ ( submenuItemStagger ?? 0 ) > 0 && (
-				<>
-					{ range(
-						__( 'Row arrival time (ms)', 'sgs-blocks' ),
-						'submenuItemStaggerDuration',
-						submenuItemStaggerDuration,
-						0,
-						0,
-						3000,
-						10,
-						__( '0 uses the opening time.', 'sgs-blocks' )
-					) }
-					{ range(
-						__( 'Longest row delay (ms)', 'sgs-blocks' ),
-						'submenuItemStaggerMax',
-						submenuItemStaggerMax,
-						0,
-						0,
-						3000,
-						10,
-						__( '0 means no cap.', 'sgs-blocks' )
-					) }
-					{ range(
-						__( 'Row travel distance (px)', 'sgs-blocks' ),
-						'submenuItemStaggerDistance',
-						submenuItemStaggerDistance,
-						8,
-						-400,
-						400,
-						1,
-						__( 'Negative values drop rows in from above.', 'sgs-blocks' )
-					) }
-					<SelectControl
-						label={ __( 'Stagger applies to', 'sgs-blocks' ) }
-						value={ submenuItemStaggerScope || 'columns' }
-						options={ [
-							{
-								label: __( 'A section’s rows, or a mega section’s columns', 'sgs-blocks' ),
-								value: 'columns',
-							},
-							{
-								label: __( 'Link rows and cards inside each mega column', 'sgs-blocks' ),
-								value: 'rows',
-							},
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { submenuItemStaggerScope: value || 'columns' } )
-						}
-						help={ __(
-							'A plain section is unaffected either way. "Rows" cascades link by link down each mega column instead of moving whole columns.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</>
 			) }

@@ -19,14 +19,8 @@
  */
 
 import '../../shared/nav-interactivity/store';
-import initGrowFromAnchor from './grow-from-anchor';
 import initDrawerMotionState from './drawer-motion-state';
 
-// The one motion the drawer owns itself: `grow-from-anchor` measures its box's
-// two heights (the CSS keyframes need real lengths). See grow-from-anchor.js.
-initGrowFromAnchor();
-
-// A drawer on the Entrance model (its root carries `data-sgs-motion-state`):
-// the store announces each open and close, and the drawer publishes it as the
+// The root carries `data-sgs-motion-state`: the store announces each open and close, and the drawer publishes it as the
 // `open` motion state (Spec 38A FR-38A-51). See drawer-motion-state.js.
 initDrawerMotionState();

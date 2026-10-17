@@ -142,7 +142,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							// theme/sgs-theme/assets/js/sgs-shop-filters.js::scrollWrap.
 							// Set in the markup rather than at runtime because this
 							// element is server-rendered.
-							. '<div id="%3$s" class="sgs-nav-bar-menu__mega-panel-wrap sgs-nav-bar-menu__panel-motion sgs-nav-bar-menu__panel-motion--%7$s" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
+							. '<div id="%3$s" class="sgs-nav-bar-menu__mega-panel-wrap sgs-nav-bar-menu__panel-motion" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
 							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
@@ -150,7 +150,6 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
 							$caret, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
 							$panel_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output; already-safe rendered block HTML. The "View all" fallback (when the panel has no CTA of its own) is INSIDE this string, injected via sgs_mega_panel_footer_html.
-							esc_attr( $submenu['animation'] ?? 'none' )
 						);
 						continue; // Handled this item.
 					}
@@ -282,11 +281,9 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							);
 						}
 
-						// FR-41-10 / Wave 3C U-5. `$submenu['animation']` is already
-						// PHP-validated by the renderer's constructor; the same motion
-						// class rides on the mega panel wrap, so one set of rules in
-						// nav-bar-menu/style.css animates both forks.
-						$sub_wrap_class = 'sgs-nav-bar-menu__submenu-wrap sgs-nav-bar-menu__panel-motion sgs-nav-bar-menu__panel-motion--' . ( $submenu['animation'] ?? 'none' );
+						// The panel wrap is a motion state host on the Entrance model
+						// (helpers-nav-bar-motion-model.php); the mega panel wrap carries the same class.
+						$sub_wrap_class = 'sgs-nav-bar-menu__submenu-wrap sgs-nav-bar-menu__panel-motion';
 
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-bar-menu__item--has-submenu">'

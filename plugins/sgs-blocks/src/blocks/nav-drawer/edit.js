@@ -534,13 +534,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						attributes,
 						setAttributes,
 					} ),
-					fillRow( {
-						key: 'curtainColour',
-						label: __( 'Curtain animation colour', 'sgs-blocks' ),
-						attrs: { base: 'curtainColour', gradient: 'curtainColourGradient' },
-						attributes,
-						setAttributes,
-					} ),
 					textRow( {
 						key: 'toggleCloseColour',
 						label: __( 'Close icon colour', 'sgs-blocks' ),
@@ -928,7 +921,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						/>
 						{ /* The scrim's own fade time (a block setting, not page motion);
 						   0 follows the panel's open and close durations
-						   (includes/helpers-nav-drawer-motion.php::sgs_nav_drawer_motion_timing). */ }
+						   (includes/helpers-nav-drawer-motion-model.php::sgs_nav_drawer_motion_timing). */ }
 						<ToolsPanelItem
 							label={ __(
 								'Background dim fade time',

@@ -293,8 +293,7 @@
 					"clusters": [
 						"text",
 						"fill",
-						"layout",
-						"motion"
+						"layout"
 					],
 					"prefix": "burger",
 					"attrMap": {
@@ -314,9 +313,7 @@
 						"css:font-weight": "burgerFontWeight",
 						"css:text-transform": "burgerTextTransform",
 						"css:letter-spacing": "burgerLetterSpacing",
-						"css:gap": "burgerTextGap",
-						"css:transition-duration": "burgerMorphDuration",
-						"css:transition-timing-function": "burgerMorphEasing"
+						"css:gap": "burgerTextGap"
 					},
 					"states": {
 						"hover": {
@@ -326,7 +323,7 @@
 							}
 						}
 					},
-					"_note": "burgerColour is the icon TEXT colour (css:color); burgerHoverColour drives the button's HOVER background-color; burgerBg is its resting counterpart (a base attribute with an inspector control in the edit.js Burger panel, Normal state), so css:background-color resolves at base too. Unset burgerBg leaves style.css's `background:none` default. `css:color`->burgerColour, `css:background-color`->burgerBg and `states.hover.css:color`->burgerColourHover (sgs_hover_state_rules on `:hover, :focus-visible`) are declared EXPLICITLY, because burgerColour and burgerColourHover would otherwise both derive to (color, burger, state=NULL) and collide on one routing slot -- the hover entry is what separates them. The manifest is the durable source for these routings. Spec 35 §12 audit item 5 (2026-09-24) added the `motion` cluster (already defined in cluster-member-sets.json with exactly these two members, nothing new invented) + explicit attrMap entries for burgerMorphDuration/burgerMorphEasing -- the default {prefix}{suffix} convention would resolve them to 'burgerDuration'/'burgerEasing' (prefix 'burger' + suffix 'Duration'/'Easing'), which do not match the real attribute names (burgerMorphDuration/burgerMorphEasing), so an explicit attrMap entry is required, not optional."
+					"_note": "burgerColour is the icon TEXT colour (css:color); burgerHoverColour drives the button's HOVER background-color; burgerBg is its resting counterpart (a base attribute with an inspector control in the edit.js Burger panel, Normal state), so css:background-color resolves at base too. Unset burgerBg leaves style.css's `background:none` default. `css:color`->burgerColour, `css:background-color`->burgerBg and `states.hover.css:color`->burgerColourHover (sgs_hover_state_rules on `:hover, :focus-visible`) are declared EXPLICITLY, because burgerColour and burgerColourHover would otherwise both derive to (color, burger, state=NULL) and collide on one routing slot -- the hover entry is what separates them. The manifest is the durable source for these routings."
 				},
 				"detach-chip": {
 					"motion": false,
@@ -893,35 +890,6 @@
 			],
 			"description": "How many bars the default burger glyph draws: 3 (default) or 2. Two bars sit 6.5px apart centre to centre and follow every `burgerMorph` pose. Only affects the DEFAULT glyph; a custom `triggerIcon` keeps its own shape."
 		},
-		"burgerMorphDuration": {
-			"type": "number",
-			"default": 200,
-			"description": "Wave 3C U-9 (§4.4). Burger morph transition duration in ms, 0 to 1200. Default 200 matches today's hardcoded `style.css` value exactly. Ignored when the burger part holds an Entrance layer (Spec 38A FR-38A-53), whose duration and easing set the morph's speed instead."
-		},
-		"burgerMorphEasing": {
-			"type": "string",
-			"default": "ease",
-			"enum": [
-				"ease",
-				"ease-out-css",
-				"ease-in-out",
-				"default",
-				"ease-out",
-				"quart-out",
-				"standard",
-				"drafts",
-				"ease-in",
-				"spring",
-				"linear",
-				"custom"
-			],
-			"description": "Burger morph easing curve, from the shared motion easing list (`includes/helpers-motion-easing.php::sgs_motion_easing_css`, editor `MotionEasingControl`). `ease` is the default. `custom` reads `burgerMorphEasingCustom` (validated; falls back to `ease` when invalid). Ignored when the burger part holds an Entrance layer (Spec 38A FR-38A-53), whose duration and easing set the morph's speed instead."
-		},
-		"burgerMorphEasingCustom": {
-			"type": "string",
-			"default": "",
-			"description": "Wave 3C U-9 (§4.4). A hand-typed `cubic-bezier(x1, y1, x2, y2)` curve, read only when `burgerMorphEasing` is `custom`. Validated by an anchored numeric regex (four numbers, `-?\\d*\\.?\\d+`, no exponent notation, x1 and x2 clamped to 0-1 by the CSS spec) — an invalid value is REFUSED (never passed through) and the morph falls back to `ease`. Ignored when the burger part holds an Entrance layer (Spec 38A FR-38A-53), whose duration and easing set the morph's speed instead."
-		},
 		"sgsCustomCss": {
 			"type": "string",
 			"default": ""
@@ -1278,71 +1246,6 @@
 			"default": "swap",
 			"description": "How the submenu LINK background changes on hover: none / swap. Two options only — there is no Highlight on this row. PHP-validated, no JSON enum."
 		},
-		"submenuAnimation": {
-			"type": "string",
-			"default": "fade",
-			"description": "How every dropdown and mega panel arrives and leaves: none / fade / fade-lift / slide-down / grow. PHP-validated, no JSON enum. Default fade, a pure-opacity transition with no directional assumption, safe regardless of overflow-flip repositioning. Under reduced motion panels open and close whole."
-		},
-		"submenuAnimationDuration": {
-			"type": "number",
-			"default": 180,
-			"description": "Opening time of every dropdown and mega panel, in milliseconds, 0 to 3000."
-		},
-		"submenuExitDuration": {
-			"type": "number",
-			"default": 150,
-			"description": "Closing time of every dropdown and mega panel, in milliseconds. 0 closes instantly."
-		},
-		"submenuAnimationEasing": {
-			"type": "string",
-			"default": "ease-out-css",
-			"enum": [
-				"ease",
-				"ease-out-css",
-				"ease-in-out",
-				"default",
-				"ease-out",
-				"quart-out",
-				"standard",
-				"drafts",
-				"ease-in",
-				"spring",
-				"linear",
-				"custom"
-			],
-			"description": "Speed curve for the panels opening and closing, from the shared motion easing list (includes/helpers-motion-easing.php)."
-		},
-		"submenuAnimationEasingCustom": {
-			"type": "string",
-			"default": "",
-			"description": "A cubic-bezier() curve, read only when submenuAnimationEasing is custom. Validated; an invalid curve falls back to ease-out."
-		},
-		"submenuItemStagger": {
-			"type": "number",
-			"default": 0,
-			"description": "Delay between each item arriving in a dropdown or mega panel, in milliseconds. 0 turns the stagger off."
-		},
-		"submenuItemStaggerDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "Each panel item's own arrival time in milliseconds. 0 uses the panel's opening time."
-		},
-		"submenuItemStaggerMax": {
-			"type": "number",
-			"default": 0,
-			"description": "Cap on a panel item's delay in milliseconds. 0 means no cap."
-		},
-		"submenuItemStaggerDistance": {
-			"type": "number",
-			"default": 8,
-			"description": "How far each panel item travels as it arrives, in pixels. Negative means it falls from above."
-		},
-		"submenuItemStaggerScope": {
-			"type": "string",
-			"enum": [ "columns", "rows" ],
-			"default": "columns",
-			"description": "U-18 gap G-5. 'columns' (default) staggers the mega panel's direct column children only, as it always has. 'rows' staggers every link row/card INSIDE each `sgs/mega-group` column instead (the column itself stops animating so only one granularity moves), so a wide panel cascades link-by-link down each column. Dropdown (non-mega) panels are unaffected either way -- their items already are the direct children this control's 'columns' mode targets."
-		},
 		"submenuTopOffset": {
 			"type": "string",
 			"default": ""
@@ -1615,12 +1518,12 @@
 		"scrimFadeDuration": {
 			"type": "number",
 			"default": 0,
-			"description": "I-M4 (U-18). Fade time of the dimmed layer behind an open dropdown/mega panel, in milliseconds. 0 (default) fades it WITH the panel (submenuAnimationDuration/submenuExitDuration), matching today's behaviour. Mirrors sgs/nav-drawer's own scrimFadeDuration (FR-36-6) for the sibling case."
+			"description": "I-M4 (U-18). Fade time of the dimmed layer behind an open dropdown/mega panel, in milliseconds. 0 (default) fades it WITH the panel, using the open and close durations of the panel's Entrance layer. Mirrors sgs/nav-drawer's own scrimFadeDuration (FR-36-6) for the sibling case."
 		},
 		"scrimFadeEasing": {
 			"type": "string",
 			"default": "",
-			"description": "Easing of the backdrop fade, a name from the shared motion list (includes/helpers-motion-easing.php::sgs_motion_easing_css, editor MotionEasingControl). Empty (default) follows the panel's own easing (submenuAnimationEasing). custom reads scrimFadeEasingCustom."
+			"description": "Easing of the backdrop fade, a name from the shared motion list (includes/helpers-motion-easing.php::sgs_motion_easing_css, editor easing atom). Empty (default) follows the panel's own easing, from its Entrance layer. custom reads scrimFadeEasingCustom."
 		},
 		"scrimFadeEasingCustom": {
 			"type": "string",

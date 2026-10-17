@@ -2,35 +2,39 @@
 /**
  * Nav drawer on the Entrance model (Spec 38A FR-38A-51, unit M4.5): what the drawer reads from its motion layers.
  *
- * During the overlap (build plan, "One model per block during the overlap") a drawer whose `sgsMotion` holds elements
- * or stagger settings is on the new model: the panel and its items move on the Entrance and reveal panel, played by
- * `assets/css/motion-triggers.css` on the root's `data-sgs-motion-state`, and the old U-5 motion
- * (`helpers-nav-drawer-motion.php::sgs_nav_drawer_motion`, the panel keyframe rules and the item ladders) is skipped
- * for it. A drawer with no `sgsMotion` keeps the old motion until the M6.5 sweep. On the new model the panel layer's
- * timing still feeds two things:
+ * The panel and its items move on the Entrance and reveal panel, played by `assets/css/motion-triggers.css` on the
+ * root's `data-sgs-motion-state`. The panel layer's timing feeds two things:
  *
  * - the scrim, which fades with the panel unless `scrimFadeDuration` sets its own time;
  * - the store's focus deferral: a panel entrance over 500ms moves focus in when it ends (`data-sgs-nd-focus-after-entry`).
  *
  * The panel's transform origin is anchor geometry, not a motion value: a header or container drawer grows from its top
  * edge and a trigger drawer from its corner. `sgs_nav_drawer_motion_origin_css()` writes it per tier as
- * `--sgs-nd-anim-origin`, and `nav-drawer/style.css` applies it to a drawer carrying `data-sgs-motion-state`.
+ * `--sgs-nd-anim-origin`, and `nav-drawer/style.css` applies it to the root's `data-sgs-motion-state`.
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_drawer_uses_motion_model' ) ) {
+require_once __DIR__ . '/helpers-responsive.php';
+require_once __DIR__ . '/class-sgs-breakpoints.php';
+
+if ( ! function_exists( 'sgs_nav_drawer_anchor_origin' ) ) {
 	/**
-	 * Whether the drawer is on the Entrance model: its `sgsMotion` holds elements or stagger settings.
+	 * The transform origin the panel's entrance scales and rotates around: `header` and `container` expand down from
+	 * the header edge, a `trigger` drawer scales from its corner, and every other anchor is centred.
 	 *
-	 * @param array $attributes Block attributes.
-	 * @return bool
+	 * @param string $anchor The drawer's anchor at one tier.
+	 * @return string A CSS `transform-origin` value.
 	 */
-	function sgs_nav_drawer_uses_motion_model( array $attributes ): bool {
-		$motion = $attributes['sgsMotion'] ?? null;
-		return is_array( $motion ) && ( ! empty( $motion['elements'] ) || ! empty( $motion['stagger'] ) );
+	function sgs_nav_drawer_anchor_origin( string $anchor ): string {
+		$origins = array(
+			'header'    => 'top center',
+			'container' => 'top center',
+			'trigger'   => 'top right',
+		);
+		return $origins[ $anchor ] ?? 'center';
 	}
 }
 
@@ -112,9 +116,8 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_timing' ) ) {
 
 if ( ! function_exists( 'sgs_nav_drawer_motion_origin_css' ) ) {
 	/**
-	 * The panel's anchor-derived transform origin for a drawer on the Entrance model: `--sgs-nd-anim-origin` per tier,
-	 * the same value the old path wrote (`sgs_nav_drawer_motion_keyframes( 'auto', $anchor )['origin']`). A tier
-	 * follows the tier above it when its origin is the same, as the old path's tier rules did; a drawer whose every
+	 * The panel's anchor-derived transform origin: `--sgs-nd-anim-origin` per tier (`sgs_nav_drawer_anchor_origin()`).
+	 * A tier follows the tier above it when its origin is the same; a drawer whose every
 	 * tier is centred emits nothing, since the stylesheet's fallback is `center`.
 	 *
 	 * @param string $root_sel        The drawer's scoped root selector.
@@ -128,7 +131,7 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_origin_css' ) ) {
 			$anchor = (string) sgs_resolve_tier( is_array( $anchor_raw ) ? $anchor_raw : array(), $tier, 'full-screen' )['value'];
 			$anchor = in_array( $anchor, $allowed_anchors, true ) ? $anchor : 'full-screen';
 
-			$origins[ $tier ] = sgs_nav_drawer_motion_keyframes( 'auto', $anchor )['origin'];
+			$origins[ $tier ] = sgs_nav_drawer_anchor_origin( $anchor );
 		}
 		if ( array( 'center' ) === array_values( array_unique( $origins ) ) ) {
 			return '';

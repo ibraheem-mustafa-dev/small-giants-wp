@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
+import EasingAtom from '../../components/motion/EasingAtom';
 import { RangeControl } from '@wordpress/components';
-import { MotionEasingControl, SgsLengthControl } from '../../components';
+import { SgsLengthControl } from '../../components';
 
 /**
  * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — the accordion expander's
@@ -108,7 +109,7 @@ export default function ExpanderCaretControls( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
-			<MotionEasingControl
+			<EasingAtom vocab="nav"
 				label={ __( 'Expander turn curve', 'sgs-blocks' ) }
 				value={ submenuCaretTurnEasing }
 				custom={ submenuCaretTurnEasingCustom }

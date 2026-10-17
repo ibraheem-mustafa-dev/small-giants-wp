@@ -179,11 +179,8 @@ $bar_set  = array(
 );
 if ( 'two-bar' === $case ) {
 	$bar_set += array(
-		'burgerBarCount'          => 2,
-		'burgerMorph'             => 'x',
-		'burgerMorphDuration'     => 450,
-		'burgerMorphEasing'       => 'custom',
-		'burgerMorphEasingCustom' => 'cubic-bezier(0.645,0.045,0.355,1)',
+		'burgerBarCount' => 2,
+		'burgerMorph'    => 'x',
 	);
 }
 

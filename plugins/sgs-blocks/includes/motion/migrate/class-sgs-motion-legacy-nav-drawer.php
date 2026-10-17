@@ -22,8 +22,10 @@ namespace SGS\Blocks\Motion;
 
 defined( 'ABSPATH' ) || exit;
 
-require_once dirname( __DIR__, 2 ) . '/helpers-nav-drawer-motion.php';
-require_once dirname( __DIR__, 2 ) . '/helpers-nav-drawer-stagger-shape.php';
+require_once dirname( __DIR__, 2 ) . '/helpers-responsive.php';
+require_once dirname( __DIR__, 2 ) . '/helpers-motion-easing.php';
+require_once dirname( __DIR__, 2 ) . '/helpers-tokens.php';
+require_once dirname( __DIR__, 2 ) . '/class-sgs-breakpoints.php';
 require_once __DIR__ . '/class-sgs-motion-legacy-hover-value.php';
 require_once __DIR__ . '/class-sgs-motion-legacy-nav-drawer-curtain.php';
 
@@ -37,6 +39,55 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 
 	/** The item attributes. */
 	const ITEM_ATTRS = array( 'itemStagger', 'itemStaggerAxis', 'itemStaggerDistance', 'itemStaggerDuration', 'itemStaggerMax', 'itemStaggerOnClose', 'itemStaggerReveal', 'staggerInsideGroups' );
+
+	/** Every stored `entryAnimation` value. */
+	const SHAPES = array( 'auto', 'none', 'fade', 'slide-start', 'slide-end', 'slide-up', 'slide-down', 'wipe-down', 'wipe-down-skew', 'reveal-from-bar', 'curtain', 'scale', 'grow-from-anchor' );
+
+	/** The shape `auto` played for each anchor; every other anchor took the -8px nudge. */
+	const AUTO_SHAPES = array(
+		'header'     => 'expand-down',
+		'container'  => 'expand-down',
+		'side-start' => 'slide-start',
+		'side-end'   => 'slide-end',
+		'trigger'    => 'corner-scale',
+		'centred'    => 'modal-scale',
+	);
+
+	/** The transform origin the old path took from each resolved shape; every other shape used `center`. */
+	const SHAPE_ORIGINS = array(
+		'expand-down'      => 'top center',
+		'corner-scale'     => 'top right',
+		'grow-from-anchor' => 'top center',
+	);
+
+	/** The item travel multipliers (x, y) of each stored `itemStaggerAxis` value. */
+	const STAGGER_AXES = array(
+		'vertical' => array( 0, 1 ),
+		'start'    => array( -1, 0 ),
+		'end'      => array( 1, 0 ),
+	);
+
+	/**
+	 * The shape `auto` played for an anchor.
+	 *
+	 * @param string $anchor The drawer's anchor at one tier.
+	 * @return string A shape name.
+	 */
+	public static function auto_shape( string $anchor ): string {
+		return self::AUTO_SHAPES[ $anchor ] ?? 'nudge';
+	}
+
+	/**
+	 * The transform origin the old path wrote for a resolved shape.
+	 *
+	 * @param string $shape A stored shape, `auto` allowed.
+	 * @param string $anchor The drawer's anchor at the same tier.
+	 * @return string A CSS `transform-origin` value.
+	 */
+	public static function shape_origin( string $shape, string $anchor ): string {
+		$shape = 'auto' === $shape ? self::auto_shape( $anchor ) : $shape;
+		return self::SHAPE_ORIGINS[ $shape ] ?? 'center';
+	}
 
 	/** Shapes the model cannot express, with the reason. */
 	const UNMAPPED = array(
@@ -196,7 +247,7 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 			'consumed' => array(),
 			'reported' => array(),
 		);
-		$shapes = sgs_nav_drawer_motion_shapes();
+		$shapes = self::SHAPES;
 		$fade   = ! array_key_exists( 'entryFade', $attrs ) || ! empty( $attrs['entryFade'] );
 		$tiers  = array();
 		$bad    = array();
@@ -206,7 +257,7 @@ final class Sgs_Motion_Legacy_Nav_Drawer {
 			$shape = (string) self::tier( $attrs['entryAnimation'] ?? array(), $tier, 'auto' );
 			$shape = in_array( $shape, $shapes, true ) ? $shape : 'auto';
 			if ( 'auto' === $shape ) {
-				$shape = sgs_nav_drawer_motion_auto_shape( (string) self::tier( $attrs['anchor'] ?? array(), $tier, 'full-screen' ) );
+				$shape = self::auto_shape( (string) self::tier( $attrs['anchor'] ?? array(), $tier, 'full-screen' ) );
 			}
 			$used[ $shape ] = true;
 			if ( 'curtain' === $shape ) {

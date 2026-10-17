@@ -1,18 +1,10 @@
 <?php
 /**
- * Standalone runner for Wave 3C U-5: the drawer and panel entry and exit motion
- * vocabulary and item stagger. Design: `.claude/reports/2026-09-24-u5-motion-design.md`.
+ * Standalone runner for the nav drawer and nav bar panel motion contracts that remain after Spec 38A M6.6-G5: the
+ * drawer and the bar's panels move on the Entrance model, so what is tested here is what the blocks still own.
  *
- * Loads the REAL shipped helpers and reads the REAL shipped CSS, JS and JSON, so a
- * change to the shipped code is a change to what is tested. Negative controls read
- * the same files at the pre-U-5 commit (00641d401) through `git show` and prove each
- * structural check fails there.
- *
- * Spec 38A M4.5 adds the Entrance model beside it for the overlap: a drawer whose
- * `sgsMotion` holds elements or stagger settings prints the motion state host and
- * skips this motion (the panel rules sit behind `:where(:not([data-sgs-motion-state]))`);
- * any other drawer keeps it unchanged. Those checks read the pre-M4.5 files at
- * 8db550a37 for their negative controls.
+ * Loads the REAL shipped helpers and reads the REAL shipped CSS, JS and JSON, so a change to the shipped code is a
+ * change to what is tested.
  *
  *   php plugins/sgs-blocks/tests/php/run-u5-motion-standalone.php
  *
@@ -42,7 +34,7 @@ require_once $root . '/includes/helpers-tokens.php';
 require_once $root . '/includes/helpers-responsive.php';
 require_once $root . '/includes/helpers-motion-easing.php';
 require_once $root . '/includes/motion/class-sgs-motion-field-types.php';
-require_once $root . '/includes/helpers-nav-drawer-motion.php';
+require_once $root . '/includes/helpers-nav-drawer-motion-model.php';
 
 $pass = 0;
 $fail = 0;
@@ -67,46 +59,16 @@ function read_file( string $rel ): string {
 	return str_replace( "\r\n", "\n", (string) file_get_contents( $root . '/' . $rel ) );
 }
 
-/** A file at the pre-U-5 commit. `~` form, never `^` (cmd.exe eats the caret). */
-function read_old( string $rel ): string {
-	$out = shell_exec( 'git show 00641d401:plugins/sgs-blocks/' . $rel );
-	return str_replace( "\r\n", "\n", (string) $out );
-}
-
-/** A file at the last commit before the drawer gained the Entrance model (Spec 38A M4.5). */
-function read_pre_m45( string $rel ): string {
-	$out = shell_exec( 'git show 8db550a37:plugins/sgs-blocks/' . $rel );
-	return str_replace( "\r\n", "\n", (string) $out );
-}
-
-/** A file at the last commit before the bar's panels gained the Entrance model (Spec 38A M4.6). */
-function read_pre_m46( string $rel ): string {
-	$out = shell_exec( 'git show 3aae70faf:plugins/sgs-blocks/' . $rel );
-	return str_replace( "
-", "
-", (string) $out );
-}
-
-/** A file at the last commit before the model path wrote the anchor-derived transform origin (Spec 38A M4.5 follow-up). */
-function read_pre_origin( string $rel ): string {
-	$out = shell_exec( 'git show e1f1aef42:plugins/sgs-blocks/' . $rel );
-	return str_replace( "
-", "
-", (string) $out );
-}
-
 $anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
 
 // ══════════════════════════════════════════════════════════════════════════
 // 1. The shared easing list: one set of values everywhere.
 // ══════════════════════════════════════════════════════════════════════════
 $values = sgs_motion_easing_values();
-foreach ( array( 'nav-drawer' => 'entryEasing', 'nav-bar-menu' => 'submenuAnimationEasing' ) as $block => $attr ) {
-	$json = json_decode( read_file( "src/blocks/$block/block.json" ), true );
-	ok( ( $json['attributes'][ $attr ]['enum'] ?? null ) === $values, "$block.$attr enum equals sgs_motion_easing_values()" );
-}
 preg_match_all( "/\\bnav: '([a-z-]+)'/", read_file( 'src/components/motion/easing-master-list.js' ), $m );
 ok( $m[1] === $values, 'the easing master list (easing-master-list.js) carries the nav vocabulary in the same values and order' );
+$scrim_json = json_decode( read_file( 'src/blocks/nav-bar-menu/block.json' ), true );
+ok( 'string' === ( $scrim_json['attributes']['scrimFadeEasing']['type'] ?? '' ), 'the bar keeps its backdrop fade easing attribute' );
 
 ok( 'ease-out' === sgs_motion_easing_css( 'ease-out-css' ), 'ease-out-css resolves to the CSS keyword' );
 ok( 'cubic-bezier(0.16, 0.84, 0.32, 1)' === sgs_motion_easing_css( 'drafts' ), 'drafts resolves to the drafts curve (halcyon, the wholesale-food client)' );
@@ -118,74 +80,15 @@ ok( 'ease-out' === sgs_motion_easing_css( 'nope', '', 'ease-out' ), 'an unknown 
 ok( 3000 === sgs_flat_duration_ms( 99999, 1 ) && 0 === sgs_flat_duration_ms( -5, 1 ) && 7 === sgs_flat_duration_ms( 'x', 7 ), 'durations clamp to 0..3000 and default on junk' );
 
 // ══════════════════════════════════════════════════════════════════════════
-// 2. Drawer motion resolution.
+// 2. The drawer on the Entrance model (Spec 38A FR-38A-51).
 // ══════════════════════════════════════════════════════════════════════════
-$sel = '.u.wp-block-sgs-nav-drawer';
-
-$default = sgs_nav_drawer_motion( array(), $sel, array(), $anchors );
-ok( has( $default['css'], '--sgs-nd-anim-in:sgs-nav-drawer-in;' ), 'an untouched full-screen drawer keeps the -8px nudge' );
-ok( has( $default['css'], '--sgs-nd-enter-dur:250ms;--sgs-nd-exit-dur:200ms;--sgs-nd-ease:ease-out;--sgs-nd-from-opacity:0;' ), 'defaults: 250ms in, 200ms out, ease-out, fade on' );
-ok( array() === $default['classes'] && array() === $default['data'], 'defaults add no class and no data attribute' );
-ok( ! has( $default['css'], '@media' ), 'identical tiers emit no media query' );
-
-$auto_trigger = sgs_nav_drawer_motion( array(), $sel, array( 'desktop' => 'trigger', 'mobile' => 'full-screen' ), $anchors );
-ok( has( $auto_trigger['css'], '--sgs-nd-anim-in:sgs-nav-drawer-corner-scale-in;--sgs-nd-anim-out:sgs-nav-drawer-corner-scale-out;--sgs-nd-anim-origin:top right;' ), 'auto follows a trigger anchor to the corner scale' );
-ok( has( $auto_trigger['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $sel . '{--sgs-nd-anim-in:sgs-nav-drawer-in;' ), 'auto follows the phone anchor per tier' );
-
-$away = sgs_nav_drawer_motion(
-	array(
-		'entryAnimation' => array( 'desktop' => 'slide-start' ),
-		'entryDuration'  => 300,
-		'exitDuration'   => 300,
-		'entryFade'      => false,
-	),
-	$sel,
-	array(),
-	$anchors
-);
-ok( has( $away['css'], '--sgs-nd-anim-in:sgs-nav-drawer-slide-start-in;' ) && has( $away['css'], '--sgs-nd-from-opacity:1;' ) && has( $away['css'], '--sgs-nd-enter-dur:300ms;--sgs-nd-exit-dur:300ms;' ), 'away: a pure 300ms slide from the start edge' );
-
-$hostile = sgs_nav_drawer_motion( array( 'entryAnimation' => array( 'desktop' => 'x;}body{' ) ), $sel, array(), $anchors );
-ok( ! has( $hostile['css'], 'body{' ) && has( $hostile['css'], 'sgs-nav-drawer-in;' ), 'an off-list shape falls back to auto' );
-
-$curtain = sgs_nav_drawer_motion( array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => '#131419', 'entryDuration' => 1800 ), $sel, array(), $anchors );
-ok( in_array( 'sgs-nav-drawer--curtain', $curtain['classes'], true ), 'curtain adds its class' );
-ok( has( $curtain['css'], '--sgs-nd-curtain-in:sgs-nav-drawer-curtain-sweep-in;' ) && has( $curtain['css'], '--sgs-nd-curtain-colour:#131419;' ), 'dogstudio: the curtain sweep and its colour' );
-$grad = sgs_nav_drawer_motion( array( 'entryAnimation' => array( 'desktop' => 'curtain' ), 'curtainColour' => '#131419', 'curtainColourGradient' => 'linear-gradient(90deg, #000 0%, #fff 100%)' ), $sel, array(), $anchors );
-ok( has( $grad['css'], '--sgs-nd-curtain-colour:linear-gradient(90deg, #000 0%, #fff 100%);' ), 'a curtain gradient wins over the flat colour' );
-ok( array_key_exists( 'sgs-nd-focus-after-entry', $curtain['data'] ), 'an entry over 500ms defers focus until it ends' );
-
-$lusion = sgs_nav_drawer_motion(
-	array(
-		'itemStagger'         => 20,
-		'itemStaggerDistance' => array( 'desktop' => 88 ),
-		'itemStaggerOnClose'  => true,
-	),
-	$sel,
-	array(),
-	$anchors
-);
-ok( in_array( 'sgs-nav-drawer--stagger', $lusion['classes'], true ) && in_array( 'sgs-nav-drawer--stagger-close', $lusion['classes'], true ), 'lusion: stagger with reverse-on-close' );
-ok( has( $lusion['css'], '--sgs-nd-stagger-step:20ms;' ) && has( $lusion['css'], '--sgs-nd-stagger-dist:88px;' ), 'the step and distance reach the drawer' );
-ok( ! has( $lusion['css'], '--sgs-nd-stagger-max' ), 'no cap is emitted unless set (fantasy, the reference site, studionamma are uncapped)' );
-
-$drafts = sgs_nav_drawer_motion( array( 'itemStagger' => 55, 'itemStaggerMax' => 320 ), $sel, array(), $anchors );
-ok( has( $drafts['css'], '--sgs-nd-stagger-max:320ms;' ), 'the drafts\' 320ms cap is emitted when set' );
-
-$studionamma = sgs_nav_drawer_motion( array( 'itemStagger' => 100, 'itemStaggerDistance' => array( 'desktop' => 387, 'mobile' => 168 ) ), $sel, array(), $anchors );
-ok( has( $studionamma['css'], '--sgs-nd-stagger-dist:387px' ) && has( $studionamma['css'], '--sgs-nd-stagger-dist:168px' ), 'studionamma: the travel distance differs per tier' );
-
-// ══════════════════════════════════════════════════════════════════════════
-// 2b. One model per drawer during the overlap (Spec 38A M4.5).
-// ══════════════════════════════════════════════════════════════════════════
+$sel       = '.u.wp-block-sgs-nav-drawer';
 $nd_render = read_file( 'src/blocks/nav-drawer/render.php' );
-ok( has( $nd_render, "if ( \$sgs_nd_motion_model ) {\n\t\$sgs_nd_motion            = sgs_nav_drawer_motion_timing( \$attributes );" ) && has( $nd_render, "} else {\n\t\$sgs_nd_motion = sgs_nav_drawer_motion( \$attributes, \$root_sel, \$anchor_attr_raw, \$sgs_nd_allowed_anchors );\n\t\$css          .= \$sgs_nd_motion['css'];" ), 'render.php keeps the U-5 motion for a drawer off the model and reads the panel layer on it' );
-ok( has( $nd_render, "if ( \$sgs_nd_motion_model ) {\n\t// The motion state host" ) && has( $nd_render, "\$wrapper_args['data-sgs-motion-state'] = '';" ), 'only a drawer on the model prints the motion state host' );
-ok( ! has( read_pre_m45( 'src/blocks/nav-drawer/render.php' ), 'data-sgs-motion-state' ), 'negative control: before M4.5 no drawer printed it' );
-ok( ! sgs_nav_drawer_uses_motion_model( array() ) && ! sgs_nav_drawer_uses_motion_model( array( 'sgsMotion' => array( 'v' => 1 ) ) ) && sgs_nav_drawer_uses_motion_model( array( 'sgsMotion' => array( 'v' => 1, 'stagger' => array( 'step' => 50 ) ) ) ) && sgs_nav_drawer_uses_motion_model( array( 'sgsMotion' => array( 'elements' => array( 'root' => array() ) ) ) ), 'the model switch: an empty or version-only sgsMotion stays on U-5; elements or stagger settings move the drawer' );
+ok( has( $nd_render, '$sgs_nd_motion = sgs_nav_drawer_motion_timing( $attributes );' ) && has( $nd_render, "\$wrapper_args['data-sgs-motion-state'] = '';" ), 'every drawer reads its panel layer timing and prints the motion state host' );
+ok( ! function_exists( 'sgs_nav_drawer_motion' ) && ! function_exists( 'sgs_nav_drawer_uses_motion_model' ), 'the old drawer motion resolver and its overlap gate are gone' );
 
 $none = sgs_nav_drawer_motion_timing( array() );
-ok( null === $none['enter_ms'] && null === $none['exit_ms'] && '' === $none['easing'] && array() === $none['data'], 'on the model with no panel layer: no timing, so the scrim keeps its own default' );
+ok( null === $none['enter_ms'] && null === $none['exit_ms'] && '' === $none['easing'] && array() === $none['data'], 'with no panel layer: no timing, so the scrim keeps its own default' );
 $layer = static function ( array $values, array $close = array(), string $trigger = 'open' ): array {
 	$base = array(
 		'trigger' => $trigger,
@@ -200,132 +103,80 @@ $t_away = sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 300, 'easin
 ok( 300 === $t_away['enter_ms'] && 200 === $t_away['exit_ms'] && 'ease-out' === $t_away['easing'] && array() === $t_away['data'], 'a 300ms open, 200ms close panel times the scrim 300/200 with its easing' );
 $t_same = sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 900, 'easing' => 'token:easing.ease-out' ) ) );
 ok( 900 === $t_same['exit_ms'] && 'var(--wp--custom--easing--ease-out)' === $t_same['easing'] && array_key_exists( 'sgs-nd-focus-after-entry', $t_same['data'] ), 'no close duration follows the open; a token easing resolves; over 500ms defers focus' );
-ok( null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 'token:duration.slow' ) ) )['enter_ms'] && null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 900 ), array(), 'scroll' ) )['enter_ms'], 'a token duration, or a root entrance that is not `open`, gives no scrim timing' );
+ok( null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 'token:duration.slow' ) ) )['enter_ms'] && null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 900 ), array(), 'scroll' ) )['enter_ms'], 'a token duration, or a root entrance on another trigger, gives no timing' );
 
-$nd_css_now = read_file( 'src/blocks/nav-drawer/style.css' );
-ok( has( $nd_css_now, '.wp-block-sgs-nav-drawer:where(:not([data-sgs-motion-state]))[open] {' ) && ! preg_match( '/^\t\.wp-block-sgs-nav-drawer(\.|\[(?!data-sgs-motion-state\]))/m', substr( $nd_css_now, (int) strpos( $nd_css_now, '/* ── Entry and exit motion' ), (int) strpos( $nd_css_now, '/* interpolate-size' ) - (int) strpos( $nd_css_now, '/* ── Entry and exit motion' ) ) ), 'every old panel rule is gated off a drawer on the model, at zero added specificity' );
-ok( has( read_pre_m45( 'src/blocks/nav-drawer/style.css' ), "\t.wp-block-sgs-nav-drawer[open] {" ), 'negative control: before M4.5 the panel rule applied to every drawer' );
-// The panel's transform origin is anchor geometry, so a drawer on the model grows from its anchor's edge too.
+// The panel's transform origin is anchor geometry, so a drawer grows from its anchor's edge.
 $origin_header = sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'header' ), $anchors );
-ok( $sel . '{--sgs-nd-anim-origin:top center;}' === $origin_header, 'a model-path drawer with a header anchor emits the top-edge origin (top center) and nothing else', $origin_header );
+ok( $sel . '{--sgs-nd-anim-origin:top center;}' === $origin_header, 'a header anchor emits the top-edge origin (top center) and nothing else' );
 ok( $sel . '{--sgs-nd-anim-origin:top center;}' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'container' ), $anchors ), 'a container anchor emits the same top-edge origin' );
 $origin_tiers = sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'header', 'mobile' => 'full-screen' ), $anchors );
-ok( $sel . '{--sgs-nd-anim-origin:top center;}@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $sel . '{--sgs-nd-anim-origin:center;}}' === $origin_tiers, 'the origin follows the anchor per tier: Tablet inherits Desktop, the full-screen phone is centred', $origin_tiers );
+ok( $sel . '{--sgs-nd-anim-origin:top center;}@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $sel . '{--sgs-nd-anim-origin:center;}}' === $origin_tiers, 'the origin follows the anchor per tier: Tablet inherits Desktop, the full-screen phone is centred' );
 ok( $sel . '{--sgs-nd-anim-origin:top right;}' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'trigger' ), $anchors ), 'a trigger anchor emits the corner origin (top right)' );
-ok( '' === sgs_nav_drawer_motion_origin_css( $sel, array(), $anchors ) && '' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'side-start', 'mobile' => 'centred' ), $anchors ) && '' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'nope;}body{' ), $anchors ), 'an unset, side, centred or off-list anchor is centred everywhere, so nothing is emitted (the stylesheet falls back to center)' );
-ok( sgs_nav_drawer_motion_keyframes( 'auto', 'header' )['origin'] === 'top center' && has( $origin_header, sgs_nav_drawer_motion_keyframes( 'auto', 'header' )['origin'] ), 'the model path writes the very value the old path resolves for the anchor (sgs_nav_drawer_motion_keyframes)' );
-ok( has( $nd_render, "\t\$css                     .= sgs_nav_drawer_motion_origin_css( \$root_sel, \$anchor_attr_raw, \$sgs_nd_allowed_anchors );\n} else {" ) && 1 === substr_count( $nd_render, 'sgs_nav_drawer_motion_origin_css' ), 'render.php writes the origin on the model branch only, so the old path\'s output is untouched' );
-ok( has( $nd_css_now, "\t.wp-block-sgs-nav-drawer[data-sgs-motion-state] {\n\t\ttransform-origin: var(--sgs-nd-anim-origin, center);" ) && has( substr( $nd_css_now, (int) strpos( $nd_css_now, '@media (prefers-reduced-motion: no-preference)' ) ), "[data-sgs-motion-state] {\n\t\ttransform-origin" ), 'the stylesheet applies the origin to a drawer carrying the motion state host, inside prefers-reduced-motion: no-preference' );
-ok( ! has( read_pre_origin( 'includes/helpers-nav-drawer-motion-model.php' ), 'sgs_nav_drawer_motion_origin_css' ) && ! has( read_pre_origin( 'src/blocks/nav-drawer/style.css' ), "[data-sgs-motion-state] {\n\t\ttransform-origin" ), 'negative control: before this change a model-path drawer wrote no origin, so a scale entrance grew from the centre' );
+ok( '' === sgs_nav_drawer_motion_origin_css( $sel, array(), $anchors ) && '' === sgs_nav_drawer_motion_origin_css( $sel, array( 'desktop' => 'side-start', 'mobile' => 'centred' ), $anchors ), 'a drawer whose every tier is centred emits nothing' );
+ok( 1 === preg_match( '/\$css\s+\.= sgs_nav_drawer_motion_origin_css\( \$root_sel, \$anchor_attr_raw, \$sgs_nd_allowed_anchors \);/', $nd_render ) && 1 === substr_count( $nd_render, 'sgs_nav_drawer_motion_origin_css' ), 'render.php writes the origin once, for every drawer' );
+
+$nd_css = read_file( 'src/blocks/nav-drawer/style.css' );
+ok( has( $nd_css, "[data-sgs-motion-state] {\n\t\ttransform-origin: var(--sgs-nd-anim-origin, center);" ), 'the stylesheet applies the anchor origin to the motion state host' );
+ok( ! has( $nd_css, '@keyframes sgs-nav-drawer-' ) && ! has( $nd_css, '--sgs-nd-last-i' ) && ! has( $nd_css, 'sgs-nav-drawer--stagger' ), 'the old panel keyframes and the item ladder are gone from the drawer stylesheet' );
+
 $nd_edit = read_file( 'src/blocks/nav-drawer/edit.js' );
-ok( ! has( $nd_edit, '<MotionPanel' ) && has( read_pre_m45( 'src/blocks/nav-drawer/edit.js' ), '<MotionPanel' ) && has( $nd_edit, 'scrimFadeDuration: value ?? 0' ), 'the old Motion panel is unmounted (decision 11); the scrim fade time keeps its control' );
+ok( has( $nd_edit, 'scrimFadeDuration: value ?? 0' ) && ! has( $nd_edit, 'curtainColour' ), 'the scrim fade time keeps its control; the curtain colour control is gone' );
 ok( array( 'root', 'body' ) === ( json_decode( read_file( 'src/blocks/nav-drawer/block.json' ), true )['supports']['sgs']['motion']['opens'] ?? null ), 'the drawer offers Panel opens on its root and body' );
-$ndm_css_now = read_file( 'src/blocks/nav-drawer-menu/style.css' );
-ok( has( $ndm_css_now, '.sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:not([data-sgs-me]) {' ) && has( $nd_css_now, ':not(.wp-block-sgs-nav-drawer-menu, [data-sgs-me])' ) && ! has( read_pre_m45( 'src/blocks/nav-drawer-menu/style.css' ), ':not([data-sgs-me])' ), 'an item carrying an entrance is excluded from every ladder rule (negative control: not before M4.5)' );
-ok( has( read_file( 'src/blocks/nav-drawer-menu/render.php' ), "Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', \$uid, \$attributes, \$sgs_nm_loop_tagged['count'], '.sgs-nav-drawer-menu__item' )" ) && has( $ndm_css_now, '[data-drill-enhanced] > .sgs-nav-drawer-menu__item[data-sgs-me~="open"] {' ), 'the menu writes one stored delay per top-level item; in drill mode an item entrance fills backwards only' );
+$nd_json = json_decode( read_file( 'src/blocks/nav-drawer/block.json' ), true );
+foreach ( array( 'entryAnimation', 'entryDuration', 'exitDuration', 'entryEasing', 'entryEasingCustom', 'entryFade', 'curtainColour', 'curtainColourGradient', 'itemStagger', 'itemStaggerDistance', 'itemStaggerDuration', 'itemStaggerMax', 'itemStaggerOnClose', 'itemStaggerAxis', 'itemStaggerReveal', 'staggerInsideGroups' ) as $gone ) {
+	ok( ! isset( $nd_json['attributes'][ $gone ] ), "nav-drawer attribute $gone is removed" );
+}
+foreach ( array( 'src/blocks/nav-drawer/MotionPanel.js', 'src/blocks/nav-drawer/ItemEntranceControls.js', 'src/blocks/nav-drawer/grow-from-anchor.js', 'includes/helpers-nav-drawer-motion.php', 'includes/helpers-nav-drawer-stagger-shape.php' ) as $gone_file ) {
+	ok( ! file_exists( $root . '/' . $gone_file ), "$gone_file is deleted" );
+}
+
+$ndm_css = read_file( 'src/blocks/nav-drawer-menu/style.css' );
+ok( ! has( $ndm_css, 'sibling-index()' ) && ! has( $ndm_css, '--sgs-i:' ) && ! has( $ndm_css, '--sgs-ndm-si:' ), 'the drawer menu stylesheet carries no index ladder' );
+ok( has( read_file( 'src/blocks/nav-drawer-menu/render.php' ), "Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', \$uid, \$attributes, \$sgs_nm_loop_tagged['count'], '.sgs-nav-drawer-menu__item' )" ) && has( $ndm_css, '[data-drill-enhanced] > .sgs-nav-drawer-menu__item[data-sgs-me~="open"]' ), 'the menu items take stored per-index delays and fill backwards in drill mode' );
+// The accordion section's open and close runs on `::details-content`, which the model cannot target (Bean decision C).
+ok( has( $ndm_css, '::details-content' ) && has( $ndm_css, '.sgs-nav-drawer-menu--acc-height' ), 'the accordion section open and close stays on its ::details-content CSS' );
+$ndm_json = json_decode( read_file( 'src/blocks/nav-drawer-menu/block.json' ), true );
+ok( isset( $ndm_json['attributes']['submenuAnimation'] ) && ! isset( $ndm_json['attributes']['submenuItemStagger'] ), 'the drawer menu keeps the section animation attributes and loses the row stagger' );
+
 $store     = read_file( 'src/shared/nav-interactivity/store.js' );
 $lifecycle = read_file( 'src/shared/nav-interactivity/drawer-lifecycle.js' );
 $close_at  = strpos( $store, "drawer.classList.add( 'is-closing' );" );
 $tell_at   = strpos( $store, "announceDrawer( drawer, 'close' );" );
 $sample_at = strpos( $store, 'whenAnimationsSettle( drawer, () => drawer.close() );' );
-ok( false !== $close_at && false !== $tell_at && false !== $sample_at && $close_at < $tell_at && $tell_at < $sample_at && ! has( read_pre_m45( 'src/shared/nav-interactivity/store.js' ), 'announceDrawer' ), 'the store announces the close BEFORE it samples the animations (negative control: no announcement before M4.5)' );
+ok( false !== $close_at && false !== $tell_at && false !== $sample_at && $close_at < $tell_at && $tell_at < $sample_at, 'the store announces the close BEFORE it samples the animations to wait on' );
 $dms = read_file( 'src/blocks/nav-drawer/drawer-motion-state.js' );
-ok( has( $dms, "import( /* webpackIgnore: true */ '@sgs/motion-state' )" ) && has( $dms, '.catch( () => null )' ) && has( $dms, 'loaded.clearMotionState( drawer )' ) && has( read_file( 'src/blocks/nav-drawer/view.js' ), 'initDrawerMotionState();' ) && has( read_file( 'src/blocks/nav-drawer/view.js' ), 'initGrowFromAnchor();' ), 'the drawer publishes open and close through @sgs/motion-state; the old grow shape still runs off the model' );
+ok( has( $dms, "import( /* webpackIgnore: true */ '@sgs/motion-state' )" ) && has( $dms, '.catch( () => null )' ) && has( $dms, 'loaded.clearMotionState( drawer )' ) && has( read_file( 'src/blocks/nav-drawer/view.js' ), 'initDrawerMotionState();' ) && ! has( read_file( 'src/blocks/nav-drawer/view.js' ), 'GrowFromAnchor' ), 'the drawer publishes open and close through @sgs/motion-state and fails soft' );
 
 // ══════════════════════════════════════════════════════════════════════════
-// 3. Every keyframe the resolver names exists in the drawer stylesheet.
-// ══════════════════════════════════════════════════════════════════════════
-$nd_css = read_file( 'src/blocks/nav-drawer/style.css' );
-$names  = array();
-foreach ( sgs_nav_drawer_motion_shapes() as $shape ) {
-	foreach ( $anchors as $anchor ) {
-		$frames = sgs_nav_drawer_motion_keyframes( $shape, $anchor );
-		$names[ $frames['in'] ]  = true;
-		$names[ $frames['out'] ] = true;
-	}
-}
-$names['sgs-nav-drawer-curtain-sweep-in']  = true;
-$names['sgs-nav-drawer-curtain-sweep-out'] = true;
-unset( $names['none'] );
-$missing = array_filter( array_keys( $names ), fn( $n ) => ! has( $nd_css, '@keyframes ' . $n . ' {' ) );
-ok( array() === array_values( $missing ), 'every keyframe the resolver names is defined in nav-drawer/style.css' );
-$old_nd_css  = read_old( 'src/blocks/nav-drawer/style.css' );
-$old_missing = array_filter( array_keys( $names ), fn( $n ) => ! has( $old_nd_css, '@keyframes ' . $n . ' {' ) );
-ok( '' !== $old_nd_css && count( $old_missing ) > 0, 'negative control: the pre-U-5 stylesheet lacks the new keyframes' );
-
-ok( has( $nd_css, 'animation-name: var(--sgs-nd-anim-in, sgs-nav-drawer-in);' ), 'the open rule reads the per-tier keyframe name' );
-ok( ! has( $nd_css, 'sgs-nav-drawer--anim-' ), 'the old per-anchor animation classes are gone' );
-preg_match( '/@media \(prefers-reduced-motion: no-preference\) \{\n\t\.wp-block-sgs-nav-drawer:where\(:not\(\[data-sgs-motion-state\]\)\)\[open\] \{/', $nd_css, $rm );
-ok( 1 === count( $rm ), 'the drawer motion sits inside prefers-reduced-motion: no-preference' );
-
-// JS shape options mirror the PHP allow-list.
-preg_match_all( "/value: '([a-z-]+)' \\}/", read_file( 'src/blocks/nav-drawer/MotionPanel.js' ), $sm );
-ok( $sm[1] === sgs_nav_drawer_motion_shapes(), 'MotionPanel.js shape options equal sgs_nav_drawer_motion_shapes()' );
-
-$nd_json = json_decode( read_file( 'src/blocks/nav-drawer/block.json' ), true );
-ok( ! isset( $nd_json['attributes']['animateFrom'] ), 'animateFrom is removed' );
-foreach ( array( 'entryAnimation', 'itemStaggerDistance' ) as $tier_attr ) {
-	ok( 'object' === ( $nd_json['attributes'][ $tier_attr ]['type'] ?? '' ) && array() === ( $nd_json['attributes'][ $tier_attr ]['default'] ?? null ), "$tier_attr is a tier object defaulting to {}" );
-}
-ok( 0 === ( $nd_json['attributes']['itemStaggerMax']['default'] ?? null ), 'itemStaggerMax defaults to 0 (no cap)' );
-
-// ══════════════════════════════════════════════════════════════════════════
-// 4. Drawer item stagger contract (nav-drawer-menu owns the item rules).
-// ══════════════════════════════════════════════════════════════════════════
-$ndm_css = read_file( 'src/blocks/nav-drawer-menu/style.css' );
-ok( has( $ndm_css, ".sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(20) {\n\t--sgs-i: 19;" ), 'items are indexed as direct children of the drawer list (nested lists never restart the count)' );
-ok( has( $ndm_css, ':nth-last-child(1) {' ) && has( $ndm_css, 'sgs-nav-drawer--stagger-close.is-closing' ), 'reverse order on close' );
-ok( has( $ndm_css, '@supports (transition-delay: calc(sibling-index() * 1ms))' ), 'native sibling-index() through a valid @supports test' );
-ok( has( $nd_css, 'var(--sgs-nd-last-i, 0)' ) && has( $nd_css, ':not(.wp-block-sgs-nav-drawer-menu)' ) && has( $nd_css, '--sgs-nd-last-i: 20;' ), 'a logo or button beside the menu arrives with the last item' );
-ok( ! has( read_old( 'src/blocks/nav-drawer-menu/style.css' ), '--sgs-nd-stagger-step' ), 'negative control: the pre-U-5 drawer menu has no stagger' );
-
-// ══════════════════════════════════════════════════════════════════════════
-// 5. Panels: both forks animate, and close without catching the pointer.
+// 3. The bar's panels on the Entrance model.
 // ══════════════════════════════════════════════════════════════════════════
 $markup = read_file( 'includes/nav-menu-markup.php' );
-ok( has( $markup, 'sgs-nav-bar-menu__mega-panel-wrap sgs-nav-bar-menu__panel-motion sgs-nav-bar-menu__panel-motion--%7$s' ), 'the mega fork carries the motion class' );
-ok( has( $markup, "sgs-nav-bar-menu__submenu-wrap sgs-nav-bar-menu__panel-motion sgs-nav-bar-menu__panel-motion--' . ( \$submenu['animation'] ?? 'none' )" ), 'the dropdown fork carries the same class' );
-ok( ! has( read_old( 'includes/nav-menu-markup.php' ), 'sgs-nav-bar-menu__panel-motion' ), 'negative control: before U-5 the mega fork had no animation class' );
+ok( has( $markup, 'sgs-nav-bar-menu__mega-panel-wrap sgs-nav-bar-menu__panel-motion" data-sgs-mega-panel' ) && has( $markup, "\$sub_wrap_class = 'sgs-nav-bar-menu__submenu-wrap sgs-nav-bar-menu__panel-motion';" ), 'both forks carry the panel motion class, with no shape modifier' );
 
 $nbm_render = read_file( 'src/blocks/nav-bar-menu/render.php' );
-ok( has( $nbm_render, "array( 'fade', 'fade-lift', 'slide-down', 'grow' )" ), 'the renderer allows the five panel shapes' );
-ok(
-	has( $nbm_render, "'enter_ms' => \$sgs_nm_scrim_fade > 0 ? \$sgs_nm_scrim_fade : \$sgs_nm_panel_in," ),
-	'the bar scrim fades with the panels unless a scrim fade duration is set'
-);
+ok( has( $nbm_render, 'sgs_nav_bar_motion_panels( $items_html, $uid, $attributes )' ) && has( read_file( 'includes/helpers-nav-bar-motion-model.php' ), "Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-bar-menu'" ), 'every bar takes its item delays from the stored stagger settings (one scoped rule per index)' );
+ok( has( $nbm_render, "'enter_ms' => \$sgs_nm_scrim_fade > 0 ? \$sgs_nm_scrim_fade : \$sgs_nm_panel_in," ), 'the bar scrim fades with the panels unless a scrim fade duration is set' );
+ok( ! has( $nbm_render, 'sgs-nav-bar-menu--panel-stagger' ) && ! has( $nbm_render, '--sgs-nbm-panel-dur' ) && ! has( $nbm_render, '--sgs-nbm-stagger' ), 'render.php writes no old panel values or stagger classes' );
 
 $nbm_css = read_file( 'src/blocks/nav-bar-menu/style.css' );
-foreach ( array( 'transition-behavior: allow-discrete;', 'pointer-events: none;', 'visibility: hidden;', '@starting-style {' ) as $needle ) {
-	ok( has( $nbm_css, $needle ), "panel exit rule has `$needle`" );
+ok( ! has( $nbm_css, 'sgs-nav-bar-menu__panel-motion--' ) && ! has( $nbm_css, 'sibling-index()' ) && ! has( $nbm_css, '--sgs-i:' ) && ! has( $nbm_css, '@keyframes sgs-nav-bar-menu-panel-item-in' ), 'the bar stylesheet carries no panel shape rules and no item ladder' );
+$nbm_json = json_decode( read_file( 'src/blocks/nav-bar-menu/block.json' ), true );
+foreach ( array( 'submenuAnimation', 'submenuAnimationDuration', 'submenuExitDuration', 'submenuAnimationEasing', 'submenuAnimationEasingCustom', 'submenuItemStagger', 'submenuItemStaggerDuration', 'submenuItemStaggerMax', 'submenuItemStaggerDistance', 'submenuItemStaggerScope', 'burgerMorphDuration', 'burgerMorphEasing', 'burgerMorphEasingCustom' ) as $gone ) {
+	ok( ! isset( $nbm_json['attributes'][ $gone ] ), "nav-bar-menu attribute $gone is removed" );
 }
-ok( ! has( $nbm_css, 'sgs-nav-bar-menu__submenu-wrap--fade' ), 'the old open-only keyframe classes are gone' );
-
-// Spec 38A M4.6: one model per bar. Off the model the panels keep the U-5 shape and values above; on it they print
-// the `none` shape, become motion state hosts and take their item delays from the stored stagger settings.
-ok( has( $nbm_render, "'animation'   => \$sgs_nm_motion_model ? 'none' : (string) ( \$attributes['submenuAnimation'] ?? 'none' )," ), 'a bar on the Entrance model prints the none panel shape, so the old panel rules never reach it' );
-ok( has( $nbm_render, "if ( ! \$sgs_nm_motion_model ) {
-	\$css .= \$uid_sel . '{' . \$sgs_nm_panel_vars . '}';" ) && has( $nbm_render, "if ( ! \$sgs_nm_motion_model && \$sgs_nm_stagger > 0 ) {" ), 'the --sgs-nbm-* values and the stagger classes the old ladder keys on are written off the model only' );
-ok( has( $nbm_render, "sgs_nav_bar_motion_panels( \$items_html, \$uid, \$attributes )" ) && has( read_file( 'includes/helpers-nav-bar-motion-model.php' ), "Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-bar-menu'" ), 'on the model the items take stored per-index delays (Sgs_Motion_Loop_Delays), never a ladder' );
-ok( ! has( read_pre_m46( 'src/blocks/nav-bar-menu/render.php' ), 'sgs_nav_bar_motion_panels' ), 'negative control: before M4.6 the bar had no Entrance-model path' );
-$nbm_edit = read_file( 'src/blocks/nav-bar-menu/edit.js' );
-ok( ! has( $nbm_edit, '<PanelMotionPanel' ) && has( $nbm_edit, 'showAnimationControl={ false }' ) && has( read_pre_m46( 'src/blocks/nav-bar-menu/edit.js' ), '<PanelMotionPanel' ), 'the old Panel motion panel and the bar animation select are unmounted (decision 11); before M4.6 the panel was mounted' );
+ok( ! file_exists( $root . '/src/blocks/nav-bar-menu/PanelMotionPanel.js' ), 'PanelMotionPanel.js is deleted' );
 ok( has( read_file( 'src/blocks/nav-bar-menu/view.js' ), "import initPanelMotionState from './panel-motion-state';" ), 'the bar publishes each panel open state through @sgs/motion-state (panel-motion-state.js)' );
 
-$dsp = read_file( 'src/shared/nav-menu-panels/DropdownStylePanel.js' );
-ok( has( $dsp, "value: 'slide-down'" ) && ! has( $dsp, 'value="slide"' ), 'the editor saves slide-down, the value the renderer accepts' );
-ok( has( read_old( 'src/shared/nav-menu-panels/DropdownStylePanel.js' ), 'value="slide"' ), 'negative control: before U-5 the editor saved an unaccepted "slide"' );
-
 // ══════════════════════════════════════════════════════════════════════════
-// 6. Close lifecycle and the retired JS stagger.
+// 4. Close lifecycle and the retired JS stagger.
 // ══════════════════════════════════════════════════════════════════════════
 ok( has( $lifecycle, 'el.getAnimations( { subtree: true } )' ) && has( $lifecycle, 'Promise.allSettled' ) && has( $store, "import { announceDrawer, whenAnimationsSettle } from './drawer-lifecycle';" ), 'the close waits on every subtree animation (drawer-lifecycle.js)' );
-ok( ! has( $store, "addEventListener( 'animationend'" ), 'the close no longer ends on the first animationend (a curtain ::before ended it early)' );
-ok( has( read_old( 'src/shared/nav-interactivity/store.js' ), "addEventListener( 'animationend'" ), 'negative control: before U-5 the close ended on the first animationend' );
-ok( has( $store, "data-sgs-nd-focus-after-entry" ), 'focus waits for a long entry' );
-
+ok( ! has( $store, "addEventListener( 'animationend'" ), 'the close no longer ends on the first animationend' );
+ok( has( $store, 'data-sgs-nd-focus-after-entry' ), 'focus waits for a long entry' );
 ok( ! file_exists( $root . '/src/shared/effects/stagger.js' ), 'the JS stagger module is deleted' );
+
 $mp_json = json_decode( read_file( 'src/blocks/mega-panel/block.json' ), true );
-ok( ! isset( $mp_json['attributes']['staggerOnOpen'] ), 'mega-panel staggerOnOpen is removed' );
+ok( ! isset( $mp_json['attributes']['staggerOnOpen'] ) && ! isset( $mp_json['attributes']['fxEffect'] ), 'mega-panel carries neither staggerOnOpen nor the block-private fx effect attributes' );
 
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

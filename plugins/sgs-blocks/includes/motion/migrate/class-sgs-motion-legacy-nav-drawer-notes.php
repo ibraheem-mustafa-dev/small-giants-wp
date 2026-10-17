@@ -8,7 +8,7 @@
  *   high + low - delay). The two agree with no cap or when the cap is at least `(n - 1) × step`; `n` is the live
  *   menu's length, unknown at migration time, so every capped reversed menu is reported.
  * - The panel's transform origin: the old path took it from the RESOLVED shape at each tier
- *   (`sgs_nav_drawer_motion_keyframes( $shape, $anchor )['origin']`), the model path from the `auto` shape for the
+ *   (`Sgs_Motion_Legacy_Nav_Drawer::shape_origin`), the model path from the `auto` shape for the
  *   anchor (`helpers-nav-drawer-motion-model.php::sgs_nav_drawer_motion_origin_css`). A tier whose mapped panel scales
  *   (the only channel the origin moves) and whose two origins differ is reported; `corner-scale`, reachable only as the
  *   `auto` shape of a trigger anchor, takes `top right` on both paths and so is reported only if that ever changes.
@@ -20,6 +20,7 @@ namespace SGS\Blocks\Motion;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 2 ) . '/helpers-nav-drawer-motion-model.php';
 require_once __DIR__ . '/class-sgs-motion-legacy-nav-drawer.php';
 
 /**
@@ -58,20 +59,20 @@ final class Sgs_Motion_Legacy_Nav_Drawer_Notes {
 		if ( ! in_array( 'entryAnimation', $consumed, true ) ) {
 			return null;
 		}
-		$shapes = sgs_nav_drawer_motion_shapes();
+		$shapes = Sgs_Motion_Legacy_Nav_Drawer::SHAPES;
 		$fade   = ! array_key_exists( 'entryFade', $attrs ) || ! empty( $attrs['entryFade'] );
 		$moved  = array();
 		foreach ( Sgs_Motion_Legacy_Nav_Drawer::TIERS as $tier ) {
 			$anchor = (string) Sgs_Motion_Legacy_Nav_Drawer::tier( $attrs['anchor'] ?? array(), $tier, 'full-screen' );
 			$shape  = (string) Sgs_Motion_Legacy_Nav_Drawer::tier( $attrs['entryAnimation'] ?? array(), $tier, 'auto' );
 			$shape  = in_array( $shape, $shapes, true ) ? $shape : 'auto';
-			$shape  = 'auto' === $shape ? sgs_nav_drawer_motion_auto_shape( $anchor ) : $shape;
+			$shape  = 'auto' === $shape ? Sgs_Motion_Legacy_Nav_Drawer::auto_shape( $anchor ) : $shape;
 			$moves  = Sgs_Motion_Legacy_Nav_Drawer::panel_channels( $shape, $fade );
 			if ( null === $moves || ( ! isset( $moves['scale'] ) && ! isset( $moves['scaleY'] ) ) ) {
 				continue;
 			}
-			$old = sgs_nav_drawer_motion_keyframes( $shape, $anchor )['origin'];
-			$new = sgs_nav_drawer_motion_keyframes( 'auto', $anchor )['origin'];
+			$old = Sgs_Motion_Legacy_Nav_Drawer::shape_origin( $shape, $anchor );
+			$new = sgs_nav_drawer_anchor_origin( $anchor );
 			if ( $old !== $new ) {
 				$moved[] = $tier . ' (' . $shape . ' on a ' . $anchor . ' anchor: ' . $old . ', now ' . $new . ')';
 			}

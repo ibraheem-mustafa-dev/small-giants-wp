@@ -927,35 +927,6 @@
 			"default": 150,
 			"description": "Closing time of an accordion section, in milliseconds. 0 closes instantly."
 		},
-		"submenuItemStagger": {
-			"type": "number",
-			"default": 0,
-			"description": "Delay between each row arriving when an accordion section opens, in milliseconds. 0 turns the stagger off. Accordion mode only."
-		},
-		"submenuItemStaggerDistance": {
-			"type": "number",
-			"default": 8,
-			"description": "How far each row travels as it arrives, in pixels. Negative means it falls from above."
-		},
-		"submenuItemStaggerDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "Each row's own arrival time in milliseconds. 0 uses the section's opening time."
-		},
-		"submenuItemStaggerMax": {
-			"type": "number",
-			"default": 0,
-			"description": "Cap on a row's delay in milliseconds. 0 means no cap."
-		},
-		"submenuItemStaggerScope": {
-			"type": "string",
-			"enum": [
-				"columns",
-				"rows"
-			],
-			"default": "columns",
-			"description": "'columns' (default) staggers a plain section's rows, and a mega section's direct column children. 'rows' staggers every link row/card inside each `sgs/mega-group` column instead (the column itself stops animating so only one granularity moves). A plain link section is unaffected either way, its rows are already the direct children."
-		},
 		"submenuBorderRadius": {
 			"type": "object",
 			"default": {},

@@ -1,14 +1,10 @@
 <?php
 /**
- * Shared motion easing vocabulary (Wave 3C U-5).
+ * Shared motion easing vocabulary.
  *
- * One list of named speed curves read by every nav motion control: the burger
- * morph (`burgerMorphEasing`), the drawer entry and exit (`entryEasing`) and the
- * dropdown and mega panels (`submenuAnimationEasing`). A custom curve is validated
- * by the easing field type (`Sgs_Motion_Field_Types::is_valid_cubic_bezier()`);
- * the editor mirror is `src/components/MotionEasingControl.js`, which re-exports
- * `isValidCubicBezier` from `src/components/motion/field-types.js`, so a value
- * the editor accepts is never refused server-side.
+ * One list of named speed curves read by the nav, cart, button and row-behaviour controls. A custom curve is
+ * validated by the easing field type (`Sgs_Motion_Field_Types::is_valid_cubic_bezier()`); the editor mirror is
+ * `src/components/motion/field-types.js`, so a value the editor accepts is never refused server-side.
  *
  * Design: `.claude/reports/2026-09-24-u5-motion-design.md` section 3.3.
  *

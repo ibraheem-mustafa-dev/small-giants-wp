@@ -19,8 +19,6 @@ export const HEADER_TREE = path.join(
 	'nav-bar-stagger-header.json'
 );
 export const MEGA_TREE = path.join( FIXTURE_DIR, 'nav-bar-stagger-mega.json' );
-export const LADDER_KEYFRAME = 'sgs-nav-bar-menu-panel-item-in';
-export const LADDER_STEP_MS = 70;
 export const COLUMNS = '.sgs-nav-bar-menu__mega-item';
 
 /* global getComputedStyle */
@@ -151,10 +149,6 @@ export function selfTest() {
 	ok(
 		'control: an uncapped step differs from the stored list',
 		! judgeList( helperDelays( 15, { step: 26 } ), exp.delays )
-	);
-	ok(
-		'control: the ladder step gives other delays than the stored ones',
-		! judgeList( helperDelays( 15, { step: LADDER_STEP_MS } ), exp.delays )
 	);
 	ok(
 		'judgeReduced (shared with the drawer probe) rejects a delayed item',
