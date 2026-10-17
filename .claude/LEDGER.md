@@ -75,16 +75,24 @@ Open owed items:
 ### Front M: Clone coverage foundation and the motion model (Spec 38A)
 
 **State (2026-10-17):** S1 to S3b and Gate 4 (2026-10-13) are done; Wave 12 (S4) runs as four tracks; each track's bullet in `plans/2026-10-12-spec38a-motion-build.md` holds its commits and open items. peers deploy to sandybrown too, so `ssh hd "cat ~/.sgs-deploy-marker-sandybrown.json"` names the live commit.
-- **Track L: closed** (`e5533c0a4`). Live on sandybrown through `2b25fb09d`: the stagger helper hides where no child can carry a delay; twelve removed blocks wiped. Item parts for form fields, choice-flow options and form tiles built (`e59e514a6`), live on Eye Care Test and sandybrown. Open (plan Track L): marquees static until M6.5.
-- **Track S: closed** (handoff `9c7d464f8`). Built all nine units (M4.1 to M4.6, M6.2, M6.4, M5.17; the `@sgs/motion-state-loader` makes open and state motion play live). Its follow-up closed items 1, 2, 7, 9, 12, 14, 15 and item 11's test (`7b8f42a66`..`dbb0daf8d`; fixtures 5316 and 5314). Open: items 4, 5, 6, 8, 10, 11's default entrances (with the M6.5 sweep) and 13, plus 16 (the hero background-Lottie live check; `ab91a3722` is live) and 17 (a stale `run-container-wrapper-standalone.php`), all in its plan bullet.
-- **Track E: built, Gate 6 passed (2026-10-16, sandybrown 221929133).** A layer's per-device `off` switches only its own effect, across a resize too, and a one-edge wipe closes only its own edge. Horizontal-panel per-device parameters are live (`4cec6587b`). The renderer drops an effect layer whose target level does not fit its element (`8daabfd40`). A layer's per-device `off` now reaches the vanilla runtimes and every effect stylesheet (live, page 5358). Open (nav label magnet, ripple preset, M6.7 entries): plan Track E bullet. The header bar-and-burger fixture is built by the M6.6-G5 session in S6.
-- **Track I: the selector gate and part fixes are live (`af40d62d5`); entrance fixes live at `f9f02ee99` await one re-check; the card-grid template card prototype is built (`d7f2cdf15`), not deployed.** Open items: the plan's "Track I state" bullet; investigation: `reports/2026-10-16-motion-selector-and-delegation/README.md`.
+- **Track L: closed** (`e5533c0a4`). Open (plan Track L): marquees static until M6.5.
+- **Track S: closed** (handoff `9c7d464f8`). Built all nine units (M4.1 to M4.6, M6.2, M6.4, M5.17; the `@sgs/motion-state-loader` makes open and state motion play live). Open: items 4, 5, 6, 8, 10, 11's default entrances (with the M6.5 sweep) and 13, plus 16 (the hero background-Lottie live check; `ab91a3722` is live) and 17 (a stale `run-container-wrapper-standalone.php`), all in its plan bullet.
+- **Track E: built, Gate 6 passed (2026-10-16, sandybrown 221929133).** Open (nav label magnet, ripple preset, M6.7 entries): plan Track E bullet. The header bar-and-burger fixture is built by the M6.6-G5 session in S6.
+- **Track I: the selector gate and part fixes are live (`af40d62d5`); entrance fixes live at `f9f02ee99` await one re-check; the card-grid template card is built (`a705c5368`, `5ec9f84ba`), not deployed; items 10, 12, 14 and 15 done 2026-10-17.** Open items: the plan's "Track I state" bullet.
+- **Parked (Track I item 15): `BorderElementParityTest`** failed 56 cases at origin/main `31f272093`; 29 fixed in `f6f2d1b56`, 27 remain (owner confirms the rule, then re-records with `SGS_RECORD_BORDER_GOLDENS=1`):
+
+| Blocks | Fails | Cause | Owner |
+|---|---|---|---|
+| form, form[field], form-field-tiles | 29, fixed | harness lacked `WP_HTML_Tag_Processor` for `Sgs_Motion_Loop_Delays::tag_by_class` | Front M (Track L) |
+| gallery | 9 | goldens predate `e5533c0a4`'s `:where(.sgs-container-*)` stretch width | Front M (Track L); no front names gallery |
+| site-header-row, site-footer-row | 9 each | same stretch-width rule | Front N |
+
 
 **M6.6C census built (2026-10-17):** `migrate_motion.py --consumers` exits 0; report `reports/2026-10-17-motion-removal-census.md`; S5 (M5.W, M6.5) is next, then S6.
 
 **Blockers:** none. **Bean decisions (open):** whether a tiled or sized container background becomes a motion target (plan "Track I state" item 13). Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
 
-**Resume from:** the "Track I state (2026-10-16)" bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with its item (8) re-check, then item (11): deploy `d7f2cdf15` and check the template card live. Then S5 (M5.W, M6.5), then S6.
+**Resume from:** the "Track I state (2026-10-16)" bullet in `plans/2026-10-12-spec38a-motion-build.md`, starting with its item (8) re-check, then item (11): deploy `5ec9f84ba` and check the template card live. Then S5 (M5.W, M6.5), then S6.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
@@ -96,7 +104,7 @@ Open owed items:
 
 **Bean-only tasks:** the drawer-burger click retest (does the intermittent click-miss still occur now the duplicate-burger fix has shipped? If so, dispatch `/systematic-debugging`), and the mega-motion eye check (R-31-13), booked with the next live URL.
 
-**Also open (Spec 36 Status lines hold the detail):** FR-36-16, the late-CSS A/B (`plugins/sgs-blocks/scripts/nav-qa/late-css-ab.mjs`) still fails on the canary header drawer because the close control and first link are placed by `nav-drawer/style.css`, not the block's scoped rules; Bean decides whether to relax the test to the dialog box plus dismissal or to emit the drawer's whole layout in the scoped rules. FR-36-17, the mega pages exceed the 100 KB CSS and 50 KB JS budget. FR-36-11 (the active-item state under forced colours) and FR-36-26c (`aria-current` across two pages and axe) are not yet re-measured live. The homepage layout shift (0.82 at 375) is untraced. FR-38-31, the aurora and ink wave styles painted black in a local Chrome (Bean's eye on a real GPU, Spec 38). `sgs/mega-group`'s focus ring uses the accent colour (found during the unified-email plan, not its work); `sgs-client-notes` still deploys through `plugins/sgs-blocks/scripts/deploy-client-notes-quick.py` instead of `build-deploy.py`.
+**Also open (Spec 36 Status lines hold the detail):** The header and footer rows' 18 `BorderElementParityTest` goldens: Front M's parked table. FR-36-16, the late-CSS A/B (`plugins/sgs-blocks/scripts/nav-qa/late-css-ab.mjs`) still fails on the canary header drawer because the close control and first link are placed by `nav-drawer/style.css`, not the block's scoped rules; Bean decides whether to relax the test to the dialog box plus dismissal or to emit the drawer's whole layout in the scoped rules. FR-36-17, the mega pages exceed the 100 KB CSS and 50 KB JS budget. FR-36-11 (the active-item state under forced colours) and FR-36-26c (`aria-current` across two pages and axe) are not yet re-measured live. The homepage layout shift (0.82 at 375) is untraced. FR-38-31, the aurora and ink wave styles painted black in a local Chrome (Bean's eye on a real GPU, Spec 38). `sgs/mega-group`'s focus ring uses the accent colour (found during the unified-email plan, not its work); `sgs-client-notes` still deploys through `plugins/sgs-blocks/scripts/deploy-client-notes-quick.py` instead of `build-deploy.py`.
 
 ## Parked
 
