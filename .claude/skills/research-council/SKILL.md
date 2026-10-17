@@ -2,8 +2,8 @@
 name: research-council
 description: >-
   This skill should be used when the user needs a wide, peer-reviewed survey
-  with formal accountability. Multiple biased researchers + Haiku cross-read
-  loop + Council Head with scoring and revision power. Triggers: "council",
+  with formal accountability. Multiple biased researchers + a cross-read
+  round + Council Head with scoring and revision power. Triggers: "council",
   "peer review", "formal research", "comprehensive survey", or when 10+
   sources with fact-checking and formal quality gates are required. Do NOT
   invoke for: quick factual answers (use `research-check`), cutting-edge +
@@ -23,11 +23,11 @@ Rigorous multi-stage research with mandatory source verification, multi-reviewer
 
 ## Goal
 
-Produce a peer-reviewed research survey with formal accountability — multiple biased researchers, a Haiku cross-read loop, and a Council Head with scoring and revision power — for deliverables that need 10+ sources and won't pass scrutiny without fact-checking.
+Produce a peer-reviewed research survey with formal accountability — multiple biased researchers, a cross-read round, and a Council Head with scoring and revision power — for deliverables that need 10+ sources and won't pass scrutiny without fact-checking.
 
 ## Invokes
 
-Dispatches `Agent` calls directly (Sonnet researchers, Haiku cross-read agents, Opus Council Head — all-Claude fleet). Does not invoke other skills mid-execution. Delegates persistence to research markdown files.
+Dispatches `Agent` calls directly: one Sonnet researcher (continued by SendMessage from quick scan to deep dive), four reviewers whose cross-read round goes back to the same agents by SendMessage, and an Opus Council Head. Six subagents in all, within the hard ceiling of 4 running at once that `.claude/settings.json` sets. Every brief opens with the `/delegate` brief lines, starting with "Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better." Does not invoke other skills mid-execution. Delegates persistence to research markdown files.
 
 ## Mandatory References
 
@@ -127,7 +127,7 @@ If that answers the question, stop here: deliver in short-form format (skip Coun
 
 ### Stage 1B — Deep Dive
 
-A **new** cold Sonnet `Agent` (Early Bottom Line + internal findings passed as context) conducts exhaustive research per the toolkit reference. Non-negotiables (full detail in the toolkit):
+The **same** researcher continues by SendMessage (it keeps its sources and context; pass any internal findings in the message) and conducts exhaustive research per the toolkit reference. Non-negotiables (full detail in the toolkit):
 
 - **Source depth targets:** Moderate (10-15) for well-understood topics; Deep (20+) for unfamiliar/strategic; Exhaustive (30+) when the user asks for maximum rigour.
 - **Every source tiered** (Tier 1 official/peer-reviewed → Tier 4 anecdotal); citation format `[Source: Author/Org, "Title", URL, Date, Tier X]`.
@@ -152,9 +152,9 @@ Dispatch all four simultaneously (`dispatching-parallel-agents` pattern). **Thre
 
 Each reviewer receives the full research report + original brief. Each ACTIVE reviewer must: bring 3-5 new sources; score six dimensions 1-10 (Accuracy, Completeness, Practicality, Clarity, References, Source Quality); quote specific problematic text; state APPROVE or REQUEST REVISION. The Sceptic must land at least one substantive evidenced challenge; the Optimiser at least one concrete sourced alternative. Full templates: `council-prompts.md`.
 
-### Stage 2B — Cross-Read Loop (Haiku)
+### Stage 2B — Cross-Read Round
 
-After all four return, dispatch **four Haiku agents in parallel**. Each gets its own review + the three others and answers: does anything change your assessment? Can you weaken another reviewer's point? Final position: Reinforced, Pivoted, or Conflicted? Cheap, fast — turns four monologues into a discussion before the Head sees them.
+After all four return, send each reviewer the three other reviews with SendMessage to its name (name each reviewer when you dispatch it in Stage 2A). The reviewer keeps its own evidence and context, so no new agents are needed. Each answers: does anything change your assessment? Can you weaken another reviewer's point? Final position: Reinforced, Pivoted, or Conflicted? It turns four monologues into a discussion before the Head sees them, and costs four messages rather than four new subagents.
 
 ### Stage 2C — Council Head
 

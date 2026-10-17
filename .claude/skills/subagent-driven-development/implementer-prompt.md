@@ -10,6 +10,10 @@ Subagent (general-purpose):
   prompt: |
     You are implementing Task N: [task name]
 
+    Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better.
+    Match your checking to the risk: a low-risk change needs one real check that exercises it, not layers of review.
+    Return only what the caller needs: findings or results with file paths, no narrative of what you did.
+
     ## Task Description
 
     Read your task brief first: [BRIEF_FILE]
@@ -79,30 +83,12 @@ Subagent (general-purpose):
 
     ## Before Reporting Back: Self-Review
 
-    Review your work with fresh eyes. Ask yourself:
+    One quick pass, not a second review:
+    - Did I implement everything the brief asks, and nothing it does not (YAGNI)?
+    - Do names say what things do, and does the code follow the patterns around it?
+    - Do the tests exercise the behaviour the task names (not just mocks), and did I follow TDD if required?
 
-    **Completeness:**
-    - Did I fully implement everything in the spec?
-    - Did I miss any requirements?
-    - Are there edge cases I didn't handle?
-
-    **Quality:**
-    - Is this my best work?
-    - Are names clear and accurate (match what things do, not how they work)?
-    - Is the code clean and maintainable?
-
-    **Discipline:**
-    - Did I avoid overbuilding (YAGNI)?
-    - Did I only build what was requested?
-    - Did I follow existing patterns in the codebase?
-
-    **Testing:**
-    - Do tests actually verify behavior (not just mock behavior)?
-    - Did I follow TDD if required?
-    - Are tests comprehensive?
-    - Is the test output pristine (no stray warnings or noise)?
-
-    If you find issues during self-review, fix them now before reporting.
+    If the pass finds an issue, fix it now before reporting.
 
     ## After Review Findings
 

@@ -8,7 +8,8 @@ description: >-
   "per-task subagent". Do NOT invoke for: single-task work (inline main thread), tasks
   with heavy shared state (use inline + TodoWrite), pure parallel investigation with no
   review loop (use dispatching-parallel-agents), or picking WHICH model to use per
-  subagent (use /delegate for each).
+  subagent (use /delegate for each). Groups small tasks and scales review to risk so a
+  plan stays within the fan-out budget (about 12 subagents a session).
 ---
 
 # Subagent-Driven Development
@@ -24,7 +25,7 @@ Execute plan by dispatching a fresh implementer subagent per task, a task review
 ## Mandatory References
 
 Before starting, load:
-1. `~/.agents/skills/delegate/SKILL.md` — how to route each subagent to its own model
+1. `.claude/skills/delegate/SKILL.md` — how to route each subagent, the fan-out budget and the brief lines
 
 ## When NOT to Use
 
@@ -109,29 +110,38 @@ Before dispatching Task 1, scan the plan once for conflicts:
 
 Present everything you find to your human partner as one batched question — each finding beside the plan text that mandates it, asking which governs — before execution begins, not one interrupt per discovery mid-plan. If the scan is clean, proceed without comment. The review loop remains the net for conflicts that only emerge from implementation.
 
+## Fan-Out Budget for a Plan
+
+Before Task 1, count the dispatches the plan would cost: one implementer and one reviewer per task, plus fixes, plus the final review. A 15-task plan run naively is 40 to 60 subagents, which spends hours on re-briefing and report-reading overhead. Keep the whole plan to about 12 dispatches:
+
+1. **Group small tasks.** Give one implementer a batch of related small tasks (same files or same feature) and one task brief covering them. A task that changes a few lines in one file is never its own dispatch.
+2. **Scale review to risk.** Per-task review is for tasks that change shipped logic, data, security or shared interfaces. Low-risk tasks (docs, config values, copy, tests-only, mechanical renames) skip the per-task reviewer and are covered by the final whole-branch review.
+3. **Do small tasks inline.** A task you can finish in fewer turns than it takes to brief a subagent is done in the main session.
+4. **Send a long code-only plan to the cloud.** When every task needs only the repository (no live site, framework DB, secrets or MCP), route the whole plan with `/delegate` (`--code-only --expected-minutes N`); a cloud session runs this same loop on Bean's cloud credits, and the local session merges its branch and does the live checks.
+
+Say the count and the grouping in one line before Task 1, for example: "15 tasks → 4 implementer batches, 2 risk-scaled reviews, 1 final review: 7 dispatches."
+
 ## Model Selection (via `/delegate`)
 
-**HARD GATE:** Before dispatching ANY subagent, consult `/delegate` for that subagent's model — never hardcode it, and never omit it (an omitted model silently inherits the session's most expensive model, defeating this section). The canonical routing table is `~/.agents/skills/shared-references/model-routing.md` (shared across the 6 consumer skills; covers `qc_review` cross-model enforcement, persona_panel, max_parallel caps). After each subagent returns, log the outcome with `python ~/.agents/skills/delegate/scripts/log-dispatch.py <args>` so the calibration loop can tune routing.
+**HARD GATE:** Before dispatching ANY subagent, consult `/delegate` for that subagent's model and effort — never hardcode it, and never omit it (an omitted model silently inherits the session's most expensive model). Every dispatch carries the three `brief_must_include` lines, starting with the pacing line.
 
-Route each of the three per-task roles independently:
-
-| Subagent | `/delegate` descriptor | Typical model |
+| Subagent | `/delegate` descriptor | Typical answer |
 |----------|-----------------------|---------------|
-| Implementer | `--task-shape code_gen --input-size-kb <spec> --expected-output-tokens <est>` | fast/cheap when the plan carries the full code (transcription + testing); standard when working from prose |
-| Task reviewer | `--task-shape code_review --input-size-kb <diff>` with `original_model` = implementer's model | scaled to diff size/risk; the router refuses same-model QC and routes cross-provider |
-| Final whole-branch reviewer | `--task-shape code_review` (architecture-scale) | the most capable available model — not the session default |
+| Implementer | `--task-shape code_gen` (or `mechanical_edit` when the plan carries the exact code to transcribe) | Sonnet at medium effort; Haiku only for exact transcription |
+| Task reviewer (risk-scaled, see Fan-Out Budget) | `--task-shape code_review --input-size-kb <diff>` | Sonnet at medium effort, cold context |
+| Final whole-branch reviewer | `--task-shape qc_review --original-model sonnet` | Opus at high effort: a different tier from the implementer |
 
 **Principles the router encodes** (know them so you can sanity-check its pick):
-- Least powerful model that can do the role. Most implementation tasks are mechanical when the plan is well-specified.
-- **Turn count beats token price.** Wall-clock and context cost scale with turns, and the cheapest models routinely take 2–3× the turns on multi-step work — costing more overall. Use a mid-tier floor for reviewers and for implementers working from prose.
-- Single-file mechanical fixes → cheapest tier. Multi-file integration → standard. Design judgment / broad-codebase understanding → most capable.
+- **Sonnet is the implementer.** Sonnet 5.5 is strongest at multi-step coding in a real repository, including multi-file integration; do not reserve multi-file work for the main session.
+- **Turn count beats token price.** The cheapest model takes more turns on multi-step work and can cost more overall; Haiku implements only when the plan carries the exact code.
+- **Opus reviews the branch, once.** Deep review at the end beats deep review on every task.
 
 Example (before dispatching the implementer):
 
 ```bash
-python ~/.agents/skills/delegate/scripts/route.py route \
+python .claude/skills/delegate/scripts/route.py route \
   --task-shape code_gen --input-size-kb 12 --expected-output-tokens 4000 \
-  || echo "route.py unavailable — fall back to sonnet"
+  || echo "route.py unavailable — fall back to sonnet at medium effort"
 ```
 
 ## Handling Implementer Status
@@ -169,6 +179,7 @@ Per-task reviews are task-scoped gates. The broad review happens once, at the fi
 - Dispatch fix subagents for Critical and Important findings. Record Minor findings in the progress ledger as you go, and point the final whole-branch review at that list so it can triage which must be fixed before merge. A roll-up nobody reads is a silent discard.
 - A finding labeled plan-mandated — or any finding that conflicts with what the plan's text requires — is the human's decision, like any plan contradiction: present the finding and the plan text, ask which governs. Do not dismiss the finding because the plan mandates it, and do not dispatch a fix that contradicts the plan without asking.
 - The final whole-branch review gets a package too: run `scripts/review-package MERGE_BASE HEAD` (MERGE_BASE = the commit the branch started from, e.g. `git merge-base main HEAD`) and include the printed path in the final review dispatch, so the final reviewer reads one file instead of re-deriving the branch diff with git commands.
+- **Prefer sending a fix back to the same implementer** (SendMessage to its name, which keeps its context) over dispatching a new fix subagent; a fresh fixer rebuilds context from nothing.
 - Every fix dispatch carries the implementer contract: the fix subagent re-runs the tests covering its change and reports the results. Name the covering test files in the dispatch — a one-line fix does not need the whole suite. Before re-dispatching the reviewer, confirm the fix report contains the covering tests, the command run, and the output; dispatch the re-review once all three are present.
 - If the final whole-branch review returns findings, dispatch ONE fix subagent with the complete findings list — not one fixer per finding. Per-finding fixers each rebuild context and re-run suites; a real session's final-review fix wave cost more than all its tasks combined.
 
@@ -293,7 +304,7 @@ Done!
 
 **Never:**
 - Branch or create a worktree by default: work on `main` with explicit pathspecs (`~/.claude/rules/git-hygiene.md`); a worktree is only for genuinely parallel sessions on one tree
-- Skip task review, or accept a report missing either verdict (spec compliance AND task quality are both required)
+- Skip task review on a task that changes shipped logic, data, security or a shared interface, or accept a review missing either verdict (spec compliance AND task quality are both required)
 - Proceed with unfixed Critical/Important issues
 - Dispatch multiple implementation subagents in parallel (conflicts)
 - Make a subagent read the whole plan file (hand it its task brief — `scripts/task-brief` — instead)
@@ -305,6 +316,8 @@ Done!
 - Tell a reviewer what not to flag, or pre-rate a finding's severity in the dispatch prompt ("treat it as Minor at most")
 - Dispatch a task reviewer without a diff file — generate it first (`scripts/review-package BASE HEAD`) and name the printed path
 - Hardcode or omit a subagent's model — `/delegate` for each (an omitted model inherits the session's most expensive one)
+- Run past the fan-out budget: one implementer and one reviewer for every small task is how a plan reaches 60 subagents; group tasks and scale review to risk
+- Leave the pacing line out of a dispatch: "Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better."
 - Re-dispatch a task the progress ledger already marks complete — check the ledger (and `git log`) after any compaction or resume
 
 **If subagent asks questions:** answer clearly and completely; provide additional context if needed; don't rush them into implementation.
@@ -320,7 +333,7 @@ Done!
 - **requesting-code-review** - code review template for the final whole-branch review
 
 **Subagents should use:**
-- **`~/.agents/skills/shared-references/verification-rationalisations.md`** - TDD + verification-before-completion discipline, and "Proof per step" (each task states its runnable proof before work starts)
+- **Proof per step:** each task states its runnable proof (the command and pass condition) before work starts, and the implementer runs it once before reporting
 
 **Alternative workflow:**
 - **executing-plans** - use for parallel session instead of same-session execution

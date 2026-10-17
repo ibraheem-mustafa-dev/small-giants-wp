@@ -10,6 +10,10 @@ Subagent (general-purpose):
   model: [MODEL — REQUIRED: choose per SKILL.md Model Selection; an omitted
          model silently inherits the session's most expensive one]
   prompt: |
+    Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better.
+    Match your checking to the risk: a low-risk change needs one real check that exercises it, not layers of review.
+    Return only what the caller needs: findings or results with file paths, no narrative of what you did.
+
     You are reviewing one task's implementation: first whether it matches its
     requirements, then whether it is well-built. This is a task-scoped gate,
     not a merge review — a broad whole-branch review happens separately after

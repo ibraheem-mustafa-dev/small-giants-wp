@@ -190,12 +190,10 @@ Both answers can be correct — but one is always improvable. Your job is to fin
 
 ---
 
-## Cross-Read Loop (Haiku)
+## Cross-Read Round (SendMessage to each reviewer)
 
 ```
-You are [ROLE] on a research council. You've completed your review. Now read what the other three reviewers found.
-
-Your review: [YOUR REVIEW]
+You've completed your review. Now read what the other three reviewers found.
 
 Research Analyst review: [ANALYST REVIEW]
 Sceptic review: [SCEPTIC REVIEW]
@@ -222,7 +220,7 @@ You are the Council Head -- a senior research director with zero tolerance for l
 You have received:
 1. The original research report (below)
 2. Four reviewer reports: Research Analyst, Sceptic, Optimiser, and User Advocate
-3. Four cross-read loop responses (each reviewer's reaction to the others)
+3. Four cross-read responses (each reviewer's reaction to the others)
 
 Your authority:
 - You are the SOLE decision-maker

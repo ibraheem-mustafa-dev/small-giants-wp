@@ -3,14 +3,15 @@
 /delegate routing engine.
 
 Reads data/routing-table.json, applies decision rules (ordered by priority
-descending) to a task descriptor, returns the primary model + fallback chain
-+ justification.
+descending) to a task descriptor, returns the primary model + effort +
+fallback chain + justification, plus the fan-out budget and the lines every
+dispatch brief must carry.
 
 Usage:
   route.py --descriptor <path-to-json>
   route.py --task-shape <shape> [--input-size-kb N] [--expected-output-tokens N] ...
-  route.py --list-models
-  route.py --explain <model-name>
+  route.py list-models
+  route.py explain <model-name>
 
 Exit codes:
   0 - recommendation produced
@@ -28,9 +29,6 @@ sys.stdout.reconfigure(encoding='utf-8')
 ROUTING_TABLE_PATH = Path(__file__).parent.parent / 'data' / 'routing-table.json'
 
 
-BUDGET_STATE_PATH = Path(__file__).parent.parent / 'data' / 'budget-state.json'
-
-
 def load_table() -> dict:
     if not ROUTING_TABLE_PATH.is_file():
         print(f'ERROR: routing-table.json not found at {ROUTING_TABLE_PATH}', file=sys.stderr)
@@ -43,24 +41,14 @@ def load_table() -> dict:
         sys.exit(2)
 
 
-def check_budget_triggered() -> bool:
-    """Read budget-state.json (written by scripts/check-budget.py) to see if
-    any paid model has exceeded its monthly threshold. Returns False if the
-    state file is missing or can't be parsed (fail-open)."""
-    if not BUDGET_STATE_PATH.is_file():
-        return False
-    try:
-        with open(BUDGET_STATE_PATH, encoding='utf-8') as f:
-            return bool(json.load(f).get('budget_triggered', False))
-    except (json.JSONDecodeError, OSError):
-        return False
-
-
 def rule_matches(rule_when: dict, descriptor: dict) -> bool:
     """Return True if every condition in rule_when matches descriptor."""
     for key, expected in rule_when.items():
-        # Numeric comparison operators encoded in key suffix
-        if key.endswith('_gt'):
+        # Membership and numeric comparison operators encoded in key suffix
+        if key.endswith('_in'):
+            if descriptor.get(key[:-3]) not in expected:
+                return False
+        elif key.endswith('_gt'):
             field = key[:-3]
             actual = descriptor.get(field)
             if actual is None or not (isinstance(actual, (int, float)) and actual > expected):
@@ -96,11 +84,13 @@ def apply_rules(descriptor: dict, table: dict) -> dict:
     extras: dict = {}
     requires: dict = {}
     rule_fallback: list[str] | None = None
+    rule_effort: str | None = None
 
     def refusal(reason: str) -> dict:
         return {
             'primary_model': None,
             'primary_command': None,
+            'effort': None,
             'fallback_chain': [],
             'excluded': sorted(excluded),
             'justifications': justifications + [reason],
@@ -140,6 +130,7 @@ def apply_rules(descriptor: dict, table: dict) -> dict:
                 primary_model = candidate
                 justifications.append(f'primary={candidate}: {j} (original_model={original})')
                 rule_fallback = sub.get('fallback_chain', [])
+                rule_effort = sub.get('effort')
         if 'primary_model' in then and primary_model is None:
             candidate = then['primary_model']
             if candidate not in excluded:
@@ -149,6 +140,7 @@ def apply_rules(descriptor: dict, table: dict) -> dict:
                     extras['isolation'] = then['isolation']
                 if 'fallback_chain' in then:
                     rule_fallback = then['fallback_chain']
+                rule_effort = then.get('effort')
         if primary_model and all(
             (r.get('priority', 0) <= rule.get('priority', 0))
             for r in rules if r is not rule
@@ -172,7 +164,10 @@ def apply_rules(descriptor: dict, table: dict) -> dict:
         justifications.append(f'primary={primary_model}: default to highest-reliability survivor')
 
     primary_meta = table['models'].get(primary_model, {})
+    effort = rule_effort or primary_meta.get('default_effort')
     primary_command = primary_meta.get('command')
+    if primary_command and primary_command.startswith('Agent tool') and effort:
+        primary_command = f'{primary_command}, effort: {effort}'
 
     # Build fallback chain: rule-specified chain first (filtered), then extend
     # by walking each model's fallback_to, skipping excluded and deduping.
@@ -196,11 +191,14 @@ def apply_rules(descriptor: dict, table: dict) -> dict:
     return {
         'primary_model': primary_model,
         'primary_command': primary_command,
+        'effort': effort,
         'fallback_chain': fallback_chain,
         'excluded': sorted(excluded),
         'justifications': justifications,
         'extras': extras,
         'requires': requires,
+        'fanout': table.get('fanout', {}),
+        'brief_must_include': table.get('brief_must_include', []) if primary_model != 'inline' else [],
     }
 
 
@@ -223,7 +221,8 @@ def cmd_route(args) -> int:
             'needs_mcp': args.needs_mcp,
             'needs_web_search': args.needs_web_search,
             'destructive': args.destructive,
-            'offline_required': args.offline_required,
+            'code_only': args.code_only,
+            'expected_minutes': args.expected_minutes,
             'dispatch_justified': args.dispatch_justified,
             'pii_detected': args.pii_detected,
             'contains_secrets': args.contains_secrets,
@@ -233,10 +232,6 @@ def cmd_route(args) -> int:
             'parallel_count': args.parallel_count,
         }
 
-    # Auto-inject budget_triggered from state file if not explicitly set
-    if 'budget_triggered' not in descriptor:
-        descriptor['budget_triggered'] = check_budget_triggered()
-
     result = apply_rules(descriptor, table)
     result['descriptor'] = descriptor
     print(json.dumps(result, indent=2))
@@ -245,12 +240,12 @@ def cmd_route(args) -> int:
 
 def cmd_list_models(_args) -> int:
     table = load_table()
-    print(f'{"MODEL":<16} {"TIER":<14} {"RELIABILITY":<14} {"OUT CAP":<10} COMMAND')
+    print(f'{"MODEL":<10} {"TIER":<12} {"MODEL ID":<20} {"EFFORT":<10} COMMAND')
     print('-' * 80)
     for name, meta in table['models'].items():
         print(
-            f'{name:<16} {meta.get("tier", "?"):<14} {meta.get("reliability", "?"):<14} '
-            f'{meta.get("output_cap_tokens", "?"):<10} {meta.get("command", "-")}'
+            f'{name:<10} {meta.get("tier", "?"):<12} {meta.get("model_id", "?"):<20} '
+            f'{meta.get("default_effort", "?"):<10} {meta.get("command", "-")}'
         )
     return 0
 
@@ -272,17 +267,21 @@ def main() -> int:
     r = sub.add_parser('route', help='Route a task to a model')
     r.add_argument('--descriptor', help='Path to a JSON descriptor file')
     r.add_argument('--task-shape', default='code_gen',
-                   help='code_gen, classification, batch_synthesis, code_review, research, extraction')
+                   help='code_gen, debugging, code_review, batch_synthesis, research, find_list, '
+                        'classification, extraction, summarise, mechanical_edit, persona_panel, qc_review')
     r.add_argument('--input-size-kb', type=float, default=5.0)
     r.add_argument('--expected-output-tokens', type=int, default=2000)
     r.add_argument('--time-sensitivity', default='normal', choices=['low', 'normal', 'high'])
     r.add_argument('--needs-mcp', action='store_true')
     r.add_argument('--needs-web-search', action='store_true')
     r.add_argument('--destructive', action='store_true')
-    r.add_argument('--offline-required', action='store_true')
+    r.add_argument('--code-only', action='store_true',
+                   help='Needs nothing outside GitHub: no live site, framework DB, secrets, MCP or ~/.claude')
+    r.add_argument('--expected-minutes', type=int, default=None,
+                   help='Rough wall-clock estimate; 20 or more with --code-only routes to a cloud session')
     r.add_argument('--dispatch-justified', action='store_true', default=True,
                    help='Set False to force inline recommendation')
-    # Content signals (Opportunity #1)
+    # Content signals
     r.add_argument('--pii-detected', action='store_true',
                    help='Task contains personally identifiable information')
     r.add_argument('--contains-secrets', action='store_true',
@@ -292,7 +291,7 @@ def main() -> int:
     r.add_argument('--high-complexity', action='store_true',
                    help='Task requires multi-hop reasoning or has ambiguous requirements')
     r.add_argument('--original-model', default=None,
-                   choices=['inline', 'sonnet', 'haiku'],
+                   choices=['inline', 'opus', 'sonnet', 'haiku'],
                    help='For task_shape=qc_review: which model authored the work under review '
                         '(cross-tier QC routes the reviewer to a different Claude tier)')
     r.add_argument('--parallel-count', type=int, default=None,

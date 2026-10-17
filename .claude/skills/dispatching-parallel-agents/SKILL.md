@@ -4,7 +4,8 @@ description: >-
   This skill should be used when facing 2+ independent tasks that can be
   worked on without shared state or sequential dependencies. Triggers on
   "parallel agents", "dispatch in parallel", "concurrent investigation",
-  "multiple failures at once", "fan out". Do NOT invoke for: single-branch
+  "multiple failures at once", "fan out". Caps fan-out at 3 branches at
+  once and about 12 subagents a session. Do NOT invoke for: single-branch
   work (inline main thread), tasks with shared state that need sequential
   reasoning (use subagent-driven-development), picking WHICH model to use
   per branch (use /delegate for each branch independently), or writing the
@@ -16,21 +17,22 @@ description: >-
 ## Mandatory References
 
 Before dispatching, load:
-1. `~/.agents/skills/delegate/SKILL.md` — how to route each branch to its own model
+1. `.claude/skills/delegate/SKILL.md` — how to route each branch, the fan-out budget and the brief lines
 
 ## Invoked Skills
 
-This skill invokes /delegate per branch BEFORE dispatch to pick the branch's model. It invokes /subagent-prompt per branch to write the cold-prompt body. It runs `log-dispatch.py` (from `/delegate`) per branch AFTER dispatch to log the outcome to the local dispatch log. No other skills called.
+This skill invokes /delegate per branch BEFORE dispatch to pick the branch's model and effort, and /subagent-prompt per branch to write the brief. No other skills called.
 
 | Skill | When |
 |-------|------|
-| `/delegate` | Per branch BEFORE dispatch to pick the branch's model + fallback chain |
-| `/subagent-prompt` | Per branch to write the cold-prompt body (6-section template) |
-| `log-dispatch.py` (from `/delegate`) | Per branch AFTER dispatch to append the outcome to `~/.agents/skills/delegate/data/dispatch-log.jsonl` |
+| `/delegate` | Per branch BEFORE dispatch to pick the branch's model, effort and fallback chain |
+| `/subagent-prompt` | Per branch to write the brief (6-section template, brief lines, capped output) |
 
-**HARD GATE:** Before dispatching any branch, consult `/delegate` for its model. Never hardcode the model — the routing table is the source of truth. See `~/.agents/skills/shared-references/model-routing.md` — canonical section shared across the 6 consumer skills (strategic-work refusal, persona_panel shape, qc_review cross-model rule, Named Observable Behaviours for `requires.report_back_inline: true`, max_parallel caps).
+**HARD GATE — fan-out budget.** At most **3 branches at once**, and about **12 subagents in the whole session** (`/delegate`'s `fanout`; `.claude/settings.json` sets a hard ceiling of 4 concurrent). More independent items than that is a sign the work should be batched into fewer, larger branches, or done inline, not fanned wider. Each branch re-establishes context and returns a report the main session must read: in testing, eight parallel research branches cost about 50% more overall than one, and finished no sooner.
 
-**HARD GATE — Full protocol per branch, never triage substitution.** When parallel branches evaluate N targets (gap-analysis, audits, quality reviews, performance assessments), each branch MUST run the full evaluation protocol — research rounds, rubric, gap register, system-effect check. NEVER substitute a structural linter (sgs-skillscore, docscore, lighthouse score) for the full protocol. A high linter score is not evidence of zero gaps — it is evidence the scaffold is intact. If a branch finishes in seconds with "no findings", treat the result as fabricated and re-dispatch with the protocol explicit in the prompt.
+**HARD GATE — route every branch.** Before dispatching any branch, consult `/delegate` for its model and effort. Never hardcode the model.
+
+**HARD GATE — full protocol, not a linter score.** When branches evaluate N targets (gap-analysis, audits, quality reviews), each branch runs the evaluation the brief names. NEVER substitute a structural linter (sgs-skillscore, docscore, lighthouse score) for it: a high linter score is evidence the scaffold is intact, not that there are no gaps. If a branch returns "no findings" suspiciously fast, spot-check its target yourself inline before deciding whether a re-dispatch is worth it.
 ## Goal
 
 Two or more independent tasks complete concurrently with each branch routed to its own best-fit model, so heterogeneous work runs as fast as the longest branch rather than the sum of all branches.
@@ -38,9 +40,9 @@ Two or more independent tasks complete concurrently with each branch routed to i
 ## System Effect (5-lens)
 
 1. **End-result.** Multiple independent investigations complete in wall-clock parallel instead of serial. Outcome: total time drops from sum-of-branches to max-of-branches.
-2. **Cross-context reach.** The same parallel-dispatch pattern runs from the main session or a headless `claude -p` run. `/delegate` is consulted identically, and dispatch outcomes land in the same local log file.
-3. **Dispatch-log persistence.** Each branch logs its outcome via `log-dispatch.py` — one JSON line per branch (`category='dispatch_log'`) in `~/.agents/skills/delegate/data/dispatch-log.jsonl`. Grouping those rows by `task_shape` shows where parallel branches systematically fail.
-4. **Automation vs human-remember.** Model selection delegates to `/delegate` (not "remember the hierarchy"). Fan-out cap (4 parallel for Sonnet, 8 for Haiku — per routing-table max_parallel_dispatches) is encoded in the routing table, not a mental rule.
+2. **Cross-context reach.** The same parallel-dispatch pattern runs from the main session or a headless `claude -p` run; long code-only branches can run as cloud sessions (`/delegate` routes them).
+3. **Bounded cost.** The fan-out budget and capped reports keep the main session's reading load small, which is where most of the cost of parallel work lands.
+4. **Automation vs human-remember.** Model selection delegates to `/delegate` (not "remember the hierarchy"). The fan-out budget lives in the routing table and the concurrency ceiling in `.claude/settings.json`, not in a mental rule.
 5. **ADHD / overwhelm.** Parallel dispatch is cognitively cheaper than serial when Bean is watching — one status summary at the end vs N interruptions. No veto.
 
 ## Overview
@@ -56,10 +58,10 @@ When you have multiple unrelated failures (different test files, different subsy
 Before spawning the parallel branches, call `/delegate` for EACH branch independently with that branch's own task descriptor:
 
 ```bash
-python ~/.agents/skills/delegate/scripts/route.py route --task-shape <branch-shape> ...
+python .claude/skills/delegate/scripts/route.py route --task-shape <branch-shape> ...
 ```
 
-Do not assume all branches use the same model. A "read 4 large logs in parallel" workload may route 3 mechanical branches to Haiku and 1 architectural branch to Sonnet. After each branch completes, log the outcome via `python ~/.agents/skills/delegate/scripts/log-dispatch.py <args>` with that branch's metadata so the calibration feedback loop sees heterogeneous parallel patterns.
+Do not assume all branches use the same model. A "find every caller in 3 modules and fix one bug" workload may route the 3 lookups to Haiku at medium effort and the fix to Sonnet. Haiku suits bounded find-and-list branches; do not use a wide set of Haiku branches as a research layer feeding a planner, because the planner's reading cost outweighs the saving.
 
 ## When to Use
 
@@ -94,7 +96,7 @@ digraph when_to_use {
 - **Picking which model to use per branch** — call `/delegate` for each branch independently; this skill coordinates branches but doesn't select models
 - **Writing the individual cold prompts** — use `subagent-prompt` (6-section template)
 - **Connected reasoning chain** — if branches need to reference each other's work mid-flight, they aren't independent; use `subagent-driven-development` or inline
-- **More parallel branches than the per-model cap (Sonnet 4, Haiku 8)** — split into batches or use `/delegate`'s fallback chain
+- **More branches than the fan-out budget (3 at once, about 12 a session)** — merge items into fewer, larger branches, or work inline
 - **Parallel branches are fix-shape implementations from an unvalidated council** — use `/qc-council` upstream first so each branch carries an experiment frame (hypothesis + baseline + predicted post-fix + commit gate) into its cold prompt. Dispatching unvalidated fix shapes in parallel risks N parallel no-ops burning before any single result lands
 
 **Don't use when:**
@@ -119,17 +121,18 @@ Each agent gets:
 - **Specific scope:** One test file or subsystem
 - **Clear goal:** Make these tests pass
 - **Constraints:** Don't change other code
-- **Expected output:** Summary of what you found and fixed
+- **The three brief lines from `/delegate`**, word for word, starting with the pacing line: "Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better."
+- **Expected output, capped:** Root cause and changes in under 150 words
 
 ### 3. Dispatch in Parallel
 
 Issue all the branch dispatches in the SAME response — that is what makes them run concurrently:
 
 ```text
-Agent (general-purpose): "Fix agent-tool-abort.test.ts failures"
-Agent (general-purpose): "Fix batch-completion-behavior.test.ts failures"
-Agent (general-purpose): "Fix tool-approval-race-conditions.test.ts failures"
-# All three run concurrently.
+Agent (general-purpose, model: sonnet, effort: medium): "Fix agent-tool-abort.test.ts failures"
+Agent (general-purpose, model: sonnet, effort: medium): "Fix batch-completion-behavior.test.ts failures"
+Agent (general-purpose, model: sonnet, effort: medium): "Fix tool-approval-race-conditions.test.ts failures"
+# All three run concurrently: the most this skill dispatches at once.
 ```
 
 **Multiple dispatch calls in one response = parallel execution. One call per response = sequential.** This is the whole mechanism — a branch dispatched in a later turn cannot overlap one from an earlier turn.
@@ -150,6 +153,8 @@ Good agent prompts are:
 3. **Specific about output** - What should the agent return?
 
 ```markdown
+Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better. Match your checking to the risk: a low-risk change needs one real check that exercises it, not layers of review. Return only what the caller needs: findings or results with file paths, no narrative of what you did.
+
 Fix the 3 failing tests in src/agents/agent-tool-abort.test.ts:
 
 1. "should abort tool with partial output capture" - expects 'interrupted at' in message
@@ -167,7 +172,7 @@ These are timing/race condition issues. Your task:
 
 Do NOT just increase timeouts - find the real issue.
 
-Return: Summary of what you found and what you fixed.
+Return: root cause and what you changed, under 150 words.
 ```
 
 ## SGS-BEM Convention (Spec 00 §3.1)
@@ -194,7 +199,15 @@ Canonical reference: `.claude/specs/00-naming-conventions.md` §3.
 
 **❌ Vague output:** "Fix it" - you don't know what changed
 
-**✅ Specific:** "Return summary of root cause and changes"
+**✅ Specific:** "Return root cause and changes in under 150 words"
+
+**❌ Fanning out wide:** one branch per file across 20 files
+
+**✅ Batched:** 3 branches, each owning a coherent group of files
+
+**❌ Re-dispatching to double-check:** a second agent to verify the first one's routine fix
+
+**✅ One check:** run the full suite yourself once the branches return
 
 ## Real Example from Session
 

@@ -2,12 +2,14 @@
 name: qc
 type: pipeline
 user-invocable: true
-argument-hint: "<target> [--type website|skill|feature|block|pipeline] [--goal '<text>'] [--skip-code-review]"
+argument-hint: "<target> [--type website|skill|feature|block|pipeline] [--goal '<text>'] [--base <commit>] [--skip-code-review]"
 description: >-
   This skill should be used when quality-checking any artifact end-to-end —
   website, skill, feature, Gutenberg block, or pipeline output. PRIMARY
-  MANDATE: real end-to-end testing as a user or developer would do it, not
-  code review. Runs 7 stages: detect target type → extract stated goal →
+  MANDATE: real end-to-end testing as a user or developer would do it. When
+  the target carries fresh code, one cheap code review of the diff runs first,
+  so obvious faults are caught before any browser time is spent. Runs 7
+  stages: detect target type → pre-gates and fresh-code review → extract stated goal →
   generate realistic test scenarios (golden path + edge cases + failure modes
   + accessibility) → execute each scenario against the real system with
   captured evidence → compare actual vs expected output → optional code review
@@ -33,13 +35,13 @@ Before starting a QC run, load:
 
 ## Goal
 
-Evidence-backed pass/fail verdict per test scenario, with captured output (screenshots, stdout, JSON diffs), a confidence score, and a prioritised next-actions list. Code review only fires if tests pass but something still feels wrong.
+Evidence-backed pass/fail verdict per test scenario, with captured output (screenshots, stdout, JSON diffs), a confidence score, and a prioritised next-actions list. A cheap review of fresh code runs before testing (Stage 0.5b); a deeper review panel fires only if tests pass but something still feels wrong (Stage 5).
 
 **Type:** Pipeline
 
-**Stages:** DETECT → GOAL-EXTRACT → SCENARIO-GEN → EXECUTE → COMPARE → CODE-REVIEW (backup) → REPORT
+**Stages:** DETECT → PRE-GATES + FRESH-CODE REVIEW → GOAL-EXTRACT → SCENARIO-GEN → EXECUTE → COMPARE → CODE-REVIEW (backup) → REPORT
 
-**Primary mandate:** Test like a user first. Code review is Stage 6 (backup only).
+**Primary mandate:** Test like a user. Reading a diff takes minutes and needs no live site, so a fresh-code review runs first to catch typos, broken logic and rule breaks cheaply; but only the real test proves the change works, so the review never replaces it.
 
 ---
 
@@ -95,11 +97,18 @@ Any target that fails a structural check is tagged `structural_fail` and exclude
 
 **HARD GATE:** if every structural check fails, abort the QC run with a clear message naming the failing checks. Do not generate scenarios against a structurally broken target.
 
-**Output:** `stage-0.5-pre-gates.json` — `{target_type, checks_run: [{check, result: pass|fail, detail}], structural_fail: bool}`
+**Stage 0.5b — Fresh-code review (when the target carries new code).** Runs after the structural checks, before any scenario is generated or browser opened. It fires when the target has a diff: `--base <commit>` given, or the target's paths changed since the last commit Bean named as reviewed. `--skip-code-review` turns it off.
 
-**Failure:** abort (hard gate) — all checks fail → surface failures and stop.
+1. Write the diff to one file: `git log --oneline BASE..HEAD`, `git diff --stat BASE..HEAD` and `git diff -U10 BASE..HEAD -- <target paths>`.
+2. Route ONE reviewer with `/delegate`: `--task-shape code_review --input-size-kb <diff size>` (Sonnet at medium effort; add `--high-complexity` when the diff touches security, payments or data migration, which routes to Opus). One reviewer, not a panel.
+3. Brief it with the three `/delegate` brief lines, the diff file path, the goal, and the project rules the diff must honour (for SGS: no inline `style=`, `sgs-` BEM, nonce and capability checks on REST, UK English). Ask for findings only, as `path:line — severity — one-line issue`, at most 15, severity Critical / Important / Minor.
+4. **Critical findings stop the run before Stage 3:** report them and recommend "fix then re-run QC". Browser testing code with a known critical fault wastes the most expensive stage. Important and Minor findings continue: Stage 2 adds a scenario aimed at each Important finding, and the report lists them.
 
-**Duration:** 1–2 min
+**Output:** `stage-0.5-pre-gates.json` — `{target_type, checks_run: [{check, result: pass|fail, detail}], structural_fail: bool, code_review: {ran: bool, reviewer_model, findings: [{location, severity, issue}], critical_count}}`
+
+**Failure:** abort (hard gate) — all checks fail → surface failures and stop. `code_review.critical_count > 0` → stop before Stage 3 with the findings as the report's next actions.
+
+**Duration:** 1–2 min; 4–8 min with the fresh-code review
 
 ---
 
@@ -155,7 +164,7 @@ Read the matches and surface any correction that directly contradicts the stated
 
 **Input:** `stage-1-goal.json` — goal statement and acceptance criteria.
 
-**Process:** Generate a written test plan as a list of scenarios. Every plan MUST include: one golden path (the primary use case working end-to-end), at least two edge cases (boundary inputs, empty states, optional fields absent), at least two failure modes (invalid input, unavailable dependency, timeout), and — when the target is UI-surfaced — at least one accessibility check (keyboard navigation, screen-reader labels, colour contrast, touch target size). Each scenario must state: a descriptive name, the input to provide, the expected output or behaviour, and how to verify (command to run, screenshot to take, value to compare). Scenarios that cannot be verified without manual human judgement are flagged as `verify: manual` and excluded from automated execution.
+**Process:** Generate a written test plan as a list of scenarios. Add one scenario aimed at each Important finding from the Stage 0.5b fresh-code review, so the test confirms or clears it. Every plan MUST include: one golden path (the primary use case working end-to-end), at least two edge cases (boundary inputs, empty states, optional fields absent), at least two failure modes (invalid input, unavailable dependency, timeout), and — when the target is UI-surfaced — at least one accessibility check (keyboard navigation, screen-reader labels, colour contrast, touch target size). Each scenario must state: a descriptive name, the input to provide, the expected output or behaviour, and how to verify (command to run, screenshot to take, value to compare). Scenarios that cannot be verified without manual human judgement are flagged as `verify: manual` and excluded from automated execution.
 
 **Output:** `stage-2-scenarios.json` — `{scenarios: [{name, input, expected_output, verify_method, verify_type: auto|manual, category: golden|edge|failure|a11y}]}`
 
@@ -273,9 +282,9 @@ Never abort the full pipeline for a single scenario failure unless the infrastru
 
 **Trigger condition:** Stage 5 is SKIPPED BY DEFAULT. It only runs when Stage 4 sets `smell_detected: true`, or when tests are mostly green but the overall result still does not match the goal feel. Never run Stage 5 as a substitute for failing Stage 3 execution.
 
-**Process:** Dispatch a reviewer panel using `/delegate` for model routing. **Cross-model enforcement:** `/delegate` is called with `exclude_models: [<generator_model>]` so no reviewer shares the model that produced the artefact under review. Same-model self-critique is the most-cited failure mode in reflection-loop literature — fifteen sources in the deep-qc-skill 2026-04-18 research call this "the single biggest quality lever".
+**Process:** Dispatch a reviewer panel using `/delegate` for model routing. **Cross-tier enforcement:** route each reviewer with `--task-shape qc_review --original-model <tier that produced the artefact>`, so no reviewer shares the author's tier. Same-model self-critique is the most-cited failure mode in reflection-loop literature — fifteen sources in the deep-qc-skill 2026-04-18 research call this "the single biggest quality lever".
 
-Default panel: 2× Sonnet (distinct reviewer personas, full gap register) + 1× Haiku (fast triangulation, breadth on brittleness). Add a third cold Sonnet primed with an ecosystem-specific lens for ecosystem-specific gaps (JSON-LD, robots.txt, accessibility schema, API contracts). **For UI-surfaced targets** (websites, blocks, design output), add `/vision-audit` as an additional cross-tier reviewer — captures screenshots across routes + viewports and dispatches a structured visual audit, giving the panel a cross-tier visual perspective the text-model reviewers cannot provide. Each reviewer receives: the smell-tagged scenarios, the target source files, and the goal statement. Each reviewer outputs a structured gap register (issue, severity, location, suggested fix). Merge the registers, deduplicating by location. A finding confirmed by two or more reviewers is flagged `confirmed: true`.
+Default panel: 2 cold reviewers with distinct personas, each returning a full gap register; the fresh-code review in Stage 0.5b has already covered the diff line by line, so this panel looks at behaviour against the goal. Add a third reviewer primed with an ecosystem-specific lens for ecosystem-specific gaps (JSON-LD, robots.txt, accessibility schema, API contracts) only when the smell points there. Every reviewer brief carries the three `/delegate` brief lines. **For UI-surfaced targets** (websites, blocks, design output), add `/vision-audit` as an additional cross-tier reviewer — captures screenshots across routes + viewports and dispatches a structured visual audit, giving the panel a cross-tier visual perspective the text-model reviewers cannot provide. Each reviewer receives: the smell-tagged scenarios, the target source files, and the goal statement. Each reviewer outputs a structured gap register (issue, severity, location, suggested fix). Merge the registers, deduplicating by location. A finding confirmed by two or more reviewers is flagged `confirmed: true`.
 
 **Synthesise findings into two buckets:**
 
@@ -298,7 +307,7 @@ Triangulation lifts diagnostic confidence, not fix-shape confidence. A fix-shape
 
 **Input:** All previous stage artifacts.
 
-**Process:** Produce a unified QC report in two formats: markdown (human-readable) and JSON (machine-readable). The markdown report must include: target name and type, goal statement (from Stage 1), test plan summary (scenario counts by category), per-scenario pass/fail table with evidence links, confidence score with plain-English interpretation (90–100 = ship it; 70–89 = minor issues to fix; 50–69 = significant issues, do not ship; below 50 = fundamental problems), certainty block (see format below), code review findings (if Stage 5 ran), and a prioritised next-actions list. Motivation layer: every report must state the top outcome unlocked by passing QC + estimated confidence uplift from fixing the top-priority finding. Never end the report without a clear "ship / fix then ship / do not ship" recommendation.
+**Process:** Produce a unified QC report in two formats: markdown (human-readable) and JSON (machine-readable). The markdown report must include: target name and type, goal statement (from Stage 1), test plan summary (scenario counts by category), per-scenario pass/fail table with evidence links, confidence score with plain-English interpretation (90–100 = ship it; 70–89 = minor issues to fix; 50–69 = significant issues, do not ship; below 50 = fundamental problems), certainty block (see format below), fresh-code review findings (if Stage 0.5b ran), code review findings (if Stage 5 ran), and a prioritised next-actions list. Motivation layer: every report must state the top outcome unlocked by passing QC + estimated confidence uplift from fixing the top-priority finding. Never end the report without a clear "ship / fix then ship / do not ship" recommendation.
 
 **Experiment-shaped recommendations:** Every recommendation in the next-actions list must be structured as an experiment, not a bare instruction. Each recommendation carries:
 
@@ -413,15 +422,15 @@ Note: this is distinct from a *scenario* failure in Stage 3 (which uses the retr
 
 ## Reviewer Model Routing (Stage 5)
 
-Reviewer models come from `/delegate` (see `~/.agents/skills/shared-references/model-routing.md`):
+Reviewer models come from `/delegate` (`.claude/skills/delegate/scripts/route.py`):
 
-| Reviewer | Model | Role |
-|----------|-------|------|
-| Primary | Sonnet-tier | Full gap register, reliable JSON output |
-| Secondary | Haiku | Fast triangulation, breadth on brittleness gaps |
-| Ecosystem | Cold Sonnet (ecosystem persona) | JSON-LD, robots.txt, API contracts, /uimax gaps |
+| Reviewer | Descriptor | Typical answer | Role |
+|----------|-----------|----------------|------|
+| Fresh-code (Stage 0.5b) | `code_review` | Sonnet, medium | Line-by-line diff review before testing |
+| Panel (Stage 5) | `qc_review --original-model <author tier>` | Opus when Sonnet wrote it; Sonnet when the main session or Opus wrote it | Behaviour against the goal, full gap register |
+| Ecosystem (Stage 5, when the smell points there) | `qc_review` with an ecosystem persona | as above | JSON-LD, robots.txt, API contracts, /uimax gaps |
 
-Consult `/delegate` per reviewer branch — never hardcode. If `/delegate` is unavailable, use a single Sonnet-tier reviewer.
+Consult `/delegate` per reviewer — never hardcode. If `/delegate` is unavailable, use a single Sonnet reviewer at medium effort.
 
 ---
 
@@ -435,7 +444,9 @@ Reusable scenario starters by target type — see `references/scenario-templates
 
 | Mistake | Fix |
 |---------|-----|
-| Running code review as primary mode | Stage 5 is backup only. Test first, always. |
+| Running code review as primary mode | The fresh-code review (Stage 0.5b) is one cheap reviewer that catches obvious faults before testing; the real test still decides the verdict. Stage 5's panel is backup only. |
+| Browser testing code with a known critical fault | A Critical finding in Stage 0.5b stops the run before Stage 3: fix first, then re-run. |
+| A review panel for the fresh-code review | One reviewer reads the diff; the panel is Stage 5's job, and only when tests smell off. |
 | Inventing a goal when none is documented | Hard gate at Stage 1 — ask the user. |
 | Mocking in Stage 3 by default | No mocking unless the scenario explicitly tests mock behaviour. Real system only. |
 | Skipping a11y scenarios on UI targets | Accessibility is mandatory for any UI-surfaced target. |

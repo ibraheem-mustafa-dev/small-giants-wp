@@ -1,6 +1,6 @@
 # Canonical Rater Personas
 
-The five canonical personas for `/qc-council` Stage Two. Each one names a distinct angle, the tools the rater needs, the model shape (Sonnet for depth tasks, Haiku for mechanical tasks), and a cold-prompt template.
+The five canonical personas for `/qc-council` Stage Two. Each one names a distinct angle, the tools the rater needs, the model shape (Sonnet for depth tasks, Haiku at medium effort for bounded lookups), and a cold-prompt template.
 
 ## A — Visible eyeball / Playwright-DOM verifier
 
@@ -98,7 +98,7 @@ Reply with structured JSON: {section_health: [...], diagnostics: [...], proposal
 
 **Tools:** Read + Grep on source files; static call-graph tracing.
 
-**Default model:** Haiku — mechanical code-path tracing is cheap-model-shaped.
+**Default model:** Haiku at medium effort — mechanical code-path tracing is a bounded lookup.
 
 **Cold-prompt frame:**
 
@@ -126,7 +126,7 @@ Reply with structured JSON: {call_graphs: [...], proposals: [...]}
 
 **Tools:** grep the CC auto-memory lesson files and `git log --grep` for the symptom.
 
-**Default model:** Haiku — search + summary only.
+**Default model:** Haiku at medium effort — search + summary only.
 
 **Cold-prompt frame:**
 

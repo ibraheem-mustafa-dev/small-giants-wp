@@ -8,7 +8,8 @@ description: >-
   one or more fix-shape proposals that would otherwise dispatch subagents
   before being validated. Forces every fix-shape proposal through an empirical
   pre/post measurement gate — predicted numeric outcome, baseline measurement,
-  validation command, commit gate — before treatment as an accepted spec.
+  validation command, commit gate — before treatment as an accepted spec,
+  and reviews each wave's new code before any fix counts as shipped.
   Sits between research / diagnosis and implementation. Triggers on "qc
   council", "council this", "validate the council", "before-dispatch
   validation", "hypothesis-test these fixes", "is this the real path",
@@ -134,7 +135,7 @@ Proposals that fail any check are tagged `structural_fail` and dropped from rate
 
 ### Stage 2 — Seed Personas
 
-Generate three to five rater personas. Each has a DIFFERENT angle. Each has explicit fact-checking duty against Stage One ground-truth.
+Generate three rater personas by default; add a fourth or fifth only when the fix shape spans several files or has a history of failed attempts, and never run more than three at once (`/delegate`'s fan-out budget). Each has a DIFFERENT angle. Each has explicit fact-checking duty against Stage One ground-truth.
 
 Canonical trio (always seed these for pipeline/code work):
 - **A — Visible eyeball / Playwright-DOM verifier** — opens the rendered output in a browser, takes screenshots, compares to mockup or expected state
@@ -149,16 +150,18 @@ Full persona templates: `references/canonical-personas.md`.
 
 ### Stage 3 — Dispatch (model routing via /delegate)
 
-For each persona, call `/delegate` to pick the model. Don't hardcode. **Cross-model enforcement:** `/delegate` is called with `exclude_models: [<generator_model>]` so no rater shares the model that produced the proposal set. Same-model self-critique is the most-cited failure mode in reflection-loop literature — fifteen sources in the deep-qc-skill 2026-04-18 research call this "the single biggest quality lever".
+For each persona, call `/delegate` to pick the model and effort. Don't hardcode. **Cross-tier enforcement:** depth raters route with `--task-shape qc_review --original-model <tier that produced the proposal set>`, so no rater shares the author's tier. Same-model self-critique is the most-cited failure mode in reflection-loop literature — fifteen sources in the deep-qc-skill 2026-04-18 research call this "the single biggest quality lever".
 
 Default routing (subject to `/delegate`'s decision):
 - A (visible-eyeball) → Sonnet (visual analysis + Playwright tool use)
 - B (structural-diff) → Sonnet (DOM/AST diff requires depth)
 - C (pipeline-forensics) → Sonnet (JSON walk-through + cross-artefact reasoning)
-- D (code-path tracer) → Haiku (mechanical trace, cheap model)
-- E (historical-context) → Haiku (search + summary only)
+- D (code-path tracer) → Haiku at medium effort (`find_list`: mechanical trace)
+- E (historical-context) → Haiku at medium effort (`find_list`: search + summary only)
 
 Dispatch via `/dispatching-parallel-agents` when raters are independent (most cases). Each rater receives the Stage One ground-truth pack in its cold prompt via `/subagent-prompt`. Cold prompts include:
+- The three `/delegate` brief lines, word for word, starting with "Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better."
+- A capped return: at most 10 claims, each with its evidence reference
 - The proposal set under review
 - The Stage One ground-truth artefacts (relevant excerpts, not the full file dumps — keep cold prompts tight)
 - Explicit fact-check duty: any claim made must cite a `path::symbol` reference or artefact-key from the ground-truth pack
@@ -250,6 +253,10 @@ Dispatch implementer subagents with the experiment frame embedded in the cold pr
 - Safety clauses from `~/.claude/rules/git-hygiene.md` (no stash, explicit pathspecs, straight to main) + `~/.claude/rules/no-coauthored-by.md`
 - Pre-existing-uncommitted-changes guidance (scope commits by exact path; do not `git add .` or `-A`)
 
+- The three `/delegate` brief lines, word for word
+
+Route implementers with `/delegate` (`code_gen`: Sonnet at medium effort). Group proposals that touch the same files into one implementer; never run more than three implementers at once.
+
 Each implementer:
 - Runs the baseline measurement BEFORE writing any code
 - Applies the fix
@@ -257,12 +264,21 @@ Each implementer:
 - Commits ONLY if the commit gate passes
 - Reports actual pre/post numbers + commit SHA (or "did not commit; predicted X, got Y")
 
+### Stage 7.5 — Fresh-code review (one reviewer per wave)
+
+A passing commit gate proves the metric moved; it does not prove the code is sound. Before Stage 8 records any `validated-shipped` verdict, review the wave's new code once:
+
+1. Write every implementer commit in the wave to one diff file: `git log --oneline BASE..HEAD`, `git diff --stat BASE..HEAD`, `git diff -U10 BASE..HEAD`.
+2. Dispatch ONE reviewer for the whole wave, routed with `/delegate` (`code_review`: Sonnet at medium effort; `--high-complexity` for security, payments or data migration). Brief it with the brief lines, the diff file, each proposal's fix shape, and the project rules the code must honour. Return: findings as `path:line — severity — issue`, at most 15.
+3. A Critical or Important finding goes back to that proposal's implementer (SendMessage keeps its context) to fix, re-measure and re-commit under the same commit gate. Minor findings are listed in the Stage 8 report.
+4. A proposal whose Critical finding is not fixed is reported `validated-rejected` with the finding as the reason.
+
 ### Stage 8 — Report
 
 Per-proposal verdict and per-wave summary.
 
 **Per-proposal verdict format:**
-- `validated-shipped` — passed Stage Five; implementer commit gate passed; SHA recorded
+- `validated-shipped` — passed Stage Five; implementer commit gate passed; Stage 7.5 review clear of Critical and Important findings; SHA recorded
 - `validated-rejected` — passed Stage Five; implementer commit gate failed (predicted delta didn't materialise — the fix shape was right about the consumer but wrong about the mechanism, or another code path inverted the change)
 - `falsified` — failed Stage Five (baseline already matched predicted post-fix value → diagnosis wrong) — returned to Stage Zero
 - `unverifiable` — baseline measurement was impossible — escalated
@@ -289,6 +305,7 @@ Per-proposal verdict and per-wave summary.
 - **Stage Four:** fix-shape proposal that no rater can defend with `path::symbol` evidence is dropped
 - **Stage Five:** no fix-shape proceeds to Stage Six without a measured baseline
 - **Stage Seven:** implementer cold prompt MUST include the commit-gate clause verbatim
+- **Stage Seven-point-five:** no `validated-shipped` verdict while the wave's fresh-code review shows an unfixed Critical or Important finding
 
 ## Tool Bindings
 

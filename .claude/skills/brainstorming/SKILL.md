@@ -8,7 +8,7 @@ description: >-
   triggers: "design", "spec", "plan this", "build". Exploration mode triggers:
   "explore", "think through", "help me think about". Design mode: structured
   dialogue to produce a spec and invoke strategic-plan. Exploration mode: open
-  questioning, insight tracking, no spec output, no solutions until user exits. When options already exist and need a decision, use brainstorming in design mode with the options as the starting spec. Do NOT invoke for:
+  questioning, insight tracking, no spec output, no solutions until user exits. Council mode: three personas research a design decision independently, debate once, and the main session synthesises agreements, open disagreements and a recommendation; triggers "council", "get different perspectives", "debate this". When options already exist and need a decision, use brainstorming in design mode with the options as the starting spec. Do NOT invoke for:
   `strategic-plan` (implementation planning after design), `research-buddies`
   (evidence gathering before options exist).
 ---
@@ -39,6 +39,7 @@ Global rule: `~/.claude/rules/prove-the-cause-before-fix.md`. In design mode thi
 | `/brainstorming` | Asks which mode you want |
 | `/brainstorming design [topic]` | Goes straight into design mode |
 | `/brainstorming explore [topic]` | Goes straight into exploration mode |
+| `/brainstorming council [decision]` | Runs a council on one design decision (`references/council-mode.md`), then continues in design mode at Stage 4 |
 | Called by another skill or a headless run | Defaults to design mode, no question asked |
 
 ## When NOT to use
@@ -94,6 +95,8 @@ Ask one question at a time. Focus on purpose, constraints, and success criteria.
 
 ### Stage 3 — Propose Approaches
 Offer 2-3 approaches with trade-offs and a clear recommendation.
+
+**Council mode:** when the decision has several viable approaches, is costly to undo, or Bean asks for different perspectives, offer a council instead: three personas (default Builder, Sceptic, User advocate) research independently, present positions with evidence, answer each other once, and you synthesise what they agree on, what is still open and a recommendation. It costs three subagents. Full procedure: `references/council-mode.md`.
 
 ### Stage 4 — Present Design
 Present in sections scaled to their complexity. Get user approval after each section.

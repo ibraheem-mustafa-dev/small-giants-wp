@@ -17,6 +17,33 @@ One home per job:
 
 Every item carried forward (a blocker, guardrail, next step or deferred item) names the task it serves, and is deleted when that task is done.
 
+## Where it runs
+
+`$ARGUMENTS` picks the mode:
+
+- **(empty): split, the default.** The local session does Step 1, sends Steps 2 to 9 to a cloud session, and stops. Steps 2 to 9 are the expensive part (finding, reading and reconciling docs) and need only GitHub, so they run on Bean's separate cloud credits while the local session is free.
+- **`local`:** run every step here. Use it when the session changed no code and at most one doc, when `claude --cloud` is unavailable, or when Bean wants the next-session prompt in this terminal straight away.
+- **`land <branch>`:** finish a cloud handoff (see "Landing a cloud handoff" at the end).
+- **`cloud <brief-path>`:** you are the cloud session. Read the brief, treat it as Step 1, run Steps 2 to 9 and the Output, then the cloud part of Step 10.
+
+### Split mode, local part
+
+1. Run Step 1 below.
+2. Commit and push the session's own work to `main` (Step 10 rules: explicit pathspec, `git branch --show-current` in the same command), so the cloud session starts from it.
+3. Write the Step 1 result to `.claude/prompts/<YYYY-MM-DD>-handoff-brief.md`: the tasks and their intended outcomes, this session's commit hashes, the findings (including ones where no file changed), branch and HEAD, build and test results, what is deployed where and whether it matches `main`, and any uncommitted files with the reason. Write it for a reader with no access to this conversation. Commit and push it.
+4. Start the cloud session from Bash: `claude --cloud "/handoff cloud .claude/prompts/<file>"`. If slash commands do not run in the cloud session, send instead: "Read .claude/commands/handoff.md and follow it in `cloud` mode with brief .claude/prompts/<file>." Note the session id it prints.
+5. Tell Bean in two lines: the cloud session id, that its close-out and next-session prompt will appear in that session in the Claude app, and that `/handoff land <branch>` merges its result.
+
+### Split mode, cloud part
+
+You have GitHub only: no SSH, no framework DB, no `.claude/secrets/`, no `node_modules`, nothing from `~/.claude`, and no way to message the local session. So:
+
+- Take Step 1 from the brief; do not re-derive it. Where the brief says what is deployed, trust it; you cannot check a live site.
+- Run Steps 2 to 9 as written. Step 8's independent check runs here as a subagent.
+- The preflight's memory check passes vacuously here (there is no `MEMORY.md` in the cloud); the landing step re-runs it locally.
+- Step 10, cloud part: commit by explicit pathspec to this session's own branch, delete the brief file in the same commit (prompt files are single-use), and push. Do not push to `main`; the landing step does that.
+- End with the Output as specified, with one extra first line: `Land with: /handoff land <this session's branch>`. It appears in this cloud session, where Bean reads it.
+
 ## Step 1: Establish what the session did and where things stand
 
 Gather these first, because every later step depends on them:
@@ -92,7 +119,7 @@ No orchestration, no next-session prompt, no task lists: those live in the plan 
 
 ## Step 8: Independent check
 
-Skip this step only if the session changed no code and at most one doc. Otherwise dispatch one Sonnet subagent (never self-review in the main thread) with:
+Skip this step only if the session changed no code and at most one doc. Otherwise dispatch one subagent (never self-review in the main thread), routed with `/delegate` (`--task-shape qc_review --original-model inline`, which returns a cold Sonnet at medium effort), with the three `/delegate` brief lines and:
 - the Step 1 summary and commit hashes,
 - the Step 2 candidate list with verdicts,
 - `git diff` of every doc changed in Steps 3 to 7.
@@ -120,6 +147,16 @@ Per `~/.claude/rules/git-hygiene.md`:
 
    The handoff always ends with `main` carrying the session's work.
 4. Integrate with `origin/main` and push. No PRs.
+
+## Landing a cloud handoff
+
+Run in the local session as `/handoff land <branch>` once the cloud session has finished.
+
+1. `git fetch origin <branch> main`, then read its commits (`git log --oneline origin/main..origin/<branch>`) and the diff stat, and confirm it touches only docs, plans, specs, LEDGER and prompt files.
+2. Merge it into `main` with the Step 10 rules: squash-merge, explicit check of `git branch --show-current` in the same command. If `LEDGER.md` conflicts because another session changed it meanwhile, keep the other session's fronts and take the cloud branch's version of this session's front only.
+3. Run the preflight locally (`python .claude/hooks/handoff-preflight.py --check`), which also checks the memory index the cloud could not see. Fix any failure and commit the fix.
+4. Push `main`, then delete the branch locally and on the remote.
+5. Tell Bean in one line: landed at `<hash>`, preflight result.
 
 ## Output
 

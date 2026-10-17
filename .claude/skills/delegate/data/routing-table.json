@@ -1,75 +1,94 @@
 {
-  "version": "2026-07-15-v5",
-  "last_updated": "2026-07-15T00:00:00Z",
-  "schema_notes": "Bean-editable. Add or modify models here; route.py re-reads on every call. v5 (2026-07-15): ALL-CLAUDE PURGE — cerebras, gemini-flash, gemini-pro, ollama-cloud, local-gemma4, local-qwen25 removed per Bean's no-non-Claude-models decision. Fleet is now haiku (cheap/mechanical, 200K ctx), sonnet (mid/architectural + large-context, 1M ctx), inline (main-thread Opus/Fable, never dispatched). Cross-PROVIDER QC became cross-TIER QC (reviewer = different Claude tier than author, cold context). CAPABILITY LOSSES documented: no offline/local tier (offline_required now flags-and-stays-inline); no free tier (cheap = Haiku). Sensitive content (secrets/PII) stays inline to minimise copies across subagent transcripts. v4 and earlier history: see git.",
+  "version": "2026-10-17-v6",
+  "last_updated": "2026-10-17T00:00:00Z",
+  "schema_notes": "Bean-editable. route.py re-reads on every call. v6 (2026-10-17): the 5.5 generation (Haiku 5.5, Sonnet 5.5, Opus 5.5) with an effort level on every answer; Sonnet is the workhorse for dispatched work, including multi-file code and debugging; Opus 5.5 is a dispatch tier for hard self-contained work; Haiku 5.5 is for bounded find-and-list and mechanical work only; a cloud tier for long code-only jobs; a fan-out budget and brief lines every dispatch carries. Budget gating and the dispatch log were removed: the log recorded no token counts, so nothing could be calibrated or budgeted from it.",
 
-  "budget_thresholds": {
-    "sonnet": 40,
-    "haiku": 10
+  "fanout": {
+    "max_concurrent": 3,
+    "session_soft_cap": 12,
+    "notes": "A session normally runs no more than 3 subagents at once and about 12 in total; .claude/settings.json sets CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=4 as the hard ceiling. Past the soft cap, do the next piece of work inline unless it is a genuinely independent, sizeable track. Each subagent re-establishes context, re-explores and reports back, and the main session then reads its report, so fan-out multiplies cost and wall-clock time; one subagent beats several on a modest task."
   },
-  "budget_thresholds_notes": "Monthly cumulative spend ceilings in GBP. When exceeded (checked by scripts/check-budget.py), route.py activates 'budget_triggered' rules that step non-critical work down to Haiku until month end; critical (time_sensitivity=high) still routes normally. Inline (main thread) is never budget-gated.",
+
+  "brief_must_include": [
+    "Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better.",
+    "Match your checking to the risk: a low-risk change needs one real check that exercises it, not layers of review.",
+    "Return only what the caller needs: findings or results with file paths, no narrative of what you did."
+  ],
 
   "models": {
     "haiku": {
       "tier": "cheap",
       "provider": "anthropic",
       "command": "Agent tool with model: haiku",
-      "model_id": "claude-haiku-4-5",
-      "context_window_tokens": 200000,
-      "output_cap_tokens": 64000,
-      "reliability": "high",
-      "reliability_notes": "Anthropic API path, fast + cheapest tier. The mechanical workhorse: classification, extraction, formulaic edits, small well-scoped code gen.",
-      "budget": {
-        "max_input_bytes": 204800,
-        "max_output_tokens": 8192,
-        "max_tool_rounds": 15
-      },
-      "capabilities": ["classification", "extraction", "fast_response", "mcp", "code_gen", "file_ops", "bash"],
-      "excludes": ["deep_reasoning", "complex_code_gen", "large_input", "batch_synthesis"],
-      "cost_per_1m_input_tokens": 1.0,
-      "cost_per_1m_output_tokens": 5.0,
-      "fallback_to": ["sonnet"],
-      "typical_latency_sec": 3,
-      "max_parallel_dispatches": 8
-    },
-    "sonnet": {
-      "tier": "mid",
-      "provider": "anthropic",
-      "command": "Agent tool with model: sonnet",
-      "model_id": "claude-sonnet-5",
+      "model_id": "claude-haiku-5-5",
+      "default_effort": "medium",
       "context_window_tokens": 1000000,
       "output_cap_tokens": 128000,
       "reliability": "high",
-      "reliability_notes": "Anthropic API path. 1M context window — absorbs the large-input/batch-synthesis role the old 1M-context models filled. Near-Opus quality on coding and agentic work. Supports MCP via Agent tool.",
-      "budget": {
-        "max_input_bytes": 1048576,
-        "max_output_tokens": 32768,
-        "max_tool_rounds": 25
-      },
-      "capabilities": ["code_gen", "file_ops", "bash", "classification", "batch_synthesis", "large_input", "mcp", "multi_file_refactor", "spec_review", "code_review"],
+      "reliability_notes": "Bounded find-and-list work: locating files and call sites, listing usages, extraction, classification, summarising, and mechanical edits with an exact spec. Weak at agentic coding (about 39% on Anthropic's coding-agent benchmark against Sonnet 5.5's 71%) and at judgement. Keep it at medium effort: higher effort made it slower and wordier with no accuracy gain. Its price is lowest with prompts under about 100K tokens.",
+      "capabilities": ["find_list", "classification", "extraction", "summarise", "mechanical_edit", "file_ops", "bash", "mcp"],
+      "excludes": ["code_gen", "debugging", "code_review", "deep_reasoning", "batch_synthesis"],
+      "fallback_to": ["sonnet"],
+      "max_parallel_dispatches": 3
+    },
+    "sonnet": {
+      "tier": "workhorse",
+      "provider": "anthropic",
+      "command": "Agent tool with model: sonnet",
+      "model_id": "claude-sonnet-5-5",
+      "default_effort": "medium",
+      "context_window_tokens": 1000000,
+      "output_cap_tokens": 128000,
+      "reliability": "high",
+      "reliability_notes": "The default for dispatched work. Strongest on multistep agentic coding in a real repository: multi-file code changes, debugging, code review, MCP and Playwright work, research and large-input synthesis. Use medium effort for coding and tool work, low for simple jobs, high for hard debugging. At low effort it can report code done without running a check, so the brief lines require a real check.",
+      "capabilities": ["code_gen", "debugging", "multi_file_refactor", "code_review", "spec_review", "batch_synthesis", "research", "large_input", "mcp", "file_ops", "bash", "classification", "extraction"],
       "excludes": [],
-      "cost_per_1m_input_tokens": 3.0,
-      "cost_per_1m_output_tokens": 15.0,
-      "fallback_to": ["haiku"],
-      "typical_latency_sec": 15,
-      "max_parallel_dispatches": 4
+      "fallback_to": ["opus"],
+      "max_parallel_dispatches": 3
+    },
+    "opus": {
+      "tier": "deep",
+      "provider": "anthropic",
+      "command": "Agent tool with model: opus",
+      "model_id": "claude-opus-5-5",
+      "default_effort": "high",
+      "context_window_tokens": 1000000,
+      "output_cap_tokens": 128000,
+      "reliability": "high",
+      "reliability_notes": "Hard, self-contained work that needs deep reasoning but not this conversation's context: root-causing a stubborn bug, an architecture or security review, reviewing Sonnet's work. About twice Sonnet's price. It checks its own work unprompted, so do not ask it to add verification layers.",
+      "capabilities": ["everything"],
+      "excludes": [],
+      "fallback_to": ["sonnet"],
+      "max_parallel_dispatches": 2
+    },
+    "cloud": {
+      "tier": "cloud",
+      "provider": "anthropic",
+      "command": "Bash from a local session: claude --cloud \"<self-contained prompt>\" (push the branch first; collect the result with claude --teleport <session-id> or by merging its branch)",
+      "model_id": "cloud-session default",
+      "default_effort": "high",
+      "context_window_tokens": 1000000,
+      "output_cap_tokens": 128000,
+      "reliability": "high",
+      "reliability_notes": "A Claude Code on the web session that runs on Bean's separate cloud credits, not the Max allowance. It starts from GitHub only: no SSH key, no sgs-framework.db, no .claude/secrets, no node_modules and nothing from ~/.claude, and it cannot message the local session back. Fit: long (20 minutes or more), code-only work such as a code review, writing a fix the local session will test, doc reconciliation, or a plan executed against the repo. Never: deploys, reseeds, live-site probes or anything needing credentials.",
+      "capabilities": ["code_gen", "debugging", "code_review", "spec_review", "research", "file_ops", "bash"],
+      "excludes": ["mcp", "live_site", "framework_db", "secrets", "deploy"],
+      "fallback_to": ["sonnet"],
+      "max_parallel_dispatches": 3
     },
     "inline": {
       "tier": "main_thread",
       "provider": "anthropic",
       "command": "(do not dispatch, handle in main conversation)",
-      "model_id": "session-model (Fable 5 / Opus)",
+      "model_id": "session model",
+      "default_effort": "session",
       "context_window_tokens": 1000000,
       "output_cap_tokens": 128000,
       "reliability": "high",
-      "reliability_notes": "The current conversation — whatever frontier model the session runs on (Fable 5 as of 2026-07). Most expensive tier; the deep-reasoning role the old paid-credit 1M-context tier filled now lives here. Use when subagent isolation would break connected reasoning, for strategic work, and for sensitive content.",
-      "budget": {},
+      "reliability_notes": "The current conversation. Use when the work needs this conversation's context, for strategic decisions, for quick targeted changes, and for sensitive content.",
       "capabilities": ["everything"],
       "excludes": [],
-      "cost_per_1m_input_tokens": 10.0,
-      "cost_per_1m_output_tokens": 50.0,
-      "fallback_to": [],
-      "typical_latency_sec": 0
+      "fallback_to": []
     }
   },
 
@@ -78,55 +97,55 @@
       "name": "strategic_work_never_dispatched",
       "priority": 110,
       "when": {"task_shape_in": ["gap_analysis", "synthesis", "spec_rewrite", "research_decision", "strategic_planning"]},
-      "then": {"primary_model": "inline", "justification": "Strategic work is inline by default per 2026-04-18 correction. Only qc_review and persona_panel task shapes may be delegated for this class of work — both have their own rules and both require report-back-inline.", "requires": {"surface_findings_inline": true}}
+      "then": {"primary_model": "inline", "justification": "Strategic work stays inline (2026-04-18 correction). Only qc_review and persona_panel may be delegated for this class of work; both have their own rules and both report back inline.", "requires": {"surface_findings_inline": true}}
     },
     {
       "name": "dispatch_not_justified_stays_inline",
       "priority": 100,
       "when": {"dispatch_justified": false},
-      "then": {"primary_model": "inline", "justification": "No dispatch criterion met per 2026-04-15 subagent-dispatch-decision-rule. Inline wins for connected reasoning."}
+      "then": {"primary_model": "inline", "justification": "No dispatch criterion met (subagent-prompt Stage 1). Inline wins for connected reasoning and quick changes."}
     },
     {
       "name": "contains_secrets_stays_inline",
       "priority": 96,
       "when": {"contains_secrets": true},
-      "then": {"primary_model": "inline", "justification": "Content signal: credentials/secrets detected. All models are Anthropic now, but keeping secrets in the main thread minimises copies across subagent transcripts and logs. (The old local-model offline route was retired 2026-07-15 with the non-Claude purge.)"}
+      "then": {"primary_model": "inline", "justification": "Content signal: credentials or secrets. Keeping them in the main thread minimises copies across subagent transcripts."}
     },
     {
       "name": "pii_stays_inline",
       "priority": 95,
       "when": {"pii_detected": true},
-      "then": {"primary_model": "inline", "justification": "Content signal: PII detected. All providers are Anthropic (enterprise DPA), so no exclusion set is needed — but PII-bearing work stays in the main thread to minimise copies across subagent transcripts."}
+      "then": {"primary_model": "inline", "justification": "Content signal: personal data. Stays in the main thread to minimise copies across subagent transcripts."}
     },
     {
-      "name": "jailbreak_signal_routes_to_sonnet_with_guardrails",
+      "name": "jailbreak_signal_routes_to_sonnet",
       "priority": 94,
       "when": {"jailbreak_signal": true},
-      "then": {"primary_model": "sonnet", "justification": "Content signal: jailbreak attempt suspected. Sonnet via Anthropic API has strong safety training + audit logging; keeps the suspect content out of the main thread."}
+      "then": {"primary_model": "sonnet", "justification": "Content signal: suspected prompt injection. A cold Sonnet subagent keeps the suspect content out of the main thread."}
     },
     {
       "name": "mcp_needed_routes_to_sonnet",
       "priority": 90,
       "when": {"needs_mcp": true},
-      "then": {"primary_model": "sonnet", "justification": "MCP tools (Playwright, GitHub, etc) route via the Agent tool; Sonnet is the default MCP-capable dispatch tier (Haiku also supports MCP for simple fixed-shape calls)."}
+      "then": {"primary_model": "sonnet", "exclude_models": ["cloud"], "justification": "MCP tools (Playwright, GitHub and others) run through the local Agent tool; Sonnet is the MCP dispatch tier. A cloud session has none of the local MCP servers."}
+    },
+    {
+      "name": "long_code_only_work_goes_to_cloud",
+      "priority": 88,
+      "when": {"code_only": true, "expected_minutes_gte": 20, "destructive": false},
+      "then": {"primary_model": "cloud", "justification": "Long, code-only work that needs nothing outside GitHub runs as a cloud session on Bean's separate cloud credits, and the local session stays free. Results come back as a branch."}
     },
     {
       "name": "web_search_handled_inline_via_search_skill",
       "priority": 85,
       "when": {"needs_web_search": true},
-      "then": {"primary_model": "inline", "justification": "Web search via /search skill in main thread; subagents can't invoke search.py reliably."}
+      "then": {"primary_model": "inline", "justification": "Web search runs through the /search skill in the main thread; subagents cannot invoke search.py reliably."}
     },
     {
       "name": "destructive_requires_isolation",
       "priority": 80,
       "when": {"destructive": true},
-      "then": {"primary_model": "sonnet", "isolation": "worktree", "justification": "Destructive ops (DB migration, mass rewrite) need worktree isolation. Sonnet via Agent tool supports this."}
-    },
-    {
-      "name": "offline_required_unsupported_stays_inline",
-      "priority": 75,
-      "when": {"offline_required": true},
-      "then": {"primary_model": "inline", "justification": "CAPABILITY RETIRED 2026-07-15: the local/offline model tier (gemma/qwen via Ollama) was removed with the non-Claude purge. No Claude model runs offline. Work stays inline; if a genuine no-network constraint exists, flag it to Bean rather than dispatching."}
+      "then": {"primary_model": "sonnet", "isolation": "worktree", "exclude_models": ["cloud"], "justification": "Destructive work (DB migration, mass rewrite) needs worktree isolation, which the local Agent tool provides."}
     },
     {
       "name": "persona_panel_routes_to_parallel_sonnet",
@@ -134,22 +153,22 @@
       "when": {"task_shape": "persona_panel"},
       "then": {
         "primary_model": "sonnet",
-        "fallback_chain": ["haiku"],
-        "requires": {"report_back_inline": true, "max_parallel": 4, "synthesise_inline_before_apply": true},
-        "justification": "Persona panel (brainstorming, gap-analysis rubric reviewers, research councils, critique pairs): breadth via parallel COLD Sonnet subagents, each primed with a distinct persona — independence now comes from cold context + divergent priming rather than provider diversity. Quality-first per Bean's philosophy; Haiku fallback (cap 8) when the panel is large and mechanical. Each persona reports back; main agent synthesises; findings surface inline with Bean before anything is applied."
+        "fallback_chain": ["opus"],
+        "requires": {"report_back_inline": true, "max_parallel": 3, "synthesise_inline_before_apply": true},
+        "justification": "Persona panel (brainstorming council, research council, critique pairs): up to 3 cold Sonnet subagents, each primed with a distinct persona, so independence comes from cold context and divergent priming. Each persona reports back briefly; the main session synthesises; findings surface to Bean before anything is applied."
       }
     },
     {
-      "name": "fast_classification_prefers_haiku",
+      "name": "bounded_lookup_routes_to_haiku",
       "priority": 60,
-      "when": {"task_shape": "classification", "expected_output_tokens_lte": 1000, "time_sensitivity": "high"},
-      "then": {"primary_model": "haiku", "justification": "Fast classification: Haiku optimised for this, Anthropic API is reliable, <3s latency."}
+      "when": {"task_shape_in": ["find_list", "classification", "extraction", "summarise", "mechanical_edit"]},
+      "then": {"primary_model": "haiku", "effort": "medium", "justification": "Bounded find-and-list or mechanical work with an exact spec: Haiku 5.5 at medium effort gets it right at a fraction of the cost and faster. Escalate to Sonnet when the job turns out to need judgement."}
     },
     {
       "name": "large_synthesis_prefers_sonnet",
       "priority": 55,
-      "when": {"task_shape": "batch_synthesis", "input_size_kb_gt": 30},
-      "then": {"primary_model": "sonnet", "fallback_chain": ["inline"], "justification": "Batch synthesis + large input: Sonnet's 1M context window fits large synthesis input. Escalate inline only when the synthesis is itself strategic."}
+      "when": {"task_shape": "batch_synthesis"},
+      "then": {"primary_model": "sonnet", "fallback_chain": ["opus"], "justification": "Batch synthesis: Sonnet's 1M window takes the large input. Keep the synthesis inline when it is itself a strategic decision."}
     },
     {
       "name": "qc_review_enforces_cross_tier",
@@ -158,54 +177,43 @@
       "then": {
         "requires": {"report_back_inline": true, "auto_apply": false, "cross_tier": true, "original_model_required": true},
         "routing_by_original_model": {
-          "inline": {"primary_model": "sonnet", "fallback_chain": ["haiku"], "note": "Main-thread Opus/Fable did the work — cross-check with a cold Sonnet reviewer (different tier + fresh context)."},
-          "sonnet": {"primary_model": "inline", "fallback_chain": ["haiku"], "note": "Sonnet did the work — promote the review to the main-thread frontier model."},
-          "haiku":  {"primary_model": "sonnet", "fallback_chain": ["inline"], "note": "Haiku did the work — Sonnet reviews."}
+          "inline": {"primary_model": "sonnet", "fallback_chain": ["opus"], "note": "The main session did the work: a cold Sonnet reviewer (different tier, fresh context)."},
+          "sonnet": {"primary_model": "opus", "fallback_chain": ["inline"], "note": "Sonnet did the work: a cold Opus reviewer, which keeps the main session free."},
+          "opus": {"primary_model": "sonnet", "fallback_chain": ["inline"], "note": "Opus did the work: a cold Sonnet reviewer."},
+          "haiku": {"primary_model": "sonnet", "fallback_chain": ["opus"], "note": "Haiku did the work: Sonnet reviews."}
         },
-        "justification": "QC must be cross-TIER (adapted 2026-07-15 from the 2026-04-18 cross-model rule when the non-Claude fleet was purged): the reviewer is a different Claude tier than the author, dispatched COLD so it shares no context with the authoring thread. Same-tier QC is rejected. route.py refuses to answer if original_model is not supplied."
+        "justification": "QC is cross-tier: the reviewer is a different Claude tier from the author, dispatched cold so it shares no context with the authoring thread. route.py refuses to answer without original_model."
       }
     },
     {
       "name": "code_review_prefers_sonnet",
       "priority": 50,
       "when": {"task_shape": "code_review"},
-      "then": {"primary_model": "sonnet", "justification": "Code review needs code understanding + multi-file reasoning; Sonnet is the spec-reviewer default per subagent-driven-development."}
+      "then": {"primary_model": "sonnet", "justification": "Code review needs code understanding and multi-file reasoning: Sonnet's strength."}
     },
     {
-      "name": "high_complexity_content_stays_inline",
+      "name": "high_complexity_routes_to_opus",
       "priority": 45,
-      "when": {"high_complexity": true, "needs_mcp": false},
-      "then": {"primary_model": "inline", "justification": "Content signal: high-complexity embedding (multi-hop reasoning, ambiguous requirements). Deep reasoning is the main-thread tier's job now that the old paid-credit deep-reasoning subagent tier is gone."}
+      "when": {"high_complexity": true},
+      "then": {"primary_model": "opus", "effort": "high", "fallback_chain": ["inline"], "justification": "Hard, self-contained work (multi-hop reasoning, stubborn root cause, architecture review): Opus 5.5 at high effort. If the work needs this conversation's context, the dispatch is not justified and it stays inline."}
     },
     {
-      "name": "small_code_gen_tries_haiku_first",
-      "priority": 40,
-      "when": {"task_shape": "code_gen", "input_size_kb_lte": 50, "expected_output_tokens_lte": 8000, "time_sensitivity": "normal"},
-      "then": {"primary_model": "haiku", "justification": "Small, well-scoped code gen fits the cheap tier; Haiku first. Fallback to Sonnet if the diff needs multi-file reasoning."}
+      "name": "debugging_raises_sonnet_effort",
+      "priority": 42,
+      "when": {"task_shape": "debugging"},
+      "then": {"primary_model": "sonnet", "effort": "high", "fallback_chain": ["opus"], "justification": "Debugging: Sonnet at high effort. Escalate to Opus only after Sonnet has failed to find the root cause."}
     },
     {
       "name": "very_large_input_excludes_haiku",
-      "priority": 35,
+      "priority": 70,
       "when": {"input_size_kb_gt": 400},
-      "then": {"exclude_models": ["haiku"], "justification": "Input approaches Haiku's 200K-token context window; Sonnet's 1M window handles it."}
+      "then": {"exclude_models": ["haiku"], "justification": "Input above about 100K tokens moves Haiku 5.5 onto its higher rate card and past its sweet spot for bounded work; Sonnet takes it."}
     },
     {
-      "name": "large_output_excludes_haiku",
-      "priority": 30,
-      "when": {"expected_output_tokens_gt": 8000},
-      "then": {"exclude_models": ["haiku"], "justification": "Output exceeds the 8K-token self-imposed budget on Haiku dispatches (keep cheap-tier jobs small and verifiable)."}
-    },
-    {
-      "name": "budget_triggered_prefers_haiku",
-      "priority": 22,
-      "when": {"budget_triggered": true, "time_sensitivity": "normal"},
-      "then": {"exclude_models": ["sonnet"], "justification": "Monthly Sonnet budget exceeded (per scripts/check-budget.py). Step non-critical work down to Haiku until month end; critical (time_sensitivity=high) still routes normally. There is no free tier in the all-Claude fleet — cheap means Haiku."}
-    },
-    {
-      "name": "default_fallback_sonnet",
+      "name": "default_sonnet",
       "priority": 10,
       "when": {},
-      "then": {"primary_model": "sonnet", "justification": "Default: reliable, 1M context, the right quality floor for unclassified dispatch work (quality-first per Bean's philosophy — higher-quality output means less human intervention). Mechanical shapes route to Haiku via higher-priority rules."}
+      "then": {"primary_model": "sonnet", "justification": "Default: Sonnet 5.5 at medium effort handles code generation, multi-file changes and unclassified dispatch work reliably. Bounded lookups route to Haiku and hard self-contained work to Opus through higher-priority rules."}
     }
   ]
 }
