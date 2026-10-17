@@ -2,7 +2,7 @@
 """
 Unit tests for route.py rule evaluation.
 
-Runs 14 scenarios covering every decision_rule in routing-table.json (all-Claude fleet v5).
+Runs one scenario per decision_rule in routing-table.json (5.5 fleet v6), plus effort and\nbrief-line checks.
 Exit 0 = all pass; exit 1 = any failed.
 
 Usage:
@@ -37,51 +37,69 @@ def run_route(descriptor: dict) -> dict:
 
 SCENARIOS = [
     # (name, descriptor, expected_primary_model, expected_in_fallback, must_exclude)
-    # All-Claude fleet (2026-07-15 v5): haiku (cheap/mechanical), sonnet (mid + 1M ctx), inline (main thread).
-    ('small_code_gen_picks_haiku',
+    # 5.5 fleet (2026-10-17 v6): haiku (bounded lookups), sonnet (workhorse), opus (hard,
+    # self-contained), cloud (long code-only), inline (main thread).
+    ('code_gen_defaults_to_sonnet',
      {'task_shape': 'code_gen', 'input_size_kb': 5, 'expected_output_tokens': 2000},
+     'sonnet', ['opus'], []),
+
+    ('find_list_routes_to_haiku',
+     {'task_shape': 'find_list', 'input_size_kb': 40, 'expected_output_tokens': 800},
      'haiku', ['sonnet'], []),
 
-    ('very_large_input_excludes_haiku',
-     {'task_shape': 'code_gen', 'input_size_kb': 500, 'expected_output_tokens': 2000},
+    ('mechanical_edit_routes_to_haiku',
+     {'task_shape': 'mechanical_edit', 'input_size_kb': 10, 'expected_output_tokens': 1500},
+     'haiku', ['sonnet'], []),
+
+    ('very_large_lookup_excludes_haiku',
+     {'task_shape': 'find_list', 'input_size_kb': 500, 'expected_output_tokens': 800},
      'sonnet', [], ['haiku']),
 
-    ('large_output_excludes_haiku',
-     {'task_shape': 'code_gen', 'input_size_kb': 10, 'expected_output_tokens': 20000},
-     'sonnet', [], ['haiku']),
+    ('strategic_work_stays_inline',
+     {'task_shape': 'strategic_planning', 'input_size_kb': 10, 'expected_output_tokens': 2000},
+     'inline', [], []),
 
     ('batch_synthesis_routes_to_sonnet',
      {'task_shape': 'batch_synthesis', 'input_size_kb': 140, 'expected_output_tokens': 20000},
-     'sonnet', ['inline'], ['haiku']),
-
-    ('fast_classification_routes_to_haiku',
-     {'task_shape': 'classification', 'input_size_kb': 5,
-      'expected_output_tokens': 500, 'time_sensitivity': 'high'},
-     'haiku', ['sonnet'], []),
+     'sonnet', ['opus'], []),
 
     ('code_review_routes_to_sonnet',
      {'task_shape': 'code_review', 'input_size_kb': 15, 'expected_output_tokens': 3000},
-     'sonnet', ['haiku'], []),
+     'sonnet', ['opus'], []),
 
-    ('mcp_required_routes_to_sonnet',
-     {'task_shape': 'code_gen', 'input_size_kb': 5,
-      'expected_output_tokens': 2000, 'needs_mcp': True},
-     'sonnet', ['haiku'], []),
+    ('debugging_routes_to_sonnet',
+     {'task_shape': 'debugging', 'input_size_kb': 15, 'expected_output_tokens': 3000},
+     'sonnet', ['opus'], []),
+
+    ('high_complexity_routes_to_opus',
+     {'task_shape': 'code_gen', 'input_size_kb': 15,
+      'expected_output_tokens': 3000, 'high_complexity': True},
+     'opus', ['inline'], []),
+
+    ('mcp_required_routes_to_sonnet_not_cloud',
+     {'task_shape': 'code_gen', 'input_size_kb': 5, 'expected_output_tokens': 2000,
+      'needs_mcp': True, 'code_only': True, 'expected_minutes': 40},
+     'sonnet', [], ['cloud']),
+
+    ('long_code_only_routes_to_cloud',
+     {'task_shape': 'code_review', 'input_size_kb': 60,
+      'expected_output_tokens': 4000, 'code_only': True, 'expected_minutes': 30},
+     'cloud', ['sonnet'], []),
+
+    ('short_code_only_stays_local',
+     {'task_shape': 'code_review', 'input_size_kb': 20,
+      'expected_output_tokens': 2000, 'code_only': True, 'expected_minutes': 10},
+     'sonnet', [], []),
 
     ('web_search_routes_inline',
      {'task_shape': 'research', 'input_size_kb': 5,
       'expected_output_tokens': 2000, 'needs_web_search': True},
      'inline', [], []),
 
-    ('destructive_routes_to_sonnet_with_isolation',
-     {'task_shape': 'code_gen', 'input_size_kb': 10,
-      'expected_output_tokens': 3000, 'destructive': True},
-     'sonnet', ['haiku'], []),
-
-    ('offline_capability_retired_stays_inline',
-     {'task_shape': 'code_gen', 'input_size_kb': 5,
-      'expected_output_tokens': 2000, 'offline_required': True},
-     'inline', [], []),
+    ('destructive_routes_to_sonnet_not_cloud',
+     {'task_shape': 'code_gen', 'input_size_kb': 10, 'expected_output_tokens': 3000,
+      'destructive': True, 'code_only': True, 'expected_minutes': 40},
+     'sonnet', [], ['cloud']),
 
     ('secrets_stay_inline',
      {'task_shape': 'code_gen', 'input_size_kb': 5,
@@ -90,15 +108,20 @@ SCENARIOS = [
 
     ('persona_panel_routes_to_sonnet',
      {'task_shape': 'persona_panel', 'input_size_kb': 4, 'expected_output_tokens': 1500},
-     'sonnet', ['haiku'], []),
+     'sonnet', ['opus'], []),
 
     ('qc_review_of_inline_work_gets_cold_sonnet',
      {'task_shape': 'qc_review', 'input_size_kb': 10,
       'expected_output_tokens': 2000, 'original_model': 'inline'},
-     'sonnet', ['haiku'], []),
+     'sonnet', ['opus'], []),
+
+    ('qc_review_of_sonnet_work_gets_opus',
+     {'task_shape': 'qc_review', 'input_size_kb': 10,
+      'expected_output_tokens': 2000, 'original_model': 'sonnet'},
+     'opus', ['inline'], []),
 
     ('default_fallback_to_sonnet',
-     {'task_shape': 'extraction', 'input_size_kb': 10, 'expected_output_tokens': 3000},
+     {'task_shape': 'research', 'input_size_kb': 10, 'expected_output_tokens': 3000},
      'sonnet', [], []),
 ]
 
@@ -123,6 +146,12 @@ def run_tests(verbose: bool = False) -> int:
         for must_have in expected_in_fallback:
             if must_have not in fallback and primary != must_have:
                 errors.append(f'{must_have!r} missing from fallback chain {fallback}')
+
+        if primary not in (None, 'inline'):
+            if not result.get('effort'):
+                errors.append('no effort returned for a dispatched model')
+            if not result.get('brief_must_include'):
+                errors.append('brief_must_include missing for a dispatched model')
 
         excluded = set(result.get('excluded', []))
         for should_exclude in must_exclude:
