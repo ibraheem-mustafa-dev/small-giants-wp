@@ -1,0 +1,9 @@
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"wide"},"minHeight":{"desktop":"70vh"},"fx":"wave-gradient","fxWaveBase":"#f4f8fb","fxWave1":"#7dd3fc","fxWave2":"#38bdf8","fxWave3":"#22d3ee"} -->
+<!-- wp:sgs/heading {"level":"h2","content":"Flowing gradient — default palette"} /-->
+<!-- wp:sgs/text {"text":"A subdivided mesh whose vertices are displaced by noise. Colour is computed per vertex and interpolated across each triangle — which is why it flows rather than sliding. Four colours: one base plus three wave layers."} /-->
+<!-- /wp:sgs/container -->
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"wide"},"minHeight":{"desktop":"60vh"},"fx":"wave-gradient","fxWaveBase":"#1a1206","fxWave1":"#c2703a","fxWave2":"#e8b04b","fxWave3":"#7d3b2e","fxWaveSpeed":25,"fxWaveAmplitude":60} -->
+<!-- wp:sgs/heading {"level":"h2","content":"Warm palette, slower, deeper waves"} /-->
+<!-- wp:sgs/text {"text":"Same effect, different four colours and a slower speed. Re-theming the site would re-colour both this and its no-WebGL fallback."} /-->
+<!-- /wp:sgs/container -->
+

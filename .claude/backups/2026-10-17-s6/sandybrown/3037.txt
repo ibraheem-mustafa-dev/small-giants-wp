@@ -1,0 +1,6 @@
+<!-- wp:sgs/container {"fx":"wave-gradient","fxWaveVariant":"pastel","minHeight":{"desktop":"420px"},"tagName":"section"} --><!-- wp:sgs/heading {"level":"h2","content":"pastel"} /--><!-- /wp:sgs/container -->
+<!-- wp:sgs/container {"fx":"wave-gradient","fxWaveVariant":"horizon","minHeight":{"desktop":"420px"},"tagName":"section"} --><!-- wp:sgs/heading {"level":"h2","content":"horizon"} /--><!-- /wp:sgs/container -->
+<!-- wp:sgs/container {"fx":"wave-gradient","fxWaveVariant":"ribbon","minHeight":{"desktop":"420px"},"tagName":"section"} --><!-- wp:sgs/heading {"level":"h2","content":"ribbon"} /--><!-- /wp:sgs/container -->
+<!-- wp:sgs/container {"fx":"wave-gradient","fxWaveVariant":"veil","minHeight":{"desktop":"420px"},"tagName":"section"} --><!-- wp:sgs/heading {"level":"h2","content":"veil"} /--><!-- /wp:sgs/container -->
+<!-- wp:sgs/container {"fx":"wave-gradient","fxWaveVariant":"aurora","minHeight":{"desktop":"420px"},"tagName":"section"} --><!-- wp:sgs/heading {"level":"h2","content":"aurora"} /--><!-- /wp:sgs/container -->
+<!-- wp:sgs/container {"fx":"wave-gradient","fxWaveVariant":"ink","minHeight":{"desktop":"420px"},"tagName":"section"} --><!-- wp:sgs/heading {"level":"h2","content":"ink"} /--><!-- /wp:sgs/container -->

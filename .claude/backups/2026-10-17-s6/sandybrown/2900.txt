@@ -1,0 +1,4 @@
+<!-- wp:sgs/container {"minHeight":{"desktop":"80vh"}} -->
+<!-- wp:sgs/decorative-image {"imageUrl":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/08/cookies-stacked-3.jpeg","imageId":2888,"positionX":{"desktop":30},"positionY":{"desktop":50},"width":{"desktop":420},"opacity":100,"fx":"surface-treatment","fxTreatment":"grain","fxTreatmentIntensity":70} /-->
+<!-- wp:sgs/decorative-image {"imageUrl":"https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/08/cookies-stacked-3.jpeg","imageId":2888,"positionX":{"desktop":70},"positionY":{"desktop":50},"width":{"desktop":420},"opacity":100,"fx":"surface-treatment"} /-->
+<!-- /wp:sgs/container -->

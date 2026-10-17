@@ -1,0 +1,60 @@
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"surface","textColour":"text","fx":"cursor-field","fxFieldColour":"accent"} -->
+<!-- wp:sgs/heading {"content":"Cursor field — all five looks, three controls","fontSize":{"desktop":"x-large"},"textColour":"text"} /-->
+<!-- wp:sgs/text {"text":"Move the pointer across each section. Every section below sets Field style, Field shape and Trail; nothing else differs."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":""} -->
+<!-- wp:sgs/heading {"content":"Glow","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"A soft pool of light. The original look, unchanged."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"spotlight-mask"} -->
+<!-- wp:sgs/heading {"content":"Torch","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"A dot screen, revealed only around the pointer."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"hue-shift"} -->
+<!-- wp:sgs/heading {"content":"Aurora","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"The hue arriving at any point changes as you move, rather than the pool simply following you."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"parallax-pattern"} -->
+<!-- wp:sgs/heading {"content":"Drift","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"A dot pattern that moves at 8% of pointer speed. Unmasked, so it covers the whole section."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"brick-reveal"} -->
+<!-- wp:sgs/heading {"content":"Brickwork","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"Running-bond brickwork revealed under the pointer, in the brand colour, over a flat ground."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"","fxFieldTrail":0} -->
+<!-- wp:sgs/heading {"content":"Trail 0 — no lag","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"The pool tracks the pointer exactly. This is the default and is unchanged from before trail existed."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"","fxFieldTrail":60} -->
+<!-- wp:sgs/heading {"content":"Trail 60 — gentle momentum","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"Move fast, then stop. The pool coasts in and settles."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"","fxFieldTrail":90} -->
+<!-- wp:sgs/heading {"content":"Trail 90 — heavy drag","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"Deliberately overdone, so the range is visible. Probably too much for real use."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"","fxFieldShape":"wide","fxFieldTrail":50} -->
+<!-- wp:sgs/heading {"content":"Shape: wide ellipse","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"A horizontal wash across the band."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"","fxFieldShape":"tall","fxFieldTrail":50} -->
+<!-- wp:sgs/heading {"content":"Shape: tall ellipse","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"A column of light."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"tagName":"section","contentWidth":{"desktop":"normal"},"minHeight":{"desktop":"52vh"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"backgroundColour":"text","textColour":"text-inverse","fx":"cursor-field","fxFieldColour":"accent","fxFieldType":"brick-reveal","fxFieldShape":"wide","fxFieldTrail":55} -->
+<!-- wp:sgs/heading {"content":"Brickwork, wide shape, trail 55","fontSize":{"desktop":"x-large"},"textColour":"text-inverse"} /-->
+<!-- wp:sgs/text {"text":"All three controls at once, to check they compose rather than fight."} /-->
+<!-- /wp:sgs/container -->
+

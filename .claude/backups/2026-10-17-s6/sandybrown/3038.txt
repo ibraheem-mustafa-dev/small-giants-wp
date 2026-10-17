@@ -1,0 +1,7 @@
+<!-- wp:sgs/container {"fx":"grid-dots","fxGridDotColour":"cookie-brown","fxGridDotHoverColour":"primary-dark","minHeight":{"desktop":"70vh"}} -->
+<!-- wp:sgs/heading {"content":"Grid dots ON — move your pointer here"} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"minHeight":{"desktop":"40vh"}} -->
+<!-- wp:sgs/heading {"content":"NEGATIVE CONTROL — no fx, must have no canvas"} /-->
+<!-- /wp:sgs/container -->

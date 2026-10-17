@@ -1,0 +1,1 @@
+<!-- wp:sgs/container {"fx":"generative-background","fxGenColour1":"primary","fxGenColour2":"accent","fxGenColour3":"accent-light","fxGenColour4":"primary-dark","fxGenGround":"dark","minHeight":{"desktop":"500px"}} /-->

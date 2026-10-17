@@ -1,0 +1,54 @@
+<!-- wp:sgs/heading {"headingRole":"heading","level":"h1","content":"Motion Preset Comparison — Subtle vs Standard vs Dramatic"} /-->
+
+<!-- wp:sgs/text {"text":"This page shows the same three motion effects at all three intensity presets, so you can judge on sight whether Dramatic actually feels more dramatic than Subtle. Scroll slowly through each row — each block plays its effect as it enters view."} /-->
+
+<!-- wp:sgs/heading {"headingRole":"heading","level":"h2","content":"Effect 1 — Split-reveal (on sgs/heading)"} /-->
+
+<!-- wp:sgs/label {"text":"Split-reveal — Subtle: short travel, quick settle"} /-->
+
+<!-- wp:sgs/heading {"headingRole":"heading","level":"h3","content":"Rooted in tradition, made for today","fx":"split-reveal","fxPreset":"subtle","fxStart":"top 85%","fxDuration":0.5,"fxStagger":0.02,"fxEase":"power1.out","fxSplit":"words"} /-->
+
+<!-- wp:sgs/label {"text":"Split-reveal — Standard: the balanced default"} /-->
+
+<!-- wp:sgs/heading {"headingRole":"heading","level":"h3","content":"Rooted in tradition, made for today","fx":"split-reveal","fxPreset":"standard","fxStart":"top 70%","fxDuration":0.8,"fxStagger":0.05,"fxSplit":"words"} /-->
+
+<!-- wp:sgs/label {"text":"Split-reveal — Dramatic: long travel, slow catch-up, high contrast"} /-->
+
+<!-- wp:sgs/heading {"headingRole":"heading","level":"h3","content":"Rooted in tradition, made for today","fx":"split-reveal","fxPreset":"dramatic","fxStart":"top 85%","fxDuration":1.2,"fxStagger":0.03,"fxEase":"back.out","fxSplit":"chars","fxMask":"chars"} /-->
+
+<!-- wp:sgs/separator {"width":{"desktop":80},"widthUnit":"%","thickness":{"desktop":2}} /-->
+
+<!-- wp:sgs/heading {"headingRole":"heading","level":"h2","content":"Effect 2 — Scrub (scroll-linked reveal, on sgs/text)"} /-->
+
+<!-- wp:sgs/label {"text":"Scrub — Subtle: enters late, catches up fast"} /-->
+
+<!-- wp:sgs/text {"text":"Every batch of Mama's Munches is prepared in small runs, using recipes that have been in the family for three generations. We taste, adjust, and taste again before anything leaves the kitchen.","fx":"scrub","fxPreset":"subtle","fxStart":"top 85%","fxEnd":"top center","fxScrub":0.3,"fxEase":"power1.out"} /-->
+
+<!-- wp:sgs/label {"text":"Scrub — Standard: the balanced default"} /-->
+
+<!-- wp:sgs/text {"text":"Every batch of Mama's Munches is prepared in small runs, using recipes that have been in the family for three generations. We taste, adjust, and taste again before anything leaves the kitchen.","fx":"scrub","fxPreset":"standard","fxStart":"top 70%","fxEnd":"top center","fxScrub":0.8} /-->
+
+<!-- wp:sgs/label {"text":"Scrub — Dramatic: enters early, drags slowly behind the scrollbar"} /-->
+
+<!-- wp:sgs/text {"text":"Every batch of Mama's Munches is prepared in small runs, using recipes that have been in the family for three generations. We taste, adjust, and taste again before anything leaves the kitchen.","fx":"scrub","fxPreset":"dramatic","fxStart":"top bottom","fxEnd":"top top","fxScrub":1.5,"fxEase":"power3.out"} /-->
+
+<!-- wp:sgs/separator {"width":{"desktop":80},"widthUnit":"%","thickness":{"desktop":2}} /-->
+
+<!-- wp:sgs/heading {"headingRole":"heading","level":"h2","content":"Effect 3 — Scramble (text scramble-in, on sgs/label)"} /-->
+
+<!-- wp:sgs/label {"text":"Scramble — Subtle: settles almost as soon as it appears"} /-->
+
+<!-- wp:sgs/label {"text":"Handcrafted since 2019","fx":"scramble","fxPreset":"subtle","fxStart":"top 85%","fxEnd":"top center"} /-->
+
+<!-- wp:sgs/label {"text":"Scramble — Standard: the balanced default"} /-->
+
+<!-- wp:sgs/label {"text":"Handcrafted since 2019","fx":"scramble","fxPreset":"standard","fxStart":"top 70%","fxEnd":"top center"} /-->
+
+<!-- wp:sgs/label {"text":"Scramble — Dramatic: scrambles across almost the whole scroll pass"} /-->
+
+<!-- wp:sgs/label {"text":"Handcrafted since 2019","fx":"scramble","fxPreset":"dramatic","fxStart":"top bottom","fxEnd":"top top"} /-->
+
+<!-- wp:sgs/separator {"width":{"desktop":80},"widthUnit":"%","thickness":{"desktop":2}} /-->
+
+<!-- wp:sgs/text {"text":"What to look at: for each effect above, scroll so the three rows cross the middle of your screen one at a time. Ask — does Dramatic feel meaningfully bigger/slower/bolder than Subtle, or do they look the same? Note anywhere the difference feels too small to notice, or where Dramatic feels tasteless rather than bold."} /-->
+

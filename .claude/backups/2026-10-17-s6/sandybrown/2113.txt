@@ -1,0 +1,16 @@
+<!-- wp:sgs/heading {"content":"Morph QA Instance A (circle-square, load trigger)","fx":"morph","fxShape":"circle-square","fxTrigger":"load"} /-->
+
+<!-- wp:paragraph -->
+<p>Instance A above should morph from a circle into a square shortly after page load (fx-morph.js load trigger, no scroll needed).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div style="width:140px;height:140px;color:#c0392b;position:relative;margin:40px 0;" id="sgs-morph-qa-instance-b">
+<svg data-sgs-fx="morph" data-sgs-fx-morph-target="#sgs-morph-qa-missing-target" data-sgs-fx-trigger="load" viewBox="0 0 100 100" width="140" height="140" aria-hidden="true" focusable="false"><path d="M 50 6 A 44 44 0 0 1 50 94 A 44 44 0 0 1 50 6 Z" fill="currentColor"></path></svg>
+</div>
+<!-- /wp:html -->
+
+<!-- wp:paragraph -->
+<p>Instance B above deliberately points data-sgs-fx-morph-target at a selector that matches nothing (#sgs-morph-qa-missing-target does not exist anywhere on this page). Expected: console.warn, shape stays a circle, no tween.</p>
+<!-- /wp:paragraph -->
+
