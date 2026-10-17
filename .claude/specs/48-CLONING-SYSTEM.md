@@ -90,13 +90,13 @@ Input: block slug, slot element (as calibration names it), CSS property, optiona
 
 Status: built (`lib/resolve.mjs::resolve`, `tests/resolve.test.mjs`); content resolution not yet moved (`lib/solve-rows.mjs::resolveContent`).
 
-#### FR-48-1 -- Declared forms
+### FR-48-1 -- Declared forms
 
 The resolver accepts a value in the form the draft's code declares, not only its rendered result, where calibration records that the setting accepts that form (§3.2 FR-48-2): a fluid `clamp()` or `vw` size, a grid template such as `repeat(3, 1fr)` (written as the column count where the setting is `columns`, and as the template where the setting takes one), and a layout mode from the declared `display` (`grid`, `flex` with its direction), which narrows the `layout` choice the hide-on-device settings otherwise make ambiguous. Where calibration does not record the form, the value is written per tier from the declared values at 375, 768 and 1440 and the row is instrument debt (R-48-4). Track sizes the code does not state are taken from the render. The written form is then checked against the render (R-47-4). Done when: `resolve.test.mjs` gains a `repeat(3, 1fr)` container row written as three columns, a declared `display: flex` two-child row written as a flex row, a `clamp()` font size written whole on a setting whose calibration lists `clamp` and per tier on one that does not; and the per-tier case fails if the form check is removed.
 
 Status: not built (`lib/resolve.mjs` takes rendered values only). Calibration now records the forms it needs (FR-48-2); `container.columns` is cached with `property` `grid-template-columns` while `lib/resolve.mjs::candidates` matches the DB's `grid-template-columns:count`, so the resolver cannot reach it yet.
 
-#### FR-48-74 -- The desktop tier is read at 1440; 1920 confirms
+### FR-48-74 -- The desktop tier is read at 1440; 1920 confirms
 
 The resolver takes the desktop tier's value from 1440 alone. The 1920 reading is a confirmation, never a source: when the value at 1920 differs from the value at 1440, the difference is a fluid value (the declared form goes through FR-48-1 and row 8, §10) or, where the code declares no fluid form, an `I-calibration` row naming the property and both values (R-48-4). A 1440/1920 difference never produces a `shape` gap. A `shape` gap stays for a value a setting genuinely cannot hold (a keyword the setting does not take, one value for every width where the draft has several across 375, 768 and 1440). Done when: `resolve.test.mjs` gains a font size of 48px at 1440 and 52px at 1920 written as desktop 48px with no gap, a declared `clamp()` with the same readings routed to the fluid path, and both cases fail with the 1920 merge restored.
 
@@ -160,13 +160,13 @@ A setting that paints a parent while a rule on a child overrides it is recorded 
 
 Status: partly built (`calibrate.mjs`, `lib/calibrate*.mjs`, `lib/deploy-hash.mjs`, `lib/calibration-lock.mjs`; 94 block caches in `scripts/computed-route/cache/`). The two outputs are stored apart (2026-10-11: `lib/cache.mjs`, readers take the site through `solve.mjs::calibrationFor`, `tests/cache.test.mjs`; existing caches split by `split-cache.mjs`). `overriddenBy`'s rendered-box guard not built; `layout` and `select-from-enum` presence reads not built.
 
-#### FR-48-2 -- Accepted value forms
+### FR-48-2 -- Accepted value forms
 
 Each setting's calibration records the value forms it accepts beyond a plain literal, by rendering a marker in each form and reading whether the element takes it: a palette slug and a hex (colour, built), a `clamp()` and a `vw` length (fluid sizes), and a `repeat(n, …)` template or a column count (grids). The list is the setting's `forms` field in the cache. A setting is "built" for a fluid or grid form only once its `forms` list names that form; until then the resolver writes per tier (FR-48-1) and the row is instrument debt (R-48-4). Done when: recalibrating `sgs/heading` and `sgs/container` records `clamp` on a font-size setting that accepts it and `repeat` on the container's grid template setting, and a planted setting that strips `clamp()` records no `clamp`.
 
 Status: built (2026-10-11). `lib/calibrate-markers.mjs` adds `clamp` (`clamp(13px, 9px + 3vw, 71px)`), `vw` (`4vw`), `repeat` (`repeat(3, 1fr)`) and `count` probes; a form is recorded only when one element carries the expected value at 375, 768 and 1440 (0.5px tolerance for lengths), and a probe that misses never makes a setting dead (`tests/calibrate-forms.test.mjs`, MUST FAIL: a planted stripped `clamp()`). Recalibrated on `local-indus`: heading `fontSize` records `clamp` and `vw`, container `gridTemplateColumns` records `repeat`. The live planted-strip block is not built (the case is proven on synthetic readings). Colour `hex` and `slug` keep the earlier, looser reach rule.
 
-#### FR-48-3 -- Stage-0 calibration of the client's block set
+### FR-48-3 -- Stage-0 calibration of the client's block set
 
 Stage 0 runs before intake, so it cannot use anything intake produces (the page map or the skeleton proposals). Its block set is fixed in advance: the blocks that the surface kinds in the export's `handoff/surfaces.json` call for (a `header` kind calls for the header blocks, a `form` kind for the form blocks, and so on, from the framework DB's `block_composition`), plus the layout and content blocks every surface uses (container, heading, text, button, media, icon-list). For Indus the set is the named list: container, card-grid, form, nav-drawer-menu, hero, trust-bar, nav-bar-menu and mega-panel, plus the layout and content blocks. Stage 0 recalibrates the **slot map** of each block in the set whose cache is stale (its deploy hash differs from the deployed build) or carries a fault on a setting the set needs, on an existing mirror of the client's test site (for Indus, `local-indus`). It records the calibration-debt baseline: per block, the counts of `dead`, `noMarker`, `oneWidth` and `untestedStates`, with the deploy hash (Appendix C, `calibration-baseline.json`). The baseline is the instrument-debt starting point for §14; a later run reports the change from it. For Indus this also means fixing `container.gridTemplateColumns` (in `cache/container.json` `dead`) and the two resolver ties that stop `container.layout`'s discovered values. A layout mode has no `css_property` by design: calibration discovers what each value changes (`lib/db.mjs::enumSettings`, `discovered.layout` in `cache/container.json`). On the root the three hide-on-device toggles tie with it on `display`, and on a flex row draft `flex` ties with `stack` because a default `row` direction records no change.
 
@@ -216,13 +216,13 @@ Input: a surface from `surfaces.json`. After a code-first Fill (§3.4), Solve is
 
 Status: built (`solve.mjs`, `lib/solve-rows.mjs`, `lib/solve-report.mjs`, `lib/solve-groups.mjs`, `lib/winning-rule.mjs`, `lib/guard.mjs`, `lib/trial*.mjs`); the footer proof passed (§5).
 
-#### FR-48-4 -- Margin writes are tried
+### FR-48-4 -- Margin writes are tried
 
 Try before write (R-47-9) also catches a margin write that moves boxes: the trial applies the write's margin change on the live element and compares every pair's box position, not only the pair's own properties, so a margin that pushes a sibling or the following section off the draft is rejected before the rebuild. Done when: a trial test plants a margin write that moves the next sibling 20px off the draft while the written element's own margin matches, and the trial rejects it; the shop surface that showed it (WW-SH-01) is re-run and no margin write the rebuild shows moving boxes passes the trial.
 
 Status: not built (the open defect WW-SH-01 in `.claude/LEDGER.md`).
 
-#### FR-48-5 -- Guard memory and an honest wrong-write count
+### FR-48-5 -- Guard memory and an honest wrong-write count
 
 1. The guard keeps a node's tried suspects after a trial is exhausted, so a later round never tries the same suspects again (`lib/guard.mjs::guardRound` deletes the trial record, with its `tried` set, when no untried suspect is left).
 2. A run that stops early (a crash, a host failure, a time-out) writes a crash report naming every setting written since the last judged walk, and marks those writes unjudged; the next run re-measures them before it writes anything else.
@@ -270,7 +270,7 @@ Site Info rows: a row of generated brand icons shares one look, held by the row'
 
 Status: partly built. Fill from rendered values is built (`fill.mjs`, sixteen `lib/fill-*.mjs` modules, proved against a built Eye Care surface with its tree withheld, §5 stage 4); the skeleton writer is built (`skeleton.mjs`, `lib/skeleton-*.mjs`, `check-refs.mjs`, `origin.mjs`); reading values from the draft's code is not built (FR-48-8).
 
-#### FR-48-6 -- Skeleton rules
+### FR-48-6 -- Skeleton rules
 
 The skeleton writer applies these rules before any value is filled; each is a rule in `lib/skeleton-propose.mjs` or `lib/skeleton-classify.mjs` with a test that fails without it.
 1. **Marquee.** A repeated-item strip whose recorded motion is an infinite translate loop (the loop record in `animations.json` plus `document.getAnimations()` on the rendered strip) becomes `sgs/trust-bar` with `autoScroll`, never `sgs/text`.
@@ -298,13 +298,13 @@ Refusals (QC council, 2026-10-13, each with a test): a link with no words or two
 
 Status: built 2026-10-13 (`lib/skeleton-rules.mjs`, `lib/skeleton-rerun.mjs`, `intake.mjs --rerun-skeletons`, `tests/skeleton-rules.test.mjs`: each rule MUST FAIL with its decisions entry removed, plus the refusals above). `node scripts/computed-route/check-approved.mjs <client> [--no-built]` measures the rules against the client's approved outcomes (block, action family and Bean's link rulings). Measured offline on the 43 Indus surfaces with no finaliser picks: the 93 rows of Bean's review batches 1 to 5 that compare directly all match his approved outcome and the 75 rows of his built header, drawer and mega menus are settled by those posts (his outcomes: `sites/indus-foods/build/intake/approved-decisions.json`); with the built posts off the rules alone match 133 (`check-approved.mjs indus-foods`, exit 0 with the built posts). Open: without a built post, a mega panel's inner groups are proposed as `sgs/card-grid` (the first block the panel accepts), which draws its children, where Bean's posts use `sgs/mega-group` and `sgs/mega-aside` (24 of the 157 rows `--no-built` compares). `sgs/icon-list` has no grid layout setting (row-first columns, as the Indus footer's two-column link list) and no `start`, `reversed` or letter and roman numbering (Wave-parity-1 in `feature-parity-exceptions.json`).
 
-#### FR-48-7 -- Code reader for skeletons
+### FR-48-7 -- Code reader for skeletons
 
 A narrow reader, run inside the sandboxed draft (Spec 48A FR-48A-10), writes skeleton parts mechanically for: layout forms (declared `display`, `repeat()`), shared `{{ }}` bindings (one shared setting per binding, §10 row 5), copy held in the logic's arrays (count-checked against the rendered items), page-map links (from the routing adapters, §9) and motion records (`animations.json`). It writes structure, identity and content only (R-47-10). It takes over a construct from the agent lane once its tree matches the agent's on every Indus surface for that construct; until then its tree is a cross-check reported beside the agent's. Done when: on every Indus surface the reader's tree and the agent's tree are diffed per construct, the diff is in the fill report, and a construct marked "taken over" has a zero diff on every surface.
 
 Status: not built.
 
-#### FR-48-8 -- Declared values with a confirm record
+### FR-48-8 -- Declared values with a confirm record
 
 Fill reads each element's declared value per width and state from the code (step 1) and keeps, for every value it writes, a confirm record: the declared value, the rendered value at 375, 768 and 1440, the tolerance used and the verdict. The record's fields and the tolerances per property type are FR-48-36 (§10); every read runs under the determinism harness (FR-48-28, §9). A prop variant's design is its default-prop render. A value whose code and render disagree is not written from the code: the render wins and the row is reported, except a draft defect (R-47-4, §9). Done when: `fill.mjs` on an Indus surface writes a confirm record for every written value; a planted code value that differs from its render beyond tolerance is reported and the rendered value written; a planted draft defect (a state rule whose value never paints) is built from the code and listed for Bean; each case fails with its check removed.
 
@@ -331,7 +331,7 @@ An entry matches a row on node, state, property, width and layer: an element's e
 
 Status: built (`ledger.mjs`, `lib/ledger.mjs`, `scripts/parity/lib/divergences.mjs`).
 
-#### FR-48-9 -- Path-scoped entries
+### FR-48-9 -- Path-scoped entries
 
 An entry may name one element path inside its node (`"path": "<selector path from the node>"`, as calibration and the walker's `path` give it), so one of several same-property rows on a node can be accepted alone. An entry without `path` keeps covering every row on the node. `lib/ledger.mjs::match`, the lint and the walker's matcher read the new field; existing entries need no change. Done when: `ledger.test.mjs` accepts one of two same-property rows on a node by path and leaves the other open, and an entry with a path that matches no element is stale.
 
@@ -378,19 +378,19 @@ Items 10 to 13 and the built parts of 1 and 3 are proven in headless Chromium on
 
 Status: partly built: items 1 to 10, 12 to 14 and 19 built; item 11 partly built; items 15 to 18 not built (no eager load, `property_suffixes` test, font record or WebGL probe in `scripts/parity/lib/`).
 
-#### FR-48-10 -- Identity pairing fixes
+### FR-48-10 -- Identity pairing fixes
 
 1. A link list pairs on its `sc-for` loop's parent element, not on its first link.
 2. An identity pair is never refused by a word-based width check; word pairing only cross-checks identity pairs and never removes one.
 3. Identity stamps are re-derived for each export at intake; an origin file from an earlier export is refused when its draft hash differs from the current `MANIFEST.json`. Done when: re-pairing the Eye Care footer and header keeps the link-list identity on the list and the header's root pair, and a stale origin file is refused; each case fails with its fix removed. Status: not built (the footer and header re-pairing defects recorded in `.claude/LEDGER.md`).
 
-#### FR-48-11 -- Content and link rows are writable
+### FR-48-11 -- Content and link rows are writable
 
 `scripts/parity/lib/ref-trace.mjs::stampRefs` stamps `ref` and `path` on content rows (text, presence, link coverage) as it does on style rows, and `scripts/parity/lib/auto-collect.mjs` stores each linked word's `href`, with page-map links resolved from the routing adapters (§9). A presence row for an element missing from the live page then resolves through the pair's configured `ref`, and a `link-missing` row through the link setting with the draft's href. Done when: a Solve test writes a presence setting for an element present only in the draft and a link setting for a `link-missing` row, and both fail with the stamping removed.
 
 Status: not built (`stampRefs` covers style, hover, box, tag, active and lines only; `auto-collect.mjs` records `lk: true` for a linked word, not its href).
 
-#### FR-48-12 -- Walker gates and blank draft sides
+### FR-48-12 -- Walker gates and blank draft sides
 
 1. `node scripts/parity/draft-live-walk.mjs <walkerFull> --lint` runs over every surface's generated config as a route gate before Solve or Fill walks it, and a lint problem stops the run.
 2. A row whose draft side is blank is classified by the draft's `sc-if` branches: a branch the walk did not reach is an unwalked state (§3.7); an element no branch renders is absent. Neither is written.
@@ -406,7 +406,7 @@ Every row measured in a state no setting state maps to is reported in that surfa
 
 Status: built for Eye Care (`scripts/parity/flows/*.mjs`); flows from a draft's logic not built.
 
-#### FR-48-13 -- State map generated from the draft
+### FR-48-13 -- State map generated from the draft
 
 Each surface's state map (which walker state maps to which setting state, and how to reach it) is generated from the draft's state inventory: `surfaces.json` re-derived at intake (Spec 48A FR-48A-7) and every `sc-if` in the template. Every `sc-if` is mapped to a reachable state or listed as a gap row naming the condition; a click path to reach the state is optional, and a state with none is reached by setting the logic's state directly. The generated map is diffed against `scripts/parity/flows/state-map-reasons.json`, and a walker-state group carrying a conflict the map cannot express is refused by a guard in `lib/solve-rows.mjs`. Done when: generating the map for an Indus surface reaches every `sc-if` or lists it; a planted `sc-if` with no state is listed; a group named in `state-map-reasons.json` is refused by Solve; each fails with its rule removed.
 
@@ -425,13 +425,13 @@ A mega menu, a modal, a drawer and a choice flow are empty canvases held in thei
 
 Status: built (`lib/resolve.mjs::resolveViaAncestor`, `lib/triage.mjs`, `confirm-canvas.mjs`).
 
-#### FR-48-14 -- Parent writes over one loop body
+### FR-48-14 -- Parent writes over one loop body
 
 The ancestor hop may also write a parent attribute whose paint reaches several measured descendants when every reached descendant is a copy of one `sc-for` loop body and the property is static in that body (the draft's code gives the same value in every copy). Loop membership comes from the runtime's identity (R-47-4), never from matching words. Any reached descendant outside the loop, or a value that varies across copies, keeps the write on the child. Done when: the mega-panel tiles on a mega-menu surface (one loop) get one parent write, and a planted tile outside the loop, or a tile with a different value, keeps the writes on the children; each fails with the loop check removed.
 
 Status: not built (`lib/resolve.mjs::reachedDescendants` permits a write only when exactly one descendant is reached).
 
-#### FR-48-15 -- `canvasSettable` needs an emission check
+### FR-48-15 -- `canvasSettable` needs an emission check
 
 `solve.mjs::writeRound` sets `canvasSettable` from the hop's citation only when the cited attribute is shown to emit CSS on the cited element: by its calibration (`slots` or `reaches`) or by `confirm-canvas.mjs`'s measured reach. A citation with neither is reported as unconfirmed, not `canvas-settable`. Emission found by searching PHP source text is never enough on its own (§14 gate G5). Storing each attribute's emission selector in the framework database is the seeder's half (§16). Done when: a planted citation of an attribute that emits nothing on the element is reported unconfirmed, and fails as `canvas-settable` with the check removed.
 
@@ -518,7 +518,7 @@ Nothing from `plugins/sgs-blocks/scripts/`. The Site Info provisioning script (`
 
 Ref classes stay on built blocks: they carry no style and no client name. A site's final build may strip them with `lib/tree.mjs::stripRefs`, after which that surface's generated walker config no longer works.
 
-#### FR-48-75 -- The route's own pinned dependencies
+### FR-48-75 -- The route's own pinned dependencies
 
 `scripts/computed-route/package.json` and its lock file pin, at exact versions, every third-party package the route loads: Playwright (and the browser build it installs), Ajv 8 with `ajv-formats`, `saxes` and the JavaScript parser the census uses (FR-48-24). Route code imports them from `scripts/computed-route/node_modules` only. `lint.mjs` fails any route file that names `plugins/sgs-blocks/node_modules`, so a plugin dependency upgrade can never change what the route measures. Each calibration cache file and each intake record stores the Playwright and browser versions that produced it, and G0 (FR-48-64) treats a version change as stale. Done when: `npm ci` in `scripts/computed-route` installs the pinned set; a planted import from `plugins/sgs-blocks/node_modules` fails `lint.mjs`; a cache file whose recorded browser version differs from the installed one fails G0.
 
@@ -674,7 +674,7 @@ Every open item from the gap-analysis council (`.claude/reports/2026-10-11-spec4
 
 A client's draft becomes a working SGS site in six stages. Each stage has an entry test (what must be true before it starts) and an exit test (what must be true before the next one starts). A stage that fails its exit test stops the run and names the failure. It is never skipped. Bean is asked for decisions once, at the end of stage 1, in one batched review (FR-48-17). Every other stage runs without him until stage 5's visual sign-off.
 
-#### FR-48-16 — Stage 0: a current export and a calibrated block set
+### FR-48-16 — Stage 0: a current export and a calibrated block set
 **Entry:** Bean has re-exported the client's Claude Design project just before intake with the current `.claude/claude-design-handoff/PROMPT.txt`, and the folder sits unchanged in `sites/<client>/handoff/` (FR-48A-1). The client's test site has a local mirror and a `calibration-targets.json` entry for both (Appendix A step 13).
 
 **Work:**
@@ -685,7 +685,7 @@ A client's draft becomes a working SGS site in six stages. Each stage has an ent
 
 Status: the check is built (`handoff-check.mjs`); the Indus and Mama's exports pass it (repackaged 2026-10-11, Spec 48A FR-48A-1). The Indus mirror and its calibration targets exist (Appendix A step 13, `local-indus`, page 15), the Indus calibration fixes are built, and the exit holds for Indus (2026-10-12): `handoff-check.mjs` exits 0, the baseline validates and every fixed-set block's slot map carries the current deploy hash (FR-48-3 status).
 
-#### FR-48-17 — Stage 1: intake, closed by one batched review
+### FR-48-17 — Stage 1: intake, closed by one batched review
 **Entry:** stage 0's exit test passes.
 
 **Work:** the intake steps of §9, in order: sandbox, census, re-derived inventory, routing adapter, breakpoint width basis, determinism harness, page map, palette roles, Site Info proposal, placeholder, stock and prototype flags, draft defects, the missing-features list, and the skeleton writer's inventory and block proposal for every surface (§3.4 steps 1 to 3), so the block-choice table is part of the same review.
@@ -704,7 +704,7 @@ Nothing is asked again in later stages. Stage 2's environment work (Appendix A s
 
 Status: the command is built 2026-10-12 (`intake.mjs`, `lib/intake-run*.mjs`, `lib/intake-review.mjs`, `tests/intake-command.test.mjs`, `tests/intake-review.test.mjs`). An Indus rehearsal writes a valid `intake.json`, `review.md` and `page-map.json` with no live request; its last timed run, before the FR-48-28 quiet-step skipping and browser-unit pool, took about 97 minutes of machine time (draft defects 63, skeletons 17, palette readings 9, census 7). On the intake-command fixture the same changes take a full run from 50.7 s to 27.0 s with identical output (draft defects 32 to 19 s, census 2.8 to 2.0 s, palette 0.8 to 0.5 s, skeletons 3.7 to 3.0 s, the skeletons running beside the draft defects). §3.4 steps 3 and 4 run inside intake: `--finalise` writes the request for the low-confidence and unresolved block choices, an agent answers it with `prompts/skeleton-finaliser.md`, `--apply-picks` applies the answers before Bean's review, and `--apply-review` saves his confirmed choices to the client's decisions file. Every sandbox's blocked requests reach the notices. The Indus review is 762 rows, of which 415 need reading and 347 are confident block proposals that "Accept all" covers. The re-derived inventory (FR-48-25) and prop variants (FR-48-29) are the `inventory` stage, and the full not-a-defect list is kept (FR-48-34). A blocked request caught by any page the sandbox opens carries its draft ID, and the finaliser request holds each row's parent, nearest siblings and measured boxes (2026-10-12). `intake.mjs --rerun-skeletons <client>` proposes the skeleton rows again offline from the inventories the last run saved (`sites/<client>/build/intake/inventories/`), with today's standing rules and database, rewrites the finaliser request and carries the earlier picks for rows that still await it (a row a rule now settles drops its pick); a full re-run is needed only for a new export. The Indus intake ran on 2116f196a on 2026-10-13 and Bean is reviewing it (plan step 15); after the FR-48-6 rules (2026-10-13) its skeleton section is 555 rows: 82 need Bean's individual decision (77 agent picks, 3 low, 2 unresolved; 13 of them on surfaces he has reviewed), 230 are settled (153 by 28 rules, 77 by his 5 built posts), 243 are confident proposals; before the rules 206 needed a decision. The skeleton-row marks are `accept`, `block:<slug>` and `remove`.
 
-#### FR-48-18 — Stage 2: site build
+### FR-48-18 — Stage 2: site build
 **Entry:** stage 1's exit test passes and the client has its own test site (a `build-deploy.py` `TARGETS` entry and a `.claude/secrets/<site>.env` file). The environment steps of Appendix A may already have run (FR-48-17).
 
 **Work:** the Appendix A checklist on a fresh site, then `push-theme-snapshot.py` with the snapshot that the §11 extractor generated from the confirmed palette roles, the Site Info apply (FR-48-59), the media upload (FR-48-58) and the site-build script (FR-48-55). Last, the **default-paint step**: after the snapshot push and any framework edits this client needed (the Spec 32 hand-offs in §16, deployed through Appendix B's framework refresh loop), the default paint of every block in the fixed set and every block the confirmed skeletons add is measured on the client's mirror into `cache/<site>/<block>.paint.json` (§3.2), and the slot map of each added block is calibrated.
@@ -713,7 +713,7 @@ Status: the command is built 2026-10-12 (`intake.mjs`, `lib/intake-run*.mjs`, `l
 
 Status: not built (the checklist, extractor, push and Site Info scripts exist; the site-build script and the per-site default paint do not).
 
-#### FR-48-19 — Stage 3: trees
+### FR-48-19 — Stage 3: trees
 **Entry:** stage 2's exit test passes.
 
 **Work:** each surface's skeleton is finalised from the block choices Bean confirmed in stage 1 and written from the draft code (DESIGN decision 5: the agent lane now, the code reader once it matches the agent's tree on every Indus surface). The header goes through stages 3 to 5 first, as a vertical slice, before the other surfaces queue (Appendix B step 20). Fill writes every value through the resolver (§3.4). The tree is built with `scripts/wp-build-page.js` into the ID the page map holds.
@@ -722,7 +722,7 @@ Status: not built (the checklist, extractor, push and Site Info scripts exist; t
 
 Status: Fill, the resolver and `wp-build-page.js` are built (Spec 47 FR-47-1, FR-47-4). The code-reader lane is not built.
 
-#### FR-48-20 — Stage 4: check
+### FR-48-20 — Stage 4: check
 **Entry:** stage 3's exit test passes for the surface.
 
 **Work:** the code-to-code check of §10 for every written value, confirmed by the render at 375/768/1440 (plus 1920 on the walker); the generated state map; the scripted flows (§3.7); and Solve's repair rounds (§3.3).
@@ -731,7 +731,7 @@ Status: Fill, the resolver and `wp-build-page.js` are built (Spec 47 FR-47-1, FR
 
 Status: the walker, Solve and flows are built (Spec 47 FR-47-3, FR-47-6, FR-47-7); the code-to-code check is not built.
 
-#### FR-48-21 — Stage 5: the gap list and Bean's eye
+### FR-48-21 — Stage 5: the gap list and Bean's eye
 **Entry:** stage 4's exit test passes for every surface.
 
 **Work:** every open row goes through gates G0 to G7 (§14). Bean reviews each surface at 375/768/1440 with cropped draft-and-live pairs (R-31-13).
@@ -740,7 +740,7 @@ Status: the walker, Solve and flows are built (Spec 47 FR-47-3, FR-47-6, FR-47-7
 
 Status: not built.
 
-#### FR-48-22 — The kill line
+### FR-48-22 — The kill line
 For each surface, the kill-line share is (constructs the census lists for that surface that reached a confirmed value with no manual fix) / (all constructs the census lists for that surface). When it falls below **60%** on a surface, that surface is hand-built through `wp-build-page.js` and the shortfall is recorded in `gaps.json` as `killed: true` with the share. 60% is provisional, set on Indus; recalibrate it after Indus's stage 4 from the measured share per surface kind.
 
 Status: not built.
@@ -751,7 +751,7 @@ Intake turns an export into one structured file, `sites/<client>/build/intake/in
 
 R-48-3 (No silent intake, §1) governs this section.
 
-#### FR-48-23 — Running a draft safely (Spec 48A FR-48A-10)
+### FR-48-23 — Running a draft safely (Spec 48A FR-48A-10)
 Intake runs a draft only through `scripts/computed-route/lib/draft.mjs::serveDraft`, which binds to 127.0.0.1 and serves files inside the folder only. The browser runs in a fresh profile whose live network is limited to the draft server and the three pinned unpkg files (React 18.3.1, ReactDOM, `@babel/standalone` 7.29.0).
 
 Drafts also load fonts and stock images from other hosts (Indus's main draft loads `fonts.googleapis.com`, `fonts.gstatic.com` and `images.unsplash.com`, and embeds Google Maps), and the harness waits for fonts (FR-48-28), so those requests go through a **record-and-replay cache** per `MANIFEST.json` hash: `sites/<client>/build/intake/replay/<manifest-hash>.har`. The first intake run of an export records it once: font stylesheets and font files from the two Google Fonts hosts, and images from the stock hosts the draft names, fetched by a separate recording step that runs no draft code. Every later run replays the file with Playwright's `routeFromHAR` with `notFound: 'abort'`, so the draft itself never reaches the network. A request to any other host (a map embed, an analytics script, an unknown CDN) is aborted and becomes a review row naming the host and the draft ID that asked for it. A new export hash records a new file.
@@ -762,7 +762,7 @@ The process holds no `.claude/secrets/` value and no SSH agent. Exported prose i
 
 Status: built 2026-10-12 (`tests/intake-sandbox.test.mjs`, `tests/intake-prose.test.mjs`, each case MUST FAIL with its guard removed). `lib/intake-sandbox.mjs::openSandbox` launches Chromium behind a refusing trap proxy with no bypass, so the browser opens no connection of its own: the draft server's exact origin is fetched by Node and fulfilled, another loopback port is an unlisted host, and every WebSocket is closed and listed. `lib/intake-record.mjs::recordExport` writes the HAR (the three pinned unpkg scripts included, SRI-checked, so a replay run has no network at all); `lib/intake-process.mjs::runIsolated` gives a worker an allowlisted environment; `lib/intake-prose.mjs` lists command-like prose (none in the Indus, Eye Care or Mama's exports). Known limit: Windows OpenSSH reaches its agent through a fixed named pipe, not a variable, so the worker's environment cannot hide the agent from code that opens the pipe deliberately; intake runs no code of its own that does.
 
-#### FR-48-24 — Construct census, taken from the runtime
+### FR-48-24 — Construct census, taken from the runtime
 The census lists every construct a draft uses: template elements by `data-dc-tpl` ID, `sc-if`, `sc-for`, `dc-import`, `{{ }}` bindings, `style-*` pseudo rules, logic getters, `renderVals()` keys, event handlers, timers, observers, Web Animations calls, CSS transitions and keyframes, refs, `data-*` hooks, `<helmet>` scripts and fonts, and links. The census has two passes, and a construct counts as found when either finds it:
 - **Static pass (finds code that never runs).** The template is encoded with the runtime's own `encodeCase` and stamped as the runtime stamps it (`handoff-schema/METHOD.md` §2). The logic class's source is parsed to a syntax tree with the pinned JavaScript parser (FR-48-75), and its getters, methods, `renderVals()` keys, handlers, timer and observer calls and `setState` keys are listed from the tree, never from a regex. Cutting the template and the logic out of the `.dc.html` file at the `<x-dc>` and `data-dc-script` boundaries the way `support.js` itself cuts them is allowed; that is the runtime's own parse, not a construct search.
 - **Runtime pass (confirms what runs).** The page is rendered in the sandboxed browser (FR-48-23) under the determinism harness (FR-48-28), and the trace records each construct that executes, with its draft ID.
@@ -781,14 +781,14 @@ A fifth control covers the static pass: a fixture handler that no render ever ca
 
 Status: the static pass, the registry and controls 1 to 4 are built (2026-10-12; `lib/intake-census.mjs`, `lib/intake-census-template.mjs`, `lib/intake-census-logic.mjs`, `lib/intake-registry.mjs`, `data/construct-registry.json`, `tests/intake-census.test.mjs`). An import inside a false `sc-if` has no stamped template on the page, so it is loaded on its own in the sandbox. Indus's static census: 900 template elements, 967 bindings, 115 `sc-if`, 53 `sc-for`, 2 imports, 103 `style-*` rules, 12 getters, 133 `renderVals()` keys, 86 handlers, 29 timers, 5 observers, 49 Web Animations calls, 71 links, no unknown construct; the regex cross-check agrees in every category except observers (10 against 5: the regex also counts `typeof ResizeObserver` guards), kept as a gap row. The motion, trigger and hook kinds (`waapi`, `transition`, `keyframes`, `observer`, `timer`, `handler`, `ref`, `data-hook`) are read by `lib/intake-inventory.mjs::readInventory` (FR-48-25); every other registry entry is a gap naming the step that builds its reader. The runtime pass and control 5 are built (`lib/intake-census-runtime.mjs`, `-trace`, `-map`, `tests/intake-census-runtime.test.mjs`): V8 precise coverage for the logic's functions (the runtime evaluates the logic unchanged, so offsets map onto the static tree) and page wrappers for timers, observers and Web Animations calls. On Indus (24 visits at 375/768/1440, about 9 minutes) the 2,746 rows are identical across two runs; 19 rows the trace cannot decide (handlers with several same-named candidates, `handleEvent` objects, two `sc-if`s with no stamped element) are `unreached: null` with a trace gap. Rest mode fires no event, so most handlers and transitions are `unreached` until FR-48-34's forced test fires their triggers.
 
-#### FR-48-25 — The inventory, re-derived (Spec 48A FR-48A-7)
+### FR-48-25 — The inventory, re-derived (Spec 48A FR-48A-7)
 Intake writes its own `animations.json` and `surfaces.json` equivalents into `intake.json` by `METHOD.md` §0-§8, and validates them against the master schemas. Claude Design's copies are diffed against them. Each difference is a row in the review, never a silent pick. Timer-written styles (`setInterval`, `requestAnimationFrame` writers) are sampled per width so motion row 11 (§10) has their values. A recount replaces any count carried from an older report; Eye Care's `sc-if` count, for example, is 126 today, not the 87 an earlier report gave.
 
 *Done when:* the Indus and Mama's re-derived inventories validate, every counted occurrence maps to a record ID, and `trace-check.mjs`'s `--shift=7` negative control still fails on a shifted record.
 
 Status: built 2026-10-12 (`lib/intake-inventory.mjs`, `lib/intake-inventory-anim.mjs`, `-tpl`, `-code`, `-target`, `-keys`, `-css`, `-surfaces`, `-sample`, `-diff`, `tests/intake-inventory.test.mjs`, `tests/intake-inventory-diff.test.mjs`). The `inventory` stage of `lib/intake-run-stages.mjs` runs after the draft defects (a construct they prove dead code marks its record `dead-code`); `lib/intake-run.mjs::buildRecord` writes its output as `intake.json`'s `inventory`, and the FR-48-25 gap row is gone; `node --test scripts/computed-route/tests/intake-command.test.mjs` (13/13) runs it end to end on the fixture export. Records are built from the census rows and the census's own syntax tree, never a regex (`lib/intake-inventory-anim.mjs::animationRecords`, `lib/intake-inventory-surfaces.mjs::surfaceRecords`): a construct inside a JS writer folds into its J record, a `style-*` rule into its element's transition, an @keyframes rule into the records naming it (one nothing names is its own dead-code record). Each `sc-if` is classified through `lib/intake-defects-keys.mjs::conditionKeys` (the forcing's own reading) as interactive, route, breakpoint, prop variant or content variant; an interactive one's states carry the patches `lib/intake-state.mjs::setDraftState` forces and the handlers whose methods write those keys. `lib/intake-inventory.mjs::buildInventory` validates both inventories against the master schemas and `::reconcile` fails any counted occurrence without a record ID, any census row of a counted kind without an occurrence, and a trigger kind whose three or more occurrences all fall back to `role: context` (`::CONTEXT_ONLY_MIN`; on Indus and the fixture every such kind links at least one trigger); a trigger or hook that drives no effect maps to its component's surface (`role: context`, with why). Interval and frame-loop J records with a template target are sampled at 0, the midpoint and the end at 375, 768 and 1440 on the entry page (`lib/intake-inventory-sample.mjs::sampleWriters`, into `inventory.samples`); a target the entry page does not render is a gap row. `lib/intake-inventory-diff.mjs::diffInventory` pairs records by file, line and mechanism (code) or draft and element (template), never by ID, and gives one row per differing field, per unpaired record, route or toggling `sc-if`, and per differing count; a row's ID is built from that pairing key and the field, and its content hash from its draft ID, field and both values (`lib/intake-review.mjs::HASH_FIELDS`), so a re-export that inserts a record keeps every other row's mark (`lib/intake-review.mjs::safeRowId` writes a `|`, backtick, CR or LF in an ID as `%7C`, `%60`, `%0D`, `%0A`). The stage builds the inventory once and attaches the samples after (`::inventoryBase`, `::withSamples`); a name is followed to its declaration through `lib/intake-inventory-code.mjs::declaratorsOf`, built once per program: on Indus's static census `buildInventory` takes about 1.6 s (37 s before), byte-identical, and `node --test scripts/computed-route/tests/intake-inventory-core.test.mjs` (4/4) holds the surfaces inventory linear in a component's logic. Verified on the real exports by a one-off script calling `inventoryCensus`, `sampleWriters`, `buildInventory` and `diffInventory` (static census, Indus's runtime marks taken from its last `intake.json`): Indus 297 animation records (A 40, L 9, J 101, TR 127, PS 15, K 2, RM 3), 34 surfaces, 704 occurrences all mapped, 0 schema and 0 reconciliation problems, 455 diff rows, 18 samples and 18 sample gap rows (the pinned-timeline writers render off the home route); Mama's (11 page files, 14 components) 191 records (A 10, J 14, TR 138, PS 15, K 12, RM 2), 32 surfaces, 743 occurrences all mapped, 0 problems, 544 diff rows. `node scripts/computed-route/trace-check.mjs sites/indus-foods/handoff --shift=7` matches 0 of 45 distinct events (33 unshifted). Known limits: an interactive `sc-if` no type-safe key forces is a surface with an `unforceable` state and an `unresolved` entry; surface kinds are proposed from state-key and component names; writers rendered only on another route are not sampled.
 
-#### FR-48-26 — Three routing adapters
+### FR-48-26 — Three routing adapters
 Claude Design drafts route in one of three ways. Intake has one adapter per way, picks the adapter from the code, and fails loudly when none or more than one matches:
 1. **Hash routes with a `pages` getter.** Routes are the getter's keys; links are `#<key>` hrefs.
 2. **`state.page` with `go()`.** Routes are the values `go()` is called with; links are the handlers that call it.
@@ -802,12 +802,12 @@ Each adapter outputs the route list and, for every link-like element, the route 
 
 Status: built 2026-10-12 (`lib/intake-routing.mjs`, `lib/intake-ast.mjs`, `tests/intake-routing.test.mjs`). A `go()` counts as a router only when it sets `state.page` or writes `location.hash` (Mama's `SignIn` has a `go(mode)` view switcher). Indus resolves to adapter 1 with its 23 routes and 136 links (3 gap rows: two sector links built as `'#/' + s.key` and the `#/post-*` article links, which the `pages` getter does not hold); Mama's to adapter 3 (11 pages, no gap); Eye Care to adapter 2 (11 routes, 5 gap rows: a dynamic `go()` argument and bare `#` anchors).
 
-#### FR-48-27 — Two breakpoint width bases
+### FR-48-27 — Two breakpoint width bases
 A draft's breakpoint logic reads one width basis: the window (`innerWidth`; Indus and Mama's) or the root element's measured width (Eye Care). Intake records the basis per draft from the code that sets `state.w`, and every threshold (`w < 1024`, `w >= 1260`) is recorded with its basis and comparison operator. Indus's main draft branches at 768, 1024, 1200 and 1260 (`Indus Foods Website v2.dc.html`). The check (row 9, §10) tests each threshold at ±1px on that basis. A draft whose basis cannot be read is a gap row.
 
 Status: built 2026-10-12 (`lib/intake-breakpoints.mjs`, `tests/intake-breakpoints.test.mjs`). Indus and Mama's read the window, Eye Care its root's measured width (ResizeObserver `contentRect`); a `matchMedia` query is a gap row.
 
-#### FR-48-28 — The determinism harness
+### FR-48-28 — The determinism harness
 Every render intake or the check takes runs with:
 - a **virtual clock**: Playwright's `page.clock.install` at one fixed instant per run, which fakes `Date`, `performance.now`, `setTimeout`, `setInterval` and `requestAnimationFrame`. Time moves only when the harness calls `page.clock.runFor` in fixed 16ms steps, so every run sees the same sequence of ticks;
 - a seeded `Math.random`;
@@ -826,33 +826,33 @@ Two runs of one surface at one width and mode give byte-identical records.
 
 Status: built 2026-10-12 (`lib/intake-harness.mjs`, `lib/intake-harness-page.mjs`, `lib/intake-reading.mjs`, `tests/intake-harness.test.mjs`; each item MUST FAIL when removed). The clock is installed by `page.clock.pauseAt` alone (an `install` followed by `pauseAt` leaks real milliseconds into `performance.now()`), and one real rendering frame follows every 16ms step so observers see each step. Finite CSS and Web Animations run on the document timeline, which the clock does not move, so rest mode finishes them before reading. Each settle waits out intervals to 3 ticks, so Indus's 6500ms testimonial interval makes a rest read take about 20 s of virtual time. Quiet steps are skipped (`lib/intake-harness.mjs::quietSkip`, `lib/intake-harness-page.mjs::harnessInit` `H.quietMs`): while no frame callback or idle callback is scheduled, no CSS or Web Animation runs and no timer is due, nothing on the page can change, so the clock jumps the whole 16ms steps before the next due timer in one `runFor` with no frame wait and then steps on as before; every timer still fires on the same 16ms grid at the same virtual time, the settle ends on the same step and the 30 s ceiling throws at the same step, so readings are byte-identical with skipping off (`INTAKE_SKIP_QUIET=0`, the reference run). An infinite animation keeps every step stepped (no looser tier). On the quiet-step fixture the 6500ms-interval settle falls from 21.5 s to 2.0 s of wall time with byte-identical readings (`tests/intake-harness-quiet.test.mjs`). Independent harness runs go side by side in one browser-unit pool (`lib/intake-pool.mjs`, `INTAKE_POOL` slots, default 4, one semaphore for every caller): the palette's route reads, the census's width-and-page units, the skeleton page runs, and the intake stages whose context does not depend on each other (`lib/intake-run-stages.mjs::STAGE_NEEDS`). Each unit keeps its own sandbox, context and clock, no width, tick, frame, forcing step or `stepMs` is dropped, and results are folded in the canonical order a one-at-a-time run produces (route, width then page, width, page, `STAGES` order), never in completion order; `INTAKE_POOL=1 INTAKE_SKIP_QUIET=0` is the reference run. On the intake-command fixture a full `intake.mjs` run takes 50.7 s on the code before these changes and 27.0 s now, with `intake.json` and `review.md` identical (`tools/compare-intake.mjs`, which leaves out only `takenOn` and a carried mark's `carriedFrom`). On Indus (2026-10-12, both runs on 2116f196a and one replay file) the default run and the `INTAKE_POOL=1 INTAKE_SKIP_QUIET=0` reference give byte-identical census, inventory, routing, breakpoints, page map, palette, Site Info, flags, notices and skeletons. Test 2's widths side by side (`INTAKE_PARALLEL_WIDTHS=1`, `lib/intake-defects.mjs::unreachedDefects`) are off by default: on Indus they reached six mega-menu constructs (template elements 125 to 134, the timer at js:1276 and the animation at js:1278) at 768 that the one-at-a-time run reached at no width, so three defects and three gap rows became breakpoints; the cause is not yet proven (the per-width `pending()` set is not it). On Indus, home and `#/about` at 375, 768 and 1440 in rest mode and the hero heading's 900ms entrance in sample mode are byte-identical across two runs.
 
-#### FR-48-29 — Prop variants
+### FR-48-29 — Prop variants
 A component draft mounted through `dc-import` with `data-props` can render several variants. The design is the render with the default props, as the parent draft mounts it. Other variants are recorded as states only when a parent draft mounts them with other props. An enum prop no parent uses is listed, not built.
 
 Status: built 2026-10-12 (`lib/intake-props.mjs::propVariants`, `lib/intake-defects-keys.mjs::mountedProps`, `tests/intake-inventory.test.mjs`). The props come from the `data-props` of the component's `<script data-dc-script>` (`lib/intake-props.mjs::declaredProps`); a mount's value is its literal attribute, or the option strings its bound `renderVals` key yields on the parent's syntax tree (a value it cannot read is a gap row). A non-default value a parent mounts is a state of the component's surface (`props.<name>` in its `state_keys`); an enum prop no parent passes is listed as `unused`, and an option no parent mounts in `unusedOptions`; neither is built. Mama's: `SiteHeader.current` gives 7 variant states, `ProductCard.size` one (`sm`); Indus's imports declare no props. Verified by `node --test scripts/computed-route/tests/intake-inventory.test.mjs` (with no parent passing `size`, no state and `size` unused: MUST FAIL).
 
-#### FR-48-30 — The page map (Spec 48A FR-48A-9)
+### FR-48-30 — The page map (Spec 48A FR-48A-9)
 Intake proposes `sites/<client>/build/page-map.json` from the adapter's routes (FR-48-26), or from the draft's embedded `<script type="application/json" data-sgs-manifest>` block when present (Eye Care). One row per route holds: `slug`, `title`, `parent`, `template` (a theme page template or a WooCommerce template), `menus` (each menu it sits in, with position and parent item), `postType` (a page; a blog post as `post`; a catalogue page as the WooCommerce shop or a product category archive, never a static page copying products; a single-product page as `product`, the design of WooCommerce's `single-product` template that every product uses), `collection` (`static`: the draft's items are content written into the page; `live`: the items come from WordPress posts or products), and `id` (empty until the site-build script writes it). Every CPT surface (header, footer, drawer, mega menu, modal, form, choice flow) gets its own row with its post type. Bean confirms the map once (FR-48-17). The row format is Appendix C, "Page map".
 
 *Done when:* every route and every CPT surface in the census has one row, every link in the draft resolves to a row or a gap row, and the file validates against its schema.
 
 Status: built 2026-10-12 (`lib/intake-pagemap.mjs`, `lib/intake-pagemap-surfaces.mjs`, `lib/intake-ast-eval.mjs`, `data/page-map.schema.json`, `tests/intake-pagemap.test.mjs`). Indus: 23 pages, 6 posts (the `#/post-*` articles), a header, footer, drawer, 4 mega menu panels and 4 forms; every link resolves (the routing reader's 3 gap rows close once loop variables are followed). Eye Care's rows come from its embedded manifest. A single-product route is a `product` row with template `single-product` (Bean, 2026-10-12: a shop needs its own product kind, never the shop page's).
 
-#### FR-48-31 — Palette role proposal
+### FR-48-31 — Palette role proposal
 Intake builds the token-to-slug role proposal (§11, FR-33-2), which Bean confirms in the review. The tokens come from a route module, `scripts/computed-route/lib/tokens.mjs`, that parses `tokens/*.css` into declared tokens (name, value, `var()` chain resolved) with no render, and matches each to the draft's hex by where the census found that value in use. Intake never runs the extractor: R-47-1 forbids the route importing `plugins/sgs-blocks/scripts/`, the extractor reads the README rather than the token files today (FR-33-15), and it measures a rendered draft, which intake does not need for a role proposal. The extractor reads the token files and the confirmed role map later, in stage 2 (§11). Every colour outside the declared tokens stays a one-off hex.
 
 *Done when:* `lib/tokens.mjs` lists every custom property in Indus's `tokens/*.css` with its resolved value, the proposal names a role for each used token, and a planted unused token is listed as unused, not proposed.
 
 Status: built 2026-10-12 (`lib/tokens.mjs`, `lib/intake-palette.mjs`, `tests/tokens.test.mjs`, `tests/intake-palette.test.mjs`). Indus's three token files give 34, 27 and 13 tokens; slugs are read from `theme/sgs-theme/theme.json` at run time, so FR-32-14's five new slugs are proposed; a token with no confident role is `custom-<name>` (FR-33-2). Usage comes from rest-mode readings at 1440 per route.
 
-#### FR-48-32 — Site Info proposal with format validation
+### FR-48-32 — Site Info proposal with format validation
 Intake harvests business details from the code: `tel:` and `mailto:` links, social links, the logic's data objects, and labelled text. Each value is validated by shape: a UK phone number of 10 to 11 digits after removing spaces (or `+44`); an email `is_email()` would accept; a social link with an http or https scheme on a known host (`brand-registry.json`); an hours range that expands to per-day keys; a postcode matching the UK pattern. A value holding `{{ }}`, a placeholder host (example.com) or `#` is refused with its reason. The proposal is a review row per key. `plugins/sgs-blocks/scripts/sync-business-info.py`, run as a command without `--push` (print only), is one proposal source beside the intake harvest; its output feeds the same review rows and it never writes to a site (FR-33-14). After Bean's mark, `plugins/sgs-blocks/scripts/provision-site-info-from-draft.py` applies it (FR-48-59); it is the one Site Info writer for a cloned site.
 
 *Done when:* intake on Indus proposes its phone, email and social links, lists a planted placeholder address and a malformed phone number, and the confirmed set reaches Site Info through the provisioning script's dry-run table.
 
 Status: built at intake 2026-10-12 (`lib/intake-siteinfo.mjs`, `lib/intake-siteinfo-shape.mjs`, `tests/intake-siteinfo.test.mjs`). Indus proposes its phone, email, WhatsApp link, two address candidates (the footer text and the contact data object) and per-day hours, and refuses its four `#/` social links; a dry run of `provision-site-info-from-draft.py --site indus-test` with the phone and email shows both as WRITE. `wa.me` is read as WhatsApp through a one-entry alias, because the brand registry does not list it. `sync-business-info.py` still has a `--push` write path; intake never passes it.
 
-#### FR-48-33 — Placeholder, stock and prototype-only flags
+### FR-48-33 — Placeholder, stock and prototype-only flags
 Intake flags three kinds of construct so that none is built as if it were final:
 - **placeholder**: copy or data the draft marks as filler (lorem ipsum, "Your name", example.com, a `{{ }}` fallback string) or that the README's own placeholder tier names;
 - **stock**: an image from a stock or preview source (FR-48A-9: credits are not recorded and real images arrive with the client's content);
@@ -862,7 +862,7 @@ Each flag is a review row. Placeholder copy is written with the flag kept in `pa
 
 Status: built 2026-10-12 (`lib/intake-flags.mjs`, `tests/intake-flags.test.mjs`). Indus: 36 placeholder rows (19 empty image slots, 12 `#/` social links, 4 README lines and one more), 3 stock image builders, 5 prototype-only rows (the trade application's stored draft and `Math.random` reference, the enquiry form's timed submit, the inline forms' thank-you).
 
-#### FR-48-34 — Draft defects and the missing-features list
+### FR-48-34 — Draft defects and the missing-features list
 - **Draft defects** are a closed list (DESIGN decision 3) with an operational test. A row is a draft defect only when one of these holds:
   1. the declared value holds an unresolved `{{ }}` binding at read time (Indus's mega-menu `style-hover`); or
   2. a code-declared state, motion or behaviour is unreached at every tested width (375, 768 and 1440) under the harness (FR-48-28), even with the state forced (hover and focus forced through the DevTools protocol, the state keys set that the code's own condition reads, the scroll pass run). Eye Care's reveal below 1440 is this case.
@@ -874,7 +874,7 @@ Outcomes that are not defects (decided 2026-10-12 while building): a construct g
 
 Status: built 2026-10-12 (`lib/intake-defects*.mjs`, `lib/intake-missing.mjs`, `lib/intake-state.mjs`, their tests). On Indus, test 1 finds all seven bound `style-hover` rules, not only the mega menu's: the pinned runtime compiles a `style-*` attribute's text raw, so a `{{ }}` there never resolves and the browser drops the bound declaration. Test 2 over every route at 375/768/1440 forces hover and focus, state keys, every handler's event and code-wired listener, drag and press gestures with pointer coordinates inside the target's box (`lib/intake-defects-gesture.mjs`), two-step states to depth 2 (an opener from the pending rows' own state patches or a template handler on each of a loop's first four copies, then each handler on what it rendered, state put back after every attempt; `lib/intake-defects-chain.mjs`), a guard on a field only dead code writes, or nothing writes, is dead code (`lib/intake-defects-deadfield.mjs`), and so is a construct inside an `sc-if` whose loop-item field is false for every item of the draft's own constant data, or code reached only through a plain selector whose every matched element sits inside one (`lib/intake-defects-datagate.mjs::dataGatedWhy`: writes after creation followed by `lib/intake-ast-eval.mjs::trackWrites`, nesting from the census's stamped `parent` links; refused on state, props, an item where the field is true or unreadable). Before the data gate, Indus test 2 left 2 defects (from 218 at rest only, 15 before gestures and chaining): the footer opening-hours card's transition, which has no hover rule unlike its sibling cards, and `setupReveal`'s scale-in, whose `[data-draw-y]` element sits only in `<sc-if value="{{ b.isTimeline }}">` while no block of any page has type `timeline`. Measured 2026-10-12 with `dataGatedWhy` over the 305 test-2 candidates of Indus's static census (runtime marks from the 10:46 intake): 7 become data-gated dead code, the scale-in and 6 template rows inside `b.isTimeline` and `b.isQuotes` that were gap rows, so the next Indus run is expected to leave 1 defect; `b.isArticle` is refused, because the blog posts' pages are added by `this._pages['post-' + p.img] = …` and hold `article` blocks. Mama's (a text-only estimate; it has no replay file): 12 loop-item `sc-if`s, none provable. Each dead-code entry carries `deadKind` (`lib/intake-defects-static.mjs::DEAD_KINDS`: `unwired`, `constant-guard`, `data-gated`). Test 2 on Indus took about 75 minutes with a second run beside it, an upper bound. The not-a-defect list is kept whole in `intake.json`'s `notDefects` (built 2026-10-12, Bean: a misspelled wiring must be visible). `review.md` lists the dead-code entries whose `deadKind` is `unwired` (a handler, ref callback, timer or observer reached only under a `renderVals` key no template binding names, or a guard field nothing live writes; `lib/intake-defects-static.mjs::isUnwiredEntry`, which reads the note's wording only for a record without `deadKind`) as the `not-a-defect` section, default mark `not-a-defect` (a blank row takes it), alternative `defect`; a dead field with any write behind a constant guard is `constant-guard`. Constant-guard and data-gated dead code, prop variants, prototype-only and the other reasons are one header line counting each (`lib/intake-review.mjs::notDefectLine`). A `defect` mark on a not-a-defect row is read by stage 2's site build, which builds that construct's intent as a draft defect (not yet built; owner FR-48-18); nothing in stage 1 consumes it. Verified by `node --test scripts/computed-route/tests/intake-review.test.mjs` (16/16): a planted handler whose template binding is misspelled (`onTogle` for `onToggle`) appears in that section, the correctly spelled binding gives no entry, a dead field written behind a constant guard is counted, not listed, and a blank not-a-defect row is not missing, each failing with its rule removed; and by `node --test scripts/computed-route/tests/intake-defects-datagate.test.mjs` (7/7): the fixture's data-gated `sc-if`, the rows inside it and the `[data-draw-y]` reveal are dead code (the reveal a defect with the rule off), with negative controls for an item with the type, an `sc-if` true only on a page the run never opens, an `sc-if` on click-set state, and a write after creation that can give an item the type.
 
-#### FR-48-35 — The intake record
+### FR-48-35 — The intake record
 `intake.json` holds the census, the re-derived inventory, the routing adapter and routes, the width basis and thresholds, the page map, the palette proposal, the Site Info proposal, the flags, draft defects, missing features, gap rows, and Bean's marks with the date. It carries the `MANIFEST.json` hashes it was taken from, so a later export makes it stale (G0, §14). It is validated against `scripts/computed-route/data/intake.schema.json`, whose top-level keys are Appendix C, "Intake record". The schema files for every record in Appendix C live in `scripts/computed-route/data/` and are checked by the route's tests.
 
 Status: built 2026-10-12: `intake.mjs` writes `intake.json`, validated against `data/intake.schema.json` before it is written, and `tests/intake-schemas.test.mjs` holds every Appendix C schema file equal to the spec.
@@ -903,7 +903,7 @@ The check is code to code, with the render confirming: the draft's declared valu
 | 12 | Behaviour | handlers, `surfaces.json` | SGS features | scripted flow | the one-line list |
 | 13 | Site level | `tokens/*.css`, `<helmet>` fonts, routes | snapshot, Site Info, menus, pages, templates | confirmed page map; reachability | n/a |
 
-#### FR-48-36 — The confirm record
+### FR-48-36 — The confirm record
 Every written value carries a confirm record in the surface report: draft ID, block and attribute, property, width, state, declared value, emitted value, rendered draft value, rendered live value, verdict (`confirmed` | `render-wins` | `draft-defect` | `open`) and the tolerance used. The tolerances, by property type: colour ΔE ≤ 2 (CIEDE2000, alpha ±0.02); length ±0.5px declared and ±1px rendered; font family by first loaded family; font weight exact; line height ±0.5px; transform matrix entries ±0.01; time ±10ms. These are provisional, calibrate on Indus (R-47-7 keeps the snap tolerances).
 
 The verdict comes from three comparisons, each within tolerance ("agree") or not: declared against rendered draft (D–R), emitted against rendered live (E–L, which for Indus is one reading, so it always agrees, until FR-48-76), and rendered draft against rendered live (R–L). With no declared value (row 7), D–R is skipped and R–L alone decides.
@@ -920,73 +920,73 @@ With a predictive emitter (FR-48-76), an E–L disagreement is its own verdict, 
 
 Status: not built.
 
-#### FR-48-76 — A predictive emitter
+### FR-48-76 — A predictive emitter
 A module computes, from a written setting and the block's calibration (§3.2), the value the setting will emit on its calibrated element, before any build. The check then compares declared against predicted emitted (code to code) and confirms against the live read; a disagreement between predicted and live is an `emitter` row (FR-48-36). Not needed for Indus, where the emitted value is the live read; it is wanted when a pre-build check would save a build round.
 
 *Done when:* for every confirmed row on one Indus surface, the predicted value equals the live read within tolerance, and a planted calibration with a wrong transform produces `emitter` rows.
 
 Status: not built.
 
-#### FR-48-37 — Row 1, structure
+### FR-48-37 — Row 1, structure
 **Read:** template elements by `data-dc-tpl`, `sc-for` loops, `dc-import` mounts and `surfaces.json` kinds (page, header, footer, drawer, menu, panel, form, form-step, modal, accordion, result, backdrop, global; the kinds in the Indus and Mama's exports). **Write:** the block choice in the skeleton; template parts; one CPT post per CPT surface (FR-48-30). **Check:** every draft ID that paints pairs to exactly one block (`cr-ref-<surface>-<id>`), or is covered by a recorded parent. **Gap:** no SGS block or composition can hold the element (F-block, §14).
 
 Status: pairing is built (Spec 47 §3.6, identity pairing). The skeleton block choice from census hints is not built.
 
-#### FR-48-38 — Row 2, content
+### FR-48-38 — Row 2, content
 **Read:** template text, logic data (getters, arrays, `renderVals()` content), the routing adapter's links, `tel:` and `mailto:` links. **Write:** block text and item arrays; page-map links; Site Info (FR-48-32). **Check:** every text node pairs one to one with a block field, with a count check per array (a getter yielding n items gives n block items). Placeholders keep their flag. **Gap:** the content has nowhere to live in any block or store.
 
 Status: text and presence rows are built (Spec 47 §3.6, `lib/issue-classes.mjs::CONTENT_KINDS`). Logic-as-data reading and the count check are not built.
 
-#### FR-48-39 — Row 3, media and assets
+### FR-48-39 — Row 3, media and assets
 **Read:** files under `assets/`, image slots, stock previews. **Write:** media library attachment IDs from the upload map (FR-48-58). **Check:** the painted image's identity (the attachment's source file hash equals the asset's hash). The rendered box is covered by row 5. **Gap:** a painted image with no block image slot.
 
 Status: not built.
 
-#### FR-48-40 — Row 4, colour
+### FR-48-40 — Row 4, colour
 **Read:** literal colours per width and state from inline `style`, `style-*` rules and `renderVals()`. **Write:** the palette slug when the hex equals a confirmed token's value exactly; otherwise the hex (R-47-7). **Check:** declared against emitted, then the render confirms. **Gap:** no SGS setting reaches the painted element's property (F-setting, after G0-G7).
 
 Status: the snap and write are built (`lib/normalise.mjs`, `lib/resolve.mjs`). Declared-against-emitted is not built.
 
-#### FR-48-41 — Row 5, type, spacing, size, border, shadow
+### FR-48-41 — Row 5, type, spacing, size, border, shadow
 **Read:** literals, `renderVals()` values per width, and `{{ }}` bindings. **Write:** a preset or token on an exact match, else a literal per tier. Elements sharing one binding share one setting: a binding used by several sections becomes one token or preset, never n copies. **Check:** declared against emitted. **Gap:** as row 4.
 
 Status: per-element literal writing is built (Fill). Binding grouping is not built. The per-tier section padding and gutter tokens it needs are a Spec 32 hand-off (§16).
 
-#### FR-48-42 — Row 6, layout
+### FR-48-42 — Row 6, layout
 **Read:** the declared form (`display`, `grid-template-columns: repeat(...)`, `flex-direction`, `flex-wrap`).
 
 **Write:** the container's layout settings in the declared form. **Check:** the form itself, plus the rendered box of each child. **Gap:** the setting cannot take the form. A calibration fault is never this gap: `gridTemplateColumns` dead and `layout` unrouted are instrument debt (I-calibration, I-unrouted) until fixed in stage 0.
 
 Status: not built for declared forms; the measured route writes used values today.
 
-#### FR-48-43 — Row 7, unstated values
+### FR-48-43 — Row 7, unstated values
 **Read:** one render per width, for properties the draft never states (browser defaults, inheritance). **Write:** only where the value differs from the block's calibrated default paint (R-47-5). **Check:** render against default.
 
 **Gap:** as row 4.
 
 Status: built (Spec 47 R-47-5, §3.2).
 
-#### FR-48-44 — Row 8, fluid values
+### FR-48-44 — Row 8, fluid values
 **Read:** declared `clamp()`, `min()`, `max()` and `vw` values. **Write:** the fluid form, only where calibration records that the setting accepts it; otherwise the resolved value per tier. **Check:** the resolved value at each width. **Gap:** no setting accepts a fluid value and per-tier values miss the draft beyond tolerance between tiers.
 
 Status: not built. None of the 94 calibration caches records an accepted value form (`grep -l clamp scripts/computed-route/cache/*.json` returns no file), so every fluid value is written per tier today and the row is instrument debt (FR-48-49).
 
-#### FR-48-45 — Row 9, breakpoints
+### FR-48-45 — Row 9, breakpoints
 **Read:** logic thresholds with their width basis (FR-48-27). **Write:** by FR-48-50. **Check:** the live layout flips at the **written** width: between written − 1px and written + 1px, and not at any other width in the sweep. For a threshold written as-is (a block breakpoint setting or custom CSS) the written width is the draft's threshold. For a snapped threshold it is the tier, and the gap between the draft's threshold and the tier is the accepted `breakpoint-snap` ledger entry, not a failure. **Gap:** an off-tier threshold with no block setting and no listed custom CSS.
 
 Status: not built.
 
-#### FR-48-46 — Row 10, states
+### FR-48-46 — Row 10, states
 **Read:** `style-hover` and `style-focus` rules, every `sc-if` with its classification (`METHOD.md` §7), and `surfaces.json` states. **Write:** state settings (hover, focus, active, open); CPT surfaces for drawers, modals and mega menus. **Check:** every state is reached, by the generated state map (FR-48-13) that mirrors `surfaces.json` and is diffed against the surface's `state-map-reasons.json`, with an optional click path. **Gap:** no state setting holds it.
 
 Status: walker states are built (Spec 47 §3.7). The generated state map is not built.
 
-#### FR-48-47 — Row 11, motion
+### FR-48-47 — Row 11, motion
 **Read:** the re-derived animation inventory (FR-48-25) and timer-written styles. **Write:** per-element `sgsMotion` values (Spec 38A §6.2, §14, FR-38A-33) into all three motion panels: each element's entrance with its own per-device delay into `entrance`, its hover transitions into `hover`, and its looping animations into `effect`, each value a token reference where it equals the client's token; FR-48-77 adds the script-driven effects. **Check:** the parameters (keyframes, duration, easing, delay, iterations, trigger) are compared code to code, then the pose is sampled in the harness's sample mode (FR-48-28) at 0, the midpoint and the end of the recorded duration, on the virtual clock. **Gap:** no preset or setting expresses it (owner Spec 38). A reveal unreached at every tested width under a forced state is a draft defect (FR-48-34), not a gap.
 
 Status: entrance writing is built (`lib/fill-entrance.mjs`). The parameter comparison is not built.
 
-#### FR-48-77 — Effect recognition: draft motion to SGS effects
+### FR-48-77 — Effect recognition: draft motion to SGS effects
 
 A draft's interactive and scroll effects are usually written in its own plain JavaScript, while SGS expresses the same effects as block settings and Spec 38 effects, some of them GSAP (Tier G). FR-48-47 writes entrance animations only, so without this step a clone silently drops every other effect.
 
@@ -996,19 +996,19 @@ A draft's interactive and scroll effects are usually written in its own plain Ja
 
 Status: not built (Bean, 2026-10-12: before Appendix B step 21). Needs FR-48-25, which is built. The cursor reveal's circular image layer is the `cursor-field` `image-reveal` field type (Spec 38A FR-38A-34, not built).
 
-#### FR-48-48 — Rows 12 and 13, behaviour and site level
+### FR-48-48 — Rows 12 and 13, behaviour and site level
 **Behaviour.** **Read:** handlers and `surfaces.json` flows. **Write:** SGS features. **Check:** a scripted flow per main path (§3.7). **Gap:** the missing-features list (FR-48-34), never a silent drop.
 
 **Site level.** **Read:** `tokens/*.css`, `<helmet>` fonts and routes. **Write:** the snapshot (§11), Site Info, menus, pages and templates (§12). **Check:** the confirmed page map and the reachability of every route on the live site. Site-level rows never reach the gap list; a failure is a stage 2 exit failure.
 
 Status: flows are built (Spec 47 FR-47-7); the site-level check is not built.
 
-#### FR-48-49 — Uncalibrated settings
+### FR-48-49 — Uncalibrated settings
 R-48-4 (Instrument debt is never a gap, §1) governs this section.
 
 Status: not built (today an uncalibrated row is triaged W, `lib/triage.mjs`).
 
-#### FR-48-50 — The breakpoint rule
+### FR-48-50 — The breakpoint rule
 For a draft threshold `t` on its width basis, and the SGS tiers `T ∈ {768, 1024}` (Spec 35 D2):
 1. **Snap** when `min over T of |t − T| ≤ 0.05 × T` (5% of the tier). The nearest tier wins: 1060 snaps to 1024 (|1060 − 1024| = 36 ≤ 51.2). Every snap writes a divergence-ledger entry automatically (§3.5): rule `breakpoint-snap`, the node, the draft threshold, the tier and the distance in px, and `decided` naming this rule. It is a house-rule entry, so it cites no register item. Spec 32 FR-32-13 allows this snap (Bean's decision); the residual rule there covers only a threshold outside the tolerance. **Why 5% (provisional):** it lets a draft threshold that sits a few dozen pixels from a tier (1060 against 1024, 36px) use the tier the client already edits, while every Indus threshold that is not already a tier (1200 and 1260, 17% and 23% above 1024) stays off-tier and keeps its exact width. The `breakpoint-snap` entries from the Indus run move it: a snapped threshold whose layout between the draft threshold and the tier differs visibly from the draft (an open row in that width band, or Bean's eye) lowers it; no such row across the snaps leaves it or raises it.
 2. Otherwise use the block's own breakpoint setting when one exists (for example a header's burger breakpoint). A structured setting is preferred to custom CSS wherever one exists.
@@ -1049,35 +1049,35 @@ cd plugins/sgs-blocks/scripts/theme-extractor && python -m pytest tests
 
 ### 11.2 Requirements
 
-#### FR-32-7 — Component presets from the draft
+### FR-32-7 — Component presets from the draft
 The extractor reads each component variant the draft declares (base and hover, every declared property) into `settings.custom.{component}Presets` (Spec 32 FR-32-9 naming) without hand-authoring. A Claude Design draft carries no SGS class, so a variant is recognised from the draft's code: a variant-set prop (`variant_sets.py`), or a group of elements sharing one style binding and role. Button presets are measured from rendered buttons by `presets.py` (FR-33-4).
 
 *Done when:* every button variant the Indus draft renders (base and `style-hover`) is reproduced in `buttonPresets`, and a hover that changes colour and lift is captured whole.
 
 Status: button presets are built (`presets.py`). Other components' presets from a `.dc.html` draft are not built.
 
-#### FR-48-51 — The route sets the preset (route half of Spec 32 FR-32-8)
+### FR-48-51 — The route sets the preset (route half of Spec 32 FR-32-8)
 When a draft element matches a confirmed preset (all of its declared base and hover values equal one `{component}Presets` variant within FR-48-36's tolerances), the route writes that variant (for example `sgs/button` `variant: secondary`) and no per-instance values. A draft element with no variant match stays its natural element: a plain draft link stays a link and is never forced into a preset button. Written against `.dc.html` drafts, not SGS-BEM classes (C9).
 
 *Done when:* a cloned Indus primary button carries only its variant class (plus the WordPress block class), and a plain footer link does not become a button.
 
 Status: not built.
 
-#### FR-48-52 — Box values as one object (route half of Spec 32 FR-32-10)
+### FR-48-52 — Box values as one object (route half of Spec 32 FR-32-10)
 The route reads a draft's per-side and per-corner declarations (shorthand or four longhands, from inline `style` or `renderVals()`) into the named-object shape `{top, right, bottom, left}` on the owning attribute (Spec 32 §6.1(a)), never four flat attributes. A box family is recognised from the DB `box_family` column, never from a name pattern.
 
 *Done when:* a draft box with four distinct sides round-trips to four distinct, correct computed values live.
 
 Status: built for measured drafts (the route's cross-declaration accumulator in `lib/resolve.mjs`, Spec 47 §3.1); reading a declared `renderVals()` box is not built.
 
-#### FR-33-1 — Provenance-tiered extraction; declared tokens matched by value
+### FR-33-1 — Provenance-tiered extraction; declared tokens matched by value
 Every emitted token carries a `_source` (`declared`, `derived` or `rendered`). A declared token comes from `tokens/*.css` (or a `:root` rule for a draft with a `<style>` block) and is emitted when the draft's code uses its exact value. Its value is confirmed by the render: where the rendered value on the element using it differs beyond ΔE ≤ 1 (or a length delta), the render decides, and the divergence goes to the reconciliation log and Bean's review. A declared token that no element uses is gap-logged, not emitted.
 
 *Done when:* every emitted token has a `_source`. A fixture whose `colors.css` declares `--brand:#0A7EA8`, used by the CTA, emits that value as `declared`. A declared but unused token is in the gap log, not the palette.
 
 Status: provenance, reconciliation and dead-token logging are built for `<style>` `:root` tokens. Reading `tokens/*.css` is not built (`git grep -n -E "tokens/|colors\.css" -- plugins/sgs-blocks/scripts/theme-extractor` gives no line).
 
-#### FR-33-2 — Roles proposed, Bean confirms; ΔE dedupe
+### FR-33-2 — Roles proposed, Bean confirms; ΔE dedupe
 A declared token's role is proposed from two signals: its name (through the vocabulary tables in `palette_vocab.py`) and where its hex is used (property and selector role, counted by `usage_census.py`). The table below ranks usage evidence when names disagree or are absent. The proposal goes into Bean's intake review, and his confirmed role map is what the snapshot uses. The slug vocabulary is Spec 32 §12.2's 21 framework slugs, with `border` as the border slug.
 
 | Usage signal | Candidate role |
@@ -1098,68 +1098,68 @@ Colours dedupe at ΔE ≤ 1 (CIEDE2000, sRGB to Lab), with alpha as its own axis
 
 Status: role-by-usage, ΔE dedupe and the `surface-alt` guard are built. Name-based proposal from `tokens/*.css`, Bean's confirm step and the `border` guard are not built. The vocabulary still uses `border-subtle` (`palette.py::_NAME_ALIASES`, `palette.py::BASELINE_SLUGS`, `roles.py`'s border row). All 9 snapshots carry `border`; where the rename happens has not been traced.
 
-#### FR-33-3 — Base typography from computed nodes
+### FR-33-3 — Base typography from computed nodes
 The theme base (`styles.typography`, `styles.color`) is the computed font family, size, line height, colour and background on a representative rendered `<p>` in the main content flow. `rem` resolves against the draft's computed root font size. Families: `body` from the base rule; `heading` from `h1`, then `h2`, then `h3`; `display` from an explicit `--font-display` token or the heading family, else omitted. The full fallback stack is emitted and the primary family must load. A value the draft never declared is never synthesised. A `tokens/typography.css` family that matches the rendered family by name confirms it.
 
 *Done when:* a clone renders body text at the draft base size and heading line height; an `html{font-size:62.5%}` fixture resolves `rem` correctly; the heading font loads.
 
 Status: built.
 
-#### FR-33-4 — Complete declared value-type coverage
+### FR-33-4 — Complete declared value-type coverage
 Every declared value type goes to its slot (Spec 32 §14.2): the palette (FR-33-2); typography families, sizes, weights, line heights and letter spacing; spacing to `settings.spacing.spacingSizes`; radius to `settings.custom.borderRadius`; shadow to `settings.shadow.presets`; buttons to `settings.custom.buttonPresets.{primary,secondary,outline}`, plus an optional `buttonPresets.default` entry for the site-wide button hover (`hover-transform`, for example `matrix(1, 0, 0, 1, 0, -3)`, and `hover-transition`, for example `0.25s`). `contentSize` and `wideSize` come from the rendered layout (FR-33-19). A fluid font size becomes core `fluid: {min, max}` under Spec 32 §14.2's zoom-safe rule; `clamp()`, `calc()` and `min()` on other lengths are emitted verbatim. Button presets are an open property bag: the difference between rest and hover declarations, kept whole, with `!important` stripped. A lift that every regular button shares is written once as `buttonPresets.default.hover-transform` (Spec 32 FR-32-19; no new key), and a variant keeps its own `hover-transform` only where it lifts differently. When Spec 32 adds the shadow role names (FR-32-18, §16), the extractor fills them from the draft.
 
 *Done when:* spacing tokens, a content size, a button radius and both hover shapes (colour invert, transform lift) each land in the right slot with no `!important`; a draft whose buttons all lift 3px gives `buttonPresets.default.hover-transform` and no per-variant copy; a pure-`vw` `clamp()` font size becomes a fluid preset that passes the 200% zoom check, and a `clamp()` gap is emitted verbatim.
 
 Status: partly built. Per-variant `hover-transform` is built (`presets.py::_hover_diff`); folding a shared lift into `buttonPresets.default` is not built, and shadow role names are not built (Spec 32).
 
-#### FR-33-5 — Pass B is provisional and advisory; nothing usable gives the baseline plus a skip
+### FR-33-5 — Pass B is provisional and advisory; nothing usable gives the baseline plus a skip
 For values neither the tokens nor the draft declares, Pass B derives them by usage clustering and a computed-value read, tagged `_source: derived` with a confidence score, palette entries marked `advisory`. It never pushes them to the live `wp_global_styles` without confirmation (`push-theme-snapshot.py::apply_advisory_policy`; `--include-advisory` deploys them). Promotion uses a relative share within a role bucket. A draft where nothing usable is recovered emits the framework baseline unchanged plus a loud logged skip. A parser failure halts with a clear error. Pass B counts only resting selectors (`roles.py::_SEL_NON_RESTING`). An advisory entry for a base slug carries `_baseline_color`, so a push restores the base hex rather than deleting it.
 
 *Done when:* a token-less synthetic draft's derived palette is `advisory` and does not deploy without confirmation; a draft with nothing usable emits the baseline and a logged skip; Pass B never inverts a palette.
 
 Status: built.
 
-#### FR-33-6 — Dark-theme and preview-shell safety
+### FR-33-6 — Dark-theme and preview-shell safety
 The theme background is the computed background of the widest block-level ancestor holding the main content flow, not `<body>` blindly. A dark `<body>` is never discarded for being dark: a preview shell is identified only by a positive structural signal (a `.viewport-switcher`, `.device-frame` or a known review-harness class or marker). An ambiguous signal gap-logs the background for confirmation.
 
 *Done when:* a dark review-harness shell is ignored through the positive signal; a dark-theme draft with no harness keeps its dark background.
 
 Status: built.
 
-#### FR-33-7 — Provenance trace, golden fixtures and schema validation
+### FR-33-7 — Provenance trace, golden fixtures and schema validation
 The extractor writes `theme-extract-trace.json`: one row per emitted token (`_source`, source selector and property, the reason for its role, the ΔE snap target and distance, confidence). "Correct" means a diff against a checked-in golden, `plugins/sgs-blocks/scripts/theme-extractor/expected/<draft>.snapshot.json`. The snapshot is validated against the `theme.json` v3 schema (`schema_validate.py`) before handoff.
 
 *Done when:* every corpus draft produces a trace and is diffed against its golden; a malformed emit is caught before deploy.
 
 Status: built. `python -m pytest tests/test_extractor.py -q` from `plugins/sgs-blocks/scripts/theme-extractor` gives 28 passed (2026-10-11). The whole suite (`python -m pytest tests -q`) gives 1 failed, 265 passed: the failure is `tests/test_font_face_weights.py::test_bakery_fraunces_face_equals_the_committed_snapshot` (Fraunces `300 900` against Young Serif `400`). It probably compares against `sites/mamas-munches/theme-snapshot.json`; this is not verified. No golden exists yet for a Claude Design export from `handoff/`.
 
-#### FR-33-8 — Determinism and idempotence
+### FR-33-8 — Determinism and idempotence
 Re-running on an unchanged draft gives a byte-identical snapshot. Clustering, promotion and dedupe use a total order: frequency within a role, descending; then first byte offset, ascending; then canonical hex, ascending.
 
 *Done when:* `tests/test_extractor.py::test_determinism_byte_identical` passes.
 
 Status: built.
 
-#### FR-33-9 — Conservation: a slot or the gap log, never a silent drop
+### FR-33-9 — Conservation: a slot or the gap log, never a silent drop
 Every declared token and global declaration is extracted to a slot or logged as a gap candidate. ΔE merges log the loser as an alias. Role-bearing colours go to the palette. A once-used decorative value (a shadow `rgba` used once) goes to the trace, not the colour picker. A token-file colour the file itself marks as a deliberate one-off (Mama's `colors.css` header comment lists `#D9981C` and others) stays a one-off hex and is noted in the trace.
 
 *Done when:* every token-file declaration and every `:root` and base declaration appears in the snapshot or the gap log; a once-used `rgba` is in the trace, not the palette.
 
 Status: built for `:root` and base declarations; token files are not read (FR-33-1).
 
-#### FR-33-10 — Reuse by composition
+### FR-33-10 — Reuse by composition
 The extractor owns `plugins/sgs-blocks/scripts/theme-extractor/token_map.py::build_draft_root_token_map` (hex, non-hex and `var()`-chain resolution, fallbacks). The token-file reader composes it; it does not widen a live helper.
 
 *Done when:* the older map's output is byte-identical for the golden draft and the extractor consumes the composed map.
 
 Status: built.
 
-#### FR-48-53 — No snapshot-only palette push (from Spec 32 FR-33-11)
+### FR-48-53 — No snapshot-only palette push (from Spec 32 FR-33-11)
 A regenerated palette is never pushed on its own to a client whose pages are not re-cloned in the same change, because the cloned blocks snapped to the old palette. The push mechanics (backup, rollback, drift warning, advisory restore) are Spec 32 FR-33-11.
 
 Status: a process rule; not enforced by a script.
 
-#### FR-33-12 — Freshness keys and bootstrap order
+### FR-33-12 — Freshness keys and bootstrap order
 The extractor runs and validates for the current export before any tree is built for that client (stage 2 before stage 3). The snapshot records what proves it is fresh:
 - `_sgsExtractor.draft_css_sha256` hashes the draft's `<style>` blocks;
 - `_sgsExtractor.draft_source_sha256` (`plugins/sgs-blocks/scripts/shared_utils.py::draft_source_sha256`) hashes the style blocks, every inline and hover style value and the script, with line endings normalised. It must not hash the README (C4: the README is not a design input). For a Spec 48A export it is replaced by the `MANIFEST.json` hashes of the drafts and `tokens/*.css`;
@@ -1169,7 +1169,7 @@ The extractor runs and validates for the current export before any tree is built
 
 Status: partly built. The keys and the `--replace-source` refusal are built. `draft_source_sha256` still takes the README text (`shared_utils.py::draft_source_sha256`'s `readme_text` argument). The MANIFEST-hash key and the route's freshness gate are not built (`scripts/computed-route/lib/normalise.mjs` loads the snapshot unchecked).
 
-#### FR-33-13 — Namespace reservation and the token-map service
+### FR-33-13 — Namespace reservation and the token-map service
 - **Acyclic.** The extractor owns the declared `settings.*` tokens. Nothing downstream writes back into the snapshot's palette: the route reads the snapshot and snaps to it (R-47-7).
 - **Header and footer namespace reserved.** The extractor writes global tokens and generic presets only. Header and footer component tokens belong to those blocks, in the reserved, empty `settings.custom.header` and `.footer` namespace (`extract.py` reserves it; the format row is Spec 32 §14.3). Their header-specific settings are scoped CSS and block attributes (Spec 37 FR-37-15 and FR-37-16).
 - `build_draft_root_token_map()` (FR-33-10) is a callable service; nothing else re-parses `:root`.
@@ -1178,7 +1178,7 @@ Status: partly built. The keys and the `--replace-source` refusal are built. `dr
 
 Status: built.
 
-#### FR-33-14 — Business-data auto-fill companion
+### FR-33-14 — Business-data auto-fill companion
 The site's business data (the `Sgs_Site_Info` store: email, phone, socials, copyright, address, hours) is filled from the draft so a cloned header and footer show real details with no re-entry.
 - **Tier 1 (high confidence):** email (`mailto:`), phone (`tel:`), socials (an `<a href>` to a known social host; `#` skipped), copyright (the `©` line), and any address or hours the draft declares in its data object or beside an explicit label. A Claude Design draft adds two sources: the script's data object, matched through a vocabulary table, and labelled page text. Values are validated by shape. For a cloned site, tier 1 is a **proposal source**: `sync-business-info.py` runs print-only and its values join intake's Site Info proposal (FR-48-32). It is never a second writer.
 - **Tier 2 (lower confidence):** free-text guesses go to Bean's intake review (FR-48-32) the same way.
@@ -1195,7 +1195,7 @@ The site's business data (the `Sgs_Site_Info` store: email, phone, socials, copy
 
 Status: partly built. Tier 1 harvesting is built (`plugins/sgs-blocks/scripts/sync-business-info.py` over the `business_info/` package; print-only without `--push`), but `sync-business-info.py --push` still writes to a site directly, so the one-writer rule is not enforced. Tier 2, the intake review route and binding replacement are not built.
 
-#### FR-33-15 — Declared design outside `<style>` (Claude Design drafts)
+### FR-33-15 — Declared design outside `<style>` (Claude Design drafts)
 A Claude Design draft declares its design in `tokens/*.css` (the palette, read by FR-33-1), its script (variant sets chosen by a `data-props` enum; a runtime data object) and inline `style` and `style-hover` attributes. The README is not read (C4).
 - Variant sets (`variant_sets.py`): an enum prop in `data-props` plus a script object keyed by its options. The rendered custom property says which option is active; when no render confirms it, the entries are advisory.
 - Usage (`usage_census.py`, `usage_js.py`): colours counted in inline styles, hover styles, style blocks and JS values that reach a style attribute through a binding. Content data (product swatches, reviewer colours) is not counted.
@@ -1206,28 +1206,28 @@ A Claude Design draft declares its design in `tokens/*.css` (the palette, read b
 
 Status: built with the README as the palette source (`declared_sources.py::read_readme_tokens`, called from `extract.py::_declared_design`). Replacing the README with `tokens/*.css` is not built.
 
-#### FR-33-16 — Site palette overlay
+### FR-33-16 — Site palette overlay
 The palette is the base SGS palette (base order), overridden in place by the confirmed, validated token colours, plus a role-named addition only where no base slug fits (`text-label`). It is never replaced or emptied, and it is generated once per site from the whole draft, never per page. Not palette: placeholder-tier colours (faint, placeholder, disabled), third-party widget colours, and colours that drift between elements; they stay hex on the blocks that use them. Alternative accent sets go under `settings.custom.accentSets`; the active set fills `accent`, `accent-text` and `accent-light`. `primary-dark` is derived from the final `primary`. Global defaults only: corner radius, `contentSize` and `wideSize`, the measured heading weight, and button presets from measured buttons (including buttons carrying only runtime-generated classes, `GENERATED_CLASS_RE` in `measure-node.js`).
 
 *Done when:* the snapshot has every base slug plus `text-label` only, no placeholder or drifting grey, and nothing per element.
 
 Status: built.
 
-#### FR-33-17 — Variable-font faces
+### FR-33-17 — Variable-font faces
 A self-hosted variable font declares a weight range and uses the latin subset (`font_weights.py`). The weight probe tries `100..900`, then the range the draft's font link requests, then `400..900`, then `300..700`; the family is static only if all are refused. The font link is parsed as a URL, so multi-word names match.
 
 *Done when:* a variable font loads with its real weight range and the heading renders at the draft's weight.
 
 Status: built.
 
-#### FR-33-18 — Every loaded-and-rendered font family is captured
+### FR-33-18 — Every loaded-and-rendered font family is captured
 `measure.js` runs a font census (`plugins/sgs-blocks/scripts/theme-extractor/font-usage.js::FONT_USAGE_SRC`). `used_fonts.py::add_rendered_families` adds one `settings.typography.fontFamilies[]` entry per family that is both **loaded** (a Google Fonts link or `@import` on `fonts.googleapis.com`, or a draft `@font-face`) and **rendered** (the first loaded name in a census row's stack, with no generic family before it). Each entry carries `slug`, `name`, `fontFamily`, `fontWeights` and `fontStyles` (only those rendered), `google: true|false` and `_source: "rendered"`. The role slots are never changed. A family that renders but has no file behind it is logged as a gap. The runtime self-hosting of `google: true` entries is Spec 32 §14.2.
 
 *Done when:* the census and `document.fonts` agree with the snapshot's entries and weights; a family loaded but never rendered, one rendered but never loaded, and one listed after a generic are not added. Tests: `tests/test_used_fonts.py`.
 
 Status: built.
 
-#### FR-33-19 — Content width and wide width come from the rendered layout
+### FR-33-19 — Content width and wide width come from the rendered layout
 `measure.js` runs a layout census (`plugins/sgs-blocks/scripts/theme-extractor/layout-census.js::LAYOUT_CENSUS_SRC`) at 1440 and 1920. `used_layout.py::derive` decides at the widest viewport:
 1. a text's cap is the nearest element on its chain that paints no text itself, is binding (its box equals its max-width) and has a content box of at least 600px (`FLOOR_PX`);
 2. a band is constrained only when every text in it has a cap; header, footer and nav bands do not vote;
@@ -1240,7 +1240,7 @@ The rendered value beats a declared `.container` width (FR-33-4). How `SGS_Conta
 
 Status: built for the load screen. Measuring every route is not built.
 
-#### FR-48-54 — The client palette audit
+### FR-48-54 — The client palette audit
 Each extraction prints, for the client snapshot it writes: (a) the `border` slot's value and chroma (a saturated hue there breaks its role, Spec 32 §12.2); (b) the framework slugs the palette lacks, against the 21 in `theme/sgs-theme/theme.json` (the completeness rule itself stays in Spec 32); (c) duplicate slugs; (d) the `surface`/`surface-alt` RGB distance. Client palettes may carry more slugs than the framework roster; a longer palette is not drift. Before any client colour changes, the client's `sites/<client>/CLAUDE.md` is checked for a documented brand reason, and a value change to a live client palette needs Bean's go-ahead. A colour-role change is verified by computed style on the rendered element, never by a diff of the source.
 
 Status: the checks exist as one-line commands in Spec 32 §12.5 and are not wired into `extract.py`. Today `sites/mamas-munches/theme-snapshot.json` lacks `accent-light` and `border-light` (ledger C6).
@@ -1253,7 +1253,7 @@ Status: the checks exist as one-line commands in Spec 32 §12.5 and are not wire
 
 R-48-2 (The pointer exception, §1) governs this section.
 
-#### FR-48-55 — The site-build script
+### FR-48-55 — The site-build script
 One script, `scripts/computed-route/site-build.mjs`, builds the site's skeleton from the confirmed `page-map.json` (FR-48-30):
 1. **Posts.** Each row without an `id` is created with `node scripts/wp-build-page.js --create <postType> --title
    <title> --slug <slug> --tree <tree>`. Its tree is the stage 3 tree when one exists, else a one-block placeholder
@@ -1271,14 +1271,14 @@ On a rerun, every row with an `id` is updated by that ID (`wp-build-page.js --po
 
 Status: not built. `wp-build-page.js --create` and `wp sgs header|footer|drawer set-active` are built.
 
-#### FR-48-56 — Theme page templates
+### FR-48-56 — Theme page templates
 A page-map row with a WooCommerce or theme template (`archive-product`, `single-product`, `cart`, `checkout`, `page-no-title`) is built as the site's own copy of that template with `wp-build-page.js --template <slug>` (or `--template-part <slug>`, for example `sgs-pdp-buybox`), so the framework file in `theme/sgs-theme/templates/` stays unchanged. The header and footer reach a template through one `core/template-part` line each (Spec 47 §2).
 
 *Done when:* the client's shop and product templates render from its own saved copies, and the theme files are byte unchanged.
 
 Status: built (`wp-build-page.js --template`, `--template-part`); not yet driven by the page map.
 
-#### FR-48-57 — Forms
+### FR-48-57 — Forms
 Every draft form becomes a saved `sgs_form` post (Spec 42), created by the site-build script with `--create sgs_form`, and embedded by reference. This closes Spec 42's FR-42-10 for cloned forms, because the target is now created. A form step becomes an `sgs/form-step`. For each form, intake records and Bean confirms:
 - **submission path:** stored submission plus email through `wp_mail()` over the client's SMTP (Spec 04's notification architecture; Appendix A step 6);
 - **recipient:** `notifyEmail`, else the Site Info email, else `admin_email` (`Sgs_Mailer::owner_recipient`);
@@ -1289,14 +1289,14 @@ Every draft form becomes a saved `sgs_form` post (Spec 42), created by the site-
 
 Status: `sgs_form`, `notifyEmail`, `successMessage` and `successRedirect` are built. Route creation and per-field validation copy are not built.
 
-#### FR-48-58 — Media upload to an ID map
+### FR-48-58 — Media upload to an ID map
 Every file under `handoff/assets/` that a construct paints, plus the client's own real images kept outside `handoff/`, is uploaded once with `wp media import <file> --porcelain --user=Claude`. The script writes `sites/<client>/build/media-map.json` (asset path, sha256, attachment ID, `stock: true|false`). A rerun skips any file whose sha256 is already in the map with a live attachment. Stock previews upload with `stock: true` and are listed in Bean's review for replacement.
 
 *Done when:* every painted asset has one attachment ID, a rerun uploads nothing, and the row 3 identity check (§10) passes.
 
 Status: not built.
 
-#### FR-48-59 — Site Info's first real run
+### FR-48-59 — Site Info's first real run
 `plugins/sgs-blocks/scripts/provision-site-info-from-draft.py --site <target> --handover <file>` is the one Site Info writer for a cloned site; `sync-business-info.py` only proposes (FR-33-14). It runs first as a dry run on the confirmed Site Info proposal, which merges the intake harvest and `sync-business-info.py`'s print-only output (FR-48-32). Its table is shown to Bean, then it runs with `--apply`. `--apply` backs the option up to `.claude/backups/<date>/<site>/sgs_site_info.json`, writes through `Sgs_Site_Info::set()`, never overwrites a non-empty key, and fails loudly on a read-back mismatch.
 
 *Done when:* the Indus test site's Site Info holds the confirmed values and the header and footer render them.
@@ -1309,7 +1309,7 @@ Shop UI in Claude Design drafts is heavily bespoke (Bean: "its super awkward to 
 
 R-48-5 (Client code only on Bean's decision, §1) governs this section.
 
-#### FR-48-60 — The buy box
+### FR-48-60 — The buy box
 1. **Parts.** The product page's buy box is laid out in the `sgs-pdp-buybox` template part (`theme/sgs-theme/parts/sgs-pdp-buybox.html`) with SGS containers around the draft's order of parts. Today that part holds the breadcrumbs, title, rating, one `sgs/buybox` and an `sgs/icon-list`. `sgs/buybox` is one server-rendered block (274 attributes, `src/blocks/buybox/render.php` with no inner-block mount). The draft's part order is reachable only once the split into parts exists (Spec 27 hand-off, §16).
 2. **Custom CSS.** A visual leftover no part setting holds goes in the part's `sgsCustomCss`, scoped and labelled as route-written under Spec 32 FR-32-20, and listed in the surface report. A pattern seen on two clients becomes a setting (Spec 27).
 3. **Behaviour.** A behaviour no part has goes to the missing-features list; Bean decides between a framework build and R-48-5.
@@ -1318,17 +1318,17 @@ R-48-5 (Client code only on Bean's decision, §1) governs this section.
 
 Status: steps 2 and 3 work today; Spec 32 FR-32-20 scopes every rule and shows the label the route writes. Step 1 waits for the Spec 27 parts split. The fixture products do not exist.
 
-#### FR-48-61 — The shop filter
+### FR-48-61 — The shop filter
 The shop filter is composed from WooCommerce's filter blocks inside SGS containers, as the framework's `archive-product.html` already does (`woocommerce/product-filters` with `product-filter-taxonomy`, `-checkbox-list`, `-price`, `-price-slider`, `-active`, `-removable-chips` and `-clear-button`, inside `sgs/container`). The draft's filter is matched part by part. Visual leftovers go to custom CSS. A filter behaviour WooCommerce's blocks lack (for example a bespoke pop-up) is a missing-features row.
 
 Status: built in the framework template; matching a draft's filter is not built.
 
-#### FR-48-62 — The basket drawer
+### FR-48-62 — The basket drawer
 The basket drawer is `sgs/cart`'s panel, configured through its settings (175 attributes; Eye Care's header tree sets 135 of them on its cart and gives it no inner blocks). The draft's drawer values are written to those settings. Drawer content beyond the settings (a gift note, an upsell) needs an extras slot, a Spec 27 hand-off (§16). Until it exists, that content is a missing-features row.
 
 Status: the settings are built; the extras slot is not built.
 
-#### FR-48-63 — The toast
+### FR-48-63 — The toast
 The add-to-basket toast is `SGS\Blocks\Sgs_Toast` (`plugins/sgs-blocks/includes/class-sgs-toast.php`). It is one page-level region printed in `wp_footer` when a block requests it, not a block and not part of the cart. Its stylesheet (`assets/toast/toast.css`) reads the site's tokens (`--wp--preset--color--*`, spacing and radius presets). The toast is site chrome, styled only by the site tokens the client edits in Global Styles (palette, spacing and radius presets), by Bean's decision (2026-10-11): it has no block controls of its own, and this is the recorded exception to "every customisable property has a block-editor inspector control" (Bean: "no real need to have it editable"). The draft's toast is matched only through the site tokens, and any remaining difference is recorded as a deliberate difference.
 
 Status: built.
@@ -1337,7 +1337,7 @@ Status: built.
 
 A row reaches the framework gap list only after it passes every gate. A row that fails a gate takes that gate's failure class and goes to its owner instead.
 
-#### FR-48-64 — Gates G0 to G7
+### FR-48-64 — Gates G0 to G7
 
 | Gate | Input | Pass condition | Failure class |
 |---|---|---|---|
@@ -1352,7 +1352,7 @@ A row reaches the framework gap list only after it passes every gate. A row that
 
 Status: not built as a gate chain. Parts exist: identity pairing and the paint check (Spec 47 §3.6), the trial (`lib/trial-run.mjs::openTrial`), calibration lists in each cache, and the deploy hash (`lib/deploy-hash.mjs`).
 
-#### FR-48-65 — Classes, and how today's triage classes map to them
+### FR-48-65 — Classes, and how today's triage classes map to them
 | Class | Meaning | Owner |
 |---|---|---|
 | F-setting | no setting reaches a property the block paints | owning framework spec |
@@ -1381,44 +1381,44 @@ The I-classes, draft-defect and render-wins are new: today an uncalibrated row l
 
 Status: not built.
 
-#### FR-48-66 — `gaps.json`
+### FR-48-66 — `gaps.json`
 Per client, `sites/<client>/build/qa/gaps.json` holds one row per open item: `id`, `class`, `owner`, `surface`, `draftId`, `block`, `attribute` (or null), `property`, `widths`, `state`, `declared`, `renderedDraft`, `renderedLive`, `gates` (each of G0-G7 with pass, fail or not-reached and its evidence: a command and its output line, or a file and key), `firstSeen`, `publishedOn`, `killed` (FR-48-22) and `framework` (true for F-classes). A row without evidence for every gate it passed is refused when the file is written.
 
 Status: not built.
 
-#### FR-48-67 — The instrument-debt list
+### FR-48-67 — The instrument-debt list
 Every I-class row is also written to `sites/<client>/build/qa/instrument-debt.json`, grouped by owner (the seeder or calibration), with the block, the attribute and the gate evidence. Known items today: `sgs/choice-flow`'s `skipAddsToBag` NULL `css_property` (an enum setting calibration discovered, such as `container.layout`, is routed through discovery and is never I-unrouted), and the four stale Indus slot maps named in FR-48-3's status.
 
 Status: not built.
 
-#### FR-48-68 — The cross-client framework backlog
+### FR-48-68 — The cross-client framework backlog
 Every F-class row from every client's `gaps.json` is merged into one file, `.claude/reports/framework-backlog.json` (not built). Rows are keyed by block, attribute and property, so the same gap seen on two clients is one row listing both. `node scripts/computed-route/backlog-recheck.mjs` (not built) re-runs G3 to G6 for every row after each framework change, and moves a row that now passes to `closed` with the commit that closed it.
 
 Status: not built.
 
-#### FR-48-69 — The draft-defects list
+### FR-48-69 — The draft-defects list
 Each client's draft defects (FR-48-34) are kept in `sites/<client>/build/qa/draft-defects.json`: draft ID, construct, what the code declares, what the render does, and the owner (Claude Design for a fresh client; B5 for Eye Care). Each is sent to Claude Design with the next export request. The code's intent is built meanwhile.
 
 Status: not built.
 
 ## 15. Route accuracy
 
-#### FR-48-70 — The answer sheet, re-frozen
+### FR-48-70 — The answer sheet, re-frozen
 The answer sheet (R1: `scripts/computed-route/answer-sheet.mjs`, `lib/answer-sheet.mjs`, `sites/eye-care-ward-end/build/qa/answer-sheet.json`, 100 hand-labelled rows, with a baseline ratchet in `answer-sheet-baseline.json`) scores every route change before and after. Its rows were labelled against the old Eye Care draft, so they are re-frozen on the B5 draft before any score is trusted, and a second sheet is frozen from Indus's first clone. New rows on either sheet are labelled the FR-48-71 way: by an independent agent from the gate evidence, with Bean confirming disagreements only. The first acceptance evidence comes from an export B5 did not touch (Indus).
 
 Status: the scorer and Eye Care sheet are built; the re-freeze and the Indus sheet are not built.
 
-#### FR-48-71 — Gap-label rows
+### FR-48-71 — Gap-label rows
 Each sheet gains gap-label rows, taken as a fixed random sample: per client, 10 rows drawn from the rows the route classes F in `gaps.json`, with a seed recorded beside the sheet so the draw can be repeated (all F rows when there are fewer than 10). Each sampled row is labelled by an independent agent that did not run the route, from the row's gate evidence alone (FR-48-66: each gate's command and output line, or file and key): F-setting, F-hardcode, F-block, F-vocabulary, F-behaviour, or not a gap (W, I or CLIENT), with a one-line reason. Bean is not asked to label. He sees only the rows where the agent's label and the route's class disagree, and confirms one of the two. The scorer reports precision for the F-classes on the sample: (sampled rows the route classes F that end labelled F) / (sampled rows).
 
 Status: not built.
 
-#### FR-48-72 — Code-render disagreement rows
+### FR-48-72 — Code-render disagreement rows
 Each sheet gains rows where the draft's code and render disagree, labelled with the right outcome (`render-wins`, or a draft defect by FR-48-34's test) by the independent agent of FR-48-71. The scorer fails a row the route resolves the other way.
 
 Status: not built.
 
-#### FR-48-73 — F precision, reported
+### FR-48-73 — F precision, reported
 F precision on the sample (FR-48-71) is a reported metric, printed with every published `gaps.json` and kept per client so it can be compared across clients. It is not a publish blocker: a `gaps.json` reaches the framework backlog once its rows pass G0 to G7 (FR-48-64). The target is 90%; a client below it gets its disagreeing rows' gate evidence reviewed for the gate that let them through, and that gate's fix is recorded in the plan. Today 105 of 217 "missing feature" labels held on Eye Care (48%; Session D re-check). The 90% target is provisional, calibrate on Indus.
 
 Status: not built (no current measurement on the new classes).
