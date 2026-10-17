@@ -1,0 +1,26 @@
+loading 5389 @1440 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+
+5389 @1440: 95 stops (focus left the document), looks 2, min contrast 2.49, clipped 0, radius changed 0, css 825156 B
+
+looks: 2 (+ inset, signature)   [wider tuple incl. colour, shadow shape, radius: 18]
+min contrast: 2.49
+clipped: 0
+radius changed on focus: 0 (exempt: 1 stop on visually hidden at rest (.screen-reader-text, .skip-link), no rest-versus-focus comparison)
+focus sources: 2 measured on their proxy, 0 with no proxy
+unmeasurable (under 6 usable sample points, neither pass nor fail): 2; unsettled (two shots never matched): 0; neighbour overlaps: 15
+  unmeasurable a.skip-link.screen-reader-text "Skip to content": 0 of 20 sample points usable (under 6), the others sit under header.sgs-container, div.sgs-container__inner
+  unmeasurable input.wp-block-sgs-before-after__range.sgs-focus-source "": 0 of 8 sample points usable (under 6), the others sit under input.wp-block-sgs-before-after__range
+  neighbour overlap a.sgs-business-info__link "0121 496 0123" overlaps a.sgs-business-info__link
+  neighbour overlap a.sgs-business-info__link "[email]" overlaps a.sgs-business-info__link, a.sgs-business-socials__link
+  neighbour overlap input.wp-block-sgs-before-after__range.sgs-focus-source "" overlaps input.wp-block-sgs-before-after__range
+  neighbour overlap summary.sgs-accordion-item__header "First question" overlaps summary.sgs-accordion-item__header
+  neighbour overlap summary.sgs-accordion-item__header "Second question" overlaps summary.sgs-accordion-item__header
+  neighbour overlap button.sgs-tabs__tab.sgs-focus--inset "Tab one" overlaps button.sgs-tabs__tab
+token match: checked on 95 of 95 stops
+css bytes per page (first width): {"5389":825156}
+  FAIL #18 input.wp-block-sgs-before-after__range.sgs-focus-source "": no outline (the core must be a real outline)
+  FAIL #28 button.sgs-tabs__tab.sgs-focus--inset "Tab one": contrast 2.49 < 3
+  FAIL looks 2 > 1 (2px solid 2px ; 0px none 0px)
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/after2/fixture.json

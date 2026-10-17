@@ -1,0 +1,41 @@
+loading home @1440 (https://sandybrown-nightingale-600381.hostingersite.com/)
+loading shop @1440 (https://sandybrown-nightingale-600381.hostingersite.com/shop/)
+loading product @1440 (https://sandybrown-nightingale-600381.hostingersite.com/product/qa-photo-swap-target/)
+loading cart @1440 (https://sandybrown-nightingale-600381.hostingersite.com/cart/)
+
+home @1440: 38 stops (focus left the document), looks 1, min contrast 6.62, clipped 0, radius changed 0, css 846694 B
+shop @1440: 45 stops (focus left the document), looks 1, min contrast 1.00, clipped 1, radius changed 0, css 821028 B
+product @1440: 48 stops (focus left the document), looks 1, min contrast 2.25, clipped 0, radius changed 0, css 858426 B
+cart @1440: 31 stops (focus left the document), looks 1, min contrast 7.30, clipped 0, radius changed 0, css 908642 B
+
+looks: 1 (+ inset)   [wider tuple incl. colour, shadow shape, radius: 11]
+min contrast: 1.00
+clipped: 1
+radius changed on focus: 0 (exempt: 3 stops on visually hidden at rest (.screen-reader-text, .skip-link), no rest-versus-focus comparison)
+focus sources: 13 measured on their proxy, 0 with no proxy
+unmeasurable (under 6 usable sample points, neither pass nor fail): 27; unsettled (two shots never matched): 0; neighbour overlaps: 45
+  unmeasurable a.skip-link.screen-reader-text "Skip to content": 0 of 20 sample points usable (under 6), the others sit under header.sgs-container, div.sgs-container__inner
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "vanilla": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "Chocolate": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "strawberry": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "mango": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  unmeasurable button.sgs-product-card__swatch.sgs-product-card__swatch--button "Chocolate": 0 of 8 sample points usable (under 6), the others sit under a.sgs-block-link-overlay, button.sgs-product-card__swatch
+  neighbour overlap a.sgs-business-info__link "0121 496 0123" overlaps a.sgs-business-info__link
+  neighbour overlap a.sgs-business-info__link "[email]" overlaps a.sgs-business-info__link, a.sgs-business-socials__link
+  neighbour overlap a.sgs-business-info__link "[email]" overlaps span.sgs-icon__shape, span.sgs-icon__label-text, a.sgs-icon__link
+  neighbour overlap a.sgs-icon__link "Instagram" overlaps span.sgs-business-info__label, a.sgs-business-info__link
+  neighbour overlap a.sgs-icon__link "WhatsApp" overlaps span.sgs-business-info__label, a.sgs-business-info__link
+  neighbour overlap button.sgs-product-card__swatch.sgs-product-card__swatch--button "vanilla" overlaps a.sgs-block-link-overlay, button.sgs-product-card__swatch
+token match: checked on 162 of 162 stops
+css bytes per page (first width): {"home":846694,"shop":821028,"product":858426,"cart":908642}
+  FAIL #39 input.min "Filter products by minimum price": contrast 1.01 < 3
+  FAIL #40 input.max "Filter products by maximum price": contrast 1.00 < 3
+  FAIL #44 summary.sgs-shop-filters__group-summary "Brand": contrast 1.00 < 3
+  FAIL #44 summary.sgs-shop-filters__group-summary "Brand": outline clipped by div.sgs-shop-filters__scroll
+  FAIL #46 a.product-card__title-link.sgs-focus-source "Classic Lactation Cookies": contrast 2.88 < 3
+  FAIL #47 a.product-card__title-link.sgs-focus-source "Mama's Test Box — 48 SKU fixture": contrast 2.89 < 3
+  FAIL #62 a.product-card__title-link.sgs-focus-source "RT Apply Target 2026-06-10": contrast 2.88 < 3
+  FAIL #97 button.sgs-tabs__tab.sgs-focus--inset "Ingredients": contrast 2.25 < 3
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/after2/main.json
