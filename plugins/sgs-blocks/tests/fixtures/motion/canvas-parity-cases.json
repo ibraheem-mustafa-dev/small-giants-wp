@@ -1337,18 +1337,14 @@
 								"values": {
 									"borderColour": "#0A7EA8",
 									"backgroundColour": "#FFFFFF",
-									"ringSpread": 4,
-									"ringColour": "#0A7EA824",
 									"duration": 200,
 									"easing": "ease"
 								},
 								"devices": {
 									"tablet": {
-										"ringSpread": 3,
 										"duration": 150
 									},
 									"mobile": {
-										"ringSpread": 2,
 										"delay": 50
 									}
 								}
@@ -1361,7 +1357,7 @@
 			"context": {}
 		},
 		{
-			"name": "form focus state: a spread with no ring colour takes the form focus colour",
+			"name": "form focus state: a palette border colour, and a stored ring paints nothing",
 			"block": "sgs/form",
 			"motion": {
 				"v": 1,
@@ -1396,9 +1392,7 @@
 							},
 							"focus": {
 								"values": {
-									"borderColour": "#0A7EA8",
-									"ringSpread": 4,
-									"ringColour": "#0A7EA824"
+									"borderColour": "#0A7EA8"
 								}
 							}
 						}

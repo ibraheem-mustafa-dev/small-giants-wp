@@ -1,9 +1,10 @@
 /**
  * The form Focus state for the editor-canvas emitter (Spec 38A §5.1; build plan M3.4): the twin of
  * `includes/motion/class-sgs-motion-focus-state.php`. A `hover.focus` layer on the `sgs/form` root styles that form's
- * field controls: one `transition` list on the state's one timing, the focus look (border colour, background colour
- * and the ring `0 0 0 <spread> <colour>`) on `:focus-visible` for a field that is not invalid, per device, and an
- * instant flip under reduced motion. `outline` is never written. A layer anywhere else is refused (`focus-not-form`).
+ * field controls: one `transition` list on the state's one timing, the focus look (border colour and background
+ * colour) on `:focus-visible` for a field that is not invalid, per device, and an instant flip under reduced motion.
+ * Neither `outline` nor `box-shadow` is written: the focus system stays the accessible indicator. A layer anywhere else
+ * is refused (`focus-not-form`).
  *
  * @package
  */
@@ -23,9 +24,7 @@ const DEF = 'FocusStateValues';
 const FIELD_SELECTOR = '.sgs-form-field__input';
 const FOCUS_SUFFIX =
 	':focus-visible:not(:is([aria-invalid="true"],:user-invalid))';
-const PAINT = [ 'border-color', 'background-color', 'box-shadow' ];
-const FALLBACK_RING =
-	'var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)))';
+const PAINT = [ 'border-color', 'background-color' ];
 const REDUCED = '@media (prefers-reduced-motion: reduce)';
 
 const plain = ( v ) =>
@@ -64,23 +63,18 @@ export function emitFocus( layer, selector ) {
 			'ease-out'
 		),
 	};
-	const ring = { ringSpread: null, ringColour: null };
 	const base = { desktop: {}, tablet: {}, mobile: {} };
 	const focus = { desktop: {}, tablet: {}, mobile: {} };
 	let look = false;
 	TIERS.forEach( ( tier ) => {
 		let timingChanged = tier === 'desktop';
-		let ringChanged = false;
 		Object.entries( tiers[ tier ] ).forEach( ( [ key, value ] ) => {
 			const css = valueCss( DEF, key, value );
 			if ( css === null || ! f[ key ] ) {
 				return;
 			}
 			const prop = f[ key ].css;
-			if ( Object.prototype.hasOwnProperty.call( ring, key ) ) {
-				ring[ key ] = css;
-				ringChanged = true;
-			} else if (
+			if (
 				prop !== null &&
 				Object.prototype.hasOwnProperty.call( timing, prop )
 			) {
@@ -91,12 +85,6 @@ export function emitFocus( layer, selector ) {
 				look = true;
 			}
 		} );
-		if ( ringChanged && ring.ringSpread !== null ) {
-			focus[ tier ][ 'box-shadow' ] = `0 0 0 ${ ring.ringSpread } ${
-				ring.ringColour ?? FALLBACK_RING
-			}`;
-			look = true;
-		}
 		if ( timingChanged ) {
 			base[ tier ].transition = PAINT.map(
 				( prop ) =>

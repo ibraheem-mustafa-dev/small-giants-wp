@@ -831,7 +831,7 @@
 	},
 	{
 		"name": "form focus state per device",
-		"css": ".sgs-m-0123456789 .sgs-form-field__input{transition:border-color 200ms ease 0ms, background-color 200ms ease 0ms, box-shadow 200ms ease 0ms;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms, box-shadow 150ms ease 0ms;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 50ms, background-color 150ms ease 50ms, box-shadow 150ms ease 50ms;}}.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){border-color:#0A7EA8;background-color:#FFFFFF;box-shadow:0 0 0 4px #0A7EA824;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){box-shadow:0 0 0 3px #0A7EA824;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){box-shadow:0 0 0 2px #0A7EA824;}}@media (prefers-reduced-motion: reduce){.sgs-m-0123456789 .sgs-form-field__input{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}",
+		"css": ".sgs-m-0123456789 .sgs-form-field__input{transition:border-color 200ms ease 0ms, background-color 200ms ease 0ms;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 50ms, background-color 150ms ease 50ms;}}.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){border-color:#0A7EA8;background-color:#FFFFFF;}@media (prefers-reduced-motion: reduce){.sgs-m-0123456789 .sgs-form-field__input{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -845,8 +845,8 @@
 		"losers": {}
 	},
 	{
-		"name": "form focus state: a spread with no ring colour takes the form focus colour",
-		"css": ".sgs-m-0123456789 .sgs-form-field__input{transition:border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){border-color:var(--wp--preset--color--primary, currentColor);box-shadow:0 0 0 3px var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)));}@media (prefers-reduced-motion: reduce){.sgs-m-0123456789 .sgs-form-field__input{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}",
+		"name": "form focus state: a palette border colour, and a stored ring paints nothing",
+		"css": ".sgs-m-0123456789 .sgs-form-field__input{transition:border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){border-color:var(--wp--preset--color--primary, currentColor);}@media (prefers-reduced-motion: reduce){.sgs-m-0123456789 .sgs-form-field__input{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}",
 		"plans": [
 			{
 				"target": "root",

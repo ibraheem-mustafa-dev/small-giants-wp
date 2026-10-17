@@ -10231,7 +10231,7 @@
 			"type": "object",
 			"x-sgs-kind": "values",
 			"x-sgs-panel": "hover",
-			"description": "The form Focus state: how a sgs/form field looks while it has keyboard focus, animated with the one timing; the form's own focus outline stays the accessible indicator.",
+			"description": "The form Focus state: the border colour and background colour of a sgs/form field while it has keyboard focus, animated with the one timing; the focus system stays the accessible indicator and owns the focused field's outline and box-shadow.",
 			"properties": {
 				"borderColour": {
 					"$ref": "#/$defs/colourReference",
@@ -10247,31 +10247,6 @@
 					"x-sgs-field": {
 						"fieldType": "colourReference",
 						"cssProperty": "background-color",
-						"state": "focus",
-						"perDevice": false
-					}
-				},
-				"ringSpread": {
-					"$ref": "#/$defs/distance",
-					"minimum": 0,
-					"maximum": 16,
-					"x-sgs-range": {
-						"min": 0,
-						"max": 16,
-						"unit": "px"
-					},
-					"x-sgs-field": {
-						"fieldType": "distance",
-						"cssProperty": null,
-						"state": "focus",
-						"perDevice": true
-					}
-				},
-				"ringColour": {
-					"$ref": "#/$defs/colourReference",
-					"x-sgs-field": {
-						"fieldType": "colourReference",
-						"cssProperty": null,
 						"state": "focus",
 						"perDevice": false
 					}
@@ -10310,13 +10285,8 @@
 			"type": "object",
 			"x-sgs-kind": "devices",
 			"x-sgs-overrides": "FocusStateValues",
-			"description": "Tablet or Mobile overrides of FocusStateValues: only its per-device fields, all optional.",
+			"description": "Tablet or Mobile overrides of FocusStateValues: only its per-device fields (the timing's duration and delay), all optional.",
 			"properties": {
-				"ringSpread": {
-					"$ref": "#/$defs/distance",
-					"minimum": 0,
-					"maximum": 16
-				},
 				"duration": {
 					"$ref": "#/$defs/duration"
 				},
@@ -10344,7 +10314,7 @@
 			"type": "object",
 			"x-sgs-kind": "layer",
 			"x-sgs-panel": "hover",
-			"description": "The form Focus state (sgs/form only): animates the look of the form's fields on :focus-visible.",
+			"description": "The form Focus state (sgs/form only): animates the border colour and background colour of the form's fields on :focus-visible; the focus system stays the accessible indicator.",
 			"properties": {
 				"preset": {
 					"$ref": "#/$defs/presetSlug"

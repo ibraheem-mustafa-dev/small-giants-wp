@@ -9,21 +9,6 @@
 			"category": "legacy-token",
 			"group": "editor"
 		},
-		"php-emitter | plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php |  | §:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)) | ": {
-			"count": 1,
-			"category": "php-emitter",
-			"group": "motion"
-		},
-		"legacy-token | plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --sgs-focus-ring-colour": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "motion"
-		},
-		"legacy-token | plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --wp--custom--focus-ring--color-primary": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "motion"
-		},
 		"bespoke | plugins/sgs-blocks/src/blocks/audio/editor.css |  | .sgs-audio-style-btn:focus-visible | outline": {
 			"count": 1,
 			"category": "bespoke",
@@ -43,21 +28,6 @@
 			"count": 1,
 			"category": "bespoke",
 			"group": "editor"
-		},
-		"js-emitter | plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js |  | §:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)) | ": {
-			"count": 1,
-			"category": "js-emitter",
-			"group": "motion"
-		},
-		"legacy-token | plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --sgs-focus-ring-colour": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "motion"
-		},
-		"legacy-token | plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js |  | §var(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent))) | --wp--custom--focus-ring--color-primary": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "motion"
 		},
 		"bespoke | plugins/sgs-blocks/src/blocks/gallery/editor.css |  | .sgs-gallery-editor__thumb-remove:focus-visible | outline": {
 			"count": 1,

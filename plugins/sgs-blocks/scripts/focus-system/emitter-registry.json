@@ -36,14 +36,14 @@
 		{
 			"path": "plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php",
 			"contains": "FOCUS_SUFFIX =",
-			"category": "php-emitter",
-			"reason": "The form Focus state paints border-color, background-color and a box-shadow ring on .sgs-form-field__input with this suffix; the ring is a bespoke indicator (plan Task 12 drops it and FALLBACK_RING)."
+			"category": "shared-state",
+			"reason": "The form Focus state paints only border-color and background-color on .sgs-form-field__input with this suffix; it writes no outline or box-shadow, so the focus system stays the indicator."
 		},
 		{
 			"path": "plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js",
 			"contains": "FOCUS_SUFFIX =",
-			"category": "js-emitter",
-			"reason": "The editor-canvas twin of class-sgs-motion-focus-state.php: the same box-shadow ring on the same suffix (plan Task 12)."
+			"category": "shared-state",
+			"reason": "The editor-canvas twin of class-sgs-motion-focus-state.php: the same border-color and background-color on the same suffix, no outline or box-shadow."
 		},
 		{
 			"path": "plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js",

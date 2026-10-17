@@ -1,6 +1,7 @@
 /**
  * The Focus state of a form field (Spec 38A §5.1; build plan M3.4): on `sgs/form` only, one state that animates the
- * field's focus look (border colour, a ring, a background lift) with the state change's one timing. The state is a
+ * field's focus look (border colour and background colour) with the state change's one timing, while the focus
+ * system stays the accessible indicator. The state is a
  * layer of the list `hover.focus`; the section is drawn only when the schema declares that list, so a schema without it
  * draws nothing.
  *

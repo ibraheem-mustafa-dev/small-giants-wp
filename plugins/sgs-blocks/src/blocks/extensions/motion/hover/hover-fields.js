@@ -141,12 +141,7 @@ export const FOCUS_GROUPS = Object.freeze( [
 	{
 		id: 'look',
 		label: __( 'Focus look', 'sgs-blocks' ),
-		keys: [
-			'borderColour',
-			'ringSpread',
-			'ringColour',
-			'backgroundColour',
-		],
+		keys: [ 'borderColour', 'backgroundColour' ],
 	},
 	{
 		id: 'timing',

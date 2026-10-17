@@ -4,10 +4,10 @@
  *
  * Renders `sgs/form` fixtures through the shipped motion renderer with the WordPress stand-ins in
  * `stubs/motion-render-stubs.php` and reads the collected CSS: the field controls' one transition list, the
- * `:focus-visible` look per device with the ring, the reduced-motion flip, no `outline`, a saved form rendered through
- * a linking `sgs/form` block, and the `focus-not-form` refusal off the form root. The values are the Indus enquiry
- * form's (`.claude/reports/2026-10-13-motion-council/forms.md`): border #0A7EA8, a 4px rgba(10,126,168,.14) ring
- * (stored as the hex #0A7EA824), background #FFFFFF, 200ms ease.
+ * `:focus-visible` look (border and background colour), the timing per device, the reduced-motion flip, no `outline`
+ * and no `box-shadow` (the focus system stays the accessible indicator), a saved form rendered through a linking
+ * `sgs/form` block, and the `focus-not-form` refusal off the form root. The values are the Indus enquiry form's
+ * (`.claude/reports/2026-10-13-motion-council/forms.md`): border #0A7EA8, background #FFFFFF, 200ms ease.
  *
  * Run with:
  *   vendor/bin/phpunit --filter MotionFocusStateTest
@@ -52,13 +52,11 @@ final class MotionFocusStateTest extends TestCase {
 							'values'  => array(
 								'borderColour'     => '#0A7EA8',
 								'backgroundColour' => '#FFFFFF',
-								'ringSpread'       => 4,
-								'ringColour'       => '#0A7EA824',
 								'duration'         => 200,
 								'easing'           => 'ease',
 							),
 							'devices' => array(
-								'tablet' => array( 'ringSpread' => 3 ),
+								'tablet' => array( 'duration' => 180 ),
 								'mobile' => array( 'duration' => 150 ),
 							),
 						),
@@ -96,16 +94,17 @@ final class MotionFocusStateTest extends TestCase {
 		);
 	}
 
-	public function test_form_root_focus_emits_field_transition_focus_look_ring_and_reduced_motion(): void {
+	public function test_form_root_focus_emits_field_transition_focus_look_and_reduced_motion(): void {
 		$out   = $this->render( 'sgs/form', self::focus_motion(), self::FORM );
 		$scope = $this->scope( $out );
 		$field = '.' . $scope . ' .sgs-form-field__input';
 		$css   = $this->css();
 
-		$this->assertStringContainsString( $field . '{transition:border-color 200ms ease 0ms, background-color 200ms ease 0ms, box-shadow 200ms ease 0ms;}', $css );
-		$this->assertStringContainsString( $field . self::FOCUS . '{border-color:#0A7EA8;background-color:#FFFFFF;box-shadow:0 0 0 4px #0A7EA824;}', $css );
-		$this->assertStringContainsString( '@media (max-width:1023px){' . $field . self::FOCUS . '{box-shadow:0 0 0 3px #0A7EA824;}}', $css );
-		$this->assertStringContainsString( '@media (max-width:767px){' . $field . '{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms, box-shadow 150ms ease 0ms;}}', $css );
+		$this->assertStringContainsString( $field . '{transition:border-color 200ms ease 0ms, background-color 200ms ease 0ms;}', $css );
+		$this->assertStringContainsString( $field . self::FOCUS . '{border-color:#0A7EA8;background-color:#FFFFFF;}', $css );
+		$this->assertStringContainsString( '@media (max-width:1023px){' . $field . '{transition:border-color 180ms ease 0ms, background-color 180ms ease 0ms;}}', $css );
+		$this->assertStringContainsString( '@media (max-width:767px){' . $field . '{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms;}}', $css );
+		$this->assertStringNotContainsString( 'box-shadow', $css, 'the focus system owns a focused field box-shadow' );
 		$this->assertStringContainsString( '@media (prefers-reduced-motion: reduce){' . $field . '{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}', $css );
 		$this->assertStringNotContainsString( 'outline', $css, 'the form keeps its own focus outline' );
 		$this->assertStringNotContainsString( 'transition:all', str_replace( ' ', '', $css ) );
@@ -177,6 +176,17 @@ final class MotionFocusStateTest extends TestCase {
 		$this->assertNotSame( '', $css, 'the form still emits its hover state' );
 		$this->assertStringNotContainsString( 'sgs-form-field__input', $css );
 		$this->assertSame( array(), $this->drops() );
+	}
+
+	public function test_a_stored_ring_paints_nothing(): void {
+		$motion = array(
+			'v'        => 1,
+			'elements' => array( 'root' => array( 'hover' => array( 'focus' => array( 'values' => array( 'ringSpread' => 4, 'ringColour' => '#0A7EA824' ) ) ) ) ),
+		);
+		$this->render( 'sgs/form', $motion, self::FORM );
+		$css = $this->css();
+		$this->assertStringNotContainsString( 'sgs-form-field__input', $css );
+		$this->assertStringNotContainsString( 'box-shadow', $css );
 	}
 
 	public function test_a_focus_state_with_no_look_value_emits_nothing(): void {
