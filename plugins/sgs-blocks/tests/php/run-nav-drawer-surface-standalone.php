@@ -76,7 +76,9 @@ $section = substr( $section, 0, (int) strrpos( $section, "\n//" ) );
 function run_surface( string $code, array $attributes ): string {
 	$css            = '';
 	$root_sel       = '.sgs-nav-drawer-test.wp-block-sgs-nav-drawer';
-	$drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_slug_for_test( $attributes['drawerBg'] ) : 'surface';
+	// render.php resolves drawerBg (default 'surface') through sgs_colour_value() before this section runs.
+	$drawer_bg_raw   = isset( $attributes['drawerBg'] ) ? trim( (string) $attributes['drawerBg'] ) : 'surface';
+	$drawer_bg_paint = sgs_colour_value( $drawer_bg_raw );
 	// The default-edge block of the section reads these, resolved earlier in render.php.
 	$modality               = (string) ( $attributes['modality'] ?? 'modal' );
 	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
@@ -105,9 +107,10 @@ ok( '' === run_surface( $section, array( 'surfaceBlur' => 'red;}body{x' ) ), 'a 
 
 // ── Fill opacity ────────────────────────────────────────────────────────────────
 $half = run_surface( $section, array( 'surfaceOpacity' => 0.5 ) );
-ok( false !== strpos( $half, 'background-color:color-mix(in srgb, var(--wp--preset--color--surface) 50%, transparent)' ), 'opacity 0.5 makes a colour-mix on the palette token' );
+ok( false !== strpos( $half, 'background-color:color-mix(in srgb, var(--wp--preset--color--surface, transparent) 50%, transparent)' ), 'opacity 0.5 makes a colour-mix on the palette token' );
+ok( false === strpos( $half, 'currentColor' ), 'an orphaned palette slug fades out (transparent fallback), it never mixes in the text colour' );
 ok( false !== strpos( run_surface( $section, array( 'surfaceOpacity' => 0 ) ), '0%, transparent)' ), 'opacity 0 is legal (fully transparent), not treated as empty' );
-ok( false !== strpos( run_surface( $section, array( 'drawerBg' => 'primary', 'surfaceOpacity' => 0.25 ) ), 'var(--wp--preset--color--primary) 25%, transparent)' ), 'the mixed colour follows the chosen drawerBg' );
+ok( false !== strpos( run_surface( $section, array( 'drawerBg' => 'primary', 'surfaceOpacity' => 0.25 ) ), 'var(--wp--preset--color--primary, transparent) 25%, transparent)' ), 'the mixed colour follows the chosen drawerBg' );
 ok( '' === run_surface( $section, array( 'drawerBg' => '', 'surfaceOpacity' => 0.5 ) ), 'an empty drawerBg has nothing to make translucent: nothing emitted' );
 
 // ── Shadow ──────────────────────────────────────────────────────────────────────
