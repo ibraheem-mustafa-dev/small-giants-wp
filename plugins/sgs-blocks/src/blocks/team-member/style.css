@@ -156,11 +156,6 @@
 	border-color: var(--wp--preset--color--primary);
 }
 
-.sgs-team-member__social-link:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-}
-
 /* ===== Hover Overlay — bio slides up over photo on hover/focus ===== */
 
 .sgs-team-member__photo--has-overlay {

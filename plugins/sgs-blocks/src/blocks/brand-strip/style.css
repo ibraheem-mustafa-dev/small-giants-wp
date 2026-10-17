@@ -487,13 +487,6 @@
 	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
-/* ===== Focus ===== */
-.sgs-brand-strip__item a:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
-	outline-offset: 4px;
-	border-radius: 2px;
-}
-
 /* ===== Empty state (editor) ===== */
 .sgs-brand-strip__empty {
 	text-align: center;

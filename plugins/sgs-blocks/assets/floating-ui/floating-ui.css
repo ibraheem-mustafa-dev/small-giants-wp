@@ -67,11 +67,6 @@
 	transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
 }
 
-.sgs-floating-ui__back-to-top:focus-visible {
-	outline: 3px solid var(--btt-bg, #0f7e80);
-	outline-offset: 3px;
-}
-
 .sgs-floating-ui__back-to-top--right {
 	right: 24px;
 }

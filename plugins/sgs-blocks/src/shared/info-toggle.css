@@ -64,8 +64,6 @@
 .sgs-info-toggle:focus-visible {
 	background-color: var( --wp--preset--color--text, #1a202c );
 	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
-	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
-	outline-offset: 2px;
 }
 
 .sgs-info-toggle__panel {
