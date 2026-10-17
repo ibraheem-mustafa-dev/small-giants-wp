@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 392 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 730 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 391 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 733 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -157,7 +157,7 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 123 | `check-extension-roster.js` | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds sgs-update-v2.py::_seed_extension_attr_rows, so… |
 | 124 | `check-border-preview-twin.js` | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
 | 125 | `check-border-width-defaults.py` | "the stylesheet never chooses a border width". |
-| 126 | `check-focus-ring-token.py` | : every keyboard focus ring is drawn from the focus-ring token. |
+| 126 | `check-focus-system.js` | .claude/plans/2026-10-17-unified-focus-system.md §3). One focus system file |
 | 127 | `migrate-box-longhands.py` | CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides. |
 | 128 | `check-import-shadowing.js` | Fails when an editor file destructures a block attribute whose name is also a module-level binding in the same file: an import, or a top-level function… |
 | 129 | `migrate-box-alignment.py` | physical `left\|right` to logical `start\|end` for five settings. |
@@ -177,16 +177,17 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 143 | `generate-motion-stagger-columns.py` | - writes the grid-columns attribute map the stagger helper reads (FR-38A-24). |
 | 144 | `check-retired-blocks.py` | - a block that has been removed leaves no trace in live sources or the framework DB. |
 | 145 | `check-motion-off-switch-coverage.py` | Detector: which motion effects honour the per-tier off switch (Spec 38A). |
-| 146 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 147 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 148 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 149 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 150 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
-| 151 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
-| 152 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
-| 153 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
+| 146 | `check-snapshot-focus-tokens.py` | : the gate and fixer for `settings.custom.focus` (focus plan section 2.3, owner decision Q1-B). |
+| 147 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 148 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 149 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 150 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 151 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 152 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
+| 153 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
+| 154 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
 
-**153 gating scripts.** Regenerate this whole section with:
+**154 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -194,7 +195,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (153 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 153 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (154 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 154 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -374,6 +375,11 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `rosterFile`
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(1)
+
+**`plugins/sgs-blocks/scripts/check-focus-system.js`** (build)
+- Reads: `abs`
+- Writes: `tmp`
+- Non-zero exit sites found: exitCode=2
 
 **`plugins/sgs-blocks/scripts/check-fx-list-drift.py`** (build)
 - Reads: `dest_path`
@@ -591,6 +597,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `MEGA_PANEL_STYLE`, `SITE_HEADER_SCROLL_HELPER`, `VALUE_LADDER_HELPER`
 - Writes: **read-only** — no write call site found in source
 - CLI flags read: `--check`, `--self-test`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-snapshot-focus-tokens.py`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--apply`, `--check`, `--client`, `--fix`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-snapshot-palette-roster.py`** (build)
@@ -1094,13 +1106,6 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
-**`scripts/check-focus-ring-token.py`** (build)
-- Path constants: `REPO` = Path(__file__).resolve().parent.parent
-- Reads: UNVERIFIED (no recognised read call site found)
-- Writes: **read-only** — no write call site found in source
-- CLI flags read: `--check`, `--self-test`
-- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
-
 **`scripts/check-no-client-names.py`** (build)
 - Path constants: `REPO` = Path(__file__).resolve().parent.parent
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1125,7 +1130,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 668 scripts
+#### `plugins/sgs-blocks/scripts/` — 688 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1188,6 +1193,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-enum-control-shape.py` | manifest | the D812 enum control-shape GATE. |
 | `check-exit-guards.py` | manifest | Fail when a PHP file's direct-access guard names a constant WordPress never defines. |
 | `check-extension-roster.js` | manifest+script-call | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds… |
+| `check-focus-system.js` | manifest+npm+script-call | .claude/plans/2026-10-17-unified-focus-system.md §3). One focus system file |
 | `check-fx-list-drift.py` | manifest+npm+script-call | the three-list (plus field-type triad) fx drift gate. |
 | `check-fx-registration.py` | manifest+script-call | every shipped fx module is registered everywhere it must be. |
 | `check-hardcoded-render-defaults.js` | manifest+npm+script-call | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
@@ -1241,6 +1247,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-shared-panel-schema.js` | manifest+npm+script-call | STRUCTURAL GUARD — closes the gap in the "dead control" family that check-dead-controls.js (control exists, nothing renders it) and… |
 | `check-simple-surface-cap.js` | manifest+script-call | FR-37-27 (Spec 37, .claude/specs/37-HEADER-FOOTER-BUILDER.md) — the SIMPLE SURFACE CAP, made computable. The Simple surface (`sgs/site-header` and… |
 | `check-single-instance-invariants.py` | manifest+npm | Single-instance invariant register — four named prohibitions, one shared mechanism. |
+| `check-snapshot-focus-tokens.py` | manifest+npm+script-call+test-import | : the gate and fixer for `settings.custom.focus` (focus plan section 2.3, owner decision Q1-B). |
 | `check-snapshot-palette-roster.py` | manifest+npm+script-call | : every client snapshot carries the whole framework palette roster |
 | `check-style-blob-sanitisation.py` | manifest+npm | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
 | `check-text-colour-defaults.py` | manifest | : no SGS text defaults to the brand colour. |
@@ -1355,6 +1362,18 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `fanout-shadow-lift-attr.py` | manifest | adds the `shadowLiftOnHover` block-level switch (boolean, |
 | `fanout-surface-ground-attrs.py` | manifest+script-call | U-1 commit 4e fan-out of `surfaceBlur` / |
 | `fix-render-tier-object-spacing.py` | manifest+script-call | One-off fix (2026-09-06): render.php CSS-emission side of the tier-object |
+| `focus-system/census.js` | manifest+script-call | The census for check-focus-system.js: runs the right scanner over every corpus file and tallies items (each in exactly one category) per category and… |
+| `focus-system/check.js` | manifest+script-call+skill | The ratchet for check-focus-system.js (plan §3, "Gate"): a ratcheted-ceiling gate whose ceiling is the content-keyed baseline file. --check fails on… |
+| `focus-system/classify-css.js` | manifest+script-call | The CSS classifier for check-focus-system.js. Parses CSS (postcss) or SCSS (postcss-scss), puts every focus-related rule in exactly one category, and… |
+| `focus-system/config.js` | manifest+script-call+skill | Configuration for check-focus-system.js (Spec 38A, unified focus system plan §3). |
+| `focus-system/corpus.js` | script-call | Corpus for check-focus-system.js: `git ls-files` filtered by config.INCLUDE and config.EXCLUDE, plus the dumb wide enumeration the corpus control… |
+| `focus-system/diff.js` | hook+manifest+script-call+skill | A line-based unified diff (Myers O(ND)) for check-focus-system.js --fix. The diff is the artefact the owner inspects, so it carries three lines of… |
+| `focus-system/emitters.js` | manifest+script-call | PHP, JS and JSON scanning for check-focus-system.js. |
+| `focus-system/fixer.js` | script-call | The --fix transform for check-focus-system.js. Deletes `bespoke`, `suppress` and `radius-on-focus` declarations from CSS and SCSS, then drops any… |
+| `focus-system/json-io.js` | script-call | JSON file loading for check-focus-system.js. A missing or malformed file raises a FocusInputError whose message is one line naming the file and the… |
+| `focus-system/lexer.js` | manifest+script-call | A small PHP / JS lexer for check-focus-system.js: splits source into code, string and comment segments, then groups them into statements (ended by… |
+| `focus-system/selector.js` | manifest+script-call+skill | Selector helpers for check-focus-system.js: split a selector list at top level, resolve nesting (`&` and implicit descendant), and describe each… |
+| `focus-system/self-test.js` | manifest+script-call | Self-test for check-focus-system.js: the six migration-method fixtures. |
 | `fx_drift/__init__.py` | manifest+script-call |  |
 | `fx_drift/runtime_reads.py` | script-call | : every effect parameter must be READ by that effect's runtime (FR-38A-48). |
 | `fx_registration_core.py` | script-call | the parsing core of check-fx-registration.py: the tree under test (`Tree`), the |
@@ -1555,7 +1574,6 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `motion-qa/probe-editor-canvas.mjs` | script-call | Spec 38A unit M3.7 (FR-38A-28): the block editor shows motion at its final state, carries the shared motion assets in the canvas iframe, mounts the… |
 | `motion-qa/probe-entrance-input-scope.mjs` | — | Probe: a nested motion element never takes its ancestor's entrance or hover inputs (Spec 38A §10, FR-38A-18). |
 | `motion-qa/probe-first-paint.mjs` | manifest | gate's `first_paint_capture_passed` field is supposed to attest. |
-| `motion-qa/probe-focus-glow-scope.mjs` | — | Probe: the theme focus glow follows a section's own --sgs-focus-glow (Spec 38A FR-38A-7, FR-38A-42). |
 | `motion-qa/probe-follow-pointer.mjs` | — | Spec 38A unit M5.6: live acceptance of Follow pointer and glare (FR-38A-41, FR-38A-47, FR-38A-50). |
 | `motion-qa/probe-good-by-default.mjs` | manifest+npm+script-call | Gap-register claim 7 — is "good by default" true for pin-scrub / scrub / scramble / split-reveal? (2026-08-21, D729) |
 | `motion-qa/probe-horizontal-panel-focus.mjs` | manifest | Horizontal-panel keyboard-focus probe — Spec 38 FR-38-8 follow-up |
@@ -1669,6 +1687,10 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `qa/check-border-roundtrip.js` | manifest+script-call | Border round-trip probe — does the FRONTEND actually paint the border the block's `borderWidth` / `borderStyle` / `borderColour` attributes describe? |
 | `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site (unified-email plan phase 3 — the emails now go through the… |
 | `qa/lib/first-section-stub.php` | script-call | The page's first-section state for the render harness, loaded only by `--first-section`: the block being rendered sits inside the page's first… |
+| `qa/lib/focus-local.mjs` | script-call | `--local` mode of probe-focus-system.mjs: a generated HTML fixture plus the focus CSS file, tabbed through in each engine. Three grounds (light… |
+| `qa/lib/focus-measure.mjs` | script-call | The browser side of probe-focus-system.mjs: press Tab, read what the focused element paints, take an unfocused and a focused screenshot of its box… |
+| `qa/lib/focus-probe-lib.mjs` | script-call | Pure helpers for probe-focus-system.mjs (unified keyboard focus system, plan 2026-10-17 Task 2): colour maths, the box-shadow layer reader, the… |
+| `qa/lib/focus-site.mjs` | script-call | `--site` mode of probe-focus-system.mjs: resolve a target's URL from its secrets file, load each requested page SERIALLY (parallel loads trip the… |
 | `qa/lib/google-reviews-settings-stub.php` | script-call | Thin stand-in for SGS\Blocks\Google_Reviews_Settings |
 | `qa/lib/live-colour-probe.php` | script-call | WP-CLI probe for check-custom-colour-survives.py --live: renders each job's block through the real render_block() on a live site and prints the… |
 | `qa/lib/manifest-stub.php` | script-call | A variable product's configurator for the render harness, loaded only by `--manifest-file` (with `--product-file` naming a `"type": "variable"`… |
@@ -1680,6 +1702,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `qa/lib/tag-processor-stub.php` | script-call | A minimal WP_HTML_Tag_Processor for the render harness, loaded on every render: the opening-tag walk Sgs_Motion_Loop_Delays::tag_by_class runs over… |
 | `qa/lib/wc-product-stub.php` | script-call | One minimal WooCommerce product for the render harness, loaded only by `--product-file` (the motion part render-path gate… |
 | `qa/lib/wp-stubs.php` | manifest+script-call | Minimal WordPress core function/class stubs for standalone render.php execution (scripts/qa/lib/render-css-harness.php). |
+| `qa/probe-focus-editor.mjs` | — | Probe: the unified keyboard focus system inside the block editor's canvas (plan 2026-10-17-unified-focus-system.md, Task 14). focus.css loads in the… |
+| `qa/probe-focus-system.mjs` | script-call | Probe: the unified keyboard focus system, measured (plan 2026-10-17-unified-focus-system.md, Task 2). |
 | `qa/probe-shop-filters.mjs` | — | Live probe for the shop filter panel (theme/sgs-theme/assets/js/sgs-shop-filters.js and woocommerce.css section 8). Checks what a shopper sees, on… |
 | `qa/social-icon-draft-compare.mjs` | script-call | Measures the footer social icons of two design drafts and the SGS QA rows that reproduce them, at rest, with :hover forced and with :focus-visible… |
 | `qa/social-icon-local-render.mjs` | — | Renders the QA tree's social-icons rows through the real render.php files (the PHPUnit child fixture) into one static page that links the built block… |
@@ -1703,6 +1727,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `shadow-lift/run.js` | manifest+npm+script-call+skill+test-import | Shadow lift on hover for static stylesheets: census, fix and gate in one script, mirroring scripts/shadow-fallback/run.js's shape (design H4… |
 | `shadow-lift/transform.js` | manifest+script-call+skill+test-import | Shadow lift on hover for STATIC stylesheets (design H4, stylesheet part — `.claude/reports/2026-09-23-shadow-hover-lift-design.md`). |
 | `shared_utils.py` | manifest+script-call | Shared, zero-dependency utilities for the SGS clone scripts. |
+| `snapshot_focus_tokens.py` | script-call | : the keyboard-focus tokens every client snapshot carries (focus plan section 2.3, owner decision Q1-B). |
 | `snapshot_layout_tokens.py` | script-call | : the per-tier layout tokens every client snapshot must carry (Spec 32 FR-32-15). |
 | `snapshot_motion_tokens.py` | script-call | : the motion tokens every client snapshot must carry (Spec 38A section 7, FR-38A-14, FR-38A-15). |
 | `snapshot_palette_roster.py` | script-call | : the palette roster rule every client snapshot must satisfy (Spec 32 FR-32-14). |
@@ -1798,11 +1823,10 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_scan.py` | manifest+script-call | The scan: every SGS block attribute (DB `source='sgs'`) through the paint |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 215 scripts
+#### `scripts/` — 214 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
-| `check-focus-ring-token.py` | manifest+script-call | : every keyboard focus ring is drawn from the focus-ring token. |
 | `check-md-wrap.py` | commit-gate+script-call | No hard-wrapped Markdown: every paragraph, list item and blockquote paragraph is one unbroken line. |
 | `check-no-client-names.py` | manifest+script-call | : keep client names and reference-site names out of the framework. |
 | `check-spec-id-landing.py` | manifest | Prove every ID the Spec 32 and Spec 47 section ledgers carry lands in a live spec. |
@@ -2001,7 +2025,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `parity/lib/devtools.mjs` | script-call | What DevTools reads, through the Chrome DevTools Protocol, for draft-live-walk.mjs (Spec 48 A-1, GAP-CHECKLIST.md section 19): the page read once its… |
 | `parity/lib/divergences.mjs` | script-call | Divergence ledger (GAP-CHECKLIST.md section 16, Spec 48 FR-47-5). A config may name a site's divergences.json |
 | `parity/lib/entrances.mjs` | script-call | The load-entrance check for draft-live-walk.mjs (GAP-CHECKLIST.md section 15). What moves or fades in as a page loads, judged by what paints, not by… |
-| `parity/lib/focus.mjs` | manifest+script-call+skill | The keyboard focus pass for draft-live-walk.mjs (GAP-CHECKLIST.md section 13). A scripted el.focus() after mouse clicks never matches :focus-visible… |
+| `parity/lib/focus.mjs` | manifest+script-call+skill+test-import | The keyboard focus pass for draft-live-walk.mjs (GAP-CHECKLIST.md section 13). A scripted el.focus() after mouse clicks never matches :focus-visible… |
 | `parity/lib/helpers.mjs` | script-call+skill | The helpers handed to a config's open() and state actions, and the anchor-offset check, for draft-live-walk.mjs. |
 | `parity/lib/links.mjs` | manifest+script-call | The links check for draft-live-walk.mjs (GAP-CHECKLIST.md section 14). A design draft is often a one-page prototype whose links are "#" and whose… |
 | `parity/lib/lint.mjs` | script-call+skill | Config lint for draft-live-walk.mjs: runs before any browser opens and fails the run on a config that cannot prove what it claims (GAP-CHECKLIST.md… |
