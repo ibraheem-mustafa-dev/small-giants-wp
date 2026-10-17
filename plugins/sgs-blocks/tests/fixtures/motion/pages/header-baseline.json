@@ -1,0 +1,9 @@
+[
+	{
+		"name": "sgs/text",
+		"attributes": {
+			"text": "Header baseline: this page adds nothing beyond the site header and footer.",
+			"className": "m29-baseline"
+		}
+	}
+]

@@ -67,6 +67,27 @@ final class Sgs_Motion_Assets {
 	public static function register(): void {
 		add_action( 'init', array( self::class, 'register_assets' ) );
 		add_action( 'enqueue_block_assets', array( self::class, 'enqueue_editor_style' ) );
+		add_action( 'wp_print_styles', array( self::class, 'print_after_block_styles' ), PHP_INT_MAX );
+	}
+
+	/**
+	 * Move the motion stylesheets to the end of the style queue, so they print after every block stylesheet.
+	 *
+	 * A channel rule (`[data-sgs-mc~="opacity"]` and its siblings) and a block's own single-class rule for the same
+	 * property tie on specificity, so the later one wins. A block theme prints styles in enqueue order, and a header
+	 * carrying motion enqueues `motion.css` before the page's blocks enqueue theirs; without this a block rule such as
+	 * the container's SVG background opacity would replace the composed channel and stop its loop painting.
+	 * `motion-triggers.css` keeps its place after `motion.css`.
+	 *
+	 * @return void
+	 */
+	public static function print_after_block_styles(): void {
+		$styles = wp_styles();
+		$last   = array_values( array_intersect( array( self::STYLE, Sgs_Motion_Trigger_Open_State::STYLE ), $styles->queue ) );
+		if ( empty( $last ) ) {
+			return;
+		}
+		$styles->queue = array_merge( array_values( array_diff( $styles->queue, $last ) ), $last );
 	}
 
 	/**

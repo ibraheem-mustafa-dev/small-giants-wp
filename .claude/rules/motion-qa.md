@@ -13,7 +13,7 @@ npm run qa:motion -- --tier smoke    # the 6 probes the deploy runs by default (
 npm run qa:motion:morph              # fx-morph changes SVG geometry (page 2113)
 npm run qa:motion:motion-path        # motion-path re-animates on pass 2 (page 2109)
 npm run qa:motion:good-by-default    # scrub/scramble/split-reveal/pin-scrub (pages 2103, 2603)
-node scripts/motion-qa/probe-motion-model.mjs --page 5223 --page 5226 --page 5229 --engine chromium --engine firefox --engine webkit --width 375   # Spec 38A motion model (the trees: tests/fixtures/motion/pages/)
+node scripts/motion-qa/probe-motion-model.mjs --page 5223 --page 5226 --page 5229 --page 5395 --engine chromium --engine firefox --engine webkit --width 375   # Spec 38A motion model (the trees: tests/fixtures/motion/pages/)
 ```
 
 Wired into `build-deploy.py` as `step_motion_qa()` — ON by default for blocks deploys to the canary, after `step_verify_payload()`, opt out with `--skip-motion-qa`. The deploy picks the tier itself (`--motion-qa-tier auto`): smoke unless the full set is due (no recorded full pass, a record over 24 hours old, or a file matching `scripts/motion-qa/full-tier-paths.json` changed since it, uncommitted payload files included); the log line `[motion-qa] tier ...` says which and why. How the choice works and how to add a probe or a path: `.claude/deploy-architecture.md`.
@@ -37,6 +37,7 @@ The runner registers only the probes that are standing checks with negative cont
 | 5223 | Spec 38A motion model: hover lift and scale, part Fade up, load entrances, reveal, the scroll-driver host element (`probe-motion-model.mjs`) |
 | 5226 | Spec 38A motion model: three-keyframe entrance and tilt (`probe-motion-model.mjs`) |
 | 5229 | Spec 38A motion model: a page with no motion, the asset-guard reference (`probe-motion-model.mjs`) |
+| 5395 | Spec 38A motion model: the header baseline, one text block (`.m29-baseline`) under the site's own header and footer; `no-motion-assets` allows page 5229 only the motion assets this page loads, so a header carrying motion does not fail it (`probe-motion-model.mjs`, tree `tests/fixtures/motion/pages/header-baseline.json`) |
 | 5244 | Spec 38A M3.9: per-device entrance distances, custom easings, part isolation, tilted cards and the polaroid frame (`probe-motion-per-device.mjs`, tree `tests/fixtures/motion/pages/motion-per-device.json`) |
 | 5252 | Spec 38A Gate 4b (M5.1): a layer-based copy of page 2103, made by `Sgs_Motion_Migrate_Runner::migrate_content`; its nine `data-sgs-fx` elements must match 2103's (`probe-good-by-default.mjs` with 2103 swapped for 5252) |
 | 5253 | Spec 38A M5.7 parallax: split hero media part at ratio -0.06 on the page basis, a 0.18 root, an image inside a still frame, a clamp and a control (`probe-parallax.mjs --page 5253`, tree `tests/fixtures/motion/pages/parallax.json`) |

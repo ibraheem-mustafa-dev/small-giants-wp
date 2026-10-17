@@ -89,8 +89,8 @@ const REAL_PROBES = [
 	{
 		file: 'probe-motion-model.mjs',
 		tiers: [ 'smoke', 'full' ],
-		what: 'Spec 38A motion model: hover, entrances, reveal, keyframes, tilt, asset guard, scroll driver across engines (pages 5223, 5226, 5229)',
-		args: [ '--page', '5223', '--page', '5226', '--page', '5229', '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
+		what: 'Spec 38A motion model: hover, entrances, reveal, keyframes, tilt, asset guard, scroll driver across engines (pages 5223, 5226, 5229, header baseline 5395)',
+		args: [ '--page', '5223', '--page', '5226', '--page', '5229', '--page', '5395', '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
 	},
 	{
 		file: 'probe-scroll-progress.mjs',

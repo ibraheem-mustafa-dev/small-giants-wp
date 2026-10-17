@@ -227,4 +227,32 @@ final class MotionAssetsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'script:@sgs/scroll-driver', $registered );
 		$this->assertStringEndsWith( 'build/shared/effects/scroll-driver.js', $registered['module:@sgs/scroll-driver']['src'] );
 	}
+
+	/** A style queue stand-in for `wp_styles()`, holding the given handles. */
+	private static function style_queue( array $handles ): \stdClass {
+		if ( ! function_exists( 'wp_styles' ) ) {
+			function wp_styles() {
+				return $GLOBALS['sgs_test_wp_styles'];
+			}
+		}
+		$GLOBALS['sgs_test_wp_styles']        = new \stdClass();
+		$GLOBALS['sgs_test_wp_styles']->queue = $handles;
+		return $GLOBALS['sgs_test_wp_styles'];
+	}
+
+	public function test_happy_motion_stylesheets_print_after_block_styles_enqueued_later(): void {
+		require_once SGS_BLOCKS_PATH . 'includes/motion/class-sgs-motion-trigger-open-state.php';
+		// A header carrying motion enqueued both motion stylesheets before the page's blocks enqueued theirs.
+		$styles = self::style_queue( array( 'sgs-header', 'sgs-motion', 'sgs-motion-triggers', 'sgs-container-style', 'sgs-card-grid-style' ) );
+		Sgs_Motion_Assets::print_after_block_styles();
+		$this->assertSame( array( 'sgs-header', 'sgs-container-style', 'sgs-card-grid-style', 'sgs-motion', 'sgs-motion-triggers' ), $styles->queue, 'the channel rules print last, triggers after motion.css' );
+		$this->assertNotSame( 'sgs-motion-triggers', ( self::style_queue( array( 'sgs-motion', 'sgs-motion-triggers', 'sgs-container-style' ) ) )->queue[2], 'control: the unordered queue has a block style last' );
+	}
+
+	public function test_edge_queue_without_motion_is_untouched(): void {
+		require_once SGS_BLOCKS_PATH . 'includes/motion/class-sgs-motion-trigger-open-state.php';
+		$styles = self::style_queue( array( 'sgs-container-style', 'sgs-card-grid-style' ) );
+		Sgs_Motion_Assets::print_after_block_styles();
+		$this->assertSame( array( 'sgs-container-style', 'sgs-card-grid-style' ), $styles->queue );
+	}
 }

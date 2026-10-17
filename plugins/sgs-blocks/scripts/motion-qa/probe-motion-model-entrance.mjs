@@ -217,7 +217,12 @@ export async function scrollDriverChecks( ctx ) {
 	}
 }
 
-/** A page with no motion requests none of the four motion assets; a motion page does (so the zero is not vacuous). */
+/**
+ * A page with no motion requests no motion asset beyond what the site header and footer already load: with a
+ * header baseline page (`.m29-baseline`, the same header with no content of its own) the no-motion page's asset set
+ * must be a subset of the baseline's; without one it must be empty. A motion page does load them (so the check is not
+ * vacuous).
+ */
 export async function assetChecks( ctx ) {
 	const { rep, markers, browser, width } = ctx;
 	const PATTERNS = [ /\/motion(\.min)?\.css/, /motion-reveal(\.min)?\.js/, /motion-keyframes(\.min)?\.js/, /scroll-driver(\.min)?\.js/ ];
@@ -232,8 +237,12 @@ export async function assetChecks( ctx ) {
 		return { status: res ? res.status() : 0, hits: seen.filter( ( u ) => PATTERNS.some( ( p ) => p.test( u ) ) ) };
 	};
 	if ( ! markers[ '.m29-nomotion' ] ) return rep.check( 'no-motion-assets', { pass: null, why: 'no page with .m29-nomotion (no-motion fixture) given' } );
+	const assetPath = ( u ) => new URL( u ).pathname;
 	const none = await load( markers[ '.m29-nomotion' ] );
-	rep.check( 'no-motion-assets', { selector: 'network requests', property: 'motion.css, motion-reveal.js, motion-keyframes.js, scroll-driver.js', measured: none.hits, expected: [], pass: none.status === 200 && none.hits.length === 0 } );
+	const baseline = markers[ '.m29-baseline' ] ? await load( markers[ '.m29-baseline' ] ) : null;
+	const allowed = new Set( baseline ? baseline.hits.map( assetPath ) : [] );
+	const extra = none.hits.filter( ( u ) => ! allowed.has( assetPath( u ) ) );
+	rep.check( 'no-motion-assets', { selector: 'network requests', property: 'motion.css, motion-reveal.js, motion-keyframes.js, scroll-driver.js', measured: { page: none.hits, headerBaseline: baseline ? baseline.hits : 'no .m29-baseline page given', beyondBaseline: extra }, expected: 'no motion asset beyond the header baseline', pass: none.status === 200 && ( ! baseline || baseline.status === 200 ) && extra.length === 0 } );
 	const motionUrl = markers[ '.m29-fade-part' ] || markers[ '.m29-kf' ];
 	if ( ! motionUrl ) return rep.control( 'no-motion-assets', { red: null, why: 'no motion page given to prove the detector sees requests' } );
 	const some = await load( motionUrl );

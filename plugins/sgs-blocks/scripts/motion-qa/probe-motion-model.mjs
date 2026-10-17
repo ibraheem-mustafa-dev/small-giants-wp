@@ -43,7 +43,7 @@ import { hoverChecks, touchAndFocusChecks, reducedMotionChecks, tiltAndInlineChe
 import { fadeChecks, loadChecks, keyframeChecks, scrollDriverChecks, assetChecks } from './probe-motion-model-entrance.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
-const MARKERS = [ '.m29-hover-card', '.m29-fade-part', '.m29-load-first', '.m29-kf', '.m29-both', '.m29-tilt', '.m29-nomotion', '.m29-first' ];
+const MARKERS = [ '.m29-hover-card', '.m29-fade-part', '.m29-load-first', '.m29-kf', '.m29-both', '.m29-tilt', '.m29-nomotion', '.m29-baseline', '.m29-first' ];
 const HEIGHT = 900;
 
 const FX_STYLESHEET = /\/fx-[a-z0-9-]+\.css/;

@@ -56,7 +56,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 - Each client has its own test site because the active header/footer/drawer/snapshot pointers are single global options.
 - SSH: `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`); WP admin user `Claude`.
 - Credentials (gitignored, always available — don't ask): `.claude/secrets/<site>.env` (`WP_USER_*`, `WP_PWD_*`, `WP_APP_PWD_*`, `WP_URL_*`).
-- Canary pages 2103, 2109, 2113, 2603, 2740, 3037, 5223, 5226, 5229 are motion-QA fixtures — never delete or repurpose (`.claude/rules/motion-qa.md`).
+- Canary pages 2103, 2109, 2113, 2603, 2740, 3037, 5223, 5226, 5229, 5395 are motion-QA fixtures — never delete or repurpose (`.claude/rules/motion-qa.md`).
 
 ## Delegation
 

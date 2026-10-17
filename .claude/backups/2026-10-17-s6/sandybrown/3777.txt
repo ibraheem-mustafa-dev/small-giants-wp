@@ -1,0 +1,23 @@
+
+<!-- wp:sgs/site-header {"align":"full","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"headerSticky":{"desktop":"on"},"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"flex-end"} -->
+<!-- wp:sgs/business-info {"displayType":"phone","labelCollapse":"all","iconColour":"primary","sgsHideOnMobile":true,"sgsHideOnTablet":true} /-->
+
+<!-- wp:sgs/business-info {"displayType":"email","labelCollapse":"all","iconColour":"primary","sgsHideOnMobile":true,"sgsHideOnTablet":true} /-->
+
+<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"primary","sgsHideOnMobile":true,"sgsHideOnTablet":true} /-->
+<!-- /wp:sgs/site-header-row -->
+
+<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between"} -->
+<!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true} /-->
+
+<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":{"desktop":"28px"},"scrimColour":"#0a0a0c","scrimOpacity":{"desktop":0.28},"scrimBlur":{"desktop":"2px"},"burgerMorph":"x","burgerMorphDuration":450,"burgerMorphEasing":"custom","itemMagnetEnabled":true,"itemMagnetStrength":0.16,"submenuAnimation":"fade-lift","submenuAnimationDuration":340,"submenuExitDuration":0,"submenuAnimationEasing":"drafts","submenuItemStagger":28,"submenuItemStaggerMax":320,"submenuItemStaggerDuration":460,"collapsePoint":1600,"labelRoll":"up","triggerMode":{"desktop":"icon-and-text"},"triggerLabel":"Menu","triggerOpenLabel":"Close","burgerBarCount":2,"burgerMorphEasingCustom":"cubic-bezier(0.645,0.045,0.355,1)"} /-->
+
+<!-- wp:sgs/cart {"displayMode":"drawer"} /-->
+<!-- /wp:sgs/site-header-row -->
+
+<!-- wp:sgs/site-header-row {"rowSlot":"bottom","justifyContent":"center"} -->
+<!-- wp:sgs/business-info {"displayType":"phone","className":"is-style-button","sgsHideOnDesktop":true} /-->
+<!-- /wp:sgs/site-header-row -->
+<!-- /wp:sgs/site-header -->
+

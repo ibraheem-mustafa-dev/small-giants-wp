@@ -1,0 +1,6 @@
+
+<!-- wp:sgs/nav-drawer {"anchor":{"desktop":"trigger","tablet":"trigger","mobile":"trigger"},"scrimColour":"#000000","scrimOpacity":{"desktop":0.4,"tablet":0.5,"mobile":0.4},"scrimBlur":{"desktop":"16px"},"modality":"non-modal","closeStyle":{"desktop":"trigger"},"accordionExclusive":false,"closeOnScrollDistance":24,"entryAnimation":{"desktop":"slide-start"},"entryDuration":300,"exitDuration":300,"entryEasing":"ease-out-css","entryFade":false,"itemStagger":55,"itemStaggerMax":320} -->
+<!-- wp:sgs/nav-drawer-menu {"ref":119,"itemBorderWidth":{"top":"0px","right":"0px","bottom":"1px","left":"0px"},"itemBorderColour":"#16140a1a","itemBorderColourHover":"#16140a1a","itemBorderColourCurrent":"#16140a1a","siblingDimColour":"#4c4c4c","itemMotionDuration":700,"itemMotionEasing":"custom","itemMotionEasingCustom":"cubic-bezier(0.215, 0.61, 0.355, 1)","labelRoll":"up","itemOrnament":{"desktop":"index","tablet":"none","mobile":"none"},"itemOrnamentSize":{"desktop":"12px"},"itemMedia":"featured-image","itemMediaReveal":{"desktop":"hover","tablet":"none","mobile":"none"},"itemMediaWidth":{"desktop":"160px"},"itemMediaHeight":{"desktop":"112px"},"itemExpanderRotate":45,"megaDrawerMode":"panel"} /-->
+<!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
+<!-- /wp:sgs/nav-drawer -->
+
