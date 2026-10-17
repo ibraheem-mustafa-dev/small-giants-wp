@@ -833,22 +833,31 @@ $sgs_nd_close_any_text_bearing = in_array( 'text-swap', array( $sgs_nd_close_sty
 	|| in_array( 'icon-and-text', array( $sgs_nd_close_style_desktop, $sgs_nd_close_style_tablet, $sgs_nd_close_style_mobile ), true );
 
 // ── Surface tone: the drawer's children (menu items, a CTA button) can carry
-// shadows, so the drawer marks its own tone from its one fill layer, drawerBg at
-// surfaceOpacity (unset means opaque), through sgs_surface_tone_class(), the
-// resolver SGS_Container_Wrapper uses.
+// shadows and the keyboard focus ring follows the ground it sits on, so the drawer marks
+// its own tone from its painted layers, top-down (drawerBgGradient over drawerBg, both at
+// surfaceOpacity, unset means opaque), through sgs_surface_tone_class(), the resolver
+// SGS_Container_Wrapper uses. The resolver is fed the RAW drawerBg (a palette slug, a
+// `var(--wp--preset--color--x)` or a literal colour), never the painted value:
+// sgs_colour_value() returns `var(--wp--preset--color--x, currentColor)` for a slug, which the
+// resolver cannot read, so a palette-slug drawer (the default) would mark no tone at all.
 $sgs_nd_tone_opacity = isset( $attributes['surfaceOpacity'] ) && is_numeric( $attributes['surfaceOpacity'] )
 	? (float) $attributes['surfaceOpacity']
 	: 1.0;
-$sgs_nd_tone_class   = function_exists( 'sgs_surface_tone_class' )
-	? sgs_surface_tone_class(
-		array(
-			array(
-				'colour'  => $sgs_nd_fill_css,
-				'opacity' => $sgs_nd_tone_opacity,
-			),
-		)
-	)
-	: '';
+$sgs_nd_tone_layers  = array();
+$sgs_nd_tone_grad    = sgs_css_gradient_value( $attributes['drawerBgGradient'] ?? '' );
+if ( '' !== $drawer_bg_paint && '' !== $sgs_nd_tone_grad ) {
+	$sgs_nd_tone_layers[] = array(
+		'gradient' => $sgs_nd_tone_grad,
+		'opacity'  => $sgs_nd_tone_opacity,
+	);
+}
+if ( '' !== $drawer_bg_paint ) {
+	$sgs_nd_tone_layers[] = array(
+		'colour'  => $drawer_bg_raw,
+		'opacity' => $sgs_nd_tone_opacity,
+	);
+}
+$sgs_nd_tone_class = function_exists( 'sgs_surface_tone_class' ) ? sgs_surface_tone_class( $sgs_nd_tone_layers ) : '';
 
 // ── Close-button SIZE (closeSize, mirrors sgs/nav-bar-menu's burgerSize mechanism —
 // nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css()'s own size block).
