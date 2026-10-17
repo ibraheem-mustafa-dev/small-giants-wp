@@ -213,9 +213,16 @@ export const STAGES = [
 	[ 'missing features', async ( job, ctx ) => {
 		const { proposeMissingFeatures } = await import( './intake-missing.mjs' );
 		const fw = frameworkFacts( job );
+		const { loadCoverage } = await import( './clone-coverage.mjs' );
 		const gaps = fw.error ? [ gap( 'missing-features', 'framework DB', `${ fw.error }; held features are not checked` ) ] : [];
+		let coverage = null;
 		try {
-			const m = proposeMissingFeatures( { skeletonRows: ctx.skeletonRows || [], census: { rows: ctx.censusFull.rows, sources: ctx.censusFull.sources }, facts: fw.facts ?? null } );
+			coverage = loadCoverage();
+		} catch ( e ) {
+			gaps.push( gap( 'missing-features', 'clone coverage map', `${ e.message }; seen-but-unsupported rows are not listed` ) );
+		}
+		try {
+			const m = proposeMissingFeatures( { skeletonRows: ctx.skeletonRows || [], census: { rows: ctx.censusFull.rows, sources: ctx.censusFull.sources }, facts: fw.facts ?? null, coverage } );
 			const c = collapseMissing( m.rows );
 			return { missingFeatures: c.rows, held: m.held.length, collapse: { missing: [ c.before, c.after ] }, gaps, note: `${ c.before } missing, ${ c.after } after collapsing, ${ m.held.length } held by SGS` };
 		} finally {
