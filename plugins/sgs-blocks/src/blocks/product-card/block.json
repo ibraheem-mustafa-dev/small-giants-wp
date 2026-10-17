@@ -2856,9 +2856,7 @@
 			"label": "Frame Card"
 		}
 	],
-	"usesContext": [
-		"postId"
-	],
+	"usesContext": [ "postId", "sgs/cardGridSourceMode" ],
 	"editorScript": "file:./index.js",
 	"style": [ "sgs-button-style", "file:./style-index.css" ],
 	"editorStyle": "file:./index.css",

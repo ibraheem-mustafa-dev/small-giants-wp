@@ -6,7 +6,15 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
 import { TypographyControls } from '../../../components';
 
-export default function TextStylingPanel( { attributes, setAttributes, isCptCollectionMode } ) {
+/**
+ * @param {Object}   props
+ * @param {Object}   props.attributes          Block attributes.
+ * @param {Function} props.setAttributes       Attribute setter.
+ * @param {boolean}  props.isCptCollectionMode The grid paginates (collection mode).
+ * @param {boolean}  props.pageButtonsOnly     The products modes: the template card styles every card's text, so only
+ *                                             the grid's own page buttons are offered.
+ */
+export default function TextStylingPanel( { attributes, setAttributes, isCptCollectionMode, pageButtonsOnly = false } ) {
 	const {
 		imageFallback,
 		noImageLabel,
@@ -55,8 +63,8 @@ export default function TextStylingPanel( { attributes, setAttributes, isCptColl
 								showLetterSpacing: true,
 								showTransform: true,
 							},
-							// Page buttons exist only in collection mode, where the
-							// canvas is render.php's own output (ServerSideRender).
+							// Page buttons exist only in collection mode; the canvas
+							// prints the page's own buttons (ProductTemplateCanvas).
 							...( isCptCollectionMode ? [ {
 								key: 'pageButton',
 								label: __( 'Page buttons', 'sgs-blocks' ),
@@ -107,7 +115,9 @@ export default function TextStylingPanel( { attributes, setAttributes, isCptColl
 								showLetterSpacing: true,
 								showTransform: true,
 							},
-						].filter( Boolean ) }
+						]
+							.filter( Boolean )
+							.filter( ( target ) => ! pageButtonsOnly || 'pageButton' === target.key ) }
 					/>
 				</PanelBody>
 	);

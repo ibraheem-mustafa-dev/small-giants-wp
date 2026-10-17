@@ -161,15 +161,122 @@ final class CardGridTemplateCardTest extends TestCase {
 		$template = new \stdClass();
 		$template->parsed_block = array( 'innerBlocks' => array( array( 'blockName' => 'sgs/product-card', 'attrs' => self::TEMPLATE + array( 'showLadder' => true ) ) ) );
 		$attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
-			array( 'showLadder' => false, 'ctaBehaviour' => 'learn-more' ),
 			\SGS\Blocks\Card_Grid_Template::template_attrs( $template ),
 			array( 'sourceMode' => 'wc-product', 'productId' => 52 )
 		);
 		$this->assertSame( 52, $attrs['productId'] );
 		$this->assertSame( 'wc-product', $attrs['sourceMode'] );
-		$this->assertTrue( $attrs['showLadder'], 'the template setting beats the grid-forwarded default' );
-		$this->assertSame( 'learn-more', $attrs['ctaBehaviour'], 'a forwarded setting the template leaves unset stays' );
+		$this->assertTrue( $attrs['showLadder'], 'the template setting reaches the card' );
+		$this->assertArrayNotHasKey( 'ctaBehaviour', $attrs, 'the grid adds no card setting of its own: an unset template setting keeps the card default' );
 		$this->assertArrayNotHasKey( 'anchor', $attrs );
+	}
+
+	/** The grid-level card settings the template card's own attributes replace. */
+	private const RETIRED = array( 'showLadder', 'showPickers', 'ctaBehaviour', 'productShowLadder' );
+
+	public function test_the_grid_forwards_no_card_settings_of_its_own(): void {
+		$dir  = dirname( __DIR__, 2 ) . '/src/blocks/card-grid';
+		$json = json_decode( (string) file_get_contents( $dir . '/block.json' ), true );
+		foreach ( self::RETIRED as $name ) {
+			$this->assertArrayNotHasKey( $name, $json['attributes'], "sgs/card-grid declares no $name: the template card's own attribute governs it" );
+		}
+		foreach ( glob( $dir . '/*.php' ) as $file ) {
+			$this->assertDoesNotMatchRegularExpression( '/\$attributes\[\s*\'(' . implode( '|', self::RETIRED ) . ')\'/', (string) file_get_contents( $file ), basename( $file ) . ' reads no retired grid card setting' );
+		}
+		foreach ( array( 'edit.js', 'template-preview.js', 'components/collection-panel.js', 'components/ProductsToolsPanel.js' ) as $file ) {
+			$this->assertDoesNotMatchRegularExpression( '/setAttributes\(\s*\{\s*(' . implode( '|', self::RETIRED ) . ')\s*:/', (string) file_get_contents( $dir . '/' . $file ), "$file writes no retired grid card setting" );
+		}
+	}
+
+	/** Two SGS product posts, what a cpt-collection grid renders without WooCommerce. */
+	private const POSTS = array(
+		array( 'ID' => 41, 'post_type' => 'sgs_product', 'post_title' => 'Oak table', 'post_excerpt' => 'Solid oak.', 'post_status' => 'publish', 'meta' => array( 'sgs_price' => '120' ) ),
+		array( 'ID' => 42, 'post_type' => 'sgs_product', 'post_title' => 'Ash chair', 'post_excerpt' => 'Ash.', 'post_status' => 'publish', 'meta' => array( 'sgs_price' => '60' ) ),
+	);
+
+	public function test_a_collection_grid_renders_each_post_through_the_template(): void {
+		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
+		$files   = array();
+		foreach ( array(
+			'attrs' => array( 'source' => 'cpt-collection', 'contentType' => 'sgs_product' ),
+			'post'  => self::POSTS,
+			'inner' => array( array( 'name' => 'sgs/product-card', 'attributes' => (object) ( array( 'sourceMode' => 'sgs-cpt' ) + self::TEMPLATE ), 'html' => '' ) ),
+		) as $key => $tree ) {
+			$files[ $key ] = tempnam( sys_get_temp_dir(), 'sgscg' );
+			file_put_contents( $files[ $key ], json_encode( $tree, JSON_THROW_ON_ERROR ) );
+		}
+		try {
+			$out = (string) shell_exec(
+				escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness )
+				. ' --slug sgs/card-grid --attrs-file ' . escapeshellarg( $files['attrs'] )
+				. ' --post-file ' . escapeshellarg( $files['post'] )
+				. ' --inner-blocks-file ' . escapeshellarg( $files['inner'] )
+				. ' --content ' . escapeshellarg( '<div class="' . self::TEMPLATE_MARK . '"></div>' )
+				. ' --render-children 2>&1'
+			);
+		} finally {
+			foreach ( $files as $file ) {
+				@unlink( $file );
+			}
+		}
+		$decoded = json_decode( $out, true );
+		$this->assertIsArray( $decoded, 'harness did not return JSON: ' . $out );
+		$this->assertTrue( $decoded['ok'] ?? false, 'render.php failed: ' . ( $decoded['error'] ?? $out ) );
+		$html = (string) $decoded['html'];
+		$uids = self::card_uids( $html );
+		$this->assertCount( 2, $uids, 'one card per post, none for the template: ' . $html );
+		$this->assertSame( 0, substr_count( $html, self::TEMPLATE_MARK ), 'the template never prints' );
+		// The harness has no title store (get_the_title() is ''), so each card's own post shows in its excerpt and price.
+		$this->assertSame( 1, substr_count( $html, 'Solid oak.' ), 'post 41 prints its own excerpt once' );
+		$this->assertSame( 1, substr_count( $html, '>120.00<' ), 'post 41 prints its own price once' );
+		$this->assertSame( 1, substr_count( $html, '>60.00<' ), 'post 42 prints its own price once' );
+		$this->assertStringNotContainsString( 'id="template-card"', $html );
+		foreach ( $uids as $uid ) {
+			$this->assertStringContainsString( 'color:#fedcba', self::cta_decls( (string) $decoded['css'], $uid, 'rest', 'text' ), $uid . ' resting text colour' );
+			$this->assertStringContainsString( 'color:#0f0f0f', self::cta_decls( (string) $decoded['css'], $uid, 'hover', 'text' ), $uid . ' hover text colour' );
+		}
+	}
+
+	/** Load the shared results helper with the WordPress functions Grid_Pagination calls. */
+	private static function load_results(): void {
+		foreach ( array( '__', 'esc_attr', 'esc_html', 'esc_url', 'sanitize_html_class', 'wp_unslash', 'sanitize_text_field' ) as $fn ) {
+			if ( ! function_exists( $fn ) ) {
+				eval( 'function ' . $fn . '( $v, ...$r ) { return is_string( $v ) ? trim( $v ) : $v; }' );
+			}
+		}
+		if ( ! function_exists( 'absint' ) ) {
+			function absint( $v ) { return abs( (int) $v ); }
+		}
+		if ( ! function_exists( 'sanitize_key' ) ) {
+			function sanitize_key( $v ) { return strtolower( (string) preg_replace( '/[^a-z0-9_\-]/i', '', (string) $v ) ); }
+		}
+		if ( ! defined( 'ABSPATH' ) ) {
+			define( 'ABSPATH', __DIR__ );
+		}
+		require_once dirname( __DIR__, 2 ) . '/includes/class-grid-pagination.php';
+		require_once dirname( __DIR__, 2 ) . '/includes/class-card-grid-results.php';
+	}
+
+	public function test_the_empty_state_message_is_the_one_the_page_prints(): void {
+		self::load_results();
+		$results = \SGS\Blocks\Card_Grid_Results::class;
+		$this->assertSame( 'Back soon', $results::empty_message( array( 'source' => 'cpt-collection', 'emptyMessage' => ' Back soon ' ), true ) );
+		$this->assertSame( 'Sold out', $results::empty_message( array( 'source' => 'wc-product', 'productEmptyMessage' => 'Sold out', 'emptyMessage' => 'x' ), true ), 'products mode reads its own message' );
+		$this->assertSame( '', $results::empty_message( array( 'source' => 'wc-product' ), true ), 'with none set, visitors see nothing' );
+		$this->assertStringContainsString( 'Nothing to show yet', $results::empty_message( array( 'source' => 'wc-product' ), false ), 'with none set, the editor says so' );
+		$this->assertSame( 'Sold out', $results::empty_message( array( 'source' => 'wc-product', 'productEmptyMessage' => 'Sold out' ), false ), 'the editor shows the client message when one is set' );
+	}
+
+	public function test_the_editor_pagination_preview_is_the_page_markup_without_links(): void {
+		self::load_results();
+		$results = \SGS\Blocks\Card_Grid_Results::class;
+		$html    = $results::pagination( array( 'source' => 'cpt-collection', 'pagination' => 'standard' ), 'sgs-cg-x', 3, 1, \SGS\Blocks\Grid_Pagination::MODE_AJAX );
+		$this->assertSame( 3, preg_match_all( '/class="sgs-card-grid__page-btn[ "]/', $html ), 'one button per page: ' . $html );
+		$this->assertStringContainsString( 'sgs-card-grid__page-btn--current', $html );
+		$this->assertStringNotContainsString( '<a ', $html, 'the editor preview never navigates away' );
+		$this->assertSame( '', $results::pagination( array( 'source' => 'cpt-collection', 'pagination' => 'none' ), 'sgs-cg-x', 3, 1, \SGS\Blocks\Grid_Pagination::MODE_AJAX ), 'negative control: no pagination set' );
+		$this->assertSame( '', $results::pagination( array( 'source' => 'wc-product', 'pagination' => 'standard' ), 'sgs-cg-x', 3, 1, \SGS\Blocks\Grid_Pagination::MODE_AJAX ), 'products mode never paginates' );
+		$this->assertSame( '', $results::pagination( array( 'source' => 'cpt-collection', 'pagination' => 'standard' ), 'sgs-cg-x', 1, 1, \SGS\Blocks\Grid_Pagination::MODE_AJAX ), 'one page needs no pagination' );
 	}
 
 	public function test_the_item_list_never_counts_the_template(): void {

@@ -703,26 +703,6 @@
       "default": "",
       "description": "cpt-collection mode empty state (FR-24-6): shown on the live site when nothing matches; empty shows nothing there and a notice on the editor canvas."
     },
-    "showPickers": {
-      "type": "boolean",
-      "default": true,
-      "description": "Forwarded to each rendered product-card in cpt-collection mode. When false, suppresses in-card option-picker UI (axis and pill pickers)."
-    },
-    "ctaBehaviour": {
-      "type": "string",
-      "default": "learn-more",
-      "enum": [
-        "learn-more",
-        "add-to-basket",
-        "buy-now"
-      ],
-      "description": "Forwarded to each rendered product-card in cpt-collection mode. learn-more = link to the product page; add-to-basket = SGS cart proxy; buy-now = add then redirect to checkout."
-    },
-    "showLadder": {
-      "type": "boolean",
-      "default": false,
-      "description": "Forwarded to each rendered product-card in cpt-collection mode. Browsing grids default false (price + per-unit note only, no multi-row value ladder)."
-    },
     "pagination": {
       "type": "string",
       "default": "none",
@@ -798,11 +778,6 @@
         "type": "number"
       },
       "description": "Explicit product IDs for handpick mode. Order is respected."
-    },
-    "productShowLadder": {
-      "type": "boolean",
-      "default": false,
-      "description": "Show the per-pack price ladder on each card. Off by default â€” grids are a browsing context; the ladder does its upsell work on the product page."
     },
     "productEmptyMessage": {
       "type": "string",

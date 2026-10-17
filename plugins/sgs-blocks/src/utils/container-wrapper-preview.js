@@ -105,12 +105,13 @@ export const wrapperPreview = containerWrapperPreview;
  * @param {Object}  props
  * @param {boolean} props.hasBandProps `containerWrapperPreview().hasBandProps`.
  * @param {Object}  props.bandStyle    `containerWrapperPreview().bandStyle`.
+ * @param {Object}  [props.bandRef]    A ref for the band element (the list a separators preview draws on).
  * @param {*}       props.children     The block's canvas content.
  * @return {JSX.Element} The band element or a fragment.
  */
-export function BandWrap( { hasBandProps, bandStyle, children } ) {
+export function BandWrap( { hasBandProps, bandStyle, bandRef, children } ) {
 	return hasBandProps ? (
-		<div className="sgs-container__inner" style={ bandStyle }>
+		<div className="sgs-container__inner" ref={ bandRef } style={ bandStyle }>
 			{ children }
 		</div>
 	) : (

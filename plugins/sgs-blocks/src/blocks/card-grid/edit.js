@@ -5,6 +5,8 @@ import {
 	useSettings,
 } from '@wordpress/block-editor';
 import { useEffect, useMemo } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { createBlock } from '@wordpress/blocks';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { PanelBody, Button } from '@wordpress/components';
 import CollectionPanel from './components/collection-panel';
@@ -20,6 +22,8 @@ import TextStylingPanel from './components/TextStylingPanel';
 import CardSpacingStylingPanel from './components/CardSpacingStylingPanel';
 import LayoutBorderPanel from './components/LayoutBorderPanel';
 import CardGridCanvas from './components/CardGridCanvas';
+import CardDesignPanel from './components/CardDesignPanel';
+import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import {
 	colourVar,
 	spacingVar,
@@ -32,7 +36,10 @@ import {
 	wrapperPreview,
 } from '../../utils';
 import { cardGridPreview } from './preview-style';
-import { forwardedCardSettings } from './template-preview';
+import { showsManualCardPanels, templateBlocksFor } from './template-preview';
+
+/** A stable empty inner-block list (the store answers with none before the grid registers). */
+const NO_BLOCKS = [];
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
@@ -52,10 +59,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		source,
 		overlayColour,
 		overlayGradient,
-		showPickers,
-		ctaBehaviour,
-		showLadder,
-		productShowLadder,
+		imageZoomHover,
+		grayscaleHover,
 	} = attributes;
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
@@ -73,11 +78,26 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const isQueryMode = source === 'query';
 	const isWcProductMode = source === 'wc-product';
 	const isCptCollectionMode = source === 'cpt-collection';
-	// The card settings the grid forwards to every products-mode card, under the template card's own.
-	const cardForwarded = useMemo(
-		() => forwardedCardSettings( { source, showPickers, ctaBehaviour, showLadder, productShowLadder } ),
-		[ source, showPickers, ctaBehaviour, showLadder, productShowLadder ]
-	);
+	const manualCards = showsManualCardPanels( source );
+
+	// The products modes hold one template card, the design every product renders with; the other modes hold none.
+	// The grid gains its template when it enters a products mode (or, already in one, on its next editor load, so it is
+	// saved with the next save) and loses it when it leaves (removed, not hidden).
+	const innerBlocks = useSelect( ( select ) => select( 'core/block-editor' ).getBlocks( clientId ), [ clientId ] ) ?? NO_BLOCKS;
+	const { replaceInnerBlocks, selectBlock, __unstableMarkNextChangeAsNotPersistent: markNotPersistent } =
+		useDispatch( 'core/block-editor' );
+	useEffect( () => {
+		const next = templateBlocksFor( source, innerBlocks, createBlock );
+		if ( null === next ) {
+			return;
+		}
+		if ( next.length > 0 && innerBlocks.length === 0 && typeof markNotPersistent === 'function' ) {
+			// A seeded template is the grid's starting state, not a client edit (core's template sync does the same).
+			markNotPersistent();
+		}
+		replaceInnerBlocks( clientId, next, false );
+	}, [ source, innerBlocks, clientId, replaceInnerBlocks, markNotPersistent ] );
+	const templateId = innerBlocks.find( ( block ) => block.name === 'sgs/product-card' )?.clientId;
 
 	// Contrast check for card text (title/subtitle) against the card's
 	// background. `contrastAgainst` only accepts a FLAT colour/token, so this
@@ -108,6 +128,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		`sgs-card-grid--${ variant }`,
 		`sgs-card-grid--hover-${ effectHover }`,
 		overlayColour || overlayGradient ? 'sgs-card-grid--has-image-overlay' : '',
+		// The image hover effects, as render.php classes the grid (style.css paints them on the canvas too).
+		imageZoomHover ? 'sgs-has-img-zoom' : '',
+		grayscaleHover ? 'sgs-has-grayscale' : '',
 	].filter( Boolean ).join( ' ' );
 
 	const previewTier = usePreviewTier();
@@ -138,6 +161,13 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
 	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
 	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
+
+	// Lines between the cards (supports.sgs.separators), drawn on the list element the wrapper puts them on.
+	const sep = useSeparatorsCanvas( {
+		separators: attributes.separators,
+		device: previewTier,
+		deps: [ source, columnsDesktop, columnsTabletTier, columnsMobileTier, gap, items.length ],
+	} );
 
 	const gridStyle = {
 		'--sgs-card-grid-columns': columnsDesktop,
@@ -185,11 +215,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	return (
 		<>
-			<ElementColourPanels attributes={ attributes } setAttributes={ setAttributes } cardBackgroundForContrast={ cardBackgroundForContrast } />
+			{ manualCards && (
+				<ElementColourPanels attributes={ attributes } setAttributes={ setAttributes } cardBackgroundForContrast={ cardBackgroundForContrast } />
+			) }
 
-			<CardStylesPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />
+			{ manualCards && <CardStylesPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } /> }
 
 			<InspectorControls>
+				{ ! manualCards && <CardDesignPanel onEdit={ templateId ? () => selectBlock( templateId ) : null } /> }
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<ContentSourcePanel attributes={ attributes } setAttributes={ setAttributes } isQueryMode={ isQueryMode } sourceHelp={ sourceHelp } />
 
@@ -222,19 +255,23 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				</PanelBody>
 				) }
 
-				<GlyphOverlayPanels attributes={ attributes } setAttributes={ setAttributes } />
+				{ manualCards && (
+					<>
+						<GlyphOverlayPanels attributes={ attributes } setAttributes={ setAttributes } />
+						<GridSettingsPanel attributes={ attributes } setAttributes={ setAttributes } />
+						<CardGridHoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } />
+					</>
+				) }
 
-				<GridSettingsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ ( manualCards || isCptCollectionMode ) && (
+					<TextStylingPanel attributes={ attributes } setAttributes={ setAttributes } isCptCollectionMode={ isCptCollectionMode } pageButtonsOnly={ ! manualCards } />
+				) }
 
-				<CardGridHoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } />
-
-				<TextStylingPanel attributes={ attributes } setAttributes={ setAttributes } isCptCollectionMode={ isCptCollectionMode } />
-
-				<CardSpacingStylingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ manualCards && <CardSpacingStylingPanel attributes={ attributes } setAttributes={ setAttributes } /> }
 				<LayoutBorderPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
-			<CardGridCanvas attributes={ attributes } clientId={ clientId } cardForwarded={ cardForwarded } isWcProductMode={ isWcProductMode } isCptCollectionMode={ isCptCollectionMode } blockProps={ blockProps } pageButtonPreviewCss={ pageButtonPreviewCss } wrapper={ wrapper } gridStyle={ gridStyle } items={ items } cardPreview={ cardPreview } titleStyle={ titleStyle } subtitleStyle={ subtitleStyle } HeadingTag={ HeadingTag } />
+			<CardGridCanvas attributes={ attributes } clientId={ clientId } sep={ sep } isWcProductMode={ isWcProductMode } isCptCollectionMode={ isCptCollectionMode } blockProps={ blockProps } pageButtonPreviewCss={ pageButtonPreviewCss } wrapper={ wrapper } gridStyle={ gridStyle } items={ items } cardPreview={ cardPreview } titleStyle={ titleStyle } subtitleStyle={ subtitleStyle } HeadingTag={ HeadingTag } />
 		</>
 	);
 }

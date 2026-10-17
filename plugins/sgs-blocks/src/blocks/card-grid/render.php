@@ -26,6 +26,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-template.php';
 // WordPress install.
 require_once dirname( __DIR__, 3 ) . '/includes/class-cpt-collection-query.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
+require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-results.php';
 // Shared icon registry (sgs/icon, sgs/trust-bar) — reused for the per-item
 // glyph, never a second icon system.
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';

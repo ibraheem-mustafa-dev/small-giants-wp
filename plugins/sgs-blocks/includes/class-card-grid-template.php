@@ -82,16 +82,16 @@ final class Card_Grid_Template {
 	}
 
 	/**
-	 * One product card's attributes: the grid's forwarded card settings, then the template's settings over them,
-	 * then the product's identity over both.
+	 * One product card's attributes: the template's settings, then the card's own over them (the product's identity, and
+	 * the motion the grid hands the card, `Sgs_Motion_Delegate::child_motion`). The grid adds no card setting of its own:
+	 * a setting the template leaves unset keeps the card's own default.
 	 *
-	 * @param array<string,mixed> $forwarded The grid-level card settings the grid forwards (each its own default).
-	 * @param array<string,mixed> $template  The template card's attributes (template_attrs()).
-	 * @param array<string,mixed> $identity  The product's identity: sourceMode and productId.
+	 * @param array<string,mixed> $template The template card's attributes (template_attrs()).
+	 * @param array<string,mixed> $own      The card's own: sourceMode and productId, and sgsMotion when the grid hands one.
 	 * @return array<string,mixed>
 	 */
-	public static function card_attrs( array $forwarded, array $template, array $identity ): array {
-		return array_merge( $forwarded, array_diff_key( $template, array_flip( self::IDENTITY_ATTRS ) ), $identity );
+	public static function card_attrs( array $template, array $own ): array {
+		return array_merge( array_diff_key( $template, array_flip( self::IDENTITY_ATTRS ) ), $own );
 	}
 }
 

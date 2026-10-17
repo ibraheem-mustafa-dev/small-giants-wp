@@ -21,7 +21,6 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
-	ToggleControl,
 } from '@wordpress/components';
 import HandpickedPanel from './handpicked-panel';
 import CategoryPanel from './category-panel';
@@ -60,9 +59,6 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 		categoryTerm,
 		emptyMessage,
 		pagination,
-		showPickers,
-		ctaBehaviour,
-		showLadder,
 	} = attributes;
 
 	return (
@@ -143,45 +139,6 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 					onChange={ ( v ) => setAttributes( { emptyMessage: v } ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
-			</PanelBody>
-
-			<PanelBody title={ __( 'Card behaviour', 'sgs-blocks' ) } initialOpen={ false }>
-				<SelectControl
-					label={ __( 'Button action', 'sgs-blocks' ) }
-					help={ __(
-						'What the button on each card does.',
-						'sgs-blocks'
-					) }
-					value={ ctaBehaviour || 'learn-more' }
-					options={ [
-						{ value: 'learn-more', label: __( 'Go to the product page', 'sgs-blocks' ) },
-						{ value: 'add-to-basket', label: __( 'Add to basket', 'sgs-blocks' ) },
-						{ value: 'buy-now', label: __( 'Buy now (straight to checkout)', 'sgs-blocks' ) },
-					] }
-					onChange={ ( v ) => setAttributes( { ctaBehaviour: v } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-				<ToggleControl
-					label={ __( 'Show option pickers on each card', 'sgs-blocks' ) }
-					help={ __(
-						'Off is usually right for a browsing grid — shoppers pick options on the product page.',
-						'sgs-blocks'
-					) }
-					checked={ showPickers !== false }
-					onChange={ ( v ) => setAttributes( { showPickers: v } ) }
-					__nextHasNoMarginBottom
-				/>
-				<ToggleControl
-					label={ __( 'Show the price ladder on each card', 'sgs-blocks' ) }
-					help={ __(
-						'Off shows the price and per-unit note only.',
-						'sgs-blocks'
-					) }
-					checked={ !! showLadder }
-					onChange={ ( v ) => setAttributes( { showLadder: v } ) }
-					__nextHasNoMarginBottom
 				/>
 			</PanelBody>
 		</>

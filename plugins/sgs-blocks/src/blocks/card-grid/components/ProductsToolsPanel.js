@@ -3,7 +3,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, RangeControl, TextControl, ToggleControl } from '@wordpress/components';
+import { SelectControl, RangeControl, TextControl } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { ProductTaxonomyChecklist, ProductHandpickPanel } from './product-panels';
 import { PRODUCT_COLLECTION_OPTIONS } from './card-grid-options';
@@ -19,7 +19,6 @@ export default function ProductsToolsPanel( { attributes, setAttributes, isWcPro
 		productOnSale,
 		productInStock,
 		productIds,
-		productShowLadder,
 		productEmptyMessage,
 	} = attributes;
 
@@ -43,7 +42,6 @@ export default function ProductsToolsPanel( { attributes, setAttributes, isWcPro
 								productInStock: true,
 								productOnSale: false,
 								productFeatured: false,
-								productShowLadder: false,
 								productEmptyMessage: '',
 							} )
 						}
@@ -192,19 +190,6 @@ export default function ProductsToolsPanel( { attributes, setAttributes, isWcPro
 							/>
 						) }
 
-						<ToolsPanelItem
-							label={ __( 'Show price breakdown on cards', 'sgs-blocks' ) }
-							hasValue={ () => !! productShowLadder }
-							onDeselect={ () => setAttributes( { productShowLadder: false } ) }
-						>
-							<ToggleControl
-								label={ __( 'Show price breakdown on cards', 'sgs-blocks' ) }
-								checked={ !! productShowLadder }
-								onChange={ ( val ) => setAttributes( { productShowLadder: val } ) }
-								help={ __( 'Off by default — grids are a browsing context; the ladder does its upsell work on the product page.', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Empty state message', 'sgs-blocks' ) }
 							hasValue={ () => productEmptyMessage !== '' }

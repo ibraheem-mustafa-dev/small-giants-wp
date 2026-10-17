@@ -50,7 +50,8 @@
  *       map: every declared part resolved by the real Sgs_Motion_Targets::resolve. The
  *       motion part render-path gate, scripts/check-motion-part-render-paths.py, reads it.)
  *   --product-file product.json   a minimal WooCommerce product (wc-product-stub.php)
- *   --post-file post.json         the global post get_post() returns (an object: ID, post_type, ...)
+ *   --post-file post.json         the global post get_post() returns (an object: ID, post_type, ...), or a list of
+ *                                 them: the posts every WP_Query returns, each the current post while its child renders
  *   --attachments-file a.json     attachment ID => image URL (the harness has no media library)
  *   --render-children             render_block() renders sgs/* children through their real render.php
  *   --first-section               the block sits in the page's first top-level section (first-section-stub.php)
@@ -346,6 +347,11 @@ if ( isset( $args['render-children'] ) ) {
 				$GLOBALS['sgs_qa_product'] = $catalogue_product;
 			}
 		}
+		foreach ( $GLOBALS['sgs_qa_posts'] ?? array() as $catalogue_post ) {
+			if ( (int) ( $catalogue_post->ID ?? 0 ) === (int) ( $child_attrs['productId'] ?? 0 ) ) {
+				$GLOBALS['sgs_qa_post'] = $catalogue_post;
+			}
+		}
 		$child_meta = is_file( dirname( $child_path ) . '/block.json' ) ? json_decode( (string) file_get_contents( dirname( $child_path ) . '/block.json' ), true ) : array();
 		$child_type = (object) array( 'attributes' => is_array( $child_meta['attributes'] ?? null ) ? $child_meta['attributes'] : array() );
 		$render     = static function ( array $attributes, string $content, object $block, string $render_path ): string {
@@ -383,7 +389,13 @@ if ( isset( $args['post-file'] ) ) {
 	if ( ! is_array( $post_tree ) ) {
 		harness_fail( 'invalid JSON for post-file: ' . json_last_error_msg() );
 	}
-	$GLOBALS['sgs_qa_post'] = (object) $post_tree;
+	if ( array_is_list( $post_tree ) ) {
+		// A catalogue: the posts a WP_Query returns (wp-stubs.php), each the current post while its child renders.
+		$GLOBALS['sgs_qa_posts'] = array_map( static fn( $p ) => (object) $p, $post_tree );
+		$GLOBALS['sgs_qa_post']  = $GLOBALS['sgs_qa_posts'][0] ?? null;
+	} else {
+		$GLOBALS['sgs_qa_post'] = (object) $post_tree;
+	}
 }
 
 // --post-content-file: the serialised content of the global post (get_post() returns it).

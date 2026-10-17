@@ -278,7 +278,12 @@ if ( ! class_exists( 'WP_Query' ) ) {
 		public int $max_num_pages  = 0;
 		private int $current_index = -1;
 
-		public function __construct( $args = array() ) {}
+		public function __construct( $args = array() ) {
+			// A --post-file catalogue is what every query returns (render-css-harness.php); without one, no posts.
+			$this->posts         = array_values( $GLOBALS['sgs_qa_posts'] ?? array() );
+			$this->post_count    = count( $this->posts );
+			$this->max_num_pages = $this->post_count > 0 ? 1 : 0;
+		}
 
 		/**
 		 * Always false — mirrors the real WP_Query's own "no posts matched"
@@ -544,6 +549,16 @@ if ( ! function_exists( 'get_query_var' ) ) {
 	}
 }
 
+if ( ! function_exists( 'update_meta_cache' ) ) {
+	// The harness has no object cache: post meta comes straight from the post records (get_post_meta above).
+	function update_meta_cache( $meta_type, $object_ids ) {
+		return true;
+	}
+}
+if ( ! function_exists( 'wp_reset_postdata' ) ) {
+	// No global query ran, so there is no post data to restore.
+	function wp_reset_postdata() {}
+}
 if ( ! function_exists( 'get_posts' ) ) {
 	function get_posts( array $args = array() ): array {
 		// No posts exist in the harness — faithful "nothing found" result,

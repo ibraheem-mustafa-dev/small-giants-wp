@@ -34,6 +34,8 @@ import {
 	Button,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+import { effectiveSourceMode, showsConnectedProduct } from './card-grid-context';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '../../components/ServerSideRender';
 import {
@@ -658,7 +660,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 export default function Edit( { attributes, setAttributes, clientId, context, name } ) {
 	const {
 		variantStyle,
-		sourceMode,
+		sourceMode: storedSourceMode,
 		cardMaxWidth,
 		imageHeight,
 		indexVariationUrl,
@@ -783,6 +785,15 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 
 	const isTrial = variantStyle === 'trial';
 	const isFeatured = variantStyle === 'featured';
+	// Inside a card grid the card is the grid's template: each grid item hands it the product's source mode, and the
+	// grid, not the card, picks the product (card-grid-context.js).
+	const sourceMode = effectiveSourceMode( attributes, context );
+	const gridParents = useSelect(
+		( select ) => select( 'core/block-editor' ).getBlockParentsByBlockName( clientId, 'sgs/card-grid' ),
+		[ clientId ]
+	);
+	// Every attribute reaches the server preview; only the source mode is the grid item's.
+	const withItemSourceMode = ( attrs ) => ( sourceMode === storedSourceMode ? attrs : { ...attrs, sourceMode } );
 	const isBound = sourceMode !== 'typed';
 
 	// Typed mode = the built-in element editor. The block has no InnerBlocks
@@ -1603,10 +1614,12 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		<>
 			<SgsColourPanel rows={ [ ...colourRows, ...cardPartColourRows( attributes, setAttributes ) ] } />
 			<InspectorControls>
-				<ProductSourcePanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-				/>
+				{ showsConnectedProduct( gridParents ) && (
+					<ProductSourcePanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				) }
 
 				{ /* ── Card panel (behaviour: variant + heading level + tag text) ── */ }
 				<PanelBody title={ __( 'Card', 'sgs-blocks' ) } initialOpen={ false }>
@@ -3396,7 +3409,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					<SsrPreviewGuard>
 						<ServerSideRender
 							block="sgs/product-card"
-							attributes={ attributes }
+							attributes={ withItemSourceMode( attributes ) }
 							urlQueryArgs={
 								context && context.postId
 									? { post_id: context.postId }

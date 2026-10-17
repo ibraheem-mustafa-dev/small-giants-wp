@@ -5,8 +5,8 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $attributes, $block (its template sgs/product-card inner block), $source, $uid, $columns, $columns_tablet, $columns_mobile, $gap, $hover_effect, $hover_scale, $hover_shadow, $hover_shadow_colour, $transition_dur, $transition_ease, $empty_message, $card_grid_native_style_tag, $card_grid_preset_classes.
- * Writes: the $collection_*, $wc_*, $empty_html and $pagination_html working locals; it always echoes the finished markup and ends in return, so render.php returns straight after the require.
+ * Reads: $attributes, $block (its template sgs/product-card inner block), $source, $uid, $columns, $columns_tablet, $columns_mobile, $gap, $hover_effect, $hover_scale, $hover_shadow, $hover_shadow_colour, $transition_dur, $transition_ease, $card_grid_native_style_tag, $card_grid_preset_classes.
+ * Writes: the $collection_*, $wc_*, $card_grid_card_*, $card_grid_template_attrs, $empty_message, $empty_html and $pagination_html working locals; it always echoes the finished markup and ends in return, so render.php returns straight after the require.
  *
  * @package SGS\Blocks
  */
@@ -39,23 +39,16 @@ defined( 'ABSPATH' ) || exit;
 		$collection_posts = $collection_result['posts'];
 		$product_ids      = array_map( 'absint', wp_list_pluck( $collection_posts, 'ID' ) );
 
-		$pagination_html = \SGS\Blocks\Grid_Pagination::render(
-			array(
-				'base_class'   => 'sgs-card-grid',
-				'type'         => $collection_pagination,
-				'total_pages'  => (int) $collection_result['max_num_pages'],
-				'current_page' => (int) $collection_result['paged'],
-				// No view.js on this block — real links, not inert buttons.
-				'mode'         => \SGS\Blocks\Grid_Pagination::MODE_LINK,
-				'page_var'     => $collection_page_var,
-				'nav_label'    => __( 'Collection pagination', 'sgs-blocks' ),
-			)
+		$pagination_html = \SGS\Blocks\Card_Grid_Results::pagination(
+			$attributes,
+			$uid,
+			(int) $collection_result['max_num_pages'],
+			(int) $collection_result['paged'],
+			// No view.js on this block: real links, not inert buttons.
+			\SGS\Blocks\Grid_Pagination::MODE_LINK
 		);
-
-		$empty_message = (string) ( $attributes['emptyMessage'] ?? '' );
 	} else {
-		$product_ids   = \SGS\Blocks\Card_Grid_Products::get_product_ids( $attributes );
-		$empty_message = (string) ( $attributes['productEmptyMessage'] ?? '' );
+		$product_ids = \SGS\Blocks\Card_Grid_Products::get_product_ids( $attributes );
 	}
 
 	// ── Build shared wrapper props (same CSS vars the other modes use) ───────
@@ -104,10 +97,7 @@ defined( 'ABSPATH' ) || exit;
 	// ── Empty state (FR-24-6 reuse) ──────────────────────────────────────────
 	if ( empty( $product_ids ) ) {
 		// The client's message on the live site; with none set, nothing there and a notice on the editor canvas.
-		$empty_message = trim( sanitize_text_field( $empty_message ) );
-		if ( '' === $empty_message && ! \SGS\Blocks\sgs_is_frontend_render() ) {
-			$empty_message = __( 'Nothing to show yet. Visitors see nothing here unless you set an empty-state message.', 'sgs-blocks' );
-		}
+		$empty_message = \SGS\Blocks\Card_Grid_Results::empty_message( $attributes, \SGS\Blocks\sgs_is_frontend_render() );
 		ob_start();
 		if ( '' !== $empty_message ) {
 			?>
@@ -133,20 +123,15 @@ defined( 'ABSPATH' ) || exit;
 		return;
 	}
 
-	// ── Render each result as an sgs/product-card ───────────────────────────
-	// Mirror of the former content-collection render.php §6 — render_block()
-	// returns fully-rendered, escaped markup (house pattern file:render.php:242).
-	// Spec 38A §6.2 delegated parts: the grid's own parts are never printed in
-	// this mode, so the grid's motion on its mapped parts (block.json
-	// supports.sgs.motionDelegate) becomes each card's own motion, and with the
-	// stagger's apply on, a card with no entrance takes the grid's.
-	$card_grid_child_motion = \SGS\Blocks\Motion\Sgs_Motion_Delegate::child_motion( 'sgs/card-grid', $attributes );
-
-	// The grid's one template sgs/product-card is the design every card renders with (the Query Loop post-template
-	// model): its saved attributes sit over the grid-forwarded card settings, and each product's identity over both.
-	// The grid registers with skip_inner_blocks (Card_Grid_Template::metadata_settings), so the template itself never
-	// renders and $content stays unused.
+	// ── Render each result as the grid's template sgs/product-card ──────────
+	// render_block() returns fully-rendered, escaped markup. The template is the design every card renders with (the
+	// Query Loop post-template model): its saved attributes, then each product's identity over them. The grid
+	// registers with skip_inner_blocks (Card_Grid_Template::metadata_settings), so the template itself never renders
+	// and $content stays unused. Spec 38A §6.2: each card's motion is the template's own, and with the stagger's apply
+	// on, a card root with no entrance of its own takes the grid's (Sgs_Motion_Delegate::child_motion).
 	$card_grid_template_attrs = \SGS\Blocks\Card_Grid_Template::template_attrs( $block );
+	$card_grid_card_motion    = \SGS\Blocks\Motion\Sgs_Motion_Delegate::child_motion( 'sgs/card-grid', $attributes, $card_grid_template_attrs['sgsMotion'] ?? null );
+	$card_grid_card_own       = null === $card_grid_card_motion ? array() : array( 'sgsMotion' => $card_grid_card_motion );
 	ob_start();
 
 	if ( $is_cpt_collection ) {
@@ -168,27 +153,12 @@ defined( 'ABSPATH' ) || exit;
 				? 'wc-product'
 				: 'sgs-cpt';
 
-			// Collection-level card-behaviour attrs forwarded to each card.
-			// Defaults match product-card's own defaults, so omitting them stays
-			// backwards-compatible (R-22-9 — no per-item logic).
-			$card_forwarded = array(
-				// showPickers: false on browsing grids suppresses axis + pill pickers.
-				'showPickers'  => isset( $attributes['showPickers'] ) ? (bool) $attributes['showPickers'] : true,
-				// ctaBehaviour: learn-more (link to the product page) is the browsing default.
-				'ctaBehaviour' => isset( $attributes['ctaBehaviour'] ) ? sanitize_key( $attributes['ctaBehaviour'] ) : 'learn-more',
-				// showLadder: false on browsing grids — price + per-unit note only.
-				'showLadder'   => isset( $attributes['showLadder'] ) ? (bool) $attributes['showLadder'] : false,
-			);
-			if ( null !== $card_grid_child_motion ) {
-				$card_forwarded['sgsMotion'] = $card_grid_child_motion;
-			}
 			$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
-				$card_forwarded,
 				$card_grid_template_attrs,
 				array(
 					'sourceMode' => $item_source_mode,
 					'productId'  => $collection_post_id,
-				)
+				) + $card_grid_card_own
 			);
 
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
@@ -201,19 +171,12 @@ defined( 'ABSPATH' ) || exit;
 		endforeach;
 	} else {
 		foreach ( $product_ids as $wc_product_id ) :
-			$card_forwarded = array(
-				'showLadder' => (bool) ( $attributes['productShowLadder'] ?? false ),
-			);
-			if ( null !== $card_grid_child_motion ) {
-				$card_forwarded['sgsMotion'] = $card_grid_child_motion;
-			}
 			$card_attrs = \SGS\Blocks\Card_Grid_Template::card_attrs(
-				$card_forwarded,
 				$card_grid_template_attrs,
 				array(
 					'sourceMode' => 'wc-product',
 					'productId'  => absint( $wc_product_id ),
-				)
+				) + $card_grid_card_own
 			);
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
 			echo render_block(
@@ -225,7 +188,7 @@ defined( 'ABSPATH' ) || exit;
 		endforeach;
 	}
 
-	// The cards share one motion scope (identical motion), so the editor preview prints its style tag once.
+	// The cards share one motion scope (the template's motion), so the editor preview prints its style tag once.
 	$wc_cards_html = \SGS\Blocks\Motion\Sgs_Motion_Delegate::single_scope_styles( (string) ob_get_clean() );
 
 	// Item-array stagger (Spec 38A FR-38A-26) on the delegated cards: each card's

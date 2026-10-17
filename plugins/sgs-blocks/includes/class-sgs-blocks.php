@@ -247,6 +247,8 @@ final class SGS_Blocks {
 
 		// Registers sgs/card-grid with skip_inner_blocks before the blocks below register.
 		require_once SGS_BLOCKS_PATH . 'includes/class-card-grid-template.php';
+		// The products-mode grid's pagination and empty-state message (its render and its editor route share them).
+		require_once SGS_BLOCKS_PATH . 'includes/class-card-grid-results.php';
 
 		$block_dirs = array_filter(
 			scandir( $blocks_dir ),

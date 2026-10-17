@@ -3,11 +3,12 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import { useMergeRefs } from '@wordpress/compose';
 import { IconPreview } from '../../../components';
 import { colourVar, focalPointToObjectPosition, BandWrap } from '../../../utils';
 import ProductTemplateCanvas from './ProductTemplateCanvas';
 
-export default function CardGridCanvas( { attributes, clientId, cardForwarded, isWcProductMode, isCptCollectionMode, blockProps, pageButtonPreviewCss, wrapper, gridStyle, items, cardPreview, titleStyle, subtitleStyle, HeadingTag } ) {
+export default function CardGridCanvas( { attributes, clientId, sep, isWcProductMode, isCptCollectionMode, blockProps, pageButtonPreviewCss, wrapper, gridStyle, items, cardPreview, titleStyle, subtitleStyle, HeadingTag } ) {
 	const {
 		variant,
 		effectHover,
@@ -21,7 +22,31 @@ export default function CardGridCanvas( { attributes, clientId, cardForwarded, i
 		overlayGradient,
 		overlayOpacity,
 		overlayBlendMode,
+		// The settings that pick, page and describe a products-mode grid's products, named one by one: what the canvas
+		// sends to POST /sgs/v1/card-grid-items, which runs the page's own queries and returns its pagination and
+		// empty-state message (Card_Grid_Items_Rest, Card_Grid_Results).
+		source,
+		pagination,
+		contentType,
+		selectionRule,
+		count,
+		handpickedIds,
+		categoryTerm,
+		emptyMessage,
+		productSource,
+		productCollection,
+		productLimit,
+		productCategories,
+		productTags,
+		productFeatured,
+		productOnSale,
+		productInStock,
+		productIds,
+		productEmptyMessage,
 	} = attributes;
+	// The separators preview draws on the element whose children are the cards: the band when there is one, else the root.
+	const rootRef = useMergeRefs( [ blockProps.ref, wrapper.hasBandProps ? null : sep.ref ] );
+	const query = { source, pagination, contentType, selectionRule, count, handpickedIds, categoryTerm, emptyMessage, productSource, productCollection, productLimit, productCategories, productTags, productFeatured, productOnSale, productInStock, productIds, productEmptyMessage };
 
 	return (
 		<>
@@ -30,11 +55,11 @@ export default function CardGridCanvas( { attributes, clientId, cardForwarded, i
 			{ isWcProductMode || isCptCollectionMode ? (
 				<>
 					{ pageButtonPreviewCss && <style>{ pageButtonPreviewCss }</style> }
-					<ProductTemplateCanvas attributes={ attributes } clientId={ clientId } blockProps={ blockProps } gridStyle={ gridStyle } forwarded={ cardForwarded } />
+					<ProductTemplateCanvas query={ query } clientId={ clientId } blockProps={ blockProps } gridStyle={ gridStyle } sep={ sep } />
 				</>
 			) : (
-				<div { ...blockProps } style={ { ...blockProps.style, ...wrapper.style, ...gridStyle } }>
-				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
+				<div { ...blockProps } ref={ rootRef } style={ { ...blockProps.style, ...wrapper.style, ...gridStyle, ...( wrapper.hasBandProps ? {} : sep.style ) } }>
+				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.hasBandProps ? { ...wrapper.bandStyle, ...sep.style } : wrapper.bandStyle } bandRef={ wrapper.hasBandProps ? sep.ref : undefined }>
 					{ items.length === 0 && (
 						<p className="sgs-card-grid__placeholder">
 							{ __(
