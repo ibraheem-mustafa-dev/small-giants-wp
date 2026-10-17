@@ -40,7 +40,7 @@ You have GitHub only: no SSH, no framework DB, no `.claude/secrets/`, no `node_m
 
 - Take Step 1 from the brief; do not re-derive it. Where the brief says what is deployed, trust it; you cannot check a live site.
 - Run Steps 2 to 9 as written. Step 8's independent check runs here as a subagent.
-- The preflight's memory check passes vacuously here (there is no `MEMORY.md` in the cloud); the landing step re-runs it locally.
+- Two preflight results differ here, and the landing step re-runs the preflight locally to cover both. The memory check passes vacuously (there is no `MEMORY.md` in the cloud). The dangling-link check reports `.claude/specs/README.md -> 02-SGS-BLOCKS-REFERENCE.md`: that file is generated locally by `/sgs-update` from the framework DB and is gitignored, so it never exists in a cloud checkout. Treat that one finding as expected; any other preflight failure blocks as usual.
 - Step 10, cloud part: commit by explicit pathspec to this session's own branch, delete the brief file in the same commit (prompt files are single-use), and push. Do not push to `main`; the landing step does that.
 - End with the Output as specified, with one extra first line: `Land with: /handoff land <this session's branch>`. It appears in this cloud session, where Bean reads it.
 
