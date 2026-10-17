@@ -1,0 +1,4 @@
+{
+	"_meta": "Allowed resting or focus-state opacity below 1 on a focusable root. One entry per selector with path, selector and reason; a stale entry fails the test. At most 5 entries.",
+	"entries": []
+}

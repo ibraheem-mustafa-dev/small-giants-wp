@@ -160,7 +160,14 @@
 
 .sgs-toc__link:hover,
 .sgs-toc__link:focus-visible {
-	text-decoration: none; opacity: 0.85;
+	text-decoration: none;
+}
+
+/* The pointer-hover dim never applies to a keyboard-focused link: opacity on the
+ * link also fades its focus indicator, and the colour belongs to the operator, so it
+ * cannot be mixed here. */
+.sgs-toc__link:hover:not(:focus-visible) {
+	opacity: 0.85;
 }
 
 .sgs-toc__link--active {

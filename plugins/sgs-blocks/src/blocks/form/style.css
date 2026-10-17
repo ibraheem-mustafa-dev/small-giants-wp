@@ -747,8 +747,16 @@ select.sgs-form-field__input {
 }
 
 .sgs-form-field__consent-text a {
-	color: var(--wp--preset--color--primary-dark, #0f7e80);
-	text-decoration: none; opacity: 0.85;
+	/* The 85% resting tint is mixed into the text colour, never an opacity on the link:
+	 * opacity on the link also fades its focus indicator. */
+	color: color-mix( in srgb, var(--wp--preset--color--primary-dark, #0f7e80) 85%, transparent );
+	text-decoration: none;
+}
+
+@supports not (color: color-mix( in srgb, red 50%, transparent )) {
+	.sgs-form-field__consent-text a {
+		color: var(--wp--preset--color--primary-dark, #0f7e80);
+	}
 }
 
 /* ----------------------------------------------------------------

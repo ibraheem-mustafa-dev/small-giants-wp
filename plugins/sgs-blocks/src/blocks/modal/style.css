@@ -56,9 +56,18 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: inherit;
+	/* currentColor inside `color` is the inherited colour. The 85% resting tint is
+	 * mixed into the text colour, never an opacity on the trigger: opacity on the
+	 * trigger also fades its focus indicator. */
+	color: color-mix( in srgb, currentColor 85%, transparent );
 	font-weight: 400;
-	text-decoration: none; opacity: 0.85;
+	text-decoration: none;
+}
+
+@supports not (color: color-mix( in srgb, red 50%, transparent )) {
+	.sgs-modal__trigger--text-link {
+		color: inherit;
+	}
 }
 
 .sgs-modal__trigger--text-link:hover {
