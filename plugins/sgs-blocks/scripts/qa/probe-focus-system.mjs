@@ -41,9 +41,10 @@
  * (a gap on their container), because the bloom of one overpaints the next. Known gap: no dual-thumb price slider (no SGS
  * block renders it; WooCommerce's own filter markup does, so /shop/ covers it).
  *
- * Token check: each stop's computed outline-color must equal the resolved --sgs-focus-ring (--sgs-focus-ink for a signature
- * stop or a duotone or photo ground) and its box-shadow must carry a solid hairline in the resolved --sgs-focus-inner, else
- * `token-mismatch`. A page with no --sgs-focus-* properties prints `tokens not defined` and judges nothing.
+ * Token check: each stop's computed outline-color must equal the resolved --sgs-focus-ring (--sgs-focus-ground-core for a
+ * signature stop or a duotone or photo ground) and its box-shadow must carry a solid hairline in the resolved
+ * --sgs-focus-hairline, which on a G2 stop must differ from the core, else `token-mismatch`. An inline element that wraps
+ * (one ring per line box) is measured on its widest line box. A page with no --sgs-focus-* properties prints `tokens not defined` and judges nothing.
  *
  * Own headless Playwright from plugins/sgs-blocks/node_modules, never the shared MCP browser.
  *

@@ -214,23 +214,29 @@ export function sameColour( a, b ) {
 }
 
 /**
- * The token check for one stop. `s.tokens` is { defined, ring, ink, inner, expect } (colour strings resolved in the page;
- * `expect` is 'ink' for a G2 or signature stop, 'inner' for a G2 stop on a dark ground, else 'ring'). Returns { status: 'undefined' | 'ok' | 'mismatch', detail }.
+ * The token check for one stop. `s.tokens` is { defined, ring, ink, inner, core, hairline, expect } (colour strings
+ * resolved in the page; `expect` is 'core' for a G2 or signature stop, else 'ring'). The hairline must be the resolved
+ * --sgs-focus-hairline (the inner token when a page predates it), and a G2 stop's hairline must differ from its core: the
+ * two-tone pair is what lets one of them reach 3:1 on any photo. Returns { status: 'undefined' | 'ok' | 'mismatch', detail }.
  * 'undefined' means the page has no --sgs-focus-* properties, so nothing is judged.
  */
 export function judgeTokens( s ) {
 	const t = s.tokens;
 	if ( ! t || ! t.defined ) return { status: 'undefined', detail: 'tokens not defined' };
 	if ( s.noOutline ) return { status: 'ok', detail: '' };
-	const wantToken = { ink: [ t.ink, '--sgs-focus-ink' ], inner: [ t.inner, '--sgs-focus-inner' ], ring: [ t.ring, '--sgs-focus-ring' ] }[ t.expect ] || [ t.ring, '--sgs-focus-ring' ];
+	const wantToken = { ink: [ t.ink, '--sgs-focus-ink' ], inner: [ t.inner, '--sgs-focus-inner' ], core: [ t.core, '--sgs-focus-ground-core' ], ring: [ t.ring, '--sgs-focus-ring' ] }[ t.expect ] || [ t.ring, '--sgs-focus-ring' ];
 	const want = parseColour( wantToken[ 0 ] );
 	const got = parseColour( s.outline.colour );
 	if ( ! sameColour( got, want ) ) {
 		return { status: 'mismatch', detail: `outline-color ${ s.outline.colour } is not the resolved ${ wantToken[ 1 ] } ${ wantToken[ 0 ] }` };
 	}
-	const inner = parseColour( t.inner );
+	const [ hairRaw, hairName ] = t.hairline ? [ t.hairline, '--sgs-focus-hairline' ] : [ t.inner, '--sgs-focus-inner' ];
+	const inner = parseColour( hairRaw );
 	const hairline = shadowLayers( s.boxShadow ).some( ( l ) => l.blur === 0 && l.spread > 0 && l.colour && l.colour[ 3 ] > 0.5 && sameColour( l.colour, inner ) );
-	if ( ! hairline ) return { status: 'mismatch', detail: `box-shadow has no solid hairline in the resolved --sgs-focus-inner ${ t.inner } (${ s.boxShadow })` };
+	if ( ! hairline ) return { status: 'mismatch', detail: `box-shadow has no solid hairline in the resolved ${ hairName } ${ hairRaw } (${ s.boxShadow })` };
+	if ( t.expect === 'core' && sameColour( inner, want ) ) {
+		return { status: 'mismatch', detail: `G2 core and hairline are the same colour ${ hairRaw }, so neither is a second tone` };
+	}
 	return { status: 'ok', detail: '' };
 }
 
@@ -450,6 +456,10 @@ export function selfTest() {
 	const g2 = tokenStop( { outline: ringOutline( rgb( 26, 32, 44 ) ), tokens: tok( { expect: 'ink' } ) } );
 	check( 'tokens: a G2 or signature stop compares with ink', judgeStop( g2, mode ).length === 0 );
 	check( 'tokens: a G2 stop painted in the accent fails', judgeStop( tokenStop( { tokens: tok( { expect: 'ink' } ) } ), mode ).length === 1 );
+	const darkG2 = ( hair ) => tokenStop( { outline: ringOutline( rgb( 250, 249, 246 ) ), boxShadow: `${ hair } 0px 0px 0px 2px`, tokens: tok( { expect: 'core', core: rgb( 250, 249, 246 ), hairline: hair } ) } );
+	check( 'tokens: a G2 stop on a dark ground, light core and ink hairline, passes', judgeStop( darkG2( rgb( 26, 32, 44 ) ), mode ).length === 0 );
+	const oneTone = judgeStop( darkG2( rgb( 250, 249, 246 ) ), mode );
+	check( 'tokens: a G2 stop whose hairline equals its core fails', oneTone.length === 1 && oneTone[ 0 ].includes( 'same colour' ) );
 	check( 'tokens: undefined tokens judge nothing', judgeStop( tokenStop( { outline: ringOutline( rgb( 1, 2, 3 ) ), tokens: { defined: false } } ), mode ).length === 0 );
 	check( 'tokens: the run says "tokens not defined" when no stop has them', summarise( [ tokenStop( { tokens: { defined: false } } ) ], mode ).tokenStatus === 'tokens not defined' );
 	check( 'tokens: the run counts checked stops when they exist', summarise( [ tokenStop( {} ), tokenStop( {} ) ], mode ).tokenStatus === 'token match checked on 2 of 2 stops' );

@@ -9,7 +9,8 @@
  * `.sgs-focus-card`) whose ring must wrap the card and leave the link bare, and the same card with its own
  * `overflow:hidden`, an `sgs-focus--inset` ring and an `overflow:hidden` parent, which the clip test must not flag.
  * A fifth block carries a section's own tokens (two more EXTRA_STOPS, `data-focus-expect-ring`): a section that sets
- * `--sgs-focus-ring` itself, and an `sgs-on-light` section that sets its own accent preset, each of whose buttons must
+ * `--sgs-focus-ring` itself, and an `sgs-on-light` section that sets its own primary-dark preset (the light-ground ring
+ * fallback), each of whose buttons must
  * ring in that section's colour, not the site default.
  * A sixth block holds a signature button that is never focused and carries `sgs-focus-preview` (the editor's Focus look
  * toggle, `tabindex="-1"` so Tab skips it): its `::before` must paint the conic band and spin it, or hold no animation
@@ -65,14 +66,14 @@ export function fixtureHtml( focusCss ) {
 	<a class="b b-fill" data-focus-expect-ring="${ SECTION_RING }" href="#own-ring">Section ring token</a>
 </section>
 <section class="g sgs-on-light" data-ground="own-accent">
-	<a class="b b-fill" data-focus-expect-ring="${ SECTION_RING }" href="#own-accent">Section accent preset</a>
+	<a class="b b-fill" data-focus-expect-ring="${ SECTION_RING }" href="#own-accent">Section primary-dark preset</a>
 </section>`;
 	const defects = defectsHtml();
 	return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--wp--preset--color--surface:#ffffff;--wp--preset--color--text:#0b1020;--wp--preset--color--accent:#0e7c86;--wp--preset--color--primary:#1f3a5f;--wp--preset--color--accent-light:#7ad0d8}
 body{margin:0;font:16px/1.4 system-ui,sans-serif}
-${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffffff' }, { key: 'cards', css: 'background:#ffffff;color:#0b1020' }, { key: 'own-ring', css: `background:#ffffff;color:#0b1020;--sgs-focus-ring:${ SECTION_RING }` }, { key: 'own-accent', css: `background:#ffffff;color:#0b1020;--wp--preset--color--accent:${ SECTION_RING }` } ] ).map( ( g ) => `[data-ground="${ g.key }"]{${ g.css }}` ).join( ' ' ) }
+${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffffff' }, { key: 'cards', css: 'background:#ffffff;color:#0b1020' }, { key: 'own-ring', css: `background:#ffffff;color:#0b1020;--sgs-focus-ring:${ SECTION_RING }` }, { key: 'own-accent', css: `background:#ffffff;color:#0b1020;--wp--preset--color--primary-dark:${ SECTION_RING }` } ] ).map( ( g ) => `[data-ground="${ g.key }"]{${ g.css }}` ).join( ' ' ) }
 .g{padding:28px 24px;display:flex;flex-wrap:wrap;gap:28px;align-items:center}
 .b{font:inherit;padding:10px 18px;border:2px solid transparent;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
 .b-fill{background:#0e7c86;color:#ffffff;border-width:0}

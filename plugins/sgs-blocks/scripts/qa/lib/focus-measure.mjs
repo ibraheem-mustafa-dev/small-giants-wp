@@ -131,7 +131,13 @@ function readFocused( radiusExemptSelector ) {
 		return { outline: got.outline, boxShadow: got.boxShadow, radius: '', maxRadius: Math.min( thumb.width, thumb.height ) / 2 };
 	};
 	const state = isRange ? thumbFromRules() : read( target, null );
-	const r = isRange ? thumb : ( () => { const b = target.getBoundingClientRect(); return { x: b.left, y: b.top, width: b.width, height: b.height }; } )();
+	// An inline element that wraps paints one ring per line box, so its bounding box (the union of the lines) has no ring
+	// on most of its edge: it is measured on its widest line box, which carries a whole ring of its own.
+	const r = isRange ? thumb : ( () => {
+		const frags = getComputedStyle( target ).display === 'inline' ? [ ...target.getClientRects() ] : [];
+		const b = frags.length > 1 ? frags.reduce( ( w, f ) => ( f.width > w.width ? f : w ) ) : target.getBoundingClientRect();
+		return { x: b.left, y: b.top, width: b.width, height: b.height, ...( frags.length > 1 ? { lineBoxes: frags.length } : {} ) };
+	} )();
 
 	// Clip test: any ancestor that clips (overflow, paint containment, clip-path) whose padding box does not contain the outline box.
 	const ow = Number.parseFloat( state.outline.width ) || 0;
@@ -186,7 +192,8 @@ function readFocused( radiusExemptSelector ) {
 	};
 	const card = cardEl ? { cardRing: drawsRing( cardEl ), linkRing: drawsRing( el ) } : null;
 	// The --sgs-focus-* tokens on the focused element, each resolved to a computed colour on a throwaway span. A G2 ground
-	// (duotone, photo or video container) or a signature stop paints its core in the ink, every other stop in the ring.
+	// (duotone, photo or video container) or a signature stop paints its core in --sgs-focus-ground-core (the ink on a
+	// light ground, the inner token on a dark one) and its hairline in --sgs-focus-hairline; every other stop paints the ring.
 	const own = getComputedStyle( target );
 	const resolveToken = ( name ) => {
 		const raw = own.getPropertyValue( name ).trim();
@@ -204,15 +211,10 @@ function readFocused( radiusExemptSelector ) {
 		ring: resolveToken( '--sgs-focus-ring' ),
 		ink: resolveToken( '--sgs-focus-ink' ),
 		inner: resolveToken( '--sgs-focus-inner' ),
-		expect: ( () => {
-			// The core follows the NEAREST ground class: the light inner token on a dark ground, else the ink token (focus.css).
-			const nearest = target.closest( '.sgs-on-dark, .sgs-on-light' );
-			const onDark = !! nearest && nearest.classList.contains( 'sgs-on-dark' );
-			if ( sig ) return onDark ? 'inner' : 'ink';
-			const g2 = target.closest( '.sgs-focus--duotone, .sgs-container--has-bg-image, .sgs-container--has-bg-video' );
-			if ( ! g2 ) return 'ring';
-			return onDark ? 'inner' : 'ink';
-		} )(),
+		core: resolveToken( '--sgs-focus-ground-core' ),
+		hairline: resolveToken( '--sgs-focus-hairline' ),
+		// The core follows the NEAREST ground (focus.css), which --sgs-focus-ground-core carries.
+		expect: sig || target.closest( '.sgs-focus--duotone, .sgs-container--has-bg-image, .sgs-container--has-bg-video' ) ? 'core' : 'ring',
 		// A fixture stop may name the colour its section's own tokens must give the ring (data-focus-expect-ring).
 		expectRing: target.dataset.focusExpectRing || null,
 	};

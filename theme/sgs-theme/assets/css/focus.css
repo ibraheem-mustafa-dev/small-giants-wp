@@ -18,7 +18,16 @@
 @property --sgs-focus-halo { syntax: "*"; inherits: false; }
 @property --sgs-focus-under { syntax: "*"; inherits: false; }
 
-/* 1. Tokens: the client's snapshot (settings.custom.focus -> --wp--custom--focus--*), framework defaults from the palette. */
+/* 1. Tokens: the client's snapshot (settings.custom.focus -> --wp--custom--focus--*), framework defaults from the palette.
+   The painted hairline is --sgs-focus-hairline: the inner token on G1, and on G2 and G3 the ground's band, the other half
+   of the two-tone pair (the light inner token on a light ground, the ink on a dark one), so the core and the hairline
+   are never the same colour and one of them always reaches 3:1 on a photo. --sgs-focus-ring-on-light is the light-ground
+   ring on every ground, so a block whose surface turns light at a breakpoint can take it. */
+:root,
+.sgs-on-light,
+.sgs-on-dark {
+	--sgs-focus-ring-on-light: var(--wp--custom--focus--ring, var(--wp--preset--color--primary-dark, var(--wp--custom--focus--ink, var(--wp--preset--color--text, #0b1020))));
+}
 :root,
 .sgs-on-light {
 	--sgs-focus-width: var(--wp--custom--focus--width, 2px);
@@ -26,6 +35,8 @@
 	--sgs-focus-ink: var(--wp--custom--focus--ink, var(--wp--preset--color--text, #0b1020));
 	--sgs-focus-ring: var(--wp--custom--focus--ring, var(--wp--preset--color--primary-dark, var(--sgs-focus-ink)));
 	--sgs-focus-ground-core: var(--sgs-focus-ink);
+	--sgs-focus-ground-band: var(--sgs-focus-inner);
+	--sgs-focus-hairline: var(--sgs-focus-inner);
 	--sgs-focus-near: var(--wp--custom--focus--near, var(--sgs-focus-ring));
 	--sgs-focus-far: var(--wp--custom--focus--far, var(--sgs-focus-ring));
 	--sgs-focus-sig-a: var(--wp--custom--focus--signature-a, var(--wp--preset--color--primary));
@@ -34,6 +45,8 @@
 }
 .sgs-on-dark {
 	--sgs-focus-ground-core: var(--sgs-focus-inner);
+	--sgs-focus-ground-band: var(--sgs-focus-ink);
+	--sgs-focus-hairline: var(--sgs-focus-inner);
 	--sgs-focus-ring: var(--wp--custom--focus--ring-on-dark, var(--wp--preset--color--accent, var(--sgs-focus-inner)));
 	--sgs-focus-near: var(--wp--custom--focus--near-on-dark, var(--sgs-focus-ring));
 	--sgs-focus-far: var(--wp--custom--focus--far-on-dark, var(--sgs-focus-ring));
@@ -46,6 +59,7 @@
 .sgs-container--has-bg-video,
 .sgs-focus--duotone {
 	--sgs-focus-ring: var(--sgs-focus-ground-core);
+	--sgs-focus-hairline: var(--sgs-focus-ground-band);
 	--sgs-focus-near: var(--sgs-focus-inner);
 	--sgs-focus-far: var(--sgs-focus-ink);
 }
@@ -53,7 +67,7 @@
 .sgs-focus--inset,
 .sgs-focus--inset.sgs-focus-card > .sgs-block-link-overlay {
 	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
-	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2) var(--sgs-focus-inner);
+	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2) var(--sgs-focus-hairline);
 }
 
 /* 2. The indicator: one declaration set, six arms (element, adjacent proxy, scoped proxy, card proxy, card overlay, editor preview).
@@ -72,7 +86,7 @@
 	outline-offset: var(--sgs-focus-offset, var(--sgs-focus-width));
 	box-shadow:
 		var(--sgs-focus-halo,
-			0 0 0 var(--sgs-focus-offset, var(--sgs-focus-width)) var(--sgs-focus-inner),
+			0 0 0 var(--sgs-focus-offset, var(--sgs-focus-width)) var(--sgs-focus-hairline),
 			0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) 55%, transparent),
 			0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) 30%, transparent)),
 		var(--sgs-focus-under, 0 0 #0000);
@@ -86,12 +100,12 @@
 input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-webkit-slider-thumb {
 	outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
 	outline-offset: var(--sgs-focus-width);
-	box-shadow: 0 0 0 var(--sgs-focus-width) var(--sgs-focus-inner);
+	box-shadow: 0 0 0 var(--sgs-focus-width) var(--sgs-focus-hairline);
 }
 input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-moz-range-thumb {
 	outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
 	outline-offset: var(--sgs-focus-width);
-	box-shadow: 0 0 0 var(--sgs-focus-width) var(--sgs-focus-inner);
+	box-shadow: 0 0 0 var(--sgs-focus-width) var(--sgs-focus-hairline);
 }
 
 /* The slider itself draws no ring, or the browser's default ring would wrap the whole track beside the thumb's. */
@@ -111,7 +125,7 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 		outline-offset: var(--sgs-focus-offset, var(--sgs-focus-width));
 		box-shadow:
 			var(--sgs-focus-halo,
-				0 0 0 var(--sgs-focus-offset, var(--sgs-focus-width)) var(--sgs-focus-inner),
+				0 0 0 var(--sgs-focus-offset, var(--sgs-focus-width)) var(--sgs-focus-hairline),
 				0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) 55%, transparent),
 				0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) 30%, transparent)),
 			var(--sgs-focus-under, 0 0 #0000);
@@ -138,6 +152,7 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 .sgs-focus--signature:focus-visible:not(#wpadminbar *),
 .sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *) {
 	--sgs-focus-ring: var(--sgs-focus-ground-core);
+	--sgs-focus-hairline: var(--sgs-focus-ground-band);
 	--sgs-focus-near: var(--sgs-focus-sig-b);
 	--sgs-focus-far: var(--sgs-focus-sig-a);
 }

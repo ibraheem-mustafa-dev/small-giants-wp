@@ -412,6 +412,17 @@
 		   carries the non-colour signal; it changes no box geometry because the
 		   tab is a full-width block with its own min-height. */
 		font-weight: 700;
+		/* The selected tab is a light surface here whatever the section's ground, and its inset ring sits on that fill:
+		   it takes the light-ground focus tokens (focus.css), so a dark or photo section does not hand it a light ring. */
+		--sgs-focus-ground-core: var( --sgs-focus-ink );
+		--sgs-focus-ground-band: var( --sgs-focus-inner );
+		--sgs-focus-ring: var( --sgs-focus-ring-on-light );
+		--sgs-focus-hairline: var( --sgs-focus-inner );
+	}
+
+	/* On a photo or video ground the light tab keeps the G2 core (focus.css), now resolved against its own light fill. */
+	:is( .sgs-container--has-bg-image, .sgs-container--has-bg-video ) .sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__tab[aria-selected="true"] {
+		--sgs-focus-ring: var( --sgs-focus-ground-core );
 	}
 
 	/* Hide the underline indicator at mobile — full-button styling carries the active state */

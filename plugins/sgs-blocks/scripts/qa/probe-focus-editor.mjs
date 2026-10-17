@@ -70,7 +70,7 @@ function readCanvasRules( needle ) {
 /**
  * In canvas: the focused element and every contenteditable / block wrapper above it, with what they paint. A row is
  * `system` when it paints the focus system's signature (a solid outline in the resolved --sgs-focus-ring at the
- * resolved --sgs-focus-width, or a box-shadow carrying the resolved --sgs-focus-inner), `foreign` when it paints a
+ * resolved --sgs-focus-width, or a box-shadow carrying the resolved --sgs-focus-hairline), `foreign` when it paints a
  * solid outline or a box-shadow of some other writer (an older stylesheet still live, editor chrome). The editor's own
  * dashed hover outline is neither.
  */
@@ -89,7 +89,7 @@ function readRing() {
 	const sys = {
 		width: resolve( 'width', tokens.getPropertyValue( '--sgs-focus-width' ).trim() ),
 		ring: resolve( 'color', tokens.getPropertyValue( '--sgs-focus-ring' ).trim() ),
-		inner: resolve( 'color', tokens.getPropertyValue( '--sgs-focus-inner' ).trim() ),
+		inner: resolve( 'color', ( tokens.getPropertyValue( '--sgs-focus-hairline' ) || tokens.getPropertyValue( '--sgs-focus-inner' ) ).trim() ),
 	};
 	const rows = [];
 	for ( let n = active, i = 0; n && n !== document.documentElement && i < 14; n = n.parentElement, i++ ) {

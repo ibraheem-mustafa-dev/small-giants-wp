@@ -256,6 +256,31 @@ const CHECKS = {
 		}
 		return problems;
 	},
+	g2HairlineIsTheOtherTone( root ) {
+		// G2 and G3 are a two-tone pair: the hairline is the ground's band (the inner token on a light ground, the ink on
+		// a dark one), never the core's colour, and every indicator paints --sgs-focus-hairline, never the inner token.
+		const problems = [];
+		const seen = { light: false, dark: false, g2: false, signature: false };
+		root.walkRules( ( rule ) => {
+			if ( inForced( rule ) || inSupports( rule ) || atRuleChain( rule ).some( ( a ) => a.startsWith( '@media (prefers' ) ) ) {
+				return;
+			}
+			const sels = rule.selectors.map( norm );
+			const decl = ( prop ) => { let v = null; rule.each( ( n ) => { if ( 'decl' === n.type && prop === n.prop ) v = norm( n.value ); } ); return v; };
+			if ( sels.includes( ':root' ) && sels.includes( '.sgs-on-light' ) ) seen.light = 'var(--sgs-focus-inner)' === decl( '--sgs-focus-ground-band' );
+			if ( sels.includes( '.sgs-on-dark' ) && 1 === sels.length ) seen.dark = 'var(--sgs-focus-ink)' === decl( '--sgs-focus-ground-band' );
+			if ( sels.includes( '.sgs-focus--duotone' ) && sels.includes( '.sgs-container--has-bg-image' ) ) seen.g2 = 'var(--sgs-focus-ground-band)' === decl( '--sgs-focus-hairline' );
+			if ( sels.includes( '.sgs-focus--signature:focus-visible:not(#wpadminbar *)' ) && null !== decl( '--sgs-focus-ring' ) ) seen.signature = 'var(--sgs-focus-ground-band)' === decl( '--sgs-focus-hairline' );
+			rule.walkDecls( /^(box-shadow|--sgs-focus-halo)$/, ( d ) => {
+				if ( d.value.includes( 'var(--sgs-focus-inner)' ) ) problems.push( `${ sels.join( ', ' ) } paints the inner token instead of --sgs-focus-hairline` );
+			} );
+		} );
+		if ( ! seen.light ) problems.push( ':root, .sgs-on-light must set --sgs-focus-ground-band to var(--sgs-focus-inner)' );
+		if ( ! seen.dark ) problems.push( '.sgs-on-dark must set --sgs-focus-ground-band to var(--sgs-focus-ink)' );
+		if ( ! seen.g2 ) problems.push( 'the duotone and photo rule must paint its hairline in var(--sgs-focus-ground-band)' );
+		if ( ! seen.signature ) problems.push( 'the signature rule must paint its hairline in var(--sgs-focus-ground-band)' );
+		return problems;
+	},
 	signaturePreviewMirrorsFocus( root ) {
 		const problems = [];
 		let seen = 0;
@@ -415,6 +440,7 @@ describe( 'focus.css, the one focus system', () => {
 		cardArmCarriesTheIndicator: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\):not\(#wpadminbar \*\)/g, '.sgs-focus-card:focus-visible:not(#wpadminbar *)' ),
 		sourceDrawsNothing: ( text ) => text.replace( /(\n\.sgs-focus-source:focus-visible:not\(#wpadminbar \*\) \{\s*)outline-style: none;/, '$1color: inherit;' ),
 		coreFollowsNearestGround: ( text ) => text.replace( '--sgs-focus-ground-core: var(--sgs-focus-inner)', '--sgs-focus-ground-core: var(--sgs-focus-ink)' ),
+		g2HairlineIsTheOtherTone: ( text ) => text.replace( '--sgs-focus-ground-band: var(--sgs-focus-ink)', '--sgs-focus-ground-band: var(--sgs-focus-inner)' ),
 		signaturePreviewMirrorsFocus: ( text ) => text.replace( /\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\)::before/g, '.sgs-focus--signature.sgs-focus-preview-x:not(#wpadminbar *)::before' ),
 		noHasFallbackKeepsAFocusRing: ( text ) => text.replace( /@supports not selector\(:has\(\*\)\)/, '@supports not selector(:is(*))' ),
 		cardOverlayCarriesTheRing: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\) > \.sgs-block-link-overlay/g, '.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay-x' ),

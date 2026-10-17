@@ -47,8 +47,12 @@ export async function resolvePage( base, spec ) {
 /** Load a URL, retrying when the edge answers 403 or a challenge. Returns the final status. */
 async function load( page, url ) {
 	for ( let attempt = 0; attempt < 4; attempt++ ) {
-		const res = await page.goto( url, { waitUntil: 'load', timeout: 60000 } );
-		const title = await page.title();
+		// A navigation that never reaches `load` (a slow third-party request) is retried like a 403, not fatal.
+		const res = await page.goto( url, { waitUntil: 'load', timeout: 60000 } ).catch( ( e ) => {
+			if ( ! /Timeout/.test( String( e && e.message ) ) ) throw e;
+			return null;
+		} );
+		const title = res ? await page.title() : 'load timed out';
 		if ( res && res.status() < 400 && ! /forbidden|just a moment|checking your browser/i.test( title ) ) {
 			await page.waitForLoadState( 'networkidle', { timeout: 15000 } ).catch( () => {} );
 			return res.status();
