@@ -285,11 +285,11 @@ def self_test() -> int:
     # A '#' earlier on the line must not hide the read behind it.
     if len(static_findings("<?php $d = '#fff'; $b = sanitize_html_class( $attributes['drawerBg'] );", "x.php", {"drawerBg"})) != 1:
         fails.append("static: a hex string earlier on the line hid a finding")
-    raw = ("<?php $c .= '--sgs-x-focus:' . sanitize_text_field( $attributes['focusRingColour'] ) . ';';\n"
+    raw = ("<?php $c .= '--sgs-x-focus:' . sanitize_text_field( $attributes['accentColour'] ) . ';';\n"
            "$d = 'color:' . esc_attr( (string) $attributes['textColourHover'] );")
     if len(static_findings(raw, "src/blocks/x/render.php", set())) != 2:
         fails.append("static: missed a colour written into a declaration through a text sanitiser")
-    good = ("<?php $c = '--sgs-x-focus:' . sgs_colour_value( $attributes['focusRingColour'] ) . ';';\n"
+    good = ("<?php $c = '--sgs-x-focus:' . sgs_colour_value( $attributes['accentColour'] ) . ';';\n"
             "$t = 'content:' . sanitize_text_field( $attributes['label'] );")
     if static_findings(good, "x.php", set()):
         fails.append("static: flagged a resolved colour or a non-colour declaration")

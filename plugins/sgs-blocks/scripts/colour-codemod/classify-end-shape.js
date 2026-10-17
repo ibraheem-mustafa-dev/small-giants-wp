@@ -131,7 +131,7 @@ const END_SHAPES = {
 	OUTLINE_NOT_GRADIENTABLE: {
 		key: 'outline-not-gradientable',
 		helper: 'NONE — CSS outline cannot hold a gradient, and a focus ring has no hover state; a flat colour via a custom property IS the terminal shape',
-		doc: 'proven live 2026-09-07: sgs/filter-search.focusRingColour (css_property=outline-color)',
+		doc: 'any attribute whose css_property is outline-color',
 	},
 	CANVAS_NOT_CSS: {
 		key: 'canvas-not-css',
@@ -648,7 +648,6 @@ function recommendEndShape( { blockDir, blockJson, attr, row, mechanism, current
 	// base selector, so calling it for an outline would overwrite the element's real resting
 	// border colour. CSS `outline` also cannot hold a gradient, and a focus ring has no hover
 	// state. A flat colour via a custom property IS the terminal shape here.
-	// Proven live 2026-09-07 on sgs/filter-search.focusRingColour.
 	const ownDbRow = dbBlockRows && dbBlockRows[ attr ];
 	if ( ownDbRow && typeof ownDbRow.css_property === 'string' && ownDbRow.css_property.startsWith( 'outline' ) ) {
 		return {
@@ -848,8 +847,7 @@ function main() {
 // outline attribute sent through it silently stops painting the outline and starts painting
 // a border — the control keeps its name while doing something else, and any gradient/hover
 // siblings created to feed it are dead by construction (outline takes no gradient; a focus
-// ring has no hover state). Caught by hand on sgs/product-search.focusRingColour 2026-09-07
-// after a parallel agent correctly refused the same shape on sgs/filter-search; this makes
+// ring has no hover state). This makes
 // the guard structural so the next one is caught by the gate, not by a diff review.
 function findOutlineRoutedThroughBorder() {
 	const out = [];

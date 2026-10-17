@@ -7,7 +7,6 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	RangeControl,
 	TextControl,
 	TextareaControl,
 	SelectControl,
@@ -114,10 +113,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		progressBarColourGradient,
 		progressBarColourHover,
 		progressBarColourHoverGradient,
-		formFocusRingColour,
-		formFocusRingWidth,
-		formFocusRingOpacity,
-		formFocusRingOffset,
 		fieldColumnsFrom,
 		prevColourBackground,
 		prevColourBackgroundHover,
@@ -532,19 +527,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								gradientValue: progressBarColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { progressBarColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'focus-ring',
-						label: __( 'Focus ring colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: formFocusRingColour,
-								onChange: ( val ) => setAttributes( { formFocusRingColour: val || 'primary' } ),
-								linked: true,
 							},
 						],
 					},
@@ -1240,51 +1222,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						] }
 					/>
 				</PanelBody>
-				<PanelBody
-					title={ __( 'Focus State', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<RangeControl
-						label={ __( 'Focus ring width (px)', 'sgs-blocks' ) }
-						help={ __( 'Outline width in pixels when an input is keyboard-focused.', 'sgs-blocks' ) }
-						value={ formFocusRingWidth }
-						onChange={ ( value ) =>
-							setAttributes( { formFocusRingWidth: value } )
-						}
-						min={ 1 }
-						max={ 6 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Focus ring opacity (%)', 'sgs-blocks' ) }
-						help={ __( '100 = fully opaque, 40 = subtle glow (recommended).', 'sgs-blocks' ) }
-						value={ formFocusRingOpacity }
-						onChange={ ( value ) =>
-							setAttributes( { formFocusRingOpacity: value } )
-						}
-						min={ 10 }
-						max={ 100 }
-						step={ 5 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Focus ring offset (px)', 'sgs-blocks' ) }
-						help={ __( 'Gap between input edge and focus ring.', 'sgs-blocks' ) }
-						value={ formFocusRingOffset }
-						onChange={ ( value ) =>
-							setAttributes( { formFocusRingOffset: value } )
-						}
-						min={ 0 }
-						max={ 8 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
 				{ /* Responsive spacing (padding + margin) — each is a single block-owned
 					tier-object attr { desktop, tablet, mobile }, written via
 					ResponsiveOverride + SgsBoxControl; read by SGS_Container_Wrapper's

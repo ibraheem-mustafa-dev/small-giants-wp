@@ -103,8 +103,7 @@
 					"prefix": "",
 					"attrMap": {
 						"css:border-color": "inputBorderColour",
-						"css:border-color-gradient": "inputBorderColourGradient",
-						"css:outline-color": "focusRingColour"
+						"css:border-color-gradient": "inputBorderColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -200,10 +199,6 @@
 			"default": ""
 		},
 		"inputBorderColourHoverGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"focusRingColour": {
 			"type": "string",
 			"default": ""
 		},

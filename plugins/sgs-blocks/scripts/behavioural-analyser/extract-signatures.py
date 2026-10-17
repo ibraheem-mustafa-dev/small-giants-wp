@@ -1093,8 +1093,7 @@ def _custom_props_consumed(
         outline shorthand is colour-only" rule was true for every SINGLE-var
         occurrence checked but false here. Confirmed the codebase's own convention is
         width-first/colour-last in every mixed occurrence found (also
-        `sgs/form`'s `formFocusRingWidth`+`formFocusRingColour` via
-        `--sgs-focus-ring-width`+`--sgs-focus-ring-colour` in an `outline:` shorthand)
+        the form's former `--sgs-focus-ring-width`+`--sgs-focus-ring-colour` in an `outline:` shorthand)
         — CSS's own canonical shorthand order is width/style/colour, and no
         counter-example exists in this codebase.
       `state_of` — for each (var, prop) pair, the manifest-vocabulary state the

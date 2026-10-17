@@ -1,22 +1,10 @@
 {
     "a_baseline": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "b_equal_sides": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -27,12 +15,6 @@
         ]
     },
     "c_unequal_dashed_raw": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -43,12 +25,6 @@
         ]
     },
     "d_style_none": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -58,12 +34,6 @@
         ]
     },
     "e_widths_no_colour": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -73,12 +43,6 @@
         ]
     },
     "f_colour_no_widths": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -87,12 +51,6 @@
         ]
     },
     "g_gradient": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -118,12 +76,6 @@
         ]
     },
     "j_radius_uniform": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],
@@ -132,12 +84,6 @@
         ]
     },
     "k_radius_tiers": {
-        " || .sgs-container-UID": [
-            "--sgs-focus-ring-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-focus-ring-offset:2px",
-            "--sgs-focus-ring-opacity:0.4",
-            "--sgs-focus-ring-width:2px"
-        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ],

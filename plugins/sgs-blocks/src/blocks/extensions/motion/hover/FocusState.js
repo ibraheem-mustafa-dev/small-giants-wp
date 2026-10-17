@@ -14,7 +14,7 @@ import { FOCUS_GROUPS } from './hover-fields';
 import { FOCUS_LIST } from './hover-actions';
 import HoverFineTune from './HoverFineTune';
 
-/** The one block that offers the Focus state: the form names this surface with its `formFocusRing*` attributes. */
+/** The one block that offers the Focus state: the form's fields are the surface it animates. */
 export const FOCUS_BLOCK = 'sgs/form';
 const REF_PREFIX = '#/$defs/';
 

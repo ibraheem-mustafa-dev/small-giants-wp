@@ -251,14 +251,12 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'transitionEasing',
 	// Structural state unreachable on a static canvas (2026-09-05) — each
 	// verified individually, not assumed from the attribute shape:
-	// `focusRingColour` (product-search) only emits a `:focus-visible` outline
-	// rule; `backgroundColourScrolled`/`backgroundColourScrolledGradient`/
+	// `backgroundColourScrolled`/`backgroundColourScrolledGradient`/
 	// `textColourScrolled` (site-header) are gated on the REAL frontend
 	// `.is-header-scrolled` class a scroll-listener in view.js adds after the
 	// page has already rendered — confirmed by edit.js's own comment on the
 	// same attributes; `scrollEffect` (timeline) drives `data-sgs-fx`, read
 	// only by view.js's scroll listener, with no static CSS signature anywhere.
-	'focusRingColour',
 	'backgroundColourScrolled',
 	'backgroundColourScrolledGradient',
 	'textColourScrolled',

@@ -16,8 +16,8 @@
  * - Reduced motion: the field's transition becomes an instant state flip, as `assets/css/motion.css` does for every
  *   motion target.
  *
- * `outline` is never written: the form's own `:focus-visible` outline (`form/style.css`, the `formFocusRing*`
- * attributes) stays the accessible focus indicator. A layer with no look value (border, background or ring) emits
+ * `outline` is never written: the focus system's indicator (`theme/sgs-theme/assets/css/focus.css`) stays the
+ * accessible focus indicator. A layer with no look value (border, background or ring) emits
  * nothing. A `hover.focus` layer anywhere else than the `sgs/form` root is refused: nothing is emitted and
  * `sgs_motion_layer_dropped` fires with the refusal `focus-not-form`.
  *

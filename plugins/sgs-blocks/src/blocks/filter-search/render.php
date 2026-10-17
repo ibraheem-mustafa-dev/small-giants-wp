@@ -112,18 +112,9 @@ $root_sel  = '.' . $style_uid . '.wp-block-sgs-filter-search';
 
 $scoped_css = array();
 
-// Colour attributes — focus ring and text colour, emitted as custom
-// properties on the root selector (fall back to style.css's defaults when
-// unset). focusRingColour deliberately skips sgs_border_states_css() — that
-// helper writes `border-color` unconditionally on its base selector, which
-// would overwrite the input's RESTING border with the focus-only ring colour
-// on every render; a flat-only custom property consumed by style.css's own
-// `:focus-visible{outline:2px solid var(--sgs-filter-search-focus,...)}` is
-// the correct mechanism (outline cannot hold a gradient in any case).
+// Text colour, emitted as a custom property on the root selector (falls back
+// to style.css's default when unset).
 $input_css = '';
-if ( ! empty( $attributes['focusRingColour'] ?? '' ) ) {
-	$input_css .= '--sgs-filter-search-focus:' . sgs_colour_value( (string) $attributes['focusRingColour'] ) . ';';
-}
 if ( ! empty( $attributes['textColour'] ?? '' ) ) {
 	$input_css .= '--sgs-filter-search-text:' . sgs_colour_value( (string) $attributes['textColour'] ) . ';';
 }

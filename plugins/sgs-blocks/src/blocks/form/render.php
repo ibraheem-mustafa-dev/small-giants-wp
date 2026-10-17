@@ -7,7 +7,7 @@
  * sgs/container's full LAYOUT-scope capabilities (align/maxWidth/contentWidth,
  * customWidth, gap, grid/flex, responsive gridTemplateColumns, etc.).
  *
- * The Interactivity API data-* attributes, focus-ring CSS vars, form ID and
+ * The Interactivity API data-* attributes, form ID and
  * store-submissions flags are carried through via the `extra_attrs` opt.
  * The block's own class (sgs-form) rides in `extra_classes`.
  * The interior (progress bar + <form> + success/error messages) is $inner_html.
@@ -149,12 +149,6 @@ foreach ( $block->inner_blocks as $inner_block ) {
 $is_multi_step = $total_steps > 1;
 $require_login = $attributes['requireLogin'] ?? false;
 $rate_limit    = absint( $attributes['rateLimit'] ?? 5 );
-
-// Focus ring attributes — editor-controllable, keyboard-only (:focus-visible).
-$focus_ring_colour  = $attributes['formFocusRingColour'] ?? 'accent';
-$focus_ring_width   = absint( $attributes['formFocusRingWidth'] ?? 2 );
-$focus_ring_opacity = absint( $attributes['formFocusRingOpacity'] ?? 40 );
-$focus_ring_offset  = absint( $attributes['formFocusRingOffset'] ?? 2 );
 
 // Cache form configuration server-side so the submit handler can enforce
 // requireLogin and per-form rateLimit, and Form_Mailer can read the email
@@ -669,14 +663,6 @@ if ( '' !== $sgs_form_file_border_css || '' !== $sgs_form_file_fill_css ) {
 	$sgs_form_supports_css .= $sgs_form_file_border_css . $sgs_form_file_fill_css;
 }
 
-// Build focus ring CSS custom properties for :focus-visible on form inputs.
-// Opacity attribute is stored as 0-100 integer; CSS needs 0-1 decimal.
-// absint() sanitises every value before interpolation.
-$focus_ring_css_vars = '--sgs-focus-ring-width:' . absint( $focus_ring_width ) . 'px'
-	. ';--sgs-focus-ring-colour:' . esc_attr( sgs_colour_value( $focus_ring_colour ) )
-	. ';--sgs-focus-ring-opacity:' . esc_attr( strval( round( absint( $focus_ring_opacity ) / 100, 2 ) ) )
-	. ';--sgs-focus-ring-offset:' . absint( $focus_ring_offset ) . 'px';
-
 // ── Build inner HTML ───────────────────────────────────────────────────────
 // Capture the form interior (progress bar + <form> + messages) as a string
 // so it can be passed to SGS_Container_Wrapper::render() as $inner_html.
@@ -842,9 +828,7 @@ if ( $sgs_form_border['mobile'] ) {
 // element is the inner .sgs-form__inner child.
 // extra_attrs carry ALL Interactivity API data-* + form-specific identifiers
 // that view.js / the store / REST handler depend on.
-// extra_styles carry the focus-ring CSS custom properties — these are CSS
-// custom-property VALUES (`--x:y`), allowed inline per contract §A (not a
-// real property declaration). extra_classes carries 'sgs-form' + the uid +
+// extra_classes carries 'sgs-form' + the uid +
 // re-added preset has-* classes computed above (color/typography/border are
 // block-private, scoped in $sgs_form_supports_css).
 $sgs_form_output = SGS_Container_Wrapper::render(
@@ -855,7 +839,6 @@ $sgs_form_output = SGS_Container_Wrapper::render(
 	array(
 		'tag'           => 'div',
 		'extra_classes' => $sgs_form_supports_classes,
-		'extra_styles'  => array( $focus_ring_css_vars ),
 		'extra_attrs'   => array(
 			'data-wp-interactive'    => 'sgs/form',
 			'data-wp-context'        => wp_json_encode( $context ),

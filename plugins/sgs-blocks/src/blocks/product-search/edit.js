@@ -8,7 +8,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, ScrimControls, scrimColourRow, resolveColourToken } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, ScrimControls, scrimColourRow } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import {
@@ -47,7 +47,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		inputBorderColourGradient,
 		inputBorderColourHover,
 		inputBorderColourHoverGradient,
-		focusRingColour,
 		listboxBackgroundColour,
 		listboxBackgroundColourGradient,
 		listboxBackgroundColourHover,
@@ -76,15 +75,12 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const previewTier = usePreviewTier();
 	const [ colourPalette ] = useSettings( 'color.palette' );
-	// focusRingColour feeds the same custom property style.css's focus outline reads.
-	const focusRing = resolveColourToken( attributes.focusRingColour, colourPalette );
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-search',
 		style: {
 			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 			...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ),
-			...( focusRing ? { '--sgs-ps-focus-ring': focusRing } : {} ),
 		},
 	} );
 
@@ -169,21 +165,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( {
 										inputBorderColourHoverGradient: val ?? '',
-									} ),
-							},
-						],
-					},
-					{
-						key: 'focus-ring',
-						label: __( 'Focus ring colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: focusRingColour,
-								onChange: ( val ) =>
-									setAttributes( {
-										focusRingColour: val ?? '',
 									} ),
 							},
 						],

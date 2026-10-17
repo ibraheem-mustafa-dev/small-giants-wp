@@ -17,7 +17,7 @@ import FilterSearchSettings from './FilterSearchSettings';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
-	const { searchMode, taxonomy, showCounts, attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
+	const { searchMode, taxonomy, showCounts, attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, textColour, textColourHover } = attributes;
 	const isTermsMode = 'taxonomy-terms' === searchMode;
 
 	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
@@ -61,8 +61,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		className: `sgs-filter-search sgs-filter-search--editor-preview ${ filterSearchPreviewScope }`,
 		style: {
 			...marginLonghands,
-			// The custom property style.css reads for the input's focus ring.
-			'--sgs-filter-search-focus': resolveColourToken( focusRingColour, colourPalette ),
 		},
 	} );
 
@@ -93,19 +91,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								gradientValue: inputBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { inputBorderColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'focusRing',
-						label: __( 'Focus ring colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: focusRingColour,
-								onChange: ( val ) => setAttributes( { focusRingColour: val ?? '' } ),
-								linked: true,
 							},
 						],
 					},

@@ -122,17 +122,12 @@ $sgs_ps_is_dialog_mode = in_array( $display, array( 'full-screen-overlay', 'comm
 $sgs_style_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 
-// Colour overrides — 5 client-controllable colour rows,
+// Colour overrides — 4 client-controllable colour rows,
 // each routed through the conformant shared helper for its DB mechanism
 // rather than a bare custom-property array literal
 // (block_attributes.css_property).
 // inputBorderColour (border-color, css_element=input) routes through
 // sgs_border_states_css() -- .claude/rules/colour-emission.md "Colour EMISSION helpers".
-// focusRingColour (outline-color, css_element=input) is a TERMINAL
-// "outline-not-gradientable" shape (classify-end-shape.js) -- CSS
-// `outline` cannot hold a gradient (no box side to clip a masked ring
-// against) and a focus ring has no hover concept, so it stays a flat
-// custom property.
 // listboxBackgroundColour / resultHoverBackgroundColour /
 // matchHighlightColour (background-color, css_element=results/
 // result-title) route through sgs_custom_property_gradient_decls() -- the
@@ -159,19 +154,12 @@ $sgs_ps_input_border_css = sgs_border_states_css(
 	)
 );
 
-// -- focusRingColour / listboxBackgroundColour / resultHoverBackgroundColour
+// -- listboxBackgroundColour / resultHoverBackgroundColour
 // / matchHighlightColour: bare custom-property VALUES; style.css's existing
 // var(--sgs-ps-*) rules consume each (the 3 background-color rows each gain
 // one sibling background-image line + a hover-state rule consuming the
-// *-hover(-gradient) pair; focusRingColour stays flat-only, no siblings). --
+// *-hover(-gradient) pair). --
 $sgs_ps_fill_decls = array_merge(
-	sgs_custom_property_gradient_decls(
-		'sgs-ps-focus-ring',
-		(string) ( $attributes['focusRingColour'] ?? '' ),
-		'',
-		'',
-		''
-	),
 	sgs_custom_property_gradient_decls(
 		'sgs-ps-listbox-bg',
 		(string) ( $attributes['listboxBackgroundColour'] ?? '' ),

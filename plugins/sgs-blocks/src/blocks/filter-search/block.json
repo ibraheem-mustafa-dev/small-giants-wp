@@ -125,10 +125,6 @@
 			"default": "",
 			"description": "CSS gradient string painting the search input's border on hover instead of a flat colour. Non-empty wins over inputBorderColourHover at render time."
 		},
-		"focusRingColour": {
-			"type": "string",
-			"default": ""
-		},
 		"textColour": {
 			"type": "string",
 			"default": ""
