@@ -15,6 +15,8 @@ WHAT COUNTS
   closing quote, so text a script concatenates after the quote is not seen.
 
 EXEMPT  `0s`, `0ms` and the reduced-motion idiom `0.01ms` switch motion off; they are counted but never failed.
+  A `1ms` animation-duration is also exempt when an `animation-timeline` is declared within 300 characters of it: a
+  scroll-driven animation needs a non-zero duration to run at all, and the scroll position, not the clock, drives it.
 
 ROLE  In a shorthand the first time in each comma item is the duration and the second is the delay. A delay is
   never swapped for a duration token: it is listed as a decision.
@@ -120,7 +122,7 @@ def _working(value: str) -> tuple[str, list[tuple[int, int]]]:
 def _classify(f: Finding, tokens: dict) -> None:
     if f.kind == "time":
         ms = parse_ms(f.literal)
-        f.exempt = ms == 0 or f.literal == "0.01ms"
+        f.exempt = ms == 0 or ms == Decimal("0.01")
         if f.role == "delay" or f.exempt:
             f.nearest = "delay: no duration token" if f.role == "delay" and not f.exempt else ""
             return
@@ -179,6 +181,9 @@ def scan_text(text: str, rel: str, tokens: dict) -> list[Finding]:
                     else "duration"
             f = Finding(rel, text.count("\n", 0, base + s) + 1, prop, lit, kind, role, base + s, base + e)
             _classify(f, tokens)
+            if (f.literal == "1ms" and f.prop.endswith("duration")
+                    and "animation-timeline" in masked[max(0, base - 300):base + len(value) + 300]):
+                f.exempt, f.match, f.nearest = True, None, ""
             found.append(f)
     return found
 
@@ -200,13 +205,13 @@ def selector_at(masked: str, pos: int) -> str:
 
 
 def source_files(root: Path) -> list[Path]:
-    """The stylesheets and render.php files FR-38A-53 names, as sorted absolute paths."""
+    """The stylesheets and the PHP files that can emit CSS under src/blocks and includes, as sorted absolute paths."""
     base = root / "plugins/sgs-blocks"
     files: set[Path] = set()
     blocks = base / "src/blocks"
-    for pattern in ("*.css", "*.scss", "render.php"):
+    for pattern in ("*.css", "*.scss", "*.php"):
         files.update(blocks.rglob(pattern))
-    files.update((base / "includes").rglob("render.php"))
+    files.update((base / "includes").rglob("*.php"))
     files.update((base / "assets/css").glob("*.css"))
     return sorted(p for p in files if not SKIP_DIRS & set(p.relative_to(root).parts))
 

@@ -7,12 +7,13 @@ leading-zero normalisation (`cubic-bezier(.4,0,.2,1)` equals `cubic-bezier(0.4, 
 
 WHAT IS SCANNED  every transition / animation declaration (shorthand, -duration, -delay, -timing-function) in
 `plugins/sgs-blocks/src/blocks/**/*.css|scss`, `plugins/sgs-blocks/assets/css/*.css`, and the CSS text inside every
-`render.php` under `src/blocks/` and `includes/`. What counts as a literal, the role rule for delays and the PHP
+PHP file under `src/blocks/` and `includes/` (any file there can emit CSS). What counts as a literal, the role rule for delays and the PHP
 string limits are in motion_literals_scan.py.
 
 ALLOWED  a literal inside a var() fallback (`var(--wp--custom--duration--medium, 300ms)`); `none`; property names that
 merely contain a keyword; and the zero values `0s`, `0ms` and the reduced-motion idiom `0.01ms`, which switch motion
-off. Zero values are never failed or rewritten, but `--survey` counts them so nothing is hidden.
+off, and a `1ms` animation-duration that sits beside an `animation-timeline` (a scroll-driven animation needs a non-zero
+duration). Exempt values are never failed or rewritten, but `--survey` counts them so nothing is hidden.
 
 MODES
   --check      exit 0 when no unallowed literal exists, else 1 and print each. Reads the shared allow-list
@@ -97,7 +98,7 @@ def survey(root: Path, as_json: bool) -> int:
         return 0
     for f in findings:
         if f.exempt:
-            verdict = "exempt (zero)"
+            verdict = "exempt"
         elif f.match:
             verdict = f"= {f.match[0]}.{f.match[1]}"
         else:
@@ -156,6 +157,12 @@ CASES = [
     ("!important", ".a{transition: opacity var(--d) 0.3s !important;}", "css", 1, 0),
     ("clean multi-line, tokens only", ".a{\n transition:\n  opacity var(--d),\n  transform var(--d, 1s);\n}", "css", 0, 0),
     ("0s / 0ms / 0.01ms exempt", ".a{transition: none 0s; animation-duration: 0.01ms; transition-delay: 0ms;}", "css", 0, 3),
+    ("1ms duration beside animation-timeline is exempt",
+     ".a{animation-name:x;animation-duration:1ms;animation-timeline:scroll(root block);}", "css", 0, 1),
+    ("1ms duration with no animation-timeline is a literal", ".a{animation-duration:1ms;}", "css", 1, 0),
+    ("PHP string with a scroll-timeline 1ms is exempt",
+     "<?php\n$c = 'animation-name:x-' . $uid . ';animation-duration:1ms;animation-timeline:scroll(root block);';\n", "php", 0, 1),
+    (".01ms without the leading zero is exempt too", ".a{transition-duration:.01ms;}", "css", 0, 1),
     ("none, animation-name, transition-property",
      ".a{transition: none; animation-name: linear-gradient-x; transition-property: opacity, transform;}", "css", 0, 0),
     ("easing in var() fallback", ".a{transition-timing-function: var(--e, ease-in-out);}", "css", 0, 0),
