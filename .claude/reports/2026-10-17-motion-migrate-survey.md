@@ -7,7 +7,10 @@ All four targets run commit 0e50f75f1 (deploy: 4 sites in 523 s, full gates 12/1
 | eye-care-test | 14 posts (83 blocks, then 12 blocks on the second pass) | Re-run dry run: 0 blocks left to migrate, 0 flags |
 | indus-test | none | Nothing to migrate |
 | mamas-test | 1 (footer, 5 blocks) | Re-run: nothing to write |
-| sandybrown | 29 non-protected posts (1513, 1581, 1594, 1607, 2107, 2115, 2594, 2742, 3079, 3389, 3405, 3448, 3777, 3778, 4087, 4235, 4426, 4428, 4430, 4437, 4440, 4443, 4456, 4461, 4465, 4739, 5193, 5205, 5217) | Re-run dry run per post: 0 blocks left, 0 flags |
+| sandybrown | 27 non-protected posts (1513, 1581, 1594, 1607, 2107, 2115, 2594, 2742, 3079, 3389, 3405, 3448, 4087, 4235, 4426, 4428, 4430, 4437, 4440, 4443, 4456, 4461, 4465, 4739, 5193, 5205, 5217) | Re-run dry run per post: 0 blocks left, 0 flags |
+
+## Rolled back
+The active header 3777 and drawer 3778 were migrated and then restored from their pre-sweep backups: the migrated header carries a duration-only hover state, so `motion.css` loaded on every page and `no-motion-assets` in `probe-motion-model.mjs` failed (29 pass, 0 fail after the rollback). They keep their old settings until S6 decides whether a duration-only state may load the layer.
 
 ## What stays, by design
 Values the mappers report as `REPORTED ... left in place` are not old-motion settings with a destination: `effectHover` (per-item hover class), `scaleHover`, `sgsHoverShadow` and `sgsHoverShadowCustom` (the shadow control owns them), `sgsHoverZoomDuration` on product cards, the nav-drawer panel-shape timings and stagger axes, `childIconPaintDuration`, and `bgParallax` on a fixed-background hero. M6.6 decides each.

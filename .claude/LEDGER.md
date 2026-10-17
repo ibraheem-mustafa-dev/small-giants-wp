@@ -81,11 +81,11 @@ Open owed items:
 - **Track I: closed (2026-10-17).** The selector gate and part fixes, the card-grid template card, the entrance, flash and buybox-priority fixes and the border goldens are live and checked on sandybrown (`4f466d6ab`, `6d2ff6893`). Open: item 4, the Fade Bold travel of 32px against 28px, belongs to M5.18 (session S7); detail in the plan's "Track I state" bullet.
 
 
-**M6.6C census built (2026-10-17):** `migrate_motion.py --consumers` exits 0; report `reports/2026-10-17-motion-removal-census.md`; S5 (M5.W, M6.5) is next, then S6.
+**M6.6C census built (2026-10-17):** `migrate_motion.py --consumers` exits 0; report `reports/2026-10-17-motion-removal-census.md`. **S5 closed 2026-10-17:** `0e50f75f1` deployed to all four targets (no reseed: the DB already held the nine effects); M6.5 swept eye-care-test, mamas-test and 27 canary posts to zero blocks left (`reports/2026-10-17-motion-migrate-survey.md`; GATE fixtures untouched). The active header 3777 and drawer 3778 were rolled back: migrating them wrote a duration-only hover state, so `motion.css` loaded on every page and `no-motion-assets` failed. Decide in S6 whether a duration-only state may load the layer. S6 is next.
 
-**Blockers:** none. **Bean decisions (open):** whether the focus ring on light grounds stays the darkened brand tone (current: 3:1 on every palette ground, so Mama's Munches reads near-black brown with a gold bloom) or softens towards the accent; whether the focus keys are pushed to indus-test and eye-care-test (`push-theme-snapshot.py`, dry run first). Ruled 2026-10-15: Gate 5b's glance passed; stored brand-strip and trust-bar marquees wait for M6.5 (static rows until then); the all-effects stress page's weight is accepted.
+**Blockers:** none. **Ruled 2026-10-17:** the focus ring stays the darkened brand tone (3:1 on every ground); the focus keys are not pushed to indus-test or eye-care-test yet (`push-theme-snapshot.py`, dry run first, when wanted). Ruled 2026-10-15: stored brand-strip and trust-bar marquees stay static until the sweep reaches them; the all-effects stress page's weight is accepted.
 
-**Resume from:** `reports/2026-10-17-focus-system/after3/ (main.txt, fixture.txt)` (the 1440 focus probe passes; open: 768 and 375 runs, the before-after handle reads unmeasurable, the 5229 motion asset guard red since the 29e841f37 deploy, per-card stagger with a section above), then S5 (M5.W, M6.5), then S6.
+**Resume from:** `reports/2026-10-17-focus-system/after3/SUMMARY.md` (1440 focus probe PASS, clipped 0; open: 768 and 375 runs, the before-after handle reads unmeasurable, per-card stagger with a section above), then S6.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
