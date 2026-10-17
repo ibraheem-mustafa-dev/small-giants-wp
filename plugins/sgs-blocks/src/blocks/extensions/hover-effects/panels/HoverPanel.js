@@ -25,7 +25,7 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
 /**
  * @param {Object}   props
  * @param {boolean}  props.motionOwned      The block edits hover motion in the motion panels (Spec 38A): only the
- *                                          hover shadow and the focus ring show here.
+ *                                          hover shadow shows here.
  * @param {boolean}  props.hideShadowPicker
  * @param {boolean}  props.hideImageZoom
  * @param {boolean}  props.hideGrayscale
@@ -47,7 +47,6 @@ import { isValidCubicBezier } from '../../../../components/MotionEasingControl';
  * @param {string}   props.sgsHoverEasing
  * @param {string}   props.sgsHoverEasingCustom
  * @param {number}   props.sgsStaggerDelay
- * @param {boolean}  props.sgsFocusRing
  * @param {number}   props.sgsHoverOpacity
  * @param {string}   props.sgsHoverIndent
  * @param {Function} props.setAttributes
@@ -75,7 +74,6 @@ export default function HoverPanel( {
 	sgsHoverEasing,
 	sgsHoverEasingCustom,
 	sgsStaggerDelay,
-	sgsFocusRing,
 	sgsHoverOpacity,
 	sgsHoverIndent,
 	setAttributes,
@@ -304,12 +302,6 @@ export default function HoverPanel( {
 			/>
 			</>
 			) }
-			<ToggleControl
-				label={ __( 'Show focus ring on keyboard focus', 'sgs-blocks' ) }
-				help={ __( 'Adds a visible focus ring (3px primary glow at 0.4 alpha) when keyboard-tabbed to. Recommended on for any clickable block.', 'sgs-blocks' ) }
-				checked={ sgsFocusRing }
-				onChange={ ( val ) => setAttributes( { sgsFocusRing: val } ) }
-			/>
 			{ ! motionOwned && (
 			<>
 			<RangeControl

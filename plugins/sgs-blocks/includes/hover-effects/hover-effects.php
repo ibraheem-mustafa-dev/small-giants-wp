@@ -21,7 +21,6 @@
  * - sgsHoverGrayscale (boolean)
  * - sgsHoverBorderAccent (boolean)
  * - sgsHoverTilt3D (boolean)
- * - sgsFocusRing (boolean) — emits class sgs-has-focus-ring
  * - sgsHoverIndent (string, CSS length) — additive hover/focus-within
  *   inline-start padding growth on top of the block's own resting `padding`
  *   left side where present (Spec 36 "Item hover paint", generalised)
@@ -103,7 +102,6 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		: (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
 	$hover_border_acc      = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
 	$hover_tilt_3d         = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
-	$focus_ring            = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
 	// The typed link, or the page / Site Info link / back-to-top its source names.
 	$block_link_source     = is_string( $attrs['sgsBlockLinkSource'] ?? null ) ? $attrs['sgsBlockLinkSource'] : '';
 	$block_link            = '' === $block_link_source
@@ -169,7 +167,6 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		! $hover_grayscale &&
 		! $hover_border_acc &&
 		! $hover_tilt_3d &&
-		! $focus_ring &&
 		! $block_link &&
 		! $has_ripple &&
 		'' === $hover_indent
@@ -246,7 +243,6 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$hover_border_acc,
 		$hover_tilt_3d,
 		$stagger_delay,
-		$focus_ring,
 		$block_link,
 		$has_ripple,
 		$hover_opacity,

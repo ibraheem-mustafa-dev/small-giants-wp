@@ -85,8 +85,6 @@ export function addHoverAttributes( settings ) {
 			sgsHoverBorderAccent: { type: 'boolean', default: false },
 			// 3D tilt effect.
 			sgsHoverTilt3D:       { type: 'boolean', default: false },
-			// Focus ring for keyboard navigation — enabled on opt-in blocks.
-			sgsFocusRing:         { type: 'boolean', default: defaults.focusRing },
 			// Fade to this opacity on hover (0-1). 0 = off — mirrors the
 			// off-sentinel convention every other numeric hover control here
 			// already uses (sgsHoverScale, sgsHoverZoom, sgsHoverLift).

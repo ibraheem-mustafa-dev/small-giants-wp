@@ -164,7 +164,7 @@ describe( 'the old panels on a block with the motion support', () => {
 		}
 	);
 
-	it( 'the Hover panel keeps only the hover shadow and the focus ring, and the Click panel goes', () => {
+	it( 'the Hover panel keeps only the hover shadow, and the Click panel goes', () => {
 		const plain = renderEdit(
 			loadEdit( 'hover-effects/index.js', PLAIN ),
 			'sgs/info-box'
@@ -176,7 +176,7 @@ describe( 'the old panels on a block with the motion support', () => {
 			'sgs/info-box'
 		);
 		expect( count( moving, 'RangeControl' ) ).toBe( 0 );
-		expect( count( moving, 'ToggleControl' ) ).toBe( 1 );
+		expect( count( moving, 'ToggleControl' ) ).toBe( 0 );
 		expect( count( moving, 'SelectControl' ) ).toBe( 1 );
 		expect( plainSelects ).toBeGreaterThan( 1 );
 	} );

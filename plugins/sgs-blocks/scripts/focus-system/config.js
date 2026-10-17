@@ -138,9 +138,6 @@ function groupOf( rel, selector ) {
 	if ( FOCUS_RING_ATTR_PREFIXES.some( ( p ) => rel.startsWith( p ) ) ) {
 		return 'focus-ring-attr';
 	}
-	if ( 'plugins/sgs-blocks/assets/css/extensions.css' === rel && selector && selector.includes( 'sgs-has-focus-ring' ) ) {
-		return 'focus-ring-attr';
-	}
 	for ( const [ group, prefixes ] of PATH_GROUPS ) {
 		if ( prefixes.some( ( p ) => rel.startsWith( p ) ) ) {
 			return group;

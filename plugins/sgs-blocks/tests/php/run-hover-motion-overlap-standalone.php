@@ -6,7 +6,7 @@
  * hover defaults switch the scale hover on with no stored attribute. Without sgsMotion the legacy movement classes appear
  * (the negative control: this test can fail); with sgsMotion they do not, because their `:hover` rules set `transform`,
  * `filter` and `opacity` outright and would replace the motion model's composed channels, while the non-motion outputs
- * (focus ring, block link, shadow) stay.
+ * (block link, shadow) stay.
  *
  * Usage: php plugins/sgs-blocks/tests/php/run-hover-motion-overlap-standalone.php
  *
@@ -112,7 +112,6 @@ $model = $classes(
 );
 $left = array_values( array_intersect( $movement, $model ) );
 $check( array() === $left, 'with sgsMotion no legacy movement class is added (left: ' . implode( ', ', $left ) . ')' );
-$check( in_array( 'sgs-has-focus-ring', $model, true ) === in_array( 'sgs-has-focus-ring', $legacy, true ), 'with sgsMotion the non-motion focus ring output is unchanged' );
 
 // The stand-down is scoped to a hover on the root: a motion document holding only an entrance never touches the
 // root's hover channels, so the block's own hover defaults keep painting.

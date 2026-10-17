@@ -4,16 +4,6 @@
 		"shape": "Ratcheted ceiling (migration-method Step 8). Keys are content keys 'category | path | context | selector | property' with a count. --check fails on a finding above its count and on an entry no longer reproduced; --prune-baseline lowers entries to the live count and never adds or raises one. Written once from the 2026-10-17 census (Task 1); each focus task prunes it; Task 15 deletes this file and the gate becomes binary."
 	},
 	"findings": {
-		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-has-focus-ring:focus-visible | outline": {
-			"count": 1,
-			"category": "bespoke",
-			"group": "focus-ring-attr"
-		},
-		"bespoke | plugins/sgs-blocks/assets/css/extensions.css |  | .sgs-has-focus-ring:focus-visible | outline-offset": {
-			"count": 1,
-			"category": "bespoke",
-			"group": "focus-ring-attr"
-		},
 		"legacy-token | plugins/sgs-blocks/assets/css/motion-thumbnails.css |  | .sgs-motion-thumbs__item.components-button:focus-visible | outline": {
 			"count": 1,
 			"category": "legacy-token",

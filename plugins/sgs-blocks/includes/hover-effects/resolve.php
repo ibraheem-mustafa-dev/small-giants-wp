@@ -47,14 +47,13 @@ function is_hover_shadow_slug( $value ): bool {
  * to emit one.
  *
  * @param string $block_name Block name (e.g. 'sgs/card-grid').
- * @return array { scale_preset: string, shadow: string, image_zoom: bool, focus_ring: bool, lift: int, zoom: int, zoom_duration: int, zoom_style: string }
+ * @return array { scale_preset: string, shadow: string, image_zoom: bool, lift: int, zoom: int, zoom_duration: int, zoom_style: string }
  */
 function resolve_hover_defaults( string $block_name ): array {
 	$all_off = array(
 		'scale_preset' => '',
 		'shadow'       => '',
 		'image_zoom'    => false,
-		'focus_ring'    => false,
 		'lift'          => 0,
 		'zoom'          => 0,
 		'zoom_duration' => 0,
@@ -108,7 +107,6 @@ function resolve_hover_defaults( string $block_name ): array {
 		// image element to bind it to is the D805 shape (a client-visible
 		// default with no effect) — see resolve_hover_excluded_controls() below.
 		'image_zoom'   => in_array( 'imageZoom', $excluded, true ) ? false : (bool) ( $declared['imageZoom'] ?? false ),
-		'focus_ring'   => (bool) ( $declared['focusRing'] ?? false ),
 		// Panel units (px, %, ms); 0 = off / the block's own default. Mirrors resolve.js.
 		'lift'          => absint( $declared['lift'] ?? 0 ),
 		'zoom'          => absint( $declared['zoom'] ?? 0 ),

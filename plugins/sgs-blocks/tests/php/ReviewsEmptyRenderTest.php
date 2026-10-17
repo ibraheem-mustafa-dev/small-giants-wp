@@ -83,14 +83,12 @@ final class ReviewsEmptyRenderTest extends TestCase {
 		$this->assertSame( "  \n\t ", $this->hover( "  \n\t " ), 'whitespace-only content is returned untouched, nothing appended' );
 	}
 
-	public function test_the_hover_filter_still_decorates_a_block_that_rendered_something(): void {
-		$out = $this->hover( '<div class="sgs-google-reviews sgs-gr-abc">x</div>' );
-		// google-reviews' only hover default is the focus ring: no grow, shadow or lift (register S3, S4).
-		$this->assertStringContainsString( 'sgs-has-focus-ring', $out );
-		$this->assertStringContainsString( '<style>.sgs-hover-', $out );
-		$this->assertStringNotContainsString( 'sgs-has-hover', $out );
-		$this->assertStringNotContainsString( '--sgs-hover-scale', $out );
-		$this->assertStringContainsString( '>x</div>', $out );
+	public function test_the_hover_filter_leaves_a_block_with_no_hover_default_untouched(): void {
+		$html = '<div class="sgs-google-reviews sgs-gr-abc">x</div>';
+		$out  = $this->hover( $html );
+		// google-reviews declares no hover default (no grow, shadow, lift or ring: register S3, S4), so nothing is added.
+		$this->assertSame( $html, $out );
+		$this->assertStringNotContainsString( 'sgs-has-focus-ring', $out );
 	}
 
 	public function test_a_sample_render_is_unchanged_by_the_filter_guard(): void {

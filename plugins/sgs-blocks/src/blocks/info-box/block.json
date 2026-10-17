@@ -44,8 +44,7 @@
 			"hoverDefaults": {
 				"scalePreset": "1.02",
 				"shadow": "soft",
-				"imageZoom": true,
-				"focusRing": true
+				"imageZoom": true
 			},
 			"boxFamilies": {
 				"padding": [

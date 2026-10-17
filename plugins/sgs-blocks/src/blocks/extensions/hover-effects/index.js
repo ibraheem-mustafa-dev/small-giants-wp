@@ -2,7 +2,7 @@
  * Hover Effects extension — MIXED gating model (D551, Phase 2.1).
  *
  * Adds hover colour, scale, shadow, image zoom, grayscale, stagger delay,
- * easing, duration, focus ring, block link and click-ripple controls.
+ * easing, duration, block link and click-ripple controls.
  *
  * Default model: opted-in blocks start with EMPTY/FALSE defaults (no hover
  * lift). A block declaring `supports.sgs.hoverDefaults` gets those defaults.
@@ -76,7 +76,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// ['clickEffects'] to avoid irrelevant-panel clutter (sgs/brand-strip,
 		// 2026-07-18).
 		// A block with the motion support edits hover and click motion in the motion panels (Spec 38A): the Hover
-		// panel keeps only its non-motion controls (hover shadow, focus ring) and the Click panel is hidden.
+		// panel keeps only its non-motion controls (hover shadow) and the Click panel is hidden.
 		const motionOwned = hasMotionSupport( type );
 		const hideHover = ! isExtensionEnabled( name, 'hover' );
 		const hideBlockLink = ! isExtensionEnabled( name, 'blockLink' );
@@ -96,7 +96,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// Gate A cleanup (D808 follow-up): suppress ONLY the two toggles a
 		// block has declared as excluded (no image element to bind to) —
 		// every other Hover Effects control (scale, shadow, duration,
-		// easing, stagger, focus ring) still applies. See
+		// easing, stagger) still applies. See
 		// resolveHoverExcludedControls() above + the PHP twin.
 		const excludedHoverControls = resolveHoverExcludedControls( type );
 		const hideImageZoom = excludedHoverControls.includes( 'imageZoom' );
@@ -134,7 +134,6 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsHoverGrayscale,
 			sgsHoverBorderAccent,
 			sgsHoverTilt3D,
-			sgsFocusRing,
 			sgsHoverOpacity,
 			sgsHoverIndent,
 			sgsBlockLink,
@@ -222,7 +221,6 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							sgsHoverEasing={ sgsHoverEasing }
 							sgsHoverEasingCustom={ sgsHoverEasingCustom }
 							sgsStaggerDelay={ sgsStaggerDelay }
-							sgsFocusRing={ sgsFocusRing }
 							sgsHoverOpacity={ sgsHoverOpacity }
 							sgsHoverIndent={ sgsHoverIndent }
 							setAttributes={ setAttributes }

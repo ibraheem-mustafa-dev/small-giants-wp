@@ -23,8 +23,7 @@
 				"hover"
 			],
 			"hoverDefaults": {
-				"imageZoom": false,
-				"focusRing": true
+				"imageZoom": false
 			},
 			"hoverExcludeControls": [
 				"imageZoom",

@@ -57,7 +57,6 @@ defined( 'ABSPATH' ) || exit;
  * @param bool   $hover_border_acc Whether the border accent line is active.
  * @param bool   $hover_tilt_3d    Whether the 3D tilt effect is active.
  * @param int    $stagger_delay    Stagger delay in ms (0 = off).
- * @param bool   $focus_ring       Whether the focus ring is active.
  * @param string $block_link       Block-link URL, or ''.
  * @param bool   $has_ripple       Whether the click-ripple effect is active.
  * @param float  $hover_opacity    Fade-to opacity on hover (0-1; 0 = off).
@@ -77,7 +76,6 @@ function build_hover_classes(
 	bool $hover_border_acc,
 	bool $hover_tilt_3d,
 	int $stagger_delay,
-	bool $focus_ring,
 	string $block_link,
 	bool $has_ripple,
 	float $hover_opacity = 0.0,
@@ -135,9 +133,6 @@ function build_hover_classes(
 	}
 	if ( $stagger_delay > 0 ) {
 		$add_classes[] = 'sgs-has-stagger';
-	}
-	if ( $focus_ring ) {
-		$add_classes[] = 'sgs-has-focus-ring';
 	}
 	if ( $block_link ) {
 		$add_classes[] = 'sgs-has-block-link';

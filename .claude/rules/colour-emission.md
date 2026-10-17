@@ -106,7 +106,7 @@ Static `style.css` is a second surface these PHP helpers cannot reach — covere
 
 A new shadow colour must be the site colour (`color-mix(in srgb, var(--wp--custom--shadow-colour) N%, transparent)`) or a palette colour, never a black literal. Gates: `scripts/check-shadow-sources.py --check`, `scripts/shadow-lift/run.js --check`, `scripts/shadow-fallback/run.js --check`, `scripts/check-shadow-fallback-php.py --check`.
 
-`supports.sgs.hoverDefaults` (`{scalePreset, shadow, imageZoom, focusRing}`) only applies when the block also opts into the universal hover panel. `focusRing` is near-inert on a non-focusable root (`<div>`/`<section>` without `tabindex`) — don't treat it as a11y cover.
+`supports.sgs.hoverDefaults` (`{scalePreset, shadow, imageZoom}`) only applies when the block also opts into the universal hover panel. Keyboard focus rings come from the unified focus system (`theme/sgs-theme/assets/css/focus.css`), not from a per-block hover attribute.
 
 One hover-shadow control only: `src/components/ShadowLiftControls.js` (D1148) — never mount a second.
 

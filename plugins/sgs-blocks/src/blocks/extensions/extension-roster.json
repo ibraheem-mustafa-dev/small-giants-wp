@@ -61,7 +61,6 @@
 				"sgsHoverGrayscale": { "type": "boolean", "default": false, "role": "visual" },
 				"sgsHoverBorderAccent": { "type": "boolean", "default": false, "role": "visual" },
 				"sgsHoverTilt3D": { "type": "boolean", "default": false, "role": "visual" },
-				"sgsFocusRing": { "type": "boolean", "role": "behaviour" },
 				"sgsHoverOpacity": { "type": "number", "default": 0, "role": "visual", "css_property": "opacity", "css_element": "wrapper", "css_state": "hover" },
 				"sgsHoverIndent": { "type": "string", "default": "", "role": "layout", "css_property": "padding-left", "css_element": "wrapper", "css_state": "hover" }
 			}

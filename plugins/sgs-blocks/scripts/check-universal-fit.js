@@ -278,7 +278,7 @@ const EXTENSIONS = [
 			'sgsHoverScale', 'sgsHoverScalePreset', 'sgsHoverShadow',
 			'sgsHoverDuration', 'sgsHoverEasing', 'sgsHoverImageZoom',
 			'sgsStaggerDelay', 'sgsHoverGrayscale', 'sgsHoverBorderAccent',
-			'sgsHoverTilt3D', 'sgsFocusRing',
+			'sgsHoverTilt3D',
 		],
 		hideSlug: 'hover',
 		// D551 (Phase 2.1): OPT-IN, not opt-out — disconnected from every

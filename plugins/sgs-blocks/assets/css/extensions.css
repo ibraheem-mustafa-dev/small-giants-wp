@@ -494,18 +494,6 @@
 	z-index: auto;
 }
 
-/* ===== Focus Ring Extension ===== */
-
-/*
- * Applied via the sgsFocusRing attribute (boolean, default true on opt-in blocks).
- * Uses :focus-visible so mouse users never see the ring — keyboard-only.
- * Values reference theme.json settings.custom.focus-ring tokens.
- */
-.sgs-has-focus-ring:focus-visible {
-	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
-	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
-}
-
 /* ── Parallax extension ─────────────────────────────────────────────────── */
 /* 'Background parallax' (the .sgs-parallax-background rules that used to
  * live here) was RETIRED 2026-08-19 — its editor toggle was dead UI (see
