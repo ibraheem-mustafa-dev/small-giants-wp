@@ -75,6 +75,7 @@ All files are in `plugins/sgs-blocks/scripts/`. One job per file; the command fi
 
 ## Known limits and next speed-ups (2026-10-17)
 
+- Planned change (Bean ruled 2026-10-17): while Spec 38A is being built the canary deploy runs the live motion QA (smoke by default, full when due). When plan milestone M6.7 closes it moves off the default deploy path and becomes an opt-in extra; the build plan's M6.7 entry (`.claude/plans/2026-10-12-spec38a-motion-build.md`) lists the code and docs to change. Until M6.7 is done, leave it on.
 - The marquee probe is 367s, mostly fixed waits (a 2s settle after each of about 32 page opens, repeated re-measurement in its reduced-motion pass and 1s measurement windows). Trimming those while keeping the 2% rate judge could save about 100s on full runs; it needs a live canary to verify and a negative-control check, so it is not done yet.
 - The full gate tier's wall clock equals its slowest gate, `run-motion-gates` (about 135s), which runs about 40 scripts one after another; threading them four at a time could save about 20 to 30s.
 - A gate result is not cached per input hash: `check-render-undefined-vars` and `check-dead-api-calls` read whole-tree inputs that are not declared, so a stale pass would be worse than the time saved.
