@@ -73,9 +73,20 @@ trait TrustBarRenderTrait {
 	private function scroll_attrs(): array {
 		return array(
 			'badgeStyle'             => 'icon-circle',
-			'autoScroll'             => true,
-			'autoScrollSpeed'        => 'medium',
-			'autoScrollPauseOnHover' => true,
+			'sgsMotion'              => array(
+				'v'        => 1,
+				'elements' => array(
+					'root' => array(
+						'effects' => array(
+							array(
+								'id'     => 'marquee',
+								'effect' => 'marquee',
+								'values' => array(),
+							),
+						),
+					),
+				),
+			),
 			'items'                  => $this->two_items(),
 			'title'                  => 'Hello',
 		);

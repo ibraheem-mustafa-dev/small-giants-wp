@@ -24,10 +24,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-media-element.php';
-// Bare-icon variant, stroke width, item gap/padding and the marquee-below-breakpoint option
+// Bare-icon variant, stroke width and item gap/padding
 // live in their own files (this render.php is already over the file-length cap).
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-item.php';
-require_once dirname( __DIR__, 3 ) . '/includes/helpers-trust-bar-marquee.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 
 // --- Unique ID for scoped typography <style> ----------------------------------
@@ -102,23 +101,32 @@ $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHov
 // Grid columns are driven by the gridTemplateColumns attr via the shared wrapper helper.
 // Gap is consumed by the shared wrapper helper directly from $attributes['gap'].
 
-// --- Auto-scroll attributes --------------------------------------------------
-$auto_scroll       = ! empty( $attributes['autoScroll'] );
-$tb_marquee_below  = sgs_trust_bar_marquee_below( $attributes['autoScrollBelow'] ?? 0 );
-// The badges sit inside the marquee set (`.sgs-trust-bar__track`, `data-sgs-marquee-set`) whenever the block runs the
-// shared marquee. The runtime is `src/shared/effects/fx-marquee.js`, loaded by the block's marquee motion effect.
-$tb_marquee_track  = $auto_scroll || sgs_motion_root_has_effect( $attributes, 'marquee' );
+// --- Marquee ------------------------------------------------------------------
+// The badges sit inside the marquee set (`.sgs-trust-bar__track`, `data-sgs-marquee-set`) whenever the root stores a
+// marquee effect layer. The runtime is `src/shared/effects/fx-marquee.js`, loaded by the block's marquee motion effect.
+$tb_marquee_track = sgs_motion_root_has_effect( $attributes, 'marquee' );
+
+// The layer's range: a layer with no `belowBreakpoint` (or `always`) runs at every width.
+$tb_marquee_always = false;
+if ( $tb_marquee_track ) {
+	foreach ( (array) ( $attributes['sgsMotion']['elements']['root']['effects'] ?? array() ) as $tb_layer ) {
+		if ( is_array( $tb_layer ) && 'marquee' === ( $tb_layer['effect'] ?? null ) ) {
+			$tb_below_value    = $tb_layer['values']['belowBreakpoint'] ?? 'always';
+			$tb_marquee_always = ! in_array( $tb_below_value, array( 'mobile', 'tablet' ), true );
+			break;
+		}
+	}
+}
 
 // --- Overflow mode ('wrap' default / 'drop') ----------------------------------
 // 'drop' keeps a single row and lets view.js hide whichever trailing badges do
-// not fit (see overflow-drop.js). It coexists with auto-scroll when the marquee
-// is limited to a width range (autoScrollBelow > 0): the marquee runs below the
-// breakpoint (every badge in the scrolling track) and drop applies at and above
-// it. A marquee at every width (autoScrollBelow 0) never leaves a static row to
-// drop from, so drop is not emitted there.
+// not fit (see overflow-drop.js). It coexists with the marquee when the layer is
+// limited to a width range: the marquee runs inside the range (every badge in the
+// scrolling track) and drop applies outside it. A marquee at every width never
+// leaves a static row to drop from, so drop is not emitted there.
 $tb_overflow_mode_raw = isset( $attributes['overflowMode'] ) ? sanitize_key( (string) $attributes['overflowMode'] ) : 'wrap';
 $tb_overflow_mode     = in_array( $tb_overflow_mode_raw, array( 'wrap', 'drop' ), true ) ? $tb_overflow_mode_raw : 'wrap';
-$tb_overflow_drop     = ( 'drop' === $tb_overflow_mode && ( ! $auto_scroll || $tb_marquee_below > 0 ) );
+$tb_overflow_drop     = ( 'drop' === $tb_overflow_mode && ! $tb_marquee_always );
 
 // Clamp circle size.
 $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
@@ -319,14 +327,6 @@ $tb_extra_attrs = array(
 
 // data-columns removed: grid columns are now driven by gridTemplateColumns attr
 // via the universal wrapper mechanism. No CSS selector overrides needed.
-
-if ( $auto_scroll ) {
-	// overflow-drop.js reads these to know the marquee range (it hides what does not fit outside it).
-	$tb_extra_attrs['data-auto-scroll'] = 'true';
-	if ( $tb_marquee_below > 0 ) {
-		$tb_extra_attrs['data-auto-scroll-below'] = (string) $tb_marquee_below;
-	}
-}
 
 if ( $tb_overflow_drop ) {
 	// view.js (overflow-drop.js) reads this to find blocks to measure; the
@@ -540,12 +540,12 @@ $tb_per_item_css = '';
 // 1-based position when the badges are the sole children of their parent.
 // Two compositions exist, both decided further down (see the $badges_html
 // ternary and the SGS_Container_Wrapper::render() call):
-// * auto-scroll ON  → badges are wrapped in `.sgs-trust-bar__track`, which
+// * marquee layer stored  → badges are wrapped in `.sgs-trust-bar__track`, which
 // therefore contains ONLY badges → offset 0.
-// * auto-scroll OFF → badges are passed to the wrapper as
+// * no marquee layer → badges are passed to the wrapper as
 // `$title_html . $badges_html`, so a rendered title is an element sibling
 // immediately before badge 1 → offset 1.
-// The block's `autoScroll` default is FALSE, so the offset case is the DEFAULT
+// A block with no marquee layer is the common case, so the offset case is the DEFAULT
 // rendering path, not an edge case.
 //
 // This is derived from the SAME two variables that compose the parent, so it
@@ -641,7 +641,7 @@ foreach ( $items as $tb_item_index => $item ) {
 			// `.sgs-trust-bar__badge` wrapper unconditionally, so the badge's own
 			// 1-based position is $tb_item_index + 1 — PLUS $tb_badge_offset, which
 			// accounts for any non-badge element sibling sharing the badges' parent
-			// (a rendered title, when auto-scroll is off). See where it is computed,
+			// (a rendered title, when no marquee layer is stored). See where it is computed,
 			// just above the loop.
 			$fill_colour = sgs_colour_value( (string) $item['fillColour'] );
 			if ( $fill_colour ) {

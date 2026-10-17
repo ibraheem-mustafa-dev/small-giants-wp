@@ -1,6 +1,6 @@
 /**
  * Trust bar: inspector panels and canvas preview for the bare-icon variant,
- * stroke width, badge spacing and the marquee options.
+ * stroke width and badge spacing.
  *
  * Kept out of edit.js (already far past the file-length cap). Every control here
  * writes one block.json attribute and is mirrored by render.php / view.js:
@@ -9,13 +9,11 @@
  *   iconStrokeWidth   -> --sgs-trust-badge-icon-stroke-width  (icon-circle + icon-bare)
  *   itemGap           -> gap on each badge item               (tier object)
  *   itemPadding       -> padding on each badge item           (tier box object)
- *   autoScrollBelow   -> data-auto-scroll-below + media query (0 / 768 / 1024)
- *   autoScrollDuration-> the marquee's seconds per cycle      (read by the shared marquee runtime, 0 = preset)
  *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
+import { PanelBody, RangeControl } from '@wordpress/components';
 import {
 	IconPreview,
 	ResponsiveOverride,
@@ -35,13 +33,6 @@ export const TRUST_BAR_LIMITS = {
 	strokeWidth: { min: 0.25, max: 4, fallback: 1.8 },
 	bareSize: { min: 8, max: 96, fallback: 20 },
 };
-
-/** Marquee breakpoint choices: the two device-tier standards (768 / 1024), or off. */
-export const AUTO_SCROLL_BELOW_OPTIONS = [
-	{ label: __( 'At every screen size', 'sgs-blocks' ), value: '0' },
-	{ label: __( 'Phones only (below 768px)', 'sgs-blocks' ), value: '768' },
-	{ label: __( 'Phones and tablets (below 1024px)', 'sgs-blocks' ), value: '1024' },
-];
 
 /**
  * Bare icon (no circle) for the editor canvas. The CSS custom properties that size
@@ -152,29 +143,5 @@ export function TrustBarItemSpacingPanel( { attributes, setAttributes } ) {
 				) }
 			</ResponsiveOverride>
 		</PanelBody>
-	);
-}
-
-/**
- * The marquee option that sits under "Enable auto-scroll": where it runs. Speed, direction, pause and fade are the marquee effect's own controls.
- *
- * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes Attribute setter.
- * @return {JSX.Element} The controls.
- */
-export function TrustBarMarqueeControls( { attributes, setAttributes } ) {
-	return (
-		<>
-			<SelectControl
-				label={ __( 'Scroll only on', 'sgs-blocks' ) }
-				help={ __( 'Above the chosen width the badges show as a normal static row, and the "When items do not fit" choice applies.', 'sgs-blocks' ) }
-				value={ String( attributes.autoScrollBelow ?? 0 ) }
-				options={ AUTO_SCROLL_BELOW_OPTIONS }
-				onChange={ ( val ) => setAttributes( { autoScrollBelow: parseInt( val, 10 ) || 0 } ) }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-		</>
 	);
 }

@@ -63,7 +63,6 @@
 						"css:background-image": "backgroundColourGradient",
 						"css:color": "textColour",
 						"css:color-gradient": "textColourGradient",
-						"css:width": "fadeWidth",
 						"css:min-height": "maxHeight"
 					},
 					"states": {
@@ -199,7 +198,7 @@
 					"order": 6,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The marquee track (.sgs-brand-strip__track). The scrollSpeed attribute is kept only for the M6.5 migration: the marquee mapper (includes/motion/migrate/mappers/class-sgs-motion-map-marquee.php) reads it and writes the marquee effect layer, and the shared runtime (src/shared/effects/fx-marquee.js) runs the track. The track is declared as the real container; the attribute drives no CSS of its own."
+					"_note": "The marquee track (.sgs-brand-strip__track). The shared runtime (src/shared/effects/fx-marquee.js) runs the track from the marquee effect layer on the root; the track is declared as the real container."
 				},
 				"strip-spacing": {
 					"label": "Strip spacing",
@@ -251,7 +250,7 @@
 		"separators": {
 			"type": "object",
 			"default": {},
-			"description": "The lines between the brands of a static strip (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `column` is the vertical line between brands side by side, `row` the horizontal line between wrapped rows. Drawn centred in the gap by CSS gap decorations where the browser has them and by a small script elsewhere. A scrolling strip is one row, so only `column` applies and the line is drawn after every brand by the items themselves. No thickness (the default) draws nothing."
+			"description": "The lines between the brands of a static strip (the shared Separators setting, includes/helpers-separators.php): { row: { style, width: {desktop,tablet,mobile}, colour }, column: { same } }. `column` is the vertical line between brands side by side, `row` the horizontal line between wrapped rows. Drawn centred in the gap by CSS gap decorations where the browser has them and by a small script elsewhere. A marquee strip is one row, so only `column` applies and the line is drawn after every brand by the items themselves. No thickness (the default) draws nothing."
 		},
 		"shadowLiftOnHover": {
 			"type": "boolean",
@@ -425,35 +424,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"scrolling": {
-			"type": "boolean",
-			"default": false
-		},
-		"scrollSpeed": {
-			"type": "string",
-			"default": "medium"
-		},
-		"scrollDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "Custom marquee duration in seconds for one full cycle (2 to 300). 0 = use the slow / medium / fast preset in scrollSpeed. A value here wins over the preset."
-		},
-		"scrollDirection": {
-			"type": "string",
-			"default": "left",
-			"enum": [
-				"left",
-				"right"
-			]
-		},
-		"fadeEdges": {
-			"type": "boolean",
-			"default": false
-		},
-		"fadeWidth": {
-			"type": "number",
-			"default": 60
-		},
 		"imageEffect": {
 			"type": "string",
 			"default": "none"
@@ -473,15 +443,6 @@
 		"showNames": {
 			"type": "boolean",
 			"default": false
-		},
-		"pauseOnHover": {
-			"type": "boolean",
-			"default": true
-		},
-		"pauseButton": {
-			"type": "boolean",
-			"default": false,
-			"description": "Show a pause / play button while the strip scrolls (off by default). Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients. Keyboard focus, hover and touch pause the strip either way."
 		},
 		"nameFontSize": {
 			"type": "object",
@@ -679,10 +640,6 @@
 			"default": "",
 			"description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-within."
 		},
-		"effectHover": {
-			"type": "string",
-			"default": "none"
-		},
 		"transitionDuration": {
 			"type": "string",
 			"default": "300"
@@ -760,13 +717,11 @@
 		}
 	},
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
 	"viewScriptModule": "file:./view.js",
 	"render": "file:./render.php",
 	"example": {
 		"attributes": {
-			"scrolling": true,
 			"imageEffect": "none",
 			"maxHeight": 80
 		}

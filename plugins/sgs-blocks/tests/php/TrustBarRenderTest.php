@@ -42,10 +42,10 @@ final class TrustBarRenderTest extends TestCase {
 	 * else is byte-identical to the pre-change render.
 	 */
 	private const GOLDEN_SCROLL_CSS = '.sgs-tb-1.wp-block-sgs-trust-bar{color:var(--wp--preset--color--text, currentColor)}'
-		. "\n" . '.sgs-container-0c0d0389{--sgs-trust-badge-circle-bg: var(--wp--preset--color--surface, currentColor);--sgs-trust-badge-icon-colour: var(--wp--preset--color--primary-dark, currentColor);--sgs-trust-badge-text-colour: var(--wp--preset--color--text, currentColor);--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--whisper);}';
+		. "\n" . '.sgs-container-4a51e85e{--sgs-trust-badge-circle-bg: var(--wp--preset--color--surface, currentColor);--sgs-trust-badge-icon-colour: var(--wp--preset--color--primary-dark, currentColor);--sgs-trust-badge-text-colour: var(--wp--preset--color--text, currentColor);--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--whisper);}';
 
 	/** Golden wrapper opening tag of the pre-change render for scroll_attrs(). */
-	private const GOLDEN_SCROLL_OPEN_TAG = '<section class="sgs-container sgs-trust-bar sgs-trust-bar--icon-circle sgs-trust-bar--medium sgs-tb-1 sgs-container-0c0d0389" aria-label="Trust signals" data-auto-scroll="true">';
+	private const GOLDEN_SCROLL_OPEN_TAG = '<section class="sgs-container sgs-trust-bar sgs-trust-bar--icon-circle sgs-trust-bar--medium sgs-tb-1 sgs-container-4a51e85e" aria-label="Trust signals">';
 
 	/** @return array<string, mixed> */
 	private function circle_attrs(): array {
@@ -100,14 +100,12 @@ final class TrustBarRenderTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-trust-bar__icon', $circle['html'], 'no bare-icon markup in the circle variant' );
 
 		$scroll = $this->render( $this->scroll_attrs() );
-		$this->assertSame( self::GOLDEN_SCROLL_CSS, $scroll['css'], 'auto-scroll scoped CSS is the pre-change render without the retired marquee rules' );
+		$this->assertSame( self::GOLDEN_SCROLL_CSS, $scroll['css'], 'auto-scroll scoped CSS is the render of a root marquee effect layer' );
 		$this->assertStringContainsString( self::GOLDEN_SCROLL_OPEN_TAG, $scroll['html'], 'auto-scroll wrapper tag is byte-identical to the pre-change render' );
 	}
 
 	public function test_new_attributes_at_their_defaults_change_nothing(): void {
 		$defaults = array(
-			'autoScrollBelow'    => 0,
-			'autoScrollDuration' => 0,
 			'iconStrokeWidth'    => 1.8,
 			'iconBareSize'       => 20,
 			'itemGap'            => array(),
@@ -118,7 +116,6 @@ final class TrustBarRenderTest extends TestCase {
 			$plain  = $this->render( $base );
 			$with   = $this->render( array_merge( $base, $defaults ) );
 			$this->assertSame( $this->normalise_uid( $plain['html'] ), $this->normalise_uid( $with['html'] ), 'defaults render exactly as the attributes being absent' );
-			$this->assertStringNotContainsString( 'data-auto-scroll-below', $with['html'] );
 		}
 	}
 

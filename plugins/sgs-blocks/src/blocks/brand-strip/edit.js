@@ -33,13 +33,6 @@ const CAPTION_ALIGN_OPTIONS = [
 	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
-const HOVER_EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
-	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-];
-
 const IMAGE_EFFECT_OPTIONS = [
 	{ label: __( 'None (full colour)', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Greyscale', 'sgs-blocks' ), value: 'grayscale' },
@@ -187,7 +180,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		brandTextColour,
 		brandTextColourGradient,
 		brandTextColourHover,
-		scrolling,
 		imageEffect,
 		maxHeight,
 		columns,
@@ -219,11 +211,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
-		effectHover,
 		transitionDuration,
 		transitionEasing,
 		nameColourHover,
 	} = attributes;
+	// A marquee effect layer on the root makes the strip one marquee row.
+	const isScrolling = ( attributes.sgsMotion?.elements?.root?.effects ?? [] ).some(
+		( layer ) => layer?.effect === 'marquee'
+	);
 
 	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
 	// silently for items authored before this field existed. useMemo keeps
@@ -484,13 +479,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<SourcePanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				{ /* The lines between brands. A scrolling strip is one row, so it offers the
+				{ /* The lines between brands. A marquee strip is one row, so it offers the
 				   between-columns line only. */ }
 				<PanelBody title={ __( 'Separators', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsSeparatorControl
 						value={ attributes.separators }
 						onChange={ ( next ) => setAttributes( { separators: next } ) }
-						axes={ attributes.scrolling ? [ 'column' ] : [ 'row', 'column' ] }
+						axes={ isScrolling ? [ 'column' ] : [ 'row', 'column' ] }
 					/>
 				</PanelBody>
 
@@ -618,22 +613,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Marquee', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __(
-							'Infinite scroll animation',
-							'sgs-blocks'
-						) }
-						checked={ scrolling }
-						onChange={ ( val ) =>
-							setAttributes( { scrolling: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
@@ -679,7 +658,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							itemBackgroundColourHover: '',
 							itemBorderColourHover: '',
 							itemBorderColourHoverGradient: '',
-							effectHover: 'none',
 							transitionDuration: '300',
 							transitionEasing: 'ease-in-out',
 						} )
@@ -807,25 +785,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 
-					{ /* Hover behaviour — motion + timing (applies on hover
-					   regardless of the colour states above). */ }
-					<ToolsPanelItem
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						hasValue={ () => effectHover !== 'none' }
-						onDeselect={ () => setAttributes( { effectHover: 'none' } ) }
-					>
-						<SelectControl
-							label={ __( 'Hover effect', 'sgs-blocks' ) }
-							value={ effectHover }
-							options={ HOVER_EFFECT_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { effectHover: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
+					{ /* Hover timing (applies on hover regardless of the colour states above). */ }
 					<ToolsPanelItem
 						label={ __( 'Transition duration', 'sgs-blocks' ) }
 						hasValue={ () => transitionDuration !== '300' }

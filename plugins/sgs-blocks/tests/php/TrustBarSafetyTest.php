@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/TrustBarRenderTrait.php';
-require_once dirname( __DIR__, 2 ) . '/includes/helpers-trust-bar-marquee.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-trust-bar-item.php';
 
 final class TrustBarSafetyTest extends TestCase {
 
@@ -52,9 +52,8 @@ final class TrustBarSafetyTest extends TestCase {
 
 	/** @param mixed $raw Non-finite stored value. */
 	#[DataProvider( 'non_finite_provider' )]
-	public function test_non_finite_bare_size_and_breakpoint_are_ignored( $raw ): void {
+	public function test_non_finite_bare_size_is_ignored( $raw ): void {
 		$this->assertSame( SGS_TRUST_BAR_DEFAULT_BARE_ICON_SIZE, sgs_trust_bar_icon_bare_size( $raw ) );
-		$this->assertSame( 0, sgs_trust_bar_marquee_below( $raw ) );
 	}
 
 	public function test_finite_numbers_still_pass_through_the_guard(): void {
@@ -214,7 +213,6 @@ final class TrustBarSafetyTest extends TestCase {
 	public function test_block_json_descriptions_state_the_server_clamps(): void {
 		$block = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/trust-bar/block.json' ), true );
 		$this->assertStringContainsString( '0.25 to 4', $block['attributes']['iconStrokeWidth']['description'] );
-		$this->assertStringContainsString( '(2 to 300)', $block['attributes']['autoScrollDuration']['description'] );
 		$this->assertStringContainsString( '8 to 96', $block['attributes']['iconBareSize']['description'] );
 	}
 }

@@ -15,7 +15,7 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/p
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
-import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel, TrustBarMarqueeControls } from './edit-panels';
+import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel } from './edit-panels';
 import {
 	colourVar,
 	resolveShadowPreviewComposed,
@@ -362,7 +362,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		alignContent,
 		alignItems,
 		gridAutoRows,
-		autoScroll,
 		overflowMode,
 		shadow,
 	} = attributes;
@@ -431,8 +430,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const svgPreview = svgBackgroundPreview( {
 		bgSvgContent: attributes.bgSvgContent,
 		bgSvgPosition: attributes.bgSvgPosition,
-		bgSvgAnimation: attributes.bgSvgAnimation,
-		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
 		bgSvgOpacity: attributes.bgSvgOpacity,
 		bgSvgMinHeight: attributes.bgSvgMinHeight,
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
@@ -441,19 +438,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const bgPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
-		bgLottie: attributes.bgLottie,
 		backgroundSize: attributes.backgroundSize,
 		backgroundPosition: attributes.backgroundPosition,
 		backgroundRepeat: attributes.backgroundRepeat,
 		backgroundAttachment: attributes.backgroundAttachment,
-		bgHoverZoom: attributes.bgHoverZoom,
-		bgHoverZoomScale: attributes.bgHoverZoomScale,
-		bgHoverZoomDuration: attributes.bgHoverZoomDuration,
-		bgHoverZoomEasing: attributes.bgHoverZoomEasing,
-		bgHoverZoomEasingCustom: attributes.bgHoverZoomEasingCustom,
-		bgKenBurns: attributes.bgKenBurns,
-		bgAnimationDuration: attributes.bgAnimationDuration,
-		bgParallax: attributes.bgParallax,
 		backgroundOverlayColour: attributes.backgroundOverlayColour,
 		overlayGradient: attributes.overlayGradient,
 		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
@@ -487,8 +475,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// class instead gives the control a visible effect in the editor: a
 	// single-row `flex-wrap:nowrap` rule in style.css (never reached on the
 	// frontend, since render.php/view.js never add this class there).
-	// Ignored while autoScroll is on, matching render.php's own gating.
-	const isOverflowDrop = 'drop' === overflowMode && ! autoScroll;
+	// Ignored while a marquee runs at every width, matching render.php's own gating.
+	const marqueeLayer = ( attributes.sgsMotion?.elements?.root?.effects ?? [] ).find(
+		( layer ) => layer?.effect === 'marquee'
+	);
+	const marqueeAlways =
+		!! marqueeLayer &&
+		! [ 'mobile', 'tablet' ].includes( marqueeLayer.values?.belowBreakpoint );
+	const isOverflowDrop = 'drop' === overflowMode && ! marqueeAlways;
 
 	// Build className based on active variant.
 	const blockClassName = [
@@ -816,13 +810,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					) }
 				</PanelBody>
 
-				{ /* ── Auto-scroll (behaviour) ───────────────────────────────── */ }
-				<PanelBody title={ __( 'Auto-scroll', 'sgs-blocks' ) } initialOpen={ false }>
-					{ ( ! autoScroll || ( attributes.autoScrollBelow ?? 0 ) > 0 ) && (
+				{ /* ── Overflow (behaviour) ──────────────────────────────────── */ }
+				<PanelBody title={ __( 'Overflow', 'sgs-blocks' ) } initialOpen={ false }>
+					{ ! marqueeAlways && (
 						<ToggleGroupControl
 							label={ __( "When items don't fit", 'sgs-blocks' ) }
-							help={ autoScroll
-								? __( "Applies at and above the width where scrolling stops: items that don't fit on one line are hidden. Below it the row scrolls and shows every item. Hidden items are removed from the tab order and from screen readers too. Only visible once published.", 'sgs-blocks' )
+							help={ marqueeLayer
+								? __( "Applies outside the width range where the marquee scrolls: items that don't fit on one line are hidden. Inside it the row scrolls and shows every item. Hidden items are removed from the tab order and from screen readers too. Only visible once published.", 'sgs-blocks' )
 								: __( "What happens when the badges don't all fit on one line. Hidden items are removed from the tab order and from screen readers too. Only visible once published — the editor canvas always shows every badge.", 'sgs-blocks' ) }
 							value={ overflowMode ?? 'wrap' }
 							onChange={ ( val ) => setAttributes( { overflowMode: val || 'wrap' } ) }
@@ -833,18 +827,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							<ToggleGroupControlOption value="wrap" label={ __( 'Wrap', 'sgs-blocks' ) } />
 							<ToggleGroupControlOption value="drop" label={ __( 'Hide extras', 'sgs-blocks' ) } />
 						</ToggleGroupControl>
-					) }
-					<ToggleControl
-						label={ __( 'Enable auto-scroll', 'sgs-blocks' ) }
-						help={ __( 'When the number of badges exceeds what fits on screen, the row scrolls automatically like a marquee.', 'sgs-blocks' ) }
-						checked={ !! autoScroll }
-						onChange={ ( val ) => setAttributes( { autoScroll: val } ) }
-						__nextHasNoMarginBottom
-					/>
-					{ autoScroll && (
-						<>
-							<TrustBarMarqueeControls attributes={ attributes } setAttributes={ setAttributes } />
-						</>
 					) }
 				</PanelBody>
 

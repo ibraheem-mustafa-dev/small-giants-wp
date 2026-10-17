@@ -710,43 +710,6 @@
 			},
 			"_comment": "Was the bare number \"20\", which the old flat path read as WordPress spacing-scale SLUG 20 = 0.5rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 20px. This block is pure-wrapper (render.php:86 — gap is handled entirely by the shared wrapper), so it had no render.php fallback shielding it."
 		},
-		"autoScroll": {
-			"type": "boolean",
-			"default": false
-		},
-		"autoScrollSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [
-				"slow",
-				"medium",
-				"fast"
-			]
-		},
-		"autoScrollPauseOnHover": {
-			"type": "boolean",
-			"default": true
-		},
-		"autoScrollPauseButton": {
-			"type": "boolean",
-			"default": false,
-			"description": "Show a pause / play button while the marquee is running (off by default). Needed for WCAG 2.2.2 on sites that must meet it, such as public-sector clients. Keyboard focus, hover and press pause the row either way. Needs autoScroll on; never shown when nothing moves."
-		},
-		"autoScrollBelow": {
-			"type": "number",
-			"default": 0,
-			"enum": [
-				0,
-				768,
-				1024
-			],
-			"description": "Run the auto-scroll only below this viewport width in px, using the device-tier standards: 0 = at every width (default), 768 = phones only, 1024 = phones and tablets. At and above it the badges show as a normal static row. Needs autoScroll on."
-		},
-		"autoScrollDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "Custom marquee duration in seconds for one full cycle (2 to 300). 0 = use the slow / medium / fast preset in autoScrollSpeed. A value here wins over the preset."
-		},
 		"layout": {
 			"type": "string",
 			"enum": [
@@ -867,46 +830,6 @@
 		"bgVideoMobile": {
 			"type": "object"
 		},
-		"bgLottie": {
-			"type": "integer",
-			"default": 0
-		},
-		"bgLottieLoop": {
-			"type": "boolean",
-			"default": true
-		},
-		"bgParallax": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgKenBurns": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgAnimationDuration": {
-			"type": "number",
-			"default": 20
-		},
-		"bgHoverZoom": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgHoverZoomScale": {
-			"type": "number",
-			"default": 105
-		},
-		"bgHoverZoomDuration": {
-			"type": "number",
-			"default": 600
-		},
-		"bgHoverZoomEasing": {
-			"type": "string",
-			"default": "ease"
-		},
-		"bgHoverZoomEasingCustom": {
-			"type": "string",
-			"default": ""
-		},
 		"shadow": {
 			"type": "string"
 		},
@@ -995,25 +918,6 @@
 				"foreground"
 			]
 		},
-		"bgSvgAnimation": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"pulse",
-				"float",
-				"wave"
-			]
-		},
-		"bgSvgAnimationSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [
-				"slow",
-				"medium",
-				"fast"
-			]
-		},
 		"bgSvgOpacity": {
 			"type": "number",
 			"default": 100
@@ -1093,7 +997,7 @@
 				"wrap",
 				"drop"
 			],
-			"description": "What happens when the badges do not all fit on one line. 'wrap' (default) lets them flow onto a second line, unchanged from the block's prior behaviour. 'drop' keeps a single row and hides whichever trailing badges do not fit (measured live on the frontend by view.js; hidden badges use the native `hidden` attribute so they are never focusable or read by a screen reader). Ignored while autoScroll is on — the marquee already keeps a single row by scrolling."
+			"description": "What happens when the badges do not all fit on one line. 'wrap' (default) lets them flow onto a second line, unchanged from the block's prior behaviour. 'drop' keeps a single row and hides whichever trailing badges do not fit (measured live on the frontend by view.js; hidden badges use the native `hidden` attribute so they are never focusable or read by a screen reader). Ignored while the marquee runs: it already keeps a single row."
 		},
 		"contentWidth": {
 			"type": "object",

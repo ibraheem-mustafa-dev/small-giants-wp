@@ -344,8 +344,8 @@ final class MotionPauseRenderTest extends TestCase {
 	 */
 	public function test_no_block_prints_the_button_by_default_when_its_motion_is_on(): void {
 		$cases = array(
-			'trust-bar'          => $this->html( 'sgs/trust-bar', array( 'autoScroll' => true, 'items' => $this->trust_items() ) ),
-			'brand-strip'        => $this->html( 'sgs/brand-strip', array( 'scrolling' => true, 'logos' => $this->brand_logos() ) ),
+			'trust-bar'          => $this->html( 'sgs/trust-bar', array_merge( $this->marquee_layer(), array( 'items' => $this->trust_items() ) ) ),
+			'brand-strip'        => $this->html( 'sgs/brand-strip', array_merge( $this->marquee_layer(), array( 'logos' => $this->brand_logos() ) ) ),
 			'testimonial-slider' => $this->html( 'sgs/testimonial-slider', array( 'autoplay' => true ), $this->testimonials( 3 ) ),
 			'gallery'            => $this->html( 'sgs/gallery', array( 'layout' => 'carousel', 'carouselAutoplay' => true, 'mediaItems' => $this->gallery_items() ) ),
 			'post-grid'          => $this->html( 'sgs/post-grid', array( 'layout' => 'carousel', 'carouselAutoplay' => true ) ),
@@ -357,18 +357,23 @@ final class MotionPauseRenderTest extends TestCase {
 		}
 	}
 
-	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_it_is_switched_off(): void {
+	/**
+	 * A root marquee effect layer with no pause control: the runtime, not the server, prints a marquee's pause button.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function marquee_layer(): array {
+		return array( 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'root' => array( 'effects' => array( array( 'id' => 'marquee', 'effect' => 'marquee', 'values' => array() ) ) ) ) ) );
+	}
+
+	public function test_trust_bar_prints_no_button_when_nothing_scrolls_or_the_layer_has_no_pause_control(): void {
 		$this->assertSame( '', $this->pause_button( $this->html( 'sgs/trust-bar', array( 'items' => $this->trust_items() ) ) ) );
 		$this->assertSame(
 			'',
 			$this->pause_button(
 				$this->html(
 					'sgs/trust-bar',
-					array(
-						'autoScroll'            => true,
-						'autoScrollPauseButton' => false,
-						'items'                 => $this->trust_items(),
-					)
+					array_merge( $this->marquee_layer(), array( 'items' => $this->trust_items() ) )
 				)
 			)
 		);

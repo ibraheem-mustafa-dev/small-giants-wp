@@ -59,6 +59,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 require_once __DIR__ . '/product-brands-source.php';
 require_once __DIR__ . '/brand-display-render.php';
 
@@ -81,7 +82,8 @@ if ( 'product-brands' === $brand_source ) {
 	$logos = sgs_brand_strip_get_product_brand_logos( $attributes );
 }
 $brand_display       = sgs_brand_strip_resolve_display( $attributes );
-$scrolling           = $attributes['scrolling'] ?? false;
+// A marquee effect layer on the root makes the strip one marquee row; without it the strip wraps.
+$is_marquee           = sgs_motion_root_has_effect( $attributes, 'marquee' );
 $image_effect        = $attributes['imageEffect'] ?? 'none';
 $max_height          = $attributes['maxHeight'] ?? 180;
 $columns_tiers       = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
@@ -148,13 +150,10 @@ $root_text_colour          = $attributes['textColour'] ?? '';
 $root_text_colour_gradient = $attributes['textColourGradient'] ?? '';
 $root_text_hover_colour    = $attributes['textColourHover'] ?? '';
 $root_text_hover_gradient  = $attributes['textColourHoverGradient'] ?? '';
-$hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
 // Sanitise values.
-$allowed_effects     = array( 'none', 'lift', 'scale', 'glow' );
-$safe_hover_effect   = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 $allowed_img_effects = array( 'none', 'grayscale', 'sepia' );
 $safe_image_effect   = in_array( $image_effect, $allowed_img_effects, true ) ? $image_effect : 'none';
 // tileShadow sanitisation happens at emission time via sgs_shadow_value()
@@ -217,9 +216,6 @@ if ( $logo_layout_row ) {
 }
 if ( 'none' !== $safe_image_effect ) {
 	$classes[] = 'sgs-brand-strip--effect-' . esc_attr( $safe_image_effect );
-}
-if ( 'none' !== $safe_hover_effect ) {
-	$classes[] = 'sgs-brand-strip--hover-' . esc_attr( $safe_hover_effect );
 }
 if ( $has_background ) {
 	$classes[] = 'has-background';
@@ -583,17 +579,17 @@ if ( $mobile_decls ) {
 
 // Lines between the brands: the shared Separators setting. A static strip wraps, so it
 // takes the flow path (the root carries the marker the runtime fallback looks for). A
-// scrolling strip is one row of cloned sets, so its items draw the line, one after every
+// marquee strip is one row of cloned sets, so its items draw the line, one after every
 // item: the clones copy the lines, and the seam between two sets stays continuous.
 $sgs_bs_sep_raw    = $attributes['separators'] ?? array();
-$sgs_bs_sep_axes   = $scrolling ? array( 'column' ) : array( 'row', 'column' );
+$sgs_bs_sep_axes   = $is_marquee ? array( 'column' ) : array( 'row', 'column' );
 $sgs_bs_sep_caps   = array(
 	'axes'  => $sgs_bs_sep_axes,
-	'edges' => $scrolling,
+	'edges' => $is_marquee,
 );
 $sgs_bs_sep_active = sgs_separators_active( sgs_separators_normalise( $sgs_bs_sep_raw, $sgs_bs_sep_caps ) );
-$sgs_bs_sep_flow   = $sgs_bs_sep_active && ! $scrolling;
-if ( $sgs_bs_sep_active && $scrolling ) {
+$sgs_bs_sep_flow   = $sgs_bs_sep_active && ! $is_marquee;
+if ( $sgs_bs_sep_active && $is_marquee ) {
 	$scoped_css[] = sgs_separators_css(
 		array_merge( (array) $sgs_bs_sep_raw, array( 'edges' => 'end' ) ),
 		array(

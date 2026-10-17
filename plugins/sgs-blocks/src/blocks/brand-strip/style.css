@@ -59,7 +59,7 @@
 	gap: var(--sgs-logo-gap, var(--wp--preset--spacing--50));
 }
 
-/* Static (non-scrolling) mode: wrap and centre.
+/* Static (no marquee) mode: wrap and centre.
  *
  * WIDTH comes from the block's own `align` (wide/full) — NOT a CSS breakout.
  * The reference brand strip packs all 8 tiles into a near-full-width row
@@ -92,12 +92,12 @@
  * second row rather than being clipped, and use a tighter gap so 8
  * uniform tiles can share one row on wide viewports (matches the
  * reference's own tight, near-zero-gap packing — see the measurement note
- * in the visual-diff report). Scoped to static mode only so the scrolling
+ * in the visual-diff report). Scoped to static mode only so the
  * marquee's spacing (`--wp--preset--spacing--50`) is unaffected, per the
  * coordinator's explicit instruction.
  *
  * `width: 100%` + `flex-shrink: 1` (overriding the base rule's
- * `flex-shrink: 0`, which the scrolling marquee needs so cloned sets keep
+ * `flex-shrink: 0`, which the marquee needs so cloned sets keep
  * their full intrinsic width) is the load-bearing part of this fix — a
  * `flex-wrap: wrap` container with NO width constraint of its own just
  * grows to fit all children (never triggering the wrap), so at narrower
@@ -442,49 +442,6 @@
  * a `var(--x, <inert-fallback>)` instead: unset → inert, set → applies. */
 .sgs-brand-strip__item:hover {
 	border-color: var(--sgs-tile-hover-border, transparent);
-}
-
-/* Hover effect variants — all scoped to `.sgs-brand-strip__item:hover`.
- * `scale` deliberately zooms the LOGO IMAGE (a child of the tile), not the
- * tile box itself — a self-scaling tile isn't clipped by its own
- * `overflow: hidden` (that only clips the tile's CONTENTS, not the tile's
- * own transformed render), so it would visually escape the card and
- * overlap neighbours. Scaling the image instead is contained by the
- * tile's `overflow: hidden`, exactly matching Bean's "zoom, contained in
- * the tile" requirement and the reference's own mechanism (scale3d(1.1)
- * on the thumbnail, clipped by the media container). 1.1 matches the
- * reference's measured scale factor exactly. */
-.sgs-brand-strip--hover-lift .sgs-brand-strip__item {
-	transition-property: transform, box-shadow, border-color;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-}
-
-.sgs-brand-strip--hover-lift .sgs-brand-strip__item:hover {
-	transform: translateY(-4px);
-	box-shadow: 0 8px 24px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
-}
-
-.sgs-brand-strip--hover-scale .sgs-brand-strip__logo,
-.sgs-brand-strip--hover-scale .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
-	transition-property: transform;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-}
-
-.sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-brand-strip__logo,
-.sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip {
-	transform: scale(1.1);
-}
-
-.sgs-brand-strip--hover-glow .sgs-brand-strip__item {
-	transition-property: box-shadow, border-color;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-}
-
-.sgs-brand-strip--hover-glow .sgs-brand-strip__item:hover {
-	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
 /* ===== Empty state (editor) ===== */
