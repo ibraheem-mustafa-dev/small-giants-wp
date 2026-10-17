@@ -1,0 +1,3755 @@
+{
+	"sections": {
+		"block-setting": {
+			"side": "framework",
+			"source": "db",
+			"status": "absent",
+			"entries": []
+		},
+		"fx": {
+			"side": "framework",
+			"source": "db",
+			"status": "absent",
+			"entries": []
+		},
+		"motion-preset": {
+			"side": "framework",
+			"source": "db",
+			"status": "absent",
+			"entries": []
+		},
+		"sgs-support": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "sgs-support:animationItems",
+					"label": "supports.sgs.animationItems",
+					"count": 1,
+					"examples": [
+						"sgs/card-grid"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:arrayContentLift",
+					"label": "supports.sgs.arrayContentLift",
+					"count": 9,
+					"examples": [
+						"sgs/brand-strip",
+						"sgs/card-grid",
+						"sgs/google-reviews",
+						"sgs/icon-list",
+						"sgs/option-picker"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:blockLinkAlways",
+					"label": "supports.sgs.blockLinkAlways",
+					"count": 1,
+					"examples": [
+						"sgs/product-card"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:blockLinkAutoHelp",
+					"label": "supports.sgs.blockLinkAutoHelp",
+					"count": 2,
+					"examples": [
+						"sgs/product-card",
+						"sgs/responsive-logo"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:blockLinkAutoUrl",
+					"label": "supports.sgs.blockLinkAutoUrl",
+					"count": 1,
+					"examples": [
+						"sgs/responsive-logo"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:boxFamilies",
+					"label": "supports.sgs.boxFamilies",
+					"count": 70,
+					"examples": [
+						"sgs/accordion",
+						"sgs/accordion-item",
+						"sgs/audio",
+						"sgs/before-after",
+						"sgs/brand-strip"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:collection",
+					"label": "supports.sgs.collection",
+					"count": 16,
+					"examples": [
+						"sgs/accordion",
+						"sgs/brand-strip",
+						"sgs/breadcrumbs",
+						"sgs/card-grid",
+						"sgs/gallery"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:colourExemptions",
+					"label": "supports.sgs.colourExemptions",
+					"count": 17,
+					"examples": [
+						"sgs/before-after",
+						"sgs/business-info",
+						"sgs/cart",
+						"sgs/filter-search",
+						"sgs/gallery"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:containerKind",
+					"label": "supports.sgs.containerKind",
+					"count": 20,
+					"examples": [
+						"sgs/card-grid",
+						"sgs/container",
+						"sgs/feature-grid",
+						"sgs/form",
+						"sgs/hero"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:elements",
+					"label": "supports.sgs.elements",
+					"count": 97,
+					"examples": [
+						"sgs/accordion",
+						"sgs/accordion-item",
+						"sgs/account",
+						"sgs/audio",
+						"sgs/before-after"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:enabledExtensions",
+					"label": "supports.sgs.enabledExtensions",
+					"count": 21,
+					"examples": [
+						"sgs/button",
+						"sgs/container",
+						"sgs/google-reviews",
+						"sgs/heading",
+						"sgs/hero"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:fx",
+					"label": "supports.sgs.fx",
+					"count": 8,
+					"examples": [
+						"sgs/before-after",
+						"sgs/buybox",
+						"sgs/decorative-image",
+						"sgs/gallery",
+						"sgs/google-reviews"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:headerEssential",
+					"label": "supports.sgs.headerEssential",
+					"count": 6,
+					"examples": [
+						"sgs/cart",
+						"sgs/nav-bar-menu",
+						"sgs/nav-drawer-menu",
+						"sgs/product-search",
+						"sgs/responsive-logo"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:hideExtensions",
+					"label": "supports.sgs.hideExtensions",
+					"count": 32,
+					"examples": [
+						"sgs/accordion-item",
+						"sgs/brand-strip",
+						"sgs/choice-flow",
+						"sgs/choice-flow-question",
+						"sgs/choice-flow-result"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:hoverDefaults",
+					"label": "supports.sgs.hoverDefaults",
+					"count": 6,
+					"examples": [
+						"sgs/google-reviews",
+						"sgs/info-box",
+						"sgs/pricing-table",
+						"sgs/product-card",
+						"sgs/team-member"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:hoverExcludeControls",
+					"label": "supports.sgs.hoverExcludeControls",
+					"count": 4,
+					"examples": [
+						"sgs/container",
+						"sgs/google-reviews",
+						"sgs/pricing-table",
+						"sgs/whatsapp-cta"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:iconPicker",
+					"label": "supports.sgs.iconPicker",
+					"count": 14,
+					"examples": [
+						"sgs/accordion",
+						"sgs/button",
+						"sgs/cart",
+						"sgs/counter",
+						"sgs/form-field-tiles"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:imageControls",
+					"label": "supports.sgs.imageControls",
+					"count": 14,
+					"examples": [
+						"sgs/card-grid",
+						"sgs/cart",
+						"sgs/form-field-tiles",
+						"sgs/gallery",
+						"sgs/google-rating-badge"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:imageControlsExplicit",
+					"label": "supports.sgs.imageControlsExplicit",
+					"count": 3,
+					"examples": [
+						"sgs/card-grid",
+						"sgs/gallery",
+						"sgs/team-member"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:intrinsicColumns",
+					"label": "supports.sgs.intrinsicColumns",
+					"count": 2,
+					"examples": [
+						"sgs/container",
+						"sgs/site-footer-row"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:is_section_root",
+					"label": "supports.sgs.is_section_root",
+					"count": 3,
+					"examples": [
+						"sgs/hero",
+						"sgs/notice-banner",
+						"sgs/trust-bar"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:mediaElements",
+					"label": "supports.sgs.mediaElements",
+					"count": 20,
+					"examples": [
+						"sgs/before-after",
+						"sgs/brand-strip",
+						"sgs/buybox",
+						"sgs/card-grid",
+						"sgs/cart"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:motion",
+					"label": "supports.sgs.motion",
+					"count": 77,
+					"examples": [
+						"sgs/accordion",
+						"sgs/account",
+						"sgs/audio",
+						"sgs/before-after",
+						"sgs/brand-strip"
+					],
+					"motion": true
+				},
+				{
+					"id": "sgs-support:motionDelegate",
+					"label": "supports.sgs.motionDelegate",
+					"count": 1,
+					"examples": [
+						"sgs/card-grid"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:motionItems",
+					"label": "supports.sgs.motionItems",
+					"count": 8,
+					"examples": [
+						"sgs/card-grid",
+						"sgs/choice-flow-question",
+						"sgs/form",
+						"sgs/form-field-tiles",
+						"sgs/gallery"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:presetManualValues",
+					"label": "supports.sgs.presetManualValues",
+					"count": 1,
+					"examples": [
+						"sgs/google-reviews"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:presetSelectors",
+					"label": "supports.sgs.presetSelectors",
+					"count": 3,
+					"examples": [
+						"sgs/google-reviews",
+						"sgs/info-box",
+						"sgs/team-member"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:scalarContentLift",
+					"label": "supports.sgs.scalarContentLift",
+					"count": 5,
+					"examples": [
+						"sgs/google-reviews",
+						"sgs/media",
+						"sgs/option-picker",
+						"sgs/team-member",
+						"sgs/testimonial"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:scalarStylingLift",
+					"label": "supports.sgs.scalarStylingLift",
+					"count": 9,
+					"examples": [
+						"sgs/card-grid",
+						"sgs/counter",
+						"sgs/media",
+						"sgs/option-picker",
+						"sgs/product-card"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:scrim",
+					"label": "supports.sgs.scrim",
+					"count": 6,
+					"examples": [
+						"sgs/cart",
+						"sgs/gallery",
+						"sgs/modal",
+						"sgs/nav-bar-menu",
+						"sgs/nav-drawer"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:sectionPadding",
+					"label": "supports.sgs.sectionPadding",
+					"count": 1,
+					"examples": [
+						"sgs/container"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:separators",
+					"label": "supports.sgs.separators",
+					"count": 15,
+					"examples": [
+						"sgs/brand-strip",
+						"sgs/business-info",
+						"sgs/card-grid",
+						"sgs/cart",
+						"sgs/container"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:shadowLift",
+					"label": "supports.sgs.shadowLift",
+					"count": 5,
+					"examples": [
+						"sgs/cart",
+						"sgs/mega-panel",
+						"sgs/modal",
+						"sgs/nav-drawer",
+						"sgs/nav-drawer-menu"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:siteInfoLinkRow",
+					"label": "supports.sgs.siteInfoLinkRow",
+					"count": 1,
+					"examples": [
+						"sgs/social-icons"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:spacingAxes",
+					"label": "supports.sgs.spacingAxes",
+					"count": 2,
+					"examples": [
+						"sgs/google-reviews",
+						"sgs/tabs"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:spacingDefaults",
+					"label": "supports.sgs.spacingDefaults",
+					"count": 15,
+					"examples": [
+						"sgs/card-grid",
+						"sgs/cart",
+						"sgs/countdown-timer",
+						"sgs/counter",
+						"sgs/filter-search"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:specRef",
+					"label": "supports.sgs.specRef",
+					"count": 1,
+					"examples": [
+						"sgs/account"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:sweepEligibility",
+					"label": "supports.sgs.sweepEligibility",
+					"count": 2,
+					"examples": [
+						"sgs/nav-bar-menu",
+						"sgs/nav-drawer-menu"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:variantAttr",
+					"label": "supports.sgs.variantAttr",
+					"count": 5,
+					"examples": [
+						"sgs/hero",
+						"sgs/notice-banner",
+						"sgs/product-card",
+						"sgs/testimonial",
+						"sgs/trust-bar"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:variants",
+					"label": "supports.sgs.variants",
+					"count": 5,
+					"examples": [
+						"sgs/hero",
+						"sgs/notice-banner",
+						"sgs/product-card",
+						"sgs/testimonial",
+						"sgs/trust-bar"
+					],
+					"motion": false
+				}
+			]
+		},
+		"extension": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "extension:animation",
+					"label": "extension animation (animation.js)",
+					"count": 10,
+					"examples": [
+						"sgsAnimation",
+						"sgsAnimationDelay",
+						"sgsAnimationDistance",
+						"sgsAnimationDuration",
+						"sgsAnimationEasing"
+					],
+					"motion": true
+				},
+				{
+					"id": "extension:blockLink",
+					"label": "extension blockLink (hover-effects/attributes.js)",
+					"count": 4,
+					"examples": [
+						"sgsBlockLink",
+						"sgsBlockLinkLabel",
+						"sgsBlockLinkSource",
+						"sgsBlockLinkTarget"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:blockLinkAuto",
+					"label": "extension blockLinkAuto (hover-effects/attributes.js)",
+					"count": 1,
+					"examples": [
+						"sgsBlockLinkAuto"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:childSizing",
+					"label": "extension childSizing (child-sizing.js)",
+					"count": 2,
+					"examples": [
+						"sgsChildSizing",
+						"sgsChildWidth"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:chipGap",
+					"label": "extension chipGap (product-filter-chips-gap.js)",
+					"count": 1,
+					"examples": [
+						"sgsChipGap"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:clickEffects",
+					"label": "extension clickEffects (hover-effects/attributes.js)",
+					"count": 3,
+					"examples": [
+						"sgsClickEffect",
+						"sgsClickRippleColour",
+						"sgsClickRippleDuration"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:conditionalVisibility",
+					"label": "extension conditionalVisibility (conditional-visibility.js)",
+					"count": 9,
+					"examples": [
+						"sgsConditionCollectionQueryId",
+						"sgsConditionDateEnd",
+						"sgsConditionDateStart",
+						"sgsConditionDays",
+						"sgsConditionLoggedIn"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:customCss",
+					"label": "extension customCss (custom-css.js)",
+					"count": 3,
+					"examples": [
+						"sgsCustomCss",
+						"sgsCustomCssId",
+						"sgsCustomCssNote"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:hover",
+					"label": "extension hover (hover-effects/attributes.js)",
+					"count": 19,
+					"examples": [
+						"sgsHoverBorderAccent",
+						"sgsHoverDuration",
+						"sgsHoverDurationMs",
+						"sgsHoverEasing",
+						"sgsHoverEasingCustom"
+					],
+					"motion": true
+				},
+				{
+					"id": "extension:imageControls",
+					"label": "extension imageControls (image-controls.js)",
+					"count": 8,
+					"examples": [
+						"sgsColourTreatment",
+						"sgsHeightDesktop",
+						"sgsHeightMobile",
+						"sgsHeightTablet",
+						"sgsHeightUnit"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:parallax",
+					"label": "extension parallax (parallax.js)",
+					"count": 2,
+					"examples": [
+						"sgsParallax",
+						"sgsParallaxStrength"
+					],
+					"motion": true
+				},
+				{
+					"id": "extension:responsiveVisibility",
+					"label": "extension responsiveVisibility (responsive-visibility.js)",
+					"count": 4,
+					"examples": [
+						"sgsCollapseVisibility",
+						"sgsHideOnDesktop",
+						"sgsHideOnMobile",
+						"sgsHideOnTablet"
+					],
+					"motion": false
+				},
+				{
+					"id": "extension:sameTerm",
+					"label": "extension sameTerm (product-collection-same-term.js)",
+					"count": 1,
+					"examples": [
+						"sgsSameTermAs"
+					],
+					"motion": false
+				}
+			]
+		},
+		"template": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "template:404",
+					"label": "templates/404.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:archive-product",
+					"label": "templates/archive-product.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:archive",
+					"label": "templates/archive.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:cart",
+					"label": "templates/cart.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:checkout",
+					"label": "templates/checkout.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:front-page",
+					"label": "templates/front-page.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:home",
+					"label": "templates/home.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:index",
+					"label": "templates/index.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:order-confirmation",
+					"label": "templates/order-confirmation.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:page-no-title",
+					"label": "templates/page-no-title.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:page",
+					"label": "templates/page.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:product-search-results",
+					"label": "templates/product-search-results.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:search",
+					"label": "templates/search.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:single-product",
+					"label": "templates/single-product.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:single",
+					"label": "templates/single.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "template:taxonomy-product_attribute",
+					"label": "templates/taxonomy-product_attribute.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"part": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "part:footer",
+					"label": "parts/footer.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "part:header",
+					"label": "parts/header.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "part:sgs-archive-toolbar",
+					"label": "parts/sgs-archive-toolbar.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "part:sgs-cart-content",
+					"label": "parts/sgs-cart-content.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "part:sgs-checkout-content",
+					"label": "parts/sgs-checkout-content.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "part:sgs-order-confirmation-content",
+					"label": "parts/sgs-order-confirmation-content.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "part:sgs-pdp-buybox",
+					"label": "parts/sgs-pdp-buybox.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "part:sgs-pdp-content",
+					"label": "parts/sgs-pdp-content.html",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"pattern": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "pattern:about-image-left",
+					"label": "patterns/about-image-left.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:about-mission",
+					"label": "patterns/about-mission.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:about-stats",
+					"label": "patterns/about-stats.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:about-story",
+					"label": "patterns/about-story.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:contact-form",
+					"label": "patterns/contact-form.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:contact-minimal",
+					"label": "patterns/contact-minimal.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:cta-banner",
+					"label": "patterns/cta-banner.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:cta-centred",
+					"label": "patterns/cta-centred.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-anchored-card-stack",
+					"label": "patterns/drawer-anchored-card-stack.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-centred-statement",
+					"label": "patterns/drawer-centred-statement.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-editorial-ghost-list",
+					"label": "patterns/drawer-editorial-ghost-list.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-floating-capped-card",
+					"label": "patterns/drawer-floating-capped-card.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-offset-column",
+					"label": "patterns/drawer-offset-column.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-scratch",
+					"label": "patterns/drawer-scratch.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-solid-brand-light",
+					"label": "patterns/drawer-solid-brand-light.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-split-zone-serif",
+					"label": "patterns/drawer-split-zone-serif.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:drawer-two-column-editorial",
+					"label": "patterns/drawer-two-column-editorial.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:faq-section",
+					"label": "patterns/faq-section.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:footer-centred",
+					"label": "patterns/footer-centred.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:footer-columns",
+					"label": "patterns/footer-columns.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:footer-compact",
+					"label": "patterns/footer-compact.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:footer-informational",
+					"label": "patterns/footer-informational.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:footer-minimal",
+					"label": "patterns/footer-minimal.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:footer-scratch",
+					"label": "patterns/footer-scratch.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:footer-simple",
+					"label": "patterns/footer-simple.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:framework-drawer-default",
+					"label": "patterns/framework-drawer-default.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:framework-footer-default",
+					"label": "patterns/framework-footer-default.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:framework-header-default",
+					"label": "patterns/framework-header-default.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-centred",
+					"label": "patterns/header-centred.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-full",
+					"label": "patterns/header-full.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-minimal",
+					"label": "patterns/header-minimal.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-scratch",
+					"label": "patterns/header-scratch.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-search-bar-above",
+					"label": "patterns/header-search-bar-above.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-search-bar-below",
+					"label": "patterns/header-search-bar-below.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-search-icon",
+					"label": "patterns/header-search-icon.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:header-top-icons",
+					"label": "patterns/header-top-icons.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:heading-subheading-cluster",
+					"label": "patterns/heading-subheading-cluster.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:hero-centred",
+					"label": "patterns/hero-centred.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:hero-split",
+					"label": "patterns/hero-split.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:hero-video-background",
+					"label": "patterns/hero-video-background.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:label-heading-subheading-cluster",
+					"label": "patterns/label-heading-subheading-cluster.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-brands-1",
+					"label": "patterns/mega-brands-1.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-compact-links-numbered",
+					"label": "patterns/mega-compact-links-numbered.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-compact-links",
+					"label": "patterns/mega-compact-links.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-general-1col",
+					"label": "patterns/mega-general-1col.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-general-2col-aside",
+					"label": "patterns/mega-general-2col-aside.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-general-2col",
+					"label": "patterns/mega-general-2col.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-links-with-tiles",
+					"label": "patterns/mega-links-with-tiles.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:mega-media-cards-1",
+					"label": "patterns/mega-media-cards-1.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:pricing-columns",
+					"label": "patterns/pricing-columns.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:services-alternating",
+					"label": "patterns/services-alternating.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:services-features",
+					"label": "patterns/services-features.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:services-grid",
+					"label": "patterns/services-grid.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:stats-counter",
+					"label": "patterns/stats-counter.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:team-section",
+					"label": "patterns/team-section.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:testimonials-cards",
+					"label": "patterns/testimonials-cards.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:testimonials-highlight",
+					"label": "patterns/testimonials-highlight.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "pattern:testimonials-large",
+					"label": "patterns/testimonials-large.php",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"post-type": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "post-type:sgs_choice_flow",
+					"label": "post type sgs_choice_flow (plugins/sgs-blocks/includes/class-sgs-block-cpts.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "post-type:sgs_drawer",
+					"label": "post type sgs_drawer (plugins/sgs-blocks/includes/class-sgs-block-cpts.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "post-type:sgs_footer",
+					"label": "post type sgs_footer (plugins/sgs-blocks/includes/class-sgs-block-cpts.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "post-type:sgs_form",
+					"label": "post type sgs_form (plugins/sgs-blocks/includes/class-sgs-block-cpts.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "post-type:sgs_header",
+					"label": "post type sgs_header (plugins/sgs-blocks/includes/class-sgs-block-cpts.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "post-type:sgs_mega_menu",
+					"label": "post type sgs_mega_menu (plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "post-type:sgs_modal",
+					"label": "post type sgs_modal (plugins/sgs-blocks/includes/class-sgs-block-cpts.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "post-type:sgs_product_template",
+					"label": "post type sgs_product_template (plugins/sgs-blocks/includes/class-product-templates-cpt.php)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"plugin": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "plugin:sgs-accessibility",
+					"label": "plugin sgs-accessibility",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "plugin:sgs-blocks",
+					"label": "plugin sgs-blocks",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "plugin:sgs-client-notes",
+					"label": "plugin sgs-client-notes",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"snapshot-key": {
+			"side": "framework",
+			"source": "code",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "snapshot-key:settings.appearanceTools",
+					"label": "theme-snapshot settings.appearanceTools",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color",
+					"label": "theme-snapshot settings.color",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color.custom",
+					"label": "theme-snapshot settings.color.custom",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color.customDuotone",
+					"label": "theme-snapshot settings.color.customDuotone",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color.customGradient",
+					"label": "theme-snapshot settings.color.customGradient",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color.defaultGradients",
+					"label": "theme-snapshot settings.color.defaultGradients",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color.defaultPalette",
+					"label": "theme-snapshot settings.color.defaultPalette",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color.gradients",
+					"label": "theme-snapshot settings.color.gradients",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.color.palette",
+					"label": "theme-snapshot settings.color.palette",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom",
+					"label": "theme-snapshot settings.custom",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.accentSets",
+					"label": "theme-snapshot settings.custom.accentSets",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.borderRadius",
+					"label": "theme-snapshot settings.custom.borderRadius",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.buttonPresets",
+					"label": "theme-snapshot settings.custom.buttonPresets",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.distance",
+					"label": "theme-snapshot settings.custom.distance",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.duration",
+					"label": "theme-snapshot settings.custom.duration",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.easing",
+					"label": "theme-snapshot settings.custom.easing",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.entrance",
+					"label": "theme-snapshot settings.custom.entrance",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.focus",
+					"label": "theme-snapshot settings.custom.focus",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.footer",
+					"label": "theme-snapshot settings.custom.footer",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.gutter",
+					"label": "theme-snapshot settings.custom.gutter",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.header",
+					"label": "theme-snapshot settings.custom.header",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.linkSweep",
+					"label": "theme-snapshot settings.custom.linkSweep",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.maxWidth",
+					"label": "theme-snapshot settings.custom.maxWidth",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.measuredDiagramPresets",
+					"label": "theme-snapshot settings.custom.measuredDiagramPresets",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.section",
+					"label": "theme-snapshot settings.custom.section",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.sgs",
+					"label": "theme-snapshot settings.custom.sgs",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.shadowColour",
+					"label": "theme-snapshot settings.custom.shadowColour",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.shadowHover",
+					"label": "theme-snapshot settings.custom.shadowHover",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.transition",
+					"label": "theme-snapshot settings.custom.transition",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.layout",
+					"label": "theme-snapshot settings.layout",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.layout.contentSize",
+					"label": "theme-snapshot settings.layout.contentSize",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.layout.wideSize",
+					"label": "theme-snapshot settings.layout.wideSize",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.lightbox",
+					"label": "theme-snapshot settings.lightbox",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.lightbox.allowEditing",
+					"label": "theme-snapshot settings.lightbox.allowEditing",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.lightbox.enabled",
+					"label": "theme-snapshot settings.lightbox.enabled",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.shadow",
+					"label": "theme-snapshot settings.shadow",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.shadow.defaultPresets",
+					"label": "theme-snapshot settings.shadow.defaultPresets",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.shadow.presets",
+					"label": "theme-snapshot settings.shadow.presets",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing",
+					"label": "theme-snapshot settings.spacing",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing.blockGap",
+					"label": "theme-snapshot settings.spacing.blockGap",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing.customSpacingSize",
+					"label": "theme-snapshot settings.spacing.customSpacingSize",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing.defaultSpacingSizes",
+					"label": "theme-snapshot settings.spacing.defaultSpacingSizes",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing.margin",
+					"label": "theme-snapshot settings.spacing.margin",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing.padding",
+					"label": "theme-snapshot settings.spacing.padding",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing.spacingSizes",
+					"label": "theme-snapshot settings.spacing.spacingSizes",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.spacing.units",
+					"label": "theme-snapshot settings.spacing.units",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.typography",
+					"label": "theme-snapshot settings.typography",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.typography.defaultFontSizes",
+					"label": "theme-snapshot settings.typography.defaultFontSizes",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.typography.fluid",
+					"label": "theme-snapshot settings.typography.fluid",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.typography.fontFamilies",
+					"label": "theme-snapshot settings.typography.fontFamilies",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.typography.fontSizes",
+					"label": "theme-snapshot settings.typography.fontSizes",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.useRootPaddingAwareAlignments",
+					"label": "theme-snapshot settings.useRootPaddingAwareAlignments",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:styles.blocks",
+					"label": "theme-snapshot styles.blocks",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:styles.color",
+					"label": "theme-snapshot styles.color",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:styles.css",
+					"label": "theme-snapshot styles.css",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:styles.elements",
+					"label": "theme-snapshot styles.elements",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:styles.spacing",
+					"label": "theme-snapshot styles.spacing",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:styles.typography",
+					"label": "theme-snapshot styles.typography",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"html": {
+			"side": "draft",
+			"source": "web",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "html:a",
+					"label": "<a>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:abbr",
+					"label": "<abbr>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:acronym",
+					"label": "<acronym>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:address",
+					"label": "<address>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:applet",
+					"label": "<applet>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:area",
+					"label": "<area>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:article",
+					"label": "<article>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:aside",
+					"label": "<aside>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:audio",
+					"label": "<audio>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:b",
+					"label": "<b>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:base",
+					"label": "<base>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:basefont",
+					"label": "<basefont>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:bdi",
+					"label": "<bdi>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:bdo",
+					"label": "<bdo>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:bgsound",
+					"label": "<bgsound>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:big",
+					"label": "<big>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:blink",
+					"label": "<blink>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:blockquote",
+					"label": "<blockquote>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:body",
+					"label": "<body>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:br",
+					"label": "<br>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:button",
+					"label": "<button>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:canvas",
+					"label": "<canvas>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:caption",
+					"label": "<caption>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:center",
+					"label": "<center>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:cite",
+					"label": "<cite>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:code",
+					"label": "<code>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:col",
+					"label": "<col>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:colgroup",
+					"label": "<colgroup>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:command",
+					"label": "<command>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:content",
+					"label": "<content>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:data",
+					"label": "<data>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:datalist",
+					"label": "<datalist>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:dd",
+					"label": "<dd>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:del",
+					"label": "<del>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:details",
+					"label": "<details>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:dfn",
+					"label": "<dfn>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:dialog",
+					"label": "<dialog>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:dir",
+					"label": "<dir>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:div",
+					"label": "<div>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:dl",
+					"label": "<dl>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:dt",
+					"label": "<dt>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:element",
+					"label": "<element>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:em",
+					"label": "<em>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:embed",
+					"label": "<embed>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:fieldset",
+					"label": "<fieldset>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:figcaption",
+					"label": "<figcaption>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:figure",
+					"label": "<figure>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:font",
+					"label": "<font>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:footer",
+					"label": "<footer>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:form",
+					"label": "<form>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:frame",
+					"label": "<frame>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:frameset",
+					"label": "<frameset>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:h1",
+					"label": "<h1>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:h2",
+					"label": "<h2>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:h3",
+					"label": "<h3>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:h4",
+					"label": "<h4>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:h5",
+					"label": "<h5>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:h6",
+					"label": "<h6>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:head",
+					"label": "<head>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:header",
+					"label": "<header>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:hgroup",
+					"label": "<hgroup>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:hr",
+					"label": "<hr>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:html",
+					"label": "<html>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:i",
+					"label": "<i>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:iframe",
+					"label": "<iframe>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:image",
+					"label": "<image>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:img",
+					"label": "<img>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:input",
+					"label": "<input>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:ins",
+					"label": "<ins>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:isindex",
+					"label": "<isindex>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:kbd",
+					"label": "<kbd>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:keygen",
+					"label": "<keygen>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:label",
+					"label": "<label>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:legend",
+					"label": "<legend>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:li",
+					"label": "<li>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:link",
+					"label": "<link>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:listing",
+					"label": "<listing>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:main",
+					"label": "<main>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:map",
+					"label": "<map>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:mark",
+					"label": "<mark>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:marquee",
+					"label": "<marquee>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:math",
+					"label": "<math>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:menu",
+					"label": "<menu>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:menuitem",
+					"label": "<menuitem>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:meta",
+					"label": "<meta>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:meter",
+					"label": "<meter>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:multicol",
+					"label": "<multicol>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:nav",
+					"label": "<nav>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:nextid",
+					"label": "<nextid>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:nobr",
+					"label": "<nobr>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:noembed",
+					"label": "<noembed>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:noframes",
+					"label": "<noframes>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:noscript",
+					"label": "<noscript>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:object",
+					"label": "<object>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:ol",
+					"label": "<ol>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:optgroup",
+					"label": "<optgroup>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:option",
+					"label": "<option>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:output",
+					"label": "<output>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:p",
+					"label": "<p>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:param",
+					"label": "<param>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:picture",
+					"label": "<picture>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:plaintext",
+					"label": "<plaintext>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:pre",
+					"label": "<pre>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:progress",
+					"label": "<progress>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:q",
+					"label": "<q>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:rb",
+					"label": "<rb>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:rbc",
+					"label": "<rbc>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:rp",
+					"label": "<rp>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:rt",
+					"label": "<rt>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:rtc",
+					"label": "<rtc>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:ruby",
+					"label": "<ruby>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:s",
+					"label": "<s>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:samp",
+					"label": "<samp>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:script",
+					"label": "<script>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:search",
+					"label": "<search>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:section",
+					"label": "<section>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:select",
+					"label": "<select>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:shadow",
+					"label": "<shadow>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:slot",
+					"label": "<slot>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:small",
+					"label": "<small>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:source",
+					"label": "<source>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:spacer",
+					"label": "<spacer>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:span",
+					"label": "<span>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:strike",
+					"label": "<strike>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:strong",
+					"label": "<strong>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:style",
+					"label": "<style>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:sub",
+					"label": "<sub>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:summary",
+					"label": "<summary>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:sup",
+					"label": "<sup>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:svg",
+					"label": "<svg>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:table",
+					"label": "<table>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:tbody",
+					"label": "<tbody>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:td",
+					"label": "<td>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:template",
+					"label": "<template>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:textarea",
+					"label": "<textarea>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:tfoot",
+					"label": "<tfoot>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:th",
+					"label": "<th>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:thead",
+					"label": "<thead>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:time",
+					"label": "<time>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:title",
+					"label": "<title>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:tr",
+					"label": "<tr>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:track",
+					"label": "<track>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:tt",
+					"label": "<tt>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:u",
+					"label": "<u>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:ul",
+					"label": "<ul>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:var",
+					"label": "<var>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:video",
+					"label": "<video>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:wbr",
+					"label": "<wbr>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:xmp",
+					"label": "<xmp>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"css-at": {
+			"side": "draft",
+			"source": "web",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "css-at:charset",
+					"label": "@charset",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:container",
+					"label": "@container",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:counter-style",
+					"label": "@counter-style",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:document",
+					"label": "@document",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:font-face",
+					"label": "@font-face",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:font-feature-values",
+					"label": "@font-feature-values",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:font-palette-values",
+					"label": "@font-palette-values",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:import",
+					"label": "@import",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:keyframes",
+					"label": "@keyframes",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:layer",
+					"label": "@layer",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:media",
+					"label": "@media",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:namespace",
+					"label": "@namespace",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:page",
+					"label": "@page",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:position-try",
+					"label": "@position-try",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:property",
+					"label": "@property",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:scope",
+					"label": "@scope",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:starting-style",
+					"label": "@starting-style",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:supports",
+					"label": "@supports",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "css-at:view-transition",
+					"label": "@view-transition",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				}
+			]
+		},
+		"css-group": {
+			"side": "draft",
+			"source": "web",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "css-group:anchor-positioning",
+					"label": "CSS properties: CSS Anchor Positioning",
+					"count": 16,
+					"examples": [
+						"anchor-name",
+						"anchor-scope",
+						"bottom",
+						"left",
+						"margin-bottom"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:animations",
+					"label": "CSS properties: CSS Animations",
+					"count": 22,
+					"examples": [
+						"animation",
+						"animation-composition",
+						"animation-delay",
+						"animation-direction",
+						"animation-duration"
+					],
+					"motion": true
+				},
+				{
+					"id": "css-group:backgrounds-and-borders",
+					"label": "CSS properties: CSS Backgrounds and Borders",
+					"count": 61,
+					"examples": [
+						"background",
+						"background-attachment",
+						"background-clip",
+						"background-color",
+						"background-image"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:basic-user-interface",
+					"label": "CSS properties: CSS Basic User Interface",
+					"count": 22,
+					"examples": [
+						"accent-color",
+						"appearance",
+						"caret",
+						"caret-animation",
+						"caret-color"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:box-alignment",
+					"label": "CSS properties: CSS Box Alignment",
+					"count": 12,
+					"examples": [
+						"align-content",
+						"align-items",
+						"align-self",
+						"column-gap",
+						"gap"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:box-model",
+					"label": "CSS properties: CSS Box Model",
+					"count": 11,
+					"examples": [
+						"margin",
+						"margin-bottom",
+						"margin-left",
+						"margin-right",
+						"margin-top"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:box-sizing",
+					"label": "CSS properties: CSS Box Sizing",
+					"count": 17,
+					"examples": [
+						"aspect-ratio",
+						"box-sizing",
+						"column-height",
+						"column-width",
+						"column-wrap"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:cascading-and-inheritance",
+					"label": "CSS properties: CSS Cascading and Inheritance",
+					"count": 1,
+					"examples": [
+						"all"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:color",
+					"label": "CSS properties: CSS Color",
+					"count": 6,
+					"examples": [
+						"color",
+						"color-scheme",
+						"dynamic-range-limit",
+						"forced-color-adjust",
+						"opacity"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:compositing-and-blending",
+					"label": "CSS properties: Compositing and Blending",
+					"count": 3,
+					"examples": [
+						"background-blend-mode",
+						"isolation",
+						"mix-blend-mode"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:conditional-rules",
+					"label": "CSS properties: CSS Conditional Rules",
+					"count": 3,
+					"examples": [
+						"container",
+						"container-name",
+						"container-type"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:containment",
+					"label": "CSS properties: CSS Containment",
+					"count": 2,
+					"examples": [
+						"contain",
+						"content-visibility"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:custom-properties-for-cascading-variables",
+					"label": "CSS properties: CSS Custom Properties for Cascading Variables",
+					"count": 1,
+					"examples": [
+						"--*"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:display",
+					"label": "CSS properties: CSS Display",
+					"count": 5,
+					"examples": [
+						"display",
+						"order",
+						"reading-flow",
+						"reading-order",
+						"visibility"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:filter-effects",
+					"label": "CSS properties: Filter Effects",
+					"count": 6,
+					"examples": [
+						"backdrop-filter",
+						"color-interpolation-filters",
+						"filter",
+						"flood-color",
+						"flood-opacity"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:flexible-box-layout",
+					"label": "CSS properties: CSS Flexible Box Layout",
+					"count": 12,
+					"examples": [
+						"align-content",
+						"align-items",
+						"align-self",
+						"flex",
+						"flex-basis"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:fonts",
+					"label": "CSS properties: CSS Fonts",
+					"count": 28,
+					"examples": [
+						"font",
+						"font-family",
+						"font-feature-settings",
+						"font-kerning",
+						"font-language-override"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:fragmentation",
+					"label": "CSS properties: CSS Fragmentation",
+					"count": 6,
+					"examples": [
+						"box-decoration-break",
+						"break-after",
+						"break-before",
+						"break-inside",
+						"orphans"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:generated-content",
+					"label": "CSS properties: CSS Generated Content",
+					"count": 2,
+					"examples": [
+						"content",
+						"quotes"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:grid-layout",
+					"label": "CSS properties: CSS Grid Layout",
+					"count": 23,
+					"examples": [
+						"-ms-grid-columns",
+						"-ms-grid-rows",
+						"align-tracks",
+						"grid",
+						"grid-area"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:images",
+					"label": "CSS properties: CSS Images",
+					"count": 6,
+					"examples": [
+						"image-orientation",
+						"image-rendering",
+						"image-resolution",
+						"object-fit",
+						"object-position"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:inline",
+					"label": "CSS properties: CSS Inline",
+					"count": 11,
+					"examples": [
+						"alignment-baseline",
+						"baseline-shift",
+						"baseline-source",
+						"dominant-baseline",
+						"initial-letter"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:lists-and-counters",
+					"label": "CSS properties: CSS Lists and Counters",
+					"count": 7,
+					"examples": [
+						"counter-increment",
+						"counter-reset",
+						"counter-set",
+						"list-style",
+						"list-style-image"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:logical-properties-and-values",
+					"label": "CSS properties: CSS Logical Properties and Values",
+					"count": 53,
+					"examples": [
+						"block-size",
+						"border-block",
+						"border-block-color",
+						"border-block-end",
+						"border-block-end-color"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:masking",
+					"label": "CSS properties: CSS Masking",
+					"count": 20,
+					"examples": [
+						"clip",
+						"clip-path",
+						"clip-rule",
+						"mask",
+						"mask-border"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:mathml",
+					"label": "CSS properties: MathML",
+					"count": 4,
+					"examples": [
+						"math-depth",
+						"math-shift",
+						"math-style",
+						"text-transform"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:microsoft-extensions",
+					"label": "CSS properties: Microsoft Extensions",
+					"count": 46,
+					"examples": [
+						"-ms-accelerator",
+						"-ms-block-progression",
+						"-ms-content-zoom-chaining",
+						"-ms-content-zoom-limit",
+						"-ms-content-zoom-limit-max"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:mobile-text-size-adjustment",
+					"label": "CSS properties: CSS Mobile Text Size Adjustment",
+					"count": 1,
+					"examples": [
+						"text-size-adjust"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:motion-path",
+					"label": "CSS properties: Motion Path",
+					"count": 6,
+					"examples": [
+						"offset",
+						"offset-anchor",
+						"offset-distance",
+						"offset-path",
+						"offset-position"
+					],
+					"motion": true
+				},
+				{
+					"id": "css-group:mozilla-extensions",
+					"label": "CSS properties: Mozilla Extensions",
+					"count": 31,
+					"examples": [
+						"-moz-appearance",
+						"-moz-binding",
+						"-moz-border-bottom-colors",
+						"-moz-border-left-colors",
+						"-moz-border-right-colors"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:multi-column-layout",
+					"label": "CSS properties: CSS Multi-column Layout",
+					"count": 12,
+					"examples": [
+						"column-count",
+						"column-fill",
+						"column-gap",
+						"column-height",
+						"column-rule"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:overflow",
+					"label": "CSS properties: CSS Overflow",
+					"count": 15,
+					"examples": [
+						"-webkit-line-clamp",
+						"line-clamp",
+						"max-lines",
+						"overflow",
+						"overflow-block"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:overscroll-behavior",
+					"label": "CSS properties: CSS Overscroll Behavior",
+					"count": 5,
+					"examples": [
+						"overscroll-behavior",
+						"overscroll-behavior-block",
+						"overscroll-behavior-inline",
+						"overscroll-behavior-x",
+						"overscroll-behavior-y"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:paged-media",
+					"label": "CSS properties: CSS Paged Media",
+					"count": 4,
+					"examples": [
+						"page",
+						"page-break-after",
+						"page-break-before",
+						"page-break-inside"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:pointer-events",
+					"label": "CSS properties: Pointer Events",
+					"count": 1,
+					"examples": [
+						"touch-action"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:positioned-layout",
+					"label": "CSS properties: CSS Positioned Layout",
+					"count": 16,
+					"examples": [
+						"bottom",
+						"clear",
+						"float",
+						"inset",
+						"inset-block"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:rhythmic-sizing",
+					"label": "CSS properties: CSS Rhythmic Sizing",
+					"count": 1,
+					"examples": [
+						"line-height-step"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:ruby",
+					"label": "CSS properties: CSS Ruby",
+					"count": 4,
+					"examples": [
+						"ruby-align",
+						"ruby-merge",
+						"ruby-overhang",
+						"ruby-position"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:scalable-vector-graphics",
+					"label": "CSS properties: Scalable Vector Graphics",
+					"count": 34,
+					"examples": [
+						"cx",
+						"cy",
+						"d",
+						"dominant-baseline",
+						"fill"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:scroll-anchoring",
+					"label": "CSS properties: CSS Scroll Anchoring",
+					"count": 1,
+					"examples": [
+						"overflow-anchor"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:scroll-driven-animations",
+					"label": "CSS properties: Scroll-driven Animations",
+					"count": 11,
+					"examples": [
+						"animation-range",
+						"animation-range-end",
+						"animation-range-start",
+						"scroll-timeline",
+						"scroll-timeline-axis"
+					],
+					"motion": true
+				},
+				{
+					"id": "css-group:scroll-snap",
+					"label": "CSS properties: CSS Scroll Snap",
+					"count": 32,
+					"examples": [
+						"scroll-initial-target",
+						"scroll-margin",
+						"scroll-margin-block",
+						"scroll-margin-block-end",
+						"scroll-margin-block-start"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:scrollbars-styling",
+					"label": "CSS properties: CSS Scrollbars Styling",
+					"count": 2,
+					"examples": [
+						"scrollbar-color",
+						"scrollbar-width"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:shapes",
+					"label": "CSS properties: CSS Shapes",
+					"count": 3,
+					"examples": [
+						"shape-image-threshold",
+						"shape-margin",
+						"shape-outside"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:speech",
+					"label": "CSS properties: CSS Speech",
+					"count": 1,
+					"examples": [
+						"speak-as"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:table",
+					"label": "CSS properties: CSS Table",
+					"count": 5,
+					"examples": [
+						"border-collapse",
+						"border-spacing",
+						"caption-side",
+						"empty-cells",
+						"table-layout"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:text",
+					"label": "CSS properties: CSS Text",
+					"count": 24,
+					"examples": [
+						"hanging-punctuation",
+						"hyphenate-character",
+						"hyphenate-limit-chars",
+						"hyphens",
+						"letter-spacing"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:text-decoration",
+					"label": "CSS properties: CSS Text Decoration",
+					"count": 15,
+					"examples": [
+						"text-decoration",
+						"text-decoration-color",
+						"text-decoration-inset",
+						"text-decoration-line",
+						"text-decoration-skip"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:transforms",
+					"label": "CSS properties: CSS Transforms",
+					"count": 10,
+					"examples": [
+						"backface-visibility",
+						"perspective",
+						"perspective-origin",
+						"rotate",
+						"scale"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:transitions",
+					"label": "CSS properties: CSS Transitions",
+					"count": 6,
+					"examples": [
+						"transition",
+						"transition-behavior",
+						"transition-delay",
+						"transition-duration",
+						"transition-property"
+					],
+					"motion": true
+				},
+				{
+					"id": "css-group:values-and-units",
+					"label": "CSS properties: CSS Values and Units",
+					"count": 2,
+					"examples": [
+						"interpolate-size",
+						"link-parameters"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:view-transitions",
+					"label": "CSS properties: CSS View Transitions",
+					"count": 3,
+					"examples": [
+						"view-transition-class",
+						"view-transition-name",
+						"view-transition-scope"
+					],
+					"motion": true
+				},
+				{
+					"id": "css-group:viewport",
+					"label": "CSS properties: CSS Viewport",
+					"count": 1,
+					"examples": [
+						"zoom"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:webkit-extensions",
+					"label": "CSS properties: WebKit Extensions",
+					"count": 50,
+					"examples": [
+						"-moz-appearance",
+						"-webkit-appearance",
+						"-webkit-border-after",
+						"-webkit-border-after-color",
+						"-webkit-border-after-style"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:will-change",
+					"label": "CSS properties: CSS Will Change",
+					"count": 1,
+					"examples": [
+						"will-change"
+					],
+					"motion": false
+				},
+				{
+					"id": "css-group:writing-modes",
+					"label": "CSS properties: CSS Writing Modes",
+					"count": 5,
+					"examples": [
+						"direction",
+						"text-combine-upright",
+						"text-orientation",
+						"unicode-bidi",
+						"writing-mode"
+					],
+					"motion": false
+				}
+			]
+		},
+		"construct": {
+			"side": "draft",
+			"source": "registry",
+			"status": "ok",
+			"entries": [
+				{
+					"id": "construct:binding",
+					"label": "runtime construct binding",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:data-hook",
+					"label": "runtime construct data-hook",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:dc-import",
+					"label": "runtime construct dc-import",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:getter",
+					"label": "runtime construct getter",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:handler",
+					"label": "runtime construct handler",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:helmet-font",
+					"label": "runtime construct helmet-font",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:helmet-script",
+					"label": "runtime construct helmet-script",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:keyframes",
+					"label": "runtime construct keyframes",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "construct:link",
+					"label": "runtime construct link",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:observer",
+					"label": "runtime construct observer",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:ref",
+					"label": "runtime construct ref",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:renderVals-key",
+					"label": "runtime construct renderVals-key",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:sc-for",
+					"label": "runtime construct sc-for",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:sc-if",
+					"label": "runtime construct sc-if",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:style-hover",
+					"label": "runtime construct style-hover",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:template-element",
+					"label": "runtime construct template-element",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:timer",
+					"label": "runtime construct timer",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "construct:transition",
+					"label": "runtime construct transition",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "construct:waapi",
+					"label": "runtime construct waapi",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				}
+			]
+		}
+	}
+}

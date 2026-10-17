@@ -8,6 +8,8 @@
 		"@babel/parser": "7.29.9",
 		"ajv": "8.20.0",
 		"ajv-formats": "2.1.1",
+		"html-tag-names": "2.1.0",
+		"mdn-data": "2.37.1",
 		"playwright": "1.58.2",
 		"saxes": "6.0.0"
 	}

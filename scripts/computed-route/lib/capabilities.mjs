@@ -1,0 +1,230 @@
+// The capability inventory (clone coverage plan Phase 1, steps 1.1 and 1.2): everything the SGS framework offers and
+// everything a draft can hold, as stable IDs grouped into sections. Every section is derived from a source (the
+// framework DB read-only, the code, the construct registry or the web platform's own data packages), never from a
+// hand-written list (R-31-1). A DB section reads `status: 'absent'` when the DB is not on this machine, so the code and
+// web sections still build anywhere; `capabilities.mjs --write` on a machine with the DB fills every section.
+import fs from 'fs';
+import path from 'path';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+import { htmlTagNames } from 'html-tag-names';
+import { DB_PATH, openDb, isPseudoProperty } from './db.mjs';
+import { loadRegistry } from './intake-registry.mjs';
+
+const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
+export const REPO = path.resolve( ROUTE, '..', '..' );
+export const CAPABILITIES_FILE = path.join( ROUTE, 'data', 'capabilities.json' );
+const require = createRequire( import.meta.url );
+const EXAMPLES = 5;
+
+const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
+const dirs = ( d ) => ( fs.existsSync( d ) ? fs.readdirSync( d, { withFileTypes: true } ).filter( ( e ) => e.isDirectory() ).map( ( e ) => e.name ).sort() : [] );
+const files = ( d, rx ) => ( fs.existsSync( d ) ? fs.readdirSync( d ).filter( ( f ) => rx.test( f ) ).sort() : [] );
+const byId = ( a, b ) => ( a.id < b.id ? -1 : a.id > b.id ? 1 : 0 );
+
+// Members grouped under one ID: { id, label, count, examples (the first few, sorted), motion }.
+function grouped( rows, keyOf, labelOf, memberOf, motionOf = () => false ) {
+	const groups = new Map();
+	for ( const r of rows ) {
+		const id = keyOf( r );
+		const g = groups.get( id ) || { id, label: labelOf( r ), members: [], motion: false };
+		g.members.push( memberOf( r ) );
+		g.motion = g.motion || !! motionOf( r );
+		groups.set( id, g );
+	}
+	return [ ...groups.values() ].map( ( g ) => {
+		const m = [ ...new Set( g.members ) ].sort();
+		return { id: g.id, label: g.label, count: m.length, examples: m.slice( 0, EXAMPLES ), motion: g.motion };
+	} ).sort( byId );
+}
+
+const one = ( id, label, motion = false ) => ( { id, label, count: 1, examples: [], motion } );
+
+// The kind of a block setting: motion (the motion model, a motion role or an anim:/fx: pseudo-property), styling (a
+// CSS property), mode (an enum with no CSS property) or its attribute type.
+export function settingKind( r ) {
+	if ( 'sgsMotion' === r.attr_name || 'motion' === r.role || isPseudoProperty( r.css_property ) ) {
+		return 'motion';
+	}
+	if ( String( r.css_property ?? '' ).trim() ) {
+		return 'styling';
+	}
+	const e = String( r.enum_values ?? '' ).trim();
+	return e && '[]' !== e && 'null' !== e ? 'mode' : r.attr_type || 'unknown';
+}
+
+// ---- Framework sections from the DB (read-only) ----
+
+export function dbSections( db ) {
+	const attrs = db.prepare( "SELECT block_slug, attr_name, attr_type, enum_values, css_property, role FROM block_attributes WHERE source IN ('sgs','sgs-ext')" ).all();
+	const fx = db.prepare( 'SELECT effect, tier, triggers FROM fx_effects' ).all();
+	const presets = db.prepare( 'SELECT slug, panel, family FROM motion_presets' ).all();
+	return {
+		'block-setting': grouped( attrs, ( r ) => `block-setting:${ r.role || 'unclassified' }:${ settingKind( r ) }`, ( r ) => `block settings, role ${ r.role || 'unclassified' }, ${ settingKind( r ) }`, ( r ) => `${ r.block_slug }.${ r.attr_name }`, ( r ) => 'motion' === settingKind( r ) ),
+		fx: fx.map( ( r ) => one( `fx:${ r.effect }`, `fx effect ${ r.effect } (${ r.tier }, ${ r.triggers })`, true ) ).sort( byId ),
+		'motion-preset': grouped( presets, ( r ) => `motion-preset:${ r.panel }:${ r.family }`, ( r ) => `${ r.panel } presets, family ${ r.family }`, ( r ) => r.slug, () => true ),
+	};
+}
+
+// ---- Framework sections from the code ----
+
+// supports.sgs keys across every block.json under plugins/*/src/blocks (a `_`-prefixed key is an annotation).
+function supportKeys( root ) {
+	const rows = [];
+	for ( const plugin of dirs( path.join( root, 'plugins' ) ) ) {
+		const blocks = path.join( root, 'plugins', plugin, 'src', 'blocks' );
+		for ( const b of dirs( blocks ) ) {
+			const f = path.join( blocks, b, 'block.json' );
+			if ( fs.existsSync( f ) ) {
+				const j = readJson( f );
+				Object.keys( j.supports?.sgs || {} ).filter( ( k ) => ! k.startsWith( '_' ) ).forEach( ( key ) => rows.push( { key, block: j.name || b } ) );
+			}
+		}
+	}
+	return grouped( rows, ( r ) => `sgs-support:${ r.key }`, ( r ) => `supports.sgs.${ r.key }`, ( r ) => r.block, ( r ) => 'motion' === r.key );
+}
+
+function extensions( root ) {
+	const f = path.join( root, 'plugins', 'sgs-blocks', 'src', 'blocks', 'extensions', 'extension-roster.json' );
+	if ( ! fs.existsSync( f ) ) {
+		return [];
+	}
+	return readJson( f ).extensions.map( ( e ) => {
+		const attrs = Object.entries( e.attributes || {} );
+		return { id: `extension:${ e.id }`, label: `extension ${ e.id } (${ e.file })`, count: attrs.length, examples: attrs.map( ( [ k ] ) => k ).sort().slice( 0, EXAMPLES ), motion: attrs.some( ( [ , a ] ) => 'motion' === a.role ) };
+	} ).sort( byId );
+}
+
+const themeFiles = ( root, sub, prefix, rx ) => files( path.join( root, 'theme', 'sgs-theme', sub ), rx ).map( ( f ) => one( `${ prefix }:${ f.replace( rx, '' ) }`, `${ sub }/${ f }` ) );
+
+// Post types: each register_post_type( self::CONST or 'literal' ) resolved through the class constants in its file.
+function postTypes( root ) {
+	const out = [];
+	for ( const plugin of dirs( path.join( root, 'plugins' ) ) ) {
+		const stack = [ path.join( root, 'plugins', plugin, 'includes' ) ];
+		while ( stack.length ) {
+			const d = stack.pop();
+			if ( ! fs.existsSync( d ) ) {
+				continue;
+			}
+			for ( const e of fs.readdirSync( d, { withFileTypes: true } ) ) {
+				const p = path.join( d, e.name );
+				if ( e.isDirectory() ) {
+					stack.push( p );
+				} else if ( e.name.endsWith( '.php' ) ) {
+					const src = fs.readFileSync( p, 'utf8' );
+					const consts = Object.fromEntries( [ ...src.matchAll( /const\s+([A-Z_][A-Z0-9_]*)\s*=\s*'([^']+)'/g ) ].map( ( m ) => [ m[ 1 ], m[ 2 ] ] ) );
+					for ( const m of src.matchAll( /\\?register_post_type\s*\(\s*(?:self::([A-Z_][A-Z0-9_]*)|'([^']+)')/g ) ) {
+						const slug = m[ 2 ] || consts[ m[ 1 ] ];
+						if ( slug ) {
+							out.push( one( `post-type:${ slug }`, `post type ${ slug } (${ path.relative( root, p ).split( path.sep ).join( '/' ) })` ) );
+						}
+					}
+				}
+			}
+		}
+	}
+	return [ ...new Map( out.map( ( e ) => [ e.id, e ] ) ).values() ].sort( byId );
+}
+
+// Plugins: each plugins/<slug>/ folder whose top-level PHP file carries a WordPress `Plugin Name:` header.
+const pluginsOf = ( root ) => dirs( path.join( root, 'plugins' ) ).filter( ( p ) => files( path.join( root, 'plugins', p ), /\.php$/ ).some( ( f ) => /^\s*\*?\s*Plugin Name:/m.test( fs.readFileSync( path.join( root, 'plugins', p, f ), 'utf8' ).slice( 0, 4096 ) ) ) ).map( ( p ) => one( `plugin:${ p }`, `plugin ${ p }` ) );
+
+// Theme-snapshot key paths: the union across sites/*/theme-snapshot.json, three levels under `settings` (where the
+// SGS token families live) and two elsewhere. Keys only: no value or client name reaches the inventory.
+export function snapshotKeyPaths( snapshots ) {
+	const rows = [];
+	const walk = ( obj, trail, depth ) => {
+		for ( const [ k, v ] of Object.entries( obj || {} ) ) {
+			const p = [ ...trail, k ];
+			if ( p.length > 1 ) {
+				rows.push( p.join( '.' ) );
+			}
+			if ( p.length < depth && v && 'object' === typeof v && ! Array.isArray( v ) ) {
+				walk( v, p, depth );
+			}
+		}
+	};
+	snapshots.forEach( ( s ) => [ 'settings', 'styles' ].forEach( ( top ) => s[ top ] && walk( s[ top ], [ top ], 'settings' === top ? 3 : 2 ) ) );
+	return [ ...new Set( rows ) ].sort().map( ( p ) => one( `snapshot-key:${ p }`, `theme-snapshot ${ p }` ) );
+}
+
+const snapshots = ( root ) => dirs( path.join( root, 'sites' ) ).map( ( s ) => path.join( root, 'sites', s, 'theme-snapshot.json' ) ).filter( ( f ) => fs.existsSync( f ) ).map( readJson );
+
+export function codeSections( root = REPO ) {
+	return {
+		'sgs-support': supportKeys( root ),
+		extension: extensions( root ),
+		template: themeFiles( root, 'templates', 'template', /\.html$/ ),
+		part: themeFiles( root, 'parts', 'part', /\.html$/ ),
+		pattern: themeFiles( root, 'patterns', 'pattern', /\.php$/ ),
+		'post-type': postTypes( root ),
+		plugin: pluginsOf( root ),
+		'snapshot-key': snapshotKeyPaths( snapshots( root ) ),
+	};
+}
+
+// ---- What a draft can hold ----
+
+// HTML elements and CSS at-rules and property groups from the web platform's data packages, and the runtime construct
+// kinds from the construct registry.
+export function draftSections( { registry = loadRegistry(), css = require( 'mdn-data/css' ), tags = htmlTagNames } = {} ) {
+	const groups = [];
+	for ( const [ prop, p ] of Object.entries( css.properties ) ) {
+		( p.groups || [ 'ungrouped' ] ).forEach( ( g ) => groups.push( { prop, g } ) );
+	}
+	const slug = ( s ) => s.toLowerCase().replace( /^css\s+/, '' ).replace( /[^a-z0-9]+/g, '-' ).replace( /^-|-$/g, '' );
+	return {
+		html: [ ...new Set( tags ) ].sort().map( ( t ) => one( `html:${ t }`, `<${ t }>` ) ),
+		'css-at': Object.keys( css.atRules ).sort().map( ( a ) => one( `css-at:${ a.replace( /^@/, '' ) }`, a ) ),
+		'css-group': grouped( groups, ( r ) => `css-group:${ slug( r.g ) }`, ( r ) => `CSS properties: ${ r.g }`, ( r ) => r.prop, ( r ) => /animation|transition|motion|scroll-driven/i.test( r.g ) ),
+		construct: Object.keys( registry ).sort().map( ( k ) => one( `construct:${ k }`, `runtime construct ${ k }`, [ 'waapi', 'transition', 'keyframes' ].includes( k ) ) ),
+	};
+}
+
+// ---- The whole inventory ----
+
+const DB_SECTIONS = [ 'block-setting', 'fx', 'motion-preset' ];
+const CODE_SECTIONS = [ 'sgs-support', 'extension', 'template', 'part', 'pattern', 'post-type', 'plugin', 'snapshot-key' ];
+const DRAFT_SECTIONS = [ 'html', 'css-at', 'css-group', 'construct' ];
+
+// { sections: { <name>: { side, source, status, entries } } }. `dbFile` null or missing marks the DB sections absent.
+export function buildInventory( { root = REPO, dbFile = DB_PATH, registry, css, tags } = {} ) {
+	let db = null;
+	if ( dbFile && fs.existsSync( dbFile ) ) {
+		db = openDb( dbFile );
+	}
+	try {
+		const fromDb = db ? dbSections( db ) : {};
+		const fromCode = codeSections( root );
+		const fromDraft = draftSections( { ...( registry ? { registry } : {} ), ...( css ? { css } : {} ), ...( tags ? { tags } : {} ) } );
+		const sections = {};
+		DB_SECTIONS.forEach( ( s ) => ( sections[ s ] = { side: 'framework', source: 'db', status: db ? 'ok' : 'absent', entries: fromDb[ s ] || [] } ) );
+		CODE_SECTIONS.forEach( ( s ) => ( sections[ s ] = { side: 'framework', source: 'code', status: 'ok', entries: fromCode[ s ] } ) );
+		DRAFT_SECTIONS.forEach( ( s ) => ( sections[ s ] = { side: 'draft', source: 'construct' === s ? 'registry' : 'web', status: 'ok', entries: fromDraft[ s ] } ) );
+		return { sections };
+	} finally {
+		db?.close();
+	}
+}
+
+// The section an ID belongs to: the text before its first colon.
+export const sectionOf = ( id ) => String( id ).split( ':' )[ 0 ];
+
+// Every entry of an inventory, flattened: [ { ...entry, section } ].
+export const allEntries = ( inv ) => Object.entries( inv.sections ).flatMap( ( [ section, s ] ) => s.entries.map( ( e ) => ( { ...e, section } ) ) );
+
+// Merge a fresh inventory over a committed one: a section that is absent in the fresh run (no DB here) keeps the
+// committed entries, so writing on a machine without the DB never erases what a machine with it recorded.
+export function mergeInventory( fresh, committed ) {
+	const sections = { ...fresh.sections };
+	for ( const [ name, s ] of Object.entries( sections ) ) {
+		const old = committed?.sections?.[ name ];
+		if ( 'absent' === s.status && old && 'ok' === old.status ) {
+			sections[ name ] = old;
+		}
+	}
+	return { sections };
+}
+
+export const readInventoryFile = ( f = CAPABILITIES_FILE ) => ( fs.existsSync( f ) ? readJson( f ) : null );
