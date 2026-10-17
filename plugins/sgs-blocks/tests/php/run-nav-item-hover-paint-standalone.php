@@ -83,6 +83,8 @@ $item_section = (string) substr( $item_section, 0, (int) strrpos( $item_section,
 function run_item_state( string $code, array $attributes ): string {
 	$css           = '';
 	$link_sel      = '.uid .sgs-nav-bar-menu__link';
+	// nav-menu-css.php sets this before the extracted section; with no itemHoverScope it equals $link_sel.
+	$link_hover_sel = $link_sel;
 	$caret_svg_sel = '.uid .sgs-nav-bar-menu__caret svg';
 	eval( $code ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted nav-menu-css.php section.
 	return $css;
@@ -186,7 +188,7 @@ ok( false !== strpos( run_sublink_shift( $bypass_sub_clamp, array( 'submenuOpaci
 ok( '' === run_sublink_shift( $sublink_section, array() ), 'sublink: no attribute -> nothing emitted' );
 ok( '' === run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => '' ) ), 'sublink: empty attribute -> nothing emitted' );
 $sub_shift = run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => '6px' ) );
-ok( false !== strpos( $sub_shift, 'padding-inline-start:calc(16px + 6px)' ), 'sublink: padding shift adds onto the resting 16px literal (wholesale-food client dropdown 6 to 12/... reference shape)' );
+ok( false !== strpos( $sub_shift, 'padding-inline-start:calc(var(--sgs-nav-sublink-pad-start, 16px) + 6px)' ), 'sublink: padding shift adds onto the sublink inline-start padding (submenuLinkPadding via --sgs-nav-sublink-pad-start, else the 16px literal) (wholesale-food client dropdown 6 to 12/... reference shape)' );
 ok( false !== strpos( $sub_shift, SGS_HOVER_MEDIA ), 'sublink: the padding-shift rule is touch-guarded' );
 ok( '' === run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => 'url(javascript:alert(1))' ) ), 'sublink: a hostile padding-shift value emits nothing' );
 
@@ -269,6 +271,8 @@ $lift_section = (string) substr( $lift_section, 0, (int) strrpos( $lift_section,
 
 function run_lift( string $code, array $attributes ): string {
 	$css        = '';
+	// mega-panel/render.php sets $root_sel before the extracted section.
+	$root_sel   = '.uid.wp-block-sgs-mega-panel';
 	$style_crd  = '.wp-block-sgs-mega-panel[data-mega-style="cards"]';
 	$rel_group  = ' .sgs-mega-group';
 	eval( $code ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating the extracted mega-panel/render.php panelCardLift section.
