@@ -219,7 +219,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							);
 						} else {
 							$child_html .= sprintf(
-								'<li class="sgs-nav-bar-menu__subitem%s"><a class="sgs-nav-bar-menu__sublink" href="%s" data-sgs-nav-path="%s">%s%s</a></li>',
+								'<li class="sgs-nav-bar-menu__subitem%s"><a class="sgs-nav-bar-menu__sublink sgs-focus--inset" href="%s" data-sgs-nav-path="%s">%s%s</a></li>',
 								$child_featured ? ' sgs-nav-bar-menu__subitem--featured' : '',
 								esc_url( $child['url'] ),
 								esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
@@ -262,7 +262,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						if ( ! empty( $item['has_url'] ) ) {
 							$trigger_html = sprintf(
 								'<a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span></a>'
-								. '<button type="button" class="sgs-nav-bar-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								. '<button type="button" class="sgs-nav-bar-menu__subtoggle sgs-focus--inset" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 								. '<span class="screen-reader-text">%s</span>%s</button>',
 								esc_url( $item['url'] ),
 								esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
@@ -274,7 +274,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 							);
 						} else {
 							$trigger_html = sprintf(
-								'<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								'<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__subtoggle sgs-focus--inset" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 								. '<span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span>%s</button>',
 								esc_attr( $sub_dom_id ),
 								sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_label_roll_markup() esc_html's the label.
@@ -470,7 +470,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 						$child_html    .= $child_disabled
 							? sgs_nav_drawer_disabled_sublink_html( (string) $child['label'], $child_featured ? ' sgs-nav-drawer-menu__subitem--featured' : '' )
 							: sprintf(
-								'<li class="sgs-nav-drawer-menu__subitem%1$s"><a class="sgs-nav-drawer-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
+								'<li class="sgs-nav-drawer-menu__subitem%1$s"><a class="sgs-nav-drawer-menu__sublink sgs-focus--inset" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
 								$child_featured ? ' sgs-nav-drawer-menu__subitem--featured' : '',
 								esc_url( $child['url'] ),
 								esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),

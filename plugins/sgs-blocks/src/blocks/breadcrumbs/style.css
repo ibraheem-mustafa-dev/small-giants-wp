@@ -38,12 +38,6 @@
 	text-decoration: none;
 }
 
-.sgs-breadcrumbs__item a:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-	border-radius: 2px;
-}
-
 .sgs-breadcrumbs__item--current {
 	color: var(--sgs-breadcrumbs-current-colour, var(--wp--preset--color--text, #1e1e1e));
 	/* `inherit` so the current crumb follows the block's own weight setting, which

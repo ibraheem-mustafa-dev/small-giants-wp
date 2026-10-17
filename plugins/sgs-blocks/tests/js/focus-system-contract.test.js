@@ -34,8 +34,6 @@ const { analyseCss } = require( '../../scripts/focus-system/classify-css.js' );
 
 // Theme stylesheets whose focus rules a later task of the focus plan removes (the detector's group in brackets).
 const PENDING = {
-	'woocommerce.css': 'plan Task 6 (group woocommerce)',
-	'dark-mode.css': 'plan Task 7 (group nav)',
 };
 
 const INDICATOR = new Set( [ 'outline', 'outline-offset', 'box-shadow' ] );

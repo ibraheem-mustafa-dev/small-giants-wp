@@ -40,11 +40,6 @@
 	text-decoration: none;
 }
 
-.sgs-language-switch__link:focus-visible {
-	outline: 2px solid currentColor;
-	outline-offset: 2px;
-}
-
 .sgs-language-switch__link[aria-current="true"] {
 	font-weight: 600;
 	pointer-events: none;
@@ -75,11 +70,6 @@
 	cursor: pointer;
 	font: inherit;
 	color: inherit;
-}
-
-.sgs-language-switch__trigger:focus-visible {
-	outline: 2px solid currentColor;
-	outline-offset: 2px;
 }
 
 .sgs-language-switch__panel {

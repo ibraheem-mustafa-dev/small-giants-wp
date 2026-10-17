@@ -70,11 +70,6 @@
 	background-color: var(--wp--preset--color--surface-alt);
 }
 
-.sgs-dark-mode-toggle:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark));
-	outline-offset: 2px;
-}
-
 .sgs-dark-mode-toggle svg {
 	width: 20px;
 	height: 20px;
@@ -129,11 +124,6 @@
 .sgs-theme-toggle--segmented [role="radio"][aria-checked="true"] {
 	background-color: var(--wp--preset--color--surface);
 	font-weight: 600;
-}
-
-.sgs-theme-toggle--segmented [role="radio"]:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark));
-	outline-offset: 2px;
 }
 
 /* Reduced-motion audit 2026-05-08: 1 redundant rule removed; 0 kept */

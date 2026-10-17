@@ -134,7 +134,7 @@ export function initDrillDown( barEl ) {
 		backLi.className = 'sgs-nav-drawer-menu__drill-back';
 		const backBtn = document.createElement( 'button' );
 		backBtn.type = 'button';
-		backBtn.className = 'sgs-nav-drawer-menu__drill-back-btn';
+		backBtn.className = 'sgs-nav-drawer-menu__drill-back-btn sgs-focus--inset';
 		// The arrow is a real `aria-hidden` element, not CSS `content` — a
 		// generated pseudo-element's text can still surface in some browsers'
 		// accessibility trees even while its host is genuinely hidden/inert,

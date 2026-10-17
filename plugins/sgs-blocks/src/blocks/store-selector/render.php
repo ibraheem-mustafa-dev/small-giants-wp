@@ -271,7 +271,7 @@ foreach ( $stores as $store ) {
 	$is_current   = ( $store['url'] === $current_store['url'] );
 	$item_classes = 'sgs-store-selector__item';
 	$output      .= '<li class="' . esc_attr( $item_classes ) . '">';
-	$output      .= '<a href="' . esc_url( $store['url'] ) . '"' . ( $is_current ? ' aria-current="true"' : '' ) . '>';
+	$output      .= '<a class="sgs-focus--inset" href="' . esc_url( $store['url'] ) . '"' . ( $is_current ? ' aria-current="true"' : '' ) . '>';
 	if ( '' !== $store['flagUrl'] ) {
 		$output .= '<img class="sgs-store-selector__flag" src="' . esc_url( $store['flagUrl'] ) . '" alt="" width="' . esc_attr( (string) $flag_desktop['w'] ) . '" height="' . esc_attr( (string) $flag_desktop['h'] ) . '" loading="lazy" decoding="async">';
 	}

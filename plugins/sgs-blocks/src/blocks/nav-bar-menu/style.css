@@ -169,11 +169,6 @@
 	text-decoration: none;
 }
 
-.sgs-nav-bar-menu :focus-visible {
-	outline: 2px solid var( --sgs-focus-color, currentColor );
-	outline-offset: 2px;
-}
-
 /* The toggle-wrap / burger — hidden above collapsePoint by render.php's
  * scoped @media rule; this file only owns the button's SHAPE. */
 .sgs-nav-bar-menu__toggle-wrap {
@@ -480,9 +475,6 @@
 @media (forced-colors: active) {
 	.sgs-nav-bar-menu__burger {
 		border: 1px solid ButtonText;
-	}
-	.sgs-nav-bar-menu :focus-visible {
-		outline-color: Highlight;
 	}
 }
 

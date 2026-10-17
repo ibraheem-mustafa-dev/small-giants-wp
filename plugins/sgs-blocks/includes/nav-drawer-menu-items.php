@@ -260,7 +260,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 		// item rule keyed on `.sgs-nav-drawer-menu__link` (typography, colour,
 		// hover/open state, padding, ornament and trailing-icon hover) paints it
 		// exactly like a link row. The caret-only summary stays a bare toggle.
-		$summary_class = 'sgs-nav-drawer-menu__accordion-summary' . ( $row_toggle ? ' sgs-nav-drawer-menu__link sgs-nav-drawer-menu__accordion-summary--row' : '' );
+		$summary_class = 'sgs-nav-drawer-menu__accordion-summary sgs-focus--inset' . ( $row_toggle ? ' sgs-nav-drawer-menu__link sgs-nav-drawer-menu__accordion-summary--row' : '' );
 		$expander      = (string) $options['expander_html'];
 		$caret_html    = '<span class="sgs-nav-drawer-menu__caret" aria-hidden="true">' . $expander . '</span>';
 

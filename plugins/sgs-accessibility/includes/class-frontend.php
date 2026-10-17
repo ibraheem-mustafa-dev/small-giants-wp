@@ -222,8 +222,6 @@ class Frontend {
 		.sgs-skip-link:focus {
 			top: 8px;
 			left: 8px;
-			outline: 3px solid #005fcc;
-			outline-offset: 2px;
 		}
 		</style>
 		<?php
