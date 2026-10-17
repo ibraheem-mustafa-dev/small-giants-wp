@@ -82,10 +82,10 @@ digraph buddies {
 
   q [label="Question"];
   r1 [label="Round 1:\nNerd hunts sources\nPractical scopes application\n(parallel)"];
-  d1 [label="Discussion 1:\nNerd: here's what I found\nPractical: here's what we can do with it\n(Haiku)"];
+  d1 [label="Discussion 1:\nNerd: here's what I found\nPractical: here's what we can do with it\n(SendMessage, same agents)"];
   r2 [label="Round 2:\nNerd: goes deeper on what matters\nPractical: tests applications\n(parallel)"];
-  d2 [label="Discussion 2:\nConverge on answer\n(Haiku)"];
-  joint [label="Joint conclusion\n(Opus)"];
+  d2 [label="Discussion 2:\nConverge on answer\n(SendMessage, same agents)"];
+  joint [label="Joint conclusion\n(the Practical One)"];
   deliver [label="Deliver + Persist"];
 
   q -> r1;
@@ -172,9 +172,9 @@ Output:
 - What questions the Nerd should answer to make this actionable
 ```
 
-## Discussion 1 (Haiku)
+## Discussion 1 (SendMessage to the same two agents)
 
-Two `Agent` calls with `model: "haiku"` simultaneously.
+Dispatch the Nerd and the Practical One in Round 1 with names (the Agent tool's `name`). Every later step goes back to those same two agents with SendMessage: they keep their sources and context, so no new agents are needed. Open the Round 1 briefs with the `/delegate` brief lines, starting with "Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better."
 
 ```
 You are The [Nerd/Practical One]. Read what your buddy found.
@@ -215,7 +215,7 @@ How does Bean actually use this? What's the implementation path? What
 else does this solve? Challenge anything that still feels theoretical.
 ```
 
-## Discussion 2 — Convergence (Haiku)
+## Discussion 2 — Convergence (SendMessage to the same two agents)
 
 Same format but adding:
 ```
@@ -234,13 +234,14 @@ Run `/gap-analysis` on the combined research output (both rounds + both discussi
 - Log: "Research graded [grade] ([score]/5) — Personas: [names]"
 </HARD-GATE>
 
-## Joint Conclusion (Opus)
+## Joint Conclusion (SendMessage to the Practical One)
 
 ```
-You are narrating the final conversation between The Nerd and The
-Practical One. They've done two rounds and two discussions.
+You and The Nerd have done two rounds and two discussions. Write the
+joint conclusion from both of your positions. The Nerd's final
+discussion answers are below; your own you already hold.
 
-[ALL OUTPUTS]
+[NERD'S DISCUSSION 2 ANSWERS]
 
 Write their conclusion:
 
@@ -291,12 +292,12 @@ If Bash is blocked, use WebSearch as a LAST RESORT only and note the degraded re
 
 | Step | Agents | Model |
 |------|--------|-------|
-| Round 1 | 2 | Sonnet + Opus |
-| Discussion 1 | 2 | Haiku |
-| Round 2 | 2 | Sonnet + Opus |
-| Discussion 2 | 2 | Haiku |
-| Joint Conclusion | 1 | Opus |
-| **Total** | **9** | |
+| Round 1 | 2 (dispatched, named) | Sonnet + Opus |
+| Discussion 1 | 0 new (SendMessage) | same agents |
+| Round 2 | 0 new (SendMessage) | same agents |
+| Discussion 2 | 0 new (SendMessage) | same agents |
+| Joint Conclusion | 0 new (SendMessage to the Practical One) | Opus |
+| **Total** | **2 subagents** | |
 
 ## Completion Criteria
 
