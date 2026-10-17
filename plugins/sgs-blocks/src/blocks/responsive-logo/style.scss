@@ -48,7 +48,12 @@
 		display: inline-block;
 		line-height: 0; // prevent inline-block gap below image
 		text-decoration: none;
-		transition: opacity 150ms ease;
+
+		// The fade sits on the link's children, never on the link: opacity on the <a> would blend its own focus outline
+		// into the ground and drop the ring below 3:1 (focus system, WCAG 1.4.11).
+		> * {
+			transition: opacity 150ms ease;
+		}
 
 		// --sgs-logo-hover-opacity is emitted by render.php from the block's
 		// own `opacityHover` attribute (a real editor control — Bean's
@@ -58,8 +63,8 @@
 		// transform, same as every other compiled block stylesheet); source
 		// stays unguarded on purpose. Fallback 1 = no visible change when the
 		// attribute is unset (0, the off-sentinel).
-		&:hover,
-		&:focus-visible {
+		&:hover > *,
+		&:focus-visible > * {
 			opacity: var( --sgs-logo-hover-opacity, 1 );
 		}
 	}
