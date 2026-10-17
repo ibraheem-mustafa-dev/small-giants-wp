@@ -8,7 +8,10 @@ WHAT THIS DOES
 
         --survey [--json]   every old attribute found, per attribute and per post
         --check             exit 1 while any old motion attribute remains
-        --self-test         inline fixtures plus a planted fault that must turn --check red
+        --self-test         inline fixtures plus a planted fault that must turn --check red (also runs consumers.py's)
+        --consumers [--json] [--write-report]
+                            read-only census of every consumer of what M6.6-G0 to G5 delete, each hit assigned
+                            to a group (consumers.py, consumer-groups.json); exit 1 while any hit has no group
 
     Input is one of:
         --input <file>      the JSON `wp post list --fields=ID,post_type,post_content --format=json` returns
@@ -426,11 +429,20 @@ def main():
     ap.add_argument('--input')
     ap.add_argument('--target')
     ap.add_argument('--write-census', action='store_true')
+    ap.add_argument('--consumers', action='store_true')
+    ap.add_argument('--write-report', action='store_true')
     args = ap.parse_args()
     if args.self_test:
-        return self_test()
+        sys.path.insert(0, HERE)
+        import consumers
+        return max(self_test(), consumers.self_test())
+    if args.consumers:
+        sys.path.insert(0, HERE)
+        import consumers
+        report = os.path.join(REPO, '.claude', 'reports', '%s-motion-removal-census.md' % datetime.date.today().isoformat())
+        return consumers.run(args.json, report if args.write_report else None, 'python ' + ' '.join(sys.argv))
     if not (args.survey or args.check):
-        ap.error('choose --survey, --check or --self-test')
+        ap.error('choose --survey, --check, --consumers or --self-test')
     if bool(args.input) == bool(args.target):
         ap.error('give exactly one of --input <file> or --target <name>')
     if args.input:

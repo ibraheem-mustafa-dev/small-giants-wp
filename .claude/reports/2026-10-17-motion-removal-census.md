@@ -1,0 +1,713 @@
+# Motion removal consumer census
+
+Generated 2026-10-17 by `python plugins/sgs-blocks/scripts/migrate-motion/migrate_motion.py --consumers --write-report`. Read-only census for Spec 38A unit M6.6C: every file that still names a path or an old attribute that M6.6-G0 to G5 delete, assigned to the group that fixes it.
+
+Needles: 285 (paths from `consumer-groups.json` plus the old attribute names in `migrate_motion.py::CATALOGUE`). A hit is one needle on one line of one file. Excluded: `.claude/specs/archive/`, `.claude/reports/`, `.claude/archive/`, `.claude/plans/archive/`, the detector folder, `plugins/sgs-blocks/build/`, `node_modules`, `vendor`, `.phpunit.cache`.
+
+Groups G0 to G5 are the M6.6 removal groups. `M6.7-docs` is the M6.7 doc sweep (plan R11). `keep` is a hit no removal group edits on purpose: the sweep tool and its tests read the old names to translate stored content, and dated backups, scratch output, memory snapshots, verification records and plugin reports are history.
+
+## Summary
+
+| Group | Hits | Files |
+|---|---|---|
+| G0 | 8801 | 312 |
+| G1 | 445 | 33 |
+| G2 | 112 | 14 |
+| G3 | 111 | 16 |
+| G4 | 738 | 91 |
+| G5 | 382 | 28 |
+| M6.7-docs | 491 | 29 |
+| keep | 2228 | 94 |
+
+Hits dropped on purpose and counted: 27 self-references (a file naming its own path), 540 attribute hits inside a block outside that attribute's catalogued scope, and 863 scoped-attribute hits outside any block folder that are not a quoted name (prose, not a key).
+
+## Unit map evidence against this census
+
+- Scripts naming G0 files: the unit map found 22, this census finds 32. The unit map counted the wired gates and generators; this census also matches the extensionless and `src/`-relative forms and counts the inspector-scan fixtures, surveys, seeders and motion probes that name the same files.
+- Theme patterns carrying `fx*` attributes: the unit map found 5, this census finds 5. Same set.
+- `sites/*/build` trees: the unit map found 12, this census finds 2 tree(s) with a hit. Only four `sites/*/build` folders exist, so twelve cannot be reproduced from `build`; the unit map may have counted `sites/*` project folders.
+- Live specs citing deleted code: the unit map found 5 plus `dev-setup.md`, this census finds 12 spec(s) and `dev-setup.md` with hits. Plan R11 names six specs (02, 35A, 36, 37, 38, 48); the rest only mention an old attribute name or path in prose or a table.
+
+## Gaps in the group lists
+
+Block folders with old-attribute hits that no group names in its FILES list (their hits were given a group by family, see the judgement section): `before-after`, `button`, `icon`, `image-sequence`, `process-steps`, `social-icons`, `testimonial-slider`, `trustpilot-reviews`.
+
+Cross-group dependencies (a file one group edits that names a path another group deletes, so the deleting group must wait for the editing group): G1 file names a G0 path; G2 file names a G0 path; G4 file names a G0 path; G5 file names a G0 path; G5 file names a G1 path.
+
+## sites/*/build: tracked or untracked
+
+The build trees are partly tracked: 177 file(s) are tracked and were searched with `git grep`. The rest are untracked, so 894 text file(s) were read directly (skipped and counted: 362 over 1 MB, 248 with a non-text extension, 0 cache folders).
+
+## Paths named by the unit map that are not on disk
+
+- `plugins/sgs-blocks/tests/php/TrustBarMarqueeTest.php`
+- `plugins/sgs-blocks/tests/js/trust-bar-view.test.js`
+
+## G0: 8801 hit(s) in 312 file(s)
+
+- `plugins/sgs-blocks/assets/css/extensions.css`: 10 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgKenBurns`, `bgParallax`, `includes/animation-attributes.php`, `includes/hover-effects`, `ripple.js`, `sgsHoverIndent`, `src/blocks/extensions/parallax.js`
+- `plugins/sgs-blocks/assets/css/fx-cursor-field.css`: 1 hit(s) at line 26, needles: `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/assets/css/fx-grid-dots.css`: 1 hit(s) at line 54, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/assets/css/fx-motion-path.css`: 3 hit(s) at lines 207, 208, 214, needles: `fx-attributes.php`, `fx.js`
+- `plugins/sgs-blocks/assets/js/animation-entrance-timing.js`: 2 hit(s) at lines 6, 7, needles: `includes/animation-stagger.php`, `src/blocks/extensions/animation.js`
+- `plugins/sgs-blocks/assets/js/animation-observer.js`: 8 hit(s), needles: `assets/js/animation-entrance-timing.js`, `includes/animation-attributes.php`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/assets/js/parallax.js`: 3 hit(s) at lines 8, 8, 47, needles: `bgKenBurns`, `bgParallax`, `sgsParallax`
+- `plugins/sgs-blocks/includes/animation-attributes.php`: 8 hit(s), needles: `animation.js`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/includes/animation-stagger.php`: 13 hit(s), needles: `animation-attributes.php`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `sgsAnimationStart`, `sgsAnimationTrigger`, `src/blocks/extensions/animation.js`
+- `plugins/sgs-blocks/includes/animation-timing-clamp.php`: 5 hit(s) at lines 5, 18, 25, 40, 46, needles: `animation-attributes.php`, `sgsAnimationDistance`, `sgsAnimationDuration`
+- `plugins/sgs-blocks/includes/class-sgs-blocks.php`: 9 hit(s), needles: `animation-entrance-timing.js`, `assets/js/animation-entrance-timing.js`, `assets/js/parallax.js`, `assets/js/ripple.js`, `assets/js/tilt-3d.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/includes/class-sgs-colour-audit-cli-commands.php`: 2 hit(s) at lines 100, 133, needles: `shadowHoverColour`
+- `plugins/sgs-blocks/includes/class-sgs-motion-diagnostics.php`: 3 hit(s) at lines 46, 60, 140, needles: `fx.js`
+- `plugins/sgs-blocks/includes/class-sgs-motion-registry.php`: 3 hit(s) at lines 1190, 1190, 1191, needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/includes/container-bg-hover-zoom.php`: 5 hit(s) at lines 15, 16, 17, 18, 19, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `plugins/sgs-blocks/includes/extension-attributes.generated.php`: 120 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `sgsAnimationStart`, `sgsAnimationTrigger` and 18 more
+- `plugins/sgs-blocks/includes/fx-attributes.php`: 263 hit(s), needles: `^fx[A-Z0-9]`, `animation-attributes.php`, `fx-presets.json`, `fx.js`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/includes/fx-cursor-field.php`: 2 hit(s) at lines 35, 296, needles: `fx-attributes.php`
+- `plugins/sgs-blocks/includes/fx-flip-woocommerce.php`: 1 hit(s) at line 21, needles: `includes/fx-attributes.php`
+- `plugins/sgs-blocks/includes/fx-generative-background.php`: 1 hit(s) at line 33, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/includes/fx-path-routes.json`: 1 hit(s) at line 2, needles: `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/includes/fx-path-routes.php`: 5 hit(s) at lines 25, 26, 31, 55, 269, needles: `fx-attributes.php`, `fx.js`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/includes/fx-shape-routes.json`: 1 hit(s) at line 2, needles: `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/includes/fx-shape-routes.php`: 5 hit(s) at lines 45, 61, 88, 325, 325, needles: `fx-attributes.php`, `fx.js`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/includes/fx-surface-treatment.php`: 4 hit(s) at lines 13, 49, 116, 261, needles: `^fx[A-Z0-9]`, `fx-attributes.php`
+- `plugins/sgs-blocks/includes/helpers-colour-variants.php`: 1 hit(s) at line 607, needles: `shadowHoverColour`
+- `plugins/sgs-blocks/includes/helpers-motion-easing.php`: 1 hit(s) at line 9, needles: `src/components/MotionEasingControl.js`
+- `plugins/sgs-blocks/includes/helpers-scoped-instance-vars.php`: 1 hit(s) at line 7, needles: `parallax.php`
+- `plugins/sgs-blocks/includes/helpers-shadow-hover.php`: 3 hit(s) at lines 171, 227, 231, needles: `includes/hover-effects`, `sgsHoverShadow`
+- `plugins/sgs-blocks/includes/helpers-stretched-link.php`: 3 hit(s) at lines 6, 8, 106, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/includes/hover-effects/classes.php`: 1 hit(s) at line 46, needles: `src/blocks/extensions/hover-effects`
+- `plugins/sgs-blocks/includes/hover-effects/hover-effects.php`: 33 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`, `sgsHoverBorderAccent`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverIndent` and 7 more
+- `plugins/sgs-blocks/includes/hover-effects/resolve.php`: 8 hit(s), needles: `sgsHoverShadow`, `shadowLiftOnHover`, `src/blocks/extensions/hover-effects`
+- `plugins/sgs-blocks/includes/image-controls.php`: 3 hit(s) at lines 176, 176, 226, needles: `animation-attributes.php`, `parallax.php`
+- `plugins/sgs-blocks/includes/motion/class-sgs-motion-fx-emitter.php`: 4 hit(s) at lines 9, 12, 21, 21, needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/includes/motion/class-sgs-motion-fx-grammar.php`: 2 hit(s) at lines 56, 251, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/includes/motion/class-sgs-motion-markup.php`: 1 hit(s) at line 6, needles: `includes/animation-attributes.php`
+- `plugins/sgs-blocks/includes/motion/data/canvas-stories.json`: 1 hit(s) at line 6, needles: `src/blocks/extensions/fx-panel.scss`
+- `plugins/sgs-blocks/includes/motion/scroll-ownership.php`: 1 hit(s) at line 6, needles: `includes/animation-attributes.php`
+- `plugins/sgs-blocks/includes/parallax.php`: 8 hit(s), needles: `assets/js/parallax.js`, `bgKenBurns`, `bgParallax`, `sgsParallax`, `sgsParallaxStrength`, `src/blocks/extensions/parallax.js`
+- `plugins/sgs-blocks/includes/rest-motion-budget.php`: 5 hit(s) at lines 6, 18, 21, 33, 151, needles: `fx.js`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/scripts/attr-classification-overrides.json`: 53 hit(s), needles: `^fx[A-Z0-9]`, `autoScroll`, `autoScrollBelow`, `autoScrollDuration`, `bgKenBurns`, `burgerMorphEasingCustom`, `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `iconRotateHover`, `imageZoomHover` and 12 more
+- `plugins/sgs-blocks/scripts/audit-post-content-blocks.py`: 1 hit(s) at line 96, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`: 13 hit(s), needles: `^fx[A-Z0-9]`, `bgKenBurns`, `bgParallax`, `imageZoomHover`
+- `plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json`: 118 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgParallax`, `bgZoomStart`, `burgerMorphDuration`, `burgerMorphEasing`, `childIconScaleHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `curtainColour`, `entryDuration`, `entryEasing` and 24 more
+- `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py`: 2 hit(s) at lines 3465, 3596, needles: `AnimationControl`, `bgKenBurns`
+- `plugins/sgs-blocks/scripts/check-dead-controls.js`: 33 hit(s), needles: `^fx[A-Z0-9]`, `animation.js`, `fx.js`, `includes/animation-stagger.php`, `includes/fx-attributes.php`, `sgsAnimation`, `transitionDuration`, `transitionEasing`
+- `plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py`: 7 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/scripts/check-duplicate-controls.js`: 56 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScrollPauseOnHover`, `effectHover`, `imageZoomHover`, `pauseOnHover`, `scaleHover`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverShadow`, `shadowHoverColour` and 4 more
+- `plugins/sgs-blocks/scripts/check-element-manifest-conformance.js`: 1 hit(s) at line 341, needles: `pauseOnHover`
+- `plugins/sgs-blocks/scripts/check-enum-control-shape-baseline.json`: 2 hit(s) at lines 48, 158, needles: `autoScrollSpeed`, `scrollDirection`
+- `plugins/sgs-blocks/scripts/check-fx-list-drift.py`: 50 hit(s), needles: `^fx[A-Z0-9]`, `fx-attributes.php`, `fx.js`, `includes/fx-attributes.php`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/scripts/check-fx-registration.py`: 15 hit(s), needles: `^fx[A-Z0-9]`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/scripts/check-hover-state-classification.py`: 6 hit(s), needles: `effectHover`, `pauseOnHover`, `scaleHover`
+- `plugins/sgs-blocks/scripts/check-motion-pause-control.py`: 3 hit(s) at lines 17, 34, 258, needles: `pauseButton`
+- `plugins/sgs-blocks/scripts/check-raw-spacing-controls.py`: 2 hit(s) at lines 36, 37, needles: `blocks/extensions/fx.js`, `components/GridDotFieldRowControls.js`
+- `plugins/sgs-blocks/scripts/check-undeclared-attrs.py`: 5 hit(s) at lines 47, 47, 540, 542, 543, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimation`
+- `plugins/sgs-blocks/scripts/check-universal-fit.js`: 29 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation.js`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `sgsAnimationStart`, `sgsAnimationTrigger` and 13 more
+- `plugins/sgs-blocks/scripts/colour-codemod/adopt.js`: 13 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/colour-codemod/fix.js`: 159 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/colour-codemod/wire-border-contrast.js`: 24 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/consistency/attr-role-map.json`: 4463 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `effectHover` and 33 more
+- `plugins/sgs-blocks/scripts/consistency/cluster-member-sets.json`: 1 hit(s) at line 13, needles: `effectHover`
+- `plugins/sgs-blocks/scripts/consistency/golden-controls.json`: 2 hit(s) at lines 609, 675, needles: `fx.js`
+- `plugins/sgs-blocks/scripts/consistency/goldens/behaviour.json`: 20 hit(s), needles: `AnimationControl`, `^fx[A-Z0-9]`, `animation.js`, `assets/js/parallax.js`, `bgKenBurns`, `bgParallax`, `fx.js`, `includes/parallax.php`, `sgsParallax`, `src/blocks/extensions/animation.js`, `src/blocks/extensions/fx.js`, `src/blocks/extensions/hover-effects` and 2 more
+- `plugins/sgs-blocks/scripts/consistency/goldens/input.json`: 1 hit(s) at line 169, needles: `fx.js`
+- `plugins/sgs-blocks/scripts/consistency/setting-reclassification.json`: 169 hit(s), needles: `^fx[A-Z0-9]`, `animationStyle`, `autoScroll`, `autoScrollPauseOnHover`, `autoScrollSpeed`, `bgKenBurns`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `effectHover`, `fadeEdges`, `imageZoomHover` and 14 more
+- `plugins/sgs-blocks/scripts/consistency/setting-registry-behaviours.json`: 31 hit(s), needles: `AnimationControl`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation.js`, `autoScroll`, `autoScrollPauseOnHover`, `autoScrollSpeed`, `bgKenBurns`, `bgParallax`, `bgSvgAnimation`, `effectHover`, `parallaxStrength`, `pauseOnHover` and 12 more
+- `plugins/sgs-blocks/scripts/consistency/setting-registry.json`: 51 hit(s), needles: `AnimationControl`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation.js`, `autoScroll`, `autoScrollPauseOnHover`, `autoScrollSpeed`, `bgKenBurns`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `effectHover`, `parallaxStrength` and 13 more
+- `plugins/sgs-blocks/scripts/content-role-detect/classify_detector1.py`: 22 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/content-role-detect/detector1_render_escaping.php`: 9 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/content-role-detect/fixtures/multihop_provenance.php`: 13 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/data/slots.json`: 2 hit(s) at lines 253, 255, needles: `sgsAnimation`
+- `plugins/sgs-blocks/scripts/db-consistency/check_motion_fx_reseed.py`: 2 hit(s) at lines 190, 223, needles: `^fx[A-Z0-9]`, `fx.js`
+- `plugins/sgs-blocks/scripts/dbschema/seed-motion-shape-signatures.py`: 10 hit(s), needles: `plugins/sgs-blocks/src/components/AnimationControl.js`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`: 6 hit(s), needles: `^fx[A-Z0-9]`, `fx-attributes.php`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/scripts/duplicate-controls-baseline.json`: 17 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `effectHover`, `imageZoomHover`, `scaleHover`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverShadow`, `shadowHoverColour`
+- `plugins/sgs-blocks/scripts/editor-render-parity-baseline.json`: 24 hit(s), needles: `bgLottie`, `bgLottieLoop`, `bgZoomStart`, `pauseOnHover`, `staggerDelay`
+- `plugins/sgs-blocks/scripts/editor-render-parity/lib-ceiling.js`: 1 hit(s) at line 193, needles: `fx.js`
+- `plugins/sgs-blocks/scripts/editor-render-parity/lib-editor-invisible.js`: 54 hit(s), needles: `^fx[A-Z0-9]`, `autoScroll`, `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom` and 21 more
+- `plugins/sgs-blocks/scripts/editor-render-parity/lib-php-gates.js`: 2 hit(s) at lines 91, 91, needles: `transitionDuration`, `transitionEasing`
+- `plugins/sgs-blocks/scripts/element-manifest-baseline.json`: 1 hit(s) at line 10, needles: `shadowHoverColour`
+- `plugins/sgs-blocks/scripts/fanout-shadow-lift-attr.py`: 2 hit(s) at lines 3, 55, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/scripts/feature-parity-exceptions.json`: 1 hit(s) at line 328, needles: `bgParallax`
+- `plugins/sgs-blocks/scripts/fx_drift/runtime_reads.py`: 21 hit(s), needles: `^fx[A-Z0-9]`, `fx-attributes.php`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/scripts/generate-extension-attributes.js`: 1 hit(s) at line 54, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/generate-fx-effects-php.py`: 4 hit(s) at lines 217, 224, 232, 245, needles: `^fx[A-Z0-9]`, `fx.js`
+- `plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py`: 5 hit(s) at lines 4, 293, 949, 1042, 1050, needles: `animation.js`, `animationStyle`, `fx.js`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/scripts/inspector-scan/core/extensions.js`: 4 hit(s) at lines 5, 8, 9, 28, needles: `animation.js`, `fx-presets.json`, `fx.js`
+- `plugins/sgs-blocks/scripts/inspector-scan/core/golden.js`: 1 hit(s) at line 807, needles: `pauseOnHover`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/21-render-without-control/extension-lookalike-still-flags/block.json`: 1 hit(s) at line 5, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/21-render-without-control/extension-lookalike-still-flags/edit.js`: 1 hit(s) at line 13, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/21-render-without-control/extension-lookalike-still-flags/render.php`: 1 hit(s) at line 9, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/21-render-without-control/extension-owned-attr/block.json`: 2 hit(s) at lines 6, 7, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/21-render-without-control/extension-owned-attr/edit.js`: 4 hit(s) at lines 4, 4, 7, 15, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/21-render-without-control/extension-owned-attr/render.php`: 2 hit(s) at lines 12, 13, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/26-responsive-duplicate/_extensions/independent-per-tier-flags.js`: 2 hit(s) at lines 5, 5, needles: `^fx[A-Z0-9]`, `fx.js`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/34-declared-attr-unrendered/_dead-controls-dump.json`: 1 hit(s) at line 40, needles: `sgsAnimation`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/34-declared-attr-unrendered/exempt-system-attr/block.json`: 1 hit(s) at line 1, needles: `sgsAnimation`
+- `plugins/sgs-blocks/scripts/inspector-scan/fixtures/37-media-no-handroll/bg-panel-attr-not-flagged/block.json`: 1 hit(s) at line 10, needles: `bgParallax`
+- `plugins/sgs-blocks/scripts/inspector-scan/placement-rule-surfaces.json`: 3 hit(s) at lines 15, 16, 18, needles: `plugins/sgs-blocks/src/blocks/extensions/animation.js`, `plugins/sgs-blocks/src/blocks/extensions/hover-effects`, `plugins/sgs-blocks/src/blocks/extensions/parallax.js`
+- `plugins/sgs-blocks/scripts/inspector-scan/rules.json`: 7 hit(s), needles: `CursorFieldRowControls`, `FlowingGradientRowControls`, `GridDotFieldRowControls.js`, `ParticleTrailRowControls`, `SurfaceTreatmentPanel`, `^fx[A-Z0-9]`, `fx.js`
+- `plugins/sgs-blocks/scripts/inspector-scan/rules/01-tab-group.js`: 1 hit(s) at line 98, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/inspector-scan/rules/21-render-without-control.js`: 3 hit(s) at lines 89, 90, 1169, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/inspector-scan/rules/26-responsive-duplicate.js`: 3 hit(s) at lines 249, 249, 250, needles: `^fx[A-Z0-9]`, `fx.js`
+- `plugins/sgs-blocks/scripts/inspector-scan/rules/37-media-no-handroll.js`: 2 hit(s) at lines 298, 298, needles: `bgKenBurns`, `bgParallax`
+- `plugins/sgs-blocks/scripts/inspector-scan/rules/40-media-svg-sanitised.js`: 2 hit(s) at lines 67, 67, needles: `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/scripts/lib/render_emits.py`: 1 hit(s) at line 129, needles: `transitionDuration`
+- `plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py`: 5 hit(s) at lines 36, 84, 353, 355, 356, needles: `bgParallax`
+- `plugins/sgs-blocks/scripts/migrate-easing-option-lists.js`: 9 hit(s), needles: `burgerMorphEasing`, `entryEasing`, `src/blocks/extensions/fx.js`, `src/blocks/extensions/hover-effects`, `src/components/AnimationControl.js`, `submenuAnimationEasing`, `transitionEasing`
+- `plugins/sgs-blocks/scripts/migrate-fx-list-match.py`: 1 hit(s) at line 15, needles: `includes/fx-attributes.php`
+- `plugins/sgs-blocks/scripts/migrate-motion-support.py`: 3 hit(s) at lines 11, 48, 269, needles: `sgsAnimation`
+- `plugins/sgs-blocks/scripts/migrations/2026-08-13-role-remediation-part2-overrides.py`: 5 hit(s) at lines 10, 31, 33, 149, 169, needles: `bgKenBurns`, `revealStagger`, `svgAnimationSource`
+- `plugins/sgs-blocks/scripts/motion-qa/probe-motion-drawer-close-together.mjs`: 1 hit(s) at line 2, needles: `itemStaggerOnClose`
+- `plugins/sgs-blocks/scripts/motion-qa/probe-motion-model-hover.mjs`: 1 hit(s) at line 231, needles: `tilt-3d.js`
+- `plugins/sgs-blocks/scripts/motion-qa/probe-motion-model.mjs`: 2 hit(s) at lines 57, 127, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/motion-qa/probe-wave-c.mjs`: 3 hit(s) at lines 88, 116, 1769, needles: `fx.js`, `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-drawer.tree.json`: 8 hit(s), needles: `entryAnimation`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance`, `itemStaggerDuration`, `opacityHover`
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-header.tree.json`: 14 hit(s), needles: `liftHover`, `opacityHover`, `sgsHoverOpacity`, `shadowLiftOnHover`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax` and 2 more
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-about.tree.json`: 26 hit(s), needles: `opacityHover`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverIndent`, `sgsHoverOpacity`
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-brands.tree.json`: 1 hit(s) at line 634, needles: `opacityHover`
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-sectors.tree.json`: 28 hit(s), needles: `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverLift`, `sgsHoverOpacity`, `sgsHoverShadow`, `sgsHoverShadowCustom`
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-trade.tree.json`: 21 hit(s), needles: `opacityHover`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverIndent`, `sgsHoverOpacity`
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-page.tree.json`: 14 hit(s), needles: `liftHover`, `opacityHover`, `sgsHoverOpacity`, `shadowLiftOnHover`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax` and 2 more
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/lamalama-drawer.tree.json`: 25 hit(s), needles: `^fx[A-Z0-9]`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerDistance`, `itemStaggerDuration`, `itemStaggerReveal`, `scaleHover` and 3 more
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/lamalama-header.tree.json`: 1 hit(s) at line 90, needles: `opacityHover`
+- `plugins/sgs-blocks/scripts/nav-qa/gate3c/lamalama-page.tree.json`: 1 hit(s) at line 90, needles: `opacityHover`
+- `plugins/sgs-blocks/scripts/nav-qa/lane-c/qa-lottie.json`: 5 hit(s) at lines 10, 12, 14, 26, 27, needles: `bgLottie`, `bgLottieLoop`, `lottieId`, `lottieSpeed`, `lottieTrigger`
+- `plugins/sgs-blocks/scripts/nav-qa/qa-item-markup-fixture.php`: 16 hit(s), needles: `^fx[A-Z0-9]`, `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `effectHover`, `fxFooterStagger`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`
+- `plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs`: 5 hit(s) at lines 10, 125, 126, 133, 135, needles: `sgsAnimationDistance`
+- `plugins/sgs-blocks/scripts/pattern-fingerprint.py`: 3 hit(s) at lines 53, 54, 55, needles: `scaleHover`, `transitionDuration`, `transitionEasing`
+- `plugins/sgs-blocks/scripts/qa/social-icon-draft-rows.tree.json`: 12 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconTransitionDuration`, `childIconTransitionEasing`
+- `plugins/sgs-blocks/scripts/scan-component-adoption.js`: 2 hit(s) at lines 241, 242, needles: `AnimationControl`, `blocks/extensions/animation.js`
+- `plugins/sgs-blocks/scripts/seed-motion-fx-registry.py`: 7 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`
+- `plugins/sgs-blocks/scripts/seed_motion_fx_data.py`: 60 hit(s), needles: `^fx[A-Z0-9]`, `assets/js/parallax.js`, `assets/js/ripple.js`, `fx.js`, `includes/fx-attributes.php`, `ripple.js`
+- `plugins/sgs-blocks/scripts/sgs-update-v2.py`: 13 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/scripts/surveys/survey-control-mounts.py`: 1 hit(s) at line 35, needles: `AnimationControl`
+- `plugins/sgs-blocks/scripts/surveys/survey-dead-css.py`: 2 hit(s) at lines 15, 415, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/scripts/surveys/survey-experimental-imports.js`: 1 hit(s) at line 551, needles: `fx.js`
+- `plugins/sgs-blocks/scripts/surveys/survey-inspector-surface.js`: 11 hit(s), needles: `^fx[A-Z0-9]`, `animation.js`, `fx.js`
+- `plugins/sgs-blocks/scripts/surveys/survey-responsive-shape.py`: 1 hit(s) at line 43, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/tests/test_extension_attr_rows.py`: 15 hit(s), needles: `sgsAnimation`, `sgsAnimationStart`, `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`, `sgsHoverIndent`, `sgsHoverLift`, `sgsHoverOpacity`, `sgsParallax`, `sgsParallaxStrength`
+- `plugins/sgs-blocks/scripts/tests/test_reseed_classification_reset.py`: 3 hit(s) at lines 143, 148, 154, needles: `imageZoomHover`
+- `plugins/sgs-blocks/scripts/tests/test_seeder_routing.py`: 6 hit(s), needles: `transitionDuration`, `transitionEasing`
+- `plugins/sgs-blocks/scripts/uimax-tools/enrich-db.py`: 4 hit(s) at lines 102, 103, 104, 167, needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`: 5 hit(s) at lines 11, 12, 13, 37, 38, needles: `bgKenBurnsMode`, `bgZoomStart`, `sgsClickEffect`, `sgsClickRippleColour`, `sgsParallaxStrength`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/fixtures/db.json`: 1 hit(s) at line 266, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/fixtures/plugin/includes/hover-opacity.php`: 1 hit(s) at line 3, needles: `sgsHoverOpacity`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/fixtures/plugin/src/blocks/extensions/extension-roster.json`: 1 hit(s) at line 8, needles: `sgsHoverOpacity`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/fixtures/plugin/src/blocks/extensions/hover-opacity.js`: 1 hit(s) at line 5, needles: `sgsHoverOpacity`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/fixtures/plugin/src/blocks/paint/block.json`: 1 hit(s) at line 15, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/fixtures/plugin/src/blocks/paint/edit.js`: 1 hit(s) at line 12, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/fixtures/plugin/src/blocks/paint/render.php`: 1 hit(s) at line 5, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/test_fix3.py`: 1 hit(s) at line 94, needles: `bgLottieLoop`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/test_paint.py`: 2 hit(s) at lines 25, 48, needles: `^fx[A-Z0-9]`, `transitionEasing`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/tests/test_review_fixes.py`: 3 hit(s) at lines 186, 198, 200, needles: `bgLottieLoop`, `sgsHoverOpacity`, `shadowLiftOnHover`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/wf_paint.py`: 4 hit(s) at lines 60, 123, 123, 125, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgLottieLoop`, `sgsAnimation`, `shadowLiftOnHover`
+- `plugins/sgs-blocks/scripts/wiring-fingerprint/wf_resolve.py`: 2 hit(s) at lines 7, 29, needles: `animation-stagger.php`, `includes/animation-stagger.php`
+- `plugins/sgs-blocks/sgs-blocks.php`: 5 hit(s) at lines 114, 299, 300, 329, 449, needles: `fx.js`, `includes/animation-attributes.php`, `includes/animation-stagger.php`, `includes/parallax.php`, `parallax.php`
+- `plugins/sgs-blocks/src/blocks/before-after/block.json`: 1 hit(s) at line 452, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/before-after/edit.js`: 3 hit(s) at lines 473, 666, 668, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/before-after/render.php`: 2 hit(s) at lines 22, 103, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/before-after/view.js`: 3 hit(s) at lines 20, 106, 411, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/button/block.json`: 3 hit(s) at lines 120, 394, 414, needles: `liftHover`, `scaleHoverTarget`
+- `plugins/sgs-blocks/src/blocks/button/edit.js`: 10 hit(s), needles: `MotionEasingControl`, `liftHover`, `scaleHoverTarget`
+- `plugins/sgs-blocks/src/blocks/button/render.php`: 2 hit(s) at lines 335, 347, needles: `liftHover`, `scaleHoverTarget`
+- `plugins/sgs-blocks/src/blocks/button/style.css`: 1 hit(s) at line 281, needles: `scaleHoverTarget`
+- `plugins/sgs-blocks/src/blocks/extensions/animation.js`: 67 hit(s), needles: `AnimationControl`, `EntranceStaggerControls`, `components/EntranceStaggerControls`, `fx.js`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax` and 2 more
+- `plugins/sgs-blocks/src/blocks/extensions/child-sizing.js`: 1 hit(s) at line 153, needles: `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/cpt-default-panel.js`: 1 hit(s) at line 26, needles: `animation.js`
+- `plugins/sgs-blocks/src/blocks/extensions/extension-roster.json`: 35 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation.js`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `sgsAnimationStart`, `sgsAnimationTrigger` and 18 more
+- `plugins/sgs-blocks/src/blocks/extensions/fx-panel.scss`: 2 hit(s) at lines 27, 48, needles: `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/fx-presets.json`: 25 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/fx.js`: 679 hit(s), needles: `^fx[A-Z0-9]`, `animation.js`, `fx-attributes.php`, `fx-panel.scss`, `fx-presets.json`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/attributes.js`: 26 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `includes/hover-effects`, `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`, `sgsHoverBorderAccent`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverGrayscale`, `sgsHoverImageZoom` and 6 more
+- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/index.js`: 45 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `includes/hover-effects`, `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`, `sgsHoverBorderAccent`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverGrayscale`, `sgsHoverImageZoom` and 6 more
+- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/panels/BlockLinkPanel.js`: 1 hit(s) at line 102, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/panels/ClickPanel.js`: 13 hit(s), needles: `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`
+- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/panels/HoverPanel.js`: 79 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `components/MotionEasingControl`, `sgsHoverBorderAccent`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverIndent`, `sgsHoverLift`, `sgsHoverOpacity` and 3 more
+- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/resolve.js`: 4 hit(s) at lines 13, 38, 43, 64, needles: `includes/hover-effects`, `sgsHoverShadow`
+- `plugins/sgs-blocks/src/blocks/extensions/index.js`: 3 hit(s) at lines 70, 74, 75, needles: `fx-panel.scss`, `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/motion/effect-helpers/hue.js`: 1 hit(s) at line 2, needles: `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/motion/effect-helpers/thumbnails.js`: 1 hit(s) at line 4, needles: `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/motion/effect-helpers/use-motion-budget.js`: 1 hit(s) at line 2, needles: `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/motion/effect-options.js`: 1 hit(s) at line 4, needles: `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/motion/stories/grid-dots.js`: 5 hit(s) at lines 3, 41, 58, 59, 74, needles: `^fx[A-Z0-9]`, `fx-panel.scss`, `fx.js`
+- `plugins/sgs-blocks/src/blocks/extensions/parallax.js`: 21 hit(s), needles: `animation.js`, `assets/js/parallax.js`, `bgKenBurns`, `bgParallax`, `includes/parallax.php`, `sgsParallax`, `sgsParallaxStrength`
+- `plugins/sgs-blocks/src/blocks/extensions/responsive-device-toggle.js`: 3 hit(s) at lines 69, 85, 86, needles: `animation.js`, `fx.js`
+- `plugins/sgs-blocks/src/blocks/icon/icon-motion.js`: 1 hit(s) at line 10, needles: `components/MotionEasingControl`
+- `plugins/sgs-blocks/src/blocks/icon/motion-panels.js`: 2 hit(s) at lines 12, 135, needles: `MotionEasingControl`, `components/MotionEasingControl`
+- `plugins/sgs-blocks/src/blocks/image-sequence/block.json`: 4 hit(s) at lines 167, 171, 175, 179, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/image-sequence/edit.js`: 13 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/image-sequence/render.php`: 4 hit(s) at lines 138, 139, 140, 141, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/process-steps/block.json`: 8 hit(s), needles: `effectHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/src/blocks/process-steps/edit.js`: 4 hit(s) at lines 147, 260, 732, 735, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/process-steps/render.php`: 2 hit(s) at lines 108, 169, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/testimonial-slider/block.json`: 1 hit(s) at line 206, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/testimonial-slider/edit.js`: 3 hit(s) at lines 83, 461, 464, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/testimonial-slider/render.php`: 1 hit(s) at line 61, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/trustpilot-reviews/block.json`: 6 hit(s), needles: `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/src/components/CursorFieldRowControls.js`: 40 hit(s), needles: `SurfaceTreatmentPanel.js`, `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/components/DesignTokenPicker.js`: 2 hit(s) at lines 516, 517, needles: `fx.js`, `sgsClickRippleColour`
+- `plugins/sgs-blocks/src/components/EntranceStaggerControls.js`: 27 hit(s), needles: `AnimationControl`, `assets/js/animation-entrance-timing.js`, `includes/animation-stagger.php`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `sgsAnimationStart`, `sgsAnimationTrigger`, `src/blocks/extensions/animation.js`
+- `plugins/sgs-blocks/src/components/FlowingGradientRowControls.js`: 38 hit(s), needles: `SurfaceTreatmentPanel.js`, `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/components/GridDotFieldRowControls.js`: 48 hit(s), needles: `SurfaceTreatmentPanel.js`, `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/components/ParticleTrailRowControls.js`: 26 hit(s), needles: `SurfaceTreatmentPanel.js`, `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/components/RowScrollBehaviourControls.js`: 2 hit(s) at lines 45, 372, needles: `MotionEasingControl`
+- `plugins/sgs-blocks/src/components/SgsColourPanel.js`: 1 hit(s) at line 17, needles: `blocks/extensions/parallax.js`
+- `plugins/sgs-blocks/src/components/ShadowLiftControls.js`: 3 hit(s) at lines 5, 9, 35, needles: `sgsHoverShadow`, `src/blocks/extensions/hover-effects`
+- `plugins/sgs-blocks/src/components/SurfaceTreatmentPanel.js`: 38 hit(s), needles: `^fx[A-Z0-9]`, `bgParallax`, `fx.js`
+- `plugins/sgs-blocks/src/components/index.js`: 3 hit(s) at lines 63, 98, 102, needles: `AnimationControl`, `MotionEasingControl`
+- `plugins/sgs-blocks/src/components/media/atoms/svg-presentation.js`: 1 hit(s) at line 29, needles: `assets/js/parallax.js`
+- `plugins/sgs-blocks/src/shared/effects/fx-follow-pointer.js`: 1 hit(s) at line 5, needles: `assets/js/tilt-3d.js`
+- `plugins/sgs-blocks/src/shared/effects/gsap/fx-image-sequence.js`: 2 hit(s) at lines 13, 440, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/shared/effects/gsap/fx-motion-path.js`: 1 hit(s) at line 68, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/shared/effects/gsap/fx-pin-scrub.js`: 1 hit(s) at line 26, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/shared/effects/gsap/fx-split-reveal.js`: 1 hit(s) at line 227, needles: `src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/src/shared/effects/gsap/provider.js`: 2 hit(s) at lines 220, 221, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/shared/effects/motion-utils.js`: 1 hit(s) at line 102, needles: `fx.js`
+- `plugins/sgs-blocks/src/shared/effects/off-switch.js`: 1 hit(s) at line 5, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/shared/nav-menu-panels/ColourTreatment.js`: 1 hit(s) at line 96, needles: `src/components/SurfaceTreatmentPanel.js`
+- `plugins/sgs-blocks/src/shared/nav-menu-panels/ItemEffectsPanel.js`: 2 hit(s) at lines 3, 100, needles: `MotionEasingControl`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/follow-pointer.json`: 2 hit(s) at lines 71, 98, needles: `effectHover`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/hover-entrance.json`: 8 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `effectHover`, `sgsHoverImageZoom`, `sgsHoverShadow`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/keyframes-tilt.json`: 1 hit(s) at line 259, needles: `sgsHoverTilt3D`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/motion-a11y.json`: 5 hit(s) at lines 104, 182, 184, 185, 186, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `effectHover`, `sgsHoverImageZoom`, `sgsHoverShadow`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/motion-per-device.json`: 16 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `effectHover`, `imageZoomHover`, `sgsHoverImageZoom`, `sgsHoverShadow`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/motion-stacks.json`: 3 hit(s) at lines 149, 193, 298, needles: `effectHover`
+- `plugins/sgs-blocks/tests/js/__mocks__/@wordpress/known-exports.json`: 1 hit(s) at line 3, needles: `fx.js`
+- `plugins/sgs-blocks/tests/js/button-form-motion.test.js`: 1 hit(s) at line 34, needles: `sgsHoverShadow`
+- `plugins/sgs-blocks/tests/js/fx-ambient-float.test.js`: 4 hit(s) at lines 78, 79, 186, 193, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/tests/js/fx-ken-burns.test.js`: 4 hit(s) at lines 78, 79, 326, 335, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/tests/js/fx-svg-loop.test.js`: 4 hit(s) at lines 78, 79, 234, 243, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/tests/js/motion-atoms-behaviour.test.js`: 2 hit(s) at lines 32, 131, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/tests/js/motion-atoms-values-state.test.js`: 1 hit(s) at line 30, needles: `components/MotionEasingControl`
+- `plugins/sgs-blocks/tests/js/motion-panels-mount.test.js`: 2 hit(s) at lines 153, 154, needles: `animation.js`, `fx.js`
+- `plugins/sgs-blocks/tests/js/parallax.test.js`: 2 hit(s) at lines 2, 5, needles: `assets/js/parallax.js`
+- `plugins/sgs-blocks/tests/js/tilt-3d.test.js`: 1 hit(s) at line 5, needles: `assets/js/tilt-3d.js`
+- `plugins/sgs-blocks/tests/php/MotionRendererChannelsTest.php`: 3 hit(s) at lines 152, 154, 156, needles: `includes/animation-attributes.php`, `sgsAnimation`
+- `plugins/sgs-blocks/tests/php/ReviewsEmptyRenderTest.php`: 1 hit(s) at line 10, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/tests/php/run-button-form-motion-standalone.php`: 3 hit(s) at lines 209, 215, 324, needles: `liftHover`, `sgsHoverShadow`
+- `plugins/sgs-blocks/tests/php/run-fx-layer-off-per-effect-standalone.php`: 2 hit(s) at lines 7, 8, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/tests/php/run-fx-legacy-filter-order-standalone.php`: 2 hit(s) at lines 96, 97, needles: `fx-attributes.php`
+- `plugins/sgs-blocks/tests/php/run-fx-motion-overlap-standalone.php`: 4 hit(s) at lines 6, 28, 48, 49, needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/tests/php/run-hover-motion-overlap-standalone.php`: 5 hit(s) at lines 5, 67, 97, 99, 107, needles: `includes/hover-effects`, `sgsHoverTilt3D`
+- `plugins/sgs-blocks/tests/php/run-motion-fx-mapper-standalone.php`: 51 hit(s), needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/tests/php/run-motion-horizontal-panel-per-device-standalone.php`: 2 hit(s) at lines 184, 191, needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/tests/php/run-shadow-hover-rules-standalone.php`: 15 hit(s), needles: `sgsHoverShadow`
+- `plugins/sgs-blocks/tests/php/stubs/hover-effects-probe.php`: 2 hit(s) at lines 4, 70, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/webpack.config.js`: 3 hit(s) at lines 185, 330, 331, needles: `^fx[A-Z0-9]`
+- `scripts/computed-route/calibration-fixtures.json`: 7 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgKenBurns`, `countPopAnimation`, `fadeEdges`, `itemStagger`, `scrolling`
+- `scripts/computed-route/data/skeleton-decisions.json`: 3 hit(s) at lines 306, 308, 310, needles: `autoScroll`, `fadeEdges`, `scrolling`
+- `scripts/computed-route/lib/calibrate-markers.mjs`: 1 hit(s) at line 179, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `scripts/computed-route/lib/entrance.mjs`: 4 hit(s) at lines 1, 48, 48, 56, needles: `sgsAnimation`, `sgsAnimationStart`
+- `scripts/computed-route/lib/resolve.mjs`: 1 hit(s) at line 379, needles: `sgsAnimationDuration`
+- `scripts/computed-route/lib/triage.mjs`: 1 hit(s) at line 601, needles: `sgsAnimationStart`
+- `scripts/computed-route/tests/calibrate-classes.test.mjs`: 2 hit(s) at lines 35, 36, needles: `liftHover`, `scaleHover`
+- `scripts/computed-route/tests/calibrate-size-box.test.mjs`: 1 hit(s) at line 56, needles: `childIconTransitionDuration`
+- `scripts/computed-route/tests/calibrate.test.mjs`: 4 hit(s) at lines 155, 156, 196, 203, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `submenuExitDuration`, `transitionDuration`, `transitionEasing`
+- `scripts/computed-route/tests/db.test.mjs`: 4 hit(s) at lines 18, 43, 44, 45, needles: `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsHoverLift`
+- `scripts/computed-route/tests/entrance.test.mjs`: 4 hit(s) at lines 2, 7, 14, 35, needles: `sgsAnimation`, `sgsAnimationStart`
+- `scripts/computed-route/tests/fill-entrance.test.mjs`: 3 hit(s) at lines 95, 104, 105, needles: `sgsAnimation`
+- `scripts/computed-route/tests/fill-row-lift.test.mjs`: 1 hit(s) at line 56, needles: `childIconTransitionDuration`
+- `scripts/computed-route/tests/resolve.test.mjs`: 4 hit(s) at lines 269, 274, 296, 298, needles: `sgsAnimationDuration`, `sgsHoverDuration`
+- `scripts/computed-route/tests/triage.test.mjs`: 12 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `scripts/wp-migrate-oldshape-blocks.js`: 1 hit(s) at line 216, needles: `sgsClickEffect`
+- `sites/_dogfood/build/separators-qa.tree.json`: 2 hit(s) at lines 627, 863, needles: `scrolling`
+- `sites/eye-care-ward-end/build/about.tree.json`: 29 hit(s), needles: `sgsAnimation`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStart`
+- `sites/eye-care-ward-end/build/archive-product.tree.json`: 12 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimation`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerMax`, `sgsHoverDurationMs`, `sgsHoverImageZoom`, `sgsHoverLift`, `sgsHoverShadow`
+- `sites/eye-care-ward-end/build/footer.tree.json`: 9 hit(s), needles: `opacityHover`, `scaleHover`
+- `sites/eye-care-ward-end/build/gen_archive_product.py`: 12 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimation`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerMax`, `sgsHoverDurationMs`, `sgsHoverImageZoom`, `sgsHoverLift`, `sgsHoverShadow`
+- `sites/eye-care-ward-end/build/header.tree.json`: 10 hit(s), needles: `autoScroll`, `autoScrollBelow`, `autoScrollDuration`, `autoScrollPauseButton`, `autoScrollPauseOnHover`, `countPopAnimation`, `opacityHover`, `submenuAnimationDuration`
+- `sites/eye-care-ward-end/build/home.tree.json`: 189 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgParallax`, `bgZoomStart`, `effectHover`, `imageZoomHover`, `pauseOnHover`, `scrollDuration`, `scrollSpeed`, `scrolling` and 16 more
+- `sites/eye-care-ward-end/build/lenses.tree.json`: 12 hit(s), needles: `sgsAnimation`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `sites/eye-care-ward-end/build/mega-brands.tree.json`: 4 hit(s) at lines 122, 123, 291, 292, needles: `effectHover`, `shadowLiftOnHover`, `transitionDuration`, `transitionEasing`
+- `sites/eye-care-ward-end/build/mobile-menu.tree.json`: 7 hit(s), needles: `itemStagger`, `itemStaggerDistance`, `itemStaggerDuration`, `scaleHover`, `staggerInsideGroups`
+- `sites/eye-care-ward-end/build/qa/canvas-confirm.json`: 33 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `burgerMorphDuration`, `burgerMorphEasing`, `opacityHover`, `scaleHover`, `sgsHoverLift`, `sgsHoverOpacity`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuExitDuration`, `submenuItemStaggerDistance` and 3 more
+- `sites/eye-care-ward-end/build/qa/parity/mapping-header-drawer.md`: 1 hit(s) at line 76, needles: `submenuAnimation`
+- `sites/eye-care-ward-end/build/qa/parity/mapping-mega-brands-lenses.md`: 2 hit(s) at lines 35, 35, needles: `effectHover`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/about/2026-10-09T09-02-01/solve-report.json`: 1 hit(s) at line 16, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/header/2026-10-09T08-08-15/solve-report.json`: 1 hit(s) at line 1004, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/trial-round-1/trial.json`: 2 hit(s) at lines 603, 612, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/home/2026-10-09T09-03-14/trial-round-1/writes-kept.json`: 2 hit(s) at lines 1074, 1136, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-09T08-19-54/solve-report.json`: 1 hit(s) at line 513, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-09T08-44-06/solve-report.json`: 2 hit(s) at lines 64, 122, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/solve-report.json`: 16 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-09T08-40-01/solve-report.md`: 8 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-09T08-17-24/solve-report.json`: 3 hit(s) at lines 64, 112, 160, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-09T08-46-22/solve-report.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `entryEasing`, `itemStaggerAxis`, `sgsHoverLift`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.md`: 4 hit(s) at lines 2607, 2608, 2636, 2637, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `sites/eye-care-ward-end/build/qa/sweep/2026-10-09/sweep.json`: 6 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `sites/eye-care-ward-end/build/qa/triage/about.json`: 5 hit(s) at lines 35, 43, 49, 62, 70, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/contact-form.json`: 2 hit(s) at lines 6914, 6923, needles: `sgsClickRippleColour`
+- `sites/eye-care-ward-end/build/qa/triage/contact.json`: 4 hit(s) at lines 360, 369, 601, 610, needles: `sgsClickRippleColour`
+- `sites/eye-care-ward-end/build/qa/triage/footer.json`: 10 hit(s), needles: `sgsClickRippleColour`
+- `sites/eye-care-ward-end/build/qa/triage/header.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `sgsClickRippleColour`
+- `sites/eye-care-ward-end/build/qa/triage/home.json`: 109 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `fadeWidth`, `liftHover` and 8 more
+- `sites/eye-care-ward-end/build/qa/triage/lens.json`: 6 hit(s), needles: `sgsClickRippleColour`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/lenses.json`: 4 hit(s) at lines 58, 68, 99, 109, needles: `sgsHoverLift`, `sgsHoverOpacity`
+- `sites/eye-care-ward-end/build/qa/triage/mega-brands.json`: 12 hit(s), needles: `sgsClickRippleColour`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/mega-help.json`: 20 hit(s), needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/mega-lenses.json`: 16 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `sites/eye-care-ward-end/build/qa/triage/mega-sunglasses.json`: 20 hit(s), needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/mobile-menu.json`: 78 hit(s), needles: `curtainColour`, `entryDuration`, `entryEasing`, `exitDuration`, `itemStaggerAxis`, `liftHover`, `opacityHover`, `scaleHover`, `scaleHoverTarget`, `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsClickRippleColour` and 3 more
+- `sites/eye-care-ward-end/build/qa/triage/product.json`: 51 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsClickRippleColour`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverLift`, `sgsHoverOpacity`, `sgsHoverShadow`, `sgsHoverShadowCustom`
+- `sites/eye-care-ward-end/build/qa/triage/shop.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsClickRippleColour`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverIndent`, `transitionDuration`
+- `sites/eye-care-ward-end/build/single-product.tree.json`: 2 hit(s) at lines 165, 270, needles: `photoEntrance`, `transitionDuration`
+- `theme/sgs-theme/patterns/cta-banner.php`: 1 hit(s) at line 17, needles: `^fx[A-Z0-9]`
+- `theme/sgs-theme/patterns/hero-centred.php`: 1 hit(s) at line 13, needles: `^fx[A-Z0-9]`
+- `theme/sgs-theme/patterns/hero-split.php`: 1 hit(s) at line 13, needles: `^fx[A-Z0-9]`
+- `theme/sgs-theme/patterns/services-grid.php`: 1 hit(s) at line 18, needles: `^fx[A-Z0-9]`
+- `theme/sgs-theme/patterns/stats-counter.php`: 1 hit(s) at line 12, needles: `^fx[A-Z0-9]`
+
+## G1: 445 hit(s) in 33 file(s)
+
+- `plugins/sgs-blocks/assets/css/media-atoms/motion.css`: 3 hit(s) at lines 3, 3, 19, needles: `motion.js`, `motion.php`
+- `plugins/sgs-blocks/assets/css/media-element.css`: 3 hit(s) at lines 691, 691, 707, needles: `motion.js`, `motion.php`
+- `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`: 40 hit(s), needles: `SurfaceTreatmentPanel.js`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `animationStyle`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `includes/fx-attributes.php` and 1 more
+- `plugins/sgs-blocks/includes/media/atoms/motion.php`: 8 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`, `src/components/media/atoms/motion.js`
+- `plugins/sgs-blocks/includes/render-helpers.php`: 1 hit(s) at line 221, needles: `motion.php`
+- `plugins/sgs-blocks/src/blocks/container/block.json`: 28 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `sgsAnimation`
+- `plugins/sgs-blocks/src/blocks/container/components/BackgroundPanel.js`: 54 hit(s), needles: `MotionEasingControl`, `SurfaceTreatmentPanel`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed` and 3 more
+- `plugins/sgs-blocks/src/blocks/container/edit.js`: 12 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/container/grid-item-preview.js`: 1 hit(s) at line 124, needles: `sgsHoverShadow`
+- `plugins/sgs-blocks/src/blocks/hero/block.json`: 38 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `sgsAnimation`, `splitMediaAnimationDuration` and 2 more
+- `plugins/sgs-blocks/src/blocks/hero/edit.js`: 37 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/blocks/hero/render.php`: 20 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgParallax`, `bgZoomStart`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/blocks/hero/style.css`: 6 hit(s), needles: `assets/js/parallax.js`, `bgKenBurns`, `bgParallax`
+- `plugins/sgs-blocks/src/blocks/multi-button/block.json`: 19 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/multi-button/edit.js`: 11 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/physics-canvas/block.json`: 12 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/physics-canvas/edit.js`: 11 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/site-footer/block.json`: 23 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `sgsAnimation`
+- `plugins/sgs-blocks/src/blocks/site-footer/edit.js`: 11 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/site-header/block.json`: 23 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `sgsAnimation`
+- `plugins/sgs-blocks/src/blocks/site-header/edit.js`: 16 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/site-header/section-ink-panel.js`: 2 hit(s) at lines 16, 175, needles: `MotionEasingControl`
+- `plugins/sgs-blocks/src/components/MediaElementControls.js`: 6 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/components/media/HeroSplitMediaPanelLayout.js`: 2 hit(s) at lines 5, 5, needles: `bgKenBurns`, `bgParallax`
+- `plugins/sgs-blocks/src/components/media/atoms/motion.control.js`: 5 hit(s) at lines 4, 6, 16, 17, 34, needles: `MediaMotionControls`, `MediaMotionControls.js`, `motion.js`
+- `plugins/sgs-blocks/src/components/media/atoms/motion.js`: 9 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `includes/media/atoms/motion.php`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/components/media/atoms/opacity.js`: 1 hit(s) at line 70, needles: `motion.php`
+- `plugins/sgs-blocks/src/components/media/atoms/registry.js`: 6 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/components/media/atoms/svg-presentation.js`: 2 hit(s) at lines 7, 7, needles: `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/components/media/canvasStyle.js`: 1 hit(s) at line 65, needles: `motion.js`
+- `plugins/sgs-blocks/src/components/media/controls/MediaMotionControls.js`: 6 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/shared/effects/fx-svg-loop.js`: 2 hit(s) at lines 19, 19, needles: `bgSvgAnimation`, `svgAnimation`
+- `plugins/sgs-blocks/src/utils/background-preview.js`: 26 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `components/MotionEasingControl`
+
+## G2: 112 hit(s) in 14 file(s)
+
+- `plugins/sgs-blocks/includes/fx-path-routes.php`: 1 hit(s) at line 38, needles: `svgAnimationSource`
+- `plugins/sgs-blocks/includes/fx-shape-routes.php`: 1 hit(s) at line 67, needles: `svgAnimationSource`
+- `plugins/sgs-blocks/src/blocks/media/block.json`: 5 hit(s) at lines 166, 176, 201, 204, 214, needles: `lottieId`, `lottieSpeed`, `lottieTrigger`, `svgAnimation`, `svgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/media/components/LottieCanvas.js`: 2 hit(s) at lines 7, 12, needles: `lottieId`
+- `plugins/sgs-blocks/src/blocks/media/components/SvgCanvas.js`: 5 hit(s) at lines 7, 7, 34, 35, 36, needles: `svgAnimation`, `svgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/media/edit.js`: 6 hit(s), needles: `lottieId`, `svgAnimation`, `svgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/media/render.php`: 5 hit(s) at lines 100, 1070, 1074, 1177, 1254, needles: `lottieId`, `sgsHoverImageZoom`, `svgAnimation`, `svgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/responsive-logo/block.json`: 16 hit(s), needles: `animationStyle`, `animationSubstrate`, `fx.js`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
+- `plugins/sgs-blocks/src/blocks/responsive-logo/edit.js`: 29 hit(s), needles: `animationStyle`, `animationSubstrate`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
+- `plugins/sgs-blocks/src/blocks/responsive-logo/render.php`: 21 hit(s), needles: `animationStyle`, `animationSubstrate`, `includes/hover-effects`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
+- `plugins/sgs-blocks/src/shared/effects/gsap/fx-draw.js`: 1 hit(s) at line 9, needles: `animationStyle`
+- `plugins/sgs-blocks/src/vendor-modules/gsap-drawsvg.js`: 1 hit(s) at line 9, needles: `animationStyle`
+- `plugins/sgs-blocks/tests/php/ResponsiveLogoTest.php`: 9 hit(s), needles: `animationStyle`, `svgAnimationSource`
+- `plugins/sgs-blocks/tests/php/run-lottie-standalone.php`: 10 hit(s), needles: `lottieSpeed`, `lottieTrigger`
+
+## G3: 111 hit(s) in 16 file(s)
+
+- `plugins/sgs-blocks/includes/helpers-trust-bar-marquee.php`: 2 hit(s) at lines 3, 19, needles: `autoScrollBelow`
+- `plugins/sgs-blocks/src/blocks/brand-strip/block.json`: 14 hit(s), needles: `effectHover`, `fadeEdges`, `fadeWidth`, `pauseButton`, `pauseOnHover`, `scrollDirection`, `scrollDuration`, `scrollSpeed`, `scrolling`
+- `plugins/sgs-blocks/src/blocks/brand-strip/edit.js`: 11 hit(s), needles: `effectHover`, `scrolling`
+- `plugins/sgs-blocks/src/blocks/brand-strip/editor.css`: 1 hit(s) at line 3, needles: `scrolling`
+- `plugins/sgs-blocks/src/blocks/brand-strip/render.php`: 7 hit(s), needles: `effectHover`, `scrolling`
+- `plugins/sgs-blocks/src/blocks/brand-strip/style.css`: 2 hit(s) at lines 95, 100, needles: `scrolling`
+- `plugins/sgs-blocks/src/blocks/trust-bar/block.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScroll`, `autoScrollBelow`, `autoScrollDuration`, `autoScrollPauseButton`, `autoScrollPauseOnHover`, `autoScrollSpeed`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax` and 2 more
+- `plugins/sgs-blocks/src/blocks/trust-bar/edit-panels.js`: 3 hit(s) at lines 12, 172, 174, needles: `autoScrollBelow`
+- `plugins/sgs-blocks/src/blocks/trust-bar/edit.js`: 20 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScroll`, `autoScrollBelow`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/src/blocks/trust-bar/marquee-mode.js`: 3 hit(s) at lines 12, 18, 30, needles: `autoScroll`, `autoScrollBelow`
+- `plugins/sgs-blocks/src/blocks/trust-bar/overflow-drop.js`: 3 hit(s) at lines 17, 17, 30, needles: `autoScrollBelow`, `marquee-mode.js`
+- `plugins/sgs-blocks/src/blocks/trust-bar/render.php`: 6 hit(s), needles: `autoScroll`, `autoScrollBelow`, `includes/helpers-trust-bar-marquee.php`
+- `plugins/sgs-blocks/tests/php/MotionPauseRenderTest.php`: 10 hit(s), needles: `autoScroll`, `autoScrollPauseButton`, `pauseButton`, `scrolling`
+- `plugins/sgs-blocks/tests/php/TrustBarRenderTest.php`: 2 hit(s) at lines 109, 110, needles: `autoScrollBelow`, `autoScrollDuration`
+- `plugins/sgs-blocks/tests/php/TrustBarRenderTrait.php`: 3 hit(s) at lines 76, 77, 78, needles: `autoScroll`, `autoScrollPauseOnHover`, `autoScrollSpeed`
+- `plugins/sgs-blocks/tests/php/TrustBarSafetyTest.php`: 2 hit(s) at lines 29, 217, needles: `autoScrollDuration`, `includes/helpers-trust-bar-marquee.php`
+
+## G4: 738 hit(s) in 91 file(s)
+
+- `plugins/sgs-blocks/includes/extension-attributes.generated.php`: 1 hit(s) at line 166, needles: `sgsStaggerDelay`
+- `plugins/sgs-blocks/includes/helpers-colour-variants.php`: 1 hit(s) at line 661, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/includes/helpers-grid-item.php`: 1 hit(s) at line 176, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/includes/helpers-icon-motion.php`: 1 hit(s) at line 86, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/includes/helpers-motion-easing.php`: 1 hit(s) at line 6, needles: `burgerMorphEasing`
+- `plugins/sgs-blocks/includes/helpers-shadow-hover.php`: 3 hit(s) at lines 170, 204, 265, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/includes/helpers-state-motion-model.php`: 5 hit(s) at lines 9, 15, 62, 85, 123, needles: `burgerMorphDuration`, `countPopAnimation`
+- `plugins/sgs-blocks/includes/helpers-tokens.php`: 2 hit(s) at lines 1466, 1477, needles: `transitionDuration`, `transitionEasing`
+- `plugins/sgs-blocks/includes/media/atoms/shadow.php`: 1 hit(s) at line 67, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/src/blocks/buybox/block.json`: 1 hit(s) at line 868, needles: `photoEntrance`
+- `plugins/sgs-blocks/src/blocks/buybox/inspector-extra.js`: 3 hit(s) at lines 32, 65, 71, needles: `photoEntrance`
+- `plugins/sgs-blocks/src/blocks/buybox/render.php`: 1 hit(s) at line 660, needles: `photoEntrance`
+- `plugins/sgs-blocks/src/blocks/buybox/style.css`: 1 hit(s) at line 791, needles: `photoEntrance`
+- `plugins/sgs-blocks/src/blocks/card-grid/block.json`: 22 hit(s), needles: `assets/js/animation-entrance-timing.js`, `bgParallax`, `effectHover`, `imageZoomHover`, `includes/animation-stagger.php`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/card-grid/components/CardGridCanvas.js`: 2 hit(s) at lines 14, 137, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/card-grid/components/CardGridHoverEffectsPanel.js`: 12 hit(s), needles: `imageZoomHover`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/card-grid/components/GridSettingsPanel.js`: 3 hit(s) at lines 14, 78, 81, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/card-grid/edit.js`: 4 hit(s) at lines 52, 62, 129, 132, needles: `effectHover`, `imageZoomHover`
+- `plugins/sgs-blocks/src/blocks/card-grid/render.php`: 4 hit(s) at lines 81, 110, 376, 377, needles: `effectHover`, `imageZoomHover`, `includes/animation-stagger.php`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/cart/PanelDesignControls.js`: 2 hit(s) at lines 4, 171, needles: `MotionEasingControl`
+- `plugins/sgs-blocks/src/blocks/cart/TriggerSettingsControls.js`: 4 hit(s) at lines 24, 36, 103, 109, needles: `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/cart/block.json`: 2 hit(s) at lines 847, 1266, needles: `MotionEasingControl`, `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/cart/count-pop.js`: 1 hit(s) at line 5, needles: `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/cart/edit.js`: 2 hit(s) at lines 73, 156, needles: `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/cart/render.php`: 1 hit(s) at line 86, needles: `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/cart/style.css`: 1 hit(s) at line 190, needles: `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/decorative-image/block.json`: 4 hit(s) at lines 45, 49, 49, 124, needles: `parallaxStrength`, `sgsAnimation`
+- `plugins/sgs-blocks/src/blocks/decorative-image/edit.js`: 3 hit(s) at lines 41, 339, 340, needles: `parallaxStrength`
+- `plugins/sgs-blocks/src/blocks/decorative-image/render.php`: 5 hit(s) at lines 89, 410, 411, 413, 416, needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`, `parallaxStrength`
+- `plugins/sgs-blocks/src/blocks/decorative-image/view.js`: 3 hit(s) at lines 81, 84, 85, needles: `parallaxStrength`
+- `plugins/sgs-blocks/src/blocks/gallery/block.json`: 17 hit(s), needles: `bgParallax`, `effectHover`, `imageZoomHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/gallery/components/GalleryHoverEffectsPanel.js`: 22 hit(s), needles: `effectHover`, `imageZoomHover`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/gallery/edit.js`: 4 hit(s) at lines 85, 87, 88, 224, needles: `effectHover`, `imageZoomHover`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/gallery/render.php`: 3 hit(s) at lines 78, 79, 82, needles: `effectHover`, `imageZoomHover`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/google-reviews/block.json`: 6 hit(s), needles: `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/src/blocks/icon/block.json`: 18 hit(s), needles: `iconRotateHover`, `offsetXHover`, `offsetYHover`, `opacityHover`, `paintDuration`, `scaleHover`, `shadowLiftOnHover`, `transitionDuration`, `transitionEasing`, `transitionEasingCustom`
+- `plugins/sgs-blocks/src/blocks/icon/edit.js`: 8 hit(s), needles: `opacityHover`, `scaleHover`, `shadowLiftOnHover`
+- `plugins/sgs-blocks/src/blocks/icon/inspector.js`: 6 hit(s), needles: `opacityHover`, `scaleHover`
+- `plugins/sgs-blocks/src/blocks/icon/motion-panels.js`: 12 hit(s), needles: `iconRotateHover`, `offsetXHover`, `offsetYHover`, `paintDuration`, `shadowLiftOnHover`, `transitionDuration`, `transitionEasing`, `transitionEasingCustom`
+- `plugins/sgs-blocks/src/blocks/icon/render.php`: 10 hit(s), needles: `iconRotateHover`, `offsetXHover`, `offsetYHover`, `opacityHover`, `paintDuration`, `scaleHover`, `transitionDuration`, `transitionEasing`, `transitionEasingCustom`
+- `plugins/sgs-blocks/src/blocks/info-box/block.json`: 9 hit(s), needles: `effectHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `shadowHoverColour`
+- `plugins/sgs-blocks/src/blocks/info-box/edit.js`: 8 hit(s), needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/info-box/render.php`: 7 hit(s), needles: `effectHover`, `includes/hover-effects`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `shadowHoverColour`
+- `plugins/sgs-blocks/src/blocks/info-box/style.css`: 1 hit(s) at line 66, needles: `sgsAnimation`
+- `plugins/sgs-blocks/src/blocks/post-grid/block.json`: 12 hit(s), needles: `bgParallax`, `imageZoomHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/src/blocks/post-grid/components/ContentPanel.js`: 6 hit(s), needles: `imageZoomHover`
+- `plugins/sgs-blocks/src/blocks/post-grid/components/HoverEffectsPanel.js`: 2 hit(s) at lines 12, 22, needles: `imageZoomHover`
+- `plugins/sgs-blocks/src/blocks/post-grid/render.php`: 1 hit(s) at line 149, needles: `imageZoomHover`
+- `plugins/sgs-blocks/src/blocks/pricing-table/block.json`: 10 hit(s), needles: `bgParallax`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/src/blocks/product-card/render.php`: 1 hit(s) at line 1036, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/src/blocks/site-footer-row/block.json`: 29 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`, `fxFooterStagger`
+- `plugins/sgs-blocks/src/blocks/site-footer-row/edit.js`: 69 hit(s), needles: `CursorFieldRowControls`, `FlowingGradientRowControls`, `GridDotFieldRowControls`, `ParticleTrailRowControls`, `^fx[A-Z0-9]`, `components/CursorFieldRowControls`, `components/FlowingGradientRowControls`, `components/GridDotFieldRowControls`, `components/ParticleTrailRowControls`, `fx.js`, `fxFooterStagger`
+- `plugins/sgs-blocks/src/blocks/site-footer-row/render.php`: 33 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`, `fxFooterStagger`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/blocks/site-header-row/block.json`: 26 hit(s), needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/site-header-row/edit.js`: 55 hit(s), needles: `CursorFieldRowControls`, `FlowingGradientRowControls`, `GridDotFieldRowControls`, `ParticleTrailRowControls`, `^fx[A-Z0-9]`, `components/CursorFieldRowControls`, `components/FlowingGradientRowControls`, `components/GridDotFieldRowControls`, `components/ParticleTrailRowControls`, `fx.js`
+- `plugins/sgs-blocks/src/blocks/site-header-row/render.php`: 42 hit(s), needles: `FlowingGradientRowControls`, `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/src/blocks/social-icons/block.json`: 14 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `childIconTransitionEasingCustom`
+- `plugins/sgs-blocks/src/blocks/social-icons/group-motion.js`: 12 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `childIconTransitionEasingCustom`
+- `plugins/sgs-blocks/src/blocks/social-icons/render.php`: 9 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `childIconTransitionEasingCustom`
+- `plugins/sgs-blocks/src/blocks/team-member/block.json`: 5 hit(s) at lines 116, 364, 380, 384, 388, needles: `imageZoomHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/src/blocks/team-member/edit.js`: 6 hit(s), needles: `imageZoomHover`
+- `plugins/sgs-blocks/src/blocks/team-member/render.php`: 2 hit(s) at lines 130, 784, needles: `imageZoomHover`, `includes/hover-effects`
+- `plugins/sgs-blocks/src/blocks/testimonial/block.json`: 16 hit(s), needles: `bgParallax`, `effectHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `shadowHoverColour`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/testimonial/edit.js`: 14 hit(s), needles: `effectHover`, `shadowHoverColour`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/testimonial/render.php`: 4 hit(s) at lines 173, 178, 179, 633, needles: `effectHover`, `shadowHoverColour`, `staggerDelay`
+- `plugins/sgs-blocks/src/blocks/timeline/block.json`: 3 hit(s) at lines 409, 413, 421, needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
+- `plugins/sgs-blocks/src/blocks/timeline/edit.js`: 13 hit(s), needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
+- `plugins/sgs-blocks/src/blocks/timeline/render.php`: 5 hit(s) at lines 6, 127, 128, 154, 814, needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
+- `plugins/sgs-blocks/src/blocks/timeline/style.scss`: 1 hit(s) at line 1723, needles: `revealTrigger`
+- `plugins/sgs-blocks/src/blocks/timeline/view.js`: 6 hit(s), needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
+- `plugins/sgs-blocks/src/components/ShadowLiftControls.js`: 3 hit(s) at lines 4, 8, 35, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/src/components/media/atoms/shadow.js`: 2 hit(s) at lines 81, 89, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/follow-pointer.json`: 2 hit(s) at lines 72, 99, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/hover-entrance.json`: 2 hit(s) at lines 215, 228, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/layer-off-per-effect.json`: 3 hit(s) at lines 27, 92, 154, needles: `revealOnScroll`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/motion-a11y.json`: 1 hit(s) at line 183, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/motion-per-device.json`: 9 hit(s), needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/motion-stacks.json`: 3 hit(s) at lines 150, 194, 299, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/js/button-form-motion.test.js`: 1 hit(s) at line 34, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/php/ContainerGridItemShadowLiftTest.php`: 2 hit(s) at lines 6, 58, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/php/IconDraftStylesTest.php`: 26 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `iconRotateHover`, `offsetXHover`, `offsetYHover`, `paintDuration`, `scaleHover` and 4 more
+- `plugins/sgs-blocks/tests/php/TimelineTest.php`: 2 hit(s) at lines 280, 305, needles: `revealOnScroll`
+- `plugins/sgs-blocks/tests/php/fixtures/icon-motion-dump.php`: 1 hit(s) at line 39, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/php/run-burger-morph-standalone.php`: 23 hit(s), needles: `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`
+- `plugins/sgs-blocks/tests/php/run-button-form-motion-standalone.php`: 3 hit(s) at lines 209, 212, 213, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/php/run-media-atom-shadow-hover-standalone.php`: 2 hit(s) at lines 92, 100, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/php/run-motion-fx-mapper-standalone.php`: 2 hit(s) at lines 210, 211, needles: `fxFooterStagger`
+- `plugins/sgs-blocks/tests/php/run-motion-state-model-standalone.php`: 15 hit(s), needles: `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `countPopAnimation`
+- `plugins/sgs-blocks/tests/php/run-post-grid-hover-shadow-standalone.php`: 3 hit(s) at lines 6, 132, 135, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/php/run-shadow-hover-rules-standalone.php`: 6 hit(s), needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/tests/php/run-transition-vars-standalone.php`: 3 hit(s) at lines 49, 75, 75, needles: `transitionDuration`, `transitionEasing`
+
+## G5: 382 hit(s) in 28 file(s)
+
+- `plugins/sgs-blocks/includes/helpers-motion-easing.php`: 2 hit(s) at lines 6, 7, needles: `entryEasing`, `submenuAnimationEasing`
+- `plugins/sgs-blocks/includes/helpers-nav-drawer-motion.php`: 16 hit(s), needles: `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `helpers-nav-drawer-stagger-shape.php`, `itemStagger`, `itemStaggerDistance`, `itemStaggerDuration`, `itemStaggerMax` and 2 more
+- `plugins/sgs-blocks/includes/helpers-nav-drawer-stagger-shape.php`: 6 hit(s), needles: `itemStaggerAxis`, `itemStaggerDistance`, `itemStaggerReveal`
+- `plugins/sgs-blocks/includes/nav-drawer-menu-section-css.php`: 13 hit(s), needles: `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax`, `submenuItemStaggerScope`
+- `plugins/sgs-blocks/scripts/inspector-scan/rules.json`: 1 hit(s) at line 58, needles: `MotionPanel`
+- `plugins/sgs-blocks/src/blocks/mega-panel/block.json`: 32 hit(s), needles: `FlowingGradientRowControls.js`, `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/blocks/mega-panel/edit.js`: 53 hit(s), needles: `CursorFieldRowControls`, `FlowingGradientRowControls`, `GridDotFieldRowControls`, `ParticleTrailRowControls`, `^fx[A-Z0-9]`, `components/CursorFieldRowControls`, `components/FlowingGradientRowControls`, `components/GridDotFieldRowControls`, `components/ParticleTrailRowControls`
+- `plugins/sgs-blocks/src/blocks/mega-panel/render.php`: 39 hit(s), needles: `FlowingGradientRowControls.js`, `^fx[A-Z0-9]`, `effectHover`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/BurgerPanel.js`: 15 hit(s), needles: `MotionEasingControl`, `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/DropdownSettingsPanel.js`: 2 hit(s) at lines 11, 358, needles: `MotionEasingControl`
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/PanelMotionPanel.js`: 30 hit(s), needles: `MotionEasingControl`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax`, `submenuItemStaggerScope`
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`: 25 hit(s), needles: `MotionEasingControl`, `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration` and 2 more
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/edit.js`: 8 hit(s), needles: `MotionEasingControl`, `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`: 14 hit(s), needles: `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax` and 1 more
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css`: 4 hit(s) at lines 331, 331, 492, 678, needles: `burgerMorphDuration`, `burgerMorphEasing`, `submenuAnimation`, `submenuItemStaggerScope`
+- `plugins/sgs-blocks/src/blocks/nav-drawer-menu/ExpanderCaretControls.js`: 2 hit(s) at lines 3, 111, needles: `MotionEasingControl`
+- `plugins/sgs-blocks/src/blocks/nav-drawer-menu/SectionMotionPanel.js`: 3 hit(s) at lines 5, 17, 90, needles: `MotionEasingControl`, `PanelMotionPanel`
+- `plugins/sgs-blocks/src/blocks/nav-drawer-menu/edit.js`: 2 hit(s) at lines 69, 748, needles: `SectionMotionPanel`
+- `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css`: 1 hit(s) at line 630, needles: `motion.php`
+- `plugins/sgs-blocks/src/blocks/nav-drawer/ItemEntranceControls.js`: 9 hit(s), needles: `MotionPanel.js`, `includes/helpers-nav-drawer-stagger-shape.php`, `itemStaggerAxis`, `itemStaggerReveal`
+- `plugins/sgs-blocks/src/blocks/nav-drawer/MotionPanel.js`: 41 hit(s), needles: `ItemEntranceControls`, `MotionEasingControl`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerDistance`, `itemStaggerDuration`, `itemStaggerMax` and 2 more
+- `plugins/sgs-blocks/src/blocks/nav-drawer/block.json`: 22 hit(s), needles: `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `includes/helpers-nav-drawer-stagger-shape.php`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance`, `itemStaggerDuration` and 4 more
+- `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js`: 2 hit(s) at lines 538, 540, needles: `curtainColour`
+- `plugins/sgs-blocks/src/blocks/nav-drawer/style.css`: 6 hit(s), needles: `entryFade`, `includes/helpers-nav-drawer-stagger-shape.php`, `itemStaggerAxis`, `itemStaggerReveal`, `staggerInsideGroups`
+- `plugins/sgs-blocks/src/shared/nav-menu-panels/DropdownStylePanel.js`: 2 hit(s) at lines 26, 67, needles: `submenuAnimation`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/nav-drawer-close-together-drawer.json`: 4 hit(s) at lines 6, 7, 8, 9, needles: `exitDuration`, `itemStagger`, `itemStaggerDuration`, `itemStaggerOnClose`
+- `plugins/sgs-blocks/tests/php/run-motion-nav-bar-panels-standalone.php`: 1 hit(s) at line 135, needles: `submenuItemStagger`
+- `plugins/sgs-blocks/tests/php/run-u5-motion-standalone.php`: 27 hit(s), needles: `MotionPanel`, `MotionPanel.js`, `PanelMotionPanel`, `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerDistance`, `itemStaggerMax` and 4 more
+
+## M6.7-docs: 491 hit(s) in 29 file(s)
+
+- `.claude/LEDGER.md`: 2 hit(s) at lines 67, 107, needles: `autoScroll`, `splitMediaParallax`
+- `.claude/catalogues/helpers.md`: 14 hit(s), needles: `AnimationControl.js`, `CursorFieldRowControls.js`, `EntranceStaggerControls.js`, `FlowingGradientRowControls.js`, `GridDotFieldRowControls.js`, `MotionEasingControl.js`, `ParticleTrailRowControls.js`, `SurfaceTreatmentPanel.js`, `autoScrollBelow`, `entryAnimation`, `includes/helpers-nav-drawer-stagger-shape.php`, `includes/helpers-trust-bar-marquee.php` and 2 more
+- `.claude/catalogues/tooling.md`: 4 hit(s) at lines 144, 1334, 1552, 1806, needles: `itemStaggerOnClose`, `sgsAnimationStart`, `shadowLiftOnHover`
+- `.claude/dev-setup.md`: 1 hit(s) at line 156, needles: `fx.js`
+- `.claude/plans/2026-10-01-header-nav-thread-plan.md`: 1 hit(s) at line 60, needles: `scaleHover`
+- `.claude/plans/2026-10-02-eye-care-fix-register.md`: 9 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurnsMode`, `bgParallax`, `bgZoomStart`, `includes/hover-effects`, `photoEntrance`, `staggerInsideGroups`, `transitionDuration`
+- `.claude/plans/2026-10-02-eye-care-plan.md`: 2 hit(s) at lines 36, 104, needles: `staggerInsideGroups`, `transitionDuration`
+- `.claude/plans/2026-10-04-spec47-full-coverage.md`: 5 hit(s) at lines 32, 32, 75, 238, 240, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgKenBurnsMode`, `bgZoomStart`, `childIconTransitionDuration`, `sgsAnimationStart`
+- `.claude/plans/2026-10-11-spec48-indus-build.md`: 1 hit(s) at line 78, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `.claude/plans/2026-10-12-clone-coverage-foundation.md`: 3 hit(s) at lines 25, 25, 25, needles: `sgsHoverShadow`, `shadowHoverColour`, `shadowLiftOnHover`
+- `.claude/plans/2026-10-12-spec38a-motion-build.md`: 47 hit(s), needles: `AnimationControl.js`, `EntranceStaggerControls.js`, `MotionEasingControl.js`, `^fx[A-Z0-9]`, `animation.js`, `assets/js/animation-entrance-timing.js`, `assets/js/parallax.js`, `assets/js/tilt-3d.js`, `components/media/atoms/motion`, `fx-presets.json`, `fx.js`, `imageZoomHover` and 16 more
+- `.claude/plans/2026-10-13-indus-review-block-builds.md`: 2 hit(s) at lines 31, 42, needles: `FlowingGradientRowControls`
+- `.claude/specs/00-naming-conventions.md`: 2 hit(s) at lines 99, 106, needles: `scaleHover`
+- `.claude/specs/02-SGS-BLOCKS.md`: 68 hit(s), needles: `AnimationControl.js`, `MotionEasingControl`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation.js`, `assets/js/animation-entrance-timing.js`, `assets/js/parallax.js`, `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover` and 43 more
+- `.claude/specs/11-SGS-BUTTON-ARCHITECTURE.md`: 1 hit(s) at line 43, needles: `liftHover`
+- `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`: 2 hit(s) at lines 320, 320, needles: `animation-attributes.php`, `parallax.php`
+- `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`: 3 hit(s) at lines 409, 512, 568, needles: `AnimationControl`, `MotionEasingControl`, `shadowLiftOnHover`
+- `.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md`: 6 hit(s), needles: `AnimationControl`, `animation.js`, `fx.js`
+- `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`: 42 hit(s), needles: `animationSubstrate`, `burgerMorphDuration`, `burgerMorphEasing`, `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance` and 21 more
+- `.claude/specs/37-HEADER-FOOTER-BUILDER.md`: 4 hit(s) at lines 449, 449, 449, 449, needles: `^fx[A-Z0-9]`, `fxFooterStagger`, `plugins/sgs-blocks/includes/animation-attributes.php`, `sgsAnimation`
+- `.claude/specs/38-SGS-MOTION-SYSTEM.md`: 50 hit(s), needles: `^fx[A-Z0-9]`, `animation.js`, `animationStyle`, `assets/js/animation-entrance-timing.js`, `fx-attributes.php`, `fx.js`, `plugins/sgs-blocks/includes/animation-attributes.php`, `plugins/sgs-blocks/src/blocks/extensions/fx.js`, `plugins/sgs-blocks/src/components/MotionEasingControl.js`, `sgsAnimation`, `src/blocks/extensions/fx.js`, `svgAnimationSource` and 1 more
+- `.claude/specs/38A-SGS-MOTION-MODEL.md`: 203 hit(s), needles: `AnimationControl.js`, `EntranceStaggerControls.js`, `MotionEasingControl.js`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `animation-entrance-timing.js`, `animation-stagger.php`, `animationStyle`, `animationSubstrate`, `assets/js/parallax.js`, `assets/js/ripple.js`, `assets/js/tilt-3d.js` and 124 more
+- `.claude/specs/48-CLONING-SYSTEM.md`: 5 hit(s) at lines 175, 276, 289, 1453, 1453, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScroll`, `fadeEdges`, `sgsAnimation`, `src/blocks/extensions/animation.js`
+- `.claude/specs/common-wp-styling-errors.md`: 2 hit(s) at lines 26, 42, needles: `sgsAnimation`, `transitionDuration`
+- `plugins/sgs-blocks/CLAUDE.md`: 2 hit(s) at lines 67, 70, needles: `AnimationControl`, `animation.js`
+- `plugins/sgs-blocks/scripts/nav-qa/README.md`: 2 hit(s) at lines 401, 401, needles: `^fx[A-Z0-9]`, `fxFooterStagger`
+- `plugins/sgs-blocks/tests/fixtures/motion/pages/README.md`: 1 hit(s) at line 6, needles: `sgsHoverTilt3D`
+- `plugins/sgs-blocks/tests/fixtures/motion/rotate-council/rotate.md`: 3 hit(s) at lines 88, 95, 95, needles: `assets/js/tilt-3d.js`, `src/blocks/extensions/hover-effects`
+- `scripts/computed-route/README.md`: 4 hit(s) at lines 152, 192, 587, 883, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimationStart`
+
+## keep: 2228 hit(s) in 94 file(s)
+
+- `.claude/backups/2026-07-15-track-b/REGISTER.md`: 1 hit(s) at line 72, needles: `sgsClickEffect`
+- `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/13.txt`: 7 hit(s), needles: `scrolling`, `sgsAnimationDelay`
+- `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/288.txt`: 7 hit(s), needles: `scrolling`, `sgsAnimationDelay`
+- `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/52.txt`: 3 hit(s) at lines 183, 377, 391, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimation`, `transitionDuration`
+- `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/65.txt`: 20 hit(s), needles: `transitionDuration`, `transitionEasing`
+- `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/66.txt`: 2 hit(s) at lines 284, 284, needles: `scrollSpeed`, `scrolling`
+- `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/67.txt`: 2 hit(s) at lines 251, 251, needles: `scrollSpeed`, `scrolling`
+- `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/68.txt`: 2 hit(s) at lines 284, 284, needles: `scrollSpeed`, `scrolling`
+- `.claude/backups/2026-07-15-track-b/palestine-lives/13.txt`: 25 hit(s), needles: `scrolling`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDuration`
+- `.claude/backups/2026-07-15-track-b/palestine-lives/52.txt`: 3 hit(s) at lines 183, 377, 391, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimation`, `transitionDuration`
+- `.claude/backups/2026-07-15-track-b/palestine-lives/65.txt`: 20 hit(s), needles: `transitionDuration`, `transitionEasing`
+- `.claude/backups/2026-07-15-track-b/palestine-lives/66.txt`: 2 hit(s) at lines 284, 284, needles: `scrollSpeed`, `scrolling`
+- `.claude/backups/2026-07-15-track-b/palestine-lives/67.txt`: 2 hit(s) at lines 251, 251, needles: `scrollSpeed`, `scrolling`
+- `.claude/backups/2026-07-15-track-b/palestine-lives/68.txt`: 2 hit(s) at lines 284, 284, needles: `scrollSpeed`, `scrolling`
+- `.claude/backups/2026-07-15-track-b/palestine-lives/_raw-dump.txt`: 54 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `scrollSpeed`, `scrolling`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDuration`, `transitionDuration`, `transitionEasing`
+- `.claude/backups/2026-07-15-track-b/register.json`: 1 hit(s) at line 666, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
+- `.claude/backups/2026-08-25/page-2742-post_content.BEFORE.txt`: 7 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-25/page-2742.BEFORE-desktop-pass.txt`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-25/page-2742.BEFORE-padding.txt`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-25/page-2742.BEFORE-pass2.txt`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-25/page-2742.BEFORE-reapply.txt`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-25/sitewide-post-content.BEFORE.json`: 2 hit(s) at lines 1, 1, needles: `^fx[A-Z0-9]`, `effectHover`
+- `.claude/backups/2026-08-26-hero-rename-oldshape/post-2742.after.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-26-hero-rename-oldshape/post-2742.before.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-26-hero-rename-oldshape/post-2742.final.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-26-hero-rename-oldshape/post-2742.pass2.after.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-26-hero-rename-oldshape/post-2742.pass2.before.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-26-hero-rename-oldshape/post-2742.pass3.after.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-26-hero-rename-oldshape/post-2742.pass3.before.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-27-p2744/2744.BEFORE.txt`: 1 hit(s) at line 1, needles: `^fx[A-Z0-9]`
+- `.claude/backups/2026-08-27-post2884/2884.before.txt`: 7 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-27-spacing-postcontent/export.json`: 2 hit(s) at lines 60, 64, needles: `effectHover`
+- `.claude/backups/2026-08-27-spacing-postcontent/export.migrated.json`: 2 hit(s) at lines 60, 64, needles: `effectHover`
+- `.claude/backups/2026-08-27-spacing-postcontent/payload/2742.html`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-27-spacing-postcontent/payload/2849.html`: 7 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-27/css-property-classifications.OTHER-TRACK.json`: 68 hit(s), needles: `bgAnimationDuration`, `bgParallax`, `fadeWidth`, `parallaxStrength`, `scaleHover`, `scrollSpeed`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `shadowHoverColour`, `staggerDelay`, `transitionDuration` and 1 more
+- `.claude/backups/2026-08-27/sandybrown/2737.txt`: 2 hit(s) at lines 6, 7, needles: `^fx[A-Z0-9]`
+- `.claude/backups/2026-08-29-button-rename/2742.txt`: 6 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-29-button-rename/2849.txt`: 7 hit(s), needles: `effectHover`
+- `.claude/backups/2026-08-29-button-rename/2884.txt`: 7 hit(s), needles: `effectHover`
+- `.claude/backups/page-13-content-2026-07-17-brandstrip.html`: 1 hit(s) at line 1, needles: `sgsAnimationDelay`
+- `.claude/backups/page-13-content-2026-07-18-preMigration.html`: 9 hit(s), needles: `effectHover`, `scrollSpeed`, `scrolling`, `sgsAnimationDelay`
+- `.claude/memory/consolidated-2026-04-29/2026-02-21-master-feature-audit.md`: 6 hit(s), needles: `animation.js`
+- `.claude/memory/consolidated-2026-04-29/ARCHITECTURE.md`: 6 hit(s), needles: `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsAnimationEasing`, `src/blocks/extensions/animation.js`, `src/blocks/extensions/hover-effects`
+- `.claude/memory/session-2026-07-20-2.md`: 1 hit(s) at line 35, needles: `sgsParallax`
+- `.claude/scratch/retired-by-spec-15-p3/fingerprint-builder/output/layer-3-internal-elements.json`: 87 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgKenBurns`, `bgParallax`, `exitDuration`, `fadeEdges`, `fadeWidth`, `parallaxStrength`, `scrollDirection`, `scrollSpeed`, `scrolling`, `sgsAnimation`, `sgsAnimationDuration` and 8 more
+- `.claude/scratch/retired-by-spec-15-p3/fingerprint-builder/output/role-templates.json`: 2 hit(s) at lines 185, 185, needles: `transitionDuration`, `transitionEasing`
+- `.claude/verify/nav-review-wave1-cluster3-interactivity.md`: 4 hit(s) at lines 64, 68, 76, 92, needles: `submenuAnimation`
+- `.claude/verify/spec-41-gates-interaction.md`: 1 hit(s) at line 74, needles: `submenuAnimation`
+- `.claude/verify/spec-41-qa3-wave-a-close.md`: 1 hit(s) at line 46, needles: `SurfaceTreatmentPanel.js`
+- `.claude/verify/spec-41-qc-council-1.md`: 1 hit(s) at line 72, needles: `includes/hover-effects`
+- `.claude/verify/spec-41-qc-council-3.md`: 1 hit(s) at line 134, needles: `submenuAnimation`
+- `.claude/verify/spec-41-reuse-ledger.md`: 1 hit(s) at line 222, needles: `src/components/SurfaceTreatmentPanel.js`
+- `.claude/verify/spec38a-motion-build.md`: 3 hit(s) at lines 70, 70, 70, needles: `plugins/sgs-blocks/assets/js/tilt-3d.js`, `plugins/sgs-blocks/src/blocks/extensions/animation.js`, `plugins/sgs-blocks/src/blocks/extensions/fx.js`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-entrance.php`: 47 hit(s), needles: `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStart`, `sgsAnimationTrigger`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-fx-value.php`: 2 hit(s) at lines 24, 61, needles: `^fx[A-Z0-9]`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-hover-value.php`: 68 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `liftHover`, `opacityHover`, `scaleHover`, `scaleHoverTarget`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverIndent`, `sgsHoverLift`, `sgsHoverOpacity` and 3 more
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-nav-bar.php`: 35 hit(s), needles: `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax`, `submenuItemStaggerScope`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-curtain.php`: 3 hit(s) at lines 50, 77, 119, needles: `curtainColour`, `exitDuration`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-items.php`: 27 hit(s), needles: `entryDuration`, `entryEasing`, `helpers-nav-drawer-stagger-shape.php`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance`, `itemStaggerDuration`, `itemStaggerMax`, `itemStaggerOnClose`, `itemStaggerReveal`, `staggerInsideGroups`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer-notes.php`: 6 hit(s), needles: `entryAnimation`, `entryFade`, `itemStaggerOnClose`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-nav-drawer.php`: 46 hit(s), needles: `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `helpers-nav-drawer-stagger-shape.php`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance`, `itemStaggerDuration` and 4 more
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-legacy-stagger.php`: 9 hit(s), needles: `assets/js/animation-entrance-timing.js`, `sgsAnimation`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`
+- `plugins/sgs-blocks/includes/motion/migrate/class-sgs-motion-reveal-plans.php`: 37 hit(s), needles: `^fx[A-Z0-9]`, `fxFooterStagger`, `photoEntrance`, `revealOnScroll`, `revealStagger`, `revealTrigger`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-block-reveals.php`: 33 hit(s), needles: `^fx[A-Z0-9]`, `fxFooterStagger`, `includes/animation-stagger.php`, `includes/hover-effects`, `photoEntrance`, `revealOnScroll`, `revealStagger`, `revealTrigger`, `sgsAnimationStaggerMax`, `sgsStaggerDelay`, `staggerDelay`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-entrance.php`: 24 hit(s), needles: `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `staggerDelay`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-fx.php`: 31 hit(s), needles: `^fx[A-Z0-9]`, `fxFooterStagger`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-hover.php`: 120 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `effectHover`, `imageZoomHover`, `includes/hover-effects`, `liftHover`, `opacityHover`, `scaleHover`, `scaleHoverTarget`, `sgsHoverBorderAccent`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing` and 14 more
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-icon.php`: 41 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `childIconTransitionEasingCustom`, `iconRotateHover`, `offsetXHover`, `offsetYHover` and 7 more
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-looping-media.php`: 62 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`, `svgAnimation` and 1 more
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-lottie-logo.php`: 39 hit(s), needles: `animationStyle`, `animationSubstrate`, `bgLottie`, `bgLottieLoop`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-marquee.php`: 38 hit(s), needles: `autoScroll`, `autoScrollBelow`, `autoScrollDuration`, `autoScrollPauseButton`, `autoScrollPauseOnHover`, `autoScrollSpeed`, `fadeEdges`, `fadeWidth`, `pauseButton`, `pauseOnHover`, `scrollDirection`, `scrollDuration` and 2 more
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-nav-bar.php`: 6 hit(s), needles: `submenuAnimation`, `submenuItemStagger`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-nav-drawer.php`: 8 hit(s), needles: `itemStagger`, `itemStaggerOnClose`, `staggerInsideGroups`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-parallax.php`: 41 hit(s), needles: `bgParallax`, `parallaxStrength`, `sgsParallax`, `sgsParallaxStrength`, `splitMediaParallax`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-ripple.php`: 9 hit(s), needles: `assets/js/ripple.js`, `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-state.php`: 21 hit(s), needles: `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `countPopAnimation`
+- `plugins/sgs-blocks/includes/motion/migrate/mappers/class-sgs-motion-map-tilt.php`: 3 hit(s) at lines 5, 7, 31, needles: `assets/js/tilt-3d.js`, `sgsHoverTilt3D`
+- `plugins/sgs-blocks/reports/f3-e14-triage.md`: 2 hit(s) at lines 590, 590, needles: `bgSvgAnimation`, `bgSvgAnimationSpeed`
+- `plugins/sgs-blocks/reports/migrations/motion-pause-census.json`: 6 hit(s), needles: `autoScrollPauseButton`, `pauseButton`
+- `plugins/sgs-blocks/tests/php/run-motion-map-block-reveals-standalone.php`: 79 hit(s), needles: `^fx[A-Z0-9]`, `fxFooterStagger`, `photoEntrance`, `revealOnScroll`, `revealStagger`, `revealTrigger`, `sgsAnimationStaggerMax`, `sgsStaggerDelay`, `staggerDelay`
+- `plugins/sgs-blocks/tests/php/run-motion-map-entrance-standalone.php`: 107 hit(s), needles: `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `sgsAnimationStart`, `sgsAnimationTrigger`
+- `plugins/sgs-blocks/tests/php/run-motion-map-hover-standalone.php`: 142 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `childIconScaleHover`, `effectHover`, `imageZoomHover`, `liftHover`, `opacityHover`, `scaleHover`, `scaleHoverTarget`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom` and 10 more
+- `plugins/sgs-blocks/tests/php/run-motion-map-icon-standalone.php`: 73 hit(s), needles: `childIconOffsetYHover`, `childIconPaintDuration`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `iconRotateHover`, `offsetXHover`, `offsetYHover`, `opacityHover`, `paintDuration`, `scaleHover` and 4 more
+- `plugins/sgs-blocks/tests/php/run-motion-map-looping-media-standalone.php`: 145 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`, `svgAnimation` and 1 more
+- `plugins/sgs-blocks/tests/php/run-motion-map-lottie-logo-standalone.php`: 54 hit(s), needles: `animationStyle`, `animationSubstrate`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
+- `plugins/sgs-blocks/tests/php/run-motion-map-marquee-standalone.php`: 71 hit(s), needles: `autoScroll`, `autoScrollBelow`, `autoScrollDuration`, `autoScrollPauseButton`, `autoScrollPauseOnHover`, `autoScrollSpeed`, `fadeEdges`, `fadeWidth`, `pauseOnHover`, `scrollDirection`, `scrollDuration`, `scrollSpeed` and 1 more
+- `plugins/sgs-blocks/tests/php/run-motion-map-nav-bar-standalone.php`: 52 hit(s), needles: `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax`, `submenuItemStaggerScope`
+- `plugins/sgs-blocks/tests/php/run-motion-map-nav-drawer-standalone.php`: 125 hit(s), needles: `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance`, `itemStaggerDuration`, `itemStaggerMax` and 3 more
+- `plugins/sgs-blocks/tests/php/run-motion-map-parallax-standalone.php`: 60 hit(s), needles: `bgParallax`, `parallax.php`, `parallaxStrength`, `sgsParallax`, `sgsParallaxStrength`, `splitMediaParallax`, `src/blocks/extensions/parallax.js`
+- `plugins/sgs-blocks/tests/php/run-motion-map-ripple-standalone.php`: 28 hit(s), needles: `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`
+- `plugins/sgs-blocks/tests/php/run-motion-map-state-standalone.php`: 32 hit(s), needles: `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `countPopAnimation`
+- `plugins/sgs-blocks/tests/php/run-motion-map-tilt-standalone.php`: 13 hit(s), needles: `sgsHoverTilt3D`
+- `plugins/sgs-blocks/tests/php/run-motion-migrate-standalone.php`: 16 hit(s), needles: `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`
+
+## Self-references
+
+27 hit(s) in 19 file(s) were files naming themselves by their own path and were not counted as consumers.
+
+## Judgement assignments
+
+These rules assign a class of hit on a reading the unit map does not state: the group whose deletion makes the hit dead, or `keep` / `M6.7-docs` where no removal group edits it. Each is open to correction in `consumer-groups.json`.
+
+- `plugins/sgs-blocks/includes/motion/migrate/**` goes to keep (756 hit(s)): the sweep tool (Spec 38A section 13, M6.1 to M6.4) reads the old attribute names to translate stored content, so no removal group edits it
+- `plugins/sgs-blocks/tests/php/run-motion-map-*-standalone.php` goes to keep (981 hit(s)): these tests feed old attributes to the migration mappers on purpose
+- `plugins/sgs-blocks/tests/php/run-motion-migrate-standalone.php` goes to keep (16 hit(s)): this test feeds old attributes to the sweep tool on purpose
+- `.claude/backups/**` goes to keep (353 hit(s)): dated backups of stored content are history, not live code or docs
+- `.claude/scratch/**` goes to keep (89 hit(s)): retired scratch output is history, not live code or docs
+- `.claude/memory/**` goes to keep (13 hit(s)): dated memory snapshots are history, not live docs
+- `.claude/verify/**` goes to keep (12 hit(s)): dated verification records are history, not live docs
+- `plugins/sgs-blocks/reports/**` goes to keep (8 hit(s)): dated plugin reports and census outputs are history, not live code
+- `.claude/**` goes to M6.7-docs (303 hit(s)): a live spec, plan, rule, catalogue or ledger that cites deleted code is a doc consumer; the plan names only Specs 36, 37, 38, 48, 02, 35A and dev-setup, M6.7 is the doc sweep
+- `**/*.md` goes to M6.7-docs (12 hit(s)): a README or CLAUDE.md that cites deleted code is a doc consumer for the M6.7 doc sweep
+- `plugins/sgs-blocks/scripts/** attribute` goes to G0 (5727 hit(s)): gates, goldens, baselines and tooling that list old attribute names are shared infrastructure, the same class the unit map gives G0 for scripts naming G0 files
+- `plugins/sgs-blocks/* attribute` goes to G0 (3 hit(s)): the plugin build and bootstrap files (webpack config, package files) are shared infrastructure
+- `scripts/** attribute` goes to G0 (42 hit(s)): the cloning pipeline and parity tooling that name old attributes are fixed by the G0 cloning-writer change
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute ['entrance', 'hover', 'tilt', 'ripple', 'parallax', 'fx']` goes to G0 (355 hit(s)): the flat fx, entrance, hover, tilt, ripple and parallax attributes are unregistered with their G0 extensions (FR-38A-22, FR-38A-43), so a block named in no group list takes the same group
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute looping-media` goes to G1 (4 hit(s)): the looping background and media attributes are G1 (background and split-media blocks)
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute lottie-logo` goes to G2 (23 hit(s)): the logo and media Lottie attributes are G2 (media and logo)
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute marquee` goes to G3 (15 hit(s)): the marquee attributes are G3 (marquees)
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute ['block-reveals', 'icon', 'state']` goes to G4 (219 hit(s)): per-block reveal, icon hover and state-change attributes are G4 (per-block reveals and state); icon and social-icons are named in no group list
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute ['nav-drawer', 'nav-bar']` goes to G5 (60 hit(s)): the drawer and submenu attributes are G5 (nav)
