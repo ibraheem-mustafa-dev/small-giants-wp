@@ -10,6 +10,7 @@ One home per job:
 | Rules | `../CLAUDE.md`, plus path-scoped `rules/*.md` |
 | Lessons | Claude Code auto memory (its `MEMORY.md` index loads every session) |
 | Build, deploy, SSH, DB column meanings | `dev-setup.md` |
+| How the deploy works: its files, stage order, speed mechanisms (gate tiers, cache, motion QA tiers, timings) and how to add to each | `deploy-architecture.md` |
 | The `wp sgs` command reference | `wp-sgs-cli.md` |
 | Generated catalogues (every gate/script, every helper/component) | `catalogues/` |
 | System design | `architecture.md` |

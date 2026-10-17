@@ -8,14 +8,17 @@ paths:
 # Motion QA
 
 ```bash
-npm run qa:motion                    # all standing live probes (what the deploy runs)
+npm run qa:motion                    # all standing live probes, the full set (about 735s serial)
+npm run qa:motion -- --tier smoke    # the 6 probes the deploy runs by default (about 242s); --list prints the selection without running anything
 npm run qa:motion:morph              # fx-morph changes SVG geometry (page 2113)
 npm run qa:motion:motion-path        # motion-path re-animates on pass 2 (page 2109)
 npm run qa:motion:good-by-default    # scrub/scramble/split-reveal/pin-scrub (pages 2103, 2603)
 node scripts/motion-qa/probe-motion-model.mjs --page 5223 --page 5226 --page 5229 --engine chromium --engine firefox --engine webkit --width 375   # Spec 38A motion model (the trees: tests/fixtures/motion/pages/)
 ```
 
-Wired into `build-deploy.py` as `step_motion_qa()` — ON by default for blocks deploys, after `step_verify_payload()`, opt out with `--skip-motion-qa`.
+Wired into `build-deploy.py` as `step_motion_qa()` — ON by default for blocks deploys to the canary, after `step_verify_payload()`, opt out with `--skip-motion-qa`. The deploy picks the tier itself (`--motion-qa-tier auto`): smoke unless the full set is due (no recorded full pass, a record over 24 hours old, or a file matching `scripts/motion-qa/full-tier-paths.json` changed since it, uncommitted payload files included); the log line `[motion-qa] tier ...` says which and why. How the choice works and how to add a probe or a path: `.claude/deploy-architecture.md`.
+
+Each probe in `PROBES` lists its `tiers`. `probe-marquee.mjs` (367s) and `probe-looping-media.mjs` (127s) are full-only; a new probe over about a minute should be too, and its source paths belong in `full-tier-paths.json`. Never run probes in parallel (`--parallel` above 1) against the canary: four at a time on 2026-10-17 made probes fail on non-200 pages and the CDN answered 403 to everything for about seven minutes. When another session is on the canary, take turns by message.
 
 Not in `prebuild`, on purpose — these need a live canary. Post-deploy is the honest home: the canary is up by definition, and the payload gate has just proven the live plugin is this run's payload.
 

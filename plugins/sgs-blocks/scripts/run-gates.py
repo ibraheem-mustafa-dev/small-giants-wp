@@ -290,7 +290,7 @@ def do_time(write: bool) -> int:
         for g in raw:
             if g["id"] in by_id:
                 g["budget_ms"] = round(by_id[g["id"]]["secs"] * 1000)
-        _GATES_JSON.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+        _GATES_JSON.write_text(json.dumps(raw, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"\n[run-gates] budget_ms written from THIS run into {_GATES_JSON.name}")
 
     failed = [r for r in results if r["code"] != 0]
