@@ -81,7 +81,6 @@
 	background-image: var( --sgs-tab-bg-gradient, none );
 	margin: 0;
 	cursor: pointer;
-	outline: none;
 
 	padding: var(--sgs-tab-padding, 12px 20px);
 	font-size: inherit;
@@ -120,12 +119,6 @@
 .sgs-tabs__tab:hover {
 	color: var( --wp--preset--color--text, #1e1e1e );
 	background-color: var( --sgs-tab-hover-bg, transparent );
-}
-
-/* :focus-visible ring using SGS focus-ring tokens */
-.sgs-tabs__tab:focus-visible {
-	outline: var( --wp--custom--focus-ring--width, 3px ) solid var( --wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4) );
-	outline-offset: var( --wp--custom--focus-ring--offset, 2px );
 }
 
 /*

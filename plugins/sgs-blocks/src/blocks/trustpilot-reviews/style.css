@@ -58,18 +58,6 @@
 	text-align: left;
 }
 
-/* WCAG 2.2 §2.1.1 — the track is a focusable, keyboard-scrollable region
-   (tabindex=0 in render.php). Provide a visible focus ring (2px solid,
-   2px offset, >=3:1 against light + dark themes). */
-.sgs-trustpilot-reviews__track:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-}
-
-.sgs-trustpilot-reviews--theme-dark .sgs-trustpilot-reviews__track:focus-visible {
-	outline-color: #ffffff;
-}
-
 .sgs-trustpilot-reviews__label {
 	font-size: 1.25rem;
 	font-weight: 700;
@@ -114,11 +102,6 @@
 	display: inline-flex;
 	align-items: center;
 	border-radius: 4px;
-}
-
-.sgs-trustpilot-reviews__header-logo-link:focus-visible {
-	outline: 2px solid var(--sgs-tp-green);
-	outline-offset: 2px;
 }
 
 .sgs-trustpilot-reviews__on {
@@ -373,11 +356,6 @@
 	border-color: var(--sgs-tp-green);
 }
 
-.sgs-trustpilot-reviews__arrow:focus-visible {
-	outline: 2px solid var(--sgs-tp-green);
-	outline-offset: 2px;
-}
-
 .sgs-trustpilot-reviews__arrow--prev {
 	left: 0;
 }
@@ -420,11 +398,6 @@
 .sgs-trustpilot-reviews__dot.is-active {
 	background: var(--sgs-tp-green);
 	transform: scale(1.2);
-}
-
-.sgs-trustpilot-reviews__dot:focus-visible {
-	outline: 2px solid var(--sgs-tp-green);
-	outline-offset: 2px;
 }
 
 /* Pause / play button (WCAG 2.2.2): the shared control, centred under the cards (and the

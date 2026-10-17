@@ -335,7 +335,7 @@ foreach ( $tabs as $i => $tab ) { // phpcs:ignore WordPress.WP.GlobalVariablesOv
 	$is_first = ( 0 === $i );
 
 	$nav_html .= sprintf(
-		'<button id="%s" class="sgs-tabs__tab%s" role="tab" aria-selected="%s" aria-controls="%s" tabindex="%s" data-tab-index="%d">%s</button>',
+		'<button id="%s" class="sgs-tabs__tab sgs-focus--inset%s" role="tab" aria-selected="%s" aria-controls="%s" tabindex="%s" data-tab-index="%d">%s</button>',
 		$tab_id,
 		$is_first ? ' sgs-tabs__tab--active' : '',
 		$is_first ? 'true' : 'false',

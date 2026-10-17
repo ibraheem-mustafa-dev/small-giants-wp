@@ -230,12 +230,6 @@
 	background-color: var(--wp--preset--color--primary-dark, #0A5B5D);
 }
 
-/* :focus-visible ring using SGS focus-ring tokens */
-.sgs-modal__close:focus-visible {
-	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
-	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
-}
-
 .sgs-modal__close svg {
 	width: 1.25rem;
 	height: 1.25rem;

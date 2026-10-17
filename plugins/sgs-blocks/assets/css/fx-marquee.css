@@ -80,10 +80,6 @@
 	transform: translateY(-50%);
 }
 
-[data-sgs-fx~="marquee"][data-sgs-marquee-lane="on"] > .sgs-motion-pause:focus-visible {
-	outline-offset: -4px;
-}
-
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-fx~="marquee"][data-sgs-fx-marquee-edge-fade="true"] {
 		mask-image: none;

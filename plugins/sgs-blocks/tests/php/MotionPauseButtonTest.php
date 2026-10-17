@@ -66,11 +66,11 @@ final class MotionPauseButtonTest extends TestCase {
 		$this->assertMatchesRegularExpression( '#aria-label="[^"]+"#', $out );
 	}
 
-	public function test_the_stylesheet_keeps_the_target_focus_and_icon_contract(): void {
+	public function test_the_stylesheet_keeps_the_target_and_icon_contract_and_leaves_focus_to_the_system(): void {
 		$css = (string) file_get_contents( self::PLUGIN . '/assets/css/motion-pause.css' );
 		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-motion-pause\s*\{[^}]*min-width:\s*44px;[^}]*min-height:\s*44px;#', $css );
-		$this->assertMatchesRegularExpression( '#\.sgs-motion-pause:focus-visible\s*\{[^}]*outline:#', $css );
+		$this->assertDoesNotMatchRegularExpression( '#:focus-visible[^{]*\{[^}]*outline#', $css, 'the focus system draws the ring' );
 		$this->assertMatchesRegularExpression( '#\.sgs-motion-pause\[hidden\]\s*\{\s*display:\s*none;#', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-motion-pause\[aria-pressed="true"\] \.sgs-motion-pause__icon--play\s*\{\s*display:\s*block;#', $css );
 		$this->assertMatchesRegularExpression( '#:where\(\.sgs-motion-pause\)\s*\{[^}]*background-color:#', $css, 'the look sits at zero specificity' );

@@ -34,11 +34,6 @@
 	display: none;
 }
 
-.sgs-motion-pause:focus-visible {
-	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, currentColor);
-	outline-offset: 2px;
-}
-
 /* Over the end edge of the moving region, vertically centred: it takes no place in the row.
    The region positions it (a marquee's root is position: relative). The ring sits inside the
    button because a marquee clips anything outside its own height. */
@@ -48,10 +43,6 @@
 	inset-inline-end: 0;
 	transform: translateY(-50%);
 	z-index: 1;
-}
-
-.sgs-motion-pause--overlay-end:focus-visible {
-	outline-offset: -4px;
 }
 
 .sgs-motion-pause__icon {

@@ -570,7 +570,7 @@ ob_start();
 					>
 						<button
 							type="button"
-							class="sgs-gallery__item-btn"
+							class="sgs-gallery__item-btn sgs-focus--inset"
 							aria-label="<?php
 								/* translators: %s: image alt text */
 								printf( esc_attr__( 'View %s in lightbox', 'sgs-blocks' ), $img_alt ?: esc_attr__( 'image', 'sgs-blocks' ) );

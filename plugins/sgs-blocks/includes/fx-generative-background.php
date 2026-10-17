@@ -121,7 +121,7 @@ function sgs_apply_fx_generative_background( string $block_content ): string {
 	 * so the control never appears for it (mirrors `fx-wave-gradient.php`).
 	 */
 	$toggle = \sprintf(
-		'<button type="button" class="sgs-generative-background__toggle" '
+		'<button type="button" class="sgs-generative-background__toggle sgs-focus--duotone" '
 			. 'data-sgs-genbg-toggle aria-pressed="false" hidden>%s</button>',
 		\esc_html__( 'Pause background', 'sgs-blocks' )
 	);

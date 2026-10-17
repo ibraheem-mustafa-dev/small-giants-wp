@@ -66,13 +66,6 @@
 	appearance: none;
 }
 
-/* Focus-visible ring — 2px solid, ≥3:1 contrast per WCAG 2.4.11 (AA). */
-.sgs-collapsible-text__toggle:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 3px;
-	border-radius: 3px;
-}
-
 /* ─── Reduced motion ─────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {

@@ -208,10 +208,6 @@
     width: 100%;
     height: auto;
 }
-.sgs-video:focus-visible {
-    outline: 3px solid var( --sgs-video-accent );
-    outline-offset: 2px;
-}
 
 /* Centre play — shown when paused, hidden when playing. */
 .sgs-video__centre {
@@ -233,7 +229,6 @@
 .sgs-video__centre svg { width: 34px; height: 34px; margin-left: 3px; }
 .sgs-video__centre:hover { transform: scale( 1.06 ); }
 .sgs-video.is-playing .sgs-video__centre { opacity: 0; pointer-events: none; }
-.sgs-video__centre:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* Per-device "Show Controls" tier resolved off (view.js) — chromeless playback,
    e.g. a background-video use case that is only chromeless on mobile. */
@@ -282,7 +277,6 @@
 }
 .sgs-video__btn svg { width: 22px; height: 22px; }
 .sgs-video__btn:hover { background: rgba( 255, 255, 255, 0.16 ); }
-.sgs-video__btn:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
 
 /* The bar's only text is the time read-out (buttons and range inputs set their
  * own box), so its line-height 1 lives here with the font size, in :where() so
@@ -328,8 +322,6 @@
     background: #fff;
     cursor: pointer;
 }
-.sgs-video__scrub:focus-visible,
-.sgs-video__vol:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 .sgs-video.is-reduced-motion .sgs-video__centre,
 .sgs-video.is-reduced-motion .sgs-video__bar { transition: none; }

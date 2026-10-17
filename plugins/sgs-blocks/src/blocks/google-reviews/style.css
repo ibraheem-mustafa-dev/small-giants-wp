@@ -204,12 +204,6 @@ a.sgs-google-reviews__maps-link {
 	text-underline-offset: 2px;
 }
 
-.sgs-google-reviews__maps-link:focus-visible,
-a.sgs-google-reviews__author:focus-visible {
-	outline: 2px solid var( --sgs-gr-blue );
-	outline-offset: 2px;
-}
-
 /* ─── Ratings Breakdown (per-star distribution) ──────────────────────────── */
 
 .sgs-google-reviews__breakdown {
@@ -680,15 +674,6 @@ a.sgs-google-reviews__author:hover {
 	border-color: var( --sgs-gr-blue );
 }
 
-/* Keyboard focus: Google blue, 2px, clear of the border (the shared slider-nav ring is the theme's primary). */
-.sgs-google-reviews .sgs-google-reviews__arrow:focus-visible,
-.sgs-google-reviews .sgs-google-reviews__pause:focus-visible,
-.sgs-google-reviews .sgs-google-reviews__write-review:focus-visible,
-.sgs-google-reviews .sgs-google-reviews__see-all:focus-visible {
-	outline: 2px solid var( --sgs-gr-blue );
-	outline-offset: 2px;
-}
-
 /* Hover timing follows the site's button timing (buttonPresets.default, else 150ms). The
    buttons stay still by default, as Google's do; the block's buttonHoverLift setting
    (render.php) adds a lift for a site that wants one. */
@@ -875,11 +860,6 @@ a.sgs-google-reviews__author:hover {
 .sgs-google-reviews__dot.is-active::before {
 	background-color: var( --sgs-gr-star-colour, var( --sgs-gr-star ) );
 	transform: translate( -50%, -50% ) scale( 1.35 );
-}
-
-.sgs-google-reviews__dot:focus-visible {
-	outline: 2px solid var( --sgs-gr-blue );
-	outline-offset: 2px;
 }
 
 @media ( prefers-reduced-motion: reduce ) {

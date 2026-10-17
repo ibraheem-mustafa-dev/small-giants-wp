@@ -69,11 +69,6 @@
  * readable on dark surfaces. Hover and open add no background or colour of
  * their own: that paint comes only from the block's own settings. */
 
-/* :focus-visible ring */
-.sgs-accordion-item__header:focus-visible {
-	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
-	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
-}
 
 .sgs-accordion-item__title {
 	flex: 1;

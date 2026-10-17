@@ -74,6 +74,10 @@ if ( ! function_exists( 'sgs_motion_pause_button' ) ) {
 		if ( '' !== $block ) {
 			$classes[] = $block . '__pause';
 		}
+		if ( 'overlay-end' === $placement ) {
+			// The marquee clips beyond its own height, so the ring sits inside the button.
+			$classes[] = 'sgs-focus--inset';
+		}
 
 		sgs_motion_pause_enqueue_style();
 

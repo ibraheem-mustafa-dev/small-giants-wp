@@ -146,11 +146,6 @@
 	background: rgb( 15 23 42 / 95%);
 }
 
-.sgs-wave-gradient__toggle:focus-visible {
-	outline: 2px solid #fff;
-	outline-offset: 2px;
-}
-
 @media ( prefers-reduced-motion: reduce ) {
 	/*
 	 * The boot module draws ONE frame and stops under `reduce`, so the visitor

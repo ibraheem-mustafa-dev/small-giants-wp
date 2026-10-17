@@ -67,10 +67,6 @@
 	background: var( --sgs-audio-accent-hover, var( --sgs-audio-accent, #c9821f ) );
 	background-image: var( --sgs-audio-accent-hover-gradient, var( --sgs-audio-accent-gradient, none ) );
 }
-.sgs-audio__play:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, currentColor);
-	outline-offset: 3px;
-}
 
 .sgs-audio__time {
 	font-variant-numeric: tabular-nums;
@@ -107,10 +103,6 @@
 	background: var( --sgs-audio-accent );
 	background-image: var( --sgs-audio-accent-gradient, none );
 	cursor: pointer;
-}
-.sgs-audio__seek:focus-visible {
-	outline: 2px solid var(--sgs-audio-accent, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)));
-	outline-offset: 3px;
 }
 
 /* ---- 2. waveform ---- */
@@ -233,10 +225,6 @@
 }
 .sgs-audio__toggle:hover {
 	filter: brightness( 1.15 );
-}
-.sgs-audio__toggle:focus-visible {
-	outline: 2px solid var( --sgs-focus-color, currentColor );
-	outline-offset: 3px;
 }
 
 .sgs-audio__toggle-icon {

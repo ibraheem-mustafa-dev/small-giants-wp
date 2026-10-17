@@ -94,7 +94,7 @@ function sgs_apply_fx_wave_gradient( string $block_content ): string {
 	 */
 	$html   = $processor->get_updated_html();
 	$toggle = \sprintf(
-		'<button type="button" class="sgs-wave-gradient__toggle" '
+		'<button type="button" class="sgs-wave-gradient__toggle sgs-focus--duotone" '
 			. 'data-sgs-wave-toggle aria-pressed="false" hidden>%s</button>',
 		\esc_html__( 'Pause background', 'sgs-blocks' )
 	);

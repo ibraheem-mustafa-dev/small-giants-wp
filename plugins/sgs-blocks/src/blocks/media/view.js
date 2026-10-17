@@ -182,7 +182,7 @@ function enhance( video ) {
 	video.removeAttribute( 'controls' );
 
 	// Wrap the video so the chrome can overlay it.
-	const wrap = el( 'div', 'sgs-video' );
+	const wrap = el( 'div', 'sgs-video sgs-focus--duotone' );
 	video.parentNode.insertBefore( wrap, video );
 	wrap.appendChild( video );
 

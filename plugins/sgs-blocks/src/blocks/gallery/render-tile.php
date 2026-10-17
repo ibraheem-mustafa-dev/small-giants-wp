@@ -215,7 +215,7 @@ if ( ! function_exists( 'sgs_gallery_linked_item_html' ) ) {
 		}
 
 		$html  = '<figure class="sgs-gallery__item sgs-gallery__item--linked" data-gallery-item-key="' . esc_attr( $item_key ) . '">';
-		$html .= '<a class="sgs-gallery__item-link"' . $attrs . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href is esc_url(), label is esc_attr().
+		$html .= '<a class="sgs-gallery__item-link sgs-focus--inset"' . $attrs . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href is esc_url(), label is esc_attr().
 		$html .= '<div class="sgs-gallery__img-wrap">' . $media_html . '</div>';
 		$html .= '</a>';
 		if ( '' !== $overlay ) {

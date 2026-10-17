@@ -593,6 +593,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								key={ index }
 								className={ [
 									'sgs-tabs__tab',
+									'sgs-focus--inset',
 									isActive ? 'sgs-tabs__tab--active' : '',
 									hideEmptyTabs && tabIsEmpty[ index ]
 										? 'sgs-tabs__tab--hidden-when-empty'

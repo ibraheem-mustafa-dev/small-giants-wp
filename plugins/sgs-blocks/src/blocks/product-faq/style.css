@@ -78,11 +78,6 @@
 	color: var(--wp--preset--color--primary-dark, #0f7e80);
 }
 
-.sgs-product-faq-item__question:focus-visible {
-	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
-	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
-}
-
 .sgs-product-faq-item__question-text {
 	flex: 1;
 }
