@@ -22,12 +22,13 @@
  *     `.sgs-focus--signature.sgs-focus-preview` editor arm, so the preview shows the band;
  *   - restates the arms that need no `:has()` (and a card's own focus source) in `@supports not selector(:has(*))`, in
  *     forced colours too, because a browser without `:has()` drops the whole selector list above;
- *   - gives a duotone or photo element on a dark ground a light ring (`--sgs-focus-inner`) and an ink far bloom;
+ *   - gives a duotone, photo or signature element the core of the NEAREST ground: the ground classes set
+ *     `--sgs-focus-ground-core` (the ink token on `:root` and `.sgs-on-light`, the light inner token on `.sgs-on-dark`), the
+ *     element reads it by inheritance, so a light pill inside a dark block keeps the dark core and no selector says
+ *     "dark ancestor" (which would also reach through a nearer light ground);
  *   - registers the three per-element override properties (`--sgs-focus-offset`, `--sgs-focus-halo`, `--sgs-focus-under`)
  *     with `@property` and `inherits: false`, so an inset or shadowed card never hands its inset ring, halo or shadow to a
  *     focusable descendant that carries no such class of its own;
- *   - gives a signature button on a dark ground the light inner token as its core (the ink core would score about 1.3:1),
- *     in the focus and editor-preview arms, after the signature rule it overrides;
  *   - rings a card's block-link overlay (`.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay`)
  *     in the one declaration set and in forced colours, and gives it the inset offset and halo on an inset card: the card's
  *     own outline paints below its positioned children, so the overlay carries the ring over a photo;
@@ -206,25 +207,54 @@ const CHECKS = {
 		} );
 		return found ? [] : [ 'a focus source keeps the browser default ring beside its proxy ring' ];
 	},
-	darkDuotoneRingIsLight( root ) {
-		const WANT = [
-			'.sgs-on-dark.sgs-focus--duotone', '.sgs-on-dark .sgs-focus--duotone',
-			'.sgs-on-dark.sgs-container--has-bg-image', '.sgs-on-dark .sgs-container--has-bg-image',
-			'.sgs-on-dark.sgs-container--has-bg-video', '.sgs-on-dark .sgs-container--has-bg-video',
-		];
-		const got = {};
+	coreFollowsNearestGround( root ) {
+		const problems = [];
+		const coreOf = ( rule ) => {
+			let v = null;
+			rule.each( ( n ) => { if ( 'decl' === n.type && '--sgs-focus-ground-core' === n.prop ) v = norm( n.value ); } );
+			return v;
+		};
+		const seen = { light: false, dark: false };
+		let g2 = null;
+		let signature = null;
 		root.walkRules( ( rule ) => {
-			if ( inForced( rule ) || inSupports( rule ) || 'root' !== rule.parent.type ) {
+			const sels = rule.selectors.map( norm );
+			for ( const sel of sels ) {
+				if ( /\.sgs-on-dark[^,]*\.sgs-(?:focus--(?:duotone|signature)|container--has-bg-(?:image|video))/.test( sel ) ) {
+					problems.push( `selector reaches through a nearer light ground: ${ sel }` );
+				}
+			}
+			if ( inForced( rule ) || inSupports( rule ) || atRuleChain( rule ).some( ( a ) => a.startsWith( '@media (prefers' ) ) ) {
 				return;
 			}
-			const decls = Object.fromEntries( ( rule.nodes || [] ).filter( ( n ) => 'decl' === n.type ).map( ( n ) => [ n.prop, norm( n.value ) ] ) );
-			if ( 'var(--sgs-focus-inner)' === decls[ '--sgs-focus-ring' ] && 'var(--sgs-focus-ink)' === decls[ '--sgs-focus-far' ] ) {
-				rule.selectors.map( norm ).forEach( ( sel ) => {
-					got[ sel ] = true;
-				} );
+			const core = coreOf( rule );
+			if ( null !== core && sels.includes( ':root' ) && sels.includes( '.sgs-on-light' ) ) {
+				seen.light = 'var(--sgs-focus-ink)' === core;
+			}
+			if ( null !== core && sels.includes( '.sgs-on-dark' ) ) {
+				seen.dark = 'var(--sgs-focus-inner)' === core;
+			}
+			const decl = ( prop ) => { let v = null; rule.each( ( n ) => { if ( 'decl' === n.type && prop === n.prop ) v = norm( n.value ); } ); return v; };
+			if ( sels.includes( '.sgs-focus--duotone' ) && sels.includes( '.sgs-container--has-bg-image' ) ) {
+				g2 = decl( '--sgs-focus-ring' );
+			}
+			if ( sels.includes( '.sgs-focus--signature:focus-visible:not(#wpadminbar *)' ) && null !== decl( '--sgs-focus-ring' ) ) {
+				signature = decl( '--sgs-focus-ring' );
 			}
 		} );
-		return WANT.filter( ( sel ) => ! got[ sel ] ).map( ( sel ) => `no light ring and ink far bloom for ${ sel }` );
+		if ( ! seen.light ) {
+			problems.push( ':root, .sgs-on-light must set --sgs-focus-ground-core to var(--sgs-focus-ink)' );
+		}
+		if ( ! seen.dark ) {
+			problems.push( '.sgs-on-dark must set --sgs-focus-ground-core to var(--sgs-focus-inner)' );
+		}
+		if ( 'var(--sgs-focus-ground-core)' !== g2 ) {
+			problems.push( `the duotone and photo rule paints the core ${ g2 }, want var(--sgs-focus-ground-core)` );
+		}
+		if ( 'var(--sgs-focus-ground-core)' !== signature ) {
+			problems.push( `the signature rule paints the core ${ signature }, want var(--sgs-focus-ground-core)` );
+		}
+		return problems;
 	},
 	signaturePreviewMirrorsFocus( root ) {
 		const problems = [];
@@ -298,42 +328,6 @@ const CHECKS = {
 			if ( 'initial-value' in reg ) {
 				problems.push( `${ name } registers an initial-value, which would replace the var() fallback with a value` );
 			}
-		}
-		return problems;
-	},
-	signatureCoreIsLightOnDark( root ) {
-		const want = [
-			'.sgs-on-dark .sgs-focus--signature:focus-visible:not(#wpadminbar *)',
-			'.sgs-on-dark.sgs-focus--signature:focus-visible:not(#wpadminbar *)',
-			'.sgs-on-dark .sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)',
-			'.sgs-on-dark.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)',
-		];
-		let found = null;
-		let sigAt = -1;
-		let darkAt = -1;
-		let i = 0;
-		root.walkRules( ( rule ) => {
-			i++;
-			const sels = rule.selectors.map( norm );
-			if ( sels.includes( '.sgs-focus--signature:focus-visible:not(#wpadminbar *)' ) && -1 === sigAt && rule.some( ( n ) => 'decl' === n.type && '--sgs-focus-ring' === n.prop ) ) {
-				sigAt = i;
-			}
-			if ( want.every( ( w ) => sels.includes( w ) ) ) {
-				found = rule;
-				darkAt = i;
-			}
-		} );
-		if ( ! found ) {
-			return [ 'no rule gives the signature core the light inner token on a dark ground (all four arms)' ];
-		}
-		const problems = [];
-		let value = '';
-		found.walkDecls( '--sgs-focus-ring', ( d ) => { value = norm( d.value ); } );
-		if ( 'var(--sgs-focus-inner)' !== value ) {
-			problems.push( `the dark-ground signature core is ${ value }, want var(--sgs-focus-inner)` );
-		}
-		if ( darkAt < sigAt ) {
-			problems.push( 'the dark-ground signature rule comes before the signature rule it must override' );
 		}
 		return problems;
 	},
@@ -420,10 +414,9 @@ describe( 'focus.css, the one focus system', () => {
 		rangeTrackDrawsNoSecondRing: ( text ) => text.replace( /(input\[type="range"\]:not\(\.sgs-focus-source\):focus-visible:not\(#wpadminbar \*\) \{\s*)outline-style: none;/, '$1outline-style: auto;' ),
 		cardArmCarriesTheIndicator: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\):not\(#wpadminbar \*\)/g, '.sgs-focus-card:focus-visible:not(#wpadminbar *)' ),
 		sourceDrawsNothing: ( text ) => text.replace( /(\n\.sgs-focus-source:focus-visible:not\(#wpadminbar \*\) \{\s*)outline-style: none;/, '$1color: inherit;' ),
-		darkDuotoneRingIsLight: ( text ) => text.replace( /(\.sgs-on-dark \.sgs-focus--duotone[^{]*\{[^}]*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
+		coreFollowsNearestGround: ( text ) => text.replace( '--sgs-focus-ground-core: var(--sgs-focus-inner)', '--sgs-focus-ground-core: var(--sgs-focus-ink)' ),
 		signaturePreviewMirrorsFocus: ( text ) => text.replace( /\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\)::before/g, '.sgs-focus--signature.sgs-focus-preview-x:not(#wpadminbar *)::before' ),
 		noHasFallbackKeepsAFocusRing: ( text ) => text.replace( /@supports not selector\(:has\(\*\)\)/, '@supports not selector(:is(*))' ),
-		signatureCoreIsLightOnDark: ( text ) => text.replace( /(\.sgs-on-dark\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\) \{\s*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
 		cardOverlayCarriesTheRing: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\) > \.sgs-block-link-overlay/g, '.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay-x' ),
 		overridePropertiesDoNotInherit: ( text ) => text.replace( /@property --sgs-focus-halo \{[^}]*\}/, '@property --sgs-focus-halo { syntax: "*"; inherits: true; }' ),
 		signatureClearsHostBorder: ( text ) => text.replace( /inset: calc\([^;]*--sgs-focus-host-border[^;]*\);/, 'inset: calc(var(--sgs-focus-width) * -3);' ),

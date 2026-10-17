@@ -454,7 +454,7 @@ endif;
 
 if ( $show_source_header ) :
 	?>
-	<div class="sgs-trustpilot-reviews__header">
+	<div class="sgs-trustpilot-reviews__header sgs-on-light">
 		<?php if ( '' !== $trust_score_label ) : ?>
 			<span class="sgs-trustpilot-reviews__label"><?php echo esc_html( $trust_score_label ); ?></span>
 		<?php endif; ?>

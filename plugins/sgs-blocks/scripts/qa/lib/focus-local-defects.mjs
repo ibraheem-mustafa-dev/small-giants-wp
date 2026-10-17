@@ -25,7 +25,7 @@ const REPO = path.resolve( HERE, '..', '..', '..', '..', '..' );
 const read = ( ...parts ) => fs.readFileSync( path.join( REPO, ...parts ), 'utf8' );
 
 /** Number of focusable stops this block adds to the fixture (one per control below). */
-export const DEFECT_STOPS = 5;
+export const DEFECT_STOPS = 6;
 
 /** Top-level rules of a stylesheet whose selector matches `re`, as one CSS string. At-rules are skipped. */
 export function rulesMatching( cssText, re ) {
@@ -64,6 +64,9 @@ export function defectsHtml() {
 .pc .pcbody{position:relative;padding:10px}
 .pc .pcbody a{color:inherit}
 .fade{background:#101828;padding:12px}
+.pillground{background:#101828;padding:16px}
+.pill{display:inline-block;padding:6px 14px;border-radius:999px;background:#ffffff}
+.pill a{color:#0b1020}
 .fade .sgs-responsive-logo__link{display:inline-block;color:#ffffff;--sgs-logo-hover-opacity:0.85}
 .fade .mark{display:block;width:90px;height:30px;background:#ffffff}
 ${ realCss() }`,
@@ -77,6 +80,7 @@ ${ realCss() }`,
 		<div class="pcbody"><a id="photo-lender" class="sgs-focus-source" href="#photo">Photo card title link</a></div>
 		<a class="sgs-block-link-overlay" href="#photo" tabindex="-1" aria-hidden="true"></a>
 	</article>
+	<div class="pillground sgs-on-dark"><span class="pill sgs-on-light"><a id="pill-link" class="sgs-focus--duotone" href="#pill">Pill link on a light pill</a></span></div>
 	<div class="fade"><a class="sgs-responsive-logo__link" id="fade-link" href="#logo"><span class="mark"></span></a></div>
 </section>`,
 	};
@@ -103,6 +107,8 @@ const lum = ( [ r, g, b ] ) => {
 const contrast = ( a, b ) => ( Math.max( lum( a ), lum( b ) ) + 0.05 ) / ( Math.min( lum( a ), lum( b ) ) + 0.05 );
 /** Last measured signature-on-dark core contrast, for the probe's report. */
 export const signatureDark = { contrast: null };
+/** Last measured core contrast of a duotone link on a white pill inside a dark block. */
+export const pillLink = { contrast: null };
 
 const parseRgb = ( s ) => ( s.match( /[\d.]+/g ) || [] ).slice( 0, 3 ).map( Number );
 const near = ( a, b, tol ) => a.length === 3 && b.length === 3 && a.every( ( v, i ) => Math.abs( v - b[ i ] ) <= tol );
@@ -136,6 +142,14 @@ export async function checkDefects( page, scratch, mode ) {
 	} );
 	signatureDark.contrast = contrast( parseRgb( sig.ring ), parseRgb( sig.ground ) );
 	if ( ! mode.forcedColors && signatureDark.contrast < 3 ) problems.push( `signature on dark: the core ${ sig.ring } scores ${ signatureDark.contrast.toFixed( 2 ) } against the ground ${ sig.ground }, want at least 3` );
+
+	await keyboardFocus( page, 'pill-link' );
+	const pill = await page.evaluate( () => {
+		const el = document.getElementById( 'pill-link' );
+		return { ring: getComputedStyle( el ).outlineColor, ground: getComputedStyle( el.closest( '.pill' ) ).backgroundColor };
+	} );
+	pillLink.contrast = contrast( parseRgb( pill.ring ), parseRgb( pill.ground ) );
+	if ( ! mode.forcedColors && pillLink.contrast < 3 ) problems.push( `pill link: the core ${ pill.ring } scores ${ pillLink.contrast.toFixed( 2 ) } against its light pill ${ pill.ground } inside a dark block, want at least 3 (the nearest ground must win)` );
 
 	await keyboardFocus( page, 'fade-link' );
 	const fade = await page.evaluate( () => {

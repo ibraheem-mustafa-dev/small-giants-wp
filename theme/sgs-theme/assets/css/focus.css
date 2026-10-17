@@ -25,6 +25,7 @@
 	--sgs-focus-inner: var(--wp--custom--focus--inner, var(--wp--preset--color--surface, #fff));
 	--sgs-focus-ink: var(--wp--custom--focus--ink, var(--wp--preset--color--text, #0b1020));
 	--sgs-focus-ring: var(--wp--custom--focus--ring, var(--wp--preset--color--accent, var(--sgs-focus-ink)));
+	--sgs-focus-ground-core: var(--sgs-focus-ink);
 	--sgs-focus-near: var(--wp--custom--focus--near, var(--sgs-focus-ring));
 	--sgs-focus-far: var(--wp--custom--focus--far, var(--sgs-focus-ring));
 	--sgs-focus-sig-a: var(--wp--custom--focus--signature-a, var(--wp--preset--color--primary));
@@ -32,27 +33,19 @@
 	--sgs-focus-sig-c: var(--wp--custom--focus--signature-c, var(--wp--preset--color--accent-light));
 }
 .sgs-on-dark {
+	--sgs-focus-ground-core: var(--sgs-focus-inner);
 	--sgs-focus-ring: var(--wp--custom--focus--ring-on-dark, var(--wp--preset--color--accent, var(--sgs-focus-inner)));
 	--sgs-focus-near: var(--wp--custom--focus--near-on-dark, var(--sgs-focus-ring));
 	--sgs-focus-far: var(--wp--custom--focus--far-on-dark, var(--sgs-focus-ring));
 }
-/* G2 wherever the ground is a photo or video, or an element asks for it. Later than .sgs-on-dark on purpose. */
+/* G2 wherever the ground is a photo or video, or an element asks for it. Later than .sgs-on-dark on purpose.
+   The core is --sgs-focus-ground-core, which the nearest ground class sets (ink on light, the light inner token on dark),
+   so a light pill inside a dark block keeps the dark core: inheritance picks the nearest ground, a "dark ancestor"
+   selector could not. A block marks an always-light surface with .sgs-on-light and an always-dark one with .sgs-on-dark. */
 .sgs-container--has-bg-image,
 .sgs-container--has-bg-video,
 .sgs-focus--duotone {
-	--sgs-focus-ring: var(--sgs-focus-ink);
-	--sgs-focus-near: var(--sgs-focus-inner);
-	--sgs-focus-far: var(--sgs-focus-ink);
-}
-/* A G2 element on a dark ground: the dark ink core would vanish into the ground, so the core is the light inner token.
-   The far bloom stays ink, giving a light ring with a dark halo, and the stop clears 3:1 through either band (the C40 pair). */
-.sgs-on-dark.sgs-focus--duotone,
-.sgs-on-dark .sgs-focus--duotone,
-.sgs-on-dark.sgs-container--has-bg-image,
-.sgs-on-dark .sgs-container--has-bg-image,
-.sgs-on-dark.sgs-container--has-bg-video,
-.sgs-on-dark .sgs-container--has-bg-video {
-	--sgs-focus-ring: var(--sgs-focus-inner);
+	--sgs-focus-ring: var(--sgs-focus-ground-core);
 	--sgs-focus-near: var(--sgs-focus-inner);
 	--sgs-focus-far: var(--sgs-focus-ink);
 }
@@ -144,17 +137,9 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 .sgs-focus--signature { position: relative; }
 .sgs-focus--signature:focus-visible:not(#wpadminbar *),
 .sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *) {
-	--sgs-focus-ring: var(--sgs-focus-ink);
+	--sgs-focus-ring: var(--sgs-focus-ground-core);
 	--sgs-focus-near: var(--sgs-focus-sig-b);
 	--sgs-focus-far: var(--sgs-focus-sig-a);
-}
-/* On a dark ground the ink core would vanish into it (about 1.3:1), so the signature core is the light inner token; the
-   band and the bloom keep the client's colours. */
-.sgs-on-dark .sgs-focus--signature:focus-visible:not(#wpadminbar *),
-.sgs-on-dark.sgs-focus--signature:focus-visible:not(#wpadminbar *),
-.sgs-on-dark .sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *),
-.sgs-on-dark.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *) {
-	--sgs-focus-ring: var(--sgs-focus-inner);
 }
 @supports (mask-composite: exclude) {
 	/* Anchored to the host's border box: the band runs from 2x to 3x the width outside it, beyond the ring. */
@@ -185,10 +170,8 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 		--sgs-focus-near: transparent;
 		--sgs-focus-far: transparent;
 	}
-	.sgs-on-dark.sgs-focus--duotone, .sgs-on-dark .sgs-focus--duotone,
-	.sgs-on-dark.sgs-container--has-bg-image, .sgs-on-dark .sgs-container--has-bg-image,
-	.sgs-on-dark.sgs-container--has-bg-video, .sgs-on-dark .sgs-container--has-bg-video {
-		--sgs-focus-ring: var(--sgs-focus-inner);
+	.sgs-container--has-bg-image, .sgs-container--has-bg-video, .sgs-focus--duotone {
+		--sgs-focus-ring: var(--sgs-focus-ground-core);
 		--sgs-focus-near: transparent;
 		--sgs-focus-far: transparent;
 	}

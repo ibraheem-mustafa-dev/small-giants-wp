@@ -129,6 +129,7 @@ final class FocusGroundClassTest extends TestCase {
 					'showTrustpilotLogo' => true,
 				)
 			);
+			$this->assertTrue( $this->has_token( $this->classes_of( $out['html'], 'sgs-trustpilot-reviews__header' ), 'sgs-on-light' ), "the white pill declares itself a light ground inside a {$theme} block, so the nearest ground sets the focus core" );
 			foreach ( array( 'sgs-trustpilot-reviews__header-logo-link', 'sgs-trustpilot-reviews__count-link' ) as $token ) {
 				$this->assertTrue( $this->has_token( $this->classes_of( $out['html'], $token ), 'sgs-focus--duotone' ), "{$token} sits on a hard-coded white pill ({$theme} theme)" );
 			}

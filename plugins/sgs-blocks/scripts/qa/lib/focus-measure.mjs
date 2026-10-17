@@ -189,12 +189,13 @@ function readFocused( radiusExemptSelector ) {
 		ink: resolveToken( '--sgs-focus-ink' ),
 		inner: resolveToken( '--sgs-focus-inner' ),
 		expect: ( () => {
-			// A signature core is the ink token, or the light inner token on a dark ground (focus.css).
-			if ( sig ) return target.closest( '.sgs-on-dark' ) ? 'inner' : 'ink';
+			// The core follows the NEAREST ground class: the light inner token on a dark ground, else the ink token (focus.css).
+			const nearest = target.closest( '.sgs-on-dark, .sgs-on-light' );
+			const onDark = !! nearest && nearest.classList.contains( 'sgs-on-dark' );
+			if ( sig ) return onDark ? 'inner' : 'ink';
 			const g2 = target.closest( '.sgs-focus--duotone, .sgs-container--has-bg-image, .sgs-container--has-bg-video' );
 			if ( ! g2 ) return 'ring';
-			// A G2 element on a dark ground paints its core in the light inner token (focus.css).
-			return g2.closest( '.sgs-on-dark' ) ? 'inner' : 'ink';
+			return onDark ? 'inner' : 'ink';
 		} )(),
 		// A fixture stop may name the colour its section's own tokens must give the ring (data-focus-expect-ring).
 		expectRing: target.dataset.focusExpectRing || null,
