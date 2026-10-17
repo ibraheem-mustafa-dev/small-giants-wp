@@ -551,7 +551,7 @@
         "width": "2px",
         "inner": "var(--wp--preset--color--surface)",
         "ink": "var(--wp--preset--color--text)",
-        "ring": "var(--wp--preset--color--accent)",
+        "ring": "var(--wp--preset--color--text)",
         "near": "var(--wp--preset--color--accent)",
         "far": "var(--wp--preset--color--accent)",
         "ringOnDark": "var(--wp--preset--color--accent)",

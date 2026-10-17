@@ -5,7 +5,9 @@ guard (`push-theme-snapshot.py::roster_guard`):
 
   * `settings.custom.focus` holds twelve keys (`FOCUS_KEYS`); WordPress prints each as `--wp--custom--focus--<kebab-key>`;
   * the core ring (`ring` on light grounds, `ringOnDark` on dark grounds) must reach 3:1 against every ground of its
-    tone; `inner` against `ink` must reach 9:1;
+    tone; `inner` against `ink` must reach 9:1. A ground is any opaque palette entry that is not a text, border or
+    solid signal colour (`is_ground_slug`): page surfaces, section bands, tints (including the `-light` status tints),
+    the brand colours, the footer; a translucent entry is no ground because what shows through it is unknown;
   * the fixer keeps the client's hue: a failing accent is darkened (light grounds) or lightened (dark grounds) in OKLCH
     lightness, the shortest distance that reaches 3:1, and written as a literal hex; the bloom keys stay the true accent;
   * when the shifted colour keeps less than `CHROMA_FLOOR` OKLCH chroma the hue is gone, so the ring falls back to a
@@ -30,7 +32,9 @@ import snapshot_palette_roster as roster
 SCRIPTS = Path(__file__).resolve().parent
 FOCUS_KEYS = ("width", "inner", "ink", "ring", "near", "far", "ringOnDark", "nearOnDark", "farOnDark",
               "signatureA", "signatureB", "signatureC")
-GROUND_SLUGS = ("surface", "surface-alt", "section", "footer-bg")
+TEXT_SLUGS = frozenset(("text", "heading", "link", "link-hover", "section-text"))
+# Signal colours are icon, text and badge fills; their `-light` tints are the grounds (alert and notice bands).
+SIGNAL_SLUGS = frozenset(("success", "error", "info", "warning", "whatsapp"))
 MIN_CORE = 3.0
 MIN_INK = 9.0
 # Below this OKLCH chroma a colour reads as grey: there is no hue left to keep.
@@ -81,14 +85,29 @@ def resolve(value: object, palette: dict[str, str]) -> str | None:
     return norm_hex(roster.resolve_colour(value, palette))
 
 
+def is_ground_slug(slug: str) -> bool:
+    """False for the slugs that name text, link, border or signal colours (they are drawn on grounds, never behind a
+    focus ring): `text`, `heading`, `link`, `link-hover`, `section-text`, `text-*`, `*-text`, `client-text*`, `border*`,
+    `*-line`, and the solid `success`, `error`, `info`, `warning`, `whatsapp`."""
+    if slug in TEXT_SLUGS or slug in SIGNAL_SLUGS or slug.startswith(("text-", "client-text", "border", "client-border")):
+        return False
+    return not slug.endswith(("-text", "-line"))
+
+
 def grounds(snapshot: dict) -> list[tuple[str, str, str]]:
-    """(slug, hex, tone) for each ground slug the snapshot's palette resolves, in GROUND_SLUGS order."""
+    """(slug, hex, tone) for every palette entry that can be a ground (`is_ground_slug`, opaque, resolving to a colour),
+    in palette order."""
     palette = roster.palette_map(snapshot)
     out = []
-    for slug in GROUND_SLUGS:
-        h = resolve(palette.get(slug), palette)
-        if h:
-            out.append((slug, h, tone(h)))
+    for slug in palette:
+        if not is_ground_slug(slug):
+            continue
+        resolved = roster.resolve_colour(palette[slug], palette)
+        parsed = roster.parse_hex(resolved) if isinstance(resolved, str) else None
+        if parsed is None or parsed[3] < 1.0:
+            continue
+        h = norm_hex(resolved)
+        out.append((slug, h, tone(h)))
     return out
 
 
@@ -104,6 +123,10 @@ def min_ratio(colour: str, ground_hexes: list[tuple[str, str]]) -> tuple[float |
 
 def chroma_of(hex_colour: str) -> float:
     return _OK.hex_to_oklch(hex_colour)[1]
+
+
+def lightness_of(colour: str) -> float:
+    return _OK.hex_to_oklch(norm_hex(colour) or colour)[0]
 
 
 def hue_of(hex_colour: str) -> float:
@@ -154,9 +177,11 @@ def _decide_ring(accent: str, ground_hexes: list[tuple[str, str]], direction: in
     return pick
 
 
-def derive_focus(snapshot: dict, framework: bool = False) -> tuple[dict, list[str]]:
+def derive_focus(snapshot: dict, framework: bool = False, recalibrate: bool = False) -> tuple[dict, list[str]]:
     """The full `settings.custom.focus` object for this snapshot (hand-set values kept) and the decisions taken.
-    `framework=True` writes the palette-reference defaults of plan section 2.3 and shifts no ring."""
+    `framework=True` writes the palette-reference defaults of plan section 2.3 and shifts no ring. `recalibrate=True`
+    recomputes `ring` and `ringOnDark` from the current grounds even when the snapshot already holds a value for them
+    (every other present key is still kept)."""
     notes: list[str] = []
     palette = roster.palette_map(snapshot)
     existing = ((snapshot.get("settings") or {}).get("custom") or {}).get("focus")
@@ -193,7 +218,9 @@ def derive_focus(snapshot: dict, framework: bool = False) -> tuple[dict, list[st
 
     out: dict[str, str] = {}
     for key in FOCUS_KEYS:
-        if isinstance(existing.get(key), str) and existing[key].strip():
+        if recalibrate and not framework and key in ("ring", "ringOnDark"):
+            out[key] = derived[key]
+        elif isinstance(existing.get(key), str) and existing[key].strip():
             out[key] = existing[key]
             if existing[key] != derived[key]:
                 notes.append(f"{key}: hand-set {existing[key]} kept (the fixer would write {derived[key]})")

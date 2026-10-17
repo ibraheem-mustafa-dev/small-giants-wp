@@ -3,6 +3,7 @@
   --survey            per snapshot: keys present, the ring verdict on light and on dark grounds, inner/ink ratio
   --fix               print the diff that writes the full settings.custom.focus object (nothing is written)
   --fix --apply       write it to sites/*/theme-snapshot.json and theme/sgs-theme/theme.json
+  --recalibrate       with --fix / --survey: recompute `ring` and `ringOnDark` from the current grounds even when set
   --check             exit 1 on a missing key, a core ring under 3:1 on its grounds, or inner/ink under 9:1
   --self-test         the rule against built-in cases (no repository file is read)
 
@@ -59,7 +60,7 @@ def verdict(colour: str | None, ground_hexes: list[tuple[str, str]]) -> str:
     return f"{colour} min {fmt(low)} on {slug} {'PASS' if low >= ft.MIN_CORE else 'FAIL'}"
 
 
-def survey_one(name: str, path: Path) -> None:
+def survey_one(name: str, path: Path, recalibrate: bool = False) -> None:
     snap = json.loads(read(path))
     palette = roster.palette_map(snap)
     gs = ft.grounds(snap)
@@ -75,9 +76,9 @@ def survey_one(name: str, path: Path) -> None:
         print(f"  accent {accent} against grounds: " + ", ".join(f"{s} {fmt(ft.ratio(accent, h))}" for s, h, _ in gs))
         print(f"  accent as ring, light: {verdict(accent, light)}")
         print(f"  accent as ring, dark:  {verdict(accent, dark)}")
-    focus, notes = ft.derive_focus(snap, framework=name == FRAMEWORK)
+    focus, notes = ft.derive_focus(snap, framework=name == FRAMEWORK, recalibrate=recalibrate)
     for key, grounds_of in (("ring", light), ("ringOnDark", dark)):
-        print(f"  {key} ({'current' if key not in missing else 'fixer would write'}): "
+        print(f"  {key} ({'recalibrated' if recalibrate else 'current' if key not in missing else 'fixer would write'}): "
               f"{focus[key]} -> {verdict(ft.resolve(focus[key], palette), grounds_of)}")
     a, b = ft.resolve(focus["inner"], palette), ft.resolve(focus["ink"], palette)
     if a and b:
@@ -87,17 +88,17 @@ def survey_one(name: str, path: Path) -> None:
         print(f"  note: {note}")
 
 
-def cmd_survey(only: list[str] | None) -> int:
+def cmd_survey(only: list[str] | None, recalibrate: bool = False) -> int:
     for name, path in targets(only):
-        survey_one(name, path)
+        survey_one(name, path, recalibrate)
     return 0
 
 
-def cmd_fix(only: list[str] | None, apply: bool) -> int:
+def cmd_fix(only: list[str] | None, apply: bool, recalibrate: bool = False) -> int:
     changed = 0
     for name, path in targets(only):
         old = read(path)
-        focus, notes = ft.derive_focus(json.loads(old), framework=name == FRAMEWORK)
+        focus, notes = ft.derive_focus(json.loads(old), framework=name == FRAMEWORK, recalibrate=recalibrate)
         new = ft.write_focus(old, focus)
         label = path.relative_to(REPO).as_posix()
         if new == old:
@@ -135,10 +136,10 @@ def cmd_check(only: list[str] | None) -> int:
 # Self-test
 # ---------------------------------------------------------------------------
 def make_snapshot(accent: str, text: str = "#1a1a1a", surface: str = "#ffffff", section: str = "#f1f0ec",
-                  footer: str = "#0f172a", focus: dict | None = None) -> dict:
+                  footer: str = "#0f172a", focus: dict | None = None, extra: tuple = ()) -> dict:
     palette = [{"slug": s, "color": c} for s, c in (
         ("surface", surface), ("surface-alt", surface), ("section", section), ("footer-bg", footer), ("text", text),
-        ("accent", accent), ("accent-light", "#fef3c7"), ("primary", "#1f7a7a"))]
+        ("accent", accent), ("accent-light", "#fef3c7"), ("primary", "#1f7a7a"), *extra)]
     custom: dict = {"gutter": {"mobile": "1rem"}}
     if focus is not None:
         custom = {"focus": focus, **custom}
@@ -191,18 +192,61 @@ def self_test() -> int:
     focus, notes = ft.derive_focus(snap)
     expect(focus["ring"] == ft.var("text"), "desaturated accent: ring falls back to the site's ink")
     expect(any("falls back" in n for n in notes), "desaturated accent: the fallback is reported")
-    snap = make_snapshot("#777777")
-    expect(ft.derive_focus(snap)[0]["ring"] == ft.var("accent"), "desaturated accent that already passes: no shift needed")
+    snap = make_snapshot("#6b3a58")
+    focus, _ = ft.derive_focus(snap)
+    expect(focus["ring"] == ft.var("accent"), "dark accent: it reaches 3:1 on every light ground, so the ring stays the accent")
+    expect(focus["ringOnDark"].startswith("#") and ft.ratio(focus["ringOnDark"], "#6b3a58") >= 3.0,
+           "dark accent: an accent-coloured band is itself a dark ground, so ringOnDark is lightened away from it")
 
     # 5. all grounds dark
     snap = make_snapshot("#1a1a60", text="#f5f5f5", surface="#0b1020", section="#101828", footer="#05070d")
     focus, _ = ft.derive_focus(snap)
     dark = [(s, h) for s, h, t in ft.grounds(snap) if t == "dark"]
-    expect(len(dark) == 4 and focus["ring"] == ft.var("accent"), "all-dark grounds: nothing to darken for, ring stays the accent")
+    light_left = [s for s, _h, t in ft.grounds(snap) if t == "light"]
+    expect(len(dark) >= 4 and focus["ring"] == ft.var("accent") and light_left == ["accent-light"],
+           "all-dark grounds: only the pale accent tint is light, and the accent already reaches 3:1 on it, so the ring stays the accent")
     low, _s = ft.min_ratio(ft.norm_hex(focus["ringOnDark"]), dark)
     expect(focus["ringOnDark"].startswith("#") and low >= 3.0, f"all-dark grounds: ringOnDark {focus['ringOnDark']} lightened to {fmt(low)}:1")
     snap["settings"]["custom"]["focus"] = focus
     expect(ft.check_snapshot(snap) == [], "all-dark grounds: --check passes")
+
+    # 5b. ground set: every opaque palette entry that is not a text or border colour
+    snap = make_snapshot("#f5d050", extra=(("surface-pink", "#f5c2c8"), ("text-muted", "#6b5c50"), ("border", "#e8d5c0"),
+                                           ("accent-text", "#7a6500"), ("overlay", "#ffffff80"), ("heading", "#111111")))
+    slugs = [s for s, _h, _t in ft.grounds(snap)]
+    expect("surface-pink" in slugs and "accent" in slugs and "primary" in slugs and "footer-bg" in slugs,
+           "ground set: pale tints, brand colours and the footer are grounds")
+    expect(not {"text", "text-muted", "border", "accent-text", "heading", "overlay"} & set(slugs),
+           "ground set: text, heading, border and translucent entries are not grounds")
+
+    # 5c. a pale tinted palette entry darkens the ring beyond the surface/white-only calibration
+    plain = make_snapshot("#f5d050", surface="#fbf3dc", section="#fff9f0")
+    tinted = make_snapshot("#f5d050", surface="#fbf3dc", section="#fff9f0", extra=(("surface-pink", "#f5c2c8"),))
+    ring_plain, ring_tinted = ft.derive_focus(plain)[0]["ring"], ft.derive_focus(tinted)[0]["ring"]
+    expect(ft.lightness_of(ring_tinted) < ft.lightness_of(ring_plain) and ft.ratio(ring_tinted, "#f5c2c8") >= 3.0
+           and ft.ratio(ring_plain, "#f5c2c8") < 3.0 and ft.hue_of(ring_tinted) - ft.hue_of(ring_plain) < 8,
+           f"tinted ground: ring {ring_plain} -> {ring_tinted} reaches {fmt(ft.ratio(ring_tinted, '#f5c2c8'))}:1 on the pink tint, hue kept")
+    plain["settings"]["custom"]["focus"] = ft.derive_focus(plain)[0]
+    expect(any("surface-pink" in p for p in ft.check_snapshot({**tinted, "settings": {**tinted["settings"], "custom": {"focus": plain["settings"]["custom"]["focus"]}}})),
+           "tinted ground: --check names the pink tint when the ring was calibrated without it")
+
+    # 5d. a mid-dark palette entry lightens ringOnDark beyond the footer-only calibration
+    base = make_snapshot("#f0c848")
+    deep = make_snapshot("#f0c848", extra=(("primary-dark", "#587a6a"),))
+    on_base = ft.resolve(ft.derive_focus(base)[0]["ringOnDark"], roster.palette_map(base))
+    on_deep = ft.resolve(ft.derive_focus(deep)[0]["ringOnDark"], roster.palette_map(deep))
+    dgrounds = [(s, h) for s, h, t in ft.grounds(deep) if t == "dark"]
+    expect(ft.lightness_of(on_deep) > ft.lightness_of(on_base) and ft.min_ratio(ft.norm_hex(on_deep), dgrounds)[0] >= 3.0
+           and ft.min_ratio(ft.norm_hex(on_base), dgrounds)[0] < 3.0,
+           f"dark ground: ringOnDark {on_base} -> {on_deep} reaches 3:1 on every dark entry")
+
+    # 5e. a set ring is kept by default and recomputed by recalibrate; other keys stay; the framework is never shifted
+    stale = make_snapshot("#f5d050", extra=(("surface-pink", "#f5c2c8"),), focus={"ring": "#a68a23", "near": "#123456"})
+    kept, recal = ft.derive_focus(stale)[0], ft.derive_focus(stale, recalibrate=True)[0]
+    expect(kept["ring"] == "#a68a23" and recal["ring"] != "#a68a23" and ft.ratio(recal["ring"], "#f5c2c8") >= 3.0
+           and recal["near"] == "#123456", "recalibrate: ring is recomputed, a hand-set bloom key is kept")
+    expect(ft.derive_focus(stale, framework=True, recalibrate=True)[0]["ring"] == "#a68a23",
+           "recalibrate: the framework base is never shifted")
 
     # 6. inner/ink under 9:1 gets the fallback pair
     snap = make_snapshot("#0a7ea8", text="#777777", surface="#888888")
@@ -265,14 +309,17 @@ def main() -> int:
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--self-test", action="store_true")
     parser.add_argument("--apply", action="store_true", help="with --fix: write the files")
+    parser.add_argument("--recalibrate", action="store_true", help="with --fix or --survey: recompute ring and ringOnDark")
     parser.add_argument("--client", action="append", help="limit to one target folder (or `framework`)")
     args = parser.parse_args()
     if args.apply and not args.fix:
         parser.error("--apply goes with --fix")
+    if args.recalibrate and not (args.fix or args.survey):
+        parser.error("--recalibrate goes with --fix or --survey")
     if args.survey:
-        return cmd_survey(args.client)
+        return cmd_survey(args.client, args.recalibrate)
     if args.fix:
-        return cmd_fix(args.client, args.apply)
+        return cmd_fix(args.client, args.apply, args.recalibrate)
     if args.check:
         return cmd_check(args.client)
     return self_test()

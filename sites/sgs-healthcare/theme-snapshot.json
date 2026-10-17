@@ -75,7 +75,7 @@
         "width": "2px",
         "inner": "var(--wp--preset--color--surface)",
         "ink": "var(--wp--preset--color--text)",
-        "ring": "#3a9f79",
+        "ring": "#135a41",
         "near": "var(--wp--preset--color--accent)",
         "far": "var(--wp--preset--color--accent)",
         "ringOnDark": "#56b991",
