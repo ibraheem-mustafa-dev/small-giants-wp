@@ -8,22 +8,34 @@
  *                        stops per page; reaching the cap before the last focusable element prints STOP CAP HIT and exits 1.
  *   --negative-control   runs --local against a deliberately bad CSS (1px outline in the background colour) and passes
  *                        only if the probe fails it.
+ *   --determinism        runs --local twice in the same engine and passes only if every stop's contrast reading is identical.
  *
  * Per stop: outline-*, box-shadow and border-radius at rest and on focus; the clip test; and a pixel check (an
- * unfocused and a focused screenshot of the element's box grown by 8px; at up to 16 points the ring and the inner band
- * are compared with the unfocused pixel 1px outside the ring; a stop passes at min over points of max(contrast(ring),
- * contrast(inner)) >= 3). Prints `looks`, `min contrast` and `clipped` and exits 1 when the acceptance fails
+ * unfocused and a focused screenshot of the element's box grown by 8px, each taken once the frame has settled: --settle
+ * ms (default 1200) after the focus change, then until two consecutive shots are pixel-identical, at most 3 s more; at up
+ * to 20 points (four per edge on the straight part, one per corner at 45 degrees) the ring and the inner band are compared
+ * with the unfocused pixel 1px outside the ring; a stop passes at min over points of max(contrast(ring), contrast(inner))
+ * >= 3). A point whose topmost element (elementsFromPoint) is neither the target, an ancestor of it nor a descendant is a
+ * neighbour's box and is skipped; the usable count is recorded, and a stop with fewer than 6 usable points is
+ * `unmeasurable` (neither a pass nor a fail, counted on its own line). A focusable neighbour sitting over a sample point is
+ * reported as a neighbour overlap.
+ * A focus source (`sgs-focus-source`, visually hidden) is measured on the element that paints its ring (the adjacent
+ * `sgs-focus-proxy`, the first proxy in the nearest `sgs-focus-scope`, or the `sgs-focus-card`), recorded as
+ * `measuredOn: 'proxy'`; a source with none of them is a FAIL named `no-proxy`. The radius-change criterion exempts
+ * `.screen-reader-text` and `.skip-link` (visually hidden at rest, so a rest-versus-focus comparison says nothing): the
+ * exemption is counted and printed. Prints `looks`, `min contrast` and `clipped` and exits 1 when the acceptance fails
  * (looks > 1 apart from inset and signature stops, min contrast < 3, a clipped non-inset stop, radius changing on
- * focus, or fewer fixture controls reached than exist), 2 on a usage or environment error, else 0.
+ * focus, a source with no proxy, or fewer fixture controls reached than exist), 2 on a usage or environment error, else 0.
  *
  * Flags: --css <path> (default theme/sgs-theme/assets/css/focus.css) --forced-colors --reduced-motion --axe
- * --shots <dir> --json <file> --widths a,b --open-drawer --open-mega --max-stops N --settle ms --pause ms --self-test
+ * --shots <dir> --json <file> --widths a,b --open-drawer --open-mega --max-stops N --settle ms (default 1200; --local
+ * caps it at 120) --pause ms --self-test (offline judges, then a browser fixture for proxy, neighbour and radius cases)
  *
  * Fixture coverage (page 5389, about 100 stops): light, dark and photo sections each carry SGS buttons, a multi-button, links,
  * form controls, option picker, accordion, tabs and a slider; the light section also carries `sgs-focus--inset`,
- * `sgs-focus--signature` and `sgs-focus--duotone` buttons and a before-after range input. Known gaps: no
- * `sgs-focus-source` + `sgs-focus-proxy` pair (no SGS block renders one until the proxy tasks land), and no dual-thumb price
- * slider (no SGS block renders it; WooCommerce's own filter markup does, so /shop/ covers it).
+ * `sgs-focus--signature` and `sgs-focus--duotone` buttons and a before-after range input. Stacked buttons sit 8px apart
+ * (a gap on their container), because the bloom of one overpaints the next. Known gap: no dual-thumb price slider (no SGS
+ * block renders it; WooCommerce's own filter markup does, so /shop/ covers it).
  *
  * Token check: each stop's computed outline-color must equal the resolved --sgs-focus-ring (--sgs-focus-ink for a signature
  * stop or a duotone or photo ground) and its box-shadow must carry a solid hairline in the resolved --sgs-focus-inner, else
@@ -42,6 +54,7 @@ import { chromium, firefox, webkit } from 'playwright';
 import { parseArgs, selfTest, summarise } from './lib/focus-probe-lib.mjs';
 import { BAD_CSS, readCss, runLocalEngine } from './lib/focus-local.mjs';
 import { runSite } from './lib/focus-site.mjs';
+import { browserSelfTest } from './lib/focus-selftest-browser.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..', '..' );
 const DEFAULT_CSS = path.join( REPO, 'theme', 'sgs-theme', 'assets', 'css', 'focus.css' );
@@ -61,6 +74,14 @@ function headline( perWidth, extraFails ) {
 		minContrast: mins.length ? Math.min( ...mins ) : null,
 		clipped: perWidth.reduce( ( n, s ) => n + s.clipped, 0 ),
 		radiusChanged: perWidth.reduce( ( n, s ) => n + s.radiusChanged, 0 ),
+		radiusExempt: perWidth.reduce( ( n, s ) => n + s.radiusExempt, 0 ),
+		radiusExemptReasons: [ ...new Set( perWidth.flatMap( ( s ) => s.radiusExemptReasons ) ) ],
+		measuredOnProxy: perWidth.reduce( ( n, s ) => n + s.measuredOnProxy, 0 ),
+		noProxy: perWidth.reduce( ( n, s ) => n + s.noProxy, 0 ),
+		unmeasurable: perWidth.reduce( ( n, s ) => n + s.unmeasurable, 0 ),
+		unmeasurableReasons: perWidth.flatMap( ( s ) => s.unmeasurableReasons ),
+		unsettled: perWidth.reduce( ( n, s ) => n + s.unsettled, 0 ),
+		neighbourOverlaps: perWidth.flatMap( ( s ) => s.neighbourOverlaps ),
 		tokenMismatches: perWidth.reduce( ( n, s ) => n + s.tokenMismatches, 0 ),
 		tokenStatus: perWidth.some( ( s ) => s.tokenised > 0 )
 			? `checked on ${ perWidth.reduce( ( n, s ) => n + s.tokenised, 0 ) } of ${ perWidth.reduce( ( n, s ) => n + s.stops, 0 ) } stops`
@@ -74,7 +95,11 @@ function printHeadline( h, label ) {
 	console.log( `${ label }looks: ${ h.looks }${ suffix }   [wider tuple incl. colour, shadow shape, radius: ${ h.looksFull }]` );
 	console.log( `${ label }min contrast: ${ fmt( h.minContrast ) }` );
 	console.log( `${ label }clipped: ${ h.clipped }` );
-	console.log( `${ label }radius changed on focus: ${ h.radiusChanged }` );
+	console.log( `${ label }radius changed on focus: ${ h.radiusChanged }${ h.radiusExempt ? ` (exempt: ${ h.radiusExempt } stop${ h.radiusExempt === 1 ? '' : 's' } on ${ h.radiusExemptReasons.join( ', ' ) }, no rest-versus-focus comparison)` : '' }` );
+	console.log( `${ label }focus sources: ${ h.measuredOnProxy } measured on their proxy, ${ h.noProxy } with no proxy` );
+	console.log( `${ label }unmeasurable (under 6 usable sample points, neither pass nor fail): ${ h.unmeasurable }; unsettled (two shots never matched): ${ h.unsettled }; neighbour overlaps: ${ h.neighbourOverlaps.length }` );
+	h.unmeasurableReasons.slice( 0, 6 ).forEach( ( r ) => console.log( `${ label }  unmeasurable ${ r }` ) );
+	h.neighbourOverlaps.slice( 0, 6 ).forEach( ( r ) => console.log( `${ label }  neighbour overlap ${ r }` ) );
 	console.log( `${ label }token match: ${ h.tokenStatus }${ h.tokenMismatches ? `, ${ h.tokenMismatches } token-mismatch` : '' }` );
 }
 
@@ -107,6 +132,33 @@ async function runLocal( opts, cssFile, label ) {
 	}
 	console.log( `\n${ label }: ${ failed ? 'FAIL' : 'PASS' }` );
 	return { failed, all };
+}
+
+/** The same --local run twice in each engine; passes only when every stop's contrast reading is identical both times. */
+async function runDeterminism( opts, cssFile ) {
+	const cssText = readCss( cssFile );
+	let differing = 0;
+	let total = 0;
+	for ( const engine of opts.engines ) {
+		const browser = await ENGINES[ engine ].launch();
+		try {
+			const scratch = await newScratch( browser );
+			const readings = [];
+			for ( let pass = 0; pass < 2; pass++ ) {
+				const results = await runLocalEngine( browser, engine, cssText, opts, scratch );
+				readings.push( results.flatMap( ( r ) => r.stops.map( ( s ) => `${ r.width } ${ s.label } ${ JSON.stringify( [ s.contrast.min, s.contrast.points, s.contrast.planned, s.contrast.usable, s.contrast.unmeasurable || null ] ) }` ) ) );
+			}
+			const diff = readings[ 0 ].filter( ( line, i ) => line !== readings[ 1 ][ i ] );
+			differing += diff.length + Math.abs( readings[ 0 ].length - readings[ 1 ].length );
+			total += readings[ 0 ].length;
+			console.log( `[${ engine }] determinism: ${ readings[ 0 ].length } stops measured twice, ${ diff.length } differ` );
+			diff.slice( 0, 5 ).forEach( ( d ) => console.log( `  DIFF ${ d }` ) );
+		} finally {
+			await browser.close();
+		}
+	}
+	console.log( `determinism: ${ differing === 0 ? 'identical' : 'DIFFERS' } (${ total } stops)` );
+	return differing === 0;
 }
 
 async function runLive( opts ) {
@@ -153,8 +205,22 @@ async function main() {
 		console.log( fs.readFileSync( fileURLToPath( import.meta.url ), 'utf8' ).split( '*/' )[ 0 ] );
 		return 0;
 	}
-	if ( opts.selfTest ) return selfTest() ? 1 : 0;
 	const cssFile = path.resolve( opts.css || DEFAULT_CSS );
+	if ( opts.selfTest ) {
+		let failures = selfTest();
+		const browser = await ENGINES[ opts.engines[ 0 ] ].launch();
+		try {
+			failures += await browserSelfTest( browser, readCss( cssFile ) );
+		} finally {
+			await browser.close();
+		}
+		console.log( failures ? `self-test: ${ failures } failing` : 'self-test: all passed' );
+		return failures ? 1 : 0;
+	}
+	if ( opts.determinism ) {
+		opts.settle = Math.min( opts.settle, 120 );
+		return ( await runDeterminism( opts, cssFile ) ) ? 0 : 1;
+	}
 	let result;
 	if ( opts.negativeControl ) {
 		opts.settle = Math.min( opts.settle, 120 );

@@ -127,19 +127,30 @@ export function samplePlan( rect, radius, outline, hairline ) {
 		{ len: rect.height, at: ( f, d ) => snap( [ rect.x + rect.width + d, rect.y + f * rect.height ] ) },
 	];
 	const points = [];
+	let group = 0;
+	const push = ( ring, bg, inner, f ) => {
+		points.push( { kind: 'ring', x: ring[ 0 ], y: ring[ 1 ], f, group, edge: points.length } );
+		points.push( { kind: 'bg', x: bg[ 0 ], y: bg[ 1 ], f, group, edge: points.length } );
+		if ( inner ) points.push( { kind: 'inner', x: inner[ 0 ], y: inner[ 1 ], f, group, edge: points.length } );
+		group++;
+	};
 	for ( const edge of edges ) {
 		let fractions = SAMPLE_FRACTIONS.filter( ( f ) => f * edge.len >= radius && ( 1 - f ) * edge.len >= radius );
 		if ( fractions.length === 0 ) fractions = [ 0.5 ];
 		for ( const f of fractions ) {
-			const ring = edge.at( f, dRing );
-			const bg = edge.at( f, dBg );
-			points.push( { kind: 'ring', x: ring[ 0 ], y: ring[ 1 ], f, edge: points.length } );
-			points.push( { kind: 'bg', x: bg[ 0 ], y: bg[ 1 ], f, edge: points.length } );
-			if ( dInner !== null ) {
-				const inner = edge.at( f, dInner );
-				points.push( { kind: 'inner', x: inner[ 0 ], y: inner[ 1 ], f, edge: points.length } );
-			}
+			push( edge.at( f, dRing ), edge.at( f, dBg ), dInner !== null ? edge.at( f, dInner ) : null, f );
 		}
+	}
+	// One point per corner, at 45 degrees on the arc the outline follows (the effective radius is capped at half the shorter
+	// side), so a circle or a pill, whose edges give only midpoints, still has eight samples.
+	const r = Math.min( radius, rect.width / 2, rect.height / 2 );
+	const along = ( d ) => ( r < 0.5 ? d * Math.SQRT2 : r + d );
+	for ( const [ sx, sy ] of [ [ -1, -1 ], [ 1, -1 ], [ 1, 1 ], [ -1, 1 ] ] ) {
+		if ( along( dRing ) < 1 || along( dBg ) < 1 ) continue;
+		const cx = sx < 0 ? rect.x + r : rect.x + rect.width - r;
+		const cy = sy < 0 ? rect.y + r : rect.y + rect.height - r;
+		const at = ( d ) => snap( [ cx + sx * Math.SQRT1_2 * along( d ), cy + sy * Math.SQRT1_2 * along( d ) ] );
+		push( at( dRing ), at( dBg ), dInner !== null && along( dInner ) >= 1 ? at( dInner ) : null, 'corner' );
 	}
 	return points;
 }
@@ -198,6 +209,12 @@ export function judgeContrast( readings ) {
 	return { min: worst.value, ringMin, points: per.length, worst: { ring: worst.ring, bg: worst.bg, inner: worst.inner } };
 }
 
+/** The fewest usable sample points a stop needs before its pixel contrast counts; fewer and the stop is `unmeasurable`. */
+export const MIN_USABLE_POINTS = 6;
+
+/** Stops whose element is visually hidden at rest and only appears on focus: their radius at rest says nothing. */
+export const RADIUS_EXEMPT_SELECTOR = '.screen-reader-text, .skip-link';
+
 /** The look tuple that must be identical across stops. */
 export const lookKey = ( s ) => `${ s.outline.width } ${ s.outline.style } ${ s.outline.offset }`;
 
@@ -240,7 +257,8 @@ export function judgeStop( s, mode ) {
 		}
 	}
 	if ( s.clip.clipped && ! s.kinds.inset ) fails.push( `outline clipped by ${ s.clip.by }` );
-	if ( s.radiusRest !== s.radius ) fails.push( `radius ${ s.radiusRest } -> ${ s.radius } on focus` );
+	if ( s.noProxy ) fails.push( 'no-proxy: a focus source with no proxy, so nothing draws its ring (measured on the source itself)' );
+	if ( s.radiusRest !== s.radius && ! s.radiusExempt ) fails.push( `radius ${ s.radiusRest } -> ${ s.radius } on focus` );
 	if ( mode.reducedMotion && s.kinds.signature && s.signatureAnimation !== 'none' ) {
 		fails.push( `signature animation ${ s.signatureAnimation } under reduced motion` );
 	}
@@ -270,7 +288,15 @@ export function summarise( stops, mode ) {
 		minContrast: measured.length ? Math.min( ...measured ) : null,
 		clipped: stops.filter( ( s ) => s.clip.clipped && ! s.kinds.inset ).length,
 		clippedInset: stops.filter( ( s ) => s.clip.clipped && s.kinds.inset ).length,
-		radiusChanged: stops.filter( ( s ) => s.radiusRest !== s.radius ).length,
+		radiusChanged: stops.filter( ( s ) => s.radiusRest !== s.radius && ! s.radiusExempt ).length,
+		radiusExempt: stops.filter( ( s ) => s.radiusRest !== s.radius && s.radiusExempt ).length,
+		radiusExemptReasons: [ ...new Set( stops.filter( ( s ) => s.radiusExempt ).map( ( s ) => s.radiusExempt ) ) ],
+		measuredOnProxy: stops.filter( ( s ) => s.measuredOn === 'proxy' ).length,
+		noProxy: stops.filter( ( s ) => s.noProxy ).length,
+		unmeasurable: stops.filter( ( s ) => s.contrast && s.contrast.unmeasurable ).length,
+		unmeasurableReasons: stops.filter( ( s ) => s.contrast && s.contrast.unmeasurable ).map( ( s ) => `${ s.label }: ${ s.contrast.unmeasurable }` ),
+		unsettled: stops.filter( ( s ) => s.settled === false ).length,
+		neighbourOverlaps: stops.filter( ( s ) => s.contrast && s.contrast.neighbours && s.contrast.neighbours.length ).map( ( s ) => `${ s.label } overlaps ${ s.contrast.neighbours.join( ', ' ) }` ),
 		obscured: stops.filter( ( s ) => s.obscured ).length,
 		tokenStatus,
 		tokenised,
@@ -284,8 +310,8 @@ export function parseArgs( argv ) {
 	const o = {
 		local: false, site: null, pages: [], widths: [ 1440, 768, 375 ], engines: [], css: null,
 		forcedColors: false, reducedMotion: false, axe: false, shots: null, json: null,
-		openDrawer: false, openMega: false, maxStops: 130, settle: 350, pause: 2500,
-		negativeControl: false, selfTest: false, help: false,
+		openDrawer: false, openMega: false, maxStops: 130, settle: 1200, pause: 2500,
+		negativeControl: false, determinism: false, selfTest: false, help: false,
 	};
 	const value = ( i, flag ) => {
 		if ( i + 1 >= argv.length ) throw new Error( `${ flag } needs a value` );
@@ -311,6 +337,7 @@ export function parseArgs( argv ) {
 			case '--settle': o.settle = Number( value( i++, a ) ); break;
 			case '--pause': o.pause = Number( value( i++, a ) ); break;
 			case '--negative-control': o.negativeControl = true; break;
+			case '--determinism': o.determinism = true; break;
 			case '--self-test': o.selfTest = true; break;
 			case '--help': case '-h': o.help = true; break;
 			default: throw new Error( `unknown argument ${ a }` );
@@ -320,7 +347,7 @@ export function parseArgs( argv ) {
 	for ( const e of o.engines ) {
 		if ( ! [ 'chromium', 'firefox', 'webkit' ].includes( e ) ) throw new Error( `unknown engine ${ e }` );
 	}
-	if ( ! o.help && ! o.selfTest && ! o.local && ! o.negativeControl && ! o.site ) throw new Error( 'give --local, --negative-control or --site <target>' );
+	if ( ! o.help && ! o.selfTest && ! o.local && ! o.negativeControl && ! o.determinism && ! o.site ) throw new Error( 'give --local, --negative-control, --determinism or --site <target>' );
 	if ( o.site && o.pages.length === 0 ) throw new Error( '--site needs --pages <list>' );
 	return o;
 }
@@ -342,9 +369,9 @@ export function selfTest() {
 	check( 'a blurred glow is not a hairline', ! hasSolidHairline( glow ) );
 	check( 'none has no layer', firstShadowLayer( 'none' ) === null );
 	const plan = samplePlan( { x: 100, y: 100, width: 200, height: 40 }, 4, { width: 2, offset: 2 }, { inset: false, spread: 2 } );
-	check( 'a wide box gets 16 ring points', plan.filter( ( p ) => p.kind === 'ring' ).length === 16 );
+	check( 'a wide box gets 16 edge points and 4 corner points', plan.filter( ( p ) => p.kind === 'ring' ).length === 20 );
 	const small = samplePlan( { x: 0, y: 0, width: 24, height: 24 }, 12, { width: 2, offset: 2 }, null );
-	check( 'a circle gets the four midpoints', small.filter( ( p ) => p.kind === 'ring' ).length === 4 );
+	check( 'a circle gets the four midpoints and four corner points', small.filter( ( p ) => p.kind === 'ring' ).length === 8 );
 	check( 'pass at 3.5', judgeContrast( [ { ring: [ 0, 0, 0 ], bg: [ 255, 255, 255 ], inner: null } ] ).min > 3 );
 	check( 'fail at 1.04', judgeContrast( [ { ring: [ 245, 208, 80 ], bg: [ 255, 255, 255 ], inner: null } ] ).min < 3 );
 	check( 'inner band can carry the stop', judgeContrast( [ { ring: [ 128, 128, 128 ], bg: [ 128, 128, 128 ], inner: [ 255, 255, 255 ] } ] ).min > 3 );

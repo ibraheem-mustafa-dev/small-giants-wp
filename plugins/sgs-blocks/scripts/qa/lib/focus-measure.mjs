@@ -9,28 +9,38 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-	GROW, firstShadowLayer, hasSolidHairline, judgeContrast, pixelOf, samplePlan, shadowShape,
+	GROW, MIN_USABLE_POINTS, RADIUS_EXEMPT_SELECTOR, firstShadowLayer, hasSolidHairline, judgeContrast, pixelOf, samplePlan, shadowShape,
 } from './focus-probe-lib.mjs';
+
+/** The longest a stop waits for two consecutive screenshots of its box to be pixel-identical, after the settle time. */
+const SETTLE_CAP_MS = 3000;
+const RECT_CAP_MS = SETTLE_CAP_MS;
 
 /**
  * Runs in the page: the focused element and what it paints. Keeps the element on window.__fp so the blur / refocus steps
  * address the same node without touching the DOM. Returns null when focus has left the document, { seen: true } when
  * this element was already measured (a focus cycle), else the reading.
  */
-function readFocused() {
+function readFocused( radiusExemptSelector ) {
 	const el = document.activeElement;
 	if ( ! el || el === document.body || el === document.documentElement ) return null;
 	window.__fpSeen = window.__fpSeen || new WeakSet();
 	if ( window.__fpSeen.has( el ) ) return { seen: true, iframe: el.tagName === 'IFRAME' };
 	window.__fpSeen.add( el );
 
+	// The element that paints a focus source's ring is the proxy focus.css names: the next element sibling carrying
+	// `sgs-focus-proxy`, else the first `sgs-focus-proxy` inside the nearest `sgs-focus-scope`, else the nearest
+	// `sgs-focus-card`. A source with none of them paints nothing: it is measured on itself and reported as `no-proxy`.
 	let target = el;
-	if ( el.classList.contains( 'sgs-focus-source' ) ) {
+	const isSource = el.classList.contains( 'sgs-focus-source' );
+	let proxyKind = null;
+	if ( isSource ) {
 		const next = el.nextElementSibling;
 		const scope = el.closest( '.sgs-focus-scope' );
-		if ( next && next.classList.contains( 'sgs-focus-proxy' ) ) target = next;
-		else if ( scope && scope.querySelector( '.sgs-focus-proxy' ) ) target = scope.querySelector( '.sgs-focus-proxy' );
-		else if ( el.closest( '.sgs-focus-card' ) ) target = el.closest( '.sgs-focus-card' );
+		const card = el.closest( '.sgs-focus-card' );
+		if ( next && next.classList.contains( 'sgs-focus-proxy' ) ) { target = next; proxyKind = 'adjacent'; }
+		else if ( scope && scope.querySelector( '.sgs-focus-proxy' ) ) { target = scope.querySelector( '.sgs-focus-proxy' ); proxyKind = 'scoped'; }
+		else if ( card ) { target = card; proxyKind = 'card'; }
 	}
 	const cardEl = target !== el && target.classList.contains( 'sgs-focus-card' ) ? target : null;
 	window.__fp = { el, target };
@@ -179,7 +189,8 @@ function readFocused() {
 		ink: resolveToken( '--sgs-focus-ink' ),
 		inner: resolveToken( '--sgs-focus-inner' ),
 		expect: ( () => {
-			if ( sig ) return 'ink';
+			// A signature core is the ink token, or the light inner token on a dark ground (focus.css).
+			if ( sig ) return target.closest( '.sgs-on-dark' ) ? 'inner' : 'ink';
 			const g2 = target.closest( '.sgs-focus--duotone, .sgs-container--has-bg-image, .sgs-container--has-bg-video' );
 			if ( ! g2 ) return 'ring';
 			// A G2 element on a dark ground paints its core in the light inner token (focus.css).
@@ -196,6 +207,10 @@ function readFocused() {
 		viewport: { w: vw, h: vh },
 		focusVisible: el.matches( ':focus-visible' ),
 		proxied: target !== el,
+		measuredOn: target !== el ? 'proxy' : 'element',
+		proxyKind,
+		noProxy: isSource && target === el,
+		radiusExempt: el.matches( radiusExemptSelector ) ? 'visually hidden at rest (.screen-reader-text, .skip-link)' : null,
 		range: isRange,
 		kinds: {
 			inset: target.classList.contains( 'sgs-focus--inset' ),
@@ -249,13 +264,53 @@ function clipFor( rect, viewport ) {
 	return { x, y, width: right - x, height: bottom - y };
 }
 
-/** Pair the focused and unfocused pixels for one stop and judge them. Returns { min, points } or { min: null }. */
-async function measurePixels( scratch, focusedPng, restingPng, clip, reading ) {
+/**
+ * Runs in the page: for each sample point, whether the topmost element there is the focused target, one of its ancestors
+ * (the page ground) or one of its descendants. A point where another element sits on top is a neighbour's box (its fill
+ * would be read as the ground, or it would paint over the ring) and is not usable. Returns, per point, null when usable
+ * or { blocked, neighbour } naming the element in the way; a point outside the viewport is `off-screen`.
+ */
+function hitTestPoints( points ) {
+	const { target } = window.__fp;
+	const vw = document.documentElement.clientWidth;
+	const vh = window.innerHeight;
+	const describe = ( n ) => `${ n.tagName.toLowerCase() }${ typeof n.className === 'string' && n.className.trim() ? '.' + n.className.trim().split( /\s+/ )[ 0 ] : '' }`;
+	const focusable = 'a[href], button, input, select, textarea, summary, [tabindex]';
+	return points.map( ( [ x, y ] ) => {
+		if ( x < 0 || y < 0 || x >= vw || y >= vh ) return { blocked: 'off-screen', neighbour: false };
+		const top = document.elementsFromPoint( x, y )[ 0 ];
+		if ( ! top || top === target || top.contains( target ) || target.contains( top ) ) return null;
+		return { blocked: describe( top ), neighbour: top.matches( focusable ) || Boolean( top.closest( focusable ) ) };
+	} );
+}
+
+/**
+ * Pair the focused and unfocused pixels for one stop and judge them. The sample plan is filtered to the points whose
+ * ring and neighbour pixel both lie on the target's own ground (hitTestPoints); fewer than MIN_USABLE_POINTS usable
+ * samples make the stop `unmeasurable`, neither a pass nor a fail. Returns { min, points, planned, usable, neighbours }
+ * plus `unmeasurable` (the reason) when too few points were usable; `neighbours` names the focusable elements that sat
+ * over sample points (a neighbour overpaint).
+ */
+async function measurePixels( page, scratch, focusedPng, restingPng, clip, reading ) {
 	const hairline = firstShadowLayer( reading.focus.boxShadow );
 	const solid = hasSolidHairline( hairline ) ? hairline : null;
 	const w = Number.parseFloat( reading.focus.outline.width ) || 0;
 	const o = Number.parseFloat( reading.focus.outline.offset ) || 0;
-	const plan = samplePlan( reading.rect, reading.focus.maxRadius, { width: w, offset: o }, solid );
+	const full = samplePlan( reading.rect, reading.focus.maxRadius, { width: w, offset: o }, solid );
+	const hits = await page.evaluate( hitTestPoints, full.map( ( p ) => [ p.x, p.y ] ) );
+	const blockedGroups = new Map();
+	full.forEach( ( p, i ) => {
+		if ( hits[ i ] && ! blockedGroups.has( p.group ) ) blockedGroups.set( p.group, hits[ i ] );
+	} );
+	const planned = new Set( full.map( ( p ) => p.group ) ).size;
+	const plan = full.filter( ( p ) => ! blockedGroups.has( p.group ) );
+	const usable = planned - blockedGroups.size;
+	const neighbours = [ ...new Set( [ ...blockedGroups.values() ].filter( ( h ) => h.neighbour ).map( ( h ) => h.blocked ) ) ];
+	const base = { planned, usable, neighbours };
+	if ( usable < MIN_USABLE_POINTS ) {
+		const why = [ ...new Set( [ ...blockedGroups.values() ].map( ( h ) => h.blocked ) ) ].slice( 0, 3 ).join( ', ' );
+		return { min: null, points: 0, ...base, unmeasurable: `${ usable } of ${ planned } sample points usable (under ${ MIN_USABLE_POINTS })${ why ? `, the others sit under ${ why }` : '' }` };
+	}
 	const toImage = ( p ) => [ pixelOf( p.x ) - clip.x, pixelOf( p.y ) - clip.y ];
 	const focused = await readPixels( scratch, focusedPng, plan.map( toImage ) );
 	const resting = await readPixels( scratch, restingPng, plan.map( toImage ) );
@@ -272,7 +327,52 @@ async function measurePixels( scratch, focusedPng, restingPng, clip, reading ) {
 			current.inner = focused[ i ];
 		}
 	} );
-	return judgeContrast( readings );
+	return { ...judgeContrast( readings ), ...base };
+}
+
+/**
+ * A screenshot of `clip` once the frame has settled: wait `settle` ms, then re-shoot every 100 ms until two consecutive
+ * shots are pixel-identical (at most SETTLE_CAP_MS more). Returns { png, settled }.
+ */
+async function settledShot( page, clip, settle ) {
+	await page.waitForTimeout( settle );
+	let prev = await page.screenshot( { clip, animations: 'disabled', caret: 'hide' } );
+	const deadline = Date.now() + SETTLE_CAP_MS;
+	while ( Date.now() < deadline ) {
+		await page.waitForTimeout( 100 );
+		const cur = await page.screenshot( { clip, animations: 'disabled', caret: 'hide' } );
+		if ( cur.equals( prev ) ) return { png: cur, settled: true };
+		prev = cur;
+	}
+	return { png: prev, settled: false };
+}
+
+/** Runs in the page: the rects of the focused element and of whatever may paint its ring, as one comparable string. */
+function rectKey() {
+	const el = document.activeElement;
+	if ( ! el || el === document.body ) return '';
+	const nodes = [ el, el.nextElementSibling, el.closest( '.sgs-focus-scope' ), el.closest( '.sgs-focus-card' ) ].filter( Boolean );
+	return nodes.map( ( n ) => {
+		const r = n.getBoundingClientRect();
+		return [ r.x, r.y, r.width, r.height ].map( ( v ) => v.toFixed( 2 ) ).join( ',' );
+	} ).join( '|' );
+}
+
+/**
+ * Wait until the focused element's box has stopped moving (a media preview or drawer link that grows on focus): poll
+ * every 100 ms until two consecutive reads are identical, at most RECT_CAP_MS (3 s). Runs after the --settle wait, so the
+ * element has had at least that long; the same settle mechanism the screenshots use (settledShot) follows.
+ */
+async function waitStableRect( page ) {
+	let prev = await page.evaluate( rectKey );
+	const deadline = Date.now() + RECT_CAP_MS;
+	while ( Date.now() < deadline ) {
+		await page.waitForTimeout( 100 );
+		const cur = await page.evaluate( rectKey );
+		if ( cur === prev ) return true;
+		prev = cur;
+	}
+	return false;
 }
 
 /** Runs in the page: focus the next tabbable element in DOM order after the active one (WebKit skips links on Tab). */
@@ -312,7 +412,8 @@ export async function tabThrough( page, opts ) {
 	while ( stops.length < opts.maxStops && guard++ < opts.maxStops * 2 ) {
 		await pressTab( page, opts.tabKey );
 		await page.waitForTimeout( opts.settle );
-		const reading = await page.evaluate( readFocused );
+		await waitStableRect( page );
+		const reading = await page.evaluate( readFocused, RADIUS_EXEMPT_SELECTOR );
 		if ( reading === null ) {
 			ended = 'focus left the document';
 			break;
@@ -325,11 +426,14 @@ export async function tabThrough( page, opts ) {
 		const clip = clipFor( reading.rect, reading.viewport );
 		let focusedPng = null;
 		let restingPng = null;
+		let settled = true;
 		if ( clip ) {
-			focusedPng = await page.screenshot( { clip, animations: 'disabled', caret: 'hide' } );
+			const onFocus = await settledShot( page, clip, 0 );
+			focusedPng = onFocus.png;
 			await page.evaluate( () => window.__fp.el.blur() );
-			await page.waitForTimeout( opts.settle );
-			restingPng = await page.screenshot( { clip, animations: 'disabled', caret: 'hide' } );
+			const atRest = await settledShot( page, clip, opts.settle );
+			restingPng = atRest.png;
+			settled = onFocus.settled && atRest.settled;
 		} else {
 			await page.evaluate( () => window.__fp.el.blur() );
 			await page.waitForTimeout( opts.settle );
@@ -340,7 +444,7 @@ export async function tabThrough( page, opts ) {
 
 		let contrastResult = { min: null, points: 0 };
 		if ( clip && ! opts.forcedColors ) {
-			contrastResult = await measurePixels( opts.scratch, focusedPng, restingPng, clip, reading );
+			contrastResult = await measurePixels( page, opts.scratch, focusedPng, restingPng, clip, reading );
 		}
 		if ( opts.shotsDir && focusedPng ) {
 			fs.mkdirSync( opts.shotsDir, { recursive: true } );
@@ -359,6 +463,11 @@ export async function tabThrough( page, opts ) {
 			kinds: reading.kinds,
 			card: reading.card,
 			proxied: reading.proxied,
+			measuredOn: reading.measuredOn,
+			proxyKind: reading.proxyKind,
+			noProxy: reading.noProxy,
+			radiusExempt: reading.radiusExempt,
+			settled,
 			range: reading.range,
 			focusVisible: reading.focusVisible,
 			clip: reading.clip,
@@ -373,7 +482,7 @@ export async function tabThrough( page, opts ) {
 	if ( ended === 'max stops' ) {
 		await pressTab( page, opts.tabKey );
 		await page.waitForTimeout( opts.settle );
-		const more = await page.evaluate( readFocused );
+		const more = await page.evaluate( readFocused, RADIUS_EXEMPT_SELECTOR );
 		capHit = more !== null && ! more.seen;
 		if ( ! capHit ) ended = more === null ? 'focus left the document' : 'focus cycle';
 	}
