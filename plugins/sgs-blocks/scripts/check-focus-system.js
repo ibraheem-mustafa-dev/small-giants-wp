@@ -3,7 +3,7 @@
 
 /**
  * check-focus-system.js: the detector for the unified keyboard focus system (Spec 38A; plan
- * .claude/plans/2026-10-17-unified-focus-system.md §3). One focus system file
+ * .claude/plans/archive/2026-10-17-unified-focus-system.md §3). One focus system file
  * (theme/sgs-theme/assets/css/focus.css) draws every keyboard focus indicator; no block,
  * theme stylesheet, emitter or token draws its own.
  *
@@ -106,7 +106,7 @@ function censusJson( census, width ) {
 	return {
 		_meta: {
 			tool: 'plugins/sgs-blocks/scripts/check-focus-system.js --survey --json',
-			plan: '.claude/plans/2026-10-17-unified-focus-system.md §3',
+			plan: '.claude/plans/archive/2026-10-17-unified-focus-system.md §3',
 			note: 'Every item is in exactly one category (classify-css.js::RULE_PRIORITY). Findings are content-keyed (category | path | context | selector | property).',
 		},
 		summary: {

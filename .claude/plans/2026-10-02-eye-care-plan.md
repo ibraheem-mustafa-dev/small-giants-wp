@@ -27,7 +27,7 @@ status: BUILD IN PROGRESS (2026-10-08)
 
 - Every surface is built and live on `eye-care-test`, each applied from its tree in `sites/eye-care-ward-end/build/`.
 - The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth for fixes; its Sweep column was re-judged on the 2026-10-07 measure-only sweep.
-- Route and per-surface work (Spec 48, `specs/48-CLONING-SYSTEM.md`) lives in `plans/2026-10-04-spec47-full-coverage.md` (Session D).
+- Route and per-surface work (Spec 48, `specs/48-CLONING-SYSTEM.md`) lives in `plans/archive/2026-10-04-spec47-full-coverage.md` (Session D).
 - Features and controls that change what the site can do live in `plans/2026-10-05-eye-care-functionality-backlog.md`.
 - CR6 phase 2 (box longhands) has its own plan, `plans/archive/2026-10-07-cr6-box-longhand-migration.md`.
 
@@ -203,7 +203,7 @@ Each section: what is built, and what is open.
 The work list is `plans/2026-10-02-eye-care-fix-register.md`: every fix, by surface in build order, each with its fix, type and status. Bean's choices win over the draft where he chose (black link text with a sweep underline, 3px lift on every button, live icon sizes).
 
 **Build order:**
-1. Spec 48 stage 3: Solve on every built surface with full coverage, in the order of Spec 48 §5 stage 3; each surface's state is in `plans/2026-10-04-spec47-full-coverage.md`.
+1. Spec 48 stage 3: Solve on every built surface with full coverage, in the order of Spec 48 §5 stage 3; each surface's open items are in Spec 48 §5.4 (Res 33 onward) and its history in `plans/archive/2026-10-04-spec47-full-coverage.md`.
 2. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that uses a new setting.
 3. The tree settings Solve could not write, surface by surface in the register's order, re-walking each surface after its trees are applied.
 4. Content and data.

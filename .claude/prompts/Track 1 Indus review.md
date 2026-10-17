@@ -1,0 +1,34 @@
+Invoke /autopilot before doing anything else.
+
+TRACK: Spec 48 Indus build, plan step 15 (Bean's intake review). Previous session closed 2026-10-13 at origin/main b1e879cfb.
+
+CONTEXT (plain English)
+- Spec 48 turns a Claude Design export (draft pages in sites/indus-foods/handoff/) into an SGS WordPress site. Stage 1, "intake", reads the export and proposes everything Bean confirms in one review (review.md). Bean has decided category 1 (draft defects), category 2 (missing features) and skeleton batches 1 to 5 (which SGS block each draft element becomes, for the top bar, header, mega menus, drawer, footer, home hero and brand strip).
+- His decisions are now framework-wide "standing rules" in scripts/computed-route/lib/skeleton-rules.mjs (28 rules; data in scripts/computed-route/data/skeleton-decisions.json `rules`), plus his already-built posts (sites/indus-foods/build/skeleton/built-surfaces.json). His recorded outcomes are sites/indus-foods/build/intake/approved-decisions.json; `node scripts/computed-route/check-approved.mjs indus-foods` reproduces all 93 comparable rows (exit 0).
+- The review's skeleton section is grouped by cause: 555 rows; 82 need his individual decision (77 agent picks, 3 low, 2 unresolved); 230 are settled by a named rule or built post (he approves each rule once); 243 are confident proposals.
+- Work in the shared checkout on `main`. The committed intake.json and review.md are the 12 October run, from before the standing rules, so regenerate them first: `node scripts/computed-route/intake.mjs indus-foods --record` (long; run in the background), then `node scripts/computed-route/intake.mjs --rerun-skeletons indus-foods` to apply today's rules. Read the row counts from the regenerated review.md; the figures above are from the 13 October run.
+
+READ FIRST
+- .claude/plans/2026-10-11-spec48-indus-build.md step 15 (its Progress note) and steps 16 to 20.
+- .claude/specs/48-CLONING-SYSTEM.md FR-48-6 (rules, refusals, Status, open items), FR-48-17 and Appendix C "Review marks".
+- sites/indus-foods/build/intake/review.md, once regenerated (Grep to each section; never read it whole).
+
+TASKS, IN ORDER
+1. Present ALL remaining review batches to Bean at once, each in its own table (inline, main thread; ~30 min to prepare). One table per category, same format he has approved before: each row or group with what it is, the evidence (draft code, framework DB facts, his built posts: sgs_header 4461, sgs_drawer 4456, sgs_mega_menu 4426/4443/4440 on sandybrown), the proposal and why, and your recommendation. Categories:
+   - a. Decision 2: the rule groups (one line per rule or built post with its row count and reason; he approves or names exceptions).
+   - b. The 82 individual skeleton rows, grouped by cause (agent pick by block, low, unresolved), most on pages he has not reviewed.
+   - c. Inventory diffs (default mark `ours`), page map (his rule: no site-part or brand prefixes in slugs), palette roles (propose from his existing rules, never ask), Site Info (use plan step 15's facts: Google Business Profile, directions, address), flags, not-defects, notices.
+   - Before presenting, answer every question you can from code, the spec or the draft yourself; filter out anything that is standard web practice (memory: autoplay-pause-button-off-by-default). Never mark a row for him.
+2. Apply his marks (inline, ~20 min): write them into review.md, run `node scripts/computed-route/intake.mjs --apply-review indus-foods` (must exit 0). Any new ruling that generalises becomes a standing rule with a MUST FAIL test in tests/skeleton-rules.test.mjs and an entry in approved-decisions.json; re-run check-approved.mjs (exit 0). Commit intake.json, review.md, page-map.json, approved-decisions.json and the decisions file.
+3. Run /handoff to make sure all relevant documentation and then write a prompt for the next session that covers what I've listed below:
+
+NEXT SESSION
+
+Plan steps 16 to 20 (delegate heavy WP work to wp-sgs-developer via /delegate; ~2 h): Site Info from step 15's facts; the theme snapshot including the missing settings.custom.sgs header/footer pattern keys that fail ThemeSnapshotManifestTest; the site build; default paint; the header with Bean's eye.
+
+To wrap up the planning session run: /qc-council before /handoff.
+
+GUARDRAILS
+- `node --test "scripts/computed-route/tests/*.test.mjs"`: only the 3 known lint.test.mjs brand failures; `node scripts/computed-route/lint.mjs` passes; `node scripts/computed-route/check-approved.mjs indus-foods` exits 0.
+- `python plugins/sgs-blocks/scripts/run-gates.py --tier fast` passes. Deploys only via build-deploy.py through the serial queue (ListAgents; message peers); prove from the host marker, never the exit code (it exits 0 on an abort).
+- Motion work belongs to the Spec 38A session (hero parallax is its unit M5.7). Never edit sites/*/handoff/. DB read-only outside the seeder.

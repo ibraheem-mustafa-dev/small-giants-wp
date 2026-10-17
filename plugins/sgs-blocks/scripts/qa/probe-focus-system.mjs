@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Probe: the unified keyboard focus system, measured (plan 2026-10-17-unified-focus-system.md, Task 2).
+ * Probe: the unified keyboard focus system, measured (plan .claude/plans/archive/2026-10-17-unified-focus-system.md, Task 2).
  *
  *   --local              a generated fixture (light, .sgs-on-dark and .sgs-container--has-bg-image grounds; eight controls
  *                        each) with the focus CSS file, in Chromium, Firefox and WebKit (--engine, repeatable).

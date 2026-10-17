@@ -1,4 +1,4 @@
-// In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/2026-10-04-spec47-full-coverage.md).
+// In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md).
 // Each runs through page.evaluate; the walker's own collectors are passed in as source.
 import { collectAuto } from '../../parity/lib/auto-collect.mjs';
 import { AUTO_EXCLUDE } from '../../parity/lib/auto-walk.mjs';

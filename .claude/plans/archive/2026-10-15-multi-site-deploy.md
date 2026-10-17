@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: Multi-site deploys - build and check once, ship to every site at the same time
-status: in-progress
+status: closed 2026-10-17; open speed-ups are in .claude/deploy-architecture.md "Known limits and next speed-ups"
 date: 2026-10-15
 ---
 

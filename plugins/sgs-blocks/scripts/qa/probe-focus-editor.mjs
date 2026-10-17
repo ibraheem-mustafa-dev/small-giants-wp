@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Probe: the unified keyboard focus system inside the block editor's canvas (plan 2026-10-17-unified-focus-system.md,
+ * Probe: the unified keyboard focus system inside the block editor's canvas (plan .claude/plans/archive/2026-10-17-unified-focus-system.md,
  * Task 14). focus.css loads in the canvas iframe too (theme `add_editor_style`); it must never ring editing chrome and
  * must show the focus look on request.
  *

@@ -157,7 +157,7 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 123 | `check-extension-roster.js` | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds sgs-update-v2.py::_seed_extension_attr_rows, so… |
 | 124 | `check-border-preview-twin.js` | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
 | 125 | `check-border-width-defaults.py` | "the stylesheet never chooses a border width". |
-| 126 | `check-focus-system.js` | .claude/plans/2026-10-17-unified-focus-system.md §3). One focus system file |
+| 126 | `check-focus-system.js` | .claude/plans/archive/2026-10-17-unified-focus-system.md §3). One focus system file |
 | 127 | `migrate-box-longhands.py` | CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides. |
 | 128 | `check-import-shadowing.js` | Fails when an editor file destructures a block attribute whose name is also a module-level binding in the same file: an import, or a top-level function… |
 | 129 | `migrate-box-alignment.py` | physical `left\|right` to logical `start\|end` for five settings. |
@@ -1193,7 +1193,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-enum-control-shape.py` | manifest | the D812 enum control-shape GATE. |
 | `check-exit-guards.py` | manifest | Fail when a PHP file's direct-access guard names a constant WordPress never defines. |
 | `check-extension-roster.js` | manifest+script-call | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds… |
-| `check-focus-system.js` | manifest+npm+script-call | .claude/plans/2026-10-17-unified-focus-system.md §3). One focus system file |
+| `check-focus-system.js` | manifest+npm+script-call | .claude/plans/archive/2026-10-17-unified-focus-system.md §3). One focus system file |
 | `check-fx-list-drift.py` | manifest+npm+script-call | the three-list (plus field-type triad) fx drift gate. |
 | `check-fx-registration.py` | manifest+script-call | every shipped fx module is registered everywhere it must be. |
 | `check-hardcoded-render-defaults.js` | manifest+npm+script-call | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
@@ -1702,8 +1702,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `qa/lib/tag-processor-stub.php` | script-call | A minimal WP_HTML_Tag_Processor for the render harness, loaded on every render: the opening-tag walk Sgs_Motion_Loop_Delays::tag_by_class runs over… |
 | `qa/lib/wc-product-stub.php` | script-call | One minimal WooCommerce product for the render harness, loaded only by `--product-file` (the motion part render-path gate… |
 | `qa/lib/wp-stubs.php` | manifest+script-call | Minimal WordPress core function/class stubs for standalone render.php execution (scripts/qa/lib/render-css-harness.php). |
-| `qa/probe-focus-editor.mjs` | — | Probe: the unified keyboard focus system inside the block editor's canvas (plan 2026-10-17-unified-focus-system.md, Task 14). focus.css loads in the… |
-| `qa/probe-focus-system.mjs` | script-call | Probe: the unified keyboard focus system, measured (plan 2026-10-17-unified-focus-system.md, Task 2). |
+| `qa/probe-focus-editor.mjs` | — | Probe: the unified keyboard focus system inside the block editor's canvas (plan .claude/plans/archive/2026-10-17-unified-focus-system.md, Task 14). focus.css loads in the… |
+| `qa/probe-focus-system.mjs` | script-call | Probe: the unified keyboard focus system, measured (plan .claude/plans/archive/2026-10-17-unified-focus-system.md, Task 2). |
 | `qa/probe-shop-filters.mjs` | — | Live probe for the shop filter panel (theme/sgs-theme/assets/js/sgs-shop-filters.js and woocommerce.css section 8). Checks what a shopper sees, on… |
 | `qa/social-icon-draft-compare.mjs` | script-call | Measures the footer social icons of two design drafts and the SGS QA rows that reproduce them, at rest, with :hover forced and with :focus-visible… |
 | `qa/social-icon-local-render.mjs` | — | Renders the QA tree's social-icons rows through the real render.php files (the PHPUnit child fixture) into one static page that links the built block… |
@@ -1943,8 +1943,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/motion-validate.mjs` | — | The cloning writer's gate for an sgsMotion document (Spec 38A FR-38A-5, FR-38A-2; the M7 writer calls `validateMotionWrite` before it writes… |
 | `computed-route/lib/normalise.mjs` | script-call | Value normalisation and token snapping (R-47-7). Measured values arrive as computed styles (px lengths, rgb() colours). Tokens come from the site's… |
 | `computed-route/lib/pair-scope.mjs` | script-call | Twin containment: whether a hand pair's two elements hold the same words (scripts/computed-route/pairs.mjs). |
-| `computed-route/lib/pairs-page.mjs` | script-call | In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
-| `computed-route/lib/pairs.mjs` | manifest+script-call | Block pairing for full coverage (plan .claude/plans/2026-10-04-spec47-full-coverage.md): every block of a surface is paired with its draft element… |
+| `computed-route/lib/pairs-page.mjs` | script-call | In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md). |
+| `computed-route/lib/pairs.mjs` | manifest+script-call | Block pairing for full coverage (plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md): every block of a surface is paired with its draft element… |
 | `computed-route/lib/provision-refs.mjs` | script-call | What provision-calibration-refs.mjs creates on a test site so every calibration-fixture role resolves there |
 | `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 48 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
 | `computed-route/lib/register-sweep.mjs` | script-call | Register <-> sweep (A4): gives every fix-register item exactly one sweep status. |
@@ -1975,7 +1975,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/winning-rule.mjs` | script-call | Names the CSS rule that wins for a row whose setting already holds the draft value (Hardcode rows the tree holds): the rule that paints the live… |
 | `computed-route/lint.mjs` | script-call+skill | The route's own gate (R-47-1, R-47-10). |
 | `computed-route/origin.mjs` | manifest+script-call | Origin command (Spec 48 route-accuracy R4): the exact draft identity of a committed tree's blocks. |
-| `computed-route/pairs.mjs` | manifest+script-call | Block pairing command (plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
+| `computed-route/pairs.mjs` | manifest+script-call | Block pairing command (plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md). |
 | `computed-route/provision-calibration-refs.mjs` | script-call | Creates on a test site the objects the calibration fixtures name by token, and records their IDs as that target's `refs` in calibration-targets.json… |
 | `computed-route/register-sweep.mjs` | script-call | Register <-> sweep command (A4). |
 | `computed-route/skeleton.mjs` | manifest+script-call | Skeleton writer (Spec 48 §3.4): turns a Claude Design draft's own elements into an SGS block skeleton with exact draft links, plus a review table.… |

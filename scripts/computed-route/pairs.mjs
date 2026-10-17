@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Block pairing command (plan .claude/plans/2026-10-04-spec47-full-coverage.md).
+// Block pairing command (plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md).
 //   node scripts/computed-route/pairs.mjs --client eye-care-ward-end --surface about
 // Opens the surface's draft (its walker config's draft url and navigation) and live page at 1440, collects every
 // painted word with the element painting it (scripts/parity/lib/auto-collect.mjs, tagEls), pairs the words with the

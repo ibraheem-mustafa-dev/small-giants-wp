@@ -60,6 +60,12 @@ The least-started area. Eye Care gets its own checkout template; nothing here ch
 | **155** | **Hide WooCommerce's collapsed top summary on phones**, so the order summary appears once, below the form | Prove the selector first |
 | **148** | Checkout sections fade up on scroll, from tokens. A CSS-tier fix in the stylesheet, not through a setting | Small |
 
+### Reviews
+
+| Ref | The feature |
+|---|---|
+| **GBP sync** | **Google Business Profile sync for `sgs/google-reviews`.** The settings page only tells the user to find the Place ID themselves; offer the sync so a client connects the profile without looking anything up. A feature idea, not a register item |
+
 ### Measured diagram (D1) deferrals
 
 The block is built and live (plan `plans/archive/2026-10-07-measured-diagram-block.md`). Deferred, each with its trigger:
@@ -91,6 +97,7 @@ The block is built and live (plan `plans/archive/2026-10-07-measured-diagram-blo
 |---|---|
 | **67** | Tabs gain a panel padding setting (Eye Care sets 0) |
 | **94** | The gallery photo joins the shared hover zoom |
+| **Card-grid zoom** | A zoom amount control on `sgs/card-grid`: it has only the boolean `imageZoomHover` and `scaleHover`, so the zoom size cannot be set |
 | **77** | A selected-tile border width setting (Eye Care wants 2px against 1px) |
 | **49** | A "collapsed icon size" setting on the floating WhatsApp button, so the icon stays 28px or larger once it collapses to a circle |
 | **19** | A bar fill duration setting on the free-delivery bar |
@@ -107,6 +114,8 @@ Each names its evidence; the register stays the source of truth for fixes.
 | Ref | What is open | Evidence and what to do first | Tier |
 |---|---|---|---|
 | **Q10** | The product field binding's `fallback` and `fallback_link` arguments (the "Ask us" cell on frames with no lens height) have no inspector control; they live only in the Single Product template's markup, and `src/bindings/product-field.js::getValues` returns '' so the canvas never shows "Ask us". Core Block Bindings has no UI for source arguments, and products use the classic edit screen, so the template is the only editor surface | Give the arguments an editor surface | 4 |
+| **IconPicker id** | `IconPicker` has no `id` prop (props: `value`, `onChange`, `label`, `sources`, `brands`), so its label cannot be associated with the control | Add an `id` prop and wire the label to it, then use it in each caller | 4 |
+| **Box-alignment separator** | The front-end separator at a numeric 40% width has not been read in LTR and RTL | One live read of the separator at 40% in each direction | 4 |
 | **P0-4** | The wiring gate's L5 tracer misses a value that passes through a normalising variable and then a ternary | `sgs/google-reviews::scrollbarStyle`, still in `wiring-fingerprint-baseline.json`. Extend the tracer to follow the variable, then clear the baseline entry | 4 |
 | **P0-5** | 34 structural borders have no control: post-grid card, pricing plan, trustpilot card, wishlist row, product-search panel, choice-flow showcase panels | Add a border control per block | 3 |
 | **P0-7** | The gradient regex is duplicated in `src/utils/tokens.js` and `surface-tone.js`, because `surface-tone.js` cannot import it without a circular import with background-preview | Move the regex to a leaf module both import | 4 |

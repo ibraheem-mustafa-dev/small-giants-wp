@@ -43,7 +43,7 @@ The session splits at Gate 1: **sitting i** is Waves 0 and 1, **sitting ii** is 
 |---|---|
 | Judging any walker finding; matching rows to register Refs | Session C2 steps 1 to 3 |
 | Block controls, `block.json`, `render.php`, block `style.css`, theme CSS, shared helpers | Session C2 step 4, after Bean's per-item yes |
-| The 447 **T** rows (values the next run writes) and the 28 **U** rows | Session D, `plans/2026-10-04-spec47-full-coverage.md` "Progress" |
+| The 447 **T** rows (values the next run writes) and the 28 **U** rows | Session D, `plans/archive/2026-10-04-spec47-full-coverage.md` "Progress" |
 | `sgs/google-reviews`: 3 F rows, 8 deferred icon combos, all attribution work | the parallel Google reviews track (closed 2026-10-05, `plans/archive/2026-10-05-google-reviews-attribution.md`); expect it to deploy |
 | The register items whose cause is already proven in code and whose fix is already decided | a parallel track, `plans/archive/2026-10-05-eye-care-register-proven-repairs.md`, which runs beside this session and touches only `plugins/` and `theme/` |
 | Spec 47 stage 5, a second draft from a different designer | blocked: no second draft exists. See "The one item not built" |
@@ -54,7 +54,7 @@ The session splits at Gate 1: **sitting i** is Waves 0 and 1, **sitting ii** is 
 | Spec 47 item | What it is | Owner |
 |---|---|---|
 | §5 R2a Contact's hours-list row gap | Session B proved it a confirmed framework gap (`sgs/business-info` has no gap control for that row) | Session C2's list |
-| §5 R2a Contact's address width | Closed: no width row remains open on `cr-ref-contact-13/15/17`; the declared-width write holds | nothing to do, recorded in `plans/2026-10-04-spec47-full-coverage.md` |
+| §5 R2a Contact's address width | Closed: no width row remains open on `cr-ref-contact-13/15/17`; the declared-width write holds | nothing to do, recorded in `plans/archive/2026-10-04-spec47-full-coverage.md` |
 | §5 R2a the form's select height | a finding | Session C2's list |
 | §5 R2c Home re-run with full coverage | a per-surface Solve run | Session D |
 | §5 R2e Help measured only under the old guard | a per-surface Solve run | Session D |

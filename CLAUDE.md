@@ -44,7 +44,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown   # THE on
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
 ```
 
-- `build-deploy.py` builds, gates, deploys with rollback, verifies, and purges OPcache, the LiteSpeed page cache and the theme pattern cache. Targets are `TARGETS` in `deploy_common.py` beside it: `sandybrown` (default canary), `indus-test`, `eye-care-test` (named explicitly only). Scope with `--blocks-only` / `--theme-only`. Ship one commit to several sites with `--target a,b` or `--target all` (one build and gate run, sites in parallel); a commit that already passed its gates is not rebuilt. Gates run four at a time; the canary's live motion QA runs a smoke set unless the full set is due (`--motion-qa-tier auto`); every deploy prints its stage timings. Files, stage order and how to add a stage, gate or probe: `.claude/deploy-architecture.md`. A new `check-motion-*.py` is a live full-tier gate on its first commit (`run-motion-gates.py` finds it by name): run that runner first and baseline it in `scripts/data/motion-gate-allowlist.json` if it must stay red until a sweep.
+- `build-deploy.py` builds, gates, deploys with rollback, verifies, and purges OPcache, the LiteSpeed page cache and the theme pattern cache. Targets are `TARGETS` in `deploy_common.py` beside it: `sandybrown` (default canary), `indus-test`, `eye-care-test`, `mamas-test` (named explicitly only). Scope with `--blocks-only` / `--theme-only`. Ship one commit to several sites with `--target a,b` or `--target all` (one build and gate run, sites in parallel); a commit that already passed its gates is not rebuilt. Gates run four at a time; the canary's live motion QA runs a smoke set unless the full set is due (`--motion-qa-tier auto`); every deploy prints its stage timings. Files, stage order and how to add a stage, gate or probe: `.claude/deploy-architecture.md`. A new `check-motion-*.py` is a live full-tier gate on its first commit (`run-motion-gates.py` finds it by name): run that runner first and baseline it in `scripts/data/motion-gate-allowlist.json` if it must stay red until a sweep.
 - ⛔ Never hand-roll tar/scp/`rm -rf` on the server — that recipe can take client sites down. Never use `--allow-dirty` or `--skip-verify`.
 - No Node on the server: build locally, deploy `build/`.
 
@@ -56,7 +56,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 - Each client has its own test site because the active header/footer/drawer/snapshot pointers are single global options.
 - SSH: `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`); WP admin user `Claude`.
 - Credentials (gitignored, always available — don't ask): `.claude/secrets/<site>.env` (`WP_USER_*`, `WP_PWD_*`, `WP_APP_PWD_*`, `WP_URL_*`).
-- Canary pages 2103, 2109, 2113, 2603, 2740, 3037 are motion-QA fixtures — never delete or repurpose (`.claude/rules/motion-qa.md`).
+- Canary pages 2103, 2109, 2113, 2603, 2740, 3037, 5223, 5226, 5229 are motion-QA fixtures — never delete or repurpose (`.claude/rules/motion-qa.md`).
 
 ## Delegation
 

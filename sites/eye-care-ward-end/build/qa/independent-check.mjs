@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Independent check of a surface against its draft (Spec 48 pilot, plan .claude/plans/2026-10-04-spec47-full-coverage.md).
+// Independent check of a surface against its draft (Spec 48 pilot, plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md).
 //   node sites/eye-care-ward-end/build/qa/independent-check.mjs --surface about [--widths 375,768,1440] [--out <file.json>]
 // A second opinion on Solve that shares none of its measuring: it never uses the cr-ref classes, the walker's word
 // matcher or the pairing report. Every block of the surface's tree is found on both pages by its own text (the text

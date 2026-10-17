@@ -4,6 +4,7 @@ title: Indus intake review block builds
 date: 2026-10-13
 specs: [48, 36, 32, 38A]
 parent: .claude/plans/2026-10-11-spec48-indus-build.md (step 15, Bean's review)
+status: closed 2026-10-13; all twelve items built and live
 ---
 
 # Indus intake review block builds

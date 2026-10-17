@@ -3,7 +3,7 @@ doc_type: plan
 title: "Spec 48 F2: every block measured, paired by matched words"
 spec: .claude/specs/48-CLONING-SYSTEM.md
 created: 2026-10-04
-status: in progress
+status: archived 2026-10-17; open items are Spec 48 §5.4 Res 33 onward
 ---
 
 # F2: every block measured, paired by matched words
@@ -210,7 +210,7 @@ Results, run records and counts moved out of Spec 48 section 5. Spec 48 section 
      - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9.
    - **Council, 2026-10-04 (qc-council, three raters).** Solve's coverage was the gap between §0's promise and its results: §3.3 walked a hand-written config naming only some elements, the walker never compared where an element sits, and success was scored on register items, not the page. Fixes, each with a measured baseline:
      - F1 flow position rows (CR19) and F4 identity transform (CR20): done, 4606ba598.
-     - F2 every block paired through matched words (`pairs.mjs`, `lib/pairs.mjs`, `lib/pairs-page.mjs`; plan `.claude/plans/2026-10-04-spec47-full-coverage.md`): built, with a padded block paired to its padded draft wrapper, repeated words placed by nearness, text-run, form-control and group pairs (walker finders `{ textRun }`, `{ group }` in `scripts/parity/lib/paint.mjs`). The guard tries a regressed row's ancestors' writes, nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes, 12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault negative control. Lenses (2026-10-08): 67 distinct issues to 0, independent check 0, register N40 closed; its wrong-write ratio is judged per setting (0.15.7) and the fresh run wrote nothing (plan, Lenses entry). Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep.
+     - F2 every block paired through matched words (`pairs.mjs`, `lib/pairs.mjs`, `lib/pairs-page.mjs`; plan `.claude/plans/archive/2026-10-04-spec47-full-coverage.md`): built, with a padded block paired to its padded draft wrapper, repeated words placed by nearness, text-run, form-control and group pairs (walker finders `{ textRun }`, `{ group }` in `scripts/parity/lib/paint.mjs`). The guard tries a regressed row's ancestors' writes, nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes, 12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault negative control. Lenses (2026-10-08): 67 distinct issues to 0, independent check 0, register N40 closed; its wrong-write ratio is judged per setting (0.15.7) and the fresh run wrote nothing (plan, Lenses entry). Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep.
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's form rows belong to the contact-form surface); one fixture gap (CR17).
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).

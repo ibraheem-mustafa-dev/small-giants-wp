@@ -1,4 +1,4 @@
-// Block pairing for full coverage (plan .claude/plans/2026-10-04-spec47-full-coverage.md): every block of a surface
+// Block pairing for full coverage (plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md): every block of a surface
 // is paired with its draft element through the walker's word matcher, never through a guessed locator. A block's
 // words are every live word inside it (nested blocks included); its draft partner is the smallest draft element
 // holding the draft twins of those words. A pairing is kept only when it passes PAIRING_LIMITS.

@@ -341,7 +341,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 
      Whether a gap gets the right type (Hardcode for a repair, Missing setting for a new control) is reported as a further measure, not a condition.
    - **Kill:** under 60% handled, over 10% of writes are wrong, or the third write round still writes. A round that only reverts regressions (R-47-9) is not a write round.
-3. **Solve on every built Eye Care surface (built and in use).** All 17 surfaces have walker configs, score items, state maps and a pairing config; per-surface state is in `sites/eye-care-ward-end/build/qa/triage/*.json` and `.claude/plans/2026-10-04-spec47-full-coverage.md`. A surface is done when, on a fresh rebuild of its committed tree, the whole-page line reads 0 unexplained and 0 labelled gaps, 0 new rows, at most 10% wrong writes, the independent check agrees and the register is marked.
+3. **Solve on every built Eye Care surface (built and in use).** All 17 surfaces have walker configs, score items, state maps and a pairing config; per-surface state is in `sites/eye-care-ward-end/build/qa/triage/*.json` and `.claude/plans/archive/2026-10-04-spec47-full-coverage.md`. A surface is done when, on a fresh rebuild of its committed tree, the whole-page line reads 0 unexplained and 0 labelled gaps, 0 new rows, at most 10% wrong writes, the independent check agrees and the register is marked.
 4. **Fill on an unbuilt surface (proved on a built one).** Fill is proved against a built surface with its committed tree withheld as the hand-checked answer. The demonstration on a genuinely unbuilt surface carries to the first client that has one.
 5. **A second draft** from a different designer, to test generality. First surface run (Mama's footer, 2026-10-10) was on a zip export and is not resumed; its findings are in the plan's stage 5 and the Residual below. The stage is replanned after the Claude Design handover standard and the unified cloning spec (`plans/2026-10-10-claude-design-handover-standard.md`), whose Task B3 replaces the local zip-export folders `sites/mamas-munches-redesign/` and `sites/indus-foods/`; their test sites are `mamas-test` and `indus-test`.
 
@@ -369,7 +369,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 - Walker items 15 to 18 (§3.6) are not built.
 - Step 5 (a second draft) is not built; both drafts and their test sites are set up.
 
-The results, run records and dated history of steps 1 to 4 are in `.claude/plans/2026-10-04-spec47-full-coverage.md` (section "Spec 47 build log").
+The results, run records and dated history of steps 1 to 4 are in `.claude/plans/archive/2026-10-04-spec47-full-coverage.md` (section "Spec 47 build log").
 
 ## 6. Open questions
 

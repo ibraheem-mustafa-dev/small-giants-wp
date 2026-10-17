@@ -1,4 +1,4 @@
-// Block pairing for full coverage (plan .claude/plans/2026-10-04-spec47-full-coverage.md): a block's draft partner
+// Block pairing for full coverage (plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md): a block's draft partner
 // is kept only when it holds its words and nothing that belongs outside it.
 import test from 'node:test';
 import assert from 'node:assert/strict';

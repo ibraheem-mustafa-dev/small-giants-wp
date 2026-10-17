@@ -1,7 +1,7 @@
 <?php
 /**
  * Standalone runner for the opt-in drawer settings (plan
- * .claude/plans/2026-10-13-indus-review-block-builds.md items 7 and 9):
+ * .claude/plans/archive/2026-10-13-indus-review-block-builds.md items 7 and 9):
  *
  * - sgs/container `pinEdge` (includes/container-pin-edge-css.php)
  * - sgs/nav-drawer `chromeSticky`, the logo box and the close fill

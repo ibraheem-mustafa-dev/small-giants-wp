@@ -1,7 +1,7 @@
 {
 	"_meta": {
 		"tool": "plugins/sgs-blocks/scripts/check-focus-system.js",
-		"contract": "Plan .claude/plans/2026-10-17-unified-focus-system.md §2.4: allowed exceptions are editor or admin chrome only, one entry per rule with path, selector (the rule's selector list, members joined by ', ') and reason. --check fails on a stale entry (one that matches no rule) and on an entry whose path no longer exists. A retired token inside an allowed rule is still reported as legacy-token.",
+		"contract": "Plan .claude/plans/archive/2026-10-17-unified-focus-system.md §2.4: allowed exceptions are editor or admin chrome only, one entry per rule with path, selector (the rule's selector list, members joined by ', ') and reason. --check fails on a stale entry (one that matches no rule) and on an entry whose path no longer exists. A retired token inside an allowed rule is still reported as legacy-token.",
 		"carried_from_check_focus_ring_token": "None of the old check-focus-ring-token.py allow-list reasons carry over. Google Reviews and Trustpilot brand rings, the white video-control rings and the generative-background and wave-gradient toggles join the system (owner decision 'every interactive element unifies', plan Task 9); the skip link joins the system (Tasks 4 and 7); the motion.css box-shadow focus composition is deleted (Task 12)."
 	},
 	"entries": [
