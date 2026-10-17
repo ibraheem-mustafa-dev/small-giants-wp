@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: One keyboard focus system for the whole framework (accent glow with a solid core)
-status: built, awaiting grouped deploy and live verification
+status: built and live on sandybrown at 6d2ff6893; open focus-probe stops listed in reports/2026-10-17-focus-system/after2/SUMMARY.md
 date: 2026-10-17
 governing_specs: Spec 32 (new §14.5, FR-32-22), Spec 38A (§10, §12, FR-38A-30, FR-38A-42, FR-38A-49)
 evidence: .claude/reports/2026-10-17-focus-indicator/A-standards-and-technique.md, B-design-system-survey.md (B-glow-*.png), C-sgs-inventory.md

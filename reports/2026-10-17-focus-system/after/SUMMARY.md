@@ -26,7 +26,7 @@ Canary sandybrown at commit 97935b6ee (blocks and theme, deployed 2026-10-17 09:
 - F2: the ring #a68a23 is 3.02 on the cream page ground and 3.34 on white but 2.14 on the pink hero band, 2.03 behind the product category link and 1.77 behind the Trustpilot links; `check-snapshot-focus-tokens.py --check` tests only the page surface and white.
 - F3: `woocommerce.css::.sgs-shop-filters__scroll` has `overflow-x: hidden`, which cuts the price slider's minimum-thumb ring flat (4px lost); the five other clipped stops sit in the same container.
 - F4: on a title-link card the ring is hidden over the photo because `a.product-card__img-link` is `position: relative; z-index: 2` and paints above the card's outline.
-- F5: `input.wp-block-sgs-before-after__range.sgs-focus-source` has no proxy (proxyCount 0), its own outline is 0px none, so a keyboard user sees nothing, in forced colours too.
+- F5 (a probe artefact, not a defect: the handle paints a solid 2px ring when the range has focus, measured live in the second run's follow-up): the probe looked for a proxy among the range input's own siblings, but the handle sits in the divider before it in the DOM.
 - F6: `a.sgs-responsive-logo__link` has `opacity: 0.85`, so the outline blends to (178,153,62) and scores 2.52 on the header.
 - F7: `wc-blocks.css :: .screen-reader-text:focus { border-radius: 3px }` (third party) changes the skip link's radius on focus.
 
