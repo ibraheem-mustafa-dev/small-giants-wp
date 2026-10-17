@@ -4,8 +4,9 @@
  * child's. It moves only when something takes it, as on the page (`Sgs_Motion_Renderer::render`):
  * - a block holding inner blocks: the editor wrote it on each child (`stagger-write.js`), so it moves whenever the
  *   container has an entrance (`movedEntranceTarget`, the twin of `Sgs_Motion_Loop_Inherit::moved_target`);
- * - a delegating block in a delegating mode: when the child block's root takes it (`delegatedMove`, the twin of
- *   `Sgs_Motion_Delegate::hands_entrance`);
+ * - a delegating block in a delegating mode, before the inner-block rule (its template card is not a child that stores
+ *   its own delay): when the child block's root takes it (`delegatedMove`, the twin of
+ *   `Sgs_Motion_Delegate::hands_entrance`), and the canvas plays it on the cards (`delegated-children.js`);
  * - a block that prints its items itself: when its declared item part (`supports.sgs.motionItems`) has no entrance of
  *   its own (`inheritedItem`, the twin of `Sgs_Motion_Loop_Inherit::inherited_layer`); the emitter then plays it on the
  *   items, and a canvas with no items keeps it on the container.
@@ -117,21 +118,16 @@ export function inheritedItem( motion, targets, elements, motionItems ) {
 
 /**
  * The container target whose entrance the child block's root takes in a delegating mode, or null when `apply` is off,
- * the container has no entrance, or a part mapped onto the child's root carries an entrance.
+ * the container has no entrance, or the child root keeps an entrance of its own (the twin of
+ * `Sgs_Motion_Delegate::hands_entrance`).
  *
  * @param {Object|undefined} motion     The stored motion attribute.
  * @param {Object|undefined} targets    The sanitised document's `elements`.
  * @param {Object|undefined} elements   The block's `supports.sgs.elements`.
- * @param {Object}           delegation `activeDelegation()`: `{ block, parts }`.
+ * @param {Object}           delegation `activeDelegation()` plus `childRootEntrance` (the template card's root holds an
+ *                                      entrance of its own).
  * @return {string|null} The target key.
  */
 export function delegatedMove( motion, targets, elements, delegation ) {
-	const from = movedEntranceTarget( motion, targets, elements );
-	if ( from === null ) {
-		return null;
-	}
-	const kept = Object.entries( delegation?.parts || {} ).some(
-		( [ part, to ] ) => to === 'root' && hasBase( targets[ part ] )
-	);
-	return kept ? null : from;
+	return delegation?.childRootEntrance === true ? null : movedEntranceTarget( motion, targets, elements );
 }

@@ -13,7 +13,7 @@ import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { MOTION_ATTRIBUTE_NAME } from './register';
 import { blockHasMotion } from './support-cache';
-import { delegateConfig } from './delegate-parts';
+import { delegateConfig } from './source-mode';
 import MotionPanels from './MotionPanels';
 import './motion-panels.scss';
 import './layers/stamp-ambient-float';

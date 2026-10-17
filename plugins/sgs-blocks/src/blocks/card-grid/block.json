@@ -57,16 +57,9 @@
       "motionDelegate": {
         "attribute": "source",
         "values": [ "wc-product", "cpt-collection" ],
-        "block": "sgs/product-card",
-        "parts": {
-          "item": "root",
-          "title": "title",
-          "image": "image",
-          "body": "body",
-          "noImageLabel": "noImageLabel"
-        }
+        "block": "sgs/product-card"
       },
-      "_comment_motionDelegate": "Spec 38A §6.2 delegated parts. In these source modes each result renders as its own sgs/product-card, so the grid's motion on a mapped part moves onto that part of every card (grid part -> card target; the card's own motion wins); the grid's other parts are not offered in these modes. Read by includes/motion/class-sgs-motion-delegate.php and src/blocks/extensions/motion/delegate-parts.js.",
+      "_comment_motionDelegate": "Spec 38A §6.2. In these source modes each result renders as the grid's template sgs/product-card, so the grid offers only its wrapper part as a motion target (every card part is a target of the template card's own Effects panel), and with the stagger's apply on it hands its entrance to each card root (Sgs_Motion_Delegate::child_motion). Read by includes/motion/class-sgs-motion-delegate.php and src/blocks/extensions/motion/source-mode.js.",
       "collection": true,
       "scalarStylingLift": true,
       "imageControls": true,
@@ -138,6 +131,8 @@
           "_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
         },
         "item": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "restingShadow": true,
           "label": "Each card",
           "order": 1,
@@ -165,6 +160,8 @@
           "_note": "Renamed from 'card-tile' 2026-08-15 (element-manifest drift fix) — the real rendered class is `.sgs-card-grid__item` (render.php:694), not `.sgs-card-grid__card-tile`. `textColourHover` (not in this element's attrMap) already resolved to css_element='item' via the markup-fallback derivation before this rename — the key now matches every attr's real target, not just the attrMap-covered ones. Spec 35 FR-35-5 fix (2026-07-21, Task 4) — the card tile now has RESTING-STATE attrs (cardBackground/cardBorderColour/cardBorderWidth/cardRadius/cardShadow) alongside the existing hover-only ones, so backgroundColourHover/borderColourHover/cardShadowHover are STATE_OK not STATE_WITHOUT_BASE. An empty resting attr means the card inherits the theme token exactly as before (Bean's Option A — custom-property FALLBACK at style.css, never a baked default). The top-level `attrMap` on this element (not `clusters`) is deliberate: it resolves the 5 members for the states-axis base check without declaring the full fill/layout clusters, which would flood this repeater-item element with unrelated GAP findings (padding/width/aspect-ratio/etc. it genuinely doesn't have controls for)."
         },
         "image": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "surface": true,
           "selector": ".sgs-card-grid__media",
           "label": "Card image",
@@ -180,6 +177,8 @@
           "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
         },
         "image-wrap": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "label": "Image wrapper",
           "order": 4,
           "clusters": [
@@ -195,6 +194,8 @@
           "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opted this element out of orphan-candidate scanning while it had no style attrs to claim; `imageFallbackColour` changed that, and the blanket opt-out ALSO hid the attrMap from check-element-manifest-conformance.js's cluster-resolution pass (an element's attrMap is only consulted for clusters it has actually declared) — with `clusters: []` the entry was inert, so `imageFallbackColour` was reported as an unrelated ORPHAN under the 'image' element instead, purely because its name happens to start with \"image\" (the same literal-prefix collision that element's own `imageZoomHover` deliberately tolerates as a BY-DESIGN orphan). Fixed by narrowing this element's `prefix` to `\"imageFallback\"` (still opts it out of the OTHER `image*`-named attrs it doesn't own, e.g. it never claims `imageZoomHover`) and declaring `clusters: [\"fill\"]` so the `css:background-color` attrMap member actually resolves and claims `imageFallbackColour` — once claimed here, the 'image' element's separate prefix scan sees it as already-claimed and stops reporting it. `imageFallback` (the boolean toggle) has no css: mapping and stays an honest BY-DESIGN orphan here, the same shape as `imageZoomHover` on 'image'."
         },
         "title": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "label": "Card title",
           "order": 2,
           "clusters": [
@@ -217,6 +218,8 @@
           "_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element. `titleColourGradient` (2026-09-03) is the text-colour gradient sibling to titleColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. `states.hover.attrMap` added 2026-09-03 — without it titleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
         },
         "subtitle": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "label": "Card subtitle",
           "order": 3,
           "clusters": [
@@ -236,6 +239,8 @@
           "_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`. `subtitleColourGradient` (2026-09-03) is the text-colour gradient sibling to subtitleColour, same background-clip:text mechanism. `states.hover.attrMap` added 2026-09-03 — without it subtitleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
         },
         "badge": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "label": "Card badge",
           "order": 7,
           "clusters": [
@@ -245,6 +250,8 @@
           "_note": "The per-item badge (`.sgs-card-grid__badge`). Its badge text and badgeVariant preset are content/variant fields; its typography is the `badge*` surface, painted by sgs_typography_css_rule( $attributes, 'badge', … ) in render.php."
         },
         "glyphInitial": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "selector": ".sgs-card-grid__glyph-initial",
           "label": "Card glyph initial",
           "order": 6,
@@ -255,6 +262,8 @@
           "_note": "The title's first letter shown in the glyph circle when a card has no image (`.sgs-card-grid__glyph-initial`); its typography is the `glyphInitial*` surface. Its font-size also reads --sgs-card-grid-glyph-size, which sizes the circle."
         },
         "imageOverlay": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "selector": ".sgs-card-grid__image-overlay",
           "label": "Image overlay",
           "order": 8,
@@ -268,6 +277,8 @@
           "_note": "A block-wide colour/gradient overlay painted via `.sgs-card-grid__image-overlay` between the card photo and its glyph/title, over a photo only (never the flat image-fallback tile). Reuses the shared `sgs_overlay_decls()` value primitive (helpers-tokens.php) — the same primitive sgs/media's overlay atom and class-sgs-container-wrapper.php's own overlay already call — via this block's own `src/blocks/card-grid/image-overlay.php` helper. `overlayOpacity`/`overlayBlendMode` have no attrMap (opacity/blend-mode are not Fill-cluster members) and stay honest, by-design orphans, same precedent as `glyphSize` on the 'glyph' element."
         },
         "body": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "label": "Card body",
           "order": 4,
           "clusters": [],
@@ -277,6 +288,8 @@
           "_note": "The `.sgs-card-grid__body` wrapper (style.css: `padding: var(--wp--preset--spacing--30)`) holding title/subtitle/badge below the image — previously a hardcoded, non-responsive default with no attribute or editor control at all. `cardPadding` (2026-09-15, tier-object {desktop,tablet,mobile} — mirrors sgs/hero's mediaPadding/contentPadding, sgs/product-card's flat cardPadding) exposes it. Closes the gap the classless sc-var responsive correlator surfaced (D1061 follow-up): a real draft-authored responsive card-padding value had nowhere to land."
         },
         "glyph": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "label": "Card glyph",
           "order": 6,
           "clusters": [
@@ -288,6 +301,8 @@
           "_note": "FR-31-nn candidate: a per-item glyph icon (`items[].glyph`, a Lucide slug) rendered as `.sgs-card-grid__glyph` inside `.sgs-card-grid__image-wrap`, over the image or over the image-fallback tile. `glyphColour`/`glyphSize` are block-wide (one glyph treatment for every card, same scope as `cardBackground`) — resolved in the block's own `src/blocks/card-grid/glyph-fallback.php` helper file (kept out of render.php, which is already over the 300-line guidance) via a `--sgs-card-grid-glyph-colour` custom property, not a direct override, so an unset colour still inherits the theme's inverse-text token (FR-35-5 pattern). `clusters: [\"text\"]` added 2026-09-24 (compliance fix) — `css:color` is a `text` cluster member (mirrors sgs/icon's own `icon` element, which resolves its `iconColour` attrMap the same way); with `clusters: []` the attrMap was declared but never consulted by check-element-manifest-conformance.js's cluster-resolution pass, so `glyphColour` reported as an ORPHAN despite the mapping being correct. `glyphSize` has no css: mapping (a custom-property-driven size, not a standard cluster member, same honest gap as sgs/icon's own `iconSize`) and stays an unclaimed orphan by the same precedent."
         },
         "noImageLabel": {
+          "absentIn": [ "products" ],
+          "absentWhy": "source wc-product / cpt-collection print each result as the grid's template sgs/product-card, never the grid's own cards; every card part is a target of the template card's own Effects panel",
           "selector": ".sgs-card-grid__no-image-label",
           "label": "No-photo label",
           "order": 9,

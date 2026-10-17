@@ -18,9 +18,8 @@ HOW
   makes the container wrapper print its band, so the band is only reachable when a layer asks for it). The harness
   returns each part's selector from the real resolver; the HTML is parsed and the selector is matched on class tokens
   inside the block root (the first tag after any leading style or script, as Sgs_Motion_Markup finds it).
-  A path may instead declare `delegatesTo` (`{"block": "<slug>", "paths": [...]}`): the block hands its items to that
-  child block, so each part in its `supports.sgs.motionDelegate.parts` must reach the mapped child part on those child
-  paths; a part the map leaves out is not offered in that mode. A path the harness cannot render declares `unrendered`
+  A block whose source mode prints its results as another block (a products-mode `sgs/card-grid`) offers only its
+  wrapper part there, so each of its other parts declares that path in `absentIn`. A path the harness cannot render declares `unrendered`
   with the reason; it still counts as a path id. A path may list `unexercised` parts (`{"<part>": "<reason>"}`): the
   element exists on that path but only for content the harness cannot supply (a taxonomy term, a product meta value);
   they are notes, and an unexercised part that does match is a failure (stale).
@@ -38,8 +37,8 @@ MODES
   --self-test  planted controls on synthetic renders (no PHP): a modifier-only class (caught), a part printed on one
                path but not another (caught), an absentIn naming an unknown path (caught), a stale absentIn (caught), an
                absentIn on every path (caught), an absentIn with no reason (caught), an unexercised part that matches (caught), a band part reached only as a
-               direct child (a grandchild is caught), a descendant selector whose ancestor is missing (caught), a
-               delegated part the child misses (caught), and the matching positives
+               direct child (a grandchild is caught), a descendant selector whose ancestor is missing (caught), and the
+               matching positives
 
 Run from the repo root:  python plugins/sgs-blocks/scripts/check-motion-part-render-paths.py --check|--survey|--self-test
 """
@@ -227,7 +226,7 @@ def render_all(fixture: dict, blocks: dict[str, dict]) -> dict[str, dict[str, di
         if slug not in blocks:
             continue
         for pid, path in (entry.get("paths") or {}).items():
-            if "delegatesTo" in path or "unrendered" in path:
+            if "unrendered" in path:
                 continue
             jobs.append((slug, pid, path_attrs(entry, path, offered_parts(blocks[slug])), path))
     workdir = Path(tempfile.mkdtemp(prefix="motion-render-paths-"))
@@ -306,9 +305,6 @@ def evaluate(fixture: dict, blocks: dict[str, dict], results: dict[str, dict[str
             if "unrendered" in path:
                 notes.append(f"[{slug}] path {pid!r} not rendered: {path['unrendered']}")
                 continue
-            if "delegatesTo" in path:
-                errors += delegate_problems(slug, pid, path["delegatesTo"], blocks, hits, rows)
-                continue
             unexercised = path.get("unexercised") or {}
             for part in unexercised:
                 if part not in parts:
@@ -331,31 +327,6 @@ def evaluate(fixture: dict, blocks: dict[str, dict], results: dict[str, dict[str
                 elif verdict == "stale-absent":
                     errors.append(f"[{slug}:{part}] absentIn names {pid!r} but the part's selector matches an element there (stale)")
     return errors, notes, rows
-
-
-def delegate_problems(slug: str, pid: str, spec: dict, blocks: dict[str, dict], hits: dict, rows: list[dict]) -> list[str]:
-    problems = []
-    data = blocks[slug]
-    delegate = ((data.get("supports") or {}).get("sgs") or {}).get("motionDelegate") or {}
-    child = str(spec.get("block") or "")
-    if f"sgs/{child}" != delegate.get("block"):
-        return [f"[{slug}] path {pid!r} delegatesTo {child!r}, but supports.sgs.motionDelegate.block is {delegate.get('block')!r}"]
-    child_parts = offered_parts(blocks.get(child) or {})
-    for part, child_part in (delegate.get("parts") or {}).items():
-        if part not in offered_parts(data) or child_part == "root":
-            continue
-        for cpid in spec.get("paths") or []:
-            cres = (hits.get(child) or {}).get(cpid)
-            if cres is None:
-                problems.append(f"[{slug}] path {pid!r} delegates to {child} path {cpid!r}, which the fixture does not render")
-                continue
-            absent = cpid in ((child_parts.get(child_part) or {}).get("absentIn") or [])
-            hit = cres.get(child_part)
-            verdict = "absent" if absent and not hit else ("ok" if hit else "MISS")
-            rows.append({"block": slug, "path": f"{pid}->{child}:{cpid}", "part": part, "verdict": verdict})
-            if verdict == "MISS":
-                problems.append(f"[{slug}:{part}] path {pid!r}: delegated to {child} part {child_part!r}, whose selector matches no element on {child} path {cpid!r}")
-    return problems
 
 
 def load_fixture(path: Path) -> dict:
@@ -422,18 +393,6 @@ def self_test() -> int:
     cases.append(("a descendant selector whose ancestor is missing is caught", any("t:thing" in x for x in e)))
     e = run_case({"thing": {}}, one, {"t": {"a": res('<div><b class="sgs-t__wrap"><svg><path class="sgs-t__thing"/></svg></b></div>', desc)}})
     cases.append(("a descendant selector with its ancestor (an SVG self-closing leaf) passes", e == []))
-    child = {"name": "sgs/c", "supports": {"sgs": {"motion": True, "elements": {"img": {}}}}}
-    parent_parts = {"thing": {}}
-    deleg_block = block(parent_parts)
-    deleg_block["supports"]["sgs"]["motionDelegate"] = {"block": "sgs/c", "parts": {"thing": "img"}}
-    paths = {"own": {}, "products": {"delegatesTo": {"block": "c", "paths": ["live"]}}}
-    fixture = {"blocks": {"t": {"paths": paths}, "c": {"paths": {"live": {}}}}}
-    miss = {"t": {"own": res('<div><i class="sgs-t__thing"></i></div>', t)}, "c": {"live": res('<div><i class="other"></i></div>', {"img": f"{SCOPE} .sgs-c__img"})}}
-    e = evaluate(fixture, {"t": deleg_block, "c": child}, miss)[0]
-    cases.append(("a delegated part whose child part misses on the child path is caught", any("delegated to c part 'img'" in x for x in e)))
-    hit = {"t": {"own": res('<div><i class="sgs-t__thing"></i></div>', t)}, "c": {"live": res('<div><i class="sgs-c__img"></i></div>', {"img": f"{SCOPE} .sgs-c__img"})}}
-    e = evaluate(fixture, {"t": deleg_block, "c": child}, hit)[0]
-    cases.append(("a delegated part the child reaches passes", e == []))
     e = run_case({"thing": {}}, {"a": {"unexercised": {"thing": "needs a term"}}}, {"t": {"a": res('<div><i></i></div>', t)}})
     cases.append(("an unexercised part that misses is a note, not a failure", e == []))
     e = run_case({"thing": {}}, {"a": {"unexercised": {"thing": "needs a term"}}}, {"t": {"a": res('<div><i class="sgs-t__thing"></i></div>', t)}})

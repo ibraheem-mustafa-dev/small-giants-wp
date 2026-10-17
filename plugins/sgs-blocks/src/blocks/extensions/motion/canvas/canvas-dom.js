@@ -16,9 +16,10 @@
 import { emitScopedCss } from './emit-scoped-css';
 import { sharedLosers } from './shared-element';
 import { loopDelayCss } from './loop-delays';
-import { blockRootClass, delegatedChildPlans } from './delegated-children';
+import { delegatedCardPlan, delegatedCardTarget, shownCards } from './delegated-children';
 import { resolveTarget } from './resolve-target';
 import { declaredItemPart } from './stagger-apply';
+import { MIRROR_ATTR } from './mirrors';
 
 /** Attributes the canvas writes only while Replay plays. */
 export const ENTRANCE_ATTRS = Object.freeze( [
@@ -35,11 +36,13 @@ const STYLE_PREFIX = 'sgs-motion-canvas-';
  * The scoped root selector of a block in the canvas: its block element's id, as an attribute test so the selector has
  * the same class-level specificity as the page's `.sgs-m-<hash>`.
  *
- * @param {string} clientId Block client id.
+ * @param {string}  clientId Block client id.
+ * @param {boolean} mirrored Also the block element inside each of its mirrors (`mirrors.js`), at the same specificity.
  * @return {string} Selector.
  */
-export function canvasRootSelector( clientId ) {
-	return `[id="block-${ clientId }"]`;
+export function canvasRootSelector( clientId, mirrored = false ) {
+	const own = `[id="block-${ clientId }"]`;
+	return mirrored ? `:is(${ own },:where([${ MIRROR_ATTR }="${ clientId }"]) [data-block])` : own;
 }
 
 /**
@@ -173,7 +176,8 @@ export function planElements( rootEl, plan ) {
 	} catch ( error ) {
 		return [];
 	}
-	return found.filter( ( el ) => ownedBy( el, rootEl ) );
+	// A delegating block's cards are block elements of their own; its card target takes the shown cards.
+	return plan.delegated ? shownCards( found, rootEl, classes[ 0 ] ) : found.filter( ( el ) => ownedBy( el, rootEl ) );
 }
 
 /**
@@ -185,33 +189,33 @@ export function planElements( rootEl, plan ) {
  * @param {Object}       motion  Stored motion attribute.
  * @param {Object}       options `emitScopedCss()` options, plus `loopColumns` (the block's grid columns per tier).
  * @return {Object} `emitScopedCss()` output plus `losers`, and the stagger's per-item delay rules with `loopItems` when
- *                  the block prints its items itself (`withLoopDelays`); in a delegating mode, a Replay plan on the
- *                  children this DOM shows (`delegated-children.js`).
+ *                  the block prints its items itself or shows a delegating mode's cards (`withLoopDelays`); in a
+ *                  delegating mode, the cards' entrance rule and Replay plan (`delegated-children.js`).
  */
 export function planCanvas( rootEl, motion, options ) {
-	const out = withLoopDelays(
-		rootEl,
-		motion,
-		options,
-		planTargets( rootEl, motion, options )
-	);
-	if ( ! rootEl ) {
-		return out;
-	}
-	// A delegating block's children are the server's preview, which carries their delays (`delegated-children.js`); outside
-	// a delegating mode there is no child block, so there are no plans.
-	const children = delegatedChildPlans( motion, options ).filter(
-		( plan ) => planElements( rootEl, plan ).length > 0
-	);
-	return children.length === 0
-		? out
-		: { ...out, plans: [ ...out.plans, ...children ] };
+	const cards = cardCount( rootEl, options );
+	const out = withLoopDelays( rootEl, motion, { ...options, cards }, planTargets( rootEl, motion, options, cards ) );
+	const handed = rootEl ? delegatedCardPlan( motion, { ...options, cards } ) : null;
+	return handed === null ? out : { ...out, css: out.css + handed.css, plans: [ ...out.plans, handed.plan ] };
+}
+
+/**
+ * How many cards a delegating block shows in this DOM (0 outside a delegating mode).
+ *
+ * @param {Element|null} rootEl  Block element.
+ * @param {Object}       options `emitScopedCss()` options.
+ * @return {number} The shown card count.
+ */
+function cardCount( rootEl, options ) {
+	const target = delegatedCardTarget( options.delegation, options.root );
+	return rootEl && target ? planElements( rootEl, target ).length : 0;
 }
 
 /**
  * The stagger's per-item delay rules for a block that prints its items itself (`loop-delays.js`, the twin of
  * `Sgs_Motion_Loop_Delays::item_array`), added to the emission with `loopItems`, the item plan Replay gives each item its
- * index on. A block holding inner blocks (each child stores its own delay) or delegating its items gets none.
+ * index on; in a delegating mode the items are the shown cards (`delegated-children.js`). A block holding inner blocks
+ * outside a delegating mode (each child stores its own delay) gets none.
  *
  * @param {Element|null} rootEl  Block element.
  * @param {Object}       motion  Stored motion attribute.
@@ -220,11 +224,16 @@ export function planCanvas( rootEl, motion, options ) {
  * @return {Object} The emission, with the rules and `loopItems` when the block staggers its items.
  */
 function withLoopDelays( rootEl, motion, options, out ) {
-	const part = declaredItemPart( options.elements, options.motionItems );
-	if ( ! rootEl || ! part || options.hasInnerBlocks || options.delegation ) {
+	if ( ! rootEl ) {
 		return out;
 	}
-	const items = resolveTarget( options.blockName, options.elements, options.root, part, {} );
+	let items = null;
+	if ( options.delegation ) {
+		items = options.cards > 0 ? delegatedCardTarget( options.delegation, options.root ) : null;
+	} else {
+		const part = declaredItemPart( options.elements, options.motionItems );
+		items = part && ! options.hasInnerBlocks ? resolveTarget( options.blockName, options.elements, options.root, part, {} ) : null;
+	}
 	if ( ! items ) {
 		return out;
 	}
@@ -242,16 +251,13 @@ function withLoopDelays( rootEl, motion, options, out ) {
  * @param {Element|null} rootEl  Block element.
  * @param {Object}       motion  Stored motion attribute.
  * @param {Object}       options `emitScopedCss()` options.
+ * @param {number}       cards   A delegating block's shown card count (`cardCount`).
  * @return {Object} `emitScopedCss()` output plus `losers`.
  */
-function planTargets( rootEl, motion, options ) {
+function planTargets( rootEl, motion, options, cards = 0 ) {
 	let first = emitScopedCss( motion, options );
 	const inherited = first.plans.find( ( plan ) => plan.inheritedFrom );
-	const childClass = blockRootClass( options.delegation?.block );
-	const noChild =
-		Boolean( rootEl ) &&
-		childClass !== '' &&
-		rootEl.querySelector( `.${ childClass }` ) === null;
+	const noChild = Boolean( rootEl ) && Boolean( options.delegation ) && cards === 0;
 	if ( rootEl && ( noChild || ( inherited && planElements( rootEl, inherited ).length === 0 ) ) ) {
 		// No item or delegated child shows, so nothing takes the container's entrance: it stays on the container, as on
 		// the page (`render-delegated.php` prints an empty result before it hands any child the entrance).

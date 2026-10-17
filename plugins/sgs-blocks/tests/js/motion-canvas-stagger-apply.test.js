@@ -5,7 +5,8 @@
  * - a block that prints its items itself (`supports.sgs.motionItems`) gives its declared item part the container's
  *   entrance, delays removed, as an extra plan Replay plays from the container's target; an item part with its own
  *   entrance, or a canvas with no items, keeps the container's entrance on the container;
- * - a delegating block in a delegating mode moves it only when the child block's root takes it;
+ * - a delegating block in a delegating mode moves it only when the child block's root takes it (its template inner
+ *   block is not a child that stores its own delay);
  * - a block holding inner blocks moves it to them (the editor wrote it on each child, `stagger-write.js`).
  * Negative controls: `apply` off moves nothing and adds no plan.
  */
@@ -18,7 +19,7 @@ jest.mock( '@wordpress/i18n', () => ( { __: ( text ) => text } ) );
 import { emitScopedCss } from '../../src/blocks/extensions/motion/canvas/emit-scoped-css';
 import { planCanvas } from '../../src/blocks/extensions/motion/canvas/canvas-dom';
 import { canReplay, registry } from '../../src/blocks/extensions/motion/canvas/replay';
-import { activeDelegation } from '../../src/blocks/extensions/motion/delegate-parts';
+import { activeDelegation } from '../../src/blocks/extensions/motion/source-mode';
 
 const sgsOf = ( slug ) =>
 	JSON.parse(
@@ -106,11 +107,11 @@ describe( 'canvas apply entrance to children', () => {
 	test( 'a delegating grid moves its entrance only when the card root takes it', () => {
 		const sgs = sgsOf( 'card-grid' );
 		const delegation = activeDelegation( sgs, { source: 'wc-product' } );
-		const handed = emitScopedCss( motionWith( { root: { entrance: { base: fade() } } } ), optionsFor( 'card-grid', { delegation } ) );
+		const handed = emitScopedCss( motionWith( { root: { entrance: { base: fade() } } } ), optionsFor( 'card-grid', { delegation, hasInnerBlocks: true } ) );
 		expect( entrancePlans( handed ) ).toEqual( [] );
 		const kept = emitScopedCss(
-			motionWith( { root: { entrance: { base: fade() } }, item: { entrance: { base: fade( 'load' ) } } } ),
-			optionsFor( 'card-grid', { delegation } )
+			motionWith( { root: { entrance: { base: fade() } } } ),
+			optionsFor( 'card-grid', { delegation: { ...delegation, childRootEntrance: true }, hasInnerBlocks: true } )
 		);
 		expect( kept.plans.find( ( plan ) => plan.target === 'root' ).entrance ).toBe( true );
 	} );

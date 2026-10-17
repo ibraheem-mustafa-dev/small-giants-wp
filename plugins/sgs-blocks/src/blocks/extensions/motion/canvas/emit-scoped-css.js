@@ -294,12 +294,12 @@ function usesSource( targets, source ) {
  */
 function itemHandOver( motion, targets, { blockName, elements, root, states, context, motionItems, delegation, hasInnerBlocks, noItems } ) {
 	const none = { moved: null, plan: null, css: '' };
-	if ( hasInnerBlocks ) {
-		return { ...none, moved: movedEntranceTarget( motion, targets, elements ) };
-	}
 	if ( delegation ) {
 		// No child shows (an empty result), so nothing takes the container's entrance, as on the page.
 		return noItems ? none : { ...none, moved: delegatedMove( motion, targets, elements, delegation ) };
+	}
+	if ( hasInnerBlocks ) {
+		return { ...none, moved: movedEntranceTarget( motion, targets, elements ) };
 	}
 	const item = noItems ? null : inheritedItem( motion, targets, elements, motionItems );
 	const resolved = item ? resolveTarget( blockName, elements, root, item.part, {} ) : null;
@@ -331,12 +331,12 @@ function itemHandOver( motion, targets, { blockName, elements, root, states, con
  *                         `context` (`lcp`, `suppressEntrance`) for every target, and `animationItems` (the block's
  *                         `supports.sgs.animationItems`, which with the `item` part names its repeated items) and
  *                         `attributes` (the block's attributes, so a shadowed element drops the hover ring; without them
- *                         no ring is refused) and `ringDelegate` (the child block a delegating mode prints, `emit-ring.js::ringDelegate`),
+ *                         no ring is refused),
  *                         `motionItems`, `delegation`, `hasInnerBlocks` and `noItems` (the hand-over, `itemHandOver`).
  * @return {{css:string,plans:Array,rootAttrs:Object,dropped:Array,itemMatches?:Array}} Empty for an absent or invalid
  *         attribute; `itemMatches` (the elements to mark `data-sgs-mitem`) only when a hover layer uses source item.
  */
-export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes, ringDelegate, motionItems, delegation = null, hasInnerBlocks = false, noItems = false } ) {
+export function emitScopedCss( motion, { blockName, elements, root, states = [], losers = {}, context = {}, animationItems = '', attributes, motionItems, delegation = null, hasInnerBlocks = false, noItems = false } ) {
 	const out = { css: '', plans: [], rootAttrs: {}, dropped: [] };
 	const doc = sanitiseDocument( motion );
 	const targets = doc.elements;
@@ -371,7 +371,7 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		if ( state && typeof state === 'object' && ! Array.isArray( state ) && hasRing( state ) ) {
 			// The ring and the accent line are a `box-shadow`: a shadowed element drops both (FR-38A-42); an invisible
 			// pair is dropped on its own.
-			const refused = Boolean( attributes ) && ringRefused( elements, target, attributes, ringDelegate );
+			const refused = Boolean( attributes ) && ringRefused( elements, target, attributes );
 			if ( refused || ! ringPaints( state ) ) {
 				element = { ...element, hover: { ...element.hover, state: stripRing( state, refused ) } };
 			}

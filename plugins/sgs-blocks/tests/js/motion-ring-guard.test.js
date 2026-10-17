@@ -10,7 +10,6 @@ const {
 	ringPaints,
 	ringRefused,
 	shadowAttributes,
-	ringDelegate,
 	shadowValues,
 	stripRing,
 	stylesheetShadow,
@@ -70,15 +69,10 @@ describe( 'a shadow the stylesheet paints', () => {
 		expect( ringRefused( { box: { isWrapper: true, restingShadow: false } }, 'root', {} ) ).toBe( false );
 	} );
 
-	it( 'refuses a delegating block where the child it prints is marked, and only in that mode', () => {
-		const own = { item: {}, title: {} };
-		const delegate = ringDelegate(
-			{ block: 'sgs/child', parts: { item: 'root', title: 'title' } },
-			() => ( { elements: STYLED, attributes: {} } )
-		);
-		expect( ringRefused( own, 'item', {}, delegate ) ).toBe( true );
-		expect( ringRefused( own, 'title', {}, delegate ) ).toBe( false );
-		expect( ringRefused( own, 'item', {}, ringDelegate( null, () => ( {} ) ) ) ).toBe( false );
+	it( 'decides the ring from the declarations of the block itself only (a delegating grid hands its cards no part)', () => {
+		const emitRing = require( '../../src/blocks/extensions/motion/canvas/emit-ring' );
+		expect( emitRing ).not.toHaveProperty( 'ringDelegate' );
+		expect( ringRefused( { item: {}, title: {} }, 'item', {} ) ).toBe( false );
 	} );
 } );
 

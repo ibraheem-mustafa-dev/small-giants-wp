@@ -1,12 +1,13 @@
 /**
- * Delegated parts in the editor (Spec 38A §6.2): the twin of `includes/motion/class-sgs-motion-delegate.php`.
+ * Source modes in the editor's motion panels (Spec 38A §6.2): the twin of `includes/motion/class-sgs-motion-delegate.php`.
  *
  * A block whose source mode prints each result as another block (an `sgs/card-grid` with `source` `wc-product` or
- * `cpt-collection` prints one `sgs/product-card` per result) never prints its own parts in that mode. The block
- * declares the hand-off in `supports.sgs.motionDelegate` (`{ attribute, values, block, parts }`, `parts` mapping each
- * handed-over part to the child block's target); in a delegating mode only the wrapper parts and the mapped parts are
- * offered as motion targets, and the server moves the mapped parts' layers onto each child. A part left out that still
- * holds a stored layer stays offered, marked `notInMode`, so the client can find the layer and remove it.
+ * `cpt-collection` prints its template `sgs/product-card` once per result) never prints its own parts in that mode. The
+ * block declares the mode in `supports.sgs.motionDelegate` (`{ attribute, values, block }`); in that mode only the
+ * block's wrapper parts are offered as motion targets, and every part of a printed card is a target of the template
+ * card's own Effects panel. The grid hands the cards only its stagger entrance (`canvas/delegated-children.js`). A part
+ * left out that still holds a stored layer stays offered, marked `notInMode`, so the client can find the layer and
+ * remove it.
  */
 
 import { getBlockType } from '@wordpress/blocks';
@@ -16,7 +17,7 @@ import { targetsWithLayers } from './layers/use-motion-layers';
  * The block's declared delegation, validated, or null.
  *
  * @param {Object|undefined} supportsSgs The block type's `supports.sgs`.
- * @return {{attribute:string,values:string[],block:string,parts:Object<string,string>}|null} The delegation.
+ * @return {{attribute:string,values:string[],block:string}|null} The delegation.
  */
 export function delegateConfig( supportsSgs ) {
 	const raw = supportsSgs?.motionDelegate;
@@ -25,23 +26,14 @@ export function delegateConfig( supportsSgs ) {
 		typeof raw !== 'object' ||
 		typeof raw.attribute !== 'string' ||
 		typeof raw.block !== 'string' ||
-		! Array.isArray( raw.values ) ||
-		! raw.parts ||
-		typeof raw.parts !== 'object'
+		! Array.isArray( raw.values )
 	) {
 		return null;
 	}
-	const parts = {};
-	Object.entries( raw.parts ).forEach( ( [ from, to ] ) => {
-		if ( from !== '' && typeof to === 'string' && to !== '' ) {
-			parts[ from ] = to;
-		}
-	} );
 	return {
 		attribute: raw.attribute,
 		values: raw.values.filter( ( value ) => typeof value === 'string' ),
 		block: raw.block,
-		parts,
 	};
 }
 
@@ -50,7 +42,7 @@ export function delegateConfig( supportsSgs ) {
  *
  * @param {Object|undefined} supportsSgs The block type's `supports.sgs`.
  * @param {Object|undefined} attributes  The block's attributes.
- * @return {{block:string,parts:Object<string,string>}|null} The child block and the part map.
+ * @return {{block:string}|null} The child block.
  */
 export function activeDelegation( supportsSgs, attributes ) {
 	const config = delegateConfig( supportsSgs );
@@ -59,7 +51,7 @@ export function activeDelegation( supportsSgs, attributes ) {
 	}
 	const value = attributes?.[ config.attribute ];
 	return typeof value === 'string' && config.values.includes( value )
-		? { block: config.block, parts: config.parts }
+		? { block: config.block }
 		: null;
 }
 
@@ -81,9 +73,9 @@ export function heldTargets( motion ) {
 
 /**
  * The block's `supports.sgs.elements` with the parts its current source mode does not print left out: in a
- * delegating mode only the wrapper parts and the parts the delegation maps stay, plus any part that holds a stored
- * layer, marked `notInMode: true` (its layer does not reach the page in this mode, and the Target row says so). Outside
- * a delegating mode (or for a block that declares none) the elements come back unchanged.
+ * delegating mode only the wrapper parts stay, plus any part that holds a stored layer, marked `notInMode: true` (its
+ * layer does not reach the page in this mode, and the Target row says so). Outside a delegating mode (or for a block
+ * that declares none) the elements come back unchanged.
  *
  * @param {Object|undefined} supportsSgs The block type's `supports.sgs`.
  * @param {Object|undefined} attributes  The block's attributes.
@@ -92,21 +84,15 @@ export function heldTargets( motion ) {
  */
 export function elementsForSourceMode( supportsSgs, attributes, held = [] ) {
 	const elements = supportsSgs?.elements;
-	const delegation = activeDelegation( supportsSgs, attributes );
-	if ( ! delegation || ! elements || typeof elements !== 'object' ) {
+	if ( ! activeDelegation( supportsSgs, attributes ) || ! elements || typeof elements !== 'object' ) {
 		return elements;
 	}
 	return Object.fromEntries(
 		Object.entries( elements ).flatMap( ( [ key, spec ] ) => {
-			if (
-				spec?.isWrapper === true ||
-				Object.prototype.hasOwnProperty.call( delegation.parts, key )
-			) {
+			if ( spec?.isWrapper === true ) {
 				return [ [ key, spec ] ];
 			}
-			return held.includes( key )
-				? [ [ key, { ...spec, notInMode: true } ] ]
-				: [];
+			return held.includes( key ) ? [ [ key, { ...spec, notInMode: true } ] ] : [];
 		} )
 	);
 }

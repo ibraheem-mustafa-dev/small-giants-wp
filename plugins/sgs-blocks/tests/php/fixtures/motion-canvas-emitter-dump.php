@@ -8,8 +8,8 @@
  * classes, in the renderer's order (`Sgs_Motion_Document::sanitise`, `Sgs_Motion_Shared_Element::losers` over the
  * case's `html` when it has one, `Sgs_Motion_Targets::resolve`, `Sgs_Motion_Layer_Drops::resolve`,
  * `Sgs_Motion_Shared_Element::strip`, `Sgs_Motion_Emitter::emit` with the open and state trigger filters, and the
- * container entrance a stagger's `apply` moves to the children: `Sgs_Motion_Loop_Inherit::moved_target` for a case
- * with `innerBlocks`, `Sgs_Motion_Delegate::hands_entrance` in a delegating mode, else the declared item part's
+ * container entrance a stagger's `apply` moves to the children: `Sgs_Motion_Delegate::hands_entrance` in a delegating
+ * mode, `Sgs_Motion_Loop_Inherit::moved_target` for another case with `innerBlocks`, else the declared item part's
  * inherited entrance, `Sgs_Motion_Loop_Inherit::inherited_layer` and `emit_layer`, as one more plan after the stored
  * targets' plans) under the scope the case names, through the WordPress stand-ins in `tests/php/stubs/motion-render-stubs.php` (block types read
  * from the real block.json files).
@@ -65,10 +65,10 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 	$sgs_item_plan = null;
 	$sgs_item_css  = '';
 	$sgs_moved     = null;
-	if ( ! empty( $sgs_case['innerBlocks'] ) ) {
-		$sgs_moved = Sgs_Motion_Loop_Inherit::moved_target( $sgs_name, $sgs_motion );
-	} elseif ( null !== Sgs_Motion_Delegate::active( $sgs_name, $sgs_attrs ) ) {
+	if ( null !== Sgs_Motion_Delegate::active( $sgs_name, $sgs_attrs ) ) {
 		$sgs_moved = Sgs_Motion_Delegate::hands_entrance( $sgs_name, array_merge( $sgs_attrs, array( 'sgsMotion' => $sgs_motion ) ) );
+	} elseif ( ! empty( $sgs_case['innerBlocks'] ) ) {
+		$sgs_moved = Sgs_Motion_Loop_Inherit::moved_target( $sgs_name, $sgs_motion );
 	} else {
 		$sgs_layer    = Sgs_Motion_Loop_Inherit::inherited_layer( $sgs_name, $sgs_motion );
 		$sgs_resolved = null === $sgs_layer ? null : Sgs_Motion_Targets::resolve( $sgs_name, $sgs_scope, $sgs_layer['part'], array() );

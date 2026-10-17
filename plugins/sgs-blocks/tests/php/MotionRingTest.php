@@ -193,7 +193,9 @@ final class MotionRingTest extends TestCase {
 		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/product-card', 'box', array() ), 'the marked wrapper part' );
 	}
 
-	public function test_a_delegating_block_is_refused_when_the_child_it_prints_has_a_shadow(): void {
+	public function test_a_delegating_block_decides_its_ring_from_its_own_parts_only(): void {
+		// A delegating mode hands the child block only the stagger entrance; every part of the child is styled and moved
+		// through the child's own motion (the grid's template card), so the child's shadow never refuses a grid part.
 		$GLOBALS['sgs_test_block_types']['sgs/fake-grid'] = array(
 			'supports' => array(
 				'sgs' => array(
@@ -202,13 +204,12 @@ final class MotionRingTest extends TestCase {
 						'attribute' => 'source',
 						'values'    => array( 'cards' ),
 						'block'     => 'sgs/product-card',
-						'parts'     => array( 'item' => 'root', 'title' => 'title' ),
 					),
 				),
 			),
 		);
-		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/fake-grid', 'item', array( 'source' => 'cards' ) ), 'its item is the product card root' );
+		$this->assertTrue( Sgs_Motion_Ring_Guard::refused( 'sgs/product-card', 'root', array() ), 'control: the child root has a resting shadow' );
+		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/fake-grid', 'item', array( 'source' => 'cards' ) ), 'delegating: the grid part is not the child root' );
 		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/fake-grid', 'item', array( 'source' => 'manual' ) ), 'not delegating: its own item has no shadow' );
-		$this->assertFalse( Sgs_Motion_Ring_Guard::refused( 'sgs/fake-grid', 'title', array( 'source' => 'cards' ) ), 'a mapped part with no shadow' );
 	}
 }

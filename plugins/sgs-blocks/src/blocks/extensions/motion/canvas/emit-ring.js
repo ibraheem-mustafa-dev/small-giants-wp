@@ -134,41 +134,16 @@ export function stylesheetShadow( elements, target ) {
  * @param {Object}  elements   The block's `supports.sgs.elements`.
  * @param {string}  target     Target.
  * @param {Object}  attributes The block's attributes (defaults included).
- * @param {?Object} delegate   The child block a delegating mode prints: `{ elements, attributes, parts }` (`ringDelegate`).
  * @return {boolean} True when the ring is refused.
  */
-export function ringRefused( elements, target, attributes, delegate = null ) {
+export function ringRefused( elements, target, attributes ) {
 	const attrs = plain( attributes );
-	if (
+	return (
 		stylesheetShadow( elements, target ) ||
 		shadowAttributes( elements, target ).some( ( name ) =>
 			isSet( name === NATIVE ? plain( attrs.style ).shadow : attrs[ name ] )
 		)
-	) {
-		return true;
-	}
-	const to = plain( delegate?.parts )[ target ];
-	return typeof to === 'string' && ringRefused( delegate.elements, to, delegate.attributes );
-}
-
-/**
- * The child block a delegating block prints in its current mode, in the shape `ringRefused` reads, or null.
- *
- * @param {?Object}  delegation `activeDelegation()` of the block: `{ block, parts }`.
- * @param {Function} childOf    Takes the child block name; returns `{ elements, attributes }` (its `supports.sgs.elements`
- *                              and its attribute defaults).
- * @return {?Object} `{ elements, attributes, parts }`.
- */
-export function ringDelegate( delegation, childOf ) {
-	if ( ! delegation ) {
-		return null;
-	}
-	const child = childOf( delegation.block ) || {};
-	return {
-		elements: child.elements || {},
-		attributes: child.attributes || {},
-		parts: delegation.parts,
-	};
+	);
 }
 
 const tierValues = ( state ) => [

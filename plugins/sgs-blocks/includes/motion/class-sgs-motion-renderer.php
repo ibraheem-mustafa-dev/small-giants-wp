@@ -328,16 +328,17 @@ final class Sgs_Motion_Renderer {
 	/**
 	 * The container target whose entrance `stagger.apply` moved to the children, or null. A block holding inner blocks
 	 * moves it whenever `apply` is on and it has an entrance (the editor wrote it on each child,
-	 * `stagger-write.js::childMotionWithDelay`); a block that prints its items itself moves it only when this render
-	 * handed it over (`note_moved`), so a container whose items keep their own entrance, or that printed no items,
-	 * keeps its own.
+	 * `stagger-write.js::childMotionWithDelay`); a block that prints its items itself, or prints them through its
+	 * template inner block in a delegating mode (`Sgs_Motion_Delegate`), moves it only when this render handed it over
+	 * (`note_moved`), so a container whose items keep their own entrance, or that printed no items, keeps its own.
 	 *
 	 * @param array<string,mixed> $block Parsed block.
 	 * @param array<string,mixed> $frame The block's render frame.
 	 * @return string|null
 	 */
 	private static function moved( array $block, array $frame ): ?string {
-		if ( ! empty( $block['innerBlocks'] ) ) {
+		$name = (string) ( $block['blockName'] ?? '' );
+		if ( ! empty( $block['innerBlocks'] ) && null === Sgs_Motion_Delegate::active( $name, is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array() ) ) {
 			return Sgs_Motion_Loop_Inherit::moved_target( (string) ( $block['blockName'] ?? '' ), $block['attrs'][ self::ATTR ] ?? null );
 		}
 		return isset( $frame['moved'] ) && is_string( $frame['moved'] ) ? $frame['moved'] : null;

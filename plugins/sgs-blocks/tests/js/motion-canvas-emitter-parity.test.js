@@ -20,8 +20,7 @@ const path = require( 'path' );
 import { emitScopedCss } from '../../src/blocks/extensions/motion/canvas/emit-scoped-css';
 import { planCanvas } from '../../src/blocks/extensions/motion/canvas/canvas-dom';
 import { declaredStates } from '../../src/blocks/extensions/motion/canvas/trigger-rules';
-import { ringDelegate } from '../../src/blocks/extensions/motion/canvas/emit-ring';
-import { activeDelegation } from '../../src/blocks/extensions/motion/delegate-parts';
+import { activeDelegation } from '../../src/blocks/extensions/motion/source-mode';
 import {
 	isScoped,
 	resolveTarget,
@@ -77,21 +76,6 @@ const rootOf = ( c ) => {
 	return host.firstElementChild;
 };
 
-// The child block a delegating mode prints, as the editor hands it to the guard (its elements and attribute defaults).
-const childOf = ( name ) => {
-	const slug = name.slice( name.indexOf( '/' ) + 1 );
-	const json = JSON.parse(
-		fs.readFileSync( path.join( PLUGIN, 'src/blocks', slug, 'block.json' ), 'utf8' )
-	);
-	const attributes = {};
-	Object.entries( json.attributes || {} ).forEach( ( [ key, def ] ) => {
-		if ( def.default !== undefined ) {
-			attributes[ key ] = def.default;
-		}
-	} );
-	return { elements: json.supports?.sgs?.elements || {}, attributes };
-};
-
 // The JS result in the dump's shape.
 const jsResult = ( c ) => {
 	const sgs = blockSgs( c.block );
@@ -102,7 +86,6 @@ const jsResult = ( c ) => {
 		states: declaredStates( sgs.motion ),
 		root: c.root,
 		attributes: attributesOf( c ),
-		ringDelegate: ringDelegate( activeDelegation( sgs, attributesOf( c ) ), childOf ),
 		motionItems: sgs.motionItems,
 		delegation: activeDelegation( sgs, attributesOf( c ) ),
 		hasInnerBlocks: Boolean( c.innerBlocks ),
@@ -203,7 +186,7 @@ describe( 'motion editor-canvas emitter parity', () => {
 			'hover ring refused by the native shadow support',
 			'hover ring refused by a stylesheet shadow with no attribute (product card root)',
 			"hover ring refused by a stylesheet shadow on the card's declared wrapper part",
-			"hover ring refused on a delegating grid's item in a delegating mode",
+			"hover ring refused on a card-grid item by its own card shadow, in a delegating mode too",
 		].forEach( ( name ) => expect( css( name ) ).not.toContain( '--sgs-mh-to-ring' ) );
 		expect( css( "hover ring kept when the block's shadow is none" ) ).toContain( '--sgs-mh-to-ring:4px;' );
 		expect( css( 'hover ring refused on a block that sets a shadow' ) ).toContain( '--sgs-mh-to-ty:' );

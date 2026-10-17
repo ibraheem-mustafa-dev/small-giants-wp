@@ -1383,17 +1383,15 @@
 		"losers": {}
 	},
 	{
-		"name": "stagger apply in a delegating mode keeps the entrance when the card root has its own",
-		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:28px;--sgs-me-dur:400ms;--sgs-me-delay:120ms;}.sgs-m-0123456789 .sgs-card-grid__item{--sgs-me-from-op:0;--sgs-me-dur:300ms;}",
+		"name": "stagger apply in a delegating mode moves the grid entrance to the cards even when the grid item part has an entrance (that part reaches no card)",
+		"css": ".sgs-m-0123456789 .sgs-card-grid__item{--sgs-me-from-op:0;--sgs-me-dur:300ms;}",
 		"plans": [
 			{
 				"target": "root",
 				"selector": ".sgs-m-0123456789",
 				"root": true,
-				"attrs": {
-					"data-sgs-me": "scroll translate opacity"
-				},
-				"entrance": true
+				"attrs": {},
+				"entrance": false
 			},
 			{
 				"target": "item",
@@ -1488,7 +1486,7 @@
 		"losers": {}
 	},
 	{
-		"name": "hover ring refused on a delegating grid's item in a delegating mode",
+		"name": "hover ring refused on a card-grid item by its own card shadow, in a delegating mode too",
 		"css": ".sgs-m-0123456789 .sgs-card-grid__item{--sgs-mh-to-ty:-4px;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
 		"plans": [
 			{

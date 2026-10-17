@@ -28,7 +28,7 @@ export const REPLAY_REDUCED_NOTICE = __(
 // Longest a Replay waits for its animations before it restores the resting markers.
 const REPLAY_CAP_MS = 10000;
 
-/** Live blocks: clientId => { emitted, element() }. */
+/** Live blocks: clientId => { emitted, element(), mirrors() } (`mirrors` optional: the block's mirror roots). */
 export const registry = new Map();
 
 function prefersReduced( el ) {
@@ -37,10 +37,10 @@ function prefersReduced( el ) {
 }
 
 // Play one element's entrance: write the plan's entrance attributes, set `data-sgs-in`, and when the play ends take off
-// `data-sgs-in` and the attributes it wrote. An entrance the server already printed on the element (a delegating
-// block's children in its preview) plays from those attributes, which stay: they come off for the reflow and go back on
-// with `data-sgs-in`, because a `load` marker already holds its finished animation at rest (`motion.css` names the
-// animation for `[data-sgs-me~="load"]`), so only a fresh marker restarts it.
+// `data-sgs-in` and the attributes it wrote. An entrance marker already on the element (a block preview rendered by the
+// server) plays from those attributes, which stay: they come off for the reflow and go back on with `data-sgs-in`,
+// because a `load` marker already holds its finished animation at rest (`motion.css` names the animation for
+// `[data-sgs-me~="load"]`), so only a fresh marker restarts it.
 function playOn( el, attrs ) {
 	const win = el.ownerDocument.defaultView || window;
 	const written = ENTRANCE_ATTRS.filter(
@@ -92,7 +92,7 @@ function indexLoopItems( rootEl, loopItems ) {
 
 // A plan Replay plays for a target: the target's own entrance, or the entrance its children inherited from it (the
 // stagger's "Apply entrance to children", `stagger-apply.js`), which plays on the items, or a delegating block's
-// children that play it (`delegated-children.js`).
+// shown cards (`delegated-children.js`).
 function playsFrom( plan, target ) {
 	return Boolean( plan.entrance ) && ( plan.target === target || plan.inheritedFrom === target );
 }
@@ -119,8 +119,12 @@ export function replay( clientId, target = 'root' ) {
 		} );
 		return Promise.resolve( { played: false, reduced: true } );
 	}
-	const pairs = plans.flatMap( ( plan ) => planElements( rootEl, plan ).map( ( el ) => [ el, plan.attrs ] ) );
-	const indexed = indexLoopItems( rootEl, entry.emitted.loopItems );
+	// A mirrored block (the grid's template card) plays on each of its mirrors too (`mirrors.js`).
+	const roots = [ rootEl, ...( typeof entry.mirrors === 'function' ? entry.mirrors() : [] ) ];
+	const pairs = roots.flatMap( ( root ) =>
+		plans.flatMap( ( plan ) => planElements( root, plan ).map( ( el ) => [ el, plan.attrs ] ) )
+	);
+	const indexed = roots.flatMap( ( root ) => indexLoopItems( root, entry.emitted.loopItems ) );
 	return Promise.all( pairs.map( ( [ el, attrs ] ) => playOn( el, attrs ) ) ).then( () => {
 		indexed.forEach( ( el ) => el.removeAttribute( ITEM_ATTR ) );
 		return { played: pairs.length > 0, reduced: false };

@@ -13,8 +13,9 @@
  * `none` are not a shadow). A hover or scrolled shadow counts too: it is a `box-shadow` the ring would clash with.
  * A shadow the block's own stylesheet paints with no attribute behind it (a card's boundary shadow) is declared on the
  * element as `"restingShadow": true`, written and gated by `scripts/migrate-motion-resting-shadows.py`; it counts in
- * every variant, since the guard cannot tell which stylesheet variant the block's attributes switch on. A delegating
- * block (`supports.sgs.motionDelegate`) in a delegating mode is also refused where the child block it prints is.
+ * every variant, since the guard cannot tell which stylesheet variant the block's attributes switch on. A block decides
+ * from its own declarations only: a delegating block (`supports.sgs.motionDelegate`) hands the child block it prints no
+ * part, so the child's shadows are the child's own guard's business.
  *
  * The `root` target covers the elements flagged `isWrapper`, the block's outer element. Where a stored hover state
  * holds ring or accent values on a shadowed element the emitter drops them all (`strip`) and reports the refusal
@@ -145,8 +146,7 @@ final class Sgs_Motion_Ring_Guard {
 				return true;
 			}
 		}
-		$delegation = Sgs_Motion_Delegate::active( $block, $attributes );
-		return null !== $delegation && isset( $delegation['parts'][ $target ] ) && self::refused( $delegation['block'], $delegation['parts'][ $target ], array() );
+		return false;
 	}
 
 	/**

@@ -2130,7 +2130,7 @@
 			}
 		},
 		{
-			"name": "stagger apply in a delegating mode keeps the entrance when the card root has its own",
+			"name": "stagger apply in a delegating mode moves the grid entrance to the cards even when the grid item part has an entrance (that part reaches no card)",
 			"block": "sgs/card-grid",
 			"motion": {
 				"v": 1,
@@ -2277,7 +2277,7 @@
 			"context": {}
 		},
 		{
-			"name": "hover ring refused on a delegating grid's item in a delegating mode",
+			"name": "hover ring refused on a card-grid item by its own card shadow, in a delegating mode too",
 			"block": "sgs/card-grid",
 			"motion": {
 				"v": 1,

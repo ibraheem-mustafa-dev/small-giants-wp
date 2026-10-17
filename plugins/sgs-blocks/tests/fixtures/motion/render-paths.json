@@ -55,15 +55,9 @@
      }
     },
     "products": {
-     "why": "source wc-product / cpt-collection: render-delegated.php prints one sgs/product-card per result; supports.sgs.motionDelegate maps the grid's parts onto the card",
-     "delegatesTo": {
-      "block": "product-card",
-      "paths": [
-       "live-wc-simple",
-       "live-wc-no-photo",
-       "live-cpt",
-       "readonly-variable"
-      ]
+     "why": "source wc-product (cpt-collection prints the same wrapper): render-delegated.php prints the grid wrapper and one template sgs/product-card per result, so only the grid's wrapper part is offered; with no product the wrapper holds the empty state",
+     "attrs": {
+      "source": "wc-product"
      }
     }
    }

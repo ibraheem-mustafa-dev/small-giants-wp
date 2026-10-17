@@ -7,8 +7,9 @@
  *
  * The stamps follow the canvas: a block that mounts later is found by a mutation observer (no timers), a re-rendered
  * part or a remounted block element is planned and stamped again, and everything is removed on unmount. Blocks inside
- * a block preview (the inserter, the style book) do nothing. Mounted for every supporting block by
- * `with-canvas-motion.js`.
+ * a block preview (the inserter, the style book, a products-mode grid's product previews) do nothing; a products-mode
+ * grid's template card reaches each of its product previews instead (`mirrors.js`). Mounted for every supporting block
+ * by `with-canvas-motion.js`.
  *
  * @package SGS\Blocks
  */
@@ -28,9 +29,9 @@ import {
 	writeStyle,
 } from './canvas-dom';
 import { declaredStates } from './trigger-rules';
-import { ringDelegate, shadowValues } from './emit-ring';
-import { activeDelegation } from '../delegate-parts';
-import { childOf } from '../hover/use-ring-refused';
+import { shadowValues } from './emit-ring';
+import { activeDelegation } from '../source-mode';
+import { mirrorRoots } from './mirrors';
 import { registry } from './replay';
 import { TIERS } from './motion-schema';
 import { columnsAt } from '../entrance/entrance-facts';
@@ -63,8 +64,32 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 	const shadows = JSON.stringify(
 		shadowValues( getBlockType( name )?.supports?.sgs?.elements, attributes )
 	);
-	const delegation = JSON.stringify( activeDelegation( getBlockType( name )?.supports?.sgs, attributes ) );
-	const delegate = JSON.stringify( ringDelegate( JSON.parse( delegation ), childOf ) );
+	// In a delegating mode the grid hands its stagger entrance to the cards unless its template card's root keeps an
+	// entrance of its own (`delegated-children.js`); a template card is mirrored by the grid's product previews.
+	const { delegation, mirrored } = useSelect(
+		( select ) => {
+			const store = select( 'core/block-editor' );
+			const active = activeDelegation( getBlockType( name )?.supports?.sgs, attributes );
+			const parentId = store?.getBlockRootClientId?.( clientId );
+			const parentName = parentId ? store.getBlockName( parentId ) : null;
+			const parentDelegation = parentName
+				? activeDelegation( getBlockType( parentName )?.supports?.sgs, store.getBlockAttributes( parentId ) )
+				: null;
+			const template = active ? ( store?.getBlocks?.( clientId ) || [] ).find( ( block ) => block.name === active.block ) : null;
+			const base = template?.attributes?.[ MOTION_ATTRIBUTE_NAME ]?.elements?.root?.entrance?.base;
+			return {
+				delegation: active
+					? JSON.stringify( {
+							...active,
+							childRootEntrance: Boolean( base ) && typeof base === 'object' && ! Array.isArray( base ),
+							childStates: declaredStates( getBlockType( active.block )?.supports?.sgs?.motion ),
+					  } )
+					: 'null',
+				mirrored: parentDelegation?.block === name,
+			};
+		},
+		[ clientId, name, attributes ]
+	);
 	// The grid columns per tier, which decide the stagger's per-item delays of a block that prints its items itself.
 	const loopColumns = JSON.stringify( Object.fromEntries( TIERS.map( ( tier ) => [ tier, columnsAt( name, attributes, tier ) ] ) ) );
 	const options = useMemo( () => {
@@ -74,23 +99,23 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			elements: sgs.elements || {},
 			animationItems: sgs.animationItems || '',
 			states: declaredStates( sgs.motion ),
-			root: canvasRootSelector( clientId ),
+			root: canvasRootSelector( clientId, mirrored ),
 			attributes: JSON.parse( shadows ),
-			ringDelegate: JSON.parse( delegate ),
 			motionItems: sgs.motionItems,
 			delegation: JSON.parse( delegation ),
 			hasInnerBlocks,
 			loopColumns: JSON.parse( loopColumns ),
 		};
-	}, [ name, clientId, shadows, delegate, delegation, hasInnerBlocks, loopColumns ] );
+	}, [ name, clientId, shadows, delegation, mirrored, hasInnerBlocks, loopColumns ] );
 
 	useEffect( () => {
 		if ( preview || ( ! motion && ! linked ) ) {
 			return undefined;
 		}
 		let rootEl = null;
-		let touched = new Map();
+		let touched = [];
 		let observer = null;
+		const mirrorsOf = ( el ) => ( mirrored ? mirrorRoots( clientId, el ) : [] );
 		let frame = 0;
 		let stopWatch = () => {};
 
@@ -100,24 +125,31 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			if ( ! found ) {
 				return;
 			}
-			unstamp( touched, rootEl );
-			if ( found !== rootEl ) {
-				observer?.disconnect();
-				rootEl = found;
-				const win = rootEl.ownerDocument.defaultView || window;
-				observer = new win.MutationObserver( schedule );
-				observer.observe( rootEl, { childList: true, subtree: true } );
-				if ( rootEl.parentNode ) {
-					observer.observe( rootEl.parentNode, { childList: true } );
-				}
+			touched.forEach( ( [ map, el ] ) => unstamp( map, el ) );
+			observer?.disconnect();
+			rootEl = found;
+			const win = rootEl.ownerDocument.defaultView || window;
+			const mirrors = mirrorsOf( rootEl );
+			observer = new win.MutationObserver( schedule );
+			[ rootEl, ...mirrors ].forEach( ( el ) => observer.observe( el, { childList: true, subtree: true } ) );
+			if ( rootEl.parentNode ) {
+				observer.observe( rootEl.parentNode, { childList: true } );
+			}
+			if ( mirrored && rootEl.parentNode?.parentNode ) {
+				// The list the template card and its mirrors sit in: a product added or removed adds or removes a mirror.
+				observer.observe( rootEl.parentNode.parentNode, { childList: true } );
 			}
 			const emitted = planCanvas( rootEl, motion, options );
 			if ( linked ) {
 				emitted.rootAttrs = { ...emitted.rootAttrs, 'data-sgs-hover-group': '' };
 			}
 			writeStyle( rootEl, clientId, emitted.css );
-			touched = stamp( rootEl, emitted );
-			registry.set( clientId, { emitted, element: () => findBlockElement( clientId ) } );
+			touched = [ rootEl, ...mirrors ].map( ( el ) => [ stamp( el, emitted ), el ] );
+			registry.set( clientId, {
+				emitted,
+				element: () => findBlockElement( clientId ),
+				mirrors: () => mirrorsOf( findBlockElement( clientId ) ),
+			} );
 		};
 		function schedule() {
 			if ( ! frame ) {
@@ -132,9 +164,9 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 				window.cancelAnimationFrame( frame );
 			}
 			observer?.disconnect();
-			unstamp( touched, rootEl );
+			touched.forEach( ( [ map, el ] ) => unstamp( map, el ) );
 			removeStyle( clientId );
 			registry.delete( clientId );
 		};
-	}, [ clientId, motion, linked, preview, options ] );
+	}, [ clientId, motion, linked, preview, options, mirrored ] );
 }

@@ -4,7 +4,7 @@
  * in the order the block declares, except a part marked `"motion": false` (an element the block does not print itself,
  * §6.2) and a part marked `isWrapper` (the renderer and the canvas resolve it to the root, so it is the whole block under
  * another name) unless it already holds a stored layer. A part marked `notInMode` (it holds a stored layer but the
- * block's current source mode does not print it, `delegate-parts.js`) is labelled as not shown, so its layer can still
+ * block's current source mode does not print it, `source-mode.js`) is labelled as not shown, so its layer can still
  * be found and removed. M3.3's Target row composes this atom.
  *
  * @package
