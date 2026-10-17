@@ -122,7 +122,7 @@ All layout rules live in `plugins/sgs-blocks/assets/floating-ui/floating-ui.css`
 | 44 px touch target | `.sgs-floating-ui__back-to-top` is 44 × 44 px |
 | Screen reader label | `aria-label="Back to top"` on the `<button>` |
 | Progress bar semantics | `role="progressbar"` + `aria-valuenow` updated on scroll |
-| Visible focus ring | `outline: 3px solid var(--btt-bg); outline-offset: 3px;` |
+| Visible focus ring | the focus system (Spec 32 §14.5) |
 | Hidden when off-screen | `hidden` attribute toggled via JS (respects display:none) |
 | Reduced motion | `floating-ui.css` disables the transitions under `prefers-reduced-motion: reduce`; `floating-ui.js` scrolls instantly (`behavior: 'auto'`) under the same preference |
 
@@ -139,7 +139,7 @@ Both elements use `postMessage` transport so the Customiser preview iframe updat
 | `plugins/sgs-blocks/includes/class-sgs-floating-ui-customiser.php` | Registers Customiser section, settings, controls, sanitisers, postMessage partials |
 | `plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php` | Hooks into `wp_footer`, enqueues assets, emits markup |
 | `plugins/sgs-blocks/assets/floating-ui/floating-ui.js` | Scroll listener, visibility toggling, smooth scroll |
-| `plugins/sgs-blocks/assets/floating-ui/floating-ui.css` | Layout, z-index, transition, focus ring |
+| `plugins/sgs-blocks/assets/floating-ui/floating-ui.css` | Layout, z-index, transition |
 | `plugins/sgs-blocks/assets/floating-ui/customise-preview.js` | Customiser live preview: re-applies the custom properties on the wrapper |
 | `plugins/sgs-blocks/tests/php/FloatingUiCustomiserTest.php` | PHPUnit coverage for the Customiser sanitisers, capability gate and renderer (the test file is the source of truth) |
 

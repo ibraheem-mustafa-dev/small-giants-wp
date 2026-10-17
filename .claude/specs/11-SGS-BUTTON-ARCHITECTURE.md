@@ -5,7 +5,7 @@ spec_version: "2.0"
 title: SGS Button Architecture
 project: small-giants-wp
 status: shipped
-last_verified: 2026-10-09
+last_verified: 2026-10-17
 authors: Bean + Claude
 ---
 
@@ -77,3 +77,7 @@ Each preset (primary, secondary, outline) carries the full per-state set: backgr
 ## 6. Gaps deliberately skipped
 
 Visibility controls are not button-specific: the universal visibility extension (`02-SGS-BLOCKS.md`, Visibility Extension) covers them.
+
+## 7. Requirements
+
+- **FR-11-1 — Signature keyboard focus on the commerce CTAs.** The animated, client-coloured Signature focus look (`sgs-focus--signature`, Spec 32 §14.5) reaches the buybox add-to-cart button, the product-card CTA and the pricing-table CTA, through the same "Keyboard focus" control `sgs/button` carries (`focusStyle`), refused on the same two conditions (a gradient border, a motion effect that owns `::before`). Owner ruling 2026-10-17 (Q3): `sgs/button` is the only block with the control, so these three CTAs, which render their own markup, take the site's default focus look until this requirement is built. *Done when:* each of the three CTAs offers the Keyboard focus control or inherits it from an `sgs/button` it composes, a focused Signature CTA shows the conic band with a `::before` carrying `animation-name: sgs-focus-spin` (and `none` under `prefers-reduced-motion: reduce`), and the Spec 32 §14.5 probe reports the stop as `signature` on the fixture page. Status: NOT BUILT.

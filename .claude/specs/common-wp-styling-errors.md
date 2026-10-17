@@ -297,16 +297,14 @@ Also: always use `background-image:` not `background:` shorthand for gradient/im
             "background": "var(--wp--preset--color--text)",
             "text": "var(--wp--preset--color--text-inverse)"
           }
-        },
-        ":focus": {
-          "outline": "2px solid var(--wp--preset--color--primary)",
-          "outlineOffset": "2px"
         }
       }
     }
   }
 }
 ```
+
+Keyboard focus is not set here: the indicator lives in `theme/sgs-theme/assets/css/focus.css` and is re-coloured through `settings.custom.focus` (Spec 32 §14.5), so a `":focus"` or `":focus-visible"` outline on `styles.elements.button` is a bespoke ring that `check-focus-system.js` rejects.
 
 **When deleting the old bridge:** verify WP 7.0 native generation covers every property the bridge emitted (`minHeight`, per-corner `borderRadius`, `fontWeight`, `padding`, etc.) before removing `class-button-presets-admin.php`. If any property is missing, keep a slim PHP shim for ONLY those properties.
 
