@@ -83,8 +83,6 @@
 
 .sgs-gallery-editor__thumb-remove:focus-visible {
 	opacity:        1;
-	outline:        2px solid var( --wp--preset--color--text-inverse, #fff );
-	outline-offset: 1px;
 }
 
 /* ==========================================================================

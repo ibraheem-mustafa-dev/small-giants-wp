@@ -33,6 +33,7 @@ import { siteInfoLabelText } from './site-info-label';
 import { LINK_SOURCE_OPTIONS, FIXED_DESTINATION_LINK_SOURCES, LINK_SOURCE_HELP } from '../../shared/link-source-options';
 import { CUSTOM_WIDTH_UNITS, MIN_HEIGHT_UNITS, LINE_HEIGHT_UNITS, composeUnit, parseUnit } from './units';
 import { focusStyleClass, focusHostBorder, signatureRefusal } from './focus-style';
+import { useFocusPreview } from './components/FocusPreviewToggle';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -160,7 +161,6 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	const hidesUrlField = FIXED_DESTINATION_LINK_SOURCES.includes( linkSource );
 
 	const hasIcon = !! icon || !! attributes.iconSvg;
-
 	// LINK contract popover (Spec 35 §2 / D609 row-opens-popover shape) — ONE
 	// popover (`LinkPopoverContent`, `../../components/LinkPopoverControl.js`),
 	// its anchor swapped between the toolbar link button and the sidebar's
@@ -237,11 +237,11 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	// emits translate: 0 -N px on the same hover state).
 	const liftScope = `sgs-button-lift-${ clientId }`;
 	if ( liftHover > 0 ) blockClasses.push( liftScope );
-	// Keyboard focus style: the class render.php prints (none for a refused Signature), and for Signature the
-	// host's border width focus.css anchors the turning band with.
+	// Keyboard focus: render.php's class (none for a refused Signature), and Signature's host border width.
 	const focusClass = focusStyleClass( { focusStyle, borderColourGradient, sgsMotion: attributes.sgsMotion } );
 	const signatureRefused = signatureRefusal( { borderColourGradient, sgsMotion: attributes.sgsMotion } );
-	if ( focusClass ) blockClasses.push( focusClass );
+	const focusPreview = useFocusPreview();
+	blockClasses.push( ...[ focusClass, focusPreview.className ].filter( Boolean ) );
 	const hostBorder = 'sgs-focus--signature' === focusClass ? focusHostBorder( { borderWidth, borderStyle, inheritStyle } ) : '';
 	const blockProps = useBlockProps( {
 		className: blockClasses.join( ' ' ),
@@ -999,9 +999,8 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
 						onCustomChange={ ( val ) => setAttributes( { transitionEasingCustom: val } ) }
 					/>
-					{ /* Keyboard focus (focusStyle). The stored Default is '', which ToggleGroupControl reads as "nothing
-					   selected", so the control shows it as 'default'. Signature is disabled with its reason when the
-					   button's ::before is already taken (focus-style.js::signatureRefusal). */ }
+					{ /* Keyboard focus (focusStyle): the stored Default '' reads as "nothing selected", so it shows as 'default';
+					   Signature is disabled with its reason when ::before is taken (focus-style.js::signatureRefusal). */ }
 					<ToggleGroupControl
 						label={ __( 'Keyboard focus', 'sgs-blocks' ) }
 						help={ [
@@ -1018,6 +1017,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						<ToggleGroupControlOption value="duotone" label={ __( 'Contrast', 'sgs-blocks' ) } />
 						<ToggleGroupControlOption value="signature" label={ __( 'Signature', 'sgs-blocks' ) } disabled={ !! signatureRefused } />
 					</ToggleGroupControl>
+					{ focusPreview.control }
 				</PanelBody>
 
 				{ /* Box shadow — ONE tabbed Normal/Hover mount (Wave A1 ShadowControl

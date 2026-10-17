@@ -13,7 +13,7 @@
 		{
 			"path": "plugins/sgs-blocks/assets/css/motion-thumbnails.css",
 			"selector": ".sgs-motion-thumbs__item.components-button:focus-visible",
-			"reason": "Editor-only motion picker thumbnails (loaded by includes/motion/class-sgs-motion-editor-canvas.php), painted in the WP admin colour. Its var(--sgs-focus-color, …) fallback is still a legacy-token finding until Task 14 drops the retired token."
+			"reason": "Editor-only motion picker thumbnails (loaded by includes/motion/class-sgs-motion-editor-canvas.php), painted in the WP admin colour."
 		},
 		{
 			"path": "plugins/sgs-blocks/assets/admin/customiser-button-presets.css",
@@ -24,6 +24,26 @@
 			"path": "plugins/sgs-blocks/assets/admin/site-info-custom-fields.css",
 			"selector": ".sgs-site-info-custom-fields-table .sgs-site-info-remove-row:hover, .sgs-site-info-custom-fields-table .sgs-site-info-remove-row:focus",
 			"reason": "wp-admin Site Info settings table: the remove-row link's hover and focus text colour in the WP admin red; admin chrome outside the front end."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/blocks/audio/editor.css",
+			"selector": ".sgs-audio-style-btn:focus-visible",
+			"reason": "Block-editor inspector chrome (the Player style picker in a PanelBody), painted in the WP admin colour; focus.css loads only in the canvas, so deleting it would leave the inspector button with no focus indicator."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/components/IconPicker/editor.css",
+			"selector": ".sgs-icon-picker__cat-btn:focus-visible",
+			"reason": "Block-editor inspector chrome (the icon picker's category buttons in a panel or popover), painted in the WP admin colour; focus.css loads only in the canvas."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/components/IconPicker/editor.css",
+			"selector": ".sgs-icon-grid__cell:focus-visible",
+			"reason": "Block-editor inspector chrome (the icon picker's grid cells in a panel or popover), painted in the WP admin colour; focus.css loads only in the canvas."
+		},
+		{
+			"path": "plugins/sgs-blocks/src/components/colour-picker/color-picker/editor.scss",
+			"selector": ".sgs-colour-picker__colorful-wrapper .react-colorful__interactive:focus .react-colorful__pointer",
+			"reason": "Block-editor colour popover chrome: the colour picker's pointer shows its focus as a white halo and a scale-up, the same treatment core's own picker uses; focus.css loads only in the canvas."
 		}
 	]
 }
