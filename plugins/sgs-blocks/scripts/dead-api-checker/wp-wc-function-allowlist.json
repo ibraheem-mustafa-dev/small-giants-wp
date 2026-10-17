@@ -448,6 +448,7 @@
     "wp_strip_all_tags",
     "wp_style_engine_get_styles",
     "wp_style_is",
+    "wp_styles",
     "wp_timezone",
     "wp_timezone_string",
     "wp_title",
