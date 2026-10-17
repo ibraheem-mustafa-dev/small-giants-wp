@@ -1681,5 +1681,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 188
+  },
+  {
+    "id": "check-snapshot-focus-tokens-self-test",
+    "cmd": "python scripts/check-snapshot-focus-tokens.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 189
   }
 ]

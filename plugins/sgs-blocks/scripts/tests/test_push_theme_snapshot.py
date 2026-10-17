@@ -300,16 +300,17 @@ def test_fetch_reports_found_absent_or_error_from_the_ssh_result(pts, monkeypatc
 # 3. Exit code — main() with every network / SSH / disk-writing function stubbed
 # ---------------------------------------------------------------------------
 def _full_roster_snap(pts) -> dict:
-    """A snapshot carrying every framework palette slug and layout token (the push guard's precondition)."""
+    """A snapshot carrying every framework palette slug, layout, motion and focus token (the push guard's precondition)."""
     roster = pts.palette_roster.framework_roster()
     snap = _snap([{"slug": s, "color": "#112233", "name": s} for s in roster])
     custom = snap.setdefault("settings", {}).setdefault("custom", {})
-    for path in pts.layout_tokens.framework_layout_tokens():
+    for path in pts.layout_tokens.framework_layout_tokens() + pts.motion_tokens.motion_token_keys():
         node = custom
         keys = path.split(".")
         for key in keys[:-1]:
             node = node.setdefault(key, {})
         node[keys[-1]] = "0"
+    custom["focus"] = {key: "2px" for key in pts.focus_tokens.FOCUS_KEYS}
     return snap
 
 
@@ -468,6 +469,32 @@ def test_roster_guard_names_a_missing_layout_token(pts):
     assert pts.roster_guard(trimmed) == ["custom.section.padding.mobile", "custom.gutter.tablet"]
 
 
+def test_roster_guard_names_a_missing_focus_key(pts):
+    trimmed = _full_roster_snap(pts)
+    del trimmed["settings"]["custom"]["focus"]["ringOnDark"]
+    assert pts.roster_guard(trimmed) == ["custom.focus.ringOnDark"]
+    del trimmed["settings"]["custom"]["focus"]
+    assert pts.roster_guard(trimmed) == ["custom.focus." + k for k in pts.focus_tokens.FOCUS_KEYS]
+
+
+def test_push_refuses_a_snapshot_without_focus_tokens_before_any_network_action(pts, monkeypatch, capsys):
+    bare = _full_roster_snap(pts)
+    del bare["settings"]["custom"]["focus"]
+
+    def _boom(*a, **k):
+        raise AssertionError("network or SSH was touched")
+
+    for name in ("fetch_server_theme_json", "discover_global_styles_state", "fetch_global_styles",
+                 "push_snapshot", "post_global_styles", "flush_cache"):
+        monkeypatch.setattr(pts, name, _boom)
+    monkeypatch.setattr(sys, "argv", ["push-theme-snapshot.py", "--client", "unit-client", "--target", "user@host",
+                                      "--target-domain", "unit.example.com", "--yes"])
+    monkeypatch.setattr(pts, "load_local_snapshot", lambda client: bare)
+    assert pts.main() == 2
+    err = capsys.readouterr().err
+    assert "custom.focus.ring" in err and "check-snapshot-focus-tokens.py" in err and "nothing was sent" in err
+
+
 def test_push_refuses_a_snapshot_missing_a_roster_slug_before_any_network_action(pts, monkeypatch, capsys):
     trimmed = _full_roster_snap(pts)
     _pal(trimmed)[:] = [e for e in _pal(trimmed) if e["slug"] != "section-text"]
@@ -493,4 +520,7 @@ def test_push_proceeds_with_a_complete_roster(pts, monkeypatch):
 
 def test_every_committed_snapshot_passes_the_roster_guard(pts):
     for path in sorted((REPO / "sites").glob("*/theme-snapshot.json")):
-        assert pts.roster_guard(json.loads(path.read_text(encoding="utf-8"))) == [], path.parent.name
+        # The focus keys are written by `check-snapshot-focus-tokens.py --fix --apply` in the same change as their reader.
+        missing = [m for m in pts.roster_guard(json.loads(path.read_text(encoding="utf-8")))
+                   if not m.startswith("custom.focus.")]
+        assert missing == [], path.parent.name

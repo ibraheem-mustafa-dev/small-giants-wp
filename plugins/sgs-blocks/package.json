@@ -56,6 +56,8 @@
     "check:image-controls-support": "python scripts/surveys/check-image-controls-support.py --check",
     "check:fx-lists": "python scripts/check-fx-list-drift.py --check",
     "check:focus-system": "node scripts/check-focus-system.js --check",
+    "survey:snapshot-focus-tokens": "python scripts/check-snapshot-focus-tokens.py --survey",
+    "selftest:snapshot-focus-tokens": "python scripts/check-snapshot-focus-tokens.py --self-test",
     "check:hardcoded-defaults": "node scripts/check-hardcoded-render-defaults.js --check",
     "check:block-asset-targets": "node scripts/check-block-asset-targets.js --check",
     "check:shared-css-state": "node scripts/check-shared-css-state-rules.js --check && node scripts/inspector-scan/run.js --check",
