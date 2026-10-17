@@ -36,12 +36,22 @@ function prefersReduced( el ) {
 	return Boolean( win.matchMedia && win.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
 }
 
+// Element => the run that plays on it now, and clientId => { run, indexed } for the Replay that owns a block's loop-item
+// indices. A Replay pressed while an earlier one still plays takes both over, so the earlier run's settle leaves the
+// element and its items alone and only the newest run returns them to rest.
+const currentRun = new WeakMap();
+const currentReplay = new Map();
+
 // Play one element's entrance: write the plan's entrance attributes, set `data-sgs-in`, and when the play ends take off
 // `data-sgs-in` and the attributes it wrote. An entrance marker already on the element (a block preview rendered by the
 // server) plays from those attributes, which stay: they come off for the reflow and go back on with `data-sgs-in`,
 // because a `load` marker already holds its finished animation at rest (`motion.css` names the animation for
-// `[data-sgs-me~="load"]`), so only a fresh marker restarts it.
+// `[data-sgs-me~="load"]`), so only a fresh marker restarts it. A multi-keyframe entrance plays through the module's
+// `replay`, which cancels the run it started before, so a second press restarts the entrance rather than stacking a
+// second animation on the first.
 function playOn( el, attrs ) {
+	const run = {};
+	currentRun.set( el, run );
 	const win = el.ownerDocument.defaultView || window;
 	const written = ENTRANCE_ATTRS.filter(
 		( name ) => attrs[ name ] !== undefined
@@ -57,8 +67,8 @@ function playOn( el, attrs ) {
 	carried.forEach( ( [ name, value ] ) => el.setAttribute( name, value ) );
 	el.setAttribute( 'data-sgs-in', '' );
 	const keyframes = win.sgsMotionKeyframes;
-	if ( el.hasAttribute( 'data-sgs-me-keyframes' ) && keyframes?.play ) {
-		keyframes.play( el );
+	if ( el.hasAttribute( 'data-sgs-me-keyframes' ) && keyframes?.replay ) {
+		keyframes.replay( el );
 	}
 	const running = typeof el.getAnimations === 'function' ? el.getAnimations() : [];
 	const done = Promise.all( running.map( ( animation ) => animation.finished.catch( () => null ) ) );
@@ -68,6 +78,10 @@ function playOn( el, attrs ) {
 	} );
 	return Promise.race( [ done, cap ] ).then( () => {
 		win.clearTimeout( timer );
+		if ( currentRun.get( el ) !== run ) {
+			return;
+		}
+		currentRun.delete( el );
 		[ ...written, 'data-sgs-in', 'data-sgs-me-kf' ].forEach( ( name ) =>
 			el.removeAttribute( name )
 		);
@@ -124,9 +138,18 @@ export function replay( clientId, target = 'root' ) {
 	const pairs = roots.flatMap( ( root ) =>
 		plans.flatMap( ( plan ) => planElements( root, plan ).map( ( el ) => [ el, plan.attrs ] ) )
 	);
-	const indexed = roots.flatMap( ( root ) => indexLoopItems( root, entry.emitted.loopItems ) );
+	// Items an earlier, still-playing Replay indexed carry their index already; this Replay takes them over.
+	const indexed = [
+		...( currentReplay.get( clientId )?.indexed || [] ),
+		...roots.flatMap( ( root ) => indexLoopItems( root, entry.emitted.loopItems ) ),
+	];
+	const run = { indexed };
+	currentReplay.set( clientId, run );
 	return Promise.all( pairs.map( ( [ el, attrs ] ) => playOn( el, attrs ) ) ).then( () => {
-		indexed.forEach( ( el ) => el.removeAttribute( ITEM_ATTR ) );
+		if ( currentReplay.get( clientId ) === run ) {
+			currentReplay.delete( clientId );
+			indexed.forEach( ( el ) => el.removeAttribute( ITEM_ATTR ) );
+		}
 		return { played: pairs.length > 0, reduced: false };
 	} );
 }
