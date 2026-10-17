@@ -1,0 +1,31 @@
+loading home @1440 (https://sandybrown-nightingale-600381.hostingersite.com/)
+loading home @375 (https://sandybrown-nightingale-600381.hostingersite.com/)
+
+home @1440: 38 stops (focus left the document), looks 2, min contrast 1.00, clipped 0, radius changed 1, css 844132 B, mega: not present
+home @375: 36 stops (focus left the document), looks 2, min contrast 1.00, clipped 0, radius changed 1, css 844132 B, mega: not present
+
+looks: 2   [wider tuple incl. colour, shadow shape, radius: 9]
+min contrast: 1.00
+clipped: 0
+radius changed on focus: 2
+token match: checked on 74 of 74 stops
+css bytes per page (first width): {"home":844132}
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": radius 0px -> 3px on focus
+  FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 2.52 < 3
+  FAIL #8 a.sgs-button.sgs-button--primary "Shop Zookies": contrast 2.14 < 3
+  FAIL #9 a.sgs-button.sgs-button--secondary "Try 3 for £5": contrast 2.11 < 3
+  FAIL #10 input.sgs-focus-source "sgs-op-91baf216-choice": contrast 1.00 < 3
+  FAIL #11 a.sgs-button.sgs-button--primary "Add to Cart — £10": contrast 2.25 < 3
+  FAIL #13 a.sgs-button.sgs-button--outline "Read the full story →": contrast 1.08 < 3
+  FAIL #14 a.sgs-button.sgs-button--primary "Shop Gift Box": contrast 1.05 < 3
+  FAIL #17 button.sgs-testimonial-slider__arrow.sgs-testimonial-slider__arrow--prev "Previous testimonial": contrast 2.38 < 3
+  FAIL #25 a.sgs-icon__link "Instagram": contrast 1.75 < 3
+  FAIL looks 2 > 1 (2px solid 2px ; 2px solid -2px)
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": contrast 1.77 < 3
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": radius 0px -> 3px on focus
+  FAIL #2 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 1.00 < 3
+  FAIL #6 a.sgs-button.sgs-button--primary "Shop Zookies": contrast 1.59 < 3
+  ... 9 more (all in the JSON)
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/after/home-open-mega.json

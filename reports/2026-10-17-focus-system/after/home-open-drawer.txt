@@ -1,0 +1,18 @@
+loading home @1440 (https://sandybrown-nightingale-600381.hostingersite.com/)
+loading home @375 (https://sandybrown-nightingale-600381.hostingersite.com/)
+
+home @1440: 5 stops (focus left the document), looks 1, min contrast 1.00, clipped 0, radius changed 0, css 844132 B, drawer opened
+home @375: 5 stops (focus left the document), looks 1, min contrast 2.49, clipped 0, radius changed 0, css 844132 B, drawer opened
+
+looks: 1 (+ inset)   [wider tuple incl. colour, shadow shape, radius: 1]
+min contrast: 1.00
+clipped: 0
+radius changed on focus: 0
+token match: checked on 10 of 10 stops
+css bytes per page (first width): {"home":844132}
+  FAIL #4 a.sgs-nav-drawer-menu__link "Home pageHome page": contrast 1.00 < 3
+  FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 2.49 < 3
+  FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 2.49 < 3
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/after/home-open-drawer.json

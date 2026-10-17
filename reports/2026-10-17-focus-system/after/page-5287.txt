@@ -1,0 +1,18 @@
+loading 5287 @1440 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5287)
+
+5287 @1440: 25 stops (focus left the document), looks 1, min contrast 1.32, clipped 0, radius changed 1, css 784352 B
+
+looks: 1   [wider tuple incl. colour, shadow shape, radius: 7]
+min contrast: 1.32
+clipped: 0
+radius changed on focus: 1
+token match: checked on 25 of 25 stops
+css bytes per page (first width): {"5287":784352}
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": radius 0px -> 3px on focus
+  FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 2.52 < 3
+  FAIL #8 a.sgs-button.sgs-button--primary "Read more about parity": contrast 2.03 < 3
+  FAIL #9 button.sgs-motion-pause.sgs-motion-pause--inline "Pause animation": contrast 2.88 < 3
+  FAIL #12 a.sgs-icon__link "Instagram": contrast 1.32 < 3
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/after/page-5287.json

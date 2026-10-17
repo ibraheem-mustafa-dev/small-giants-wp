@@ -1,0 +1,51 @@
+status 200
+OPTION {
+ "input": {
+  "cls": "sgs-focus-source",
+  "outline": "0px none 2px rgb(16, 16, 16)",
+  "shadow": "none",
+  "rect": [
+   786,
+   291.5,
+   1,
+   1
+  ],
+  "opacity": "1",
+  "pos": "absolute"
+ },
+ "proxy": {
+  "cls": "sgs-option-picker__pill sgs-focus-proxy sgs-option-picker__pill--has-image",
+  "outline": "2px solid 2px rgb(166, 138, 35)",
+  "shadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+  "rect": [
+   787,
+   207.2,
+   185.7,
+   169.8
+  ],
+  "opacity": "1",
+  "pos": "relative"
+ },
+ "type": "radio"
+}
+ATC {
+ "tag": "button",
+ "cls": "wp-element-button buybox__add-to-cart",
+ "label": "Add to Cart",
+ "rect": {
+  "x": 786.96875,
+  "y": 513.09375,
+  "w": 573.03125,
+  "h": 50.875
+ },
+ "outline": "2px solid 2px rgb(166, 138, 35)",
+ "shadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+ "radius": "8px",
+ "under": "",
+ "offsetVar": "",
+ "haloVar": "",
+ "insetAncestor": null,
+ "onDark": null,
+ "anim": "none",
+ "trans": "background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s"
+}

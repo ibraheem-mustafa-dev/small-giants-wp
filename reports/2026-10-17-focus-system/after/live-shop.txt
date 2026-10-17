@@ -1,0 +1,39 @@
+status 200
+SLIDER min {"rect":{"x":105,"y":488.96875,"w":210,"h":4},"inputOutline":"none 0px","thumb":{"w":"210px","h":"4px","radius":"0px","outline":"0px none 0px rgb(58, 46, 38)","shadow":"none","bg":"rgba(0, 0, 0, 0)","pos":"absolute","marginTop":"0px"},"appearance":"none","parentOverflow":"visible"}
+SLIDER max {"rect":{"x":105,"y":488.96875,"w":210,"h":4},"inputOutline":"none 0px","thumb":{"w":"210px","h":"4px","radius":"0px","outline":"0px none 0px rgb(58, 46, 38)","shadow":"none","bg":"rgba(0, 0, 0, 0)","pos":"absolute","marginTop":"0px"},"appearance":"none","parentOverflow":"visible"}
+CARD {
+ "link": {
+  "cls": "product-card__title-link sgs-focus-source sgs-block-link-source",
+  "outline": "0px none 1px rgb(16, 16, 16)",
+  "shadow": "none",
+  "rect": [
+   392,
+   676,
+   240.6,
+   25
+  ]
+ },
+ "proxy": null,
+ "card": {
+  "cls": "product-card__title-link sgs-focus-source sgs-block-link-source",
+  "outline": "0px none 1px rgb(16, 16, 16)",
+  "shadow": "none",
+  "rect": [
+   392,
+   676,
+   240.6,
+   25
+  ]
+ },
+ "cardRect": [
+  392,
+  676,
+  240.6,
+  25
+ ],
+ "linkAfter": {
+  "pos": "static",
+  "inset": "auto auto auto auto"
+ }
+}
+SWATCH {"tag":"button","cls":"sgs-product-card__swatch sgs-product-card__swatch--button","label":"vanilla","rect":{"x":890.5625,"y":553.421875,"w":16,"h":16},"outline":"2px solid -2px rgb(166, 138, 35)","shadow":"rgb(251, 243, 220) 0px 0px 0px 4px inset, color(srgb 0.227451 0.180392 0.14902 / 0.1) 0px 2px 12px 0px","radius":"50%","under":"0 2px 12px color-mix(in srgb,#3a2e26 10%,transparent)","offsetVar":"calc(2px * -1)","haloVar":"inset 0 0 0 calc(2px * 2) #fbf3dc","insetAncestor":"sgs-hover-6e794891 sgs-has-hover sgs-has-hover-shadow sgs-has-hover-lift sgs-has","onDark":null,"anim":"none","trans":"transform 0.2s"}

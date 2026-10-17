@@ -1,0 +1,1774 @@
+{
+	"when": "2026-10-17T09:27:58.737Z",
+	"host": "Ibraheem-Mustafa",
+	"options": {
+		"local": false,
+		"site": "sandybrown",
+		"pages": [
+			"5287"
+		],
+		"widths": [
+			1440
+		],
+		"engines": [
+			"chromium"
+		],
+		"css": null,
+		"forcedColors": false,
+		"reducedMotion": false,
+		"axe": false,
+		"shots": null,
+		"json": "reports/2026-10-17-focus-system/after/page-5287.json",
+		"openDrawer": false,
+		"openMega": false,
+		"maxStops": 130,
+		"settle": 350,
+		"pause": 2500,
+		"negativeControl": false,
+		"selfTest": false,
+		"help": false
+	},
+	"failed": true,
+	"headline": {
+		"looks": 1,
+		"looksFull": 7,
+		"exempt": [],
+		"minContrast": 1.3197181742632254,
+		"clipped": 0,
+		"radiusChanged": 1,
+		"tokenMismatches": 0,
+		"tokenStatus": "checked on 25 of 25 stops",
+		"fails": [
+			"#1 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
+			"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 2.52 < 3",
+			"#8 a.sgs-button.sgs-button--primary \"Read more about parity\": contrast 2.03 < 3",
+			"#9 button.sgs-motion-pause.sgs-motion-pause--inline \"Pause animation\": contrast 2.88 < 3",
+			"#12 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3"
+		]
+	},
+	"pages": [
+		{
+			"page": "5287",
+			"url": "https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5287",
+			"axe": null,
+			"widths": [
+				{
+					"width": 1440,
+					"css": {
+						"linked": 694323,
+						"inline": 90029,
+						"total": 784352,
+						"unreadable": 0
+					},
+					"notes": [],
+					"stops": [
+						{
+							"label": "a.skip-link.screen-reader-text \"Skip to content\"",
+							"rect": {
+								"x": 4,
+								"y": 4,
+								"width": 163.515625,
+								"height": 49
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "3px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 8,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-business-info__link \"0121 496 0123\"",
+							"rect": {
+								"x": 1224.78125,
+								"y": 16,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-business-info__link \"[email]\"",
+							"rect": {
+								"x": 1265.59375,
+								"y": 16,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-business-socials__link \"Instagram\"",
+							"rect": {
+								"x": 1316,
+								"y": 16,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\"",
+							"rect": {
+								"x": 80,
+								"y": 60,
+								"width": 180,
+								"height": 60.1875
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 2.5210029763958466,
+								"ringMin": 2.5210029763958466,
+								"points": 16,
+								"worst": {
+									"ring": [
+										178,
+										153,
+										62
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "button.sgs-nav-bar-menu__burger.sgs-nav-bar-menu__burger--icon-and-text \"MenuClose\"",
+							"rect": {
+								"x": 747.609375,
+								"y": 68.09375,
+								"width": 80.78125,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "8px",
+							"radiusRest": "8px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "button.sgs-cart__trigger \"View your cart (0 items in cart)\"",
+							"rect": {
+								"x": 1316,
+								"y": 68.09375,
+								"width": 44,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "4px",
+							"radiusRest": "4px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-button.sgs-button--primary \"Read more about parity\"",
+							"rect": {
+								"x": 79.36002349853516,
+								"y": 492.5625,
+								"width": 230.03500366210938,
+								"height": 52
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "10px",
+							"radiusRest": "10px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 2.0303992383985086,
+								"ringMin": 1.058293375284643,
+								"points": 16,
+								"worst": {
+									"ring": [
+										168,
+										141,
+										39
+									],
+									"bg": [
+										230,
+										138,
+										149
+									],
+									"inner": [
+										242,
+										232,
+										197
+									]
+								}
+							}
+						},
+						{
+							"label": "button.sgs-motion-pause.sgs-motion-pause--inline \"Pause animation\"",
+							"rect": {
+								"x": 80,
+								"y": 651.359375,
+								"width": 1280,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "999px",
+							"radiusRest": "999px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 2.877788585024194,
+								"ringMin": 2.877788585024194,
+								"points": 4,
+								"worst": {
+									"ring": [
+										169,
+										142,
+										40
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										247,
+										237,
+										206
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\"",
+							"rect": {
+								"x": 220,
+								"y": 798.15625,
+								"width": 305,
+								"height": 102
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 8.997826158691298,
+								"ringMin": 6.767988872321391,
+								"points": 12,
+								"worst": {
+									"ring": [
+										217,
+										183,
+										73
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										222,
+										213,
+										192
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-business-info__link \"[email]\"",
+							"rect": {
+								"x": 211.609375,
+								"y": 774.921875,
+								"width": 237.046875,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 6.479489715999318,
+								"ringMin": 5.086086161046948,
+								"points": 16,
+								"worst": {
+									"ring": [
+										247,
+										216,
+										113
+									],
+									"bg": [
+										97,
+										86,
+										79
+									],
+									"inner": [
+										251,
+										244,
+										225
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-icon__link \"Instagram\"",
+							"rect": {
+								"x": 220,
+								"y": 808.125,
+								"width": 116.1875,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 1.3197181742632254,
+								"ringMin": 1.3197181742632254,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										230,
+										243,
+										245
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-icon__link \"WhatsApp\"",
+							"rect": {
+								"x": 348.1875,
+								"y": 808.125,
+								"width": 118.84375,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"All Products\"",
+							"rect": {
+								"x": 720,
+								"y": 629.953125,
+								"width": 79.4375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Zookies\"",
+							"rect": {
+								"x": 720,
+								"y": 657.953125,
+								"width": 52.234375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Trial Pack (£5)\"",
+							"rect": {
+								"x": 720,
+								"y": 685.953125,
+								"width": 95.734375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Gift Ideas\"",
+							"rect": {
+								"x": 720,
+								"y": 713.953125,
+								"width": 62.953125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Send to Ward\"",
+							"rect": {
+								"x": 720,
+								"y": 741.953125,
+								"width": 89.265625,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Our Story\"",
+							"rect": {
+								"x": 720,
+								"y": 769.953125,
+								"width": 63.375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"FAQs\"",
+							"rect": {
+								"x": 720,
+								"y": 797.953125,
+								"width": 34.28125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Privacy Policy\"",
+							"rect": {
+								"x": 988,
+								"y": 629.953125,
+								"width": 92.578125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Shipping Info\"",
+							"rect": {
+								"x": 988,
+								"y": 657.953125,
+								"width": 87.1875,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Terms & Conditions\"",
+							"rect": {
+								"x": 988,
+								"y": 685.953125,
+								"width": 129.03125,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Allergen Information\"",
+							"rect": {
+								"x": 988,
+								"y": 713.953125,
+								"width": 134.046875,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a. \"Contact Us\"",
+							"rect": {
+								"x": 988,
+								"y": 741.953125,
+								"width": 73.734375,
+								"height": 17
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(245, 208, 80)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(245, 208, 80)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 11.856891210852442,
+								"ringMin": 8.770083893617509,
+								"points": 16,
+								"worst": {
+									"ring": [
+										245,
+										208,
+										80
+									],
+									"bg": [
+										58,
+										46,
+										38
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						}
+					],
+					"ended": "focus left the document",
+					"capHit": false,
+					"summary": {
+						"stops": 25,
+						"looks": 1,
+						"looksList": [
+							"2px solid 2px"
+						],
+						"looksFull": 7,
+						"exempt": [],
+						"minContrast": 1.3197181742632254,
+						"clipped": 0,
+						"clippedInset": 0,
+						"radiusChanged": 1,
+						"obscured": 0,
+						"tokenStatus": "token match checked on 25 of 25 stops",
+						"tokenised": 25,
+						"tokenMismatches": 0,
+						"fails": [
+							"#1 a.skip-link.screen-reader-text \"Skip to content\": radius 0px -> 3px on focus",
+							"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 2.52 < 3",
+							"#8 a.sgs-button.sgs-button--primary \"Read more about parity\": contrast 2.03 < 3",
+							"#9 button.sgs-motion-pause.sgs-motion-pause--inline \"Pause animation\": contrast 2.88 < 3",
+							"#12 a.sgs-icon__link \"Instagram\": contrast 1.32 < 3"
+						]
+					}
+				}
+			]
+		}
+	],
+	"cssBytes": {
+		"5287": 784352
+	}
+}

@@ -1,0 +1,66 @@
+{
+ "els": [
+  {
+   "tag": "img",
+   "cls": "product-card-img sgs-product-card__image sgs-media-el sgs-pc-3--main",
+   "pos": "static",
+   "z": "auto",
+   "transform": "none",
+   "willChange": "auto",
+   "overflow": "clip",
+   "isolation": "auto",
+   "radius": "0px"
+  },
+  {
+   "tag": "a",
+   "cls": "product-card__img-link",
+   "pos": "relative",
+   "z": "2",
+   "transform": "none",
+   "willChange": "auto",
+   "overflow": "visible",
+   "isolation": "auto",
+   "radius": "0px"
+  },
+  {
+   "tag": "a",
+   "cls": "sgs-block-link-overlay",
+   "pos": "absolute",
+   "z": "1",
+   "transform": "none",
+   "willChange": "auto",
+   "overflow": "visible",
+   "isolation": "auto",
+   "radius": "0px"
+  },
+  {
+   "tag": "div",
+   "cls": "product-card__media",
+   "pos": "relative",
+   "z": "auto",
+   "transform": "none",
+   "willChange": "auto",
+   "overflow": "hidden",
+   "isolation": "auto",
+   "radius": "0px"
+  },
+  {
+   "tag": "div",
+   "cls": "sgs-hover-d2e71293 sgs-has-hover sgs-has-hover-shadow sgs-has-hover-lift sgs-has",
+   "pos": "relative",
+   "z": "auto",
+   "transform": "none",
+   "willChange": "auto",
+   "overflow": "hidden",
+   "isolation": "auto",
+   "radius": "8px"
+  }
+ ],
+ "card": {
+  "pos": "relative",
+  "overflow": "hidden",
+  "isolation": "auto",
+  "z": "auto",
+  "cls": "sgs-hover-d2e71293 sgs-has-hover sgs-has-hover-shadow sgs-has-hover-lift sgs-has-block-link sgs-container product-card sgs-focus-card sgs-focus--inset sgs-pc-3 product-card--live wp-block-sgs-product-"
+ }
+}

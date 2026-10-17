@@ -1,0 +1,16 @@
+loading 5389 @1440 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+
+5389 @1440: 94 stops (focus left the document), looks 2, min contrast n/a, clipped 0, radius changed 1, css 821702 B
+
+looks: 2 (+ inset, signature)   [wider tuple incl. colour, shadow shape, radius: 7]
+min contrast: n/a
+clipped: 0
+radius changed on focus: 1
+token match: checked on 94 of 94 stops
+css bytes per page (first width): {"5389":821702}
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": radius 0px -> 3px on focus
+  FAIL #17 input.wp-block-sgs-before-after__range.sgs-focus-source "": forced-colours: no solid Highlight outline
+  FAIL looks 2 > 1 (2px solid 2px ; 0px none 0px)
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/after/fixture-forced.json

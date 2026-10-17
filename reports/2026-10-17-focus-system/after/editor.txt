@@ -1,0 +1,13 @@
+PASS  canvas-holds-the-focus-system  {"source":"live asset","rules":[":focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .compon",":focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .compon"],"rulesSeen":16210}
+NOTE  canvas-selector-prefix  {"sample":":focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .compon"}
+PASS  fixture-has-a-paragraph-and-a-button  {"total":91,"paragraph":"9f16e25c-f3c1-4eec-abd5-ce7bf39201c0","button":"294f881b-4da6-48c0-8ef4-abddd410a796"}
+PASS  paragraph-rich-text-has-no-system-ring  {"active":"h2.block-editor-rich-text__editable.block-editor-bloc","sys":{"width":"2px","ring":"rgb(166, 138, 35)","inner":"rgb(251, 243, 220)"},"system":[],"foreign":[],"writers":[".rich-text:focus { outline: none }",".block-editor-block-list__block.wp-block-sgs-heading { outline: rgba(0, 0, 0, 0.1) dashed 1px }",".block-editor-block-list__block.wp-block-sgs-heading.is-highlighted, .block-editor-block-list__block.wp-block- { outline: none }","&:focus { box-shadow: var(--_gcd-input-box-shadow-focus,none) }","&:focus { outline: none }"]}
+PASS  button-label-has-no-system-ring  {"active":"span.block-editor-rich-text__editable.sgs-button__label","sys":{"width":"2px","ring":"rgb(166, 138, 35)","inner":"rgb(251, 243, 220)"},"system":[],"foreign":[],"writers":[".rich-text:focus { outline: none }","&:focus { box-shadow: var(--_gcd-input-box-shadow-focus,none) }","&:focus { outline: none }"]}
+NOTE  block-selection  {"selected":1}
+PASS  inserter-and-toolbars-outside-the-canvas-hold-no-focus-rules  {"rules":[],"rulesSeen":25042}
+PASS  ticking-the-preview-gives-the-system-ring  {"found":true,"hasClass":true,"outlineStyle":"solid","outlineWidth":"2px","systemWidth":"2px","boxShadow":"rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55"}
+PASS  unticking-the-preview-removes-it  {"found":true,"hasClass":false,"outlineStyle":"none","outlineWidth":"0px","systemWidth":"2px","boxShadow":"none"}
+NOTE  negative-control  {"skipped":"needs --css so the exclusions can be stripped from the local file"}
+NOTE  writes-aborted  {"count":2,"sample":["POST https://sandybrown-nightingale-600381.hostingersite.com/wp-json/wp/v2/users/me?_locale=user","POST https://sandybrown-nightingale-600381.hostingersite.com/wp-json/wp/v2/users/me?_locale=user"]}
+
+All editor focus assertions passed.

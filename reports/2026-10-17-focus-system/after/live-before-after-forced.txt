@@ -1,0 +1,21 @@
+{
+ "input": {
+  "tag": "input",
+  "cls": "wp-block-sgs-before-after__range sgs-focus-source",
+  "outline": "0px none 0px rgb(55, 0, 110)",
+  "shadow": "none",
+  "rect": [
+   80,
+   500,
+   1280,
+   400
+  ]
+ },
+ "thumbs": [
+  "none 0px rgb(55, 0, 110) 1280px 400px"
+ ],
+ "ringed": [],
+ "children": [],
+ "proxyCount": 0,
+ "siblingProxy": false
+}

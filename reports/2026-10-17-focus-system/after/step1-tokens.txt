@@ -1,0 +1,34 @@
+status 200
+{
+ "vals": {
+  "--wp--custom--focus--ring": "#a68a23",
+  "--wp--custom--focus--ring-on-dark": "#f5d050",
+  "--wp--custom--focus--near": "#f5d050",
+  "--wp--custom--focus--far": "#f5d050",
+  "--wp--custom--focus--inner": "#fbf3dc",
+  "--wp--custom--focus--ink": "#3a2e26",
+  "--wp--custom--focus--width": "2px",
+  "--sgs-focus-ring": "#a68a23",
+  "--sgs-focus-width": "2px"
+ },
+ "links": [
+  {
+   "href": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/themes/sgs-theme/assets/css/focus.css?ver=1792226322",
+   "media": "all",
+   "rel": "stylesheet",
+   "as": "",
+   "onload": null,
+   "inHead": true,
+   "sheet": true
+  }
+ ],
+ "sheets": [
+  "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/themes/sgs-theme/assets/css/focus.css?ver=1792226322"
+ ],
+ "camel": [
+  [
+   "--wp--custom--focus--ringOnDark",
+   ""
+  ]
+ ]
+}

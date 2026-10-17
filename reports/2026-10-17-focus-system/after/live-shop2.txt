@@ -1,0 +1,92 @@
+status 200
+RANGE {"rect":{"x":105,"y":488.96875,"width":210,"height":4,"top":488.96875,"right":315,"bottom":492.96875,"left":105},"ps":[{"cls":"min","rect":{"x":105,"y":488.96875,"width":210,"height":4,"top":488.96875,"right":315,"bottom":492.96875,"left":105},"val":"4","min":"4","max":"60","w":"210px"},{"cls":"max","rect":{"x":105,"y":488.96875,"width":210,"height":4,"top":488.96875,"right":315,"bottom":492.96875,"left":105},"val":"60","min":"4","max":"60","w":"210px"}],"focusVisible":true}
+CARD {
+ "chain": [
+  {
+   "tag": "a",
+   "cls": "product-card__title-link sgs-focus-source sgs-block-link-source",
+   "outline": "0px none 1px rgb(16, 16, 16)",
+   "shadow": "none",
+   "rect": [
+    392,
+    676,
+    240.6,
+    25
+   ],
+   "radius": "0px"
+  },
+  {
+   "tag": "h3",
+   "cls": "sgs-product-card__title",
+   "outline": "0px none 0px rgb(58, 46, 38)",
+   "shadow": "none",
+   "rect": [
+    392,
+    677,
+    240.6,
+    24
+   ],
+   "radius": "0px"
+  },
+  {
+   "tag": "div",
+   "cls": "sgs-product-card__title-row",
+   "outline": "0px none 0px rgb(58, 46, 38)",
+   "shadow": "none",
+   "rect": [
+    392,
+    677,
+    273.3,
+    24
+   ],
+   "radius": "0px"
+  },
+  {
+   "tag": "div",
+   "cls": "product-card-body sgs-product-card__body",
+   "outline": "0px none 0px rgb(58, 46, 38)",
+   "shadow": "none",
+   "rect": [
+    372,
+    657,
+    313.3,
+    359.6
+   ],
+   "radius": "0px"
+  },
+  {
+   "tag": "div",
+   "cls": "sgs-hover-d2e71293 sgs-has-hover sgs-has-hover-shadow sgs-has-hover-lift sgs-has-block-lin",
+   "outline": "2px solid -2px rgb(166, 138, 35)",
+   "shadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, color(srgb 0.227451 0.180392 0.14902 / 0.1) 0px 2px 12px 0px",
+   "rect": [
+    372,
+    437,
+    313.3,
+    579.6
+   ],
+   "radius": "8px"
+  },
+  {
+   "tag": "li",
+   "cls": "wc-block-product post-3990 product type-product status-publish has-post-thumbnail product_",
+   "outline": "0px none 0px rgb(58, 46, 38)",
+   "shadow": "none",
+   "rect": [
+    372,
+    437,
+    313.3,
+    579.6
+   ],
+   "radius": "0px"
+  }
+ ],
+ "ringed": [],
+ "cardRect": [
+  392,
+  677,
+  240.6,
+  24
+ ],
+ "cardTag": "H3.sgs-product-card__title"
+}

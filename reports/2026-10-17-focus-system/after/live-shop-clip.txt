@@ -1,0 +1,26 @@
+{
+ "input": [
+  105,
+  488.96875,
+  210,
+  4
+ ],
+ "clippers": [
+  {
+   "tag": "DIV",
+   "cls": "sgs-shop-filters__scroll",
+   "ox": "hidden",
+   "oy": "auto",
+   "contain": "none",
+   "rect": [
+    105,
+    425.96875,
+    210,
+    295
+   ]
+  }
+ ]
+}
+[
+ "assets/css/woocommerce.css?ver=1792226322 :: .sgs-shop-filters__scroll { overflow-x: hidden; }"
+]

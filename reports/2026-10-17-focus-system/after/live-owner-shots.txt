@@ -1,0 +1,21 @@
+8 Primary | 2px solid 2px rgb(166, 138, 35) | true
+9 Secondary | 2px solid 2px rgb(166, 138, 35) | true
+10 Outline | 2px solid 2px rgb(166, 138, 35) | true
+11 Link style | 2px solid 2px rgb(166, 138, 35) | true
+12 Single SGS button | 2px solid 2px rgb(166, 138, 35) | true
+13 Core-styled button | 2px solid 2px rgb(166, 138, 35) | true
+14 Inset button | 2px solid -2px rgb(166, 138, 35) | true
+15 Signature button | 2px solid 2px rgb(58, 46, 38) | true
+16 Duotone button | 2px solid 2px rgb(58, 46, 38) | true
+34 Primary | 2px solid 2px rgb(245, 208, 80) | true
+35 Secondary | 2px solid 2px rgb(245, 208, 80) | true
+36 Outline | 2px solid 2px rgb(245, 208, 80) | true
+37 Link style | 2px solid 2px rgb(245, 208, 80) | true
+38 Single SGS button | 2px solid 2px rgb(245, 208, 80) | true
+39 Core-styled button | 2px solid 2px rgb(245, 208, 80) | true
+56 Primary | 2px solid 2px rgb(251, 243, 220) | true
+57 Secondary | 2px solid 2px rgb(251, 243, 220) | true
+58 Outline | 2px solid 2px rgb(251, 243, 220) | true
+59 Link style | 2px solid 2px rgb(251, 243, 220) | true
+60 Single SGS button | 2px solid 2px rgb(251, 243, 220) | true
+61 Core-styled button | 2px solid 2px rgb(251, 243, 220) | true

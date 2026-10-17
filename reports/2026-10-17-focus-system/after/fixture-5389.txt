@@ -1,0 +1,34 @@
+loading 5389 @1440 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+loading 5389 @768 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+loading 5389 @375 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+
+5389 @1440: 94 stops (focus left the document), looks 2, min contrast 1.00, clipped 0, radius changed 1, css 821702 B
+5389 @768: 92 stops (focus left the document), looks 2, min contrast 1.00, clipped 0, radius changed 1, css 821702 B
+5389 @375: 92 stops (focus left the document), looks 2, min contrast 1.00, clipped 0, radius changed 1, css 821702 B
+5389 axe: color-contrastx20
+
+looks: 2 (+ inset, signature)   [wider tuple incl. colour, shadow shape, radius: 18]
+min contrast: 1.00
+clipped: 0
+radius changed on focus: 3
+token match: checked on 278 of 278 stops
+css bytes per page (first width): {"5389":821702}
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": radius 0px -> 3px on focus
+  FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 2.52 < 3
+  FAIL #8 a.sgs-button.sgs-button--primary "Primary": contrast 2.25 < 3
+  FAIL #9 a.sgs-button.sgs-button--secondary "Secondary": contrast 2.25 < 3
+  FAIL #12 a.sgs-button.sgs-button--primary "Single SGS button": contrast 1.00 < 3
+  FAIL #13 a.sgs-button.sgs-button--primary "Core-styled button": contrast 2.25 < 3
+  FAIL #14 a.sgs-button.sgs-button--primary "Inset button": contrast 2.25 < 3
+  FAIL #15 a.sgs-button.sgs-button--primary "Signature button": contrast 1.31 < 3
+  FAIL #16 a.sgs-button.sgs-button--primary "Duotone button": contrast 1.00 < 3
+  FAIL #17 input.wp-block-sgs-before-after__range.sgs-focus-source "": contrast 1.00 < 3
+  FAIL #17 input.wp-block-sgs-before-after__range.sgs-focus-source "": no outline (the core must be a real outline)
+  FAIL #18 a. "a text link": contrast 2.07 < 3
+  FAIL #19 a. "a second text link": contrast 1.90 < 3
+  FAIL #25 summary.sgs-accordion-item__header "First question": contrast 1.29 < 3
+  FAIL #27 button.sgs-tabs__tab.sgs-focus--inset "Tab one": contrast 2.49 < 3
+  ... 89 more (all in the JSON)
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/after/fixture-5389.json

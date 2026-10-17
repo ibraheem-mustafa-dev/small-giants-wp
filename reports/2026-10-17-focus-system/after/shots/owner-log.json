@@ -1,0 +1,275 @@
+[
+ {
+  "i": 8,
+  "label": "Primary",
+  "cls": "sgs-button sgs-button--primary sgs-btn-24c5dbd3 wp-block-sgs",
+  "rect": [
+   80,
+   259.375,
+   108.796875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(166, 138, 35)",
+  "fv": true
+ },
+ {
+  "i": 9,
+  "label": "Secondary",
+  "cls": "sgs-button sgs-button--secondary sgs-btn-cfd79df3 wp-block-s",
+  "rect": [
+   200.796875,
+   259.375,
+   130.671875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(166, 138, 35)",
+  "fv": true
+ },
+ {
+  "i": 10,
+  "label": "Outline",
+  "cls": "sgs-button sgs-button--outline sgs-btn-8f99ca9d wp-block-sgs",
+  "rect": [
+   343.46875,
+   259.96875,
+   100.484375,
+   48.796875
+  ],
+  "outline": "2px solid 2px rgb(166, 138, 35)",
+  "fv": true
+ },
+ {
+  "i": 11,
+  "label": "Link style",
+  "cls": "sgs-button sgs-button--link sgs-btn-d731c9b9 wp-block-sgs-bu",
+  "rect": [
+   455.953125,
+   260.375,
+   69.4375,
+   48
+  ],
+  "outline": "2px solid 2px rgb(166, 138, 35)",
+  "fv": true
+ },
+ {
+  "i": 12,
+  "label": "Single SGS button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-66da5e25 focus-fx-sin",
+  "rect": [
+   80,
+   309.375,
+   182.546875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(166, 138, 35)",
+  "fv": true
+ },
+ {
+  "i": 13,
+  "label": "Core-styled button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-9eda21b3 wp-block-but",
+  "rect": [
+   80,
+   359.375,
+   220.59375,
+   57.59375
+  ],
+  "outline": "2px solid 2px rgb(166, 138, 35)",
+  "fv": true
+ },
+ {
+  "i": 14,
+  "label": "Inset button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-85051705 sgs-focus--i",
+  "rect": [
+   80,
+   416.96875,
+   138.71875,
+   50
+  ],
+  "outline": "2px solid -2px rgb(166, 138, 35)",
+  "fv": true
+ },
+ {
+  "i": 15,
+  "label": "Signature button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-35e0030b sgs-focus--s",
+  "rect": [
+   80,
+   466.96875,
+   172.8125,
+   50
+  ],
+  "outline": "2px solid 2px rgb(58, 46, 38)",
+  "fv": true
+ },
+ {
+  "i": 16,
+  "label": "Duotone button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-d27a6842 sgs-focus--d",
+  "rect": [
+   80,
+   516.96875,
+   164.453125,
+   50
+  ],
+  "outline": "2px solid 2px rgb(58, 46, 38)",
+  "fv": true
+ },
+ {
+  "i": 34,
+  "label": "Primary",
+  "cls": "sgs-button sgs-button--primary sgs-btn-24c5dbd3 wp-block-sgs",
+  "rect": [
+   80,
+   672.671875,
+   108.796875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(245, 208, 80)",
+  "fv": true
+ },
+ {
+  "i": 35,
+  "label": "Secondary",
+  "cls": "sgs-button sgs-button--secondary sgs-btn-cfd79df3 wp-block-s",
+  "rect": [
+   200.796875,
+   672.671875,
+   130.671875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(245, 208, 80)",
+  "fv": true
+ },
+ {
+  "i": 36,
+  "label": "Outline",
+  "cls": "sgs-button sgs-button--outline sgs-btn-8f99ca9d wp-block-sgs",
+  "rect": [
+   343.46875,
+   673.265625,
+   100.484375,
+   48.796875
+  ],
+  "outline": "2px solid 2px rgb(245, 208, 80)",
+  "fv": true
+ },
+ {
+  "i": 37,
+  "label": "Link style",
+  "cls": "sgs-button sgs-button--link sgs-btn-d731c9b9 wp-block-sgs-bu",
+  "rect": [
+   455.953125,
+   673.671875,
+   69.4375,
+   48
+  ],
+  "outline": "2px solid 2px rgb(245, 208, 80)",
+  "fv": true
+ },
+ {
+  "i": 38,
+  "label": "Single SGS button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-4aa6c617 focus-fx-sin",
+  "rect": [
+   80,
+   722.671875,
+   182.546875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(245, 208, 80)",
+  "fv": true
+ },
+ {
+  "i": 39,
+  "label": "Core-styled button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-89cd0fe4 wp-block-but",
+  "rect": [
+   80,
+   772.671875,
+   220.59375,
+   57.59375
+  ],
+  "outline": "2px solid 2px rgb(245, 208, 80)",
+  "fv": true
+ },
+ {
+  "i": 56,
+  "label": "Primary",
+  "cls": "sgs-button sgs-button--primary sgs-btn-24c5dbd3 wp-block-sgs",
+  "rect": [
+   80,
+   492.96875,
+   108.796875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(251, 243, 220)",
+  "fv": true
+ },
+ {
+  "i": 57,
+  "label": "Secondary",
+  "cls": "sgs-button sgs-button--secondary sgs-btn-cfd79df3 wp-block-s",
+  "rect": [
+   200.796875,
+   492.96875,
+   130.671875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(251, 243, 220)",
+  "fv": true
+ },
+ {
+  "i": 58,
+  "label": "Outline",
+  "cls": "sgs-button sgs-button--outline sgs-btn-8f99ca9d wp-block-sgs",
+  "rect": [
+   343.46875,
+   493.5625,
+   100.484375,
+   48.796875
+  ],
+  "outline": "2px solid 2px rgb(251, 243, 220)",
+  "fv": true
+ },
+ {
+  "i": 59,
+  "label": "Link style",
+  "cls": "sgs-button sgs-button--link sgs-btn-d731c9b9 wp-block-sgs-bu",
+  "rect": [
+   455.953125,
+   493.96875,
+   69.4375,
+   48
+  ],
+  "outline": "2px solid 2px rgb(251, 243, 220)",
+  "fv": true
+ },
+ {
+  "i": 60,
+  "label": "Single SGS button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-2d0ce347 focus-fx-sin",
+  "rect": [
+   80,
+   542.96875,
+   182.546875,
+   50
+  ],
+  "outline": "2px solid 2px rgb(251, 243, 220)",
+  "fv": true
+ },
+ {
+  "i": 61,
+  "label": "Core-styled button",
+  "cls": "sgs-button sgs-button--primary sgs-btn-617514a7 wp-block-but",
+  "rect": [
+   80,
+   592.96875,
+   220.59375,
+   57.59375
+  ],
+  "outline": "2px solid 2px rgb(251, 243, 220)",
+  "fv": true
+ }
+]

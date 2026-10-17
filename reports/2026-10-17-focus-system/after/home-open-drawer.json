@@ -1,0 +1,809 @@
+{
+	"when": "2026-10-17T09:20:27.720Z",
+	"host": "Ibraheem-Mustafa",
+	"options": {
+		"local": false,
+		"site": "sandybrown",
+		"pages": [
+			"home"
+		],
+		"widths": [
+			1440,
+			375
+		],
+		"engines": [
+			"chromium"
+		],
+		"css": null,
+		"forcedColors": false,
+		"reducedMotion": false,
+		"axe": false,
+		"shots": null,
+		"json": "reports/2026-10-17-focus-system/after/home-open-drawer.json",
+		"openDrawer": true,
+		"openMega": false,
+		"maxStops": 130,
+		"settle": 350,
+		"pause": 2500,
+		"negativeControl": false,
+		"selfTest": false,
+		"help": false
+	},
+	"failed": true,
+	"headline": {
+		"looks": 1,
+		"looksFull": 1,
+		"exempt": [
+			"inset"
+		],
+		"minContrast": 1,
+		"clipped": 0,
+		"radiusChanged": 0,
+		"tokenMismatches": 0,
+		"tokenStatus": "checked on 10 of 10 stops",
+		"fails": [
+			"#4 a.sgs-nav-drawer-menu__link \"Home pageHome page\": contrast 1.00 < 3",
+			"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 2.49 < 3",
+			"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 2.49 < 3"
+		]
+	},
+	"pages": [
+		{
+			"page": "home",
+			"url": "https://sandybrown-nightingale-600381.hostingersite.com/",
+			"axe": null,
+			"widths": [
+				{
+					"width": 1440,
+					"css": {
+						"linked": 751979,
+						"inline": 92153,
+						"total": 844132,
+						"unreadable": 0
+					},
+					"notes": [
+						"drawer opened"
+					],
+					"stops": [
+						{
+							"label": "summary.sgs-nav-drawer-menu__accordion-summary.sgs-focus--inset \"ShopShop\"",
+							"rect": {
+								"x": 501,
+								"y": 205,
+								"width": 294,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "summary.sgs-nav-drawer-menu__accordion-summary.sgs-focus--inset \"BrandsBrands\"",
+							"rect": {
+								"x": 501,
+								"y": 257,
+								"width": 294,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-nav-drawer-menu__link \"BlogBlog\"",
+							"rect": {
+								"x": 501,
+								"y": 309,
+								"width": 294,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-nav-drawer-menu__link \"Home pageHome page\"",
+							"rect": {
+								"x": 501,
+								"y": 361,
+								"width": 294,
+								"height": 115.015625
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 1,
+								"ringMin": 1,
+								"points": 16,
+								"worst": {
+									"ring": [
+										251,
+										243,
+										220
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\"",
+							"rect": {
+								"x": 501,
+								"y": 425,
+								"width": 140,
+								"height": 46.8125
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 2.4913504918768066,
+								"ringMin": 2.4913504918768066,
+								"points": 16,
+								"worst": {
+									"ring": [
+										179,
+										154,
+										62
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						}
+					],
+					"ended": "focus left the document",
+					"capHit": false,
+					"summary": {
+						"stops": 5,
+						"looks": 1,
+						"looksList": [
+							"2px solid 2px"
+						],
+						"looksFull": 1,
+						"exempt": [
+							"inset"
+						],
+						"minContrast": 1,
+						"clipped": 0,
+						"clippedInset": 0,
+						"radiusChanged": 0,
+						"obscured": 0,
+						"tokenStatus": "token match checked on 5 of 5 stops",
+						"tokenised": 5,
+						"tokenMismatches": 0,
+						"fails": [
+							"#4 a.sgs-nav-drawer-menu__link \"Home pageHome page\": contrast 1.00 < 3",
+							"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 2.49 < 3"
+						]
+					}
+				},
+				{
+					"width": 375,
+					"css": {
+						"linked": 751979,
+						"inline": 92153,
+						"total": 844132,
+						"unreadable": 0
+					},
+					"notes": [
+						"drawer opened"
+					],
+					"stops": [
+						{
+							"label": "summary.sgs-nav-drawer-menu__accordion-summary.sgs-focus--inset \"ShopShop\"",
+							"rect": {
+								"x": 31.5,
+								"y": 151.5,
+								"width": 296,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "summary.sgs-nav-drawer-menu__accordion-summary.sgs-focus--inset \"BrandsBrands\"",
+							"rect": {
+								"x": 31.5,
+								"y": 203.5,
+								"width": 296,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "-2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 4px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "i0px/0px/0px/4px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": true,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-nav-drawer-menu__link \"BlogBlog\"",
+							"rect": {
+								"x": 31.5,
+								"y": 255.5,
+								"width": 296,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-nav-drawer-menu__link \"Home pageHome page\"",
+							"rect": {
+								"x": 31.5,
+								"y": 307.5,
+								"width": 296,
+								"height": 44
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 3.017889552548212,
+								"ringMin": 3.017889552548212,
+								"points": 16,
+								"worst": {
+									"ring": [
+										166,
+										138,
+										35
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						},
+						{
+							"label": "a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\"",
+							"rect": {
+								"x": 31.5,
+								"y": 371.5,
+								"width": 140,
+								"height": 46.8125
+							},
+							"outline": {
+								"width": "2px",
+								"style": "solid",
+								"offset": "2px",
+								"colour": "rgb(166, 138, 35)"
+							},
+							"noOutline": false,
+							"boxShadow": "rgb(251, 243, 220) 0px 0px 0px 2px, color(srgb 0.960784 0.815686 0.313726 / 0.55) 0px 0px 12px 4px, color(srgb 0.960784 0.815686 0.313726 / 0.3) 0px 0px 30px 10px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+							"shadowShape": "0px/0px/0px/2px + 0px/0px/12px/4px + 0px/0px/30px/10px + 0px/0px/0px/0px",
+							"radius": "0px",
+							"radiusRest": "0px",
+							"kinds": {
+								"inset": false,
+								"signature": false,
+								"source": false,
+								"assertRing": false
+							},
+							"card": null,
+							"proxied": false,
+							"range": false,
+							"focusVisible": true,
+							"clip": {
+								"clipped": false,
+								"by": ""
+							},
+							"obscured": false,
+							"forced": null,
+							"signatureAnimation": null,
+							"tokens": {
+								"defined": true,
+								"ring": "rgb(166, 138, 35)",
+								"ink": "rgb(58, 46, 38)",
+								"inner": "rgb(251, 243, 220)",
+								"expect": "ring",
+								"expectRing": null
+							},
+							"contrast": {
+								"min": 2.4913504918768066,
+								"ringMin": 2.4913504918768066,
+								"points": 16,
+								"worst": {
+									"ring": [
+										179,
+										154,
+										62
+									],
+									"bg": [
+										251,
+										243,
+										220
+									],
+									"inner": [
+										251,
+										243,
+										220
+									]
+								}
+							}
+						}
+					],
+					"ended": "focus left the document",
+					"capHit": false,
+					"summary": {
+						"stops": 5,
+						"looks": 1,
+						"looksList": [
+							"2px solid 2px"
+						],
+						"looksFull": 1,
+						"exempt": [
+							"inset"
+						],
+						"minContrast": 2.4913504918768066,
+						"clipped": 0,
+						"clippedInset": 0,
+						"radiusChanged": 0,
+						"obscured": 0,
+						"tokenStatus": "token match checked on 5 of 5 stops",
+						"tokenised": 5,
+						"tokenMismatches": 0,
+						"fails": [
+							"#5 a.sgs-responsive-logo__link \"Go to Mama's Munches homepage\": contrast 2.49 < 3"
+						]
+					}
+				}
+			]
+		}
+	],
+	"cssBytes": {
+		"home": 844132
+	}
+}
