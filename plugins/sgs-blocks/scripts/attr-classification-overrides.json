@@ -7078,7 +7078,8 @@
 			"fields": {
 				"role": "color",
 				"css_property": "box-shadow-color",
-				"css_state": "hover"
+				"css_state": "hover",
+				"css_layer": "OUTER"
 			},
 			"_reason": "2026-10-17 (Spec 38A M6.6-G4). The hover shadow's colour, renamed from shadowHoverColour; classified exactly as sgs/post-grid::shadowColourHover (box-shadow-color on hover), so it no longer shares the (box-shadow, OUTER, hover) slot with shadowHover, which paints the shadow itself."
 		}
