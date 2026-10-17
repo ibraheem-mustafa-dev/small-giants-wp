@@ -557,7 +557,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 
 ## M6.7-docs: 491 hit(s) in 29 file(s)
 
-- `.claude/LEDGER.md`: 2 hit(s) at lines 67, 107, needles: `autoScroll`, `splitMediaParallax`
+- `.claude/LEDGER.md`: 2 hit(s) at lines 67, 109, needles: `autoScroll`, `splitMediaParallax`
 - `.claude/catalogues/helpers.md`: 14 hit(s), needles: `AnimationControl.js`, `CursorFieldRowControls.js`, `EntranceStaggerControls.js`, `FlowingGradientRowControls.js`, `GridDotFieldRowControls.js`, `MotionEasingControl.js`, `ParticleTrailRowControls.js`, `SurfaceTreatmentPanel.js`, `autoScrollBelow`, `entryAnimation`, `includes/helpers-nav-drawer-stagger-shape.php`, `includes/helpers-trust-bar-marquee.php` and 2 more
 - `.claude/catalogues/tooling.md`: 4 hit(s) at lines 144, 1334, 1552, 1806, needles: `itemStaggerOnClose`, `sgsAnimationStart`, `shadowLiftOnHover`
 - `.claude/dev-setup.md`: 1 hit(s) at line 156, needles: `fx.js`
