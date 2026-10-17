@@ -233,6 +233,23 @@
 		"losers": {}
 	},
 	{
+		"name": "scroll entrance under the LCP rule",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:1;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
 		"name": "entrance suppressed by a scroll owner",
 		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.02;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--ease-out) 0ms;}",
 		"plans": [

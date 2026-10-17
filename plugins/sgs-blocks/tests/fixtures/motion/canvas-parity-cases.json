@@ -348,6 +348,33 @@
 			"root": ".sgs-m-0123456789"
 		},
 		{
+			"name": "scroll entrance under the LCP rule",
+			"block": "sgs/hero",
+			"context": {
+				"lcp": true
+			},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": 24
+									},
+									"duration": 600
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
+		},
+		{
 			"name": "entrance suppressed by a scroll owner",
 			"block": "sgs/hero",
 			"context": {

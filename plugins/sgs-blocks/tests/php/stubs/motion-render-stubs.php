@@ -63,6 +63,21 @@ namespace {
 			$GLOBALS['sgs_test_actions'][] = array( $hook, $args );
 		}
 	}
+	if ( ! function_exists( 'did_action' ) ) {
+		function did_action( $hook ) {
+			return (int) ( $GLOBALS['sgs_test_did'][ $hook ] ?? 0 );
+		}
+	}
+	if ( ! function_exists( 'wp_print_inline_script_tag' ) ) {
+		function wp_print_inline_script_tag( $data, $attributes = array() ) {
+			$attrs = '';
+			foreach ( $attributes as $name => $value ) {
+				$attrs .= ' ' . $name . '="' . htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' ) . '"';
+			}
+			echo "<script{$attrs}>{$data}</script>
+";
+		}
+	}
 	if ( ! function_exists( 'wp_json_encode' ) ) {
 		function wp_json_encode( $data, $flags = 0 ) {
 			return json_encode( $data, $flags | JSON_UNESCAPED_SLASHES );

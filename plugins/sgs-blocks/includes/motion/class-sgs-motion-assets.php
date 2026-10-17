@@ -11,9 +11,13 @@
  * What a page uses comes from `Sgs_Motion_Renderer::used_features()`, which the renderer fills as it prints each
  * attribute. The renderer calls `enqueue_used()` at the end of every block it renders. The SGS theme is a block theme,
  * so templates render before `wp_head` and an enqueue during `render_block` reaches the head; in a classic theme the
- * stylesheet and scripts print in the footer instead. The scripts are deferred in the footer: the hidden start state
- * applies only under `.sgs-motion-ready`, which `motion-reveal.js` adds, so nothing is hidden before it runs. The
- * hidden-start rules live in `assets/css/motion.css`; only the per-instance values go through the CSS collector (`sgs_collect_css`), which prints in the head.
+ * stylesheet and scripts print in the footer instead. The scripts are deferred in the footer. The hidden start state
+ * applies only under `.sgs-motion-ready`: on a page with a scroll entrance, `print_ready_gate` prints
+ * `assets/js/motion-ready-gate.js` inline at the top of the head, which adds the class before first paint (so no scroll
+ * entrance is painted visible and then hidden when the deferred reveal module runs) and removes it at the window's load
+ * event unless the reveal module has armed; with JavaScript blocked nothing adds it. A classic theme, whose head prints
+ * before the blocks render, gets no gate, and the reveal module adds the class when it runs. The hidden-start rules
+ * live in `assets/css/motion.css`; only the per-instance values go through the CSS collector (`sgs_collect_css`), which prints in the head.
  *
  * The editor gets `motion.css` and the keyframes script (so Replay plays a multi-keyframe entrance through the same
  * WAAPI module, `src/blocks/extensions/motion/canvas/replay.js`) through `enqueue_block_assets`, guarded by `is_admin()`
@@ -46,6 +50,14 @@ final class Sgs_Motion_Assets {
 	const KEYFRAMES_PATH = 'assets/js/motion-keyframes.js';
 	const DRIVER_PATH    = 'build/shared/effects/scroll-driver.js';
 	const LOOP_PATH      = 'build/shared/effects/loop-control.js';
+	const GATE_PATH      = 'assets/js/motion-ready-gate.js';
+
+	/**
+	 * Whether the ready gate has printed on this request.
+	 *
+	 * @var bool
+	 */
+	private static bool $gate_printed = false;
 
 	/**
 	 * Hook registration and the editor stylesheet.
@@ -115,12 +127,33 @@ final class Sgs_Motion_Assets {
 		}
 		if ( ! empty( $used['reveal'] ) ) {
 			wp_enqueue_script( self::REVEAL );
+			if ( ! did_action( 'wp_head' ) ) {
+				add_action( 'wp_head', array( self::class, 'print_ready_gate' ), 1 );
+			}
 		}
 		if ( ! empty( $used['keyframes'] ) ) {
 			wp_enqueue_script( self::KEYFRAMES );
 		}
 		if ( ! empty( $used['scroll'] ) ) {
 			wp_enqueue_script_module( self::DRIVER );
+		}
+	}
+
+	/**
+	 * Print the ready gate inline, once per request, without its doc comment (`wp_head`, priority 1).
+	 *
+	 * @return void
+	 */
+	public static function print_ready_gate(): void {
+		if ( self::$gate_printed || ! self::exists( self::GATE_PATH ) ) {
+			return;
+		}
+		self::$gate_printed = true;
+
+		$source = (string) file_get_contents( SGS_BLOCKS_PATH . self::GATE_PATH ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local plugin file, read once per request.
+		$script = trim( (string) preg_replace( '#^\s*/\*\*.*?\*/#s', '', $source ) );
+		if ( '' !== $script ) {
+			wp_print_inline_script_tag( $script, array( 'id' => 'sgs-motion-ready-gate' ) );
 		}
 	}
 

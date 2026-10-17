@@ -42,6 +42,7 @@ final class MotionAssetsTest extends TestCase {
 		$GLOBALS['sgs_test_actions']    = array();
 		$GLOBALS['sgs_test_registered'] = array();
 		$GLOBALS['sgs_test_enqueued']   = array();
+		$GLOBALS['sgs_test_did']        = array();
 	}
 
 	private function define_stand_ins(): void {
@@ -164,6 +165,41 @@ final class MotionAssetsTest extends TestCase {
 		Sgs_Motion_Assets::enqueue_used();
 		$this->assertContains( 'sgs-motion', $GLOBALS['sgs_test_enqueued_styles'] );
 		$this->assertSame( array(), preg_grep( '/^sgs-fx-/', $GLOBALS['sgs_test_enqueued_styles'] ) );
+	}
+
+	/**
+	 * The wp_head callbacks registered at a priority, as the stand-in add_action records them.
+	 *
+	 * @return array<int,callable>
+	 */
+	private static function head_callbacks( int $priority ): array {
+		return array_column( $GLOBALS['sgs_test_filters']['wp_head'][ $priority ] ?? array(), 0 );
+	}
+
+	public function test_happy_scroll_entrance_prints_the_ready_gate_first_in_the_head(): void {
+		$this->render( self::entrance( 'scroll' ) );
+		$this->assertContains( array( Sgs_Motion_Assets::class, 'print_ready_gate' ), self::head_callbacks( 1 ), 'the gate prints at wp_head priority 1' );
+		ob_start();
+		Sgs_Motion_Assets::print_ready_gate();
+		Sgs_Motion_Assets::print_ready_gate();
+		$head = (string) ob_get_clean();
+		$this->assertSame( 1, substr_count( $head, '<script' ), 'printed once however often the hook fires' );
+		$this->assertStringContainsString( 'id="sgs-motion-ready-gate"', $head );
+		$this->assertStringContainsString( "classList.add( 'sgs-motion-ready' )", $head, 'the gate adds the ready class' );
+		$this->assertStringContainsString( 'sgsMotionRevealArmed', $head, 'the gate falls back to showing everything when the reveal module never armed' );
+		$this->assertStringNotContainsString( '/**', $head, 'the doc comment stays in the file' );
+	}
+
+	public function test_edge_load_entrance_prints_no_ready_gate(): void {
+		$this->render( self::entrance( 'load' ) );
+		$this->assertSame( array(), self::head_callbacks( 1 ), 'a load entrance hides nothing that waits for the reveal module' );
+	}
+
+	public function test_edge_no_gate_once_the_head_has_printed(): void {
+		$GLOBALS['sgs_test_did']['wp_head'] = 1;
+		$this->render( self::entrance( 'scroll' ) );
+		$this->assert_loaded( true, true, false, false, 'a classic theme renders after the head' );
+		$this->assertSame( array(), self::head_callbacks( 1 ), 'no gate is queued for a head that already printed' );
 	}
 
 	public function test_happy_assets_are_registered(): void {

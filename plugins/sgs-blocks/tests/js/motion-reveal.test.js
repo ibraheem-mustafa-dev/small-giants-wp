@@ -54,6 +54,7 @@ beforeEach( () => {
 	listeners = [];
 	document.documentElement.className = '';
 	document.body.innerHTML = '';
+	delete window.sgsMotionRevealArmed;
 	page( 5000 );
 	window.IntersectionObserver = MockIO;
 	window.matchMedia = ( query ) => ( {
@@ -72,6 +73,29 @@ test( 'adds sgs-motion-ready and sets data-sgs-in on intersection', () => {
 	fire( cropped()[ 0 ], el, true );
 	expect( el.hasAttribute( 'data-sgs-in' ) ).toBe( true );
 	expect( cropped()[ 0 ].targets.has( el ) ).toBe( false );
+} );
+
+test( 'reports itself armed once it has measured the page, so the head gate keeps the ready class', () => {
+	add();
+	expect( window.sgsMotionRevealArmed ).toBeUndefined();
+	run();
+	expect( window.sgsMotionRevealArmed ).toBe( true );
+} );
+
+test( 'reports itself armed under reduced motion too, having removed the ready class the head gate may have added', () => {
+	reduced = true;
+	document.documentElement.classList.add( READY );
+	add();
+	run();
+	expect( document.documentElement.classList.contains( READY ) ).toBe( false );
+	expect( window.sgsMotionRevealArmed ).toBe( true );
+} );
+
+test( 'never reports itself armed without IntersectionObserver, so the head gate shows everything at load', () => {
+	delete window.IntersectionObserver;
+	add();
+	run();
+	expect( window.sgsMotionRevealArmed ).toBeUndefined();
 } );
 
 test( 'does not reveal an element that is not intersecting', () => {

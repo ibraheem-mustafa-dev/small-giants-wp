@@ -22,7 +22,7 @@
  *    later one overwriting the earlier. Effect value fields that name a custom property are written into the same
  *    scoped CSS, per device tier (`Sgs_Motion_Effect_Properties`).
  *
- * The LCP rule (§9): a `load` entrance in the page's first top-level section (the first top-level block of the main
+ * The LCP rule (§9): a `load` or `scroll` entrance in the page's first top-level section (the first top-level block of the main
  * content, filterable through `sgs_motion_is_first_section`) or on an `<img fetchpriority="high">` keeps its
  * from-opacity at 1 unless the entrance sets `allowLcpFade`.
  *

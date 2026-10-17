@@ -38,7 +38,7 @@ export function emitEntrance( base, decls, attrs, context ) {
 		return false;
 	}
 	const tiers = tierValues( base );
-	const keepOp = trigger === 'load' && Boolean( context.lcp ) && tiers.desktop.allowLcpFade !== true;
+	const keepOp = ( trigger === 'load' || trigger === 'scroll' ) && Boolean( context.lcp ) && tiers.desktop.allowLcpFade !== true;
 	const map = propertyChannels();
 	const used = {};
 	const timing = { duration: 'dur', delay: 'delay', easing: 'ease', start: 'start' };

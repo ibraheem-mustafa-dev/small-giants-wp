@@ -43,6 +43,28 @@ final class MotionRendererEntranceTest extends TestCase {
 		$this->assertStringContainsString( 'data-sgs-me="load translate opacity"', $out );
 	}
 
+	public function test_edge_first_section_scroll_fade_keeps_from_opacity_1(): void {
+		$out = $this->render_as_first_section( self::load_fade( false, 'scroll' ) );
+		$css = $this->css();
+		$this->assertStringContainsString( '--sgs-me-from-op:1;', $css, 'the ready gate hides a scroll entrance from first paint, so the LCP rule holds its opacity' );
+		$this->assertStringContainsString( '--sgs-me-from-ty:24px;', $css, 'movement still plays' );
+		$this->assertStringContainsString( 'data-sgs-me="scroll translate opacity"', $out );
+	}
+
+	public function test_edge_first_section_scroll_fade_with_allow_lcp_fade_fades(): void {
+		$this->render_as_first_section( self::load_fade( true, 'scroll' ) );
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
+	}
+
+	public function test_edge_second_section_scroll_fade_fades(): void {
+		$GLOBALS['sgs_test_in_loop'] = true;
+		Sgs_Motion_Renderer::arm_first_section( '' );
+		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
+		$GLOBALS['sgs_collected_css'] = array();
+		$this->render( self::load_fade( false, 'scroll' ) );
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
+	}
+
 	public function test_edge_first_section_with_allow_lcp_fade_fades(): void {
 		$this->render_as_first_section( self::load_fade( true ) );
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );

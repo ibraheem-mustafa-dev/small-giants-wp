@@ -424,7 +424,7 @@ final class Sgs_Motion_Emitter {
 			return false;
 		}
 		$tiers   = self::tier_values( $base );
-		$keep_op = 'load' === $trigger && ! empty( $context['lcp'] ) && true !== ( $tiers['desktop']['allowLcpFade'] ?? false );
+		$keep_op = in_array( $trigger, array( 'load', 'scroll' ), true ) && ! empty( $context['lcp'] ) && true !== ( $tiers['desktop']['allowLcpFade'] ?? false );
 		$map     = self::property_channels();
 		$used    = array();
 		$timing  = array(
