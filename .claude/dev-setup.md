@@ -549,7 +549,7 @@ Generated files live in `.claude/catalogues/`; grep them BEFORE building or hand
 | Gotcha | Detail |
 |--------|--------|
 | **SCP `-r` creates nested directories** | `scp -r theme/sgs-theme remote:path/sgs-theme` creates `sgs-theme/sgs-theme/`. One of several reasons never to hand-roll a deploy — use `build-deploy.py`. |
-| **Hostinger caches CSS aggressively** | Bump version in `style.css` after CSS changes to bust cache. Theme version is the query string for all enqueued styles. |
+| **Hostinger caches CSS aggressively** | A theme stylesheet's URL version is the file's modified time (`theme/sgs-theme/functions.php::asset_version`), so editing and deploying a theme CSS file busts the cache on its own and no `style.css` `Version:` bump is needed; the deploy also purges the LiteSpeed page cache. `style.css` `Version:` is the fallback version, not a cache lever. |
 | **`--webpack-copy-php` flag** | Build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this. |
 | **`--experimental-modules` flag** | Required in build/start scripts for `viewScriptModule` in block.json. |
 | **Deprecations NOT used** | The plugin carries no `deprecated.js` and block version bumps are forbidden pre-production. On a schema change, rebuild / re-clone the content, or use the Site Editor's "Attempt Block Recovery". Do NOT author a deprecation. |

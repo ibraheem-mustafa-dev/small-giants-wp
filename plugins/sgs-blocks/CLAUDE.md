@@ -136,6 +136,8 @@ Fast tier runs in `prebuild`, full tier runs pre-deploy, both four gates at a ti
 
 A gate that reads a block's own source reads it through `plugins/sgs-blocks/scripts/lib/block-source-files.js` / `block_source_files.py` (`renderFiles`/`renderSource`, `editFiles`/`editSource`, `viewFiles`/`viewSource`), never `render.php`, `edit.js` or `view.js` by name: a split into partials or components otherwise blinds it silently. A render partial names classes fully qualified (`\SGS\Blocks\X::`), never through a `use` of its own (gate: `check-partial-use-imports.py`).
 
+Keyboard focus is one system (`theme/sgs-theme/assets/css/focus.css`, Spec 32 §14.5): `scripts/check-focus-system.js --check` fails any block rule that draws its own focus outline or box-shadow, suppresses one, or reads a retired focus token (blocks hand in `--sgs-focus-under` and `--sgs-focus-offset` instead), and `scripts/check-snapshot-focus-tokens.py --check` holds every snapshot's `settings.custom.focus` to 3:1.
+
 ## Where the rest of this file moved
 
 Seven path-scoped rule files in `.claude/rules/` load when you touch their paths:
