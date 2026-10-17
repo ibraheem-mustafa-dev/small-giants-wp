@@ -253,9 +253,6 @@
 						"alt": ""
 					},
 					"shadowLiftOnHover": false,
-					"sgsHoverScalePreset": "none",
-					"sgsHoverShadow": "none",
-					"sgsHoverImageZoom": false,
 					"className": "m39-media",
 					"sgsMotion": {
 						"v": 1,
@@ -332,11 +329,7 @@
 							}
 						}
 					},
-					"effectHover": "none",
-					"shadowLiftOnHover": false,
-					"sgsHoverScalePreset": "none",
-					"sgsHoverShadow": "none",
-					"sgsHoverImageZoom": false
+					"shadowLiftOnHover": false
 				},
 				"innerBlocks": [
 					{
@@ -374,11 +367,7 @@
 							}
 						}
 					},
-					"effectHover": "none",
-					"shadowLiftOnHover": false,
-					"sgsHoverScalePreset": "none",
-					"sgsHoverShadow": "none",
-					"sgsHoverImageZoom": false
+					"shadowLiftOnHover": false
 				},
 				"innerBlocks": [
 					{
@@ -416,11 +405,7 @@
 							}
 						}
 					},
-					"effectHover": "none",
-					"shadowLiftOnHover": false,
-					"sgsHoverScalePreset": "none",
-					"sgsHoverShadow": "none",
-					"sgsHoverImageZoom": false
+					"shadowLiftOnHover": false
 				},
 				"innerBlocks": [
 					{

@@ -15,7 +15,7 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { SelectControl, TextControl } from '@wordpress/components';
-import { fieldCss, validateField } from './field-types';
+import { fieldCss, isValidCubicBezier, validateField } from './field-types';
 import { textDraft, useAtomField } from './atom-utils';
 import AtomFrame from './AtomFrame';
 import NamedEasing from './NamedEasing';
@@ -51,6 +51,26 @@ export function easingCssFor( vocabulary, value ) {
 	}
 	const css = fieldCss( 'easing', schemaValue );
 	return css.ok ? css.css : null;
+}
+
+/**
+ * The CSS timing function for a named nav easing, the JS twin of `sgs_motion_easing_css()`
+ * (includes/helpers-motion-easing.php), for editor canvas previews.
+ *
+ * @param {string} value    The named easing.
+ * @param {string} custom   The custom curve, read when value is `custom`.
+ * @param {string} fallback CSS used for an unknown value or an invalid curve.
+ * @return {string} A CSS timing function.
+ */
+export function motionEasingCss( value, custom = '', fallback = 'ease' ) {
+	const named = easingCssFor( 'nav', value );
+	if ( named ) {
+		return named;
+	}
+	if ( 'custom' === value && isValidCubicBezier( ( custom || '' ).trim() ) ) {
+		return custom.trim();
+	}
+	return fallback;
 }
 
 const CUSTOM = '__custom__';

@@ -751,11 +751,6 @@
 			"type": "boolean",
 			"default": true
 		},
-		"submitSgsHoverShadow": {
-			"type": "string",
-			"default": "",
-			"description": "A preset shadow to draw on the submit button on hover instead of the automatic lift. Empty = automatic."
-		},
 		"submitFontWeight": {
 			"type": "string",
 			"default": ""

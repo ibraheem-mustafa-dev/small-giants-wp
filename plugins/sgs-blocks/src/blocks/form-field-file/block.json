@@ -23,11 +23,6 @@
         "anchor": false,
         "interactivity": true,
         "sgs": {
-            "hideExtensions": [
-                "animation",
-                "clickEffects",
-                "parallax"
-            ],
             "elements": {
                 "label": {
                     "label": "Field label",

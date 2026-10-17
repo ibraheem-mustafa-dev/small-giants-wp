@@ -24,8 +24,8 @@
  *     HOW LONG.
  *
  * PREFERS-REDUCED-MOTION IS A NEW GUARD ON PURPOSE. The existing reduced-
- * motion guards (`hero/style.css`, `container/style.css`,
- * `assets/js/parallax.js`) are scoped to THOSE blocks' own selectors
+ * motion guards (`hero/style.css`, `container/style.css`)
+ * are scoped to THOSE blocks' own selectors
  * (`.sgs-container__svg-bg`, the hero media element) and do not cover
  * `.sgs-media-el` — a different selector this atom introduces. Per the
  * brief: "if you introduce a genuinely NEW motion effect, that one carries

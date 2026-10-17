@@ -44,14 +44,8 @@
 				"cardStyle"
 			],
 			"enabledExtensions": [
-				"blockLink",
-				"hover"
+				"blockLink"
 			],
-			"hoverDefaults": {
-				"scalePreset": "1.02",
-				"shadow": "soft",
-				"imageZoom": true
-			},
 			"elements": {
 				"card": {
 					"restingShadow": true,

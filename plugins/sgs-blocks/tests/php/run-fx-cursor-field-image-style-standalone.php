@@ -63,7 +63,7 @@ namespace {
 	}
 
 	\SGS\Blocks\Motion\Sgs_Motion_Renderer::register();
-	foreach ( array( 'fx-token-match', 'fx-attributes', 'fx-cursor-field' ) as $file ) {
+	foreach ( array( 'fx-token-match', 'fx-root-offset', 'fx-cursor-field' ) as $file ) {
 		require_once dirname( __DIR__, 2 ) . "/includes/$file.php";
 	}
 

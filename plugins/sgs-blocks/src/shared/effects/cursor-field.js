@@ -116,6 +116,24 @@ const PARTICIPANT_ATTR = 'data-sgs-cursor-participant';
  * Resting position for element space — the centre-ish spot the mega-menu
  * spotlight has always used. Kept verbatim; it is a published contract.
  */
+const REST_X_ATTR = 'data-sgs-fx-cursor-field-rest-x';
+const REST_Y_ATTR = 'data-sgs-fx-cursor-field-rest-y';
+
+/**
+ * A stored rest coordinate (0 to 100), or null when the attribute is absent or not a number.
+ *
+ * @param {HTMLElement} el   The emitter.
+ * @param {string}      name Attribute name.
+ * @return {number|null} The clamped value.
+ */
+export function readRest( el, name ) {
+	const raw = el.getAttribute( name );
+	if ( null === raw || '' === raw.trim() || ! Number.isFinite( Number( raw ) ) ) {
+		return null;
+	}
+	return Math.max( 0, Math.min( 100, Number( raw ) ) );
+}
+
 const STATIC_ELEMENT_X = '50%';
 const STATIC_ELEMENT_Y = '30%';
 
@@ -331,24 +349,23 @@ export function initCursorField( el, opts = {} ) {
 	 * an arbitrary screen corner.
 	 */
 	const rest = () => {
+		const restX = readRest( el, REST_X_ATTR );
+		const restY = readRest( el, REST_Y_ATTR );
 		if ( elementSpace ) {
-			el.style.setProperty( varX, STATIC_ELEMENT_X );
-			el.style.setProperty( varY, STATIC_ELEMENT_Y );
+			el.style.setProperty( varX, null === restX ? STATIC_ELEMENT_X : `${ restX }%` );
+			el.style.setProperty( varY, null === restY ? STATIC_ELEMENT_Y : `${ restY }%` );
 			return;
 		}
 		const rect = el.getBoundingClientRect();
-		el.style.setProperty(
-			varX,
-			`${ Math.round( rect.left + rect.width / 2 ) }px`
-		);
-		el.style.setProperty(
-			varY,
-			`${ Math.round( rect.top + rect.height / 2 ) }px`
-		);
+		// A stored rest point is in vw / vh; absent, the field rests at the emitter's centre.
+		const x = null === restX ? rect.left + rect.width / 2 : ( window.innerWidth * restX ) / 100;
+		const y = null === restY ? rect.top + rect.height / 2 : ( window.innerHeight * restY ) / 100;
+		el.style.setProperty( varX, `${ Math.round( x ) }px` );
+		el.style.setProperty( varY, `${ Math.round( y ) }px` );
 		// The same resting point expressed in the element's own box, for
 		// masked types. Same rect, no extra measurement.
-		el.style.setProperty( VAR_LOCAL_X, `${ Math.round( rect.width / 2 ) }px` );
-		el.style.setProperty( VAR_LOCAL_Y, `${ Math.round( rect.height / 2 ) }px` );
+		el.style.setProperty( VAR_LOCAL_X, `${ Math.round( x - rect.left ) }px` );
+		el.style.setProperty( VAR_LOCAL_Y, `${ Math.round( y - rect.top ) }px` );
 	};
 
 	/**

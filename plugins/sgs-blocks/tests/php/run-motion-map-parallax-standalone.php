@@ -146,12 +146,13 @@ namespace SGS\Blocks\Motion {
 	// 0. Contract, and the mapper's constants against the shipped block files.
 	ok( 'parallax' === $mapper->family(), 'the family slug is the file suffix' );
 	ok( 'SGS\\Blocks\\Motion\\Sgs_Motion_Map_Parallax' === Sgs_Motion_Migrate_Runner::mapper_class( 'parallax' ) && $mapper instanceof Sgs_Motion_Mapper_Interface, 'the runner finds the class from the family slug' );
-	$read = static function ( string $slug ) use ( $root ): array {
+	$frozen_decl = json_decode( (string) file_get_contents( $root . '/includes/motion/migrate/data/legacy-declarations.json' ), true );
+	$read        = static function ( string $slug ) use ( $root, $frozen_decl ): array {
 		$json = json_decode( (string) file_get_contents( $root . '/src/blocks/' . $slug . '/block.json' ), true );
-		return is_array( $json['attributes'] ?? null ) ? $json['attributes'] : array();
+		return array_merge( is_array( $frozen_decl['attributes']['sgs/' . $slug] ?? null ) ? $frozen_decl['attributes']['sgs/' . $slug] : array(), is_array( $json['attributes'] ?? null ) ? $json['attributes'] : array() );
 	};
-	ok( 0 === ( $read( 'decorative-image' )['parallaxStrength']['default'] ?? null ), 'decorative-image parallaxStrength defaults to 0 in block.json' );
-	ok( false !== strpos( (string) file_get_contents( $root . '/src/blocks/extensions/parallax.js' ), "sgsParallaxStrength: { type: 'number', default: 30 }" ), 'sgsParallaxStrength default 30 matches the extension' );
+	ok( 0 === ( $read( 'decorative-image' )['parallaxStrength']['default'] ?? null ), 'decorative-image parallaxStrength defaults to 0 in the frozen declarations' );
+	ok( 30 === ( $frozen_decl['extensions']['sgsParallaxStrength']['default'] ?? null ), 'sgsParallaxStrength default 30 matches the frozen extension declarations' );
 	$swing = Sgs_Motion_Map_Parallax::SPLIT_MEDIA_SWING;
 	$css   = (string) file_get_contents( $root . '/src/blocks/hero/style.css' );
 	ok( 1 === preg_match( '/translateY\(-' . ( $swing / 2 ) . 'px\)[^}]*\}\s*to\s*\{\s*transform:\s*translateY\(' . ( $swing / 2 ) . 'px\)/s', $css ) || false === strpos( $css, 'sgs-hero-media-parallax' ), 'the hero keyframe swing is -16px to 16px (or the keyframe is already removed)' );

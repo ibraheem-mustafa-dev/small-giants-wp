@@ -43,8 +43,8 @@
  * page reports the real per-page gzip total against `BUDGET_BYTES_GZIP`
  * (51200 — the SAME literal the Wave-C canary probe
  * `scripts/motion-qa/probe-wave-c.mjs` reports against, and the number any
- * future editor-side authoring-time warning — fx.js, owned separately —
- * should read rather than inventing its own threshold).
+ * editor-side authoring-time warning (`src/blocks/extensions/motion/effect-helpers/use-motion-budget.js`)
+ * reads rather than inventing its own threshold).
  *
  * ADMIN ONLY (hard constraint) — AMENDED 2026-08-08, see below
  * This class is wired to `admin_menu` only. It is never loaded on the
@@ -57,7 +57,7 @@
  * (`wp_remote_get()` against the page's own permalink) fired only from inside
  * `render_page()`. Since 2026-08-08 `measure_post()` can also trigger it, from
  * `includes/rest-motion-budget.php`, which serves the block editor the route
- * `extensions/fx.js` had been requesting (and 404ing on) since it was written.
+ * `use-motion-budget.js` requests.
  *
  * What is unchanged, and what the constraint now means precisely:
  *   · the admin PAGE is still `admin_menu` only;
@@ -135,10 +135,9 @@ final class Sgs_Motion_Diagnostics {
 	/**
 	 * Measure one post's motion cost, for callers OUTSIDE this admin page.
 	 *
-	 * Added 2026-08-08 so `rest-motion-budget.php` can serve the editor the
+	 * `rest-motion-budget.php` serves the editor the
 	 * SAME measurement this page shows, rather than a second implementation.
-	 * `extensions/fx.js:1015-1038` documented the interface it wanted and
-	 * explicitly refused to compute a cost itself, on the grounds that two
+	 * The editor computes no cost itself, on the grounds that two
 	 * independently-derived numbers can silently disagree. That reasoning binds
 	 * here too: this returns the measured figure or nothing at all.
 	 *

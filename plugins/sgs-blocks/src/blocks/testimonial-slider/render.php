@@ -58,7 +58,6 @@ $slides_visible = $attributes['slidesVisible'] ?? 1;
 // gradient-resolve calc below, not the combined hover-decls array (see the
 // comment further down).
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
-$hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here.
 
@@ -89,11 +88,6 @@ $total_testimonials = count( $inner_blocks );
 $classes = array(
 	'sgs-testimonial-slider',
 );
-$allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
-$safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
-if ( 'none' !== $safe_hover_effect ) {
-	$classes[] = 'sgs-testimonial-slider--hover-' . esc_attr( $safe_hover_effect );
-}
 
 // ── Scoped-style uid (NO-INLINE contract — Spec 32) ─────────────────────────
 // Own uid, independent of the wrapper's internal responsive-CSS uid — used to

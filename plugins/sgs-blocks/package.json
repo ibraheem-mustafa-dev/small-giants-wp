@@ -54,7 +54,6 @@
     "check:shared-panel-schema": "node scripts/check-shared-panel-schema.js --check",
     "check:background-colour-support": "python scripts/surveys/survey-background-colour-support.py --check",
     "check:image-controls-support": "python scripts/surveys/check-image-controls-support.py --check",
-    "check:fx-lists": "python scripts/check-fx-list-drift.py --check",
     "check:focus-system": "node scripts/check-focus-system.js --check",
     "survey:snapshot-focus-tokens": "python scripts/check-snapshot-focus-tokens.py --survey",
     "selftest:snapshot-focus-tokens": "python scripts/check-snapshot-focus-tokens.py --self-test",

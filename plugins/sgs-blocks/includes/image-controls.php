@@ -19,7 +19,7 @@
  *                        white via a CSS filter, e.g. a full-colour logo on a
  *                        dark footer — '' = no override.)
  *
- * Class and CSS variable injection mirrors the hover-effects.php pattern:
+ * Class and CSS variable injection mirrors the child-sizing.php pattern:
  * append to existing class="..." if present, otherwise add a new class
  * attribute; same for style="...".
  *
@@ -172,8 +172,8 @@ function inject_image_controls( string $block_content, array $block ): string {
 	// <style> tag (invisible), and the CSS-var injection wrote a nonsense
 	// style="" attribute onto the <style> element, both then stripped by the
 	// p99 CSS-lift filter (sgs_lift_block_css, class-sgs-css-registry.php).
-	// Same root cause + fix shape as hover-effects.php / device-visibility.php
-	// / animation-attributes.php / parallax.php — skip every leading
+	// Same root cause + fix shape as block-link.php / device-visibility.php
+	// — skip every leading
 	// <style>/<script> block to find the real wrapper tag.
 	$sgs_root_offset = 0;
 	while ( preg_match( '/^\s*<(style|script)\b[^>]*>/i', substr( $block_content, $sgs_root_offset ), $sgs_lead_match ) ) {
@@ -223,7 +223,7 @@ function inject_image_controls( string $block_content, array $block ): string {
 
 	// --- Emit CSS custom properties as a scoped <style> rule (Spec 32
 	// no-inline contract, FR-32-11) — NEVER a style="" attribute. Same
-	// mechanism as hover-effects.php / parallax.php: appended as the block's
+	// mechanism as child-sizing.php: appended as the block's
 	// own <style> tag, lifted to the consolidated <head> stylesheet on the
 	// front end (class-sgs-css-registry.php, render_block p99), left inline
 	// for the editor's ServerSideRender REST preview.

@@ -1,9 +1,8 @@
 /**
- * Hover Effects extension — "Block Link" inspector panel.
+ * Block link extension: the "Block Link" inspector panel.
  *
- * Split out of the former hover-effects.js (D551, Phase 2.1 header docs live
- * in ../index.js). Verbatim move of the PanelBody JSX; receives every value
- * it reads from the withHoverControls HOC as props.
+ * Receives every value it reads from the withBlockLinkControls HOC
+ * (../index.js) as props.
  *
  * @package SGS\Blocks
  */

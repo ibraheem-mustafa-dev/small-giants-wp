@@ -75,8 +75,8 @@ function query( text ) {
 	return queries[ text ];
 }
 
-function mount( { fxToken = 'ambient-float', attrs = '' } = {} ) {
-	document.body.innerHTML = `<div class="wp-block-sgs-container"><span data-sgs-fx="${ fxToken }" ${ attrs }></span><a href="#x">link</a></div>`;
+function mount( { effectToken = 'ambient-float', attrs = '' } = {} ) {
+	document.body.innerHTML = `<div class="wp-block-sgs-container"><span data-sgs-fx="${ effectToken }" ${ attrs }></span><a href="#x">link</a></div>`;
 	const root = document.body.firstElementChild;
 	const el = root.querySelector( '[data-sgs-fx]' );
 	el.animate = jest.fn( fakeAnimation );
@@ -183,14 +183,14 @@ describe( 'ambient float animation', () => {
 	} );
 
 	test( 'NEGATIVE CONTROL: an element without ambient-float in data-sgs-fx is never animated', () => {
-		const { el } = mount( { fxToken: 'sheen magnet' } );
+		const { el } = mount( { effectToken: 'sheen magnet' } );
 		boot();
 		expect( el.animate ).not.toHaveBeenCalled();
 		expect( animations ).toHaveLength( 0 );
 	} );
 
 	test( 'a token list that includes ambient-float is animated', () => {
-		const { el } = mount( { fxToken: 'sheen ambient-float' } );
+		const { el } = mount( { effectToken: 'sheen ambient-float' } );
 		boot();
 		expect( el.animate ).toHaveBeenCalledTimes( 1 );
 	} );

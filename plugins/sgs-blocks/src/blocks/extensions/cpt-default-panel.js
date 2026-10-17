@@ -23,8 +23,7 @@
  * equivalent.
  *
  * Double-registration guard mirrors every sibling extension in this directory
- * (responsive-device-toggle.js, animation.js, parallax.js,
- * conditional-visibility.js) — registerPlugin no-ops with a console warning on
+ * (responsive-device-toggle.js, conditional-visibility.js) — registerPlugin no-ops with a console warning on
  * a duplicate name rather than throwing, so "renders once" only holds while
  * this file is imported from exactly one place (this directory's index.js).
  */

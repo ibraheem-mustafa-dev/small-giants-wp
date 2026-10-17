@@ -896,7 +896,7 @@ if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
  * `nbm` abbreviates the block slug, as `sgs/nav-drawer`'s `--sgs-drawer-*`
  * custom properties abbreviate theirs: the convention within the nav-* family.
  */
-$sgs_nm_morph_vars = sgs_nav_bar_burger_morph_vars( $attributes, '' ); // Spec 38A FR-38A-53: the burger layer's timing.
+$sgs_nm_morph_vars = sgs_nav_bar_burger_morph_vars( $attributes ); // Spec 38A FR-38A-53: the burger layer's timing.
 if ( '' !== $sgs_nm_morph_vars ) {
 	$css .= $uid_sel . '{' . $sgs_nm_morph_vars . '}';
 }

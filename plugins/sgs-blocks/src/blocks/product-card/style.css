@@ -658,27 +658,6 @@
  */
 
 /*
- * Card hover (lift, shadow, photo zoom and their timing) comes from the
- * shared Hover Effects panel (supports.sgs.enabledExtensions "hover",
- * extensions.css). The photo zoom grows the image inside its own box.
- */
-@media (prefers-reduced-motion: no-preference) {
-	.product-card.sgs-has-img-zoom .product-card__media .sgs-media-el,
-	.product-card.sgs-has-img-zoom .sgs-product-card__media-wrap .sgs-media-el {
-		transition: transform var(--sgs-hover-zoom-duration, 0.5s) var(--sgs-hover-easing, ease);
-	}
-
-	.product-card.sgs-has-img-zoom:hover .product-card__media .sgs-media-el,
-	.product-card.sgs-has-img-zoom:hover .sgs-product-card__media-wrap .sgs-media-el {
-		transform: scale(var(--sgs-hover-zoom, 1.1));
-	}
-}
-
-.product-card.sgs-has-img-zoom .sgs-product-card__media-wrap {
-	overflow: hidden;
-}
-
-/*
  * Typed-card hover/focus affordance (Task 5d, 2026-08-27 — Bean-approved
  * reversal of the "typed cards stay unstyled" scope guardrail below).
  *

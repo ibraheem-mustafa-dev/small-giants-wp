@@ -223,8 +223,8 @@ export function initSplitReveal( el ) {
 		 * GSAP's own SplitText marks the GENERATED WRAPPER SPANS
 		 * `aria-hidden="true"` (see this file's top docblock), so the
 		 * fragments themselves are never in the tab order — but this effect
-		 * is offered as a UNIVERSAL `fx` choice on any block SplitText can
-		 * run against (`src/blocks/extensions/fx.js` `SHIPPED_EFFECTS`), and
+		 * is offered as a universal motion effect on any block SplitText can
+		 * run against (the effect list in `blocks/extensions/motion/effect-options.js`), and
 		 * SplitText does not remove pre-existing interactive descendants
 		 * (e.g. a `<a>` inline inside the split text, or a block whose
 		 * RichText target sits alongside a real CTA) — it keeps them as

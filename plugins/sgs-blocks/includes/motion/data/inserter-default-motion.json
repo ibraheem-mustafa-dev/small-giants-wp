@@ -140,7 +140,20 @@
                             "values": {
                                 "translateY": "-token:distance.sm",
                                 "duration": "token:duration.fast",
-                                "easing": "token:easing.ease-out"
+                                "easing": "token:easing.ease-out",
+                                "scale": 1.02
+                            }
+                        }
+                    }
+                },
+                "media": {
+                    "hover": {
+                        "state": {
+                            "source": "root",
+                            "values": {
+                                "scale": 1.1,
+                                "duration": 500,
+                                "easing": "token:easing.default"
                             }
                         }
                     }
@@ -203,6 +216,15 @@
                                 }
                             }
                         }
+                    },
+                    "hover": {
+                        "state": {
+                            "values": {
+                                "duration": "token:duration.medium",
+                                "easing": "token:easing.default",
+                                "scale": 1.02
+                            }
+                        }
                     }
                 }
             }
@@ -233,6 +255,24 @@
             }
         }
     },
+    "sgs/product-card": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "root": {
+                    "hover": {
+                        "state": {
+                            "values": {
+                                "duration": "token:duration.medium",
+                                "easing": "token:easing.default",
+                                "translateY": -4
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "sgs/team-member": {
         "sgsMotion": {
             "v": 1,
@@ -251,6 +291,27 @@
                                     "opacity": 1,
                                     "translateY": 0
                                 }
+                            }
+                        }
+                    },
+                    "hover": {
+                        "state": {
+                            "values": {
+                                "duration": "token:duration.medium",
+                                "easing": "token:easing.default",
+                                "scale": 1.02
+                            }
+                        }
+                    }
+                },
+                "image": {
+                    "hover": {
+                        "state": {
+                            "source": "root",
+                            "values": {
+                                "scale": 1.1,
+                                "duration": 500,
+                                "easing": "token:easing.default"
                             }
                         }
                     }

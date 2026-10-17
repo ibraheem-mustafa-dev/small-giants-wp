@@ -150,7 +150,7 @@ addFilter( 'editor.BlockEdit', 'sgs/child-sizing/controls', withChildSizingContr
 /**
  * Editor preview on the block wrapper (the flex item in the canvas): a
  * modifier class for the active tier's mode, and the width as a custom
- * property. Custom properties only, as fx.js's grid-dots preview: Spec 32
+ * property. Custom properties only, as the grid-dots canvas preview: Spec 32
  * forbids inline property declarations; the rules are in child-sizing.scss.
  */
 const withChildSizingPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {

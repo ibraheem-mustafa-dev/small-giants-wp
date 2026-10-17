@@ -1,9 +1,9 @@
 <?php
 /**
- * Hover Effects — block-link overlay insertion.
+ * Block link: the overlay insertion.
  *
- * Split out of the former includes/hover-effects.php (the orchestrator now
- * lives in hover-effects.php in this same folder).
+ * Called by block-link.php (the render_block filter in this same folder) and by
+ * helpers-stretched-link.php.
  *
  * @package SGS\Blocks
  */

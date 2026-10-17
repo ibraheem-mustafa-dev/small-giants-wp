@@ -37,7 +37,6 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
-require_once dirname( __DIR__, 3 ) . '/includes/helpers-hover-lift.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
@@ -338,8 +337,6 @@ $box_shadow_decls['hover']  = sgs_focus_under_decls( $box_shadow_decls['hover'] 
 
 // Effects.
 $hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;
-$hover_scale_target  = isset( $attributes['scaleHoverTarget'] ) ? sanitize_text_field( $attributes['scaleHoverTarget'] ) : 'whole';
-$hover_scale_target  = in_array( $hover_scale_target, array( 'whole', 'face' ), true ) ? $hover_scale_target : 'whole';
 
 // Hover opacity (0-1; 0 = off, the same sentinel every other numeric hover
 // control in the framework uses — see sgs/responsive-logo's opacityHover).
@@ -348,9 +345,6 @@ $hover_scale_target  = in_array( $hover_scale_target, array( 'whole', 'face' ), 
 // is applied at build time (scripts/hover-guard postbuild transform), not here.
 $hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
 $hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
-// Hover lift (px, 0 = off): `translate: 0 -N px` on the button root, an
-// independent property from the scale's `transform`.
-$hover_lift          = isset( $attributes['liftHover'] ) ? sgs_hover_lift_px( $attributes['liftHover'] ) : 0;
 $transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 0;
 // Shared motion easing names (and a validated custom curve), as every other SGS motion control.
 $transition_easing   = sgs_motion_easing_css( (string) ( $attributes['transitionEasing'] ?? 'ease' ), (string) ( $attributes['transitionEasingCustom'] ?? '' ), 'ease' );
@@ -462,35 +456,14 @@ if ( $transition_duration > 0 ) {
 
 // Hover scale (skip if exactly 1.0 — no-op). Touch-safe: guarded via
 // sgs_hover_state_rules() so a tap doesn't stick the scale on touchscreens.
-// 'whole' (default) scales the button element itself — border, fill and
-// label move together, the original behaviour. 'face' scales only the
-// `.sgs-button__face` wrapper around the label/icon (see step 7 below),
-// leaving the border and background fill in place — the outlined-pill
-// inner-face-only scale (G-14).
+// Scales the button element itself: border, fill and label move together.
 if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
 	$scale_val = round( $hover_scale, 3 );
-	$scoped_css_parts[] = 'face' === $hover_scale_target
-		? sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})", ':focus-visible', ' .sgs-button__face' )
-		: sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
+	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
 }
-// Hover lift paints the independent `translate` property (not `transform`),
-// so it composes with the scale above without the two contending for one
-// declaration; it always moves the button root, whichever part scales.
-// An explicit lift replaces the site-wide default lift token (the preset's
-// `transform`), otherwise the two would stack; a whole-button scale already
-// overrides that transform on its own rule.
-if ( $hover_lift > 0 ) {
-	$scoped_css_parts[] = sgs_hover_lift_rule(
-		".{$uid}.sgs-button",
-		$hover_lift,
-		abs( $hover_scale - 1.0 ) <= 0.001 || 'face' === $hover_scale_target
-	);
-}
-
 // Content alignment + label-to-icon gap, per device. Both are flex properties
-// of the button root; when the 'face' wrapper is mounted it is the flex parent
-// of the label/icon, so the same declarations are emitted onto it too. Unset
-// attrs emit nothing (the centred, gapless default stands).
+// of the button root. Unset attrs emit nothing (the centred, gapless default
+// stands).
 $content_align_allowed = array( 'flex-start', 'center', 'flex-end' );
 $content_align_props   = array(
 	array(
@@ -507,9 +480,6 @@ $content_align_props   = array(
 	),
 );
 $scoped_css_parts[]    = sgs_emit_responsive_css( ".{$uid}.sgs-button", $content_align_props );
-if ( 'face' === $hover_scale_target ) {
-	$scoped_css_parts[] = sgs_emit_responsive_css( ".{$uid}.sgs-button .sgs-button__face", $content_align_props );
-}
 
 // Hover: colour hovers are CLASS-driven (Spec 32) via the --sgs-btn-*-hover vars
 // — set as overrides in step 3 when customised, else from the preset class's
@@ -967,16 +937,6 @@ if ( $icon_html ) {
 	}
 } else {
 	$inner_html = $label_html;
-}
-
-// 'face' scale target wraps the label/icon/note in their own element so the
-// hover transform (step 4 above) can move that element alone, leaving the
-// button's own border/fill (painted on .{$uid}.sgs-button itself) still.
-// Left OUT of the markup entirely for the default 'whole' target — zero
-// change to the DOM (and therefore to :has(> .sgs-button__note) et al) for
-// every button that never touches this control.
-if ( 'face' === $hover_scale_target ) {
-	$inner_html = '<span class="sgs-button__face">' . $inner_html . '</span>';
 }
 
 // ---------------------------------------------------------------------------

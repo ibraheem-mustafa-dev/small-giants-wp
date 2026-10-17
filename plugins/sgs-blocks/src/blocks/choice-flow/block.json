@@ -23,11 +23,6 @@
 					"step-changed"
 				]
 			},
-			"hideExtensions": [
-				"animation",
-				"clickEffects",
-				"parallax"
-			],
 			"boxFamilies": {
 				"padding": [
 					"padding"

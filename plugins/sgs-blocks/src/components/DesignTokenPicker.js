@@ -511,11 +511,9 @@ export default function DesignTokenPicker( {
 	// onBorderStyleChange as a function, inner props had no such key.
 	borderStyle,
 	onBorderStyleChange,
-	// Hint text under the control. Added 2026-08-28 after a survey found FIVE
-	// callers passing `help` to this component and all five silently rendering
-	// nothing — four wave-gradient colour rows in `fx.js` and
-	// `hover-effects.js`'s `sgsClickRippleColour`. Same explicit-prop-list trap
-	// the borderStyle comment above records, second occurrence, six days apart.
+	// Hint text under the control. A caller passing `help` to a component that
+	// does not list it renders nothing, the same explicit-prop-list trap the
+	// borderStyle comment above records.
 	help,
 	// Marker read by the state-pairing gate (rule 31), never by this component: a
 	// single-state picker inside a parent that owns the Normal/Hover axis. Named

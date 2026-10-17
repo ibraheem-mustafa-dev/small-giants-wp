@@ -1,28 +1,19 @@
 /**
- * Per-block universal-extension gating — TWO mechanisms, by design (D551,
- * Phase 2.1).
+ * Per-block universal-extension gating, two mechanisms.
  *
- * DENYLIST (legacy, still governs click-effects/parallax/animation/etc. until
- * each gets its own usage-derivation pass — see the plan at
- * `.claude/plans/go-track-1b-playful-hamster.md` Phase 2.1): every extension
- * attaches to every sgs/* block unless the block opts OUT —
+ * DENYLIST: an extension attaches to every sgs/* block unless the block opts
+ * OUT with
  *
- *   "supports": { "sgs": { "hideExtensions": ["clickEffects"] } }
+ *   "supports": { "sgs": { "hideExtensions": ["<slug>"] } }
  *
- * ALLOWLIST (D551 — hover + blockLink, disconnected outright and made
- * opt-in-only because they were measured at ZERO stored usage across 194
- * canary pages and their panel/mechanism is itself flagged as a defect,
- * not merely unused): an extension attaches to NO block unless the block
- * opts IN —
+ * ALLOWLIST: an extension attaches to NO block unless the block opts IN with
  *
- *   "supports": { "sgs": { "enabledExtensions": ["hover"] } }
+ *   "supports": { "sgs": { "enabledExtensions": ["blockLink"] } }
  *
- * As Phase 2.1 derives real usage for the remaining denylist extensions,
- * each one migrates from `isExtensionHidden` to `isExtensionEnabled` in its
- * own commit — never both checked for the same slug at once.
+ * A slug is governed by one mechanism, never both.
  *
- * Recognised denylist slugs: clickEffects · parallax · spacing · animation
- * Recognised allowlist slugs: hover · blockLink · childSizing
+ * Recognised allowlist slugs: blockLink · childSizing
+ * No denylist slug is currently recognised.
  *
  * @param {string|Object} nameOrSettings Block name (from an editor HOC) OR the
  *                                        settings object (from a

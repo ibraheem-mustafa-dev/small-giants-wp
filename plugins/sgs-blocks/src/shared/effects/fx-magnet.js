@@ -52,6 +52,26 @@ function readNumber( el, name, fallback, min, max ) {
 }
 
 /**
+ * The element that moves under the pull: the declared part inside `el` when the renderer printed a moving part and
+ * its selector, else `el` itself (`root`, no attribute, a selector matching nothing or an invalid one).
+ *
+ * @param {HTMLElement} el The marked element.
+ * @return {HTMLElement} The moving element.
+ */
+export function resolveMovingPart( el ) {
+	const part = ( el.getAttribute( 'data-sgs-fx-magnet-moving-part' ) || '' ).trim();
+	const selector = ( el.getAttribute( 'data-sgs-fx-magnet-part-selector' ) || '' ).trim();
+	if ( ! part || 'root' === part || ! selector ) {
+		return el;
+	}
+	try {
+		return el.querySelector( selector ) || el;
+	} catch ( error ) {
+		return el;
+	}
+}
+
+/**
  * Read one instance's options off its own attributes.
  *
  * Every value is BOUNDED rather than trusted: a huge radius would make a button
@@ -116,6 +136,7 @@ export function readOptions( el ) {
 			5000
 		),
 		returnEasing: EASING.test( easing ) ? easing : undefined,
+		target: resolveMovingPart( el ),
 	};
 }
 

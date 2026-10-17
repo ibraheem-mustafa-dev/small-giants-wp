@@ -604,7 +604,7 @@ function sgs_shadow_attr( string $base, string $part = 'base' ): string {
  * ⛔ THE HOVER PAIR IS OPT-IN, and the survey is why. Blocks mounting this
  * control carry THREE family shapes, not one: resting-only (`boxShadow` +
  * `boxShadowColour`), resting+hover (`sgs/button`, `sgs/quote`), and HOVER-ONLY
- * (`shadowHover` + `shadowHoverColour` — `sgs/info-box`, `sgs/testimonial`,
+ * (`shadowHover` + `shadowColourHover` — `sgs/info-box`, `sgs/testimonial`,
  * `sgs/card-grid`'s second family). On that third shape an unconditional map
  * derives `shadowHoverHover`. Harmless HERE, because `sgs_shadow_decls()` reads
  * a missing attribute as '' — but the JS twin BINDS every key it is handed, so
@@ -666,12 +666,8 @@ function sgs_shadow_attr_map( string $base, bool $with_hover_shape = false, bool
  *                          [ 'base' => 'boxShadow', 'colour' => 'boxShadowColour',
  *                            'hover' => 'boxShadowHover', 'hover_colour' => '…' ].
  *                          An optional 'lift_prefix' (e.g. 'submit') makes the automatic-lift
- *                          switch and the hover-shadow pick read `submitShadowLiftOnHover` and
- *                          `submitSgsHoverShadow` (sgs_shadow_lift_attr_names()); with it, a
- *                          chosen hover-shadow preset is also drawn here, since no other path
- *                          reads a prefixed attribute. Omitted = the block-root names.
- *                          An optional 'hover_preset' names the hover-shadow pick literally
- *                          (e.g. 'submitSgsHoverShadow'); it wins over the prefix-built name.
+ *                          switch read `submitShadowLiftOnHover` (sgs_shadow_lift_attr_names()).
+ *                          Omitted = the block-root name.
  * @param string $block_name Registered block name (e.g. 'sgs/button'), for the
  *                          `supports.sgs.shadowLift` gate on the automatic lift. '' skips
  *                          that gate (the attribute-level switch still applies).
@@ -717,12 +713,6 @@ function sgs_shadow_decls( array $attributes, array $map, string $block_name = '
 			// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback.
 			$out['hover'][] = 'box-shadow:' . $hover;
 		}
-	} elseif ( '' !== $lift_prefix && sgs_shadow_hover_preset_is_set( $attributes, $lift_prefix ) ) {
-		// A hover-shadow preset picked for a prefixed shadow replaces the automatic lift.
-		$names          = sgs_shadow_lift_attr_names( $lift_prefix );
-		// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback.
-		$preset_key     = isset( $map['hover_preset'] ) ? (string) $map['hover_preset'] : $names['hover'];
-		$out['hover'][] = 'box-shadow:var(--wp--preset--shadow--' . strtolower( (string) $attributes[ $preset_key ] ) . ')';
 	} elseif ( '' !== $base_shape && sgs_shadow_lift_enabled( $attributes, $block_name, $lift_prefix ) ) {
 		// Automatic lift (design H4) — only when NOTHING explicit is wired at all; an explicit
 		// hover shape or colour above always wins and this branch is never reached for it.

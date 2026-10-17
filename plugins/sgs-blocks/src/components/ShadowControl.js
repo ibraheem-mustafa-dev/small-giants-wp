@@ -133,7 +133,7 @@ const warnMissing = ( what ) => () => {
  * @param {Object}   [props.attributes]           Block attributes (install-in-one-call form).
  * @param {Function} [props.setAttributes]        Block setAttributes.
  * @param {Object}   [props.attrNames]            Map from `shadowAttrKeys()`.
- * @param {string}   [props.liftPrefix]           Attribute prefix for the lift switch and hover-shadow pick ('' = the block root; see ShadowLiftControls).
+ * @param {string}   [props.liftPrefix]           Attribute prefix for the lift switch ('' = the block root; see ShadowLiftControls).
  */
 export default function ShadowControl( {
 	label,
@@ -220,9 +220,8 @@ export default function ShadowControl( {
 	const liftValue = declaresLift ? shadowHoverValue( value, colour, custom?.shadowHover ) : '';
 	const liftLabel = describeLift( liftValue );
 
-	// ONE control (Bean's ruling, 2026-09-24): the lift switch and the hover-shadow picker
-	// live in the shared ShadowLiftControls, also mounted by blocks that use WordPress's own
-	// shadow panel. See that file for the precedence rule.
+	// The lift switch lives in the shared ShadowLiftControls, also mounted by blocks that use
+	// WordPress's own shadow panel.
 	const liftToggle = declaresLift ? (
 		<ShadowLiftControls attributes={ attributes } setAttributes={ setAttributes } liftLabel={ liftLabel } attrPrefix={ liftPrefix } />
 	) : null;

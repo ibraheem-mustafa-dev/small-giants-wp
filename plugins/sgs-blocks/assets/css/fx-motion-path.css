@@ -203,15 +203,14 @@
 
 /*
  * Custom fine-tune (Spec 38 §11.2). `data-sgs-fx-motion-path-rest-vh` is a
- * plain data attribute, not an inline style — it is emitted by BOTH the
- * static-block save path (`fx.js`) and the dynamic-block render path
- * (`fx-attributes.php`) exactly like every other `data-sgs-fx-*` grammar
+ * plain data attribute, not an inline style — it is emitted by
+ * the motion renderer (`Sgs_Motion_Fx_Emitter`) like every other `data-sgs-fx-*` grammar
  * value, so this works identically for a static OR dynamic traveller with no
  * extra plumbing. It is a DISCRETE 5vh-stepped table rather than a single
  * `calc()` referencing the attribute's raw value, because CSS's typed
  * `attr()` (which would let a stylesheet read an arbitrary attribute value
  * into a `<length>`) does not have reliable cross-browser support today —
- * see the RangeControl `step={5}` in `fx.js`, which is what keeps this table
+ * see the motion-path rest field's `step` of 5 in the effect schema, which is what keeps this table
  * exhaustive rather than a guess at which values a client could pick.
  */
 [data-sgs-fx~="motion-path"][data-sgs-fx-motion-path-rest="custom"] {

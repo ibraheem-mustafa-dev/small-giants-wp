@@ -3,7 +3,7 @@
  * Shared stretched-link wiring for a block that owns its own destination.
  *
  * The stretched-link mechanism itself is the `blockLink` extension:
- * includes/hover-effects/hover-effects.php::SGS\Blocks\inject_hover_effects
+ * includes/hover-effects/block-link.php::SGS\Blocks\inject_block_link
  * adds `.sgs-has-block-link` to the block root and
  * includes/hover-effects/link-overlay.php::SGS\Blocks\insert_block_link_overlay
  * injects the empty overlay `<a class="sgs-block-link-overlay">` as the root's
@@ -25,7 +25,7 @@
  * $this )` in WP_Block::render(), reached only after
  * `call_user_func( $this->block_type->render_callback, ... )` has run. So a
  * render.php that writes `sgsBlockLink` into `$block->parsed_block['attrs']` is
- * writing it in time for inject_hover_effects() to read it, and the whole
+ * writing it in time for inject_block_link() to read it, and the whole
  * extension pipeline then runs unmodified. Writing it into render.php's own
  * local `$attributes` array would NOT work: that array is a copy and the filter
  * never sees it.
@@ -53,7 +53,7 @@ if ( ! function_exists( 'sgs_stretched_link_apply' ) ) {
 	 *
 	 * Writes `sgsBlockLink` (and, when the operator left the accessible-label
 	 * field empty, `sgsBlockLinkLabel`) onto the live block instance so
-	 * inject_hover_effects() picks them up on the `render_block` pass that
+	 * inject_block_link() picks them up on the `render_block` pass that
 	 * follows this render. An operator-supplied label always wins — the label
 	 * passed here is a sensible default, never an override.
 	 *

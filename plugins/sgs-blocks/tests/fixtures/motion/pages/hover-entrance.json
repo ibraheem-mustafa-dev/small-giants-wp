@@ -211,11 +211,7 @@
 							}
 						}
 					},
-					"effectHover": "none",
-					"shadowLiftOnHover": false,
-					"sgsHoverScalePreset": "none",
-					"sgsHoverShadow": "none",
-					"sgsHoverImageZoom": false
+					"shadowLiftOnHover": false
 				}
 			},
 			{
@@ -224,11 +220,7 @@
 					"heading": "Plain card",
 					"description": "This card has no motion and is the control.",
 					"className": "m29-plain-card",
-					"effectHover": "none",
-					"shadowLiftOnHover": false,
-					"sgsHoverScalePreset": "none",
-					"sgsHoverShadow": "none",
-					"sgsHoverImageZoom": false
+					"shadowLiftOnHover": false
 				}
 			}
 		]

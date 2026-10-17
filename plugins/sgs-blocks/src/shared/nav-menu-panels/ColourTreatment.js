@@ -93,8 +93,7 @@ export function sweepEligible( eligibility, treatment, attributes ) {
  * from `options` by the caller rather than rendered greyed-out — a control a
  * client can find and click to no effect is the failure the rule prevents.
  *
- * Shape copied from `src/components/SurfaceTreatmentPanel.js` — the shipped
- * precedent for a `ToggleGroupControl` choosing a visual treatment with a
+ * A `ToggleGroupControl` choosing a visual treatment with a
  * conditional sub-control beneath it.
  *
  * ⚠ Control-shape authority is Spec 35 Part O's D810 table (2–4 options with a

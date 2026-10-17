@@ -146,7 +146,6 @@
 							}
 						}
 					},
-					"effectHover": "none",
 					"shadowLiftOnHover": false
 				}
 			},
@@ -190,7 +189,6 @@
 							}
 						}
 					},
-					"effectHover": "none",
 					"shadowLiftOnHover": false
 				}
 			},
@@ -295,7 +293,6 @@
 					"heading": "Control card",
 					"description": "No motion at all: it never translates, rotates, paints a layer or ripples.",
 					"className": "m5z-control",
-					"effectHover": "none",
 					"shadowLiftOnHover": false
 				}
 			},

@@ -43,10 +43,6 @@
 					]
 				}
 			],
-			"hideExtensions": [
-				"clickEffects",
-				"parallax"
-			],
 			"elements": {
 				"root": {
 					"label": "Block root",

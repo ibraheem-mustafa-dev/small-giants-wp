@@ -111,11 +111,11 @@ require_once SGS_BLOCKS_PATH . 'includes/media-top-tone.php';
 require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 
 // Shared helper — scoped-<style> per-instance CSS var injection (Spec 32
-// no-inline contract). Required before hover-effects.php / parallax.php /
-// image-controls.php, which all depend on it.
+// no-inline contract). Required before block-link.php / image-controls.php,
+// which both depend on it.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
 
-// Cross-block wrapper extensions (hover effects, child sizing in flex rows).
+// Cross-block wrapper extensions (block link, child sizing in flex rows).
 require_once SGS_BLOCKS_PATH . 'includes/wrapper-extensions.php';
 
 // Dark-background shadow presets: the stylesheet a dark container's children use.
@@ -294,11 +294,6 @@ Llms_Txt::register();
 // Motion model (Spec 38A): every file under includes/motion/, in a fixed folder order.
 require_once SGS_BLOCKS_PATH . 'includes/motion-loader.php';
 
-// Animation attributes — server-side data-attribute injection for scroll reveals.
-require_once SGS_BLOCKS_PATH . 'includes/animation-timing-clamp.php';
-require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
-require_once SGS_BLOCKS_PATH . 'includes/animation-stagger.php';
-
 // Custom CSS per block — server-side scoped <style> output.
 require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 
@@ -324,9 +319,6 @@ Css_Output_Settings::register();
 // is generated from the extension JS by scripts/generate-extension-attributes.js.
 require_once SGS_BLOCKS_PATH . 'includes/extension-attrs-rest-register.php';
 require_once SGS_BLOCKS_PATH . 'includes/media-element-attrs-register.php';
-
-// Parallax scroll — server-side class, custom property, and data-attribute injection.
-require_once SGS_BLOCKS_PATH . 'includes/parallax.php';
 
 // Google Reviews settings and API integration.
 require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
@@ -446,7 +438,7 @@ Sgs_Footer_Rules_Admin::register();
 // Spec 02 per-page budget, and which effects were skipped (and why) —
 // without SSH or WP_DEBUG. Never loaded on the frontend request path.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-motion-diagnostics.php';
-// Serves the measurement above to the editor (`extensions/fx.js` requests this
+// Serves the measurement above to the editor (the motion panels request this
 // route). Must load AFTER the diagnostics class it calls.
 require_once SGS_BLOCKS_PATH . 'includes/rest-motion-budget.php';
 Sgs_Motion_Diagnostics::register();

@@ -470,7 +470,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		orientation,
 		reverseDirection,
 		startPosition,
-		fxDraggable,
+		freeDrag,
 		dividerColour,
 		dividerColourGradient,
 		dividerColourHover,
@@ -663,9 +663,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Adds pointer drag anywhere on the image (GSAP Draggable), layered on top of the always-available keyboard/touch slider. Turning this off still leaves the divider fully operable via the slider handle and arrow keys.',
 							'sgs-blocks'
 						) }
-						checked={ !! fxDraggable }
+						checked={ !! freeDrag }
 						onChange={ ( val ) =>
-							setAttributes( { fxDraggable: val } )
+							setAttributes( { freeDrag: val } )
 						}
 						__nextHasNoMarginBottom
 					/>

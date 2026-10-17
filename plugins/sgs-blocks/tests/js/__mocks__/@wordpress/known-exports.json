@@ -1,6 +1,5 @@
 {
 	"@wordpress/components": [
-		"// fx.js:39-40",
 		"// passes every prebuild gate",
 		"// \u26d4 The `__experimental` prefix is REQUIRED on this WordPress version",
 		"AnglePickerControl",

@@ -29,13 +29,6 @@ import { containerWrapperPreview, backgroundPaintPreview, textPaintPreview, typo
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
-const HOVER_EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
-	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-];
-
 // Options mirror the 7 sgs/testimonial variants (block.json supports.sgs.variants),
 // plus a leading "no default" option so each card can pick its own variant.
 const STYLE_OPTIONS = [
@@ -80,7 +73,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourGradient,
 		borderColourHover,
 		borderColourHoverGradient,
-		effectHover,
 		transitionDuration,
 		transitionEasing,
 		dragToScroll,
@@ -449,24 +441,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 
-				<PanelBody
-					title={ __( 'Hover States', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* Colours live in the top-level SgsColourPanel
-					   — this panel holds only the non-colour hover
-					   behaviour (the transition shape). */ }
-					<SelectControl
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ effectHover }
-						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { effectHover: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					{ (() => {
 						const sliderContrastAgainst =

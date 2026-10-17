@@ -12,9 +12,9 @@ const { createRoot } = require( 'react-dom/client' );
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
 const SUPPORT = {
-	supports: { sgs: { motion: true, enabledExtensions: [ 'hover' ] } },
+	supports: { sgs: { motion: true, enabledExtensions: [ 'blockLink' ] } },
 };
-const PLAIN = { supports: { sgs: { enabledExtensions: [ 'hover' ] } } };
+const PLAIN = { supports: { sgs: { enabledExtensions: [ 'blockLink' ] } } };
 
 // The React, renderer and act of the module registry the rendered tree came from (an isolated extension brings its own).
 let lib = { React, createRoot, act };
@@ -145,40 +145,6 @@ describe( 'the motion BlockEdit filter', () => {
 		expect(
 			node.querySelector( '[data-testid="panel"]' ).textContent
 		).toBe( 'sgs/moving' );
-	} );
-} );
-
-describe( 'the old panels on a block with the motion support', () => {
-	it.each( [
-		[ 'animation.js', 'sgs/info-box' ],
-		[ 'fx.js', 'sgs/button' ],
-		[ 'parallax.js', 'sgs/info-box' ],
-	] )(
-		'%s shows its panel without the support and hides it with it',
-		( file, name ) => {
-			const plain = renderEdit( loadEdit( file, PLAIN ), name );
-			expect( count( plain, 'InspectorControls' ) ).toBeGreaterThan( 0 );
-			const moving = renderEdit( loadEdit( file, SUPPORT ), name );
-			expect( count( moving, 'base' ) ).toBe( 1 );
-			expect( count( moving, 'InspectorControls' ) ).toBe( 0 );
-		}
-	);
-
-	it( 'the Hover panel keeps only the hover shadow, and the Click panel goes', () => {
-		const plain = renderEdit(
-			loadEdit( 'hover-effects/index.js', PLAIN ),
-			'sgs/info-box'
-		);
-		expect( count( plain, 'RangeControl' ) ).toBeGreaterThan( 0 );
-		const plainSelects = count( plain, 'SelectControl' );
-		const moving = renderEdit(
-			loadEdit( 'hover-effects/index.js', SUPPORT ),
-			'sgs/info-box'
-		);
-		expect( count( moving, 'RangeControl' ) ).toBe( 0 );
-		expect( count( moving, 'ToggleControl' ) ).toBe( 0 );
-		expect( count( moving, 'SelectControl' ) ).toBe( 1 );
-		expect( plainSelects ).toBeGreaterThan( 1 );
 	} );
 } );
 

@@ -4,7 +4,7 @@
  *
  * Three sources of flat effect attributes:
  * - the shared effect roster: `fx` names the effect and its parameters are the `fx*` attributes of
- *   `includes/fx-attributes.php::FX_ATTR_MAP`. They are first normalised as the render layer normalises them
+ *   `includes/motion/migrate/legacy-fx-grammar.php::FX_ATTR_MAP`. They are first normalised as the render layer normalises them
  *   (`sgs_fx_normalise`: the intensity preset's values filled in, other effects' parameters cleared), so the layer
  *   holds what renders today. `fxPreset` becomes the layer's intensity (`dramatic` is now `bold`); a parameter the
  *   normalisation cleared rendered nothing and is removed, reported as inert;
@@ -35,6 +35,8 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__ ) . '/interface-sgs-motion-mapper.php';
 require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-fx-value.php';
+require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-declarations.php';
+require_once dirname( __DIR__ ) . '/legacy-fx-grammar.php';
 
 /**
  * Class Sgs_Motion_Map_Fx
@@ -89,26 +91,14 @@ final class Sgs_Motion_Map_Fx implements Sgs_Motion_Mapper_Interface {
 	}
 
 	/**
-	 * A block's declared attribute (from the registered type, else its block.json).
+	 * A block's declared attribute (from the registered type, else the frozen copy of the retired declarations).
 	 *
 	 * @param string $block_name Block name.
 	 * @param string $attr       Attribute name.
 	 * @return array<string,mixed>|null
 	 */
 	private static function declared( string $block_name, string $attr ): ?array {
-		$type = class_exists( '\WP_Block_Type_Registry' ) ? \WP_Block_Type_Registry::get_instance()->get_registered( $block_name ) : null;
-		if ( is_object( $type ) && isset( $type->attributes ) && is_array( $type->attributes ) ) {
-			return is_array( $type->attributes[ $attr ] ?? null ) ? $type->attributes[ $attr ] : null;
-		}
-		$slug = substr( $block_name, (int) strpos( $block_name, '/' ) + 1 );
-		foreach ( array( 'build', 'src' ) as $dir ) {
-			$file = dirname( __DIR__, 4 ) . '/' . $dir . '/blocks/' . $slug . '/block.json';
-			if ( is_readable( $file ) ) {
-				$json = json_decode( (string) file_get_contents( $file ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local plugin file.
-				return is_array( $json['attributes'][ $attr ] ?? null ) ? $json['attributes'][ $attr ] : null;
-			}
-		}
-		return null;
+		return Sgs_Motion_Legacy_Declarations::attribute( $block_name, $attr );
 	}
 
 	/**
@@ -245,7 +235,7 @@ final class Sgs_Motion_Map_Fx implements Sgs_Motion_Mapper_Interface {
 			return $none;
 		}
 		$flat = $attrs;
-		if ( 'fx' === $source['selector'] && function_exists( '\SGS\Blocks\sgs_fx_normalise' ) ) {
+		if ( 'fx' === $source['selector'] ) {
 			$flat = \SGS\Blocks\sgs_fx_normalise( $attrs, $effect );
 		}
 		$names    = self::flat_names();
@@ -435,14 +425,13 @@ final class Sgs_Motion_Map_Fx implements Sgs_Motion_Mapper_Interface {
 	}
 
 	/**
-	 * The flat attribute that wrote each runtime attribute: `includes/fx-attributes.php::FX_ATTR_MAP` inverted (it is
-	 * loaded while the flat attributes exist and is deleted with them), plus `fxPin`, which `sgs/image-sequence` writes
+	 * The flat attribute that wrote each runtime attribute: `legacy-fx-grammar.php::FX_ATTR_MAP` inverted, plus `fxPin`, which `sgs/image-sequence` writes
 	 * itself.
 	 *
 	 * @return array<string,string> Data attribute => flat attribute.
 	 */
 	private static function flat_names(): array {
-		$map = defined( '\SGS\Blocks\FX_ATTR_MAP' ) ? array_flip( \SGS\Blocks\FX_ATTR_MAP ) : array();
+		$map = array_flip( \SGS\Blocks\FX_ATTR_MAP );
 		unset( $map['data-sgs-fx'] );
 		return $map + array( 'data-sgs-fx-pin' => 'fxPin' );
 	}

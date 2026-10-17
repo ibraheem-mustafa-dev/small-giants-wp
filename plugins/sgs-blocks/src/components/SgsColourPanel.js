@@ -13,8 +13,7 @@
  * ⚠ CORRECTED 2026-08-14 — the FIRST fix mounted into WordPress's own
  * `group="color"` InspectorControls slot (the same slot native's own "Color"
  * ToolsPanel occupies), reasoning that this matched the block's kept
- * `supports.color` declaration and an existing precedent
- * (`blocks/extensions/parallax.js:147`). Bean corrected this directly: "we're
+ * `supports.color` declaration. Bean corrected this directly: "we're
  * just supposed to be taking the code and using it for our own custom
  * settings" — i.e. reuse the ROW PATTERN (`DesignTokenPicker` + `states`),
  * do NOT mount into native's own slot. Sharing that slot meant WP's own

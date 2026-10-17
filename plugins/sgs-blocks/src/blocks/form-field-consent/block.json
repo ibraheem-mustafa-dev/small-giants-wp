@@ -23,12 +23,6 @@
 		"html": false,
 		"anchor": false,
 		"sgs": {
-			"hideExtensions": [
-				"animation",
-				"clickEffects",
-				"fx",
-				"parallax"
-			],
 			"elements": {
 				"consent": {
 					"label": "Consent checkbox + text",

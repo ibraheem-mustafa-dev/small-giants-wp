@@ -1,7 +1,6 @@
 /**
  * The effects the Effects panel offers for one block and target (Spec 38A §5.3, FR-38A-9): the `effects` list's
- * schema slugs, kept when the effect's generated meta row lists the Effects panel (`panels`, never `in_picker`, which
- * marks only the old `fx.js` picker), the block qualifies for it (`generated-fx-qualifying-blocks.json`, derived from
+ * schema slugs, kept when the effect's generated meta row lists the Effects panel (`panels`, never `in_picker`), the block qualifies for it (`generated-fx-qualifying-blocks.json`, derived from
  * `fx_effects.scope` and `requires`), its target level (`target_level`) fits the target, and the target is of a part
  * kind the effect needs (`layers/refusal-match.js::kindsFit`: text effects on text parts, SVG effects on SVG parts). Site-level rows
  * (`scroll-smoother`, `page-transitions`) list no panel and are never offered.

@@ -4,9 +4,9 @@
  * per-instance CSS custom-property VALUES to a block's root element without
  * writing a `style="…"` attribute (Spec 32 no-inline contract, FR-32-11).
  *
- * Used by hover-effects.php, parallax.php, and image-controls.php — the
- * three injectors that, before this fix, wrote `--sgs-*` custom properties
- * straight onto the root tag's `style` attribute. That path is the ONLY
+ * Used by child-sizing.php and image-controls.php, which attach `--sgs-*`
+ * custom properties through a scoped rule, never the root tag's `style`
+ * attribute. That path is the ONLY
  * sanctioned no-inline mechanism already proven live by every migrated
  * block's render.php (e.g. quote, info-box): build a scoped `.{uid}{…}`
  * rule and append it as the block's own `<style>` tag. On the front end the

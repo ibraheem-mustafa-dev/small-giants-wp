@@ -24,11 +24,6 @@
 		"sgs": {
 			"motionItems": "option",
 			"motion": true,
-			"hideExtensions": [
-				"animation",
-				"clickEffects",
-				"parallax"
-			],
 			"elements": {
 				"option": {
 					"label": "Each option",

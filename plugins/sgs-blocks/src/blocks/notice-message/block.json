@@ -28,10 +28,6 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"hideExtensions": [
-				"animation",
-				"fx"
-			],
 			"elements": {
 				"message": {
 					"label": "Message",

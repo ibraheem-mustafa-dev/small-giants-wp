@@ -8,8 +8,8 @@
 			"flag": "block sets supports.sgs.<flag> truthy",
 			"named": "only the blocks named in `blocks`; none of them is an sgs/* block, so no rows are seeded"
 		},
-		"fields": "type, default (omitted = per-block default from the block's own hoverDefaults), enum, tier_shape, is_responsive, role (an existing roles.role_name), css_property/css_element/css_state/css_tier (omitted = NULL: no single CSS property to route, or a discovered enum), requires (companion attributes a calibration marker must also carry before the setting paints anything)",
-		"css_slots": "db-consistency check_routing allows one attribute per (css_property, css_element, css_state, css_tier) on a block, so a CSS slot is declared once. Controls that compose into one declaration (hover lift, scale and preset all make one transform) or that paint a slot a block can already own (width, hover shadow, image zoom) keep css_property NULL.",
+		"fields": "type, default (omitted = no default), enum, tier_shape, is_responsive, role (an existing roles.role_name), css_property/css_element/css_state/css_tier (omitted = NULL: no single CSS property to route, or a discovered enum), requires (companion attributes a calibration marker must also carry before the setting paints anything)",
+		"css_slots": "db-consistency check_routing allows one attribute per (css_property, css_element, css_state, css_tier) on a block, so a CSS slot is declared once. Controls that paint a slot a block can already own (width) keep css_property NULL.",
 		"css_element": "wrapper = the block root; image = the img/video inside it (assets/css/extensions.css .sgs-has-image-controls rules)"
 	},
 	"extensions": [
@@ -20,49 +20,6 @@
 			"attributes": {
 				"sgsChildSizing": { "type": "object", "default": {}, "enum": [ "fit", "fill", "fixed" ], "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_element": "wrapper" },
 				"sgsChildWidth": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "requires": { "sgsChildSizing": { "desktop": "fixed", "tablet": "fixed", "mobile": "fixed" } } }
-			}
-		},
-		{
-			"id": "animation",
-			"file": "animation.js",
-			"rule": { "mode": "denylist", "hideSlug": "animation", "coreBlocks": [ "core/group", "core/columns", "core/cover", "core/image" ] },
-			"attributes": {
-				"sgsAnimation": { "type": "string", "default": "none", "enum": [ "none", "fade-up", "fade-down", "fade-in", "fade-left", "fade-right", "slide-up", "slide-down", "slide-left", "slide-right", "scale-in", "scale-out", "rotate-in", "flip-in", "blur-in", "bounce-in", "reveal-up" ], "role": "motion" },
-				"sgsAnimationDelay": { "type": "string", "default": "0", "role": "motion" },
-				"sgsAnimationDuration": { "type": "string", "default": "medium", "role": "motion" },
-				"sgsAnimationEasing": { "type": "string", "default": "default", "role": "motion" },
-				"sgsAnimationDistance": { "type": "string", "default": "", "role": "motion" },
-				"sgsAnimationStart": { "type": "string", "default": "", "enum": [ "", "load" ], "role": "motion", "requires": { "sgsAnimation": "fade-up" } },
-				"sgsAnimationTrigger": { "type": "string", "default": "", "role": "motion" },
-				"sgsAnimationStagger": { "type": "string", "default": "", "role": "motion" },
-				"sgsAnimationStaggerChildren": { "type": "string", "default": "", "role": "motion" },
-				"sgsAnimationStaggerMax": { "type": "string", "default": "", "role": "motion" }
-			}
-		},
-		{
-			"id": "hover",
-			"file": "hover-effects/attributes.js",
-			"rule": { "mode": "allowlist", "enabledSlug": "hover", "requiresClassName": true },
-			"attributes": {
-				"sgsHoverScale": { "type": "number", "default": 0, "role": "visual" },
-				"sgsHoverLift": { "type": "number", "role": "visual", "css_property": "transform", "css_element": "wrapper", "css_state": "hover" },
-				"sgsHoverScalePreset": { "type": "string", "enum": [ "", "1.02", "1.05", "1.1" ], "role": "visual" },
-				"sgsHoverShadow": { "type": "string", "role": "visual"  },
-				"sgsHoverShadowCustom": { "type": "string", "default": "", "role": "visual" },
-				"sgsHoverDuration": { "type": "string", "default": "medium", "enum": [ "instant", "fast", "medium", "slow", "extra-slow" ], "role": "motion" },
-				"sgsHoverDurationMs": { "type": "number", "default": 0, "role": "motion" },
-				"sgsHoverEasing": { "type": "string", "default": "default", "enum": [ "default", "ease-out", "ease-in", "spring", "linear", "custom" ], "role": "motion" },
-				"sgsHoverEasingCustom": { "type": "string", "default": "", "role": "motion" },
-				"sgsHoverImageZoom": { "type": "boolean", "role": "visual" },
-				"sgsHoverZoom": { "type": "number", "role": "visual"  },
-				"sgsHoverZoomDuration": { "type": "number", "role": "motion" },
-				"sgsHoverZoomStyle": { "type": "string", "role": "visual" },
-				"sgsStaggerDelay": { "type": "number", "default": 0, "role": "motion" },
-				"sgsHoverGrayscale": { "type": "boolean", "default": false, "role": "visual" },
-				"sgsHoverBorderAccent": { "type": "boolean", "default": false, "role": "visual" },
-				"sgsHoverTilt3D": { "type": "boolean", "default": false, "role": "visual" },
-				"sgsHoverOpacity": { "type": "number", "default": 0, "role": "visual", "css_property": "opacity", "css_element": "wrapper", "css_state": "hover" },
-				"sgsHoverIndent": { "type": "string", "default": "", "role": "layout", "css_property": "padding-left", "css_element": "wrapper", "css_state": "hover" }
 			}
 		},
 		{
@@ -93,16 +50,6 @@
 			}
 		},
 		{
-			"id": "clickEffects",
-			"file": "hover-effects/attributes.js",
-			"rule": { "mode": "universal", "requiresClassName": true, "hideSlug": "clickEffects" },
-			"attributes": {
-				"sgsClickEffect": { "type": "string", "default": "none", "role": "behaviour" },
-				"sgsClickRippleColour": { "type": "string", "default": "", "role": "behaviour" },
-				"sgsClickRippleDuration": { "type": "number", "default": 600, "role": "behaviour" }
-			}
-		},
-		{
 			"id": "conditionalVisibility",
 			"file": "conditional-visibility.js",
 			"rule": { "mode": "universal", "requiresClassName": true, "hideSlug": null },
@@ -126,15 +73,6 @@
 				"sgsCustomCss": { "type": "string", "default": "", "role": "styling" },
 				"sgsCustomCssId": { "type": "string", "default": "", "role": "behaviour" },
 				"sgsCustomCssNote": { "type": "string", "default": "", "role": "behaviour" }
-			}
-		},
-		{
-			"id": "parallax",
-			"file": "parallax.js",
-			"rule": { "mode": "universal", "requiresClassName": true, "hideSlug": "parallax" },
-			"attributes": {
-				"sgsParallax": { "type": "string", "default": "none", "role": "motion" },
-				"sgsParallaxStrength": { "type": "number", "default": 30, "role": "motion" }
 			}
 		},
 		{

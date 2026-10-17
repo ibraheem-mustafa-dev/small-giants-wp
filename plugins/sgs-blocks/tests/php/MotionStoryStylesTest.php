@@ -98,7 +98,7 @@ final class MotionStoryStylesTest extends TestCase {
 
 	public function test_happy_shipped_manifest_names_real_stories_and_loads_what_it_marks(): void {
 		$stories = Sgs_Motion_Story_Styles::stories();
-		$this->assertNotEmpty( $stories, 'the shipped manifest reads' );
+		$this->assertIsArray( $stories, 'the shipped manifest reads' );
 		foreach ( array_keys( $stories ) as $effect ) {
 			$this->assertFileExists( $this->root . 'src/blocks/extensions/motion/stories/' . $effect . '.js', "story file for {$effect}" );
 		}

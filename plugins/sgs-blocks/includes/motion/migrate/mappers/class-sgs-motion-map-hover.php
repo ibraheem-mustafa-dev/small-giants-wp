@@ -2,9 +2,8 @@
 /**
  * The `hover` migration mapper (Spec 38A §13.1, §13.2, FR-38A-31): the old hover attributes to `hover.state`.
  *
- * Sources (read from `src/blocks/extensions/hover-effects/attributes.js`, `includes/hover-effects/vars.php` and
- * `assets/css/extensions.css`): the extension attributes any block with the Hover panel carries, and a few block-owned
- * attributes. A stored value is mapped only when the new model expresses it exactly; anything else is returned as a
+ * Sources: the extension attributes any block with the Hover panel carried, and a few block-owned attributes (their
+ * declarations are frozen in `data/legacy-declarations.json`). A stored value is mapped only when the new model expresses it exactly; anything else is returned as a
  * `reported` row and the attribute stays on the block (`consumed` false). Nothing is guessed or coerced silently.
  *
  * - `sgsHoverScale` is a percent (the renderer divides by 100); `sgsHoverScalePreset` is read only when it is 0;
@@ -42,6 +41,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__ ) . '/interface-sgs-motion-mapper.php';
 require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-hover-value.php';
+require_once dirname( __DIR__ ) . '/class-sgs-motion-legacy-declarations.php';
 
 /**
  * Class Sgs_Motion_Map_Hover
@@ -478,15 +478,22 @@ final class Sgs_Motion_Map_Hover implements Sgs_Motion_Mapper_Interface {
 		if ( ! $type ) {
 			return $none;
 		}
-		$defaults = array();
+		$defaults = Sgs_Motion_Legacy_Declarations::defaults( $block_name );
 		foreach ( is_array( $type->attributes ) ? $type->attributes : array() as $name => $spec ) {
 			if ( is_array( $spec ) && array_key_exists( 'default', $spec ) ) {
 				$defaults[ $name ] = $spec['default'];
 			}
 		}
+		$sgs = isset( $type->supports['sgs'] ) && is_array( $type->supports['sgs'] ) ? $type->supports['sgs'] : array();
+		if ( ! isset( $sgs['hoverDefaults'] ) ) {
+			$frozen = Sgs_Motion_Legacy_Declarations::hover_defaults( $block_name );
+			if ( array() !== $frozen ) {
+				$sgs['hoverDefaults'] = $frozen;
+			}
+		}
 		return array(
 			'attributes' => $defaults,
-			'sgs'        => isset( $type->supports['sgs'] ) && is_array( $type->supports['sgs'] ) ? $type->supports['sgs'] : array(),
+			'sgs'        => $sgs,
 		);
 	}
 }

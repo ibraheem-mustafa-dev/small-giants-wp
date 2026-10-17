@@ -3,22 +3,16 @@
  * REST: per-page motion budget — `GET /wp-json/sgs/v1/motion-budget?post_id=<id>`.
  *
  * WHY THIS EXISTS
- * `src/blocks/extensions/fx.js:1015-1038` documented this exact interface and
- * then deliberately COMPUTED NOTHING ITSELF, on the stated grounds that a
- * second independently-derived cost would give the operator two numbers that
- * can silently disagree. Nothing ever registered the route, so every editor
- * load 404'd. The client handles that gracefully (it treats any error as "no
- * data yet" and renders nothing), so this was console noise rather than a
- * broken feature — but a permanent 404 on every page load is still noise that
- * hides real errors, and the measurement it wanted already existed.
+ * The block editor's motion panels (`src/blocks/extensions/motion/effect-helpers/use-motion-budget.js`) show the
+ * page's motion cost but COMPUTE NOTHING THEMSELVES: a second independently-derived cost would give the operator two
+ * numbers that can silently disagree. This route serves the measurement `Sgs_Motion_Diagnostics` already performs.
  *
  * WHAT IT RETURNS — the measurement `Sgs_Motion_Diagnostics` already performs
  * for its admin page, not a new one. That class fetches the page's own live
- * URL and reads the bytes a real visitor receives. Its docblock explicitly
- * names `fx.js` as the consumer that "should read rather than inventing its
- * own threshold", so this is the sanctioned join, not a new coupling.
+ * URL and reads the bytes a real visitor receives. The editor reads it
+ * rather than inventing its own threshold, so this is the sanctioned join, not a new coupling.
  *
- * Response shape (matches the fx.js contract verbatim):
+ * Response shape (the contract `use-motion-budget.js` reads):
  *   200 { totalKb, budgetKb, overBudget, effects: [ { effect, kb } ] }
  *
  * ⚠ `effects[].kb` figures do NOT sum to `totalKb`, by design. Only a module
@@ -30,7 +24,7 @@
  * ⚠ MEASURABILITY. A post with no live URL (draft, auto-draft, pending) cannot
  * be measured — there is nothing to fetch. That returns `null` fields rather
  * than zeros: a 0 would read as "this page is free", which is a different and
- * false claim. `fx.js` already renders nothing when `totalKb` is not a number.
+ * false claim. The editor renders nothing when `totalKb` is not a number.
  *
  * SECURITY. Authenticated + per-post capability checked (`edit_post`), so this
  * never becomes an unauthenticated way to make the site fetch its own pages.
@@ -148,7 +142,7 @@ function sgs_motion_budget_response( $request ) {
 /**
  * The "no data" payload.
  *
- * `totalKb` is null, never 0 — `fx.js` renders cost information only when it
+ * `totalKb` is null, never 0 — the editor renders cost information only when it
  * sees a number, and a 0 would assert "this page costs nothing", which is a
  * claim this endpoint has not measured.
  *

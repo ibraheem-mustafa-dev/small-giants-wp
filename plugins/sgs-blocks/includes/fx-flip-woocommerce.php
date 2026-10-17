@@ -18,8 +18,7 @@
  * ordinary `[data-sgs-fx="flip"]` boot selector.
  *
  * Runs at `render_block_woocommerce/product-collection` priority 10 — the
- * same priority `includes/fx-attributes.php` uses for the equivalent dynamic-
- * block injection, and, load-bearingly, BEFORE the registry's p99 sniff.
+ * same priority the motion layer renderer's neighbours use, and, load-bearingly, BEFORE the registry's p99 sniff.
  *
  * @package SGS\Blocks
  */

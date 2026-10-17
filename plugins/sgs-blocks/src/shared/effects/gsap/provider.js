@@ -217,9 +217,8 @@ function currentTier() {
  * Is this effect switched off on this element at the CURRENT device tier?
  *
  * Two switches are read, per tier (tablet, mobile):
- *   · `data-sgs-fx-disable-<tier>`: the flat `fxDisableTablet` /
- *     `fxDisableMobile` attributes (Step 15). Present = every effect on the
- *     element is off at that tier.
+ *   · `data-sgs-fx-disable-<tier>`: written from the layer's per-device off
+ *     setting. Present = every effect on the element is off at that tier.
  *   · `data-sgs-fx-off-<tier>`: a motion layer's `off` list (Spec 38A),
  *     written by `Sgs_Motion_Fx_Emitter` as space-separated effect slugs (the
  *     `data-sgs-fx` vocabulary). Only the listed effects are off at that

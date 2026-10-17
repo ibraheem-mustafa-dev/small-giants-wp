@@ -220,10 +220,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		mobileFrameCount,
 		mobileFramePad,
 		mobileFrameExt,
-		fxStart,
-		fxEnd,
-		fxScrub,
-		fxPin,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -531,76 +527,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Scroll effect', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Pin while scrubbing', 'sgs-blocks' ) }
-						help={
-							fxPin
-								? __(
-										'The sequence holds still on screen the moment it comes fully into view, and scrolling plays through the frames while it stays put — it is released once the frames finish.',
-										'sgs-blocks'
-								  )
-								: __(
-										'Off: the sequence scrolls normally and only plays while it is fully on screen. Turn on to hold it in place while it plays, instead of it also scrolling past.',
-										'sgs-blocks'
-								  )
-						}
-						checked={ Boolean( fxPin ) }
-						onChange={ ( value ) =>
-							setAttributes( { fxPin: value } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Start position', 'sgs-blocks' ) }
-						help={ __(
-							'Advanced — overrides the automatic "fully visible" start. Viewport-relative, e.g. "top 80%". Leave blank for the default.',
-							'sgs-blocks'
-						) }
-						value={ fxStart }
-						onChange={ ( value ) =>
-							setAttributes( { fxStart: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'End position', 'sgs-blocks' ) }
-						help={ __(
-							'Advanced — overrides the automatic "fully visible" end. Viewport-relative, e.g. "bottom 20%", or a distance like "+=150%". Leave blank for the default.',
-							'sgs-blocks'
-						) }
-						value={ fxEnd }
-						onChange={ ( value ) =>
-							setAttributes( { fxEnd: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __(
-							'Scrub smoothing (seconds)',
-							'sgs-blocks'
-						) }
-						help={ __(
-							'0 ties frames directly to the scrollbar with no lag.',
-							'sgs-blocks'
-						) }
-						value={ fxScrub }
-						onChange={ ( value ) =>
-							setAttributes( { fxScrub: value } )
-						}
-						min={ 0 }
-						max={ 3 }
-						step={ 0.1 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 				</PanelBody>
 			</InspectorControls>
 

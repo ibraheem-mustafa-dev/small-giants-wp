@@ -22,11 +22,6 @@
         "html": false,
         "anchor": false,
         "sgs": {
-            "hideExtensions": [
-                "animation",
-                "clickEffects",
-                "parallax"
-            ],
             "elements": {
                 "label": {
                     "label": "Group label",

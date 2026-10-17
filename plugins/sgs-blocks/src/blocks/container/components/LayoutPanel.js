@@ -501,7 +501,7 @@ export function LayoutPanel( {
  *
  * `name` is an OPTIONAL prop: the block name (or a settings object), passed
  * through to `isExtensionEnabled()` exactly as the HOC-injected universal
- * extensions already do (`hover-effects.js`). It is deliberately NOT a new
+ * extensions already do (the block-link extension). It is deliberately NOT a new
  * required prop — every one of today's 5 call sites (`container`,
  * `trust-bar`, `hero`, `site-footer`, `site-header`, all in
  * `src/blocks/*\/edit.js`, plus the `kind='section'` aggregator branch further

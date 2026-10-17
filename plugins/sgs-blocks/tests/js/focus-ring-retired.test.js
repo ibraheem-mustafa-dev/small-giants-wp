@@ -15,18 +15,17 @@ describe( 'sgsFocusRing is retired', () => {
 		expect( JSON.stringify( roster ) ).not.toContain( 'sgsFocusRing' );
 	} );
 
-	it( 'has no control, attribute or default in the hover-effects extension', () => {
+	it( 'has no control, attribute or default in the block-link extension', () => {
 		const files = [
 			'src/blocks/extensions/hover-effects/attributes.js',
 			'src/blocks/extensions/hover-effects/index.js',
-			'src/blocks/extensions/hover-effects/resolve.js',
-			'src/blocks/extensions/hover-effects/panels/HoverPanel.js',
+			'src/blocks/extensions/hover-effects/panels/BlockLinkPanel.js',
 		];
 		files.forEach( ( file ) => {
 			const src = read( file );
 			expect( { file, hit: /sgsFocusRing|focusRing/.test( src ) } ).toEqual( { file, hit: false } );
 		} );
-		expect( read( 'src/blocks/extensions/hover-effects/panels/HoverPanel.js' ) ).not.toContain( 'focus ring' );
+		expect( read( 'src/blocks/extensions/hover-effects/panels/BlockLinkPanel.js' ) ).not.toContain( 'focus ring' );
 	} );
 
 	it( 'is not declared as a hoverDefaults entry by any block', () => {
@@ -43,9 +42,8 @@ describe( 'sgsFocusRing is retired', () => {
 		expect( offenders ).toEqual( [] );
 	} );
 
-	it( 'leaves no sgs-has-focus-ring class in the stylesheet or the PHP class builder', () => {
+	it( 'leaves no sgs-has-focus-ring class in the stylesheet or the block-link PHP', () => {
 		expect( read( 'assets/css/extensions.css' ) ).not.toContain( 'sgs-has-focus-ring' );
-		expect( read( 'includes/hover-effects/classes.php' ) ).not.toContain( 'sgs-has-focus-ring' );
-		expect( read( 'includes/hover-effects/hover-effects.php' ) ).not.toContain( 'sgsFocusRing' );
+		expect( read( 'includes/hover-effects/block-link.php' ) ).not.toContain( 'sgsFocusRing' );
 	} );
 } );

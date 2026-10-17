@@ -45,7 +45,7 @@ namespace {
 
 	// The shipped hooks, registered exactly as the plugin does: the layer renderer and every per-effect filter.
 	\SGS\Blocks\Motion\Sgs_Motion_Renderer::register();
-	foreach ( array( 'fx-token-match', 'fx-attributes', 'fx-cursor-field' ) as $file ) {
+	foreach ( array( 'fx-token-match', 'fx-root-offset', 'fx-cursor-field' ) as $file ) {
 		require_once dirname( __DIR__, 2 ) . "/includes/$file.php";
 	}
 
@@ -93,10 +93,6 @@ namespace {
 	$seen  = 0;
 	foreach ( glob( dirname( __DIR__, 2 ) . '/includes/fx-*.php' ) as $file ) {
 		$src = (string) file_get_contents( $file );
-		// fx-attributes.php is the injector for the flat `fx` attribute and must run first (priority 10).
-		if ( 'fx-attributes.php' === basename( $file ) ) {
-			continue;
-		}
 		foreach ( preg_split( '/\R/', $src ) as $line ) {
 			if ( false === strpos( $line, "add_filter( 'render_block'" ) || '*' === substr( ltrim( $line ), 0, 1 ) ) {
 				continue;

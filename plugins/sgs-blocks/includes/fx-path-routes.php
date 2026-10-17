@@ -22,15 +22,14 @@
  * selector.
  *
  * ONE FILTER COVERS BOTH BLOCK KINDS. `render_block` runs for static blocks
- * (whose `data-sgs-fx-path` was baked in at save time by `fx.js`) and dynamic
- * blocks (whose attributes `fx-attributes.php` injected at p10) alike, and by
+ * (whose markup already carries `data-sgs-fx-path`) and dynamic
+ * blocks (whose layer the motion renderer stamped at p20) alike, and by
  * this point both look identical — a rendered root element carrying the
  * attribute. Expanding here rather than in each path is what stops the effect
  * working on some blocks and silently not on others.
  *
- * PRIORITY 22 IS LOAD-BEARING. It must run AFTER `fx-attributes.php` (p10)
- * injects `data-sgs-fx-path` onto dynamic blocks and AFTER the motion layer
- * renderer (p20) writes it for a layer — expanding first would find nothing
+ * PRIORITY 22 IS LOAD-BEARING. It must run AFTER the motion layer
+ * renderer (p20) writes `data-sgs-fx-path` for a layer — expanding first would find nothing
  * to expand — and BEFORE `SGS_Motion_Registry`'s p99 sniff, which is
  * what decides whether the motion-path module is enqueued at all.
  *
@@ -52,8 +51,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Curated route presets, read from the shared JSON both sides use.
  *
- * Shared with the editor's thumbnail picker (`src/blocks/extensions/fx.js`
- * imports the same file) rather than duplicated, because a second copy of a
+ * Kept in one file rather than duplicated, because a second copy of a
  * motion list is exactly the drift class Spec 38 Task 3 exists to close.
  *
  * @return array<string, array{label:string, description:string, d:string}>
@@ -266,8 +264,7 @@ function sgs_fx_resolve_route( string $route, int $attachment_id ): array {
 /**
  * Expand a chosen route into the hidden `<svg>` the runtime resolves against.
  *
- * Takes only `$block_content` — deliberately. Unlike `fx-attributes.php`, which
- * reads parsed ATTRIBUTES to decide what to inject, this filter works purely
+ * Takes only `$block_content` — deliberately. This filter works purely
  * from the rendered markup, and that is what makes one filter cover both block
  * kinds: by this point a static block's baked-in attribute and a dynamic
  * block's p10-injected one are the same string in the same place.

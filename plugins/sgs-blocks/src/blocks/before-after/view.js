@@ -17,7 +17,7 @@
  *      keyboard control for free. This layer has NO dependency on GSAP and
  *      runs even if the Draggable enhancement below never loads.
  *
- *   2. GSAP Draggable (opt-in via `fxDraggable`, Spec 38 FR-38-13 roster).
+ *   2. GSAP Draggable (opt-in via `freeDrag`).
  *      Lets a visitor drag anywhere on the image area, not just the thin
  *      handle — GSAP owns the pointer/touch gesture tracking (bounded 1D
  *      drag, no momentum: a comparison slider must not fling past where the
@@ -103,7 +103,7 @@ function writePosition( root, value ) {
 
 /**
  * Wire the always-present native range input. Runs for EVERY instance,
- * regardless of `fxDraggable` — this is the layer that must never depend on
+ * regardless of `freeDrag` — this is the layer that must never depend on
  * GSAP loading successfully.
  *
  * @param {HTMLElement} root Block root element.
@@ -408,7 +408,7 @@ function bootBeforeAfter() {
 			bootVideoSyncLayer( root );
 		}
 
-		if ( '0' === root.dataset.fxDraggable || isEditorSurface() ) {
+		if ( '0' === root.dataset.freeDrag || isEditorSurface() ) {
 			return;
 		}
 

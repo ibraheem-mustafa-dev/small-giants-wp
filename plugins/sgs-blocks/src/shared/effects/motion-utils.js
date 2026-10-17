@@ -99,7 +99,7 @@ export function supportsFinePointer() {
  * question without touching the frozen file. Keep both copies identical if
  * either changes — there is no gate that cross-checks them, the same
  * hand-maintained-duplicate risk this codebase already carries for a few
- * effect lists in `fx.js`.
+ * effect lists.
  *
  * @param {HTMLElement} el Element to test.
  * @return {boolean} True when `el` itself natively scrolls horizontally.

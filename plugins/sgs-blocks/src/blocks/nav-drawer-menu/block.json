@@ -85,8 +85,6 @@
 			"collection": true,
 			"headerEssential": true,
 			"hideExtensions": [
-				"clickEffects",
-				"parallax",
 				"spacing"
 			],
 			"elements": {
