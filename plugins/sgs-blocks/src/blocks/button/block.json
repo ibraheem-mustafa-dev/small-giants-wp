@@ -421,6 +421,12 @@
 			"type": "number",
 			"default": 0
 		},
+		"focusStyle": {
+			"type": "string",
+			"enum": [ "", "duotone", "signature" ],
+			"default": "",
+			"description": "Keyboard focus look (focus system, theme focus.css). '' uses the site's focus style; 'duotone' adds sgs-focus--duotone (the dark-and-light ring, for photos or busy grounds); 'signature' adds sgs-focus--signature (a slowly turning border in the site's colours that stops turning under reduced motion). Signature is refused when a gradient border or a motion effect already owns the button's ::before (helpers-button-focus.php)."
+		},
 		"transitionEasing": {
 			"type": "string",
 			"default": "ease",

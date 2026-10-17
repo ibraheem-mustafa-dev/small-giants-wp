@@ -40,6 +40,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-hover-lift.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-inner-kses.php';
 
 // ---------------------------------------------------------------------------
 // 1. Extract and sanitise attributes.
@@ -746,6 +748,19 @@ if ( '' !== $preset_bg_slug ) {
 	$btn_classes[] = 'has-' . $preset_bg_slug . '-background-color';
 }
 
+// Keyboard focus style (helpers-button-focus.php): the focus-system variant class, and for Signature the host's
+// border width, which focus.css uses to place the turning band outside the ring.
+$sgs_focus_class = sgs_button_focus_class( $attributes );
+if ( '' !== $sgs_focus_class ) {
+	$btn_classes[] = $sgs_focus_class;
+}
+$sgs_focus_host_border = 'sgs-focus--signature' === $sgs_focus_class
+	? sgs_button_focus_host_border( array( $border_width_top, $border_width_rgt, $border_width_bot, $border_width_lft ), $border_style_resolved, $inherit_style )
+	: '';
+if ( '' !== $sgs_focus_host_border ) {
+	$scoped_css_parts[] = ".{$uid}.sgs-button{--sgs-focus-host-border:{$sgs_focus_host_border};}";
+}
+
 // Base margin is no longer built as an inline wrapper style — Box-object
 // interface contract (b): it is WP-native style.spacing.margin, emitted
 // scoped via wp_style_engine_get_styles() in step 4 above, never inline.
@@ -1134,63 +1149,8 @@ if ( $scoped_css_parts ) {
 	echo '<style>' . wp_strip_all_tags( $raw_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>
 }
 
-// Allowed tags for icon SVG + label output.
-// The SVG portion below is a second, independent local allowlist — same deliberate
-// narrowing rationale as $allowed_svg above (static Lucide icons only), not a
-// duplicate to be merged away. Keep both in sync if the icon set's needs change.
-$allowed_inner = array_merge(
-	wp_kses_allowed_html( 'post' ),
-	array(
-		'svg'      => array(
-			'xmlns'           => true,
-			'width'           => true,
-			'height'          => true,
-			'viewbox'         => true,
-			'fill'            => true,
-			'stroke'          => true,
-			'stroke-width'    => true,
-			'stroke-linecap'  => true,
-			'stroke-linejoin' => true,
-			'class'           => true,
-			'aria-hidden'     => true,
-			'focusable'       => true,
-			'role'            => true,
-		),
-		'path'     => array(
-			'd'      => true,
-			'fill'   => true,
-			'stroke' => true,
-		),
-		'circle'   => array(
-			'cx'     => true,
-			'cy'     => true,
-			'r'      => true,
-			'fill'   => true,
-			'stroke' => true,
-		),
-		'line'     => array(
-			'x1' => true,
-			'y1' => true,
-			'x2' => true,
-			'y2' => true,
-		),
-		'polyline' => array( 'points' => true ),
-		'polygon'  => array( 'points' => true ),
-		'rect'     => array(
-			'x'      => true,
-			'y'      => true,
-			'width'  => true,
-			'height' => true,
-			'rx'     => true,
-			'ry'     => true,
-		),
-		'title'    => array(),
-		'span'     => array(
-			'class' => true,
-			'style' => true,
-		),
-	)
-);
+// Allowed tags for the icon SVG, label and note (helpers-button-inner-kses.php).
+$allowed_inner = sgs_button_inner_allowed_html();
 
 // Build the element.
 if ( 'button' === $tag_name ) {

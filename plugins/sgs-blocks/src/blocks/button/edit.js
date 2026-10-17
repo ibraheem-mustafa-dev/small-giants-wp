@@ -22,7 +22,7 @@ import {
 	ToolbarButton,
 } from '@wordpress/components';
 import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl } from '../../components';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { usePreviewTier, hoverLiftPreviewRule } from '../../utils';
 import { buttonPreviewStyle, labelCollapsedAt, LABEL_CLIP_STYLE } from './preview-style';
@@ -31,6 +31,8 @@ import { SiteInfoLabelToggle, IconShapeSizeItem } from './ButtonExtraControls';
 import { iconCirclePreviewStyle } from './icon-circle-preview';
 import { siteInfoLabelText } from './site-info-label';
 import { LINK_SOURCE_OPTIONS, FIXED_DESTINATION_LINK_SOURCES, LINK_SOURCE_HELP } from '../../shared/link-source-options';
+import { CUSTOM_WIDTH_UNITS, MIN_HEIGHT_UNITS, LINE_HEIGHT_UNITS, composeUnit, parseUnit } from './units';
+import { focusStyleClass, focusHostBorder, signatureRefusal } from './focus-style';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -69,58 +71,6 @@ const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'Overline', 'sgs-blocks' ), value: 'overline' },
 	{ label: __( 'Strike-through', 'sgs-blocks' ), value: 'line-through' },
 ];
-
-// UnitControl unit sets.
-const CUSTOM_WIDTH_UNITS = [
-	{ value: 'px', label: 'px', default: 200 },
-	{ value: '%', label: '%', default: 50 },
-];
-
-const MIN_HEIGHT_UNITS = [
-	{ value: 'px', label: 'px', default: 48 },
-	{ value: 'em', label: 'em', default: 3 },
-	{ value: 'rem', label: 'rem', default: 3 },
-];
-
-// '' = unitless (matches TypographyControls.js's LINE_HEIGHT_UNITS + the PHP
-// helper's empty-string → unitless semantic). Re-declared locally because this
-// block's lineHeight is now a tier OBJECT and can no longer go through
-// TypographyControls' own (flat-scalar) line-height control.
-const LINE_HEIGHT_UNITS = [
-	{ value: '', label: '—', default: 1.5 },
-	{ value: 'em', label: 'em', default: 1.5 },
-	{ value: 'rem', label: 'rem', default: 1.5 },
-	{ value: 'px', label: 'px', default: 24 },
-];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function composeUnit( num, unit ) {
-	if ( num === undefined || num === null || num === '' ) {
-		return '';
-	}
-	return `${ num }${ unit || '' }`;
-}
-
-function parseUnit( raw, currentUnit ) {
-	if ( ! raw && raw !== 0 ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const str = String( raw ).trim();
-	if ( '' === str ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
-	if ( match ) {
-		const num = parseFloat( match[ 1 ] );
-		const unit = match[ 2 ] || currentUnit || 'px';
-		return { num: isNaN( num ) ? undefined : num, unit };
-	}
-	return { num: undefined, unit: currentUnit || 'px' };
-}
-
 
 // widthType / customWidth / customWidthUnit are now TIER OBJECTS (Spec 35
 // migration, 2026-08-11) — one attr each holding {desktop,tablet,mobile} — so
@@ -195,6 +145,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 		boxShadow,
 		boxShadowColour,
 		boxShadowHover,
+		focusStyle,
 	} = attributes;
 	// A Site Info link source renders an <a> from the live Site Info value, so
 	// the no-URL submit-button option does not apply to it.
@@ -286,9 +237,15 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	// emits translate: 0 -N px on the same hover state).
 	const liftScope = `sgs-button-lift-${ clientId }`;
 	if ( liftHover > 0 ) blockClasses.push( liftScope );
+	// Keyboard focus style: the class render.php prints (none for a refused Signature), and for Signature the
+	// host's border width focus.css anchors the turning band with.
+	const focusClass = focusStyleClass( { focusStyle, borderColourGradient, sgsMotion: attributes.sgsMotion } );
+	const signatureRefused = signatureRefusal( { borderColourGradient, sgsMotion: attributes.sgsMotion } );
+	if ( focusClass ) blockClasses.push( focusClass );
+	const hostBorder = 'sgs-focus--signature' === focusClass ? focusHostBorder( { borderWidth, borderStyle, inheritStyle } ) : '';
 	const blockProps = useBlockProps( {
 		className: blockClasses.join( ' ' ),
-		style: previewStyle,
+		style: hostBorder ? { ...previewStyle, '--sgs-focus-host-border': hostBorder } : previewStyle,
 		role: 'presentation',
 	} );
 
@@ -1042,6 +999,25 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
 						onCustomChange={ ( val ) => setAttributes( { transitionEasingCustom: val } ) }
 					/>
+					{ /* Keyboard focus (focusStyle). The stored Default is '', which ToggleGroupControl reads as "nothing
+					   selected", so the control shows it as 'default'. Signature is disabled with its reason when the
+					   button's ::before is already taken (focus-style.js::signatureRefusal). */ }
+					<ToggleGroupControl
+						label={ __( 'Keyboard focus', 'sgs-blocks' ) }
+						help={ [
+							__( "Default uses the site's focus style. Contrast always uses the dark-and-light ring (use it on photos or busy grounds). Signature adds a slowly turning border in the site's colours; it stops for visitors who prefer less motion.", 'sgs-blocks' ),
+							signatureRefused,
+						].filter( Boolean ).join( ' ' ) }
+						value={ focusStyle || 'default' }
+						onChange={ ( val ) => setAttributes( { focusStyle: ! val || 'default' === val ? '' : val } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="default" label={ __( 'Default', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="duotone" label={ __( 'Contrast', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="signature" label={ __( 'Signature', 'sgs-blocks' ) } disabled={ !! signatureRefused } />
+					</ToggleGroupControl>
 				</PanelBody>
 
 				{ /* Box shadow — ONE tabbed Normal/Hover mount (Wave A1 ShadowControl
