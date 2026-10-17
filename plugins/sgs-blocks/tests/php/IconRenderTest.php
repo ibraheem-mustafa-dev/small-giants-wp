@@ -314,10 +314,10 @@ final class IconRenderTest extends TestCase {
 
 	// ── Step 7: target size, focus, motion, forced colours (stylesheet) ───────
 
-	public function test_stylesheet_keeps_the_44px_target_focus_and_motion_rules(): void {
+	public function test_stylesheet_keeps_the_44px_target_and_motion_rules_and_leaves_focus_to_the_system(): void {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/icon/style.css' );
 		$this->assertMatchesRegularExpression( '/\.sgs-icon__link \{[^}]*min-inline-size: 44px;[^}]*min-block-size: 44px;/s', $css );
-		$this->assertMatchesRegularExpression( '/\.sgs-icon__link:focus-visible \{[^}]*outline: 2px solid/s', $css );
+		$this->assertDoesNotMatchRegularExpression( '/\.sgs-icon__link:focus-visible\s*\{[^}]*(outline|box-shadow)/s', $css, 'the keyboard focus indicator is drawn by the unified focus system (theme focus.css), not by this stylesheet' );
 		$this->assertMatchesRegularExpression( '/prefers-reduced-motion: reduce\)[^@]*transform: scale\(1\) translate\(0, 0\) rotate\(var\(--sgs-icon-rotate, 0deg\)\);/s', $css );
 		$this->assertStringContainsString( '@media (forced-colors: active)', $css );
 	}
