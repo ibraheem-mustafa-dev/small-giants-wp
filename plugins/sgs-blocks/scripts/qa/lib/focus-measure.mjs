@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-	GROW, MIN_USABLE_POINTS, RADIUS_EXEMPT_SELECTOR, firstShadowLayer, hasSolidHairline, judgeContrast, pixelOf, samplePlan, shadowShape,
+	GROW, MIN_USABLE_POINTS, RADIUS_EXEMPT_SELECTOR, firstShadowLayer, hasSolidHairline, judgeContrast, pixelOf, samplePlan, shadowShape, snapRect,
 } from './focus-probe-lib.mjs';
 
 /** The longest a stop waits for two consecutive screenshots of its box to be pixel-identical, after the settle time. */
@@ -67,7 +67,9 @@ function readFocused( radiusExemptSelector ) {
 		const min = Number.parseFloat( el.min || 0 );
 		const max = Number.parseFloat( el.max || 100 );
 		const ratio = max > min ? ( Number.parseFloat( el.value ) - min ) / ( max - min ) : 0;
-		thumb = { x: r.left + ratio * ( r.width - tw ), y: r.top + r.height / 2 - th / 2, width: tw, height: th };
+		// Every engine snaps the thumb to whole device pixels, so the estimate does too: a fractional rect puts the 45-degree
+		// corner samples on the antialiased edge of the ring instead of its core.
+		thumb = { x: Math.round( r.left + ratio * ( r.width - tw ) ), y: Math.round( r.top + r.height / 2 - th / 2 ), width: tw, height: th };
 	}
 
 	const read = ( node, pe ) => {
@@ -297,7 +299,7 @@ async function measurePixels( page, scratch, focusedPng, restingPng, clip, readi
 	const solid = hasSolidHairline( hairline ) ? hairline : null;
 	const w = Number.parseFloat( reading.focus.outline.width ) || 0;
 	const o = Number.parseFloat( reading.focus.outline.offset ) || 0;
-	const full = samplePlan( reading.rect, reading.focus.maxRadius, { width: w, offset: o }, solid );
+	const full = samplePlan( snapRect( reading.rect ), reading.focus.maxRadius, { width: w, offset: o }, solid );
 	const hits = await page.evaluate( hitTestPoints, full.map( ( p ) => [ p.x, p.y ] ) );
 	const blockedGroups = new Map();
 	full.forEach( ( p, i ) => {

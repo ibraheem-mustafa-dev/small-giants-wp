@@ -155,6 +155,17 @@ export function samplePlan( rect, radius, outline, hairline ) {
 	return points;
 }
 
+/**
+ * The rect with every edge rounded to a whole device pixel, which is where an engine paints a box and its outline (Firefox
+ * rounds a fractional button edge to the nearest pixel). A 45-degree corner sample planned on the fractional rect lands one
+ * pixel off, on the antialiased arc of the ring, so the plan is made on the snapped rect.
+ */
+export function snapRect( rect ) {
+	const x = Math.round( rect.x );
+	const y = Math.round( rect.y );
+	return { x, y, width: Math.round( rect.x + rect.width ) - x, height: Math.round( rect.y + rect.height ) - y };
+}
+
 /** Every layer of a computed box-shadow as { inset, blur, spread, colour }; layers with fewer than two lengths are dropped. */
 export function shadowLayers( computed ) {
 	if ( typeof computed !== 'string' || computed === 'none' ) return [];
@@ -420,5 +431,11 @@ export function selfTest() {
 	check( 'fractional rect: every sample sits on a pixel centre', frac.every( ( p ) => Math.abs( ( p.x % 1 ) - 0.5 ) < 1e-9 && Math.abs( ( p.y % 1 ) - 0.5 ) < 1e-9 ) );
 	const thin = samplePlan( { x: 100, y: 100, width: 200, height: 40 }, 4, { width: 1, offset: -0.5 }, null );
 	check( 'inset: a neighbour sample is at least 2px from the edge', thin.filter( ( p ) => p.kind === 'bg' ).every( ( p ) => Math.min( Math.abs( p.y - 100 ), Math.abs( p.y - 140 ), Math.abs( p.x - 100 ), Math.abs( p.x - 300 ) ) >= 1.5 ) );
+	// A fractional button rect (Firefox 375px photo case): the snapped rect puts the bottom-right corner sample on the ring.
+	const fracRect = { x: 196.2167, y: 497.2, width: 150.4, height: 42.4 };
+	const snapped = snapRect( fracRect );
+	check( 'snapRect: every edge lands on a whole pixel', snapped.x === 196 && snapped.y === 497 && snapped.width === 151 && snapped.height === 43 );
+	const corner = ( rect ) => samplePlan( rect, 6, { width: 2, offset: 2 }, { inset: false, spread: 2 } ).filter( ( p ) => p.kind === 'ring' && p.f === 'corner' )[ 2 ];
+	check( 'snapRect: the corner sample moves one pixel onto the painted ring', corner( fracRect ).x === 346.5 && corner( snapped ).x === 347.5 && corner( snapped ).y === 540.5 );
 	return failed;
 }
