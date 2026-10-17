@@ -1,0 +1,79 @@
+{
+  "fixture_name": "wave-1-G2-G4-canonical-case",
+  "fixture_purpose": "Smoke-test the /qc-council Stage 5 hard gate by replaying the 2026-05-21 Wave-1 council with G2 + G4 proposals — both should be falsified by baseline measurement.",
+  "source_session": "small-giants-wp 2026-05-21 Wave-1",
+  "input": {
+    "council_type": "fix-shape",
+    "proposals": [
+      {
+        "id": "G2",
+        "title": "Strip .page-id-N scope prefix in cv2 matcher",
+        "diagnostic_claim": "cv2's _collect_css_decls_for_element returns 0 hits for SGS-registered blocks because css_router emits scope-prefixed selectors that the bare-selector matcher rejects.",
+        "fix_shape": {
+          "files": ["plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py"],
+          "function": "_collect_css_decls_for_element",
+          "line_range": "2812-2872",
+          "change": "Add re.sub for leading scope prefix at top of per-selector loop"
+        },
+        "predicted_post_fix": {
+          "hero_stage_3_slot_list_failures": {"from": 142, "to_under": 60},
+          "hero_variation_css_rules": {"from": 0, "to_at_least": 8}
+        }
+      },
+      {
+        "id": "G4",
+        "title": "Strip WP chrome from pixel-diff screenshots",
+        "diagnostic_claim": "Per-section pixel-diff is inflated 10-20pp uniformly because screenshots include WP admin bar + sgs-header above each section.",
+        "fix_shape": {
+          "files": ["scripts/pixel-diff.py"],
+          "function": "capture",
+          "line_range": "161-223",
+          "change": "Insert page.evaluate() to remove #wpadminbar + .sgs-header before el.screenshot()"
+        },
+        "predicted_post_fix": {
+          "trust_bar_1440_pixel_diff_pct": {"from": 31.713, "to_under": 15.0},
+          "brand_1440_pixel_diff_pct": {"from": 43.707, "to_under": 25.0}
+        }
+      }
+    ]
+  },
+  "ground_truth_artefacts": [
+    "pipeline-state/mamas-munches-homepage-2026-05-20-082521/leftover-buckets.json",
+    "pipeline-state/mamas-munches-homepage-2026-05-20-082521/extract.json",
+    "pipeline-state/mamas-munches-homepage-2026-05-20-082521/trace.jsonl",
+    "reports/2026-05-20-pipeline-root-gap-council/pixel-diff-matrix.csv",
+    "sites/mamas-munches/mockups/homepage/index.html"
+  ],
+  "expected_stage_5_verdicts": {
+    "G2": {
+      "verdict": "falsified",
+      "reason": "Baseline (no fix applied) matched post-fix prediction: cv2 never received scope-prefixed CSS because the SGS clone runner only fed it mockup inline <style> rules, never the generated variation CSS file. The strip is a no-op on the actual input.",
+      "return_to_stage_0_with": "Two-step fix needed: (a) SGS clone runner merges variation CSS into _section_css; (b) cv2 strips the prefix when it now appears in input."
+    },
+    "G4": {
+      "verdict": "falsified",
+      "reason": "Post-fix measurement equalled baseline within noise: el.screenshot() already clips to element bounding box, so chrome above the element was never in the captured pixels. The DOM removal has no effect on cropped output.",
+      "return_to_stage_0_with": "Diagnosis is wrong: contamination is not in cropped screenshots. Re-investigate where the perceived inflation actually comes from."
+    }
+  },
+  "expected_stage_8_summary": {
+    "proposals_in": 2,
+    "validated_shipped": 0,
+    "falsified": 2,
+    "unverifiable": 0,
+    "wave_gate": "FAILED",
+    "saved_cycles_line": "Saved 1 wave of subagent work + commit-merge cycles + a re-baselining session by catching 2 no-op proposals pre-dispatch."
+  },
+  "expected_auto_memory_invocations": [
+    {
+      "pattern_key": "producer-consumer-strip-fix-misses-handoff",
+      "summary": "When a fix-shape proposal strips/normalises input at the CONSUMER, verify the consumer actually receives that input. Producer side may need a separate fix."
+    },
+    {
+      "pattern_key": "per-section-pixel-diff-excludes-chrome",
+      "summary": "Selector-cropped screenshots via Playwright el.screenshot() already exclude content outside the element bounding box. Chrome strips have no effect in this measurement mode."
+    }
+  ],
+  "smoke_test_assertion": "After running /qc-council on this fixture, the resulting Stage 8 report MUST contain falsified verdicts for both proposals and MUST NOT have dispatched any Stage 7 implementer subagent.",
+  "human_check": "Read scripts/fixtures/example-council.json + references/example-council-walkthrough.md side by side. The walkthrough is the prose form of the same fixture."
+}
