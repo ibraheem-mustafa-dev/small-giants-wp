@@ -199,12 +199,6 @@
   },
   {
     "gate": "motion-literals",
-    "pattern": "plugins/sgs-blocks/src/blocks/filter-search/style.css",
-    "reason": "Pre-sweep baseline: this file holds 4 motion literal(s) that move onto tokens in the M5.18 sweep (check-motion-literals.py --fix, then Bean's token menu). A new literal in any file not listed here fails the gate.",
-    "delete_in_unit": "M5.18"
-  },
-  {
-    "gate": "motion-literals",
     "pattern": "plugins/sgs-blocks/src/blocks/form/style.css",
     "reason": "Pre-sweep baseline: this file holds 2 motion literal(s) that move onto tokens in the M5.18 sweep (check-motion-literals.py --fix, then Bean's token menu). A new literal in any file not listed here fails the gate.",
     "delete_in_unit": "M5.18"
