@@ -1218,6 +1218,15 @@ dialog.sgs-shop-filters {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
+/* The breadcrumb link sits on the page band, which a client may paint in a mid-tone where the site's ring colour scores
+   under 3:1 (live: 2.03). Core WooCommerce markup, so it takes the duotone token set on its own selector: ink core,
+   light hairline, ink bloom (the override contract allows a stylesheet to set the focus tokens on its own resting rule). */
+.woocommerce-breadcrumb a {
+	--sgs-focus-ring: var(--sgs-focus-ink);
+	--sgs-focus-near: var(--sgs-focus-inner);
+	--sgs-focus-far: var(--sgs-focus-ink);
+}
+
 body.woocommerce-cart h1,
 body.woocommerce-checkout h1,
 body.woocommerce-cart .wp-block-heading,
