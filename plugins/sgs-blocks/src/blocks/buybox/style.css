@@ -179,11 +179,6 @@
 	transform: var(--wp--custom--button-presets--default--hover-transform, none);
 }
 
-.sgs-buybox .buybox__add-to-cart:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-}
-
 .sgs-buybox .buybox__add-to-cart[disabled] {
 	opacity: 0.6;
 	cursor: progress;
@@ -316,11 +311,6 @@
 	border-bottom: 1px solid var(--wp--preset--color--border, currentColor);
 	padding-bottom: 1px;
 	text-decoration: none;
-}
-
-.sgs-buybox .sgs-buybox__picker-label-link:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 /* ── Stock-line hairline (stockLineHairline) ─────────────────
@@ -568,9 +558,7 @@
 }
 
 .sgs-buybox__notify-email:focus {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-	border-color: var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	border-color: var(--sgs-focus-ring);
 }
 
 /* Consent row — 44px touch target via padding on the label. */
@@ -627,11 +615,6 @@
 :root :where(.sgs-buybox__notify-submit) {
 	font-size: 1rem;
 	font-weight: 600;
-}
-
-.sgs-buybox__notify-submit:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 /* Status region — empty by default; content written by notify-view.js.
@@ -887,11 +870,6 @@
 	pointer-events: none;
 }
 
-.sgs-buybox .product-card__thumb:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-}
-
 /* Selected state: accent border (≥3:1 UI component contrast) + subtle scale. */
 .sgs-buybox .product-card__thumb[aria-current="true"] {
 	border-color: var(--wp--preset--color--primary, #0f7e80);
@@ -1031,11 +1009,6 @@
 
 .sgs-buybox-guided__meter-btn:not([aria-disabled='true']):hover {
 	border-color: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e));
-}
-
-.sgs-buybox-guided__meter-btn:focus-visible {
-	outline: 2px solid var(--sgs-buybox-guided-meter-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)));
-	outline-offset: 2px;
 }
 
 /* Meter style — 'bar': a single filled progress track. Index and value text
@@ -1234,9 +1207,4 @@
 
 .sgs-buybox-guided__nav-btn--next:not([aria-disabled='true']):hover {
 	background: color-mix(in srgb, var(--wp--preset--color--primary, #1e1e1e) 85%, #fff 15%);
-}
-
-.sgs-buybox-guided__nav-btn:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }

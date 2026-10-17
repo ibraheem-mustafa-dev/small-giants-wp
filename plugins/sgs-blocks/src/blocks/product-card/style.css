@@ -777,13 +777,6 @@
 }
 
 
-/* Focus ring: primary pink at 2px — 3:1 on #fff ✓ WCAG AA focus indicator. */
-.product-card--live .product-card__title-link:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-	border-radius: 2px;
-}
-
 /*
  * Graceful no-image state (Bean R-22-13): a product with no real photo shows a
  * branded empty box (the WooCommerce placeholder graphic reads as broken). Same
@@ -883,12 +876,6 @@
 /* Hover: show border affordance. */
 .product-card--live .product-card__thumb:hover {
 	border-color: var( --wp--preset--color--primary, #1F7A7A );
-}
-
-/* Focus ring for keyboard navigation. */
-.product-card--live .product-card__thumb:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 /* Active / selected thumb gets the primary ring. */
@@ -1675,16 +1662,6 @@
 }
 
 /*
- * Visible focus ring. The dot's own colour is data and can be anything, so the
- * ring is drawn from the theme's text token (a surface-contrasting value) with
- * an offset, never from the swatch colour.
- */
-.sgs-product-card__swatch--button:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 3px;
-}
-
-/*
  * The chosen dot. A double ring (surface gap, then a contrasting line) reads on
  * any dot colour, including white and near-black, and is not carried by colour
  * alone — view.js stamps aria-pressed, so the state is in the accessibility
@@ -1692,6 +1669,9 @@
  */
 .sgs-product-card__swatch--button[aria-pressed="true"] {
 	box-shadow:
+		0 0 0 2px var( --wp--preset--color--surface, #fff ),
+		0 0 0 3px var( --wp--preset--color--text, #1a1a1a );
+	--sgs-focus-under:
 		0 0 0 2px var( --wp--preset--color--surface, #fff ),
 		0 0 0 3px var( --wp--preset--color--text, #1a1a1a );
 }
@@ -1839,11 +1819,6 @@
 .sgs-product-card__wishlist:hover {
 	background: var( --wp--preset--color--surface-alt, #ffffff );
 	transform: scale( 1.08 );
-}
-
-.sgs-product-card__wishlist:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

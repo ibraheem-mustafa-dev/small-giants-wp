@@ -182,9 +182,7 @@
 }
 
 .sgs-choice-flow-question__option-button:focus-visible {
-	border-color: var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
+	border-color: var(--sgs-focus-ring);
 }
 
 @media ( prefers-reduced-motion: reduce ) {
@@ -258,6 +256,7 @@
 .sgs-choice-flow-question__option-button--selected {
 	border-color: var( --wp--preset--color--primary, #1f7a7a );
 	box-shadow: 0 0 0 1px var( --wp--preset--color--primary, #1f7a7a );
+	--sgs-focus-under: 0 0 0 1px var( --wp--preset--color--primary, #1f7a7a );
 }
 
 /* FR-43-17 — priced add-on step: the option's price, read from the

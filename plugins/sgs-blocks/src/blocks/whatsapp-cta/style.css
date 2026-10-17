@@ -44,11 +44,6 @@
 	transform: var(--wp--custom--button-presets--default--hover-transform, none);
 }
 
-.sgs-whatsapp-cta__btn:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
-	outline-offset: 3px;
-}
-
 /* ===== Icon ===== */
 .sgs-whatsapp-cta__icon {
 	flex-shrink: 0;
@@ -153,6 +148,7 @@
 	padding: 0;
 	justify-content: center;
 	box-shadow: 0 4px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 25%, transparent);
+	--sgs-focus-under: 0 4px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 25%, transparent);
 }
 
 /* Variant default icon size, de-specified so the Icon size setting (iconSize, a scoped .{uid} rule) wins. */

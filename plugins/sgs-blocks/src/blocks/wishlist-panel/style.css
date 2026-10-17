@@ -137,24 +137,11 @@
 	text-decoration: none;
 }
 
-.sgs-wishlist-panel__choose-options:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-}
-
 .sgs-wishlist-panel__remove,
 .sgs-wishlist-panel__notify-toggle {
 	background: transparent;
 	text-decoration: underline;
 	min-width: 44px;
-}
-
-.sgs-wishlist-panel__move-to-basket:focus-visible,
-.sgs-wishlist-panel__remove:focus-visible,
-.sgs-wishlist-panel__notify-toggle:focus-visible,
-.sgs-save-for-later:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 .sgs-wishlist-panel__notify-form {
@@ -375,16 +362,6 @@
 	padding: 0 0.75rem;
 	min-width: 12rem;
 	background-color: var(--wp--preset--color--surface, #fff);
-}
-
-.sgs-wishlist-panel__share-toggle:focus-visible,
-.sgs-wishlist-panel__share-controls button:focus-visible,
-.sgs-wishlist-panel__sort select:focus-visible,
-.sgs-wishlist-panel__view-all:focus-visible,
-.sgs-wishlist-panel__guest-prompt .wp-element-button:focus-visible,
-.sgs-wishlist-panel__add-to-mine:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
 }
 
 /* ── Shared-list "Save to my list" action ── */
