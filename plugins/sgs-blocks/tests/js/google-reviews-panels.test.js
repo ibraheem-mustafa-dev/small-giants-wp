@@ -67,6 +67,10 @@ jest.mock( '../../src/components/primitives', () => {
 		__esModule: true,
 		ToolsPanel: ( { label, resetAll, children } ) =>
 			R.createElement( 'div', { 'data-tools-panel': label }, R.createElement( 'button', { 'data-reset-all': label, onClick: resetAll } ), children ),
+		// The real ToggleGroupControl is a segmented control; this stand-in exposes the same label, value, options and onChange as a select.
+		ToggleGroupControl: ( { label, value, onChange, children } ) =>
+			R.createElement( 'select', { 'aria-label': label, value, onChange: ( e ) => onChange( e.target.value ) }, children ),
+		ToggleGroupControlOption: ( { value, label } ) => R.createElement( 'option', { value }, label ),
 		ToolsPanelItem: ( { label, hasValue, onDeselect, children } ) =>
 			R.createElement(
 				'div',
@@ -750,9 +754,11 @@ describe( 'edit.js wiring (source level)', () => {
 	} );
 
 	test( 'the six sections and the Colour panel are mounted, Navigation only for the slider', () => {
-		for ( const name of [ 'CardPanel', 'HeaderPanel', 'ReviewerPanel', 'ReviewTextPanel', 'ButtonsPanel' ] ) {
+		for ( const name of [ 'HeaderPanel', 'ReviewerPanel', 'ReviewTextPanel', 'ButtonsPanel' ] ) {
 			expect( EDIT_JS ).toContain( `<${ name } attributes={ attributes } setAttributes={ setAttributes } />` );
 		}
+		// The Card section also takes the block name, for its spacing defaults.
+		expect( EDIT_JS ).toContain( '<CardPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />' );
 		expect( EDIT_JS ).toMatch( /'slider' === variant && <NavigationPanel/ );
 		expect( EDIT_JS.indexOf( '<ColourPanel' ) ).toBeLessThan( EDIT_JS.indexOf( '<InspectorControls group="styles">' ) );
 	} );
