@@ -480,7 +480,7 @@ if ( $show_source_header ) :
 
 			if ( '' !== $business_url ) {
 				printf(
-					'<a class="sgs-trustpilot-reviews__count-link" href="%s" target="_blank" rel="noopener nofollow">%s</a>',
+					'<a class="sgs-trustpilot-reviews__count-link sgs-focus--duotone" href="%s" target="_blank" rel="noopener nofollow">%s</a>',
 					esc_url( $business_url ),
 					/* translators: %d = number of reviews */
 					esc_html( sprintf( _n( '%d review', '%d reviews', $total_reviews, 'sgs-blocks' ), $total_reviews ) )
@@ -494,7 +494,7 @@ if ( $show_source_header ) :
 				?>
 				<span class="sgs-trustpilot-reviews__on"><?php esc_html_e( ' on ', 'sgs-blocks' ); ?></span>
 				<?php if ( '' !== $business_url ) : ?>
-					<a class="sgs-trustpilot-reviews__header-logo-link" href="<?php echo esc_url( $business_url ); ?>" target="_blank" rel="noopener nofollow" aria-label="<?php esc_attr_e( 'Read reviews on Trustpilot (opens in new tab)', 'sgs-blocks' ); ?>">
+					<a class="sgs-trustpilot-reviews__header-logo-link sgs-focus--duotone" href="<?php echo esc_url( $business_url ); ?>" target="_blank" rel="noopener nofollow" aria-label="<?php esc_attr_e( 'Read reviews on Trustpilot (opens in new tab)', 'sgs-blocks' ); ?>">
 						<img
 							class="sgs-trustpilot-reviews__header-logo"
 							src="<?php echo esc_url( $logo_url ); ?>"

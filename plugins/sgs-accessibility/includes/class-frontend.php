@@ -190,7 +190,7 @@ class Frontend {
 		$target = sanitize_html_class( (string) $target, 'main-content' );
 
 		printf(
-			'<a href="#%s" class="sgs-skip-link">%s</a>' . "\n",
+			'<a href="#%s" class="sgs-skip-link sgs-focus--duotone sgs-on-dark">%s</a>' . "\n",
 			esc_attr( $target ),
 			esc_html__( 'Skip to main content', 'sgs-accessibility' )
 		);

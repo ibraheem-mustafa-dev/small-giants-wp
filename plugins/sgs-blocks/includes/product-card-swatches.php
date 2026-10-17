@@ -107,7 +107,7 @@ if ( ! function_exists( 'sgs_product_card_swatches_markup' ) ) {
 			if ( '' !== $param && '' !== $key && '' !== $label ) {
 				$interactive = true;
 				$dots_html  .= '<button type="button" id="' . esc_attr( $dot_id ) . '"'
-					. ' class="sgs-product-card__swatch sgs-product-card__swatch--button"'
+					. ' class="sgs-product-card__swatch sgs-product-card__swatch--button sgs-focus--duotone"'
 					. ' data-sgs-swatch-taxonomy="' . esc_attr( $taxonomy ) . '"'
 					. ' data-sgs-swatch-param="' . esc_attr( $param ) . '"'
 					. ' data-sgs-swatch-key="' . esc_attr( $key ) . '"'
