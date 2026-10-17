@@ -9,7 +9,7 @@ last_updated: 2026-10-17
 ## Summary for Bean
 
 - **Motion model (Spec 38A, Front M):** S1 to S5 are done; S6 is part done (removal groups G1 to G5 are on `main`; no deploy of them is recorded yet); their deploys, G0 and Gate 8 are next, then S7 (literals sweep, final acceptance).
-- **Clone coverage (Front M):** Phase 1 steps 1.1 to 1.4 (capability inventory, coverage map, gate test) are built on branch `claude/clone-coverage-plan-review-2bbei4`; step 1.5 needs one command on your PC (the framework DB lives there), then the gap list triage and your exclusion sign-off.
+- **Clone coverage (Front M):** Phase 1 steps 1.1 to 1.4 (capability inventory, coverage map, gate test) are built on branch `claude/clone-coverage-plan-review-2bbei4`; step 1.5's first run and triage are done (gap list `reports/2026-10-17-clone-coverage-gaps.md`); it waits on your exclusion sign-off.
 - **Cloning (Spec 48, Front H):** the Indus clone is paused at your intake review (plan step 15) until Spec 38A is finished, so the draft's motion transfers to the clone too.
 - **Eye Care (Front F):** built by hand and live on eye-care-test; it is the cloning system's answer key. Next: run Spec 48's intake on it and close the fix register's open rows.
 - **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
@@ -27,7 +27,7 @@ last_updated: 2026-10-17
 
 **S6 (part done):** M6.6C and M6.6-G1 to G5 are on `main` (`254fb47` to `37498db`, shared files `0046d33`, reseed `07422e7`). The G1 to G5 canary deploy was refused by the stored-content audit for 19 leftover old values on 13 posts; `strip-retired-motion-attrs.py` (`01238b3`) stripped them on sandybrown (second dry run 0). **Next:** re-run the canary deploy, deploy to the three opt-in targets, then G0 (merges last) and Gate 8. **Then S7:** M5.18 (includes Track I item 4, the Fade Bold travel) and M6.7.
 
-**Clone coverage** (`plans/2026-10-12-clone-coverage-foundation.md`): Spec 38A is its Phase 0. Phase 1 steps 1.1 to 1.4 are built on branch `claude/clone-coverage-plan-review-2bbei4` (`node scripts/computed-route/capabilities.mjs --gate`); next is step 1.5, the first run against the framework DB on Bean's PC, then triage and Bean's exclusion sign-off.
+**Clone coverage** (`plans/2026-10-12-clone-coverage-foundation.md`): Spec 38A is its Phase 0. Phase 1 steps 1.1 to 1.4 are built on branch `claude/clone-coverage-plan-review-2bbei4` (`node scripts/computed-route/capabilities.mjs --gate`); step 1.5's first run (Bean's PC) and triage are done; next is Bean's exclusion sign-off, which closes Phase 1, then Phase 2.
 
 ### Front H: Cloning system (Spec 48) and the Claude Design handover
 

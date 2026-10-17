@@ -43,7 +43,12 @@ if ( '--write' === mode ) {
 	const gaps = gapList( readInventoryFile(), loadCoverage() );
 	const bySection = new Map();
 	gaps.forEach( ( g ) => bySection.set( g.section, [ ...( bySection.get( g.section ) || [] ), g ] ) );
+	const waves = new Map();
+	gaps.forEach( ( g ) => waves.set( g.coverage?.wave || 'none', ( waves.get( g.coverage?.wave || 'none' ) || 0 ) + 1 ) );
 	console.log( `# Clone coverage gap list: ${ gaps.length } capabilities neither covered nor excluded\n` );
+	console.log( '| Wave | Gaps |\n|---|---|' );
+	[ ...waves ].sort( ( a, b ) => b[ 1 ] - a[ 1 ] ).forEach( ( [ w, n ] ) => console.log( `| ${ w } | ${ n } |` ) );
+	console.log( '' );
 	for ( const [ section, list ] of bySection ) {
 		console.log( `## ${ section } (${ list.length })\n` );
 		list.forEach( ( g ) => {

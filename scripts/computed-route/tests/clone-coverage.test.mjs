@@ -46,12 +46,12 @@ test( 'MUST FAIL (control 3): a reference to a writer, file or construct reader 
 test( 'MUST FAIL (control 4): an unsigned exclusion, a gap with no wave, a motion gap not waiting on Phase 0, an entry for an unknown ID', () => {
 	const cov = clone( committed.coverage );
 	cov.entries[ 'html:div' ] = { excluded: { reason: 'x', signedBy: 'Claude', date: '2026-10-17' } };
-	delete cov.entries[ 'html:span' ].wave;
+	delete cov.entries[ 'html:video' ].wave;
 	delete cov.entries[ 'css-group:animations' ].waiting;
 	cov.entries[ 'html:not-in-the-inventory' ] = { recognise: null, write: null, check: null, wave: 'unassigned' };
 	const p = coverageProblems( committed.inventory, cov );
 	assert.ok( p.some( ( x ) => x.startsWith( 'html:div: an exclusion needs' ) ) );
-	assert.ok( p.some( ( x ) => x.startsWith( 'html:span: a gap names its Phase 4 wave' ) ) );
+	assert.ok( p.some( ( x ) => x.startsWith( 'html:video: a gap names its Phase 4 wave' ) ) );
 	assert.ok( p.some( ( x ) => x.startsWith( 'css-group:animations: a motion gap waits on Phase 0' ) ) );
 	assert.ok( p.some( ( x ) => x.startsWith( 'html:not-in-the-inventory: a coverage entry for an ID the inventory does not hold' ) ) );
 } );

@@ -1,690 +1,624 @@
-# Clone coverage gap list: 643 capabilities neither covered nor excluded
+# Clone coverage gap list: 566 capabilities neither covered nor excluded
 
-## block-setting (106)
+| Wave | Gaps |
+|---|---|
+| exclusion candidate (awaiting Bean) | 147 |
+| motion writer (4.0) | 113 |
+| site and surfaces | 90 |
+| draft reading | 75 |
+| content, media and icons | 59 |
+| modes and values with no CSS property | 32 |
+| behaviour recognisers | 25 |
+| shop, forms and data | 25 |
 
-- `block-setting:a11y-text:string`: block settings, role a11y-text, string (8); has nothing; wave unassigned; e.g. sgs/before-after.afterVideoAlt, sgs/before-after.beforeVideoAlt, sgs/button.ariaLabel, sgs/cart.ariaLabel, sgs/form.formName
-- `block-setting:behaviour:array`: block settings, role behaviour, array (194); has nothing; wave unassigned; e.g. sgs/accordion-item.sgsConditionDays, sgs/accordion-item.sgsConditionUserRole, sgs/accordion.sgsConditionDays, sgs/accordion.sgsConditionUserRole, sgs/account.sgsConditionDays
-- `block-setting:behaviour:boolean`: block settings, role behaviour, boolean (37); has nothing; wave unassigned; e.g. sgs/accordion.allowMultiple, sgs/container.bgSvgTextShadow, sgs/container.sgsBlockLinkTarget, sgs/counter.accentStroke, sgs/form-field-address.required
-- `block-setting:behaviour:integer`: block settings, role behaviour, integer (1); has nothing; wave unassigned; e.g. sgs/form.rateLimit
-- `block-setting:behaviour:mode`: block settings, role behaviour, mode (232); has nothing; wave unassigned; e.g. sgs/accordion-item.sgsConditionLoggedIn, sgs/accordion-item.sgsConditionProductReviews, sgs/accordion.sgsConditionLoggedIn, sgs/accordion.sgsConditionProductReviews, sgs/account.sgsConditionLoggedIn
-- `block-setting:behaviour:motion`: block settings, role behaviour, motion (21, motion); has nothing; wave unassigned, waits on phase-0; e.g. sgs/before-after.fxDraggable, sgs/buybox.dragMomentum, sgs/buybox.dragToScroll, sgs/buybox.loopCarousel, sgs/gallery.dragMomentum
-- `block-setting:behaviour:number`: block settings, role behaviour, number (193); has nothing; wave unassigned; e.g. sgs/accordion-item.sgsClickRippleDuration, sgs/accordion-item.sgsConditionCollectionQueryId, sgs/accordion.defaultOpen, sgs/accordion.sgsClickRippleDuration, sgs/accordion.sgsConditionCollectionQueryId
-- `block-setting:behaviour:object`: block settings, role behaviour, object (13); has nothing; wave unassigned; e.g. sgs/google-reviews.arrowStep, sgs/nav-bar-menu.triggerDetachAfter, sgs/nav-drawer-menu.itemOrnamentFramePlay, sgs/site-footer-row.rowHideOnScroll, sgs/site-footer-row.rowShrink
-- `block-setting:behaviour:string`: block settings, role behaviour, string (890); has nothing; wave unassigned; e.g. sgs/accordion-item.sgsClickEffect, sgs/accordion-item.sgsClickRippleColour, sgs/accordion-item.sgsCollapseVisibility, sgs/accordion-item.sgsConditionDateEnd, sgs/accordion-item.sgsConditionDateStart
-- `block-setting:behaviour:styling`: block settings, role behaviour, styling (7); has nothing; wave unassigned; e.g. sgs/google-reviews.scrollbarStyle, sgs/google-reviews.textClampLines, sgs/hero.verticalAlignment, sgs/measured-diagram.extensionStyle, sgs/nav-drawer-menu.itemExpanderRotate
-- `block-setting:boolean-visibility:boolean`: block settings, role boolean-visibility, boolean (272); has nothing; wave unassigned; e.g. sgs/accordion-item.isOpen, sgs/account.showGuestLine, sgs/account.showMenuIcons, sgs/account.showOrderTracking, sgs/account.showQuickCards
-- `block-setting:boolean-visibility:object`: block settings, role boolean-visibility, object (3); has nothing; wave unassigned; e.g. sgs/nav-drawer.chromeLogoShow, sgs/nav-drawer.chromeRatingShow, sgs/nav-drawer.chromeSlotShow
-- `block-setting:boolean-visibility:styling`: block settings, role boolean-visibility, styling (291); has nothing; wave unassigned; e.g. sgs/accordion-item.sgsHideOnDesktop, sgs/accordion-item.sgsHideOnMobile, sgs/accordion-item.sgsHideOnTablet, sgs/accordion.sgsHideOnDesktop, sgs/accordion.sgsHideOnMobile
-- `block-setting:color:string`: block settings, role color, string (69); has nothing; wave unassigned; e.g. sgs/accordion-item.backgroundColourHover, sgs/brand-strip.tileShadowColourHover, sgs/business-info.openStatusClosedBackground, sgs/business-info.openStatusOpenBackground, sgs/buybox.guidedMeterColour
-- `block-setting:color:styling`: block settings, role color, styling (862); has nothing; wave unassigned; e.g. sgs/accordion-item.backgroundColour, sgs/accordion-item.borderColour, sgs/accordion-item.textColour, sgs/accordion-item.textColourHover, sgs/accordion.borderColour
-- `block-setting:colour-gradient:string`: block settings, role colour-gradient, string (76); has nothing; wave unassigned; e.g. sgs/accordion-item.backgroundColourGradient, sgs/accordion-item.backgroundColourHoverGradient, sgs/brand-strip.itemBorderColourHoverGradient, sgs/breadcrumbs.currentColourGradient, sgs/breadcrumbs.separatorColourGradient
-- `block-setting:colour-gradient:styling`: block settings, role colour-gradient, styling (518); has nothing; wave unassigned; e.g. sgs/accordion-item.borderColourGradient, sgs/accordion-item.textColourGradient, sgs/accordion-item.textColourHoverGradient, sgs/accordion.borderColourGradient, sgs/accordion.headerBackgroundGradient
-- `block-setting:content:array`: block settings, role content, array (20); has nothing; wave unassigned; e.g. sgs/brand-strip.logos, sgs/card-grid.items, sgs/form-field-address.fields, sgs/form-field-checkbox.options, sgs/form-field-file.allowedTypes
-- `block-setting:content:number`: block settings, role content, number (6); has nothing; wave unassigned; e.g. sgs/counter.number, sgs/product-card.indexVariationUrl, sgs/star-rating.schemaReviewCount, sgs/trustpilot-reviews.reviewsAverage, sgs/trustpilot-reviews.totalReviews
-- `block-setting:content:object`: block settings, role content, object (1); has nothing; wave unassigned; e.g. sgs/choice-flow.stageNoteLink
-- `block-setting:content:string`: block settings, role content, string (48); has nothing; wave unassigned; e.g. sgs/audio.audioUrl, sgs/before-after.afterImageUrlMobile, sgs/before-after.afterImageUrlTablet, sgs/before-after.afterVideoUrl, sgs/before-after.beforeImageUrlMobile
-- `block-setting:css-gate:styling`: block settings, role css-gate, styling (4); has nothing; wave unassigned; e.g. sgs/card-grid.grayscaleHover, sgs/gallery.grayscaleHover, sgs/info-box.grayscaleHover, sgs/team-member.grayscaleHover
-- `block-setting:css-modifier:mode`: block settings, role css-modifier, mode (3); has nothing; wave unassigned; e.g. sgs/google-reviews.logoPosition, sgs/google-reviews.navPosition, sgs/testimonial.ratingType
-- `block-setting:enum-class-probe:integer`: block settings, role enum-class-probe, integer (27); has nothing; wave unassigned; e.g. sgs/audio.audioId, sgs/before-after.afterImageId, sgs/before-after.afterImageIdMobile, sgs/before-after.afterImageIdTablet, sgs/before-after.afterVideoId
-- `block-setting:enum-class-probe:mode`: block settings, role enum-class-probe, mode (2); has nothing; wave unassigned; e.g. sgs/audio.toggleIcon, sgs/choice-flow.stageNoteIcon
-- `block-setting:enum-class-probe:number`: block settings, role enum-class-probe, number (10); has nothing; wave unassigned; e.g. sgs/decorative-image.imageId, sgs/decorative-image.imageIdMobile, sgs/decorative-image.imageIdTablet, sgs/filter-search.attributeId, sgs/nav-drawer.chromeLogoId
-- `block-setting:enum-class-probe:object`: block settings, role enum-class-probe, object (8); has nothing; wave unassigned; e.g. sgs/nav-bar-menu.triggerIcon, sgs/nav-drawer-menu.itemExpanderIcon, sgs/nav-drawer-menu.itemOrnamentIcon, sgs/nav-drawer-menu.itemOrnamentIconHover, sgs/nav-drawer-menu.sublinkMarkerIcon
-- `block-setting:enum-class-probe:string`: block settings, role enum-class-probe, string (17); has nothing; wave unassigned; e.g. sgs/accordion.closeIcon, sgs/accordion.openIcon, sgs/button.icon, sgs/button.linkId, sgs/buybox.addToCartModalId
-- `block-setting:enum-class-probe:styling`: block settings, role enum-class-probe, styling (3); has nothing; wave unassigned; e.g. sgs/responsive-logo.logoId, sgs/responsive-logo.logoIdMobile, sgs/responsive-logo.logoIdTablet
-- `block-setting:enum-mode:mode`: block settings, role enum-mode, mode (101); has nothing; wave unassigned; e.g. sgs/audio.audioPreload, sgs/audio.audioSource, sgs/before-after.orientation, sgs/brand-strip.brandDisplay, sgs/brand-strip.source
-- `block-setting:enum-mode:object`: block settings, role enum-mode, object (1); has nothing; wave unassigned; e.g. sgs/site-header.contrastSafe
-- `block-setting:enum-mode:string`: block settings, role enum-mode, string (9); has nothing; wave unassigned; e.g. sgs/before-after.handleIconSource, sgs/form.successRedirectSource, sgs/google-rating-badge.listingUrlSource, sgs/icon.linkUrlSource, sgs/media.linkUrlSource
-- `block-setting:enum-mode:styling`: block settings, role enum-mode, styling (17); has nothing; wave unassigned; e.g. sgs/business-info.hoursRowJustify, sgs/buybox.stackBelow, sgs/card-grid.headingLevel, sgs/form-review.headingLevel, sgs/form.submitAlign
-- `block-setting:icon-dashicon:string`: block settings, role icon-dashicon, string (2); has nothing; wave unassigned; e.g. sgs/icon.dashiconName, sgs/separator.contentIconDashicon
-- `block-setting:icon-emoji:string`: block settings, role icon-emoji, string (2); has nothing; wave unassigned; e.g. sgs/icon.emojiChar, sgs/separator.contentIconEmoji
-- `block-setting:icon-lucide:string`: block settings, role icon-lucide, string (2); has nothing; wave unassigned; e.g. sgs/icon.iconName, sgs/separator.contentIconName
-- `block-setting:icon-wp-icon:string`: block settings, role icon-wp-icon, string (2); has nothing; wave unassigned; e.g. sgs/icon.wpIconName, sgs/separator.contentIconWpIcon
-- `block-setting:identity:mode`: block settings, role identity, mode (1); has nothing; wave unassigned; e.g. sgs/icon.iconSource
-- `block-setting:identity:object`: block settings, role identity, object (1); has nothing; wave unassigned; e.g. sgs/nav-drawer-menu.itemTrailingIcons
-- `block-setting:identity:string`: block settings, role identity, string (6); has nothing; wave unassigned; e.g. sgs/cart.iconName, sgs/notice-banner.iconName, sgs/notice-banner.iconSource, sgs/product-card.productName, sgs/wishlist-link.iconName
-- `block-setting:identity:styling`: block settings, role identity, styling (2); has nothing; wave unassigned; e.g. sgs/icon.iconRotate, sgs/nav-drawer-menu.itemOrnamentFrames
-- `block-setting:image-alt:string`: block settings, role image-alt, string (8); has nothing; wave unassigned; e.g. sgs/before-after.afterImageAlt, sgs/before-after.beforeImageAlt, sgs/decorative-image.imageAlt, sgs/image-sequence.thumbnailAlt, sgs/measured-diagram.drawingImageAlt
-- `block-setting:image-object:object`: block settings, role image-object, object (32); has nothing; wave unassigned; e.g. sgs/container.bgVideo, sgs/container.bgVideoMobile, sgs/container.bgVideoTablet, sgs/hero.bgVideo, sgs/hero.bgVideoMobile
-- `block-setting:image-object:string`: block settings, role image-object, string (7); has nothing; wave unassigned; e.g. sgs/before-after.afterImageUrl, sgs/before-after.beforeImageUrl, sgs/decorative-image.imageUrl, sgs/media.imageUrl, sgs/media.thumbnail
-- `block-setting:image-object:styling`: block settings, role image-object, styling (22); has nothing; wave unassigned; e.g. sgs/container.backgroundImage, sgs/container.backgroundImageMobile, sgs/container.backgroundImageTablet, sgs/hero.backgroundImage, sgs/hero.backgroundImageMobile
-- `block-setting:layout:boolean`: block settings, role layout, boolean (3); has nothing; wave unassigned; e.g. sgs/account.showLatestOrder, sgs/google-rating-badge.fullWidth, sgs/label.fullWidth
-- `block-setting:layout:integer`: block settings, role layout, integer (2); has nothing; wave unassigned; e.g. sgs/media.imageHeight, sgs/media.imageWidth
-- `block-setting:layout:mode`: block settings, role layout, mode (45); has nothing; wave unassigned; e.g. sgs/accordion.layout, sgs/brand-strip.brandOrder, sgs/business-info.hoursLayout, sgs/button.sgsChildSizing, sgs/buybox.buyboxLayout
-- `block-setting:layout:number`: block settings, role layout, number (8); has nothing; wave unassigned; e.g. sgs/feature-grid.minItemWidth, sgs/measured-diagram.drawingImageHeight, sgs/measured-diagram.drawingImageWidth, sgs/nav-bar-menu.itemTextColumns, sgs/nav-bar-menu.submenuTextColumns
-- `block-setting:layout:object`: block settings, role layout, object (29); has nothing; wave unassigned; e.g. sgs/accordion-item.contentWidth, sgs/account.contentMaxWidth, sgs/account.gap, sgs/account.navLayout, sgs/account.navWidth
-- `block-setting:layout:string`: block settings, role layout, string (47); has nothing; wave unassigned; e.g. sgs/account.authLayout, sgs/before-after.heightUnit, sgs/before-after.maxWidthUnit, sgs/button.minHeightMobileUnit, sgs/button.minHeightTabletUnit
-- `block-setting:layout:styling`: block settings, role layout, styling (671); has nothing; wave unassigned; e.g. sgs/accordion-item.maxWidth, sgs/accordion.alignContent, sgs/accordion.alignItems, sgs/accordion.columns, sgs/accordion.contentPadding
-- `block-setting:link-content:string`: block settings, role link-content, string (2); has nothing; wave unassigned; e.g. sgs/whatsapp-cta.message, sgs/whatsapp-cta.phoneNumber
-- `block-setting:link-href:array`: block settings, role link-href, array (1); has nothing; wave unassigned; e.g. sgs/social-icons.hiddenLinks
-- `block-setting:link-href:mode`: block settings, role link-href, mode (1); has nothing; wave unassigned; e.g. sgs/icon.linkTarget
-- `block-setting:link-href:string`: block settings, role link-href, string (12); has nothing; wave unassigned; e.g. sgs/button.linkTarget, sgs/button.url, sgs/buybox.pickerLabelLinkAxis, sgs/cart.itemAddOptionsLabel, sgs/filter-search.taxonomy
-- `block-setting:motion:motion`: block settings, role motion, motion (967, motion); has nothing; wave unassigned, waits on phase-0; e.g. sgs/accordion-item.sgsParallax, sgs/accordion-item.sgsParallaxStrength, sgs/accordion.sgsAnimation, sgs/accordion.sgsAnimationDelay, sgs/accordion.sgsAnimationDistance
-- `block-setting:number-css-percent:styling`: block settings, role number-css-percent, styling (1); has nothing; wave unassigned; e.g. sgs/decorative-image.maxWidthPercent
-- `block-setting:number-css-px:string`: block settings, role number-css-px, string (9); has nothing; wave unassigned; e.g. sgs/container.surfaceBlur, sgs/hero.surfaceBlur, sgs/mega-panel.surfaceBlur, sgs/multi-button.surfaceBlur, sgs/nav-drawer.surfaceBlur
-- `block-setting:number-css-px:styling`: block settings, role number-css-px, styling (6); has nothing; wave unassigned; e.g. sgs/cart.scrimBlur, sgs/gallery.scrimBlur, sgs/modal.scrimBlur, sgs/nav-bar-menu.scrimBlur, sgs/nav-drawer.scrimBlur
-- `block-setting:numeric-content:number`: block settings, role numeric-content, number (3); has nothing; wave unassigned; e.g. sgs/google-reviews.averageRating, sgs/google-reviews.reviewCount, sgs/testimonial.ratingScale
-- `block-setting:position:object`: block settings, role position, object (2); has nothing; wave unassigned; e.g. sgs/site-header.headerFloatInset, sgs/site-header.zIndex
-- `block-setting:position:styling`: block settings, role position, styling (2); has nothing; wave unassigned; e.g. sgs/decorative-image.zIndex, sgs/nav-bar-menu.triggerDetachZIndex
-- `block-setting:presence-boolean:boolean`: block settings, role presence-boolean, boolean (3); has nothing; wave unassigned; e.g. sgs/google-reviews.showCardLogo, sgs/google-reviews.showReviewLink, sgs/testimonial.verified
-- `block-setting:rating:number`: block settings, role rating, number (4); has nothing; wave unassigned; e.g. sgs/product-card.ratingValue, sgs/product-card.reviewCount, sgs/star-rating.rating, sgs/testimonial.ratingStars
-- `block-setting:rating:string`: block settings, role rating, string (1); has nothing; wave unassigned; e.g. sgs/testimonial.ratingScaleMax
-- `block-setting:scalar-media:mode`: block settings, role scalar-media, mode (1); has nothing; wave unassigned; e.g. sgs/hero.splitMediaType
-- `block-setting:select-from-enum:mode`: block settings, role select-from-enum, mode (53); has nothing; wave unassigned; e.g. sgs/before-after.afterMediaType, sgs/before-after.beforeMediaType, sgs/brand-strip.logoLayout, sgs/business-info.displayType, sgs/buybox.framingMode
-- `block-setting:select-from-enum:number`: block settings, role select-from-enum, number (2); has nothing; wave unassigned; e.g. sgs/form-field-file.maxSize, sgs/star-rating.starSize
-- `block-setting:select-from-enum:object`: block settings, role select-from-enum, object (18); has nothing; wave unassigned; e.g. sgs/button.iconShapeSize, sgs/button.iconSize, sgs/button.widthType, sgs/choice-flow.optionMediaSize, sgs/container.shapeDividerBottomScale
-- `block-setting:select-from-enum:string`: block settings, role select-from-enum, string (26); has nothing; wave unassigned; e.g. sgs/accordion.iconPosition, sgs/audio.audioMimeType, sgs/brand-strip.imageEffect, sgs/button.iconPosition, sgs/buybox.pickerBandScale
-- `block-setting:select-from-enum:styling`: block settings, role select-from-enum, styling (171); has nothing; wave unassigned; e.g. sgs/accordion.iconSize, sgs/accordion.writingMode, sgs/before-after.labelWritingMode, sgs/before-after.startPosition, sgs/brand-strip.nameWritingMode
-- `block-setting:spacing-token:styling`: block settings, role spacing-token, styling (1); has nothing; wave unassigned; e.g. sgs/mega-panel.drawerCardSpacing
-- `block-setting:styling:boolean`: block settings, role styling, boolean (16); has nothing; wave unassigned; e.g. sgs/container.shapeDividerBottomFlip, sgs/container.shapeDividerBottomInvert, sgs/container.shapeDividerTopFlip, sgs/container.shapeDividerTopInvert, sgs/hero.shapeDividerBottomFlip
-- `block-setting:styling:motion`: block settings, role styling, motion (2, motion); has nothing; wave unassigned, waits on phase-0; e.g. sgs/decorative-image.pathDrawDurationMs, sgs/decorative-image.pathDrawOnScroll
-- `block-setting:styling:number`: block settings, role styling, number (3); has nothing; wave unassigned; e.g. sgs/nav-bar-menu.collapsePoint, sgs/responsive-logo.logoSwitchCustomPx, sgs/table-of-contents.scrollOffset
-- `block-setting:styling:object`: block settings, role styling, object (2); has nothing; wave unassigned; e.g. sgs/decorative-image.decorMedia, sgs/nav-drawer.anchor
-- `block-setting:styling:string`: block settings, role styling, string (106); has nothing; wave unassigned; e.g. sgs/accordion-item.sgsCustomCss, sgs/accordion.sgsCustomCss, sgs/account.sgsCustomCss, sgs/audio.sgsCustomCss, sgs/before-after.sgsCustomCss
-- `block-setting:styling:styling`: block settings, role styling, styling (57); has nothing; wave unassigned; e.g. sgs/accordion.headerFontWeightOpen, sgs/accordion.iconRotation, sgs/accordion.textIndent, sgs/brand-strip.logoFit, sgs/button.liftHover
-- `block-setting:svg:string`: block settings, role svg, string (12); has nothing; wave unassigned; e.g. sgs/before-after.afterSvgContent, sgs/before-after.beforeSvgContent, sgs/button.iconSvg, sgs/container.bgSvgContent, sgs/hero.bgSvgContent
-- `block-setting:tag-identity:mode`: block settings, role tag-identity, mode (4); has nothing; wave unassigned; e.g. sgs/heading.level, sgs/icon-list.headingLevel, sgs/media.mediaType, sgs/product-faq.headingLevel
-- `block-setting:tag-identity:styling`: block settings, role tag-identity, styling (1); has nothing; wave unassigned; e.g. sgs/product-card.headingLevel
-- `block-setting:technical:array`: block settings, role technical, array (9); has nothing; wave unassigned; e.g. sgs/card-grid.handpickedIds, sgs/card-grid.productCategories, sgs/card-grid.productIds, sgs/card-grid.productTags, sgs/option-picker.contentImpact
-- `block-setting:technical:boolean`: block settings, role technical, boolean (4); has nothing; wave unassigned; e.g. sgs/accordion.faqSchema, sgs/star-rating.schemaEnabled, sgs/testimonial.schemaEnabled, sgs/trustpilot-reviews.showSchema
-- `block-setting:technical:integer`: block settings, role technical, integer (2); has nothing; wave unassigned; e.g. sgs/filter-search.threshold, sgs/icon-list.menuRef
-- `block-setting:technical:number`: block settings, role technical, number (19); has nothing; wave unassigned; e.g. sgs/card-grid.categoryTerm, sgs/card-grid.count, sgs/card-grid.productLimit, sgs/card-grid.queryCategory, sgs/card-grid.queryPostsPerPage
-- `block-setting:technical:object`: block settings, role technical, object (1); has nothing; wave unassigned; e.g. sgs/product-search.maxResults
-- `block-setting:technical:string`: block settings, role technical, string (92); has nothing; wave unassigned; e.g. sgs/button.anchor, sgs/button.className, sgs/button.rel, sgs/button.transitionEasingCustom, sgs/buybox.pickerBandAxis
-- `block-setting:text-content:number`: block settings, role text-content, number (1); has nothing; wave unassigned; e.g. sgs/nav-drawer-menu.itemMagnetStrength
-- `block-setting:text-content:object`: block settings, role text-content, object (3); has nothing; wave unassigned; e.g. sgs/business-info.separators, sgs/cart.separators, sgs/pricing-table.featureSeparators
-- `block-setting:text-content:string`: block settings, role text-content, string (180); has nothing; wave unassigned; e.g. sgs/accordion-item.title, sgs/account.guestLineText, sgs/account.noOrdersText, sgs/account.orderTrackingHeading, sgs/audio.title
-- `block-setting:text-content:styling`: block settings, role text-content, styling (2); has nothing; wave unassigned; e.g. sgs/button.contentAlign, sgs/icon.brandName
-- `block-setting:typography:mode`: block settings, role typography, mode (5); has nothing; wave unassigned; e.g. sgs/button.textDecorationHover, sgs/nav-bar-menu.itemTextAlign, sgs/nav-bar-menu.itemTextWrap, sgs/nav-drawer-menu.itemTextAlign, sgs/nav-drawer-menu.itemTextWrap
-- `block-setting:typography:string`: block settings, role typography, string (500); has nothing; wave unassigned; e.g. sgs/accordion.fontSizeUnit, sgs/accordion.letterSpacingUnit, sgs/accordion.lineHeightUnit, sgs/account.cardDescFontSizeUnit, sgs/account.cardDescLetterSpacingUnit
-- `block-setting:typography:styling`: block settings, role typography, styling (1622); has nothing; wave unassigned; e.g. sgs/accordion.fontFamily, sgs/accordion.fontSize, sgs/accordion.fontStyle, sgs/accordion.fontWeight, sgs/accordion.headerFontWeight
-- `block-setting:unclassified:array`: block settings, role unclassified, array (11); has nothing; wave unassigned; e.g. sgs/account.hiddenEndpoints, sgs/buybox.pickerAlwaysShowAxes, sgs/choice-flow-question.options, sgs/choice-flow-result.matchTags, sgs/language-switch.languages
-- `block-setting:unclassified:integer`: block settings, role unclassified, integer (4); has nothing; wave unassigned; e.g. sgs/choice-flow-result.rateLimit, sgs/google-rating-badge.compactBelow, sgs/google-rating-badge.hideBelow, sgs/google-rating-badge.reviewCount
-- `block-setting:unclassified:number`: block settings, role unclassified, number (25); has nothing; wave unassigned; e.g. sgs/audio.reactiveSensitivity, sgs/brand-strip.brandMaxItems, sgs/container.surfaceSaturate, sgs/diagram-dimension.extOvershoot, sgs/diagram-dimension.extReach
-- `block-setting:unclassified:object`: block settings, role unclassified, object (21); has nothing; wave unassigned; e.g. sgs/account.cardDescriptions, sgs/account.navIcons, sgs/account.statusStepLabels, sgs/card-grid.separators, sgs/choice-flow.headerLogo
-- `block-setting:unclassified:string`: block settings, role unclassified, string (73); has nothing; wave unassigned; e.g. sgs/account.greeting, sgs/account.latestOrderHeading, sgs/account.parcelTrackingLabel, sgs/account.shopLinkLabel, sgs/account.viewOrderLabel
-- `block-setting:visual:boolean`: block settings, role visual, boolean (33); has nothing; wave unassigned; e.g. sgs/container.sgsHoverBorderAccent, sgs/container.sgsHoverGrayscale, sgs/container.sgsHoverImageZoom, sgs/container.sgsHoverTilt3D, sgs/google-reviews.sgsHoverBorderAccent
-- `block-setting:visual:mode`: block settings, role visual, mode (12); has nothing; wave unassigned; e.g. sgs/container.backgroundAttachment, sgs/container.sgsHoverScalePreset, sgs/google-reviews.sgsHoverScalePreset, sgs/hero.backgroundAttachment, sgs/info-box.sgsHoverScalePreset
-- `block-setting:visual:number`: block settings, role visual, number (30); has nothing; wave unassigned; e.g. sgs/container.sgsHoverScale, sgs/container.sgsHoverZoom, sgs/google-reviews.sgsHoverScale, sgs/google-reviews.sgsHoverZoom, sgs/info-box.sgsHoverScale
-- `block-setting:visual:object`: block settings, role visual, object (7); has nothing; wave unassigned; e.g. sgs/brand-strip.separators, sgs/container.separators, sgs/icon-list.separators, sgs/nav-bar-menu.separators, sgs/nav-bar-menu.submenuSeparators
-- `block-setting:visual:string`: block settings, role visual, string (22); has nothing; wave unassigned; e.g. sgs/container.sgsHoverShadow, sgs/container.sgsHoverShadowCustom, sgs/container.sgsHoverZoomStyle, sgs/google-rating-badge.shadow, sgs/google-reviews.sgsHoverShadow
-- `block-setting:visual:styling`: block settings, role visual, styling (415); has nothing; wave unassigned; e.g. sgs/accordion-item.borderRadius, sgs/accordion-item.borderStyle, sgs/accordion-item.borderWidth, sgs/accordion.borderRadius, sgs/accordion.borderStyle
+## block-setting (88)
+
+- `block-setting:a11y-text:string`: block settings, role a11y-text, string (8); has nothing; wave content, media and icons; e.g. sgs/before-after.afterVideoAlt, sgs/before-after.beforeVideoAlt, sgs/button.ariaLabel, sgs/cart.ariaLabel, sgs/form.formName
+- `block-setting:behaviour:array`: block settings, role behaviour, array (194); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionDays, sgs/accordion-item.sgsConditionUserRole, sgs/accordion.sgsConditionDays, sgs/accordion.sgsConditionUserRole, sgs/account.sgsConditionDays
+- `block-setting:behaviour:boolean`: block settings, role behaviour, boolean (37); has nothing; wave behaviour recognisers; e.g. sgs/accordion.allowMultiple, sgs/container.bgSvgTextShadow, sgs/container.sgsBlockLinkTarget, sgs/counter.accentStroke, sgs/form-field-address.required
+- `block-setting:behaviour:integer`: block settings, role behaviour, integer (1); has nothing; wave behaviour recognisers; e.g. sgs/form.rateLimit
+- `block-setting:behaviour:mode`: block settings, role behaviour, mode (232); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionLoggedIn, sgs/accordion-item.sgsConditionProductReviews, sgs/accordion.sgsConditionLoggedIn, sgs/accordion.sgsConditionProductReviews, sgs/account.sgsConditionLoggedIn
+- `block-setting:behaviour:motion`: block settings, role behaviour, motion (21, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/before-after.fxDraggable, sgs/buybox.dragMomentum, sgs/buybox.dragToScroll, sgs/buybox.loopCarousel, sgs/gallery.dragMomentum
+- `block-setting:behaviour:number`: block settings, role behaviour, number (193); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsClickRippleDuration, sgs/accordion-item.sgsConditionCollectionQueryId, sgs/accordion.defaultOpen, sgs/accordion.sgsClickRippleDuration, sgs/accordion.sgsConditionCollectionQueryId
+- `block-setting:behaviour:object`: block settings, role behaviour, object (13); has nothing; wave behaviour recognisers; e.g. sgs/google-reviews.arrowStep, sgs/nav-bar-menu.triggerDetachAfter, sgs/nav-drawer-menu.itemOrnamentFramePlay, sgs/site-footer-row.rowHideOnScroll, sgs/site-footer-row.rowShrink
+- `block-setting:behaviour:string`: block settings, role behaviour, string (890); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsClickEffect, sgs/accordion-item.sgsClickRippleColour, sgs/accordion-item.sgsCollapseVisibility, sgs/accordion-item.sgsConditionDateEnd, sgs/accordion-item.sgsConditionDateStart
+- `block-setting:boolean-visibility:object`: block settings, role boolean-visibility, object (3); has nothing; wave behaviour recognisers; e.g. sgs/nav-drawer.chromeLogoShow, sgs/nav-drawer.chromeRatingShow, sgs/nav-drawer.chromeSlotShow
+- `block-setting:boolean-visibility:styling`: block settings, role boolean-visibility, styling (291); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.sgsHideOnDesktop, sgs/accordion-item.sgsHideOnMobile, sgs/accordion-item.sgsHideOnTablet, sgs/accordion.sgsHideOnDesktop, sgs/accordion.sgsHideOnMobile
+- `block-setting:color:string`: block settings, role color, string (69); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.backgroundColourHover, sgs/brand-strip.tileShadowColourHover, sgs/business-info.openStatusClosedBackground, sgs/business-info.openStatusOpenBackground, sgs/buybox.guidedMeterColour
+- `block-setting:colour-gradient:string`: block settings, role colour-gradient, string (76); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.backgroundColourGradient, sgs/accordion-item.backgroundColourHoverGradient, sgs/brand-strip.itemBorderColourHoverGradient, sgs/breadcrumbs.currentColourGradient, sgs/breadcrumbs.separatorColourGradient
+- `block-setting:content:array`: block settings, role content, array (20); has nothing; wave content, media and icons; e.g. sgs/brand-strip.logos, sgs/card-grid.items, sgs/form-field-address.fields, sgs/form-field-checkbox.options, sgs/form-field-file.allowedTypes
+- `block-setting:content:number`: block settings, role content, number (6); has nothing; wave content, media and icons; e.g. sgs/counter.number, sgs/product-card.indexVariationUrl, sgs/star-rating.schemaReviewCount, sgs/trustpilot-reviews.reviewsAverage, sgs/trustpilot-reviews.totalReviews
+- `block-setting:content:object`: block settings, role content, object (1); has nothing; wave content, media and icons; e.g. sgs/choice-flow.stageNoteLink
+- `block-setting:content:string`: block settings, role content, string (48); has nothing; wave content, media and icons; e.g. sgs/audio.audioUrl, sgs/before-after.afterImageUrlMobile, sgs/before-after.afterImageUrlTablet, sgs/before-after.afterVideoUrl, sgs/before-after.beforeImageUrlMobile
+- `block-setting:css-gate:styling`: block settings, role css-gate, styling (4); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/card-grid.grayscaleHover, sgs/gallery.grayscaleHover, sgs/info-box.grayscaleHover, sgs/team-member.grayscaleHover
+- `block-setting:css-modifier:mode`: block settings, role css-modifier, mode (3); has nothing; wave modes and values with no CSS property; e.g. sgs/google-reviews.logoPosition, sgs/google-reviews.navPosition, sgs/testimonial.ratingType
+- `block-setting:enum-class-probe:integer`: block settings, role enum-class-probe, integer (27); has nothing; wave content, media and icons; e.g. sgs/audio.audioId, sgs/before-after.afterImageId, sgs/before-after.afterImageIdMobile, sgs/before-after.afterImageIdTablet, sgs/before-after.afterVideoId
+- `block-setting:enum-class-probe:mode`: block settings, role enum-class-probe, mode (2); has nothing; wave content, media and icons; e.g. sgs/audio.toggleIcon, sgs/choice-flow.stageNoteIcon
+- `block-setting:enum-class-probe:number`: block settings, role enum-class-probe, number (10); has nothing; wave content, media and icons; e.g. sgs/decorative-image.imageId, sgs/decorative-image.imageIdMobile, sgs/decorative-image.imageIdTablet, sgs/filter-search.attributeId, sgs/nav-drawer.chromeLogoId
+- `block-setting:enum-class-probe:object`: block settings, role enum-class-probe, object (8); has nothing; wave content, media and icons; e.g. sgs/nav-bar-menu.triggerIcon, sgs/nav-drawer-menu.itemExpanderIcon, sgs/nav-drawer-menu.itemOrnamentIcon, sgs/nav-drawer-menu.itemOrnamentIconHover, sgs/nav-drawer-menu.sublinkMarkerIcon
+- `block-setting:enum-class-probe:string`: block settings, role enum-class-probe, string (17); has nothing; wave content, media and icons; e.g. sgs/accordion.closeIcon, sgs/accordion.openIcon, sgs/button.icon, sgs/button.linkId, sgs/buybox.addToCartModalId
+- `block-setting:enum-class-probe:styling`: block settings, role enum-class-probe, styling (3); has nothing; wave content, media and icons; e.g. sgs/responsive-logo.logoId, sgs/responsive-logo.logoIdMobile, sgs/responsive-logo.logoIdTablet
+- `block-setting:enum-mode:mode`: block settings, role enum-mode, mode (101); has nothing; wave modes and values with no CSS property; e.g. sgs/audio.audioPreload, sgs/audio.audioSource, sgs/before-after.orientation, sgs/brand-strip.brandDisplay, sgs/brand-strip.source
+- `block-setting:enum-mode:object`: block settings, role enum-mode, object (1); has nothing; wave modes and values with no CSS property; e.g. sgs/site-header.contrastSafe
+- `block-setting:enum-mode:string`: block settings, role enum-mode, string (9); has nothing; wave modes and values with no CSS property; e.g. sgs/before-after.handleIconSource, sgs/form.successRedirectSource, sgs/google-rating-badge.listingUrlSource, sgs/icon.linkUrlSource, sgs/media.linkUrlSource
+- `block-setting:icon-dashicon:string`: block settings, role icon-dashicon, string (2); has nothing; wave content, media and icons; e.g. sgs/icon.dashiconName, sgs/separator.contentIconDashicon
+- `block-setting:icon-emoji:string`: block settings, role icon-emoji, string (2); has nothing; wave content, media and icons; e.g. sgs/icon.emojiChar, sgs/separator.contentIconEmoji
+- `block-setting:icon-lucide:string`: block settings, role icon-lucide, string (2); has nothing; wave content, media and icons; e.g. sgs/icon.iconName, sgs/separator.contentIconName
+- `block-setting:icon-wp-icon:string`: block settings, role icon-wp-icon, string (2); has nothing; wave content, media and icons; e.g. sgs/icon.wpIconName, sgs/separator.contentIconWpIcon
+- `block-setting:identity:mode`: block settings, role identity, mode (1); has nothing; wave content, media and icons; e.g. sgs/icon.iconSource
+- `block-setting:identity:object`: block settings, role identity, object (1); has nothing; wave content, media and icons; e.g. sgs/nav-drawer-menu.itemTrailingIcons
+- `block-setting:identity:string`: block settings, role identity, string (6); has nothing; wave content, media and icons; e.g. sgs/cart.iconName, sgs/notice-banner.iconName, sgs/notice-banner.iconSource, sgs/product-card.productName, sgs/wishlist-link.iconName
+- `block-setting:identity:styling`: block settings, role identity, styling (2); has nothing; wave content, media and icons; e.g. sgs/icon.iconRotate, sgs/nav-drawer-menu.itemOrnamentFrames
+- `block-setting:image-alt:string`: block settings, role image-alt, string (8); has nothing; wave content, media and icons; e.g. sgs/before-after.afterImageAlt, sgs/before-after.beforeImageAlt, sgs/decorative-image.imageAlt, sgs/image-sequence.thumbnailAlt, sgs/measured-diagram.drawingImageAlt
+- `block-setting:image-object:object`: block settings, role image-object, object (32); has nothing; wave content, media and icons; e.g. sgs/container.bgVideo, sgs/container.bgVideoMobile, sgs/container.bgVideoTablet, sgs/hero.bgVideo, sgs/hero.bgVideoMobile
+- `block-setting:image-object:string`: block settings, role image-object, string (7); has nothing; wave content, media and icons; e.g. sgs/before-after.afterImageUrl, sgs/before-after.beforeImageUrl, sgs/decorative-image.imageUrl, sgs/media.imageUrl, sgs/media.thumbnail
+- `block-setting:image-object:styling`: block settings, role image-object, styling (22); has nothing; wave content, media and icons; e.g. sgs/container.backgroundImage, sgs/container.backgroundImageMobile, sgs/container.backgroundImageTablet, sgs/hero.backgroundImage, sgs/hero.backgroundImageMobile
+- `block-setting:layout:boolean`: block settings, role layout, boolean (3); has nothing; wave modes and values with no CSS property; e.g. sgs/account.showLatestOrder, sgs/google-rating-badge.fullWidth, sgs/label.fullWidth
+- `block-setting:layout:integer`: block settings, role layout, integer (2); has nothing; wave modes and values with no CSS property; e.g. sgs/media.imageHeight, sgs/media.imageWidth
+- `block-setting:layout:mode`: block settings, role layout, mode (45); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion.layout, sgs/brand-strip.brandOrder, sgs/business-info.hoursLayout, sgs/button.sgsChildSizing, sgs/buybox.buyboxLayout
+- `block-setting:layout:number`: block settings, role layout, number (8); has nothing; wave modes and values with no CSS property; e.g. sgs/feature-grid.minItemWidth, sgs/measured-diagram.drawingImageHeight, sgs/measured-diagram.drawingImageWidth, sgs/nav-bar-menu.itemTextColumns, sgs/nav-bar-menu.submenuTextColumns
+- `block-setting:layout:object`: block settings, role layout, object (29); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.contentWidth, sgs/account.contentMaxWidth, sgs/account.gap, sgs/account.navLayout, sgs/account.navWidth
+- `block-setting:layout:string`: block settings, role layout, string (47); has nothing; wave modes and values with no CSS property; e.g. sgs/account.authLayout, sgs/before-after.heightUnit, sgs/before-after.maxWidthUnit, sgs/button.minHeightMobileUnit, sgs/button.minHeightTabletUnit
+- `block-setting:link-content:string`: block settings, role link-content, string (2); has nothing; wave content, media and icons; e.g. sgs/whatsapp-cta.message, sgs/whatsapp-cta.phoneNumber
+- `block-setting:link-href:array`: block settings, role link-href, array (1); has nothing; wave content, media and icons; e.g. sgs/social-icons.hiddenLinks
+- `block-setting:link-href:mode`: block settings, role link-href, mode (1); has nothing; wave content, media and icons; e.g. sgs/icon.linkTarget
+- `block-setting:motion:motion`: block settings, role motion, motion (967, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/accordion-item.sgsParallax, sgs/accordion-item.sgsParallaxStrength, sgs/accordion.sgsAnimation, sgs/accordion.sgsAnimationDelay, sgs/accordion.sgsAnimationDistance
+- `block-setting:number-css-px:string`: block settings, role number-css-px, string (9); has nothing; wave modes and values with no CSS property; e.g. sgs/container.surfaceBlur, sgs/hero.surfaceBlur, sgs/mega-panel.surfaceBlur, sgs/multi-button.surfaceBlur, sgs/nav-drawer.surfaceBlur
+- `block-setting:numeric-content:number`: block settings, role numeric-content, number (3); has nothing; wave content, media and icons; e.g. sgs/google-reviews.averageRating, sgs/google-reviews.reviewCount, sgs/testimonial.ratingScale
+- `block-setting:position:object`: block settings, role position, object (2); has nothing; wave modes and values with no CSS property; e.g. sgs/site-header.headerFloatInset, sgs/site-header.zIndex
+- `block-setting:rating:number`: block settings, role rating, number (4); has nothing; wave content, media and icons; e.g. sgs/product-card.ratingValue, sgs/product-card.reviewCount, sgs/star-rating.rating, sgs/testimonial.ratingStars
+- `block-setting:rating:string`: block settings, role rating, string (1); has nothing; wave content, media and icons; e.g. sgs/testimonial.ratingScaleMax
+- `block-setting:scalar-media:mode`: block settings, role scalar-media, mode (1); has nothing; wave content, media and icons; e.g. sgs/hero.splitMediaType
+- `block-setting:select-from-enum:mode`: block settings, role select-from-enum, mode (53); has nothing; wave modes and values with no CSS property; e.g. sgs/before-after.afterMediaType, sgs/before-after.beforeMediaType, sgs/brand-strip.logoLayout, sgs/business-info.displayType, sgs/buybox.framingMode
+- `block-setting:select-from-enum:number`: block settings, role select-from-enum, number (2); has nothing; wave modes and values with no CSS property; e.g. sgs/form-field-file.maxSize, sgs/star-rating.starSize
+- `block-setting:select-from-enum:object`: block settings, role select-from-enum, object (18); has nothing; wave modes and values with no CSS property; e.g. sgs/button.iconShapeSize, sgs/button.iconSize, sgs/button.widthType, sgs/choice-flow.optionMediaSize, sgs/container.shapeDividerBottomScale
+- `block-setting:select-from-enum:string`: block settings, role select-from-enum, string (26); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion.iconPosition, sgs/audio.audioMimeType, sgs/brand-strip.imageEffect, sgs/button.iconPosition, sgs/buybox.pickerBandScale
+- `block-setting:styling:boolean`: block settings, role styling, boolean (16); has nothing; wave modes and values with no CSS property; e.g. sgs/container.shapeDividerBottomFlip, sgs/container.shapeDividerBottomInvert, sgs/container.shapeDividerTopFlip, sgs/container.shapeDividerTopInvert, sgs/hero.shapeDividerBottomFlip
+- `block-setting:styling:motion`: block settings, role styling, motion (2, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/decorative-image.pathDrawDurationMs, sgs/decorative-image.pathDrawOnScroll
+- `block-setting:styling:number`: block settings, role styling, number (3); has nothing; wave modes and values with no CSS property; e.g. sgs/nav-bar-menu.collapsePoint, sgs/responsive-logo.logoSwitchCustomPx, sgs/table-of-contents.scrollOffset
+- `block-setting:styling:object`: block settings, role styling, object (2); has nothing; wave modes and values with no CSS property; e.g. sgs/decorative-image.decorMedia, sgs/nav-drawer.anchor
+- `block-setting:styling:string`: block settings, role styling, string (106); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.sgsCustomCss, sgs/accordion.sgsCustomCss, sgs/account.sgsCustomCss, sgs/audio.sgsCustomCss, sgs/before-after.sgsCustomCss
+- `block-setting:svg:string`: block settings, role svg, string (12); has nothing; wave content, media and icons; e.g. sgs/before-after.afterSvgContent, sgs/before-after.beforeSvgContent, sgs/button.iconSvg, sgs/container.bgSvgContent, sgs/hero.bgSvgContent
+- `block-setting:tag-identity:mode`: block settings, role tag-identity, mode (4); has nothing; wave modes and values with no CSS property; e.g. sgs/heading.level, sgs/icon-list.headingLevel, sgs/media.mediaType, sgs/product-faq.headingLevel
+- `block-setting:tag-identity:styling`: block settings, role tag-identity, styling (1); has nothing; wave modes and values with no CSS property; e.g. sgs/product-card.headingLevel
+- `block-setting:technical:array`: block settings, role technical, array (9); has nothing; wave shop, forms and data; e.g. sgs/card-grid.handpickedIds, sgs/card-grid.productCategories, sgs/card-grid.productIds, sgs/card-grid.productTags, sgs/option-picker.contentImpact
+- `block-setting:technical:boolean`: block settings, role technical, boolean (4); has nothing; wave shop, forms and data; e.g. sgs/accordion.faqSchema, sgs/star-rating.schemaEnabled, sgs/testimonial.schemaEnabled, sgs/trustpilot-reviews.showSchema
+- `block-setting:technical:integer`: block settings, role technical, integer (2); has nothing; wave shop, forms and data; e.g. sgs/filter-search.threshold, sgs/icon-list.menuRef
+- `block-setting:technical:number`: block settings, role technical, number (19); has nothing; wave shop, forms and data; e.g. sgs/card-grid.categoryTerm, sgs/card-grid.count, sgs/card-grid.productLimit, sgs/card-grid.queryCategory, sgs/card-grid.queryPostsPerPage
+- `block-setting:technical:object`: block settings, role technical, object (1); has nothing; wave shop, forms and data; e.g. sgs/product-search.maxResults
+- `block-setting:technical:string`: block settings, role technical, string (92); has nothing; wave shop, forms and data; e.g. sgs/button.anchor, sgs/button.className, sgs/button.rel, sgs/button.transitionEasingCustom, sgs/buybox.pickerBandAxis
+- `block-setting:text-content:number`: block settings, role text-content, number (1); has nothing; wave content, media and icons; e.g. sgs/nav-drawer-menu.itemMagnetStrength
+- `block-setting:text-content:object`: block settings, role text-content, object (3); has nothing; wave content, media and icons; e.g. sgs/business-info.separators, sgs/cart.separators, sgs/pricing-table.featureSeparators
+- `block-setting:typography:mode`: block settings, role typography, mode (5); has nothing; wave modes and values with no CSS property; e.g. sgs/button.textDecorationHover, sgs/nav-bar-menu.itemTextAlign, sgs/nav-bar-menu.itemTextWrap, sgs/nav-drawer-menu.itemTextAlign, sgs/nav-drawer-menu.itemTextWrap
+- `block-setting:typography:string`: block settings, role typography, string (500); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion.fontSizeUnit, sgs/accordion.letterSpacingUnit, sgs/accordion.lineHeightUnit, sgs/account.cardDescFontSizeUnit, sgs/account.cardDescLetterSpacingUnit
+- `block-setting:unclassified:array`: block settings, role unclassified, array (11); has nothing; wave behaviour recognisers; e.g. sgs/account.hiddenEndpoints, sgs/buybox.pickerAlwaysShowAxes, sgs/choice-flow-question.options, sgs/choice-flow-result.matchTags, sgs/language-switch.languages
+- `block-setting:unclassified:integer`: block settings, role unclassified, integer (4); has nothing; wave behaviour recognisers; e.g. sgs/choice-flow-result.rateLimit, sgs/google-rating-badge.compactBelow, sgs/google-rating-badge.hideBelow, sgs/google-rating-badge.reviewCount
+- `block-setting:unclassified:number`: block settings, role unclassified, number (25); has nothing; wave behaviour recognisers; e.g. sgs/audio.reactiveSensitivity, sgs/brand-strip.brandMaxItems, sgs/container.surfaceSaturate, sgs/diagram-dimension.extOvershoot, sgs/diagram-dimension.extReach
+- `block-setting:unclassified:object`: block settings, role unclassified, object (21); has nothing; wave behaviour recognisers; e.g. sgs/account.cardDescriptions, sgs/account.navIcons, sgs/account.statusStepLabels, sgs/card-grid.separators, sgs/choice-flow.headerLogo
+- `block-setting:unclassified:string`: block settings, role unclassified, string (73); has nothing; wave behaviour recognisers; e.g. sgs/account.greeting, sgs/account.latestOrderHeading, sgs/account.parcelTrackingLabel, sgs/account.shopLinkLabel, sgs/account.viewOrderLabel
+- `block-setting:visual:boolean`: block settings, role visual, boolean (33); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.sgsHoverBorderAccent, sgs/container.sgsHoverGrayscale, sgs/container.sgsHoverImageZoom, sgs/container.sgsHoverTilt3D, sgs/google-reviews.sgsHoverBorderAccent
+- `block-setting:visual:mode`: block settings, role visual, mode (12); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.backgroundAttachment, sgs/container.sgsHoverScalePreset, sgs/google-reviews.sgsHoverScalePreset, sgs/hero.backgroundAttachment, sgs/info-box.sgsHoverScalePreset
+- `block-setting:visual:number`: block settings, role visual, number (30); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.sgsHoverScale, sgs/container.sgsHoverZoom, sgs/google-reviews.sgsHoverScale, sgs/google-reviews.sgsHoverZoom, sgs/info-box.sgsHoverScale
+- `block-setting:visual:object`: block settings, role visual, object (7); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/brand-strip.separators, sgs/container.separators, sgs/icon-list.separators, sgs/nav-bar-menu.separators, sgs/nav-bar-menu.submenuSeparators
+- `block-setting:visual:string`: block settings, role visual, string (22); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.sgsHoverShadow, sgs/container.sgsHoverShadowCustom, sgs/container.sgsHoverZoomStyle, sgs/google-rating-badge.shadow, sgs/google-reviews.sgsHoverShadow
 
 ## fx (33)
 
-- `fx:ambient-float`: fx effect ambient-float (V, load,visible) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:carousel-loop`: fx effect carousel-loop (V, load) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:cursor-field`: fx effect cursor-field (V, hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:curtain`: fx effect curtain (V, open) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:draggable`: fx effect draggable (G, load) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:draw`: fx effect draw (G, scroll,load,hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:flip`: fx effect flip (G, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:follow-pointer`: fx effect follow-pointer (V, hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:generative-background`: fx effect generative-background (W, load) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:glare`: fx effect glare (V, hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:grid-dots`: fx effect grid-dots (V, hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:horizontal-panel`: fx effect horizontal-panel (G, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:image-sequence`: fx effect image-sequence (G, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:ken-burns`: fx effect ken-burns (V, load,visible) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:lottie`: fx effect lottie (H, load,visible,hover,scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:magnet`: fx effect magnet (V, hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:marquee`: fx effect marquee (V, load,visible) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:morph`: fx effect morph (G, scroll,load,hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:motion-path`: fx effect motion-path (G, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:page-transitions`: fx effect page-transitions (V, load) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:parallax`: fx effect parallax (V, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:particles`: fx effect particles (V, hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:pin-scrub`: fx effect pin-scrub (G, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:ripple`: fx effect ripple (V, pointerdown,click) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:scramble`: fx effect scramble (G, scroll,load,hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:scroll-progress`: fx effect scroll-progress (V, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:scroll-smoother`: fx effect scroll-smoother (H, scroll) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:scrub`: fx effect scrub (G, scroll,load,hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:sheen`: fx effect sheen (V, hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:split-reveal`: fx effect split-reveal (G, scroll,load,hover) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:surface-treatment`: fx effect surface-treatment (W, load) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:svg-loop`: fx effect svg-loop (V, load,visible) (1, motion); has nothing; wave unassigned, waits on phase-0
-- `fx:wave-gradient`: fx effect wave-gradient (W, load) (1, motion); has nothing; wave unassigned, waits on phase-0
+- `fx:ambient-float`: fx effect ambient-float (V, load,visible) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:carousel-loop`: fx effect carousel-loop (V, load) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:cursor-field`: fx effect cursor-field (V, hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:curtain`: fx effect curtain (V, open) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:draggable`: fx effect draggable (G, load) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:draw`: fx effect draw (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:flip`: fx effect flip (G, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:follow-pointer`: fx effect follow-pointer (V, hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:generative-background`: fx effect generative-background (W, load) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:glare`: fx effect glare (V, hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:grid-dots`: fx effect grid-dots (V, hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:horizontal-panel`: fx effect horizontal-panel (G, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:image-sequence`: fx effect image-sequence (G, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:ken-burns`: fx effect ken-burns (V, load,visible) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:lottie`: fx effect lottie (H, load,visible,hover,scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:magnet`: fx effect magnet (V, hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:marquee`: fx effect marquee (V, load,visible) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:morph`: fx effect morph (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:motion-path`: fx effect motion-path (G, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:page-transitions`: fx effect page-transitions (V, load) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:parallax`: fx effect parallax (V, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:particles`: fx effect particles (V, hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:pin-scrub`: fx effect pin-scrub (G, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:ripple`: fx effect ripple (V, pointerdown,click) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:scramble`: fx effect scramble (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:scroll-progress`: fx effect scroll-progress (V, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:scroll-smoother`: fx effect scroll-smoother (H, scroll) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:scrub`: fx effect scrub (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:sheen`: fx effect sheen (V, hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:split-reveal`: fx effect split-reveal (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:surface-treatment`: fx effect surface-treatment (W, load) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:svg-loop`: fx effect svg-loop (V, load,visible) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `fx:wave-gradient`: fx effect wave-gradient (W, load) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
 
 ## motion-preset (57)
 
-- `motion-preset:effects:ambient-float`: effects presets, family ambient-float (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. ambient-float-bold, ambient-float-standard, ambient-float-subtle
-- `motion-preset:effects:cursor-field`: effects presets, family cursor-field (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. cursor-field-bold, cursor-field-standard, cursor-field-subtle
-- `motion-preset:effects:draw-hover`: effects presets, family draw-hover (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. draw-hover-bold, draw-hover-standard, draw-hover-subtle
-- `motion-preset:effects:ken-burns`: effects presets, family ken-burns (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. ken-burns-bold, ken-burns-standard, ken-burns-subtle
-- `motion-preset:effects:morph`: effects presets, family morph (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. morph-bold, morph-standard, morph-subtle
-- `motion-preset:effects:motion-path`: effects presets, family motion-path (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. motion-path-bold, motion-path-standard, motion-path-subtle
-- `motion-preset:effects:parallax`: effects presets, family parallax (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. parallax-bold, parallax-standard, parallax-subtle
-- `motion-preset:effects:particles`: effects presets, family particles (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. particles-bold, particles-standard, particles-subtle
-- `motion-preset:effects:pin-scrub`: effects presets, family pin-scrub (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. pin-scrub-bold, pin-scrub-standard, pin-scrub-subtle
-- `motion-preset:effects:ripple`: effects presets, family ripple (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. ripple-bold, ripple-standard, ripple-subtle
-- `motion-preset:effects:scramble-hover`: effects presets, family scramble-hover (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. scramble-hover-bold, scramble-hover-standard, scramble-hover-subtle
-- `motion-preset:effects:scrub`: effects presets, family scrub (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. scrub-bold, scrub-standard, scrub-subtle
-- `motion-preset:effects:svg-loop`: effects presets, family svg-loop (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. svg-loop-bold, svg-loop-standard, svg-loop-subtle
-- `motion-preset:entrance:draw`: entrance presets, family draw (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. draw-bold, draw-standard, draw-subtle
-- `motion-preset:entrance:entrance-blur-in`: entrance presets, family entrance-blur-in (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-blur-in, entrance-blur-in-bold, entrance-blur-in-standard, entrance-blur-in-subtle
-- `motion-preset:entrance:entrance-bounce-in`: entrance presets, family entrance-bounce-in (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-bounce-in, entrance-bounce-in-bold, entrance-bounce-in-standard, entrance-bounce-in-subtle
-- `motion-preset:entrance:entrance-fade-down`: entrance presets, family entrance-fade-down (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-fade-down, entrance-fade-down-bold, entrance-fade-down-standard, entrance-fade-down-subtle
-- `motion-preset:entrance:entrance-fade-in`: entrance presets, family entrance-fade-in (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-fade-in
-- `motion-preset:entrance:entrance-fade-left`: entrance presets, family entrance-fade-left (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-fade-left, entrance-fade-left-bold, entrance-fade-left-standard, entrance-fade-left-subtle
-- `motion-preset:entrance:entrance-fade-right`: entrance presets, family entrance-fade-right (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-fade-right, entrance-fade-right-bold, entrance-fade-right-standard, entrance-fade-right-subtle
-- `motion-preset:entrance:entrance-fade-up`: entrance presets, family entrance-fade-up (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-fade-up, entrance-fade-up-bold, entrance-fade-up-standard, entrance-fade-up-subtle
-- `motion-preset:entrance:entrance-reveal-up`: entrance presets, family entrance-reveal-up (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-reveal-up
-- `motion-preset:entrance:entrance-rotate-in`: entrance presets, family entrance-rotate-in (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-rotate-in, entrance-rotate-in-bold, entrance-rotate-in-standard, entrance-rotate-in-subtle
-- `motion-preset:entrance:entrance-scale-in`: entrance presets, family entrance-scale-in (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-scale-in, entrance-scale-in-bold, entrance-scale-in-standard, entrance-scale-in-subtle
-- `motion-preset:entrance:entrance-scale-out`: entrance presets, family entrance-scale-out (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-scale-out, entrance-scale-out-bold, entrance-scale-out-standard, entrance-scale-out-subtle
-- `motion-preset:entrance:entrance-slide-down`: entrance presets, family entrance-slide-down (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-slide-down, entrance-slide-down-bold, entrance-slide-down-standard, entrance-slide-down-subtle
-- `motion-preset:entrance:entrance-slide-left`: entrance presets, family entrance-slide-left (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-slide-left, entrance-slide-left-bold, entrance-slide-left-standard, entrance-slide-left-subtle
-- `motion-preset:entrance:entrance-slide-right`: entrance presets, family entrance-slide-right (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-slide-right, entrance-slide-right-bold, entrance-slide-right-standard, entrance-slide-right-subtle
-- `motion-preset:entrance:entrance-slide-up`: entrance presets, family entrance-slide-up (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. entrance-slide-up, entrance-slide-up-bold, entrance-slide-up-standard, entrance-slide-up-subtle
-- `motion-preset:entrance:keyframe-bounce`: entrance presets, family keyframe-bounce (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-bounce
-- `motion-preset:entrance:keyframe-fade-in`: entrance presets, family keyframe-fade-in (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-fade-in
-- `motion-preset:entrance:keyframe-fade-out`: entrance presets, family keyframe-fade-out (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-fade-out
-- `motion-preset:entrance:keyframe-fade-up`: entrance presets, family keyframe-fade-up (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-fade-up
-- `motion-preset:entrance:keyframe-pulse`: entrance presets, family keyframe-pulse (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-pulse
-- `motion-preset:entrance:keyframe-slide-up`: entrance presets, family keyframe-slide-up (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-slide-up
-- `motion-preset:entrance:keyframe-spin`: entrance presets, family keyframe-spin (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-spin
-- `motion-preset:entrance:keyframe-zoom-in`: entrance presets, family keyframe-zoom-in (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. keyframe-zoom-in
-- `motion-preset:entrance:nav-panel-item`: entrance presets, family nav-panel-item (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. nav-panel-item-bold, nav-panel-item-standard, nav-panel-item-subtle
-- `motion-preset:entrance:scramble`: entrance presets, family scramble (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. scramble-bold, scramble-standard, scramble-subtle
-- `motion-preset:entrance:split-reveal`: entrance presets, family split-reveal (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. split-reveal-bold, split-reveal-standard, split-reveal-subtle
-- `motion-preset:entrance:state-burger-morph`: entrance presets, family state-burger-morph (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. state-burger-morph
-- `motion-preset:entrance:state-count-pop`: entrance presets, family state-count-pop (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. state-count-pop
-- `motion-preset:entrance:state-icon-turn`: entrance presets, family state-icon-turn (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. state-icon-turn
-- `motion-preset:entrance:state-result-scale-in`: entrance presets, family state-result-scale-in (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. state-result-scale-in
-- `motion-preset:entrance:state-shake`: entrance presets, family state-shake (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. state-shake
-- `motion-preset:entrance:state-step-slide`: entrance presets, family state-step-slide (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. state-step-slide
-- `motion-preset:hover:follow-pointer`: hover presets, family follow-pointer (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. follow-pointer-bold, follow-pointer-standard, follow-pointer-subtle, hover-follow-pointer
-- `motion-preset:hover:hover-border-accent`: hover presets, family hover-border-accent (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-border-accent
-- `motion-preset:hover:hover-grayscale-to-colour`: hover presets, family hover-grayscale-to-colour (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-grayscale-to-colour
-- `motion-preset:hover:hover-indent`: hover presets, family hover-indent (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-indent
-- `motion-preset:hover:hover-lift`: hover presets, family hover-lift (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-lift, hover-lift-bold, hover-lift-standard, hover-lift-subtle
-- `motion-preset:hover:hover-none`: hover presets, family hover-none (1, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-none
-- `motion-preset:hover:hover-rotate`: hover presets, family hover-rotate (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-rotate, hover-rotate-bold, hover-rotate-standard, hover-rotate-subtle
-- `motion-preset:hover:hover-scale`: hover presets, family hover-scale (5, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-image-zoom, hover-scale, hover-scale-bold, hover-scale-standard, hover-scale-subtle
-- `motion-preset:hover:hover-translate`: hover presets, family hover-translate (4, motion); has nothing; wave unassigned, waits on phase-0; e.g. hover-translate, hover-translate-bold, hover-translate-standard, hover-translate-subtle
-- `motion-preset:hover:magnet`: hover presets, family magnet (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. magnet-bold, magnet-standard, magnet-subtle
-- `motion-preset:hover:sheen`: hover presets, family sheen (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. sheen-bold, sheen-standard, sheen-subtle
+- `motion-preset:effects:ambient-float`: effects presets, family ambient-float (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. ambient-float-bold, ambient-float-standard, ambient-float-subtle
+- `motion-preset:effects:cursor-field`: effects presets, family cursor-field (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. cursor-field-bold, cursor-field-standard, cursor-field-subtle
+- `motion-preset:effects:draw-hover`: effects presets, family draw-hover (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. draw-hover-bold, draw-hover-standard, draw-hover-subtle
+- `motion-preset:effects:ken-burns`: effects presets, family ken-burns (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. ken-burns-bold, ken-burns-standard, ken-burns-subtle
+- `motion-preset:effects:morph`: effects presets, family morph (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. morph-bold, morph-standard, morph-subtle
+- `motion-preset:effects:motion-path`: effects presets, family motion-path (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. motion-path-bold, motion-path-standard, motion-path-subtle
+- `motion-preset:effects:parallax`: effects presets, family parallax (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. parallax-bold, parallax-standard, parallax-subtle
+- `motion-preset:effects:particles`: effects presets, family particles (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. particles-bold, particles-standard, particles-subtle
+- `motion-preset:effects:pin-scrub`: effects presets, family pin-scrub (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. pin-scrub-bold, pin-scrub-standard, pin-scrub-subtle
+- `motion-preset:effects:ripple`: effects presets, family ripple (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. ripple-bold, ripple-standard, ripple-subtle
+- `motion-preset:effects:scramble-hover`: effects presets, family scramble-hover (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. scramble-hover-bold, scramble-hover-standard, scramble-hover-subtle
+- `motion-preset:effects:scrub`: effects presets, family scrub (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. scrub-bold, scrub-standard, scrub-subtle
+- `motion-preset:effects:svg-loop`: effects presets, family svg-loop (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. svg-loop-bold, svg-loop-standard, svg-loop-subtle
+- `motion-preset:entrance:draw`: entrance presets, family draw (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. draw-bold, draw-standard, draw-subtle
+- `motion-preset:entrance:entrance-blur-in`: entrance presets, family entrance-blur-in (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-blur-in, entrance-blur-in-bold, entrance-blur-in-standard, entrance-blur-in-subtle
+- `motion-preset:entrance:entrance-bounce-in`: entrance presets, family entrance-bounce-in (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-bounce-in, entrance-bounce-in-bold, entrance-bounce-in-standard, entrance-bounce-in-subtle
+- `motion-preset:entrance:entrance-fade-down`: entrance presets, family entrance-fade-down (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-fade-down, entrance-fade-down-bold, entrance-fade-down-standard, entrance-fade-down-subtle
+- `motion-preset:entrance:entrance-fade-in`: entrance presets, family entrance-fade-in (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-fade-in
+- `motion-preset:entrance:entrance-fade-left`: entrance presets, family entrance-fade-left (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-fade-left, entrance-fade-left-bold, entrance-fade-left-standard, entrance-fade-left-subtle
+- `motion-preset:entrance:entrance-fade-right`: entrance presets, family entrance-fade-right (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-fade-right, entrance-fade-right-bold, entrance-fade-right-standard, entrance-fade-right-subtle
+- `motion-preset:entrance:entrance-fade-up`: entrance presets, family entrance-fade-up (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-fade-up, entrance-fade-up-bold, entrance-fade-up-standard, entrance-fade-up-subtle
+- `motion-preset:entrance:entrance-reveal-up`: entrance presets, family entrance-reveal-up (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-reveal-up
+- `motion-preset:entrance:entrance-rotate-in`: entrance presets, family entrance-rotate-in (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-rotate-in, entrance-rotate-in-bold, entrance-rotate-in-standard, entrance-rotate-in-subtle
+- `motion-preset:entrance:entrance-scale-in`: entrance presets, family entrance-scale-in (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-scale-in, entrance-scale-in-bold, entrance-scale-in-standard, entrance-scale-in-subtle
+- `motion-preset:entrance:entrance-scale-out`: entrance presets, family entrance-scale-out (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-scale-out, entrance-scale-out-bold, entrance-scale-out-standard, entrance-scale-out-subtle
+- `motion-preset:entrance:entrance-slide-down`: entrance presets, family entrance-slide-down (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-slide-down, entrance-slide-down-bold, entrance-slide-down-standard, entrance-slide-down-subtle
+- `motion-preset:entrance:entrance-slide-left`: entrance presets, family entrance-slide-left (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-slide-left, entrance-slide-left-bold, entrance-slide-left-standard, entrance-slide-left-subtle
+- `motion-preset:entrance:entrance-slide-right`: entrance presets, family entrance-slide-right (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-slide-right, entrance-slide-right-bold, entrance-slide-right-standard, entrance-slide-right-subtle
+- `motion-preset:entrance:entrance-slide-up`: entrance presets, family entrance-slide-up (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. entrance-slide-up, entrance-slide-up-bold, entrance-slide-up-standard, entrance-slide-up-subtle
+- `motion-preset:entrance:keyframe-bounce`: entrance presets, family keyframe-bounce (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-bounce
+- `motion-preset:entrance:keyframe-fade-in`: entrance presets, family keyframe-fade-in (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-fade-in
+- `motion-preset:entrance:keyframe-fade-out`: entrance presets, family keyframe-fade-out (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-fade-out
+- `motion-preset:entrance:keyframe-fade-up`: entrance presets, family keyframe-fade-up (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-fade-up
+- `motion-preset:entrance:keyframe-pulse`: entrance presets, family keyframe-pulse (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-pulse
+- `motion-preset:entrance:keyframe-slide-up`: entrance presets, family keyframe-slide-up (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-slide-up
+- `motion-preset:entrance:keyframe-spin`: entrance presets, family keyframe-spin (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-spin
+- `motion-preset:entrance:keyframe-zoom-in`: entrance presets, family keyframe-zoom-in (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. keyframe-zoom-in
+- `motion-preset:entrance:nav-panel-item`: entrance presets, family nav-panel-item (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. nav-panel-item-bold, nav-panel-item-standard, nav-panel-item-subtle
+- `motion-preset:entrance:scramble`: entrance presets, family scramble (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. scramble-bold, scramble-standard, scramble-subtle
+- `motion-preset:entrance:split-reveal`: entrance presets, family split-reveal (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. split-reveal-bold, split-reveal-standard, split-reveal-subtle
+- `motion-preset:entrance:state-burger-morph`: entrance presets, family state-burger-morph (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. state-burger-morph
+- `motion-preset:entrance:state-count-pop`: entrance presets, family state-count-pop (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. state-count-pop
+- `motion-preset:entrance:state-icon-turn`: entrance presets, family state-icon-turn (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. state-icon-turn
+- `motion-preset:entrance:state-result-scale-in`: entrance presets, family state-result-scale-in (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. state-result-scale-in
+- `motion-preset:entrance:state-shake`: entrance presets, family state-shake (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. state-shake
+- `motion-preset:entrance:state-step-slide`: entrance presets, family state-step-slide (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. state-step-slide
+- `motion-preset:hover:follow-pointer`: hover presets, family follow-pointer (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. follow-pointer-bold, follow-pointer-standard, follow-pointer-subtle, hover-follow-pointer
+- `motion-preset:hover:hover-border-accent`: hover presets, family hover-border-accent (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-border-accent
+- `motion-preset:hover:hover-grayscale-to-colour`: hover presets, family hover-grayscale-to-colour (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-grayscale-to-colour
+- `motion-preset:hover:hover-indent`: hover presets, family hover-indent (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-indent
+- `motion-preset:hover:hover-lift`: hover presets, family hover-lift (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-lift, hover-lift-bold, hover-lift-standard, hover-lift-subtle
+- `motion-preset:hover:hover-none`: hover presets, family hover-none (1, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-none
+- `motion-preset:hover:hover-rotate`: hover presets, family hover-rotate (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-rotate, hover-rotate-bold, hover-rotate-standard, hover-rotate-subtle
+- `motion-preset:hover:hover-scale`: hover presets, family hover-scale (5, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-image-zoom, hover-scale, hover-scale-bold, hover-scale-standard, hover-scale-subtle
+- `motion-preset:hover:hover-translate`: hover presets, family hover-translate (4, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. hover-translate, hover-translate-bold, hover-translate-standard, hover-translate-subtle
+- `motion-preset:hover:magnet`: hover presets, family magnet (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. magnet-bold, magnet-standard, magnet-subtle
+- `motion-preset:hover:sheen`: hover presets, family sheen (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sheen-bold, sheen-standard, sheen-subtle
 
 ## sgs-support (40)
 
-- `sgs-support:animationItems`: supports.sgs.animationItems (1); has nothing; wave unassigned; e.g. sgs/card-grid
-- `sgs-support:arrayContentLift`: supports.sgs.arrayContentLift (9); has nothing; wave unassigned; e.g. sgs/brand-strip, sgs/card-grid, sgs/google-reviews, sgs/icon-list, sgs/option-picker
-- `sgs-support:blockLinkAlways`: supports.sgs.blockLinkAlways (1); has nothing; wave unassigned; e.g. sgs/product-card
-- `sgs-support:blockLinkAutoHelp`: supports.sgs.blockLinkAutoHelp (2); has nothing; wave unassigned; e.g. sgs/product-card, sgs/responsive-logo
-- `sgs-support:blockLinkAutoUrl`: supports.sgs.blockLinkAutoUrl (1); has nothing; wave unassigned; e.g. sgs/responsive-logo
-- `sgs-support:boxFamilies`: supports.sgs.boxFamilies (70); has nothing; wave unassigned; e.g. sgs/accordion, sgs/accordion-item, sgs/audio, sgs/before-after, sgs/brand-strip
-- `sgs-support:collection`: supports.sgs.collection (16); has nothing; wave unassigned; e.g. sgs/accordion, sgs/brand-strip, sgs/breadcrumbs, sgs/card-grid, sgs/gallery
-- `sgs-support:colourExemptions`: supports.sgs.colourExemptions (17); has nothing; wave unassigned; e.g. sgs/before-after, sgs/business-info, sgs/cart, sgs/filter-search, sgs/gallery
-- `sgs-support:containerKind`: supports.sgs.containerKind (20); has nothing; wave unassigned; e.g. sgs/card-grid, sgs/container, sgs/feature-grid, sgs/form, sgs/hero
-- `sgs-support:elements`: supports.sgs.elements (97); has nothing; wave unassigned; e.g. sgs/accordion, sgs/accordion-item, sgs/account, sgs/audio, sgs/before-after
-- `sgs-support:enabledExtensions`: supports.sgs.enabledExtensions (21); has nothing; wave unassigned; e.g. sgs/button, sgs/container, sgs/google-reviews, sgs/heading, sgs/hero
-- `sgs-support:fx`: supports.sgs.fx (8); has nothing; wave unassigned; e.g. sgs/before-after, sgs/buybox, sgs/decorative-image, sgs/gallery, sgs/google-reviews
-- `sgs-support:headerEssential`: supports.sgs.headerEssential (6); has nothing; wave unassigned; e.g. sgs/cart, sgs/nav-bar-menu, sgs/nav-drawer-menu, sgs/product-search, sgs/responsive-logo
-- `sgs-support:hideExtensions`: supports.sgs.hideExtensions (32); has nothing; wave unassigned; e.g. sgs/accordion-item, sgs/brand-strip, sgs/choice-flow, sgs/choice-flow-question, sgs/choice-flow-result
-- `sgs-support:hoverDefaults`: supports.sgs.hoverDefaults (6); has nothing; wave unassigned; e.g. sgs/google-reviews, sgs/info-box, sgs/pricing-table, sgs/product-card, sgs/team-member
-- `sgs-support:hoverExcludeControls`: supports.sgs.hoverExcludeControls (4); has nothing; wave unassigned; e.g. sgs/container, sgs/google-reviews, sgs/pricing-table, sgs/whatsapp-cta
-- `sgs-support:iconPicker`: supports.sgs.iconPicker (14); has nothing; wave unassigned; e.g. sgs/accordion, sgs/button, sgs/cart, sgs/counter, sgs/form-field-tiles
-- `sgs-support:imageControls`: supports.sgs.imageControls (14); has nothing; wave unassigned; e.g. sgs/card-grid, sgs/cart, sgs/form-field-tiles, sgs/gallery, sgs/google-rating-badge
-- `sgs-support:imageControlsExplicit`: supports.sgs.imageControlsExplicit (3); has nothing; wave unassigned; e.g. sgs/card-grid, sgs/gallery, sgs/team-member
-- `sgs-support:intrinsicColumns`: supports.sgs.intrinsicColumns (2); has nothing; wave unassigned; e.g. sgs/container, sgs/site-footer-row
-- `sgs-support:is_section_root`: supports.sgs.is_section_root (3); has nothing; wave unassigned; e.g. sgs/hero, sgs/notice-banner, sgs/trust-bar
-- `sgs-support:mediaElements`: supports.sgs.mediaElements (20); has nothing; wave unassigned; e.g. sgs/before-after, sgs/brand-strip, sgs/buybox, sgs/card-grid, sgs/cart
-- `sgs-support:motion`: supports.sgs.motion (77, motion); has nothing; wave unassigned, waits on phase-0; e.g. sgs/accordion, sgs/account, sgs/audio, sgs/before-after, sgs/brand-strip
-- `sgs-support:motionDelegate`: supports.sgs.motionDelegate (1); has nothing; wave unassigned; e.g. sgs/card-grid
-- `sgs-support:motionItems`: supports.sgs.motionItems (8); has nothing; wave unassigned; e.g. sgs/card-grid, sgs/choice-flow-question, sgs/form, sgs/form-field-tiles, sgs/gallery
-- `sgs-support:presetManualValues`: supports.sgs.presetManualValues (1); has nothing; wave unassigned; e.g. sgs/google-reviews
-- `sgs-support:presetSelectors`: supports.sgs.presetSelectors (3); has nothing; wave unassigned; e.g. sgs/google-reviews, sgs/info-box, sgs/team-member
-- `sgs-support:scalarContentLift`: supports.sgs.scalarContentLift (5); has nothing; wave unassigned; e.g. sgs/google-reviews, sgs/media, sgs/option-picker, sgs/team-member, sgs/testimonial
-- `sgs-support:scalarStylingLift`: supports.sgs.scalarStylingLift (9); has nothing; wave unassigned; e.g. sgs/card-grid, sgs/counter, sgs/media, sgs/option-picker, sgs/product-card
-- `sgs-support:scrim`: supports.sgs.scrim (6); has nothing; wave unassigned; e.g. sgs/cart, sgs/gallery, sgs/modal, sgs/nav-bar-menu, sgs/nav-drawer
-- `sgs-support:sectionPadding`: supports.sgs.sectionPadding (1); has nothing; wave unassigned; e.g. sgs/container
-- `sgs-support:separators`: supports.sgs.separators (15); has nothing; wave unassigned; e.g. sgs/brand-strip, sgs/business-info, sgs/card-grid, sgs/cart, sgs/container
-- `sgs-support:shadowLift`: supports.sgs.shadowLift (5); has nothing; wave unassigned; e.g. sgs/cart, sgs/mega-panel, sgs/modal, sgs/nav-drawer, sgs/nav-drawer-menu
-- `sgs-support:siteInfoLinkRow`: supports.sgs.siteInfoLinkRow (1); has nothing; wave unassigned; e.g. sgs/social-icons
-- `sgs-support:spacingAxes`: supports.sgs.spacingAxes (2); has nothing; wave unassigned; e.g. sgs/google-reviews, sgs/tabs
-- `sgs-support:spacingDefaults`: supports.sgs.spacingDefaults (15); has nothing; wave unassigned; e.g. sgs/card-grid, sgs/cart, sgs/countdown-timer, sgs/counter, sgs/filter-search
-- `sgs-support:specRef`: supports.sgs.specRef (1); has nothing; wave unassigned; e.g. sgs/account
-- `sgs-support:sweepEligibility`: supports.sgs.sweepEligibility (2); has nothing; wave unassigned; e.g. sgs/nav-bar-menu, sgs/nav-drawer-menu
-- `sgs-support:variantAttr`: supports.sgs.variantAttr (5); has nothing; wave unassigned; e.g. sgs/hero, sgs/notice-banner, sgs/product-card, sgs/testimonial, sgs/trust-bar
-- `sgs-support:variants`: supports.sgs.variants (5); has nothing; wave unassigned; e.g. sgs/hero, sgs/notice-banner, sgs/product-card, sgs/testimonial, sgs/trust-bar
+- `sgs-support:animationItems`: supports.sgs.animationItems (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid
+- `sgs-support:arrayContentLift`: supports.sgs.arrayContentLift (9); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/brand-strip, sgs/card-grid, sgs/google-reviews, sgs/icon-list, sgs/option-picker
+- `sgs-support:blockLinkAlways`: supports.sgs.blockLinkAlways (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/product-card
+- `sgs-support:blockLinkAutoHelp`: supports.sgs.blockLinkAutoHelp (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/product-card, sgs/responsive-logo
+- `sgs-support:blockLinkAutoUrl`: supports.sgs.blockLinkAutoUrl (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/responsive-logo
+- `sgs-support:boxFamilies`: supports.sgs.boxFamilies (70); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/accordion-item, sgs/audio, sgs/before-after, sgs/brand-strip
+- `sgs-support:collection`: supports.sgs.collection (16); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/brand-strip, sgs/breadcrumbs, sgs/card-grid, sgs/gallery
+- `sgs-support:colourExemptions`: supports.sgs.colourExemptions (17); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/before-after, sgs/business-info, sgs/cart, sgs/filter-search, sgs/gallery
+- `sgs-support:containerKind`: supports.sgs.containerKind (20); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/container, sgs/feature-grid, sgs/form, sgs/hero
+- `sgs-support:elements`: supports.sgs.elements (97); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/accordion-item, sgs/account, sgs/audio, sgs/before-after
+- `sgs-support:enabledExtensions`: supports.sgs.enabledExtensions (21); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/button, sgs/container, sgs/google-reviews, sgs/heading, sgs/hero
+- `sgs-support:fx`: supports.sgs.fx (8); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/before-after, sgs/buybox, sgs/decorative-image, sgs/gallery, sgs/google-reviews
+- `sgs-support:headerEssential`: supports.sgs.headerEssential (6); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/cart, sgs/nav-bar-menu, sgs/nav-drawer-menu, sgs/product-search, sgs/responsive-logo
+- `sgs-support:hideExtensions`: supports.sgs.hideExtensions (32); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion-item, sgs/brand-strip, sgs/choice-flow, sgs/choice-flow-question, sgs/choice-flow-result
+- `sgs-support:hoverDefaults`: supports.sgs.hoverDefaults (6); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/info-box, sgs/pricing-table, sgs/product-card, sgs/team-member
+- `sgs-support:hoverExcludeControls`: supports.sgs.hoverExcludeControls (4); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/container, sgs/google-reviews, sgs/pricing-table, sgs/whatsapp-cta
+- `sgs-support:iconPicker`: supports.sgs.iconPicker (14); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/button, sgs/cart, sgs/counter, sgs/form-field-tiles
+- `sgs-support:imageControls`: supports.sgs.imageControls (14); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/cart, sgs/form-field-tiles, sgs/gallery, sgs/google-rating-badge
+- `sgs-support:imageControlsExplicit`: supports.sgs.imageControlsExplicit (3); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/gallery, sgs/team-member
+- `sgs-support:intrinsicColumns`: supports.sgs.intrinsicColumns (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/container, sgs/site-footer-row
+- `sgs-support:is_section_root`: supports.sgs.is_section_root (3); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/hero, sgs/notice-banner, sgs/trust-bar
+- `sgs-support:mediaElements`: supports.sgs.mediaElements (20); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/before-after, sgs/brand-strip, sgs/buybox, sgs/card-grid, sgs/cart
+- `sgs-support:motion`: supports.sgs.motion (77, motion); has nothing; wave exclusion candidate (awaiting Bean), waits on phase-0; e.g. sgs/accordion, sgs/account, sgs/audio, sgs/before-after, sgs/brand-strip
+- `sgs-support:motionDelegate`: supports.sgs.motionDelegate (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid
+- `sgs-support:motionItems`: supports.sgs.motionItems (8); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/choice-flow-question, sgs/form, sgs/form-field-tiles, sgs/gallery
+- `sgs-support:presetManualValues`: supports.sgs.presetManualValues (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews
+- `sgs-support:presetSelectors`: supports.sgs.presetSelectors (3); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/info-box, sgs/team-member
+- `sgs-support:scalarContentLift`: supports.sgs.scalarContentLift (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/media, sgs/option-picker, sgs/team-member, sgs/testimonial
+- `sgs-support:scalarStylingLift`: supports.sgs.scalarStylingLift (9); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/counter, sgs/media, sgs/option-picker, sgs/product-card
+- `sgs-support:scrim`: supports.sgs.scrim (6); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/cart, sgs/gallery, sgs/modal, sgs/nav-bar-menu, sgs/nav-drawer
+- `sgs-support:sectionPadding`: supports.sgs.sectionPadding (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/container
+- `sgs-support:separators`: supports.sgs.separators (15); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/brand-strip, sgs/business-info, sgs/card-grid, sgs/cart, sgs/container
+- `sgs-support:shadowLift`: supports.sgs.shadowLift (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/cart, sgs/mega-panel, sgs/modal, sgs/nav-drawer, sgs/nav-drawer-menu
+- `sgs-support:siteInfoLinkRow`: supports.sgs.siteInfoLinkRow (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/social-icons
+- `sgs-support:spacingAxes`: supports.sgs.spacingAxes (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/tabs
+- `sgs-support:spacingDefaults`: supports.sgs.spacingDefaults (15); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/cart, sgs/countdown-timer, sgs/counter, sgs/filter-search
+- `sgs-support:specRef`: supports.sgs.specRef (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/account
+- `sgs-support:sweepEligibility`: supports.sgs.sweepEligibility (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/nav-bar-menu, sgs/nav-drawer-menu
+- `sgs-support:variantAttr`: supports.sgs.variantAttr (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/hero, sgs/notice-banner, sgs/product-card, sgs/testimonial, sgs/trust-bar
+- `sgs-support:variants`: supports.sgs.variants (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/hero, sgs/notice-banner, sgs/product-card, sgs/testimonial, sgs/trust-bar
 
 ## extension (13)
 
-- `extension:animation`: extension animation (animation.js) (10, motion); has nothing; wave unassigned, waits on phase-0; e.g. sgsAnimation, sgsAnimationDelay, sgsAnimationDistance, sgsAnimationDuration, sgsAnimationEasing
-- `extension:blockLink`: extension blockLink (hover-effects/attributes.js) (4); has nothing; wave unassigned; e.g. sgsBlockLink, sgsBlockLinkLabel, sgsBlockLinkSource, sgsBlockLinkTarget
-- `extension:blockLinkAuto`: extension blockLinkAuto (hover-effects/attributes.js) (1); has nothing; wave unassigned; e.g. sgsBlockLinkAuto
-- `extension:childSizing`: extension childSizing (child-sizing.js) (2); has nothing; wave unassigned; e.g. sgsChildSizing, sgsChildWidth
-- `extension:chipGap`: extension chipGap (product-filter-chips-gap.js) (1); has nothing; wave unassigned; e.g. sgsChipGap
-- `extension:clickEffects`: extension clickEffects (hover-effects/attributes.js) (3); has nothing; wave unassigned; e.g. sgsClickEffect, sgsClickRippleColour, sgsClickRippleDuration
-- `extension:conditionalVisibility`: extension conditionalVisibility (conditional-visibility.js) (9); has nothing; wave unassigned; e.g. sgsConditionCollectionQueryId, sgsConditionDateEnd, sgsConditionDateStart, sgsConditionDays, sgsConditionLoggedIn
-- `extension:customCss`: extension customCss (custom-css.js) (3); has nothing; wave unassigned; e.g. sgsCustomCss, sgsCustomCssId, sgsCustomCssNote
-- `extension:hover`: extension hover (hover-effects/attributes.js) (19, motion); has nothing; wave unassigned, waits on phase-0; e.g. sgsHoverBorderAccent, sgsHoverDuration, sgsHoverDurationMs, sgsHoverEasing, sgsHoverEasingCustom
-- `extension:imageControls`: extension imageControls (image-controls.js) (8); has nothing; wave unassigned; e.g. sgsColourTreatment, sgsHeightDesktop, sgsHeightMobile, sgsHeightTablet, sgsHeightUnit
-- `extension:parallax`: extension parallax (parallax.js) (2, motion); has nothing; wave unassigned, waits on phase-0; e.g. sgsParallax, sgsParallaxStrength
-- `extension:responsiveVisibility`: extension responsiveVisibility (responsive-visibility.js) (4); has nothing; wave unassigned; e.g. sgsCollapseVisibility, sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet
-- `extension:sameTerm`: extension sameTerm (product-collection-same-term.js) (1); has nothing; wave unassigned; e.g. sgsSameTermAs
+- `extension:animation`: extension animation (animation.js) (10, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsAnimation, sgsAnimationDelay, sgsAnimationDistance, sgsAnimationDuration, sgsAnimationEasing
+- `extension:blockLink`: extension blockLink (hover-effects/attributes.js) (4); has nothing; wave behaviour recognisers; e.g. sgsBlockLink, sgsBlockLinkLabel, sgsBlockLinkSource, sgsBlockLinkTarget
+- `extension:blockLinkAuto`: extension blockLinkAuto (hover-effects/attributes.js) (1); has nothing; wave behaviour recognisers; e.g. sgsBlockLinkAuto
+- `extension:childSizing`: extension childSizing (child-sizing.js) (2); has nothing; wave modes and values with no CSS property; e.g. sgsChildSizing, sgsChildWidth
+- `extension:chipGap`: extension chipGap (product-filter-chips-gap.js) (1); has nothing; wave modes and values with no CSS property; e.g. sgsChipGap
+- `extension:clickEffects`: extension clickEffects (hover-effects/attributes.js) (3); has nothing; wave behaviour recognisers; e.g. sgsClickEffect, sgsClickRippleColour, sgsClickRippleDuration
+- `extension:conditionalVisibility`: extension conditionalVisibility (conditional-visibility.js) (9); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgsConditionCollectionQueryId, sgsConditionDateEnd, sgsConditionDateStart, sgsConditionDays, sgsConditionLoggedIn
+- `extension:customCss`: extension customCss (custom-css.js) (3); has nothing; wave modes and values with no CSS property; e.g. sgsCustomCss, sgsCustomCssId, sgsCustomCssNote
+- `extension:hover`: extension hover (hover-effects/attributes.js) (19, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsHoverBorderAccent, sgsHoverDuration, sgsHoverDurationMs, sgsHoverEasing, sgsHoverEasingCustom
+- `extension:imageControls`: extension imageControls (image-controls.js) (8); has nothing; wave content, media and icons; e.g. sgsColourTreatment, sgsHeightDesktop, sgsHeightMobile, sgsHeightTablet, sgsHeightUnit
+- `extension:parallax`: extension parallax (parallax.js) (2, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsParallax, sgsParallaxStrength
+- `extension:responsiveVisibility`: extension responsiveVisibility (responsive-visibility.js) (4); has nothing; wave modes and values with no CSS property; e.g. sgsCollapseVisibility, sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet
+- `extension:sameTerm`: extension sameTerm (product-collection-same-term.js) (1); has nothing; wave shop, forms and data; e.g. sgsSameTermAs
 
 ## template (16)
 
-- `template:404`: templates/404.html (1); has nothing; wave unassigned
-- `template:archive-product`: templates/archive-product.html (1); has nothing; wave unassigned
-- `template:archive`: templates/archive.html (1); has nothing; wave unassigned
-- `template:cart`: templates/cart.html (1); has nothing; wave unassigned
-- `template:checkout`: templates/checkout.html (1); has nothing; wave unassigned
-- `template:front-page`: templates/front-page.html (1); has nothing; wave unassigned
-- `template:home`: templates/home.html (1); has nothing; wave unassigned
-- `template:index`: templates/index.html (1); has nothing; wave unassigned
-- `template:order-confirmation`: templates/order-confirmation.html (1); has nothing; wave unassigned
-- `template:page-no-title`: templates/page-no-title.html (1); has nothing; wave unassigned
-- `template:page`: templates/page.html (1); has nothing; wave unassigned
-- `template:product-search-results`: templates/product-search-results.html (1); has nothing; wave unassigned
-- `template:search`: templates/search.html (1); has nothing; wave unassigned
-- `template:single-product`: templates/single-product.html (1); has nothing; wave unassigned
-- `template:single`: templates/single.html (1); has nothing; wave unassigned
-- `template:taxonomy-product_attribute`: templates/taxonomy-product_attribute.html (1); has nothing; wave unassigned
+- `template:404`: templates/404.html (1); has nothing; wave site and surfaces
+- `template:archive-product`: templates/archive-product.html (1); has nothing; wave site and surfaces
+- `template:archive`: templates/archive.html (1); has nothing; wave site and surfaces
+- `template:cart`: templates/cart.html (1); has nothing; wave site and surfaces
+- `template:checkout`: templates/checkout.html (1); has nothing; wave site and surfaces
+- `template:front-page`: templates/front-page.html (1); has nothing; wave site and surfaces
+- `template:home`: templates/home.html (1); has nothing; wave site and surfaces
+- `template:index`: templates/index.html (1); has nothing; wave site and surfaces
+- `template:order-confirmation`: templates/order-confirmation.html (1); has nothing; wave site and surfaces
+- `template:page-no-title`: templates/page-no-title.html (1); has nothing; wave site and surfaces
+- `template:page`: templates/page.html (1); has nothing; wave site and surfaces
+- `template:product-search-results`: templates/product-search-results.html (1); has nothing; wave site and surfaces
+- `template:search`: templates/search.html (1); has nothing; wave site and surfaces
+- `template:single-product`: templates/single-product.html (1); has nothing; wave site and surfaces
+- `template:single`: templates/single.html (1); has nothing; wave site and surfaces
+- `template:taxonomy-product_attribute`: templates/taxonomy-product_attribute.html (1); has nothing; wave site and surfaces
 
 ## part (8)
 
-- `part:footer`: parts/footer.html (1); has nothing; wave unassigned
-- `part:header`: parts/header.html (1); has nothing; wave unassigned
-- `part:sgs-archive-toolbar`: parts/sgs-archive-toolbar.html (1); has nothing; wave unassigned
-- `part:sgs-cart-content`: parts/sgs-cart-content.html (1); has nothing; wave unassigned
-- `part:sgs-checkout-content`: parts/sgs-checkout-content.html (1); has nothing; wave unassigned
-- `part:sgs-order-confirmation-content`: parts/sgs-order-confirmation-content.html (1); has nothing; wave unassigned
-- `part:sgs-pdp-buybox`: parts/sgs-pdp-buybox.html (1); has nothing; wave unassigned
-- `part:sgs-pdp-content`: parts/sgs-pdp-content.html (1); has nothing; wave unassigned
+- `part:footer`: parts/footer.html (1); has nothing; wave site and surfaces
+- `part:header`: parts/header.html (1); has nothing; wave site and surfaces
+- `part:sgs-archive-toolbar`: parts/sgs-archive-toolbar.html (1); has nothing; wave site and surfaces
+- `part:sgs-cart-content`: parts/sgs-cart-content.html (1); has nothing; wave site and surfaces
+- `part:sgs-checkout-content`: parts/sgs-checkout-content.html (1); has nothing; wave site and surfaces
+- `part:sgs-order-confirmation-content`: parts/sgs-order-confirmation-content.html (1); has nothing; wave site and surfaces
+- `part:sgs-pdp-buybox`: parts/sgs-pdp-buybox.html (1); has nothing; wave site and surfaces
+- `part:sgs-pdp-content`: parts/sgs-pdp-content.html (1); has nothing; wave site and surfaces
 
 ## pattern (58)
 
-- `pattern:about-image-left`: patterns/about-image-left.php (1); has nothing; wave unassigned
-- `pattern:about-mission`: patterns/about-mission.php (1); has nothing; wave unassigned
-- `pattern:about-stats`: patterns/about-stats.php (1); has nothing; wave unassigned
-- `pattern:about-story`: patterns/about-story.php (1); has nothing; wave unassigned
-- `pattern:contact-form`: patterns/contact-form.php (1); has nothing; wave unassigned
-- `pattern:contact-minimal`: patterns/contact-minimal.php (1); has nothing; wave unassigned
-- `pattern:cta-banner`: patterns/cta-banner.php (1); has nothing; wave unassigned
-- `pattern:cta-centred`: patterns/cta-centred.php (1); has nothing; wave unassigned
-- `pattern:drawer-anchored-card-stack`: patterns/drawer-anchored-card-stack.php (1); has nothing; wave unassigned
-- `pattern:drawer-centred-statement`: patterns/drawer-centred-statement.php (1); has nothing; wave unassigned
-- `pattern:drawer-editorial-ghost-list`: patterns/drawer-editorial-ghost-list.php (1); has nothing; wave unassigned
-- `pattern:drawer-floating-capped-card`: patterns/drawer-floating-capped-card.php (1); has nothing; wave unassigned
-- `pattern:drawer-offset-column`: patterns/drawer-offset-column.php (1); has nothing; wave unassigned
-- `pattern:drawer-scratch`: patterns/drawer-scratch.php (1); has nothing; wave unassigned
-- `pattern:drawer-solid-brand-light`: patterns/drawer-solid-brand-light.php (1); has nothing; wave unassigned
-- `pattern:drawer-split-zone-serif`: patterns/drawer-split-zone-serif.php (1); has nothing; wave unassigned
-- `pattern:drawer-two-column-editorial`: patterns/drawer-two-column-editorial.php (1); has nothing; wave unassigned
-- `pattern:faq-section`: patterns/faq-section.php (1); has nothing; wave unassigned
-- `pattern:footer-centred`: patterns/footer-centred.php (1); has nothing; wave unassigned
-- `pattern:footer-columns`: patterns/footer-columns.php (1); has nothing; wave unassigned
-- `pattern:footer-compact`: patterns/footer-compact.php (1); has nothing; wave unassigned
-- `pattern:footer-informational`: patterns/footer-informational.php (1); has nothing; wave unassigned
-- `pattern:footer-minimal`: patterns/footer-minimal.php (1); has nothing; wave unassigned
-- `pattern:footer-scratch`: patterns/footer-scratch.php (1); has nothing; wave unassigned
-- `pattern:footer-simple`: patterns/footer-simple.php (1); has nothing; wave unassigned
-- `pattern:framework-drawer-default`: patterns/framework-drawer-default.php (1); has nothing; wave unassigned
-- `pattern:framework-footer-default`: patterns/framework-footer-default.php (1); has nothing; wave unassigned
-- `pattern:framework-header-default`: patterns/framework-header-default.php (1); has nothing; wave unassigned
-- `pattern:header-centred`: patterns/header-centred.php (1); has nothing; wave unassigned
-- `pattern:header-full`: patterns/header-full.php (1); has nothing; wave unassigned
-- `pattern:header-minimal`: patterns/header-minimal.php (1); has nothing; wave unassigned
-- `pattern:header-scratch`: patterns/header-scratch.php (1); has nothing; wave unassigned
-- `pattern:header-search-bar-above`: patterns/header-search-bar-above.php (1); has nothing; wave unassigned
-- `pattern:header-search-bar-below`: patterns/header-search-bar-below.php (1); has nothing; wave unassigned
-- `pattern:header-search-icon`: patterns/header-search-icon.php (1); has nothing; wave unassigned
-- `pattern:header-top-icons`: patterns/header-top-icons.php (1); has nothing; wave unassigned
-- `pattern:heading-subheading-cluster`: patterns/heading-subheading-cluster.php (1); has nothing; wave unassigned
-- `pattern:hero-centred`: patterns/hero-centred.php (1); has nothing; wave unassigned
-- `pattern:hero-split`: patterns/hero-split.php (1); has nothing; wave unassigned
-- `pattern:hero-video-background`: patterns/hero-video-background.php (1); has nothing; wave unassigned
-- `pattern:label-heading-subheading-cluster`: patterns/label-heading-subheading-cluster.php (1); has nothing; wave unassigned
-- `pattern:mega-brands-1`: patterns/mega-brands-1.php (1); has nothing; wave unassigned
-- `pattern:mega-compact-links-numbered`: patterns/mega-compact-links-numbered.php (1); has nothing; wave unassigned
-- `pattern:mega-compact-links`: patterns/mega-compact-links.php (1); has nothing; wave unassigned
-- `pattern:mega-general-1col`: patterns/mega-general-1col.php (1); has nothing; wave unassigned
-- `pattern:mega-general-2col-aside`: patterns/mega-general-2col-aside.php (1); has nothing; wave unassigned
-- `pattern:mega-general-2col`: patterns/mega-general-2col.php (1); has nothing; wave unassigned
-- `pattern:mega-links-with-tiles`: patterns/mega-links-with-tiles.php (1); has nothing; wave unassigned
-- `pattern:mega-media-cards-1`: patterns/mega-media-cards-1.php (1); has nothing; wave unassigned
-- `pattern:pricing-columns`: patterns/pricing-columns.php (1); has nothing; wave unassigned
-- `pattern:services-alternating`: patterns/services-alternating.php (1); has nothing; wave unassigned
-- `pattern:services-features`: patterns/services-features.php (1); has nothing; wave unassigned
-- `pattern:services-grid`: patterns/services-grid.php (1); has nothing; wave unassigned
-- `pattern:stats-counter`: patterns/stats-counter.php (1); has nothing; wave unassigned
-- `pattern:team-section`: patterns/team-section.php (1); has nothing; wave unassigned
-- `pattern:testimonials-cards`: patterns/testimonials-cards.php (1); has nothing; wave unassigned
-- `pattern:testimonials-highlight`: patterns/testimonials-highlight.php (1); has nothing; wave unassigned
-- `pattern:testimonials-large`: patterns/testimonials-large.php (1); has nothing; wave unassigned
+- `pattern:about-image-left`: patterns/about-image-left.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:about-mission`: patterns/about-mission.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:about-stats`: patterns/about-stats.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:about-story`: patterns/about-story.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:contact-form`: patterns/contact-form.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:contact-minimal`: patterns/contact-minimal.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:cta-banner`: patterns/cta-banner.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:cta-centred`: patterns/cta-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-anchored-card-stack`: patterns/drawer-anchored-card-stack.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-centred-statement`: patterns/drawer-centred-statement.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-editorial-ghost-list`: patterns/drawer-editorial-ghost-list.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-floating-capped-card`: patterns/drawer-floating-capped-card.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-offset-column`: patterns/drawer-offset-column.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-scratch`: patterns/drawer-scratch.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-solid-brand-light`: patterns/drawer-solid-brand-light.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-split-zone-serif`: patterns/drawer-split-zone-serif.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:drawer-two-column-editorial`: patterns/drawer-two-column-editorial.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:faq-section`: patterns/faq-section.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:footer-centred`: patterns/footer-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:footer-columns`: patterns/footer-columns.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:footer-compact`: patterns/footer-compact.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:footer-informational`: patterns/footer-informational.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:footer-minimal`: patterns/footer-minimal.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:footer-scratch`: patterns/footer-scratch.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:footer-simple`: patterns/footer-simple.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:framework-drawer-default`: patterns/framework-drawer-default.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:framework-footer-default`: patterns/framework-footer-default.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:framework-header-default`: patterns/framework-header-default.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-centred`: patterns/header-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-full`: patterns/header-full.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-minimal`: patterns/header-minimal.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-scratch`: patterns/header-scratch.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-search-bar-above`: patterns/header-search-bar-above.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-search-bar-below`: patterns/header-search-bar-below.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-search-icon`: patterns/header-search-icon.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:header-top-icons`: patterns/header-top-icons.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:heading-subheading-cluster`: patterns/heading-subheading-cluster.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:hero-centred`: patterns/hero-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:hero-split`: patterns/hero-split.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:hero-video-background`: patterns/hero-video-background.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:label-heading-subheading-cluster`: patterns/label-heading-subheading-cluster.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-brands-1`: patterns/mega-brands-1.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-compact-links-numbered`: patterns/mega-compact-links-numbered.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-compact-links`: patterns/mega-compact-links.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-general-1col`: patterns/mega-general-1col.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-general-2col-aside`: patterns/mega-general-2col-aside.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-general-2col`: patterns/mega-general-2col.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-links-with-tiles`: patterns/mega-links-with-tiles.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:mega-media-cards-1`: patterns/mega-media-cards-1.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:pricing-columns`: patterns/pricing-columns.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:services-alternating`: patterns/services-alternating.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:services-features`: patterns/services-features.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:services-grid`: patterns/services-grid.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:stats-counter`: patterns/stats-counter.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:team-section`: patterns/team-section.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:testimonials-cards`: patterns/testimonials-cards.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:testimonials-highlight`: patterns/testimonials-highlight.php (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `pattern:testimonials-large`: patterns/testimonials-large.php (1); has nothing; wave exclusion candidate (awaiting Bean)
 
 ## post-type (8)
 
-- `post-type:sgs_choice_flow`: post type sgs_choice_flow (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave unassigned
-- `post-type:sgs_drawer`: post type sgs_drawer (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave unassigned
-- `post-type:sgs_footer`: post type sgs_footer (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave unassigned
-- `post-type:sgs_form`: post type sgs_form (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave unassigned
-- `post-type:sgs_header`: post type sgs_header (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave unassigned
-- `post-type:sgs_mega_menu`: post type sgs_mega_menu (plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php) (1); has nothing; wave unassigned
-- `post-type:sgs_modal`: post type sgs_modal (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave unassigned
-- `post-type:sgs_product_template`: post type sgs_product_template (plugins/sgs-blocks/includes/class-product-templates-cpt.php) (1); has nothing; wave unassigned
+- `post-type:sgs_choice_flow`: post type sgs_choice_flow (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave shop, forms and data
+- `post-type:sgs_drawer`: post type sgs_drawer (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave site and surfaces
+- `post-type:sgs_footer`: post type sgs_footer (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave site and surfaces
+- `post-type:sgs_form`: post type sgs_form (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave shop, forms and data
+- `post-type:sgs_header`: post type sgs_header (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave site and surfaces
+- `post-type:sgs_mega_menu`: post type sgs_mega_menu (plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php) (1); has nothing; wave site and surfaces
+- `post-type:sgs_modal`: post type sgs_modal (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave site and surfaces
+- `post-type:sgs_product_template`: post type sgs_product_template (plugins/sgs-blocks/includes/class-product-templates-cpt.php) (1); has nothing; wave shop, forms and data
 
 ## plugin (3)
 
-- `plugin:sgs-accessibility`: plugin sgs-accessibility (1); has nothing; wave unassigned
-- `plugin:sgs-blocks`: plugin sgs-blocks (1); has nothing; wave unassigned
-- `plugin:sgs-client-notes`: plugin sgs-client-notes (1); has nothing; wave unassigned
+- `plugin:sgs-accessibility`: plugin sgs-accessibility (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `plugin:sgs-blocks`: plugin sgs-blocks (1); has nothing; wave site and surfaces
+- `plugin:sgs-client-notes`: plugin sgs-client-notes (1); has nothing; wave exclusion candidate (awaiting Bean)
 
 ## snapshot-key (58)
 
-- `snapshot-key:settings.appearanceTools`: theme-snapshot settings.appearanceTools (1); has nothing; wave unassigned
-- `snapshot-key:settings.color`: theme-snapshot settings.color (1); has nothing; wave unassigned
-- `snapshot-key:settings.color.custom`: theme-snapshot settings.color.custom (1); has nothing; wave unassigned
-- `snapshot-key:settings.color.customDuotone`: theme-snapshot settings.color.customDuotone (1); has nothing; wave unassigned
-- `snapshot-key:settings.color.customGradient`: theme-snapshot settings.color.customGradient (1); has nothing; wave unassigned
-- `snapshot-key:settings.color.defaultGradients`: theme-snapshot settings.color.defaultGradients (1); has nothing; wave unassigned
-- `snapshot-key:settings.color.defaultPalette`: theme-snapshot settings.color.defaultPalette (1); has nothing; wave unassigned
-- `snapshot-key:settings.color.gradients`: theme-snapshot settings.color.gradients (1); has nothing; wave unassigned
-- `snapshot-key:settings.color.palette`: theme-snapshot settings.color.palette (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom`: theme-snapshot settings.custom (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.accentSets`: theme-snapshot settings.custom.accentSets (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.borderRadius`: theme-snapshot settings.custom.borderRadius (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.buttonPresets`: theme-snapshot settings.custom.buttonPresets (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.distance`: theme-snapshot settings.custom.distance (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.duration`: theme-snapshot settings.custom.duration (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.easing`: theme-snapshot settings.custom.easing (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.entrance`: theme-snapshot settings.custom.entrance (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.focus`: theme-snapshot settings.custom.focus (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.footer`: theme-snapshot settings.custom.footer (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.gutter`: theme-snapshot settings.custom.gutter (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.header`: theme-snapshot settings.custom.header (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.linkSweep`: theme-snapshot settings.custom.linkSweep (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.maxWidth`: theme-snapshot settings.custom.maxWidth (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.measuredDiagramPresets`: theme-snapshot settings.custom.measuredDiagramPresets (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.section`: theme-snapshot settings.custom.section (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.sgs`: theme-snapshot settings.custom.sgs (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.shadowColour`: theme-snapshot settings.custom.shadowColour (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.shadowHover`: theme-snapshot settings.custom.shadowHover (1); has nothing; wave unassigned
-- `snapshot-key:settings.custom.transition`: theme-snapshot settings.custom.transition (1); has nothing; wave unassigned
-- `snapshot-key:settings.layout`: theme-snapshot settings.layout (1); has nothing; wave unassigned
-- `snapshot-key:settings.layout.contentSize`: theme-snapshot settings.layout.contentSize (1); has nothing; wave unassigned
-- `snapshot-key:settings.layout.wideSize`: theme-snapshot settings.layout.wideSize (1); has nothing; wave unassigned
-- `snapshot-key:settings.lightbox`: theme-snapshot settings.lightbox (1); has nothing; wave unassigned
-- `snapshot-key:settings.lightbox.allowEditing`: theme-snapshot settings.lightbox.allowEditing (1); has nothing; wave unassigned
-- `snapshot-key:settings.lightbox.enabled`: theme-snapshot settings.lightbox.enabled (1); has nothing; wave unassigned
-- `snapshot-key:settings.shadow`: theme-snapshot settings.shadow (1); has nothing; wave unassigned
-- `snapshot-key:settings.shadow.defaultPresets`: theme-snapshot settings.shadow.defaultPresets (1); has nothing; wave unassigned
-- `snapshot-key:settings.shadow.presets`: theme-snapshot settings.shadow.presets (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing`: theme-snapshot settings.spacing (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing.blockGap`: theme-snapshot settings.spacing.blockGap (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing.customSpacingSize`: theme-snapshot settings.spacing.customSpacingSize (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing.defaultSpacingSizes`: theme-snapshot settings.spacing.defaultSpacingSizes (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing.margin`: theme-snapshot settings.spacing.margin (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing.padding`: theme-snapshot settings.spacing.padding (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing.spacingSizes`: theme-snapshot settings.spacing.spacingSizes (1); has nothing; wave unassigned
-- `snapshot-key:settings.spacing.units`: theme-snapshot settings.spacing.units (1); has nothing; wave unassigned
-- `snapshot-key:settings.typography`: theme-snapshot settings.typography (1); has nothing; wave unassigned
-- `snapshot-key:settings.typography.defaultFontSizes`: theme-snapshot settings.typography.defaultFontSizes (1); has nothing; wave unassigned
-- `snapshot-key:settings.typography.fluid`: theme-snapshot settings.typography.fluid (1); has nothing; wave unassigned
-- `snapshot-key:settings.typography.fontFamilies`: theme-snapshot settings.typography.fontFamilies (1); has nothing; wave unassigned
-- `snapshot-key:settings.typography.fontSizes`: theme-snapshot settings.typography.fontSizes (1); has nothing; wave unassigned
-- `snapshot-key:settings.useRootPaddingAwareAlignments`: theme-snapshot settings.useRootPaddingAwareAlignments (1); has nothing; wave unassigned
-- `snapshot-key:styles.blocks`: theme-snapshot styles.blocks (1); has nothing; wave unassigned
-- `snapshot-key:styles.color`: theme-snapshot styles.color (1); has nothing; wave unassigned
-- `snapshot-key:styles.css`: theme-snapshot styles.css (1); has nothing; wave unassigned
-- `snapshot-key:styles.elements`: theme-snapshot styles.elements (1); has nothing; wave unassigned
-- `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave unassigned
-- `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave unassigned
+- `snapshot-key:settings.appearanceTools`: theme-snapshot settings.appearanceTools (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color`: theme-snapshot settings.color (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color.custom`: theme-snapshot settings.color.custom (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color.customDuotone`: theme-snapshot settings.color.customDuotone (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color.customGradient`: theme-snapshot settings.color.customGradient (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color.defaultGradients`: theme-snapshot settings.color.defaultGradients (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color.defaultPalette`: theme-snapshot settings.color.defaultPalette (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color.gradients`: theme-snapshot settings.color.gradients (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.color.palette`: theme-snapshot settings.color.palette (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom`: theme-snapshot settings.custom (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.accentSets`: theme-snapshot settings.custom.accentSets (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.borderRadius`: theme-snapshot settings.custom.borderRadius (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.buttonPresets`: theme-snapshot settings.custom.buttonPresets (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.distance`: theme-snapshot settings.custom.distance (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.duration`: theme-snapshot settings.custom.duration (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.easing`: theme-snapshot settings.custom.easing (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.entrance`: theme-snapshot settings.custom.entrance (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.focus`: theme-snapshot settings.custom.focus (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.footer`: theme-snapshot settings.custom.footer (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.gutter`: theme-snapshot settings.custom.gutter (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.header`: theme-snapshot settings.custom.header (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.linkSweep`: theme-snapshot settings.custom.linkSweep (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.maxWidth`: theme-snapshot settings.custom.maxWidth (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.measuredDiagramPresets`: theme-snapshot settings.custom.measuredDiagramPresets (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.section`: theme-snapshot settings.custom.section (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.sgs`: theme-snapshot settings.custom.sgs (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.shadowColour`: theme-snapshot settings.custom.shadowColour (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.shadowHover`: theme-snapshot settings.custom.shadowHover (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.custom.transition`: theme-snapshot settings.custom.transition (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.layout`: theme-snapshot settings.layout (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.layout.contentSize`: theme-snapshot settings.layout.contentSize (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.layout.wideSize`: theme-snapshot settings.layout.wideSize (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.lightbox`: theme-snapshot settings.lightbox (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.lightbox.allowEditing`: theme-snapshot settings.lightbox.allowEditing (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.lightbox.enabled`: theme-snapshot settings.lightbox.enabled (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.shadow`: theme-snapshot settings.shadow (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.shadow.defaultPresets`: theme-snapshot settings.shadow.defaultPresets (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.shadow.presets`: theme-snapshot settings.shadow.presets (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing`: theme-snapshot settings.spacing (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing.blockGap`: theme-snapshot settings.spacing.blockGap (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing.customSpacingSize`: theme-snapshot settings.spacing.customSpacingSize (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing.defaultSpacingSizes`: theme-snapshot settings.spacing.defaultSpacingSizes (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing.margin`: theme-snapshot settings.spacing.margin (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing.padding`: theme-snapshot settings.spacing.padding (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing.spacingSizes`: theme-snapshot settings.spacing.spacingSizes (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.spacing.units`: theme-snapshot settings.spacing.units (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.typography`: theme-snapshot settings.typography (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.typography.defaultFontSizes`: theme-snapshot settings.typography.defaultFontSizes (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.typography.fluid`: theme-snapshot settings.typography.fluid (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.typography.fontFamilies`: theme-snapshot settings.typography.fontFamilies (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.typography.fontSizes`: theme-snapshot settings.typography.fontSizes (1); has nothing; wave site and surfaces
+- `snapshot-key:settings.useRootPaddingAwareAlignments`: theme-snapshot settings.useRootPaddingAwareAlignments (1); has nothing; wave site and surfaces
+- `snapshot-key:styles.blocks`: theme-snapshot styles.blocks (1); has nothing; wave site and surfaces
+- `snapshot-key:styles.color`: theme-snapshot styles.color (1); has nothing; wave site and surfaces
+- `snapshot-key:styles.css`: theme-snapshot styles.css (1); has nothing; wave site and surfaces
+- `snapshot-key:styles.elements`: theme-snapshot styles.elements (1); has nothing; wave site and surfaces
+- `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave site and surfaces
+- `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave site and surfaces
 
-## html (149)
+## html (90)
 
-- `html:a`: <a> (1); has nothing; wave unassigned
-- `html:abbr`: <abbr> (1); has nothing; wave unassigned
-- `html:acronym`: <acronym> (1); has nothing; wave unassigned
-- `html:address`: <address> (1); has nothing; wave unassigned
-- `html:applet`: <applet> (1); has nothing; wave unassigned
-- `html:area`: <area> (1); has nothing; wave unassigned
-- `html:article`: <article> (1); has nothing; wave unassigned
-- `html:aside`: <aside> (1); has nothing; wave unassigned
-- `html:audio`: <audio> (1); has nothing; wave unassigned
-- `html:b`: <b> (1); has nothing; wave unassigned
-- `html:base`: <base> (1); has nothing; wave unassigned
-- `html:basefont`: <basefont> (1); has nothing; wave unassigned
-- `html:bdi`: <bdi> (1); has nothing; wave unassigned
-- `html:bdo`: <bdo> (1); has nothing; wave unassigned
-- `html:bgsound`: <bgsound> (1); has nothing; wave unassigned
-- `html:big`: <big> (1); has nothing; wave unassigned
-- `html:blink`: <blink> (1); has nothing; wave unassigned
-- `html:blockquote`: <blockquote> (1); has nothing; wave unassigned
-- `html:body`: <body> (1); has nothing; wave unassigned
-- `html:br`: <br> (1); has nothing; wave unassigned
-- `html:button`: <button> (1); has nothing; wave unassigned
-- `html:canvas`: <canvas> (1); has nothing; wave unassigned
-- `html:caption`: <caption> (1); has nothing; wave unassigned
-- `html:center`: <center> (1); has nothing; wave unassigned
-- `html:cite`: <cite> (1); has nothing; wave unassigned
-- `html:code`: <code> (1); has nothing; wave unassigned
-- `html:col`: <col> (1); has nothing; wave unassigned
-- `html:colgroup`: <colgroup> (1); has nothing; wave unassigned
-- `html:command`: <command> (1); has nothing; wave unassigned
-- `html:content`: <content> (1); has nothing; wave unassigned
-- `html:data`: <data> (1); has nothing; wave unassigned
-- `html:datalist`: <datalist> (1); has nothing; wave unassigned
-- `html:dd`: <dd> (1); has nothing; wave unassigned
-- `html:del`: <del> (1); has nothing; wave unassigned
-- `html:details`: <details> (1); has nothing; wave unassigned
-- `html:dfn`: <dfn> (1); has nothing; wave unassigned
-- `html:dialog`: <dialog> (1); has nothing; wave unassigned
-- `html:dir`: <dir> (1); has nothing; wave unassigned
-- `html:div`: <div> (1); has nothing; wave unassigned
-- `html:dl`: <dl> (1); has nothing; wave unassigned
-- `html:dt`: <dt> (1); has nothing; wave unassigned
-- `html:element`: <element> (1); has nothing; wave unassigned
-- `html:em`: <em> (1); has nothing; wave unassigned
-- `html:embed`: <embed> (1); has nothing; wave unassigned
-- `html:fieldset`: <fieldset> (1); has nothing; wave unassigned
-- `html:figcaption`: <figcaption> (1); has nothing; wave unassigned
-- `html:figure`: <figure> (1); has nothing; wave unassigned
-- `html:font`: <font> (1); has nothing; wave unassigned
-- `html:footer`: <footer> (1); has nothing; wave unassigned
-- `html:form`: <form> (1); has nothing; wave unassigned
-- `html:frame`: <frame> (1); has nothing; wave unassigned
-- `html:frameset`: <frameset> (1); has nothing; wave unassigned
-- `html:h1`: <h1> (1); has nothing; wave unassigned
-- `html:h2`: <h2> (1); has nothing; wave unassigned
-- `html:h3`: <h3> (1); has nothing; wave unassigned
-- `html:h4`: <h4> (1); has nothing; wave unassigned
-- `html:h5`: <h5> (1); has nothing; wave unassigned
-- `html:h6`: <h6> (1); has nothing; wave unassigned
-- `html:head`: <head> (1); has nothing; wave unassigned
-- `html:header`: <header> (1); has nothing; wave unassigned
-- `html:hgroup`: <hgroup> (1); has nothing; wave unassigned
-- `html:hr`: <hr> (1); has nothing; wave unassigned
-- `html:html`: <html> (1); has nothing; wave unassigned
-- `html:i`: <i> (1); has nothing; wave unassigned
-- `html:iframe`: <iframe> (1); has nothing; wave unassigned
-- `html:image`: <image> (1); has nothing; wave unassigned
-- `html:img`: <img> (1); has nothing; wave unassigned
-- `html:input`: <input> (1); has nothing; wave unassigned
-- `html:ins`: <ins> (1); has nothing; wave unassigned
-- `html:isindex`: <isindex> (1); has nothing; wave unassigned
-- `html:kbd`: <kbd> (1); has nothing; wave unassigned
-- `html:keygen`: <keygen> (1); has nothing; wave unassigned
-- `html:label`: <label> (1); has nothing; wave unassigned
-- `html:legend`: <legend> (1); has nothing; wave unassigned
-- `html:li`: <li> (1); has nothing; wave unassigned
-- `html:link`: <link> (1); has nothing; wave unassigned
-- `html:listing`: <listing> (1); has nothing; wave unassigned
-- `html:main`: <main> (1); has nothing; wave unassigned
-- `html:map`: <map> (1); has nothing; wave unassigned
-- `html:mark`: <mark> (1); has nothing; wave unassigned
-- `html:marquee`: <marquee> (1); has nothing; wave unassigned
-- `html:math`: <math> (1); has nothing; wave unassigned
-- `html:menu`: <menu> (1); has nothing; wave unassigned
-- `html:menuitem`: <menuitem> (1); has nothing; wave unassigned
-- `html:meta`: <meta> (1); has nothing; wave unassigned
-- `html:meter`: <meter> (1); has nothing; wave unassigned
-- `html:multicol`: <multicol> (1); has nothing; wave unassigned
-- `html:nav`: <nav> (1); has nothing; wave unassigned
-- `html:nextid`: <nextid> (1); has nothing; wave unassigned
-- `html:nobr`: <nobr> (1); has nothing; wave unassigned
-- `html:noembed`: <noembed> (1); has nothing; wave unassigned
-- `html:noframes`: <noframes> (1); has nothing; wave unassigned
-- `html:noscript`: <noscript> (1); has nothing; wave unassigned
-- `html:object`: <object> (1); has nothing; wave unassigned
-- `html:ol`: <ol> (1); has nothing; wave unassigned
-- `html:optgroup`: <optgroup> (1); has nothing; wave unassigned
-- `html:option`: <option> (1); has nothing; wave unassigned
-- `html:output`: <output> (1); has nothing; wave unassigned
-- `html:p`: <p> (1); has nothing; wave unassigned
-- `html:param`: <param> (1); has nothing; wave unassigned
-- `html:picture`: <picture> (1); has nothing; wave unassigned
-- `html:plaintext`: <plaintext> (1); has nothing; wave unassigned
-- `html:pre`: <pre> (1); has nothing; wave unassigned
-- `html:progress`: <progress> (1); has nothing; wave unassigned
-- `html:q`: <q> (1); has nothing; wave unassigned
-- `html:rb`: <rb> (1); has nothing; wave unassigned
-- `html:rbc`: <rbc> (1); has nothing; wave unassigned
-- `html:rp`: <rp> (1); has nothing; wave unassigned
-- `html:rt`: <rt> (1); has nothing; wave unassigned
-- `html:rtc`: <rtc> (1); has nothing; wave unassigned
-- `html:ruby`: <ruby> (1); has nothing; wave unassigned
-- `html:s`: <s> (1); has nothing; wave unassigned
-- `html:samp`: <samp> (1); has nothing; wave unassigned
-- `html:script`: <script> (1); has nothing; wave unassigned
-- `html:search`: <search> (1); has nothing; wave unassigned
-- `html:section`: <section> (1); has nothing; wave unassigned
-- `html:select`: <select> (1); has nothing; wave unassigned
-- `html:shadow`: <shadow> (1); has nothing; wave unassigned
-- `html:slot`: <slot> (1); has nothing; wave unassigned
-- `html:small`: <small> (1); has nothing; wave unassigned
-- `html:source`: <source> (1); has nothing; wave unassigned
-- `html:spacer`: <spacer> (1); has nothing; wave unassigned
-- `html:span`: <span> (1); has nothing; wave unassigned
-- `html:strike`: <strike> (1); has nothing; wave unassigned
-- `html:strong`: <strong> (1); has nothing; wave unassigned
-- `html:style`: <style> (1); has nothing; wave unassigned
-- `html:sub`: <sub> (1); has nothing; wave unassigned
-- `html:summary`: <summary> (1); has nothing; wave unassigned
-- `html:sup`: <sup> (1); has nothing; wave unassigned
-- `html:svg`: <svg> (1); has nothing; wave unassigned
-- `html:table`: <table> (1); has nothing; wave unassigned
-- `html:tbody`: <tbody> (1); has nothing; wave unassigned
-- `html:td`: <td> (1); has nothing; wave unassigned
-- `html:template`: <template> (1); has nothing; wave unassigned
-- `html:textarea`: <textarea> (1); has nothing; wave unassigned
-- `html:tfoot`: <tfoot> (1); has nothing; wave unassigned
-- `html:th`: <th> (1); has nothing; wave unassigned
-- `html:thead`: <thead> (1); has nothing; wave unassigned
-- `html:time`: <time> (1); has nothing; wave unassigned
-- `html:title`: <title> (1); has nothing; wave unassigned
-- `html:tr`: <tr> (1); has nothing; wave unassigned
-- `html:track`: <track> (1); has nothing; wave unassigned
-- `html:tt`: <tt> (1); has nothing; wave unassigned
-- `html:u`: <u> (1); has nothing; wave unassigned
-- `html:ul`: <ul> (1); has nothing; wave unassigned
-- `html:var`: <var> (1); has nothing; wave unassigned
-- `html:video`: <video> (1); has nothing; wave unassigned
-- `html:wbr`: <wbr> (1); has nothing; wave unassigned
-- `html:xmp`: <xmp> (1); has nothing; wave unassigned
+- `html:acronym`: <acronym> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:applet`: <applet> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:area`: <area> (1); has nothing; wave content, media and icons
+- `html:audio`: <audio> (1); has nothing; wave content, media and icons
+- `html:base`: <base> (1); has nothing; wave draft reading
+- `html:basefont`: <basefont> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:bgsound`: <bgsound> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:big`: <big> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:blink`: <blink> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:body`: <body> (1); has nothing; wave draft reading
+- `html:button`: <button> (1); has nothing; wave shop, forms and data
+- `html:canvas`: <canvas> (1); has nothing; wave content, media and icons
+- `html:caption`: <caption> (1); has nothing; wave content, media and icons
+- `html:center`: <center> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:col`: <col> (1); has nothing; wave content, media and icons
+- `html:colgroup`: <colgroup> (1); has nothing; wave content, media and icons
+- `html:command`: <command> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:content`: <content> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:datalist`: <datalist> (1); has nothing; wave shop, forms and data
+- `html:details`: <details> (1); has nothing; wave behaviour recognisers
+- `html:dialog`: <dialog> (1); has nothing; wave behaviour recognisers
+- `html:dir`: <dir> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:element`: <element> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:embed`: <embed> (1); has nothing; wave content, media and icons
+- `html:fieldset`: <fieldset> (1); has nothing; wave shop, forms and data
+- `html:figcaption`: <figcaption> (1); has nothing; wave content, media and icons
+- `html:figure`: <figure> (1); has nothing; wave content, media and icons
+- `html:font`: <font> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:form`: <form> (1); has nothing; wave shop, forms and data
+- `html:frame`: <frame> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:frameset`: <frameset> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:head`: <head> (1); has nothing; wave draft reading
+- `html:html`: <html> (1); has nothing; wave draft reading
+- `html:iframe`: <iframe> (1); has nothing; wave content, media and icons
+- `html:image`: <image> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:img`: <img> (1); has nothing; wave content, media and icons
+- `html:input`: <input> (1); has nothing; wave shop, forms and data
+- `html:isindex`: <isindex> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:keygen`: <keygen> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:label`: <label> (1); has nothing; wave shop, forms and data
+- `html:legend`: <legend> (1); has nothing; wave shop, forms and data
+- `html:link`: <link> (1); has nothing; wave draft reading
+- `html:listing`: <listing> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:map`: <map> (1); has nothing; wave content, media and icons
+- `html:marquee`: <marquee> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:math`: <math> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:menu`: <menu> (1); has nothing; wave behaviour recognisers
+- `html:menuitem`: <menuitem> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:meta`: <meta> (1); has nothing; wave draft reading
+- `html:meter`: <meter> (1); has nothing; wave shop, forms and data
+- `html:multicol`: <multicol> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:nextid`: <nextid> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:nobr`: <nobr> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:noembed`: <noembed> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:noframes`: <noframes> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:noscript`: <noscript> (1); has nothing; wave draft reading
+- `html:object`: <object> (1); has nothing; wave content, media and icons
+- `html:optgroup`: <optgroup> (1); has nothing; wave shop, forms and data
+- `html:option`: <option> (1); has nothing; wave shop, forms and data
+- `html:output`: <output> (1); has nothing; wave shop, forms and data
+- `html:picture`: <picture> (1); has nothing; wave content, media and icons
+- `html:plaintext`: <plaintext> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:progress`: <progress> (1); has nothing; wave shop, forms and data
+- `html:rb`: <rb> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:rtc`: <rtc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:script`: <script> (1); has nothing; wave draft reading
+- `html:search`: <search> (1); has nothing; wave shop, forms and data
+- `html:select`: <select> (1); has nothing; wave shop, forms and data
+- `html:shadow`: <shadow> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:slot`: <slot> (1); has nothing; wave draft reading
+- `html:source`: <source> (1); has nothing; wave content, media and icons
+- `html:spacer`: <spacer> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:strike`: <strike> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:style`: <style> (1); has nothing; wave draft reading
+- `html:summary`: <summary> (1); has nothing; wave behaviour recognisers
+- `html:svg`: <svg> (1); has nothing; wave content, media and icons
+- `html:table`: <table> (1); has nothing; wave content, media and icons
+- `html:tbody`: <tbody> (1); has nothing; wave content, media and icons
+- `html:td`: <td> (1); has nothing; wave content, media and icons
+- `html:template`: <template> (1); has nothing; wave draft reading
+- `html:textarea`: <textarea> (1); has nothing; wave shop, forms and data
+- `html:tfoot`: <tfoot> (1); has nothing; wave content, media and icons
+- `html:th`: <th> (1); has nothing; wave content, media and icons
+- `html:thead`: <thead> (1); has nothing; wave content, media and icons
+- `html:title`: <title> (1); has nothing; wave draft reading
+- `html:tr`: <tr> (1); has nothing; wave content, media and icons
+- `html:track`: <track> (1); has nothing; wave content, media and icons
+- `html:tt`: <tt> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html:video`: <video> (1); has nothing; wave content, media and icons
+- `html:xmp`: <xmp> (1); has nothing; wave exclusion candidate (awaiting Bean)
 
 ## css-at (19)
 
-- `css-at:charset`: @charset (1); has nothing; wave unassigned
-- `css-at:container`: @container (1); has nothing; wave unassigned
-- `css-at:counter-style`: @counter-style (1); has nothing; wave unassigned
-- `css-at:document`: @document (1); has nothing; wave unassigned
-- `css-at:font-face`: @font-face (1); has nothing; wave unassigned
-- `css-at:font-feature-values`: @font-feature-values (1); has nothing; wave unassigned
-- `css-at:font-palette-values`: @font-palette-values (1); has nothing; wave unassigned
-- `css-at:import`: @import (1); has nothing; wave unassigned
-- `css-at:keyframes`: @keyframes (1); has nothing; wave unassigned
-- `css-at:layer`: @layer (1); has nothing; wave unassigned
-- `css-at:media`: @media (1); has nothing; wave unassigned
-- `css-at:namespace`: @namespace (1); has nothing; wave unassigned
-- `css-at:page`: @page (1); has nothing; wave unassigned
-- `css-at:position-try`: @position-try (1); has nothing; wave unassigned
-- `css-at:property`: @property (1); has nothing; wave unassigned
-- `css-at:scope`: @scope (1); has nothing; wave unassigned
-- `css-at:starting-style`: @starting-style (1); has nothing; wave unassigned
-- `css-at:supports`: @supports (1); has nothing; wave unassigned
-- `css-at:view-transition`: @view-transition (1); has nothing; wave unassigned
+- `css-at:charset`: @charset (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-at:container`: @container (1); has nothing; wave draft reading
+- `css-at:counter-style`: @counter-style (1); has nothing; wave draft reading
+- `css-at:document`: @document (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-at:font-face`: @font-face (1); has nothing; wave site and surfaces
+- `css-at:font-feature-values`: @font-feature-values (1); has nothing; wave draft reading
+- `css-at:font-palette-values`: @font-palette-values (1); has nothing; wave draft reading
+- `css-at:import`: @import (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-at:keyframes`: @keyframes (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-at:layer`: @layer (1); has nothing; wave draft reading
+- `css-at:media`: @media (1); has nothing; wave modes and values with no CSS property
+- `css-at:namespace`: @namespace (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-at:page`: @page (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-at:position-try`: @position-try (1); has nothing; wave draft reading
+- `css-at:property`: @property (1); has nothing; wave draft reading
+- `css-at:scope`: @scope (1); has nothing; wave draft reading
+- `css-at:starting-style`: @starting-style (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-at:supports`: @supports (1); has nothing; wave draft reading
+- `css-at:view-transition`: @view-transition (1); has nothing; wave motion writer (4.0), waits on phase-0
 
 ## css-group (56)
 
-- `css-group:anchor-positioning`: CSS properties: CSS Anchor Positioning (16); has nothing; wave unassigned; e.g. anchor-name, anchor-scope, bottom, left, margin-bottom
-- `css-group:animations`: CSS properties: CSS Animations (22, motion); has nothing; wave unassigned, waits on phase-0; e.g. animation, animation-composition, animation-delay, animation-direction, animation-duration
-- `css-group:backgrounds-and-borders`: CSS properties: CSS Backgrounds and Borders (61); has nothing; wave unassigned; e.g. background, background-attachment, background-clip, background-color, background-image
-- `css-group:basic-user-interface`: CSS properties: CSS Basic User Interface (22); has nothing; wave unassigned; e.g. accent-color, appearance, caret, caret-animation, caret-color
-- `css-group:box-alignment`: CSS properties: CSS Box Alignment (12); has nothing; wave unassigned; e.g. align-content, align-items, align-self, column-gap, gap
-- `css-group:box-model`: CSS properties: CSS Box Model (11); has nothing; wave unassigned; e.g. margin, margin-bottom, margin-left, margin-right, margin-top
-- `css-group:box-sizing`: CSS properties: CSS Box Sizing (17); has nothing; wave unassigned; e.g. aspect-ratio, box-sizing, column-height, column-width, column-wrap
-- `css-group:cascading-and-inheritance`: CSS properties: CSS Cascading and Inheritance (1); has nothing; wave unassigned; e.g. all
-- `css-group:color`: CSS properties: CSS Color (6); has nothing; wave unassigned; e.g. color, color-scheme, dynamic-range-limit, forced-color-adjust, opacity
-- `css-group:compositing-and-blending`: CSS properties: Compositing and Blending (3); has nothing; wave unassigned; e.g. background-blend-mode, isolation, mix-blend-mode
-- `css-group:conditional-rules`: CSS properties: CSS Conditional Rules (3); has nothing; wave unassigned; e.g. container, container-name, container-type
-- `css-group:containment`: CSS properties: CSS Containment (2); has nothing; wave unassigned; e.g. contain, content-visibility
-- `css-group:custom-properties-for-cascading-variables`: CSS properties: CSS Custom Properties for Cascading Variables (1); has nothing; wave unassigned; e.g. --*
-- `css-group:display`: CSS properties: CSS Display (5); has nothing; wave unassigned; e.g. display, order, reading-flow, reading-order, visibility
-- `css-group:filter-effects`: CSS properties: Filter Effects (6); has nothing; wave unassigned; e.g. backdrop-filter, color-interpolation-filters, filter, flood-color, flood-opacity
-- `css-group:flexible-box-layout`: CSS properties: CSS Flexible Box Layout (12); has nothing; wave unassigned; e.g. align-content, align-items, align-self, flex, flex-basis
-- `css-group:fonts`: CSS properties: CSS Fonts (28); has nothing; wave unassigned; e.g. font, font-family, font-feature-settings, font-kerning, font-language-override
-- `css-group:fragmentation`: CSS properties: CSS Fragmentation (6); has nothing; wave unassigned; e.g. box-decoration-break, break-after, break-before, break-inside, orphans
-- `css-group:generated-content`: CSS properties: CSS Generated Content (2); has nothing; wave unassigned; e.g. content, quotes
-- `css-group:grid-layout`: CSS properties: CSS Grid Layout (23); has nothing; wave unassigned; e.g. -ms-grid-columns, -ms-grid-rows, align-tracks, grid, grid-area
-- `css-group:images`: CSS properties: CSS Images (6); has nothing; wave unassigned; e.g. image-orientation, image-rendering, image-resolution, object-fit, object-position
-- `css-group:inline`: CSS properties: CSS Inline (11); has nothing; wave unassigned; e.g. alignment-baseline, baseline-shift, baseline-source, dominant-baseline, initial-letter
-- `css-group:lists-and-counters`: CSS properties: CSS Lists and Counters (7); has nothing; wave unassigned; e.g. counter-increment, counter-reset, counter-set, list-style, list-style-image
-- `css-group:logical-properties-and-values`: CSS properties: CSS Logical Properties and Values (53); has nothing; wave unassigned; e.g. block-size, border-block, border-block-color, border-block-end, border-block-end-color
-- `css-group:masking`: CSS properties: CSS Masking (20); has nothing; wave unassigned; e.g. clip, clip-path, clip-rule, mask, mask-border
-- `css-group:mathml`: CSS properties: MathML (4); has nothing; wave unassigned; e.g. math-depth, math-shift, math-style, text-transform
-- `css-group:microsoft-extensions`: CSS properties: Microsoft Extensions (46); has nothing; wave unassigned; e.g. -ms-accelerator, -ms-block-progression, -ms-content-zoom-chaining, -ms-content-zoom-limit, -ms-content-zoom-limit-max
-- `css-group:mobile-text-size-adjustment`: CSS properties: CSS Mobile Text Size Adjustment (1); has nothing; wave unassigned; e.g. text-size-adjust
-- `css-group:motion-path`: CSS properties: Motion Path (6, motion); has nothing; wave unassigned, waits on phase-0; e.g. offset, offset-anchor, offset-distance, offset-path, offset-position
-- `css-group:mozilla-extensions`: CSS properties: Mozilla Extensions (31); has nothing; wave unassigned; e.g. -moz-appearance, -moz-binding, -moz-border-bottom-colors, -moz-border-left-colors, -moz-border-right-colors
-- `css-group:multi-column-layout`: CSS properties: CSS Multi-column Layout (12); has nothing; wave unassigned; e.g. column-count, column-fill, column-gap, column-height, column-rule
-- `css-group:overflow`: CSS properties: CSS Overflow (15); has nothing; wave unassigned; e.g. -webkit-line-clamp, line-clamp, max-lines, overflow, overflow-block
-- `css-group:overscroll-behavior`: CSS properties: CSS Overscroll Behavior (5); has nothing; wave unassigned; e.g. overscroll-behavior, overscroll-behavior-block, overscroll-behavior-inline, overscroll-behavior-x, overscroll-behavior-y
-- `css-group:paged-media`: CSS properties: CSS Paged Media (4); has nothing; wave unassigned; e.g. page, page-break-after, page-break-before, page-break-inside
-- `css-group:pointer-events`: CSS properties: Pointer Events (1); has nothing; wave unassigned; e.g. touch-action
-- `css-group:positioned-layout`: CSS properties: CSS Positioned Layout (16); has nothing; wave unassigned; e.g. bottom, clear, float, inset, inset-block
-- `css-group:rhythmic-sizing`: CSS properties: CSS Rhythmic Sizing (1); has nothing; wave unassigned; e.g. line-height-step
-- `css-group:ruby`: CSS properties: CSS Ruby (4); has nothing; wave unassigned; e.g. ruby-align, ruby-merge, ruby-overhang, ruby-position
-- `css-group:scalable-vector-graphics`: CSS properties: Scalable Vector Graphics (34); has nothing; wave unassigned; e.g. cx, cy, d, dominant-baseline, fill
-- `css-group:scroll-anchoring`: CSS properties: CSS Scroll Anchoring (1); has nothing; wave unassigned; e.g. overflow-anchor
-- `css-group:scroll-driven-animations`: CSS properties: Scroll-driven Animations (11, motion); has nothing; wave unassigned, waits on phase-0; e.g. animation-range, animation-range-end, animation-range-start, scroll-timeline, scroll-timeline-axis
-- `css-group:scroll-snap`: CSS properties: CSS Scroll Snap (32); has nothing; wave unassigned; e.g. scroll-initial-target, scroll-margin, scroll-margin-block, scroll-margin-block-end, scroll-margin-block-start
-- `css-group:scrollbars-styling`: CSS properties: CSS Scrollbars Styling (2); has nothing; wave unassigned; e.g. scrollbar-color, scrollbar-width
-- `css-group:shapes`: CSS properties: CSS Shapes (3); has nothing; wave unassigned; e.g. shape-image-threshold, shape-margin, shape-outside
-- `css-group:speech`: CSS properties: CSS Speech (1); has nothing; wave unassigned; e.g. speak-as
-- `css-group:table`: CSS properties: CSS Table (5); has nothing; wave unassigned; e.g. border-collapse, border-spacing, caption-side, empty-cells, table-layout
-- `css-group:text`: CSS properties: CSS Text (24); has nothing; wave unassigned; e.g. hanging-punctuation, hyphenate-character, hyphenate-limit-chars, hyphens, letter-spacing
-- `css-group:text-decoration`: CSS properties: CSS Text Decoration (15); has nothing; wave unassigned; e.g. text-decoration, text-decoration-color, text-decoration-inset, text-decoration-line, text-decoration-skip
-- `css-group:transforms`: CSS properties: CSS Transforms (10); has nothing; wave unassigned; e.g. backface-visibility, perspective, perspective-origin, rotate, scale
-- `css-group:transitions`: CSS properties: CSS Transitions (6, motion); has nothing; wave unassigned, waits on phase-0; e.g. transition, transition-behavior, transition-delay, transition-duration, transition-property
-- `css-group:values-and-units`: CSS properties: CSS Values and Units (2); has nothing; wave unassigned; e.g. interpolate-size, link-parameters
-- `css-group:view-transitions`: CSS properties: CSS View Transitions (3, motion); has nothing; wave unassigned, waits on phase-0; e.g. view-transition-class, view-transition-name, view-transition-scope
-- `css-group:viewport`: CSS properties: CSS Viewport (1); has nothing; wave unassigned; e.g. zoom
-- `css-group:webkit-extensions`: CSS properties: WebKit Extensions (50); has nothing; wave unassigned; e.g. -moz-appearance, -webkit-appearance, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style
-- `css-group:will-change`: CSS properties: CSS Will Change (1); has nothing; wave unassigned; e.g. will-change
-- `css-group:writing-modes`: CSS properties: CSS Writing Modes (5); has nothing; wave unassigned; e.g. direction, text-combine-upright, text-orientation, unicode-bidi, writing-mode
+- `css-group:anchor-positioning`: CSS properties: CSS Anchor Positioning (16); has nothing; wave draft reading; e.g. anchor-name, anchor-scope, bottom, left, margin-bottom
+- `css-group:animations`: CSS properties: CSS Animations (22, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. animation, animation-composition, animation-delay, animation-direction, animation-duration
+- `css-group:backgrounds-and-borders`: CSS properties: CSS Backgrounds and Borders (61); has nothing; wave draft reading; e.g. background, background-attachment, background-clip, background-color, background-image
+- `css-group:basic-user-interface`: CSS properties: CSS Basic User Interface (22); has nothing; wave draft reading; e.g. accent-color, appearance, caret, caret-animation, caret-color
+- `css-group:box-alignment`: CSS properties: CSS Box Alignment (12); has nothing; wave draft reading; e.g. align-content, align-items, align-self, column-gap, gap
+- `css-group:box-model`: CSS properties: CSS Box Model (11); has nothing; wave draft reading; e.g. margin, margin-bottom, margin-left, margin-right, margin-top
+- `css-group:box-sizing`: CSS properties: CSS Box Sizing (17); has nothing; wave draft reading; e.g. aspect-ratio, box-sizing, column-height, column-width, column-wrap
+- `css-group:cascading-and-inheritance`: CSS properties: CSS Cascading and Inheritance (1); has nothing; wave draft reading; e.g. all
+- `css-group:color`: CSS properties: CSS Color (6); has nothing; wave draft reading; e.g. color, color-scheme, dynamic-range-limit, forced-color-adjust, opacity
+- `css-group:compositing-and-blending`: CSS properties: Compositing and Blending (3); has nothing; wave draft reading; e.g. background-blend-mode, isolation, mix-blend-mode
+- `css-group:conditional-rules`: CSS properties: CSS Conditional Rules (3); has nothing; wave draft reading; e.g. container, container-name, container-type
+- `css-group:containment`: CSS properties: CSS Containment (2); has nothing; wave draft reading; e.g. contain, content-visibility
+- `css-group:custom-properties-for-cascading-variables`: CSS properties: CSS Custom Properties for Cascading Variables (1); has nothing; wave draft reading; e.g. --*
+- `css-group:display`: CSS properties: CSS Display (5); has nothing; wave draft reading; e.g. display, order, reading-flow, reading-order, visibility
+- `css-group:filter-effects`: CSS properties: Filter Effects (6); has nothing; wave draft reading; e.g. backdrop-filter, color-interpolation-filters, filter, flood-color, flood-opacity
+- `css-group:flexible-box-layout`: CSS properties: CSS Flexible Box Layout (12); has nothing; wave draft reading; e.g. align-content, align-items, align-self, flex, flex-basis
+- `css-group:fonts`: CSS properties: CSS Fonts (28); has nothing; wave draft reading; e.g. font, font-family, font-feature-settings, font-kerning, font-language-override
+- `css-group:fragmentation`: CSS properties: CSS Fragmentation (6); has nothing; wave draft reading; e.g. box-decoration-break, break-after, break-before, break-inside, orphans
+- `css-group:generated-content`: CSS properties: CSS Generated Content (2); has nothing; wave draft reading; e.g. content, quotes
+- `css-group:grid-layout`: CSS properties: CSS Grid Layout (23); has nothing; wave draft reading; e.g. -ms-grid-columns, -ms-grid-rows, align-tracks, grid, grid-area
+- `css-group:images`: CSS properties: CSS Images (6); has nothing; wave draft reading; e.g. image-orientation, image-rendering, image-resolution, object-fit, object-position
+- `css-group:inline`: CSS properties: CSS Inline (11); has nothing; wave draft reading; e.g. alignment-baseline, baseline-shift, baseline-source, dominant-baseline, initial-letter
+- `css-group:lists-and-counters`: CSS properties: CSS Lists and Counters (7); has nothing; wave draft reading; e.g. counter-increment, counter-reset, counter-set, list-style, list-style-image
+- `css-group:logical-properties-and-values`: CSS properties: CSS Logical Properties and Values (53); has nothing; wave draft reading; e.g. block-size, border-block, border-block-color, border-block-end, border-block-end-color
+- `css-group:masking`: CSS properties: CSS Masking (20); has nothing; wave draft reading; e.g. clip, clip-path, clip-rule, mask, mask-border
+- `css-group:mathml`: CSS properties: MathML (4); has nothing; wave exclusion candidate (awaiting Bean); e.g. math-depth, math-shift, math-style, text-transform
+- `css-group:microsoft-extensions`: CSS properties: Microsoft Extensions (46); has nothing; wave exclusion candidate (awaiting Bean); e.g. -ms-accelerator, -ms-block-progression, -ms-content-zoom-chaining, -ms-content-zoom-limit, -ms-content-zoom-limit-max
+- `css-group:mobile-text-size-adjustment`: CSS properties: CSS Mobile Text Size Adjustment (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. text-size-adjust
+- `css-group:motion-path`: CSS properties: Motion Path (6, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. offset, offset-anchor, offset-distance, offset-path, offset-position
+- `css-group:mozilla-extensions`: CSS properties: Mozilla Extensions (31); has nothing; wave exclusion candidate (awaiting Bean); e.g. -moz-appearance, -moz-binding, -moz-border-bottom-colors, -moz-border-left-colors, -moz-border-right-colors
+- `css-group:multi-column-layout`: CSS properties: CSS Multi-column Layout (12); has nothing; wave draft reading; e.g. column-count, column-fill, column-gap, column-height, column-rule
+- `css-group:overflow`: CSS properties: CSS Overflow (15); has nothing; wave draft reading; e.g. -webkit-line-clamp, line-clamp, max-lines, overflow, overflow-block
+- `css-group:overscroll-behavior`: CSS properties: CSS Overscroll Behavior (5); has nothing; wave draft reading; e.g. overscroll-behavior, overscroll-behavior-block, overscroll-behavior-inline, overscroll-behavior-x, overscroll-behavior-y
+- `css-group:paged-media`: CSS properties: CSS Paged Media (4); has nothing; wave exclusion candidate (awaiting Bean); e.g. page, page-break-after, page-break-before, page-break-inside
+- `css-group:pointer-events`: CSS properties: Pointer Events (1); has nothing; wave draft reading; e.g. touch-action
+- `css-group:positioned-layout`: CSS properties: CSS Positioned Layout (16); has nothing; wave draft reading; e.g. bottom, clear, float, inset, inset-block
+- `css-group:rhythmic-sizing`: CSS properties: CSS Rhythmic Sizing (1); has nothing; wave draft reading; e.g. line-height-step
+- `css-group:ruby`: CSS properties: CSS Ruby (4); has nothing; wave draft reading; e.g. ruby-align, ruby-merge, ruby-overhang, ruby-position
+- `css-group:scalable-vector-graphics`: CSS properties: Scalable Vector Graphics (34); has nothing; wave draft reading; e.g. cx, cy, d, dominant-baseline, fill
+- `css-group:scroll-anchoring`: CSS properties: CSS Scroll Anchoring (1); has nothing; wave draft reading; e.g. overflow-anchor
+- `css-group:scroll-driven-animations`: CSS properties: Scroll-driven Animations (11, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. animation-range, animation-range-end, animation-range-start, scroll-timeline, scroll-timeline-axis
+- `css-group:scroll-snap`: CSS properties: CSS Scroll Snap (32); has nothing; wave draft reading; e.g. scroll-initial-target, scroll-margin, scroll-margin-block, scroll-margin-block-end, scroll-margin-block-start
+- `css-group:scrollbars-styling`: CSS properties: CSS Scrollbars Styling (2); has nothing; wave draft reading; e.g. scrollbar-color, scrollbar-width
+- `css-group:shapes`: CSS properties: CSS Shapes (3); has nothing; wave draft reading; e.g. shape-image-threshold, shape-margin, shape-outside
+- `css-group:speech`: CSS properties: CSS Speech (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. speak-as
+- `css-group:table`: CSS properties: CSS Table (5); has nothing; wave draft reading; e.g. border-collapse, border-spacing, caption-side, empty-cells, table-layout
+- `css-group:text`: CSS properties: CSS Text (24); has nothing; wave draft reading; e.g. hanging-punctuation, hyphenate-character, hyphenate-limit-chars, hyphens, letter-spacing
+- `css-group:text-decoration`: CSS properties: CSS Text Decoration (15); has nothing; wave draft reading; e.g. text-decoration, text-decoration-color, text-decoration-inset, text-decoration-line, text-decoration-skip
+- `css-group:transforms`: CSS properties: CSS Transforms (10); has nothing; wave draft reading; e.g. backface-visibility, perspective, perspective-origin, rotate, scale
+- `css-group:transitions`: CSS properties: CSS Transitions (6, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. transition, transition-behavior, transition-delay, transition-duration, transition-property
+- `css-group:values-and-units`: CSS properties: CSS Values and Units (2); has nothing; wave draft reading; e.g. interpolate-size, link-parameters
+- `css-group:view-transitions`: CSS properties: CSS View Transitions (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. view-transition-class, view-transition-name, view-transition-scope
+- `css-group:viewport`: CSS properties: CSS Viewport (1); has nothing; wave draft reading; e.g. zoom
+- `css-group:webkit-extensions`: CSS properties: WebKit Extensions (50); has nothing; wave exclusion candidate (awaiting Bean); e.g. -moz-appearance, -webkit-appearance, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style
+- `css-group:will-change`: CSS properties: CSS Will Change (1); has nothing; wave draft reading; e.g. will-change
+- `css-group:writing-modes`: CSS properties: CSS Writing Modes (5); has nothing; wave draft reading; e.g. direction, text-combine-upright, text-orientation, unicode-bidi, writing-mode
 
 ## construct (19)
 
-- `construct:binding`: runtime construct binding (1); has nothing; wave unassigned
-- `construct:data-hook`: runtime construct data-hook (1); has recognise; wave behaviour recognisers (plan Phase 4)
-- `construct:dc-import`: runtime construct dc-import (1); has nothing; wave unassigned
-- `construct:getter`: runtime construct getter (1); has nothing; wave unassigned
-- `construct:handler`: runtime construct handler (1); has recognise; wave behaviour recognisers (plan Phase 4)
-- `construct:helmet-font`: runtime construct helmet-font (1); has nothing; wave unassigned
-- `construct:helmet-script`: runtime construct helmet-script (1); has nothing; wave unassigned
-- `construct:keyframes`: runtime construct keyframes (1, motion); has recognise; wave unassigned, waits on phase-0
-- `construct:link`: runtime construct link (1); has nothing; wave unassigned
-- `construct:observer`: runtime construct observer (1); has recognise; wave behaviour recognisers (plan Phase 4)
-- `construct:ref`: runtime construct ref (1); has recognise; wave behaviour recognisers (plan Phase 4)
-- `construct:renderVals-key`: runtime construct renderVals-key (1); has nothing; wave unassigned
-- `construct:sc-for`: runtime construct sc-for (1); has nothing; wave unassigned
-- `construct:sc-if`: runtime construct sc-if (1); has nothing; wave unassigned
-- `construct:style-hover`: runtime construct style-hover (1); has nothing; wave unassigned
-- `construct:template-element`: runtime construct template-element (1); has nothing; wave unassigned
-- `construct:timer`: runtime construct timer (1); has recognise; wave behaviour recognisers (plan Phase 4)
-- `construct:transition`: runtime construct transition (1, motion); has recognise; wave unassigned, waits on phase-0
-- `construct:waapi`: runtime construct waapi (1, motion); has recognise; wave unassigned, waits on phase-0
+- `construct:binding`: runtime construct binding (1); has nothing; wave draft reading
+- `construct:data-hook`: runtime construct data-hook (1); has recognise; wave behaviour recognisers
+- `construct:dc-import`: runtime construct dc-import (1); has nothing; wave draft reading
+- `construct:getter`: runtime construct getter (1); has nothing; wave draft reading
+- `construct:handler`: runtime construct handler (1); has recognise; wave behaviour recognisers
+- `construct:helmet-font`: runtime construct helmet-font (1); has nothing; wave site and surfaces
+- `construct:helmet-script`: runtime construct helmet-script (1); has nothing; wave draft reading
+- `construct:keyframes`: runtime construct keyframes (1, motion); has recognise; wave motion writer (4.0), waits on phase-0
+- `construct:link`: runtime construct link (1); has nothing; wave draft reading
+- `construct:observer`: runtime construct observer (1); has recognise; wave behaviour recognisers
+- `construct:ref`: runtime construct ref (1); has recognise; wave behaviour recognisers
+- `construct:renderVals-key`: runtime construct renderVals-key (1); has nothing; wave draft reading
+- `construct:sc-for`: runtime construct sc-for (1); has nothing; wave draft reading
+- `construct:sc-if`: runtime construct sc-if (1); has nothing; wave draft reading
+- `construct:style-hover`: runtime construct style-hover (1); has nothing; wave draft reading
+- `construct:template-element`: runtime construct template-element (1); has nothing; wave draft reading
+- `construct:timer`: runtime construct timer (1); has recognise; wave behaviour recognisers
+- `construct:transition`: runtime construct transition (1, motion); has recognise; wave motion writer (4.0), waits on phase-0
+- `construct:waapi`: runtime construct waapi (1, motion); has recognise; wave motion writer (4.0), waits on phase-0
 
