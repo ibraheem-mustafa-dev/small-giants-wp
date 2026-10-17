@@ -361,7 +361,7 @@ def self_test() -> list[str]:
         paths = config["paths"]
         want_in = ["plugins/sgs-blocks/scripts/motion-qa/probe-marquee.mjs", "plugins/sgs-blocks/src/blocks/brand-strip/render.php"]
         want_in += ["plugins/sgs-blocks/src/blocks/container/block.json", "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php",
-                    "plugins/sgs-blocks/includes/container-bg-hover-zoom.php", "plugins/sgs-blocks/includes/fx-attributes.php",
+                    "plugins/sgs-blocks/includes/fx-attributes.php",
                     "plugins/sgs-blocks/includes/generated-fx-effects.php", "plugins/sgs-blocks/includes/class-sgs-motion-registry.php",
                     "plugins/sgs-blocks/src/shared/effects/off-switch.js", "plugins/sgs-blocks/src/shared/effects/motion-utils.js",
                     "plugins/sgs-blocks/src/shared/motion-pause/index.js", "plugins/sgs-blocks/src/shared/effects/gsap/bezier-ease.js",

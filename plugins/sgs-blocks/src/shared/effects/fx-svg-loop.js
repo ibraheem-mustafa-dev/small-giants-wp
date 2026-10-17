@@ -16,7 +16,7 @@
  * - `wave` swells the scale to `1 + 0.05 x amplitude` while it rocks `1deg x amplitude` to each side, easing
  *   `ease-in-out` between the five keyframes.
  *
- * An amplitude of 1 is the shape the retired `bgSvgAnimation` and `svgAnimation` classes drew. The float motion is the
+ * An amplitude of 1 is the shape the container's and the media block's former pulse and wave classes drew. The float motion is the
  * `ambient-float` effect, not this one.
  *
  * A motion layer's per-device off switch (`data-sgs-fx-off-<tier>`, `data-sgs-fx-disable-<tier>`) is honoured through

@@ -25,7 +25,7 @@
 		"color": false,
 		"sgs": {
 			"motion": true,
-			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
+			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg* are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- settled 2026-09-03 (Bean-directed) after this exact question was investigated. A background panel applied to the whole block is a different feature from a client-configurable <img>/<video> element (which the media-atom system in supports.sgs.mediaElements DOES cover), so it is correctly out of scope for that system and is not a deferred migration. Detector rule 37-media-no-handroll (scripts/inspector-scan/rules/37-media-no-handroll.js) encodes this discriminator: a bare `background`/`bg`-prefixed attribute is panel-owned and never flagged; an element-prefixed attribute (e.g. splitMediaObjectFit) still is.",
 			"intrinsicColumns": true,
 			"separators": {
 				"separators": {
@@ -49,7 +49,7 @@
 				"childSizing"
 			],
 			"sectionPadding": true,
-			"_comment_hoverExclude": "The Hover panel's image zoom and grayscale have nothing to act on here: a container's own picture is its background, zoomed from the Background panel (bgHoverZoom), and an image block inside has its own Hover panel.",
+			"_comment_hoverExclude": "The Hover panel's image zoom and grayscale have nothing to act on here: a container's own picture is its background, moved by the motion model's `background` part, and an image block inside has its own Hover panel.",
 			"hoverExcludeControls": [
 				"imageZoom",
 				"grayscale"
@@ -114,12 +114,10 @@
 						"css:aspect-ratio": "boxAspectRatio",
 						"css:box-shadow": "shadow",
 						"css:box-shadow-color": "shadowColour",
-						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration",
 						"css:color-gradient": "textColourGradient"
 					},
 					"_note_border": "R2c pattern (mirrors sgs/product-card, D-pending 2026-08-25): root border colour/width/style are block-private attrs (borderColour/borderColourGradient/borderWidth/borderStyle), not the native __experimentalBorder path — a single owner instead of the native Styles-tab colour panel and an SGS panel both writing style.border. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a paint decision) and stays skip-serialised, emitted scoped via the style engine exactly as before. borderWidth has NO default (unset = no border, matching the padding attribute's no-default discipline right below) and is a base-only box object (no Tablet/Mobile siblings, matching product-card's own borderWidth).",
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; the wrapper declares no `prefix`, so ROLLOUT REQUIREMENT 1 applies). bgKenBurns has no animation-cluster member (it's a Ken-Burns preset toggle, not a scroll-trigger/parallax/preset/duration/easing/stagger control) and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — this block has no sgsAnimation*/staggerDelay/scroll-trigger attributes.",
+					"_note_animation": "The animation cluster (anim:*) has no member on this block: its motion is the sgsMotion model (Spec 38A), not attributes.",
 					"_note_typography": "Typography migrated off the old WP-native supports.typography (fontSize/lineHeight/textAlign/letterSpacing/textTransform/fontWeight/fontStyle) onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontSizeUnit/fontWeight/fontStyle/lineHeight/lineHeightUnit) — mirrors sgs/accordion. css:letter-spacing and css:text-transform are now honest gaps (no letterSpacing/textTransform control is offered); css:text-align keeps mapping to the block's own pre-existing textAlign attribute, unrelated to this migration.",
 					"states": {
 						"hover": {
@@ -414,46 +412,6 @@
 		"bgVideoMobile": {
 			"type": "object"
 		},
-		"bgLottie": {
-			"type": "integer",
-			"default": 0
-		},
-		"bgLottieLoop": {
-			"type": "boolean",
-			"default": true
-		},
-		"bgParallax": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgKenBurns": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgAnimationDuration": {
-			"type": "number",
-			"default": 20
-		},
-		"bgHoverZoom": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgHoverZoomScale": {
-			"type": "number",
-			"default": 105
-		},
-		"bgHoverZoomDuration": {
-			"type": "number",
-			"default": 600
-		},
-		"bgHoverZoomEasing": {
-			"type": "string",
-			"default": "ease"
-		},
-		"bgHoverZoomEasingCustom": {
-			"type": "string",
-			"default": ""
-		},
 		"shadow": {
 			"type": "string"
 		},
@@ -545,25 +503,6 @@
 			"enum": [
 				"background",
 				"foreground"
-			]
-		},
-		"bgSvgAnimation": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"pulse",
-				"float",
-				"wave"
-			]
-		},
-		"bgSvgAnimationSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [
-				"slow",
-				"medium",
-				"fast"
 			]
 		},
 		"bgSvgOpacity": {
@@ -932,33 +871,6 @@
 				"vertical-rl",
 				"vertical-lr"
 			],
-			"default": ""
-		},
-		"fxTreatment": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentHighlight": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentTint": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentInk": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentIntensity": {
-			"type": "number"
-		},
-		"fxTreatmentReveal": {
-			"type": "string",
 			"default": ""
 		}
 	},

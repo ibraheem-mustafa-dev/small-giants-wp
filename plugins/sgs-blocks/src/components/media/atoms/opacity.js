@@ -67,7 +67,7 @@ export function validate( value ) {
  *
  * The gate accepts a numeric STRING as well as a `number` — matching the PHP
  * twin's `is_numeric()` (the atom-family convention: `box-shape.php`/
- * `motion.php`/`overlay.php`/`svg-presentation.php` all gate on `is_numeric()`
+ * `overlay.php`/`svg-presentation.php` all gate on `is_numeric()`
  * too). A numeric string is a genuine value on the REST/import path (a stored
  * attribute round-tripped through JSON as `"0.5"` rather than `0.5`), and
  * rejecting it here while PHP accepts it was a JS/PHP parity gap — the same

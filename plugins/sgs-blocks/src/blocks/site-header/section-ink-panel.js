@@ -13,9 +13,9 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl, Notice } from '@wordpress/components';
 import {
 	ResponsiveOverride,
-	MotionEasingControl,
 	resolveColourToken,
 } from '../../components';
+import EasingAtom from '../../components/motion/EasingAtom';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTier } from '../../utils/responsive';
 import { calculateRelativeLuminance, calculateContrastRatio, meetsWCAG_AA } from '../../utils/wcag-contrast';
@@ -172,7 +172,8 @@ export default function SectionInkPanel( { attributes, setAttributes, colourPale
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<MotionEasingControl
+					<EasingAtom
+						vocab="nav"
 						label={ __( 'Speed curve', 'sgs-blocks' ) }
 						value={ inkEasing }
 						custom={ inkEasingCustom }

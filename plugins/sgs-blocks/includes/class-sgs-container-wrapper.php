@@ -50,10 +50,6 @@ require_once __DIR__ . '/helpers-grid-item.php';
 require_once __DIR__ . '/helpers-surface-ground.php';
 // sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
-// U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
-// chain, so required directly here (idempotent — require_once).
-require_once __DIR__ . '/lottie-render.php';
-require_once __DIR__ . '/container-bg-hover-zoom.php';
 require_once __DIR__ . '/motion/class-sgs-motion-background-lottie.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
@@ -518,28 +514,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$bg_video                = $attributes['bgVideo'] ?? null;
 			$bg_video_tablet         = $attributes['bgVideoTablet'] ?? null;
 			$bg_video_mobile         = $attributes['bgVideoMobile'] ?? null;
-			// U-17 (design §3.1/§6) — a Lottie/Bodymovin JSON as the moving
-			// background layer. Integer attachment id (not the {id,url} object
-			// shape bgVideo uses) — matches LottieId everywhere else. Untiered:
-			// the shared wrapper background offers no per-tier art direction for
-			// ANY of its moving layers (bgVideo itself has no such tiering
-			// control in the editor either, despite the attribute existing).
-			$bg_lottie_id            = isset( $attributes['bgLottie'] ) ? absint( $attributes['bgLottie'] ) : 0;
-			// `array_key_exists` (not `??`), so an UNDECLARED bgLottieLoop attr
-			// (a block that has not adopted it) and a DECLARED-but-false one are
-			// distinguishable — both resolve to the same true default here, but
-			// this is the same guard every other nullable-tri-state read in this
-			// file uses (e.g. $overlay_opacity_tablet above).
-			$bg_lottie_loop          = array_key_exists( 'bgLottieLoop', $attributes ) ? (bool) $attributes['bgLottieLoop'] : true;
-			$has_bg_lottie           = $bg_lottie_id > 0;
 			// A `lottie` layer on the background part plays in a holder the wrapper prints (Spec 38A FR-38A-52).
-			$has_bg_lottie_layer     = empty( $opts['no_background_holder'] ) && ! $has_bg_lottie && \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
-			$bg_parallax             = ! empty( $attributes['bgParallax'] );
-			$bg_ken_burns            = ! empty( $attributes['bgKenBurns'] );
-			$bg_animation_duration   = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
-			// Background panel "Zoom background on hover" (includes/container-bg-hover-zoom.php).
-			// Off while Ken Burns or parallax moves the same image.
-			$bg_hover_zoom           = ! empty( $attributes['bgHoverZoom'] ) && ! $bg_parallax && ! $bg_ken_burns;
+			$has_bg_lottie_layer     = empty( $opts['no_background_holder'] ) && \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
 
 			$shadow = $attributes['shadow'] ?? '';
 			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
@@ -1051,16 +1027,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( ! in_array( $bg_svg_position, $allowed_svg_positions, true ) ) {
 				$bg_svg_position = 'background';
 			}
-			$bg_svg_animation       = $attributes['bgSvgAnimation'] ?? 'none';
-			$allowed_svg_animations = array( 'none', 'pulse', 'float', 'wave' );
-			if ( ! in_array( $bg_svg_animation, $allowed_svg_animations, true ) ) {
-				$bg_svg_animation = 'none';
-			}
-			$bg_svg_speed       = $attributes['bgSvgAnimationSpeed'] ?? 'medium';
-			$allowed_svg_speeds = array( 'slow', 'medium', 'fast' );
-			if ( ! in_array( $bg_svg_speed, $allowed_svg_speeds, true ) ) {
-				$bg_svg_speed = 'medium';
-			}
 			$bg_svg_opacity     = isset( $attributes['bgSvgOpacity'] ) ? absint( $attributes['bgSvgOpacity'] ) : 100;
 			$bg_svg_min_height  = is_string( $attributes['bgSvgMinHeight'] ?? null ) ? sgs_css_length_value( $attributes['bgSvgMinHeight'] ) : '';
 			$bg_svg_text_shadow = ! empty( $attributes['bgSvgTextShadow'] );
@@ -1270,14 +1236,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// accepts arbitrary lengths/percentages/'auto', none of which
 				// object-fit can express, so anything other than cover/contain
 				// must stay CSS.
-				&& ! $bg_parallax
-				// Parallax works by pinning the CSS background box with
-				// `position:fixed` relative to the viewport (see
-				// `.sgs-container--parallax` in style.css) — an <img> painting the
-				// section's own box cannot reproduce that independent scroll.
 				&& 'fixed' !== $bg_attachment
-				// background-attachment:fixed has no <img> equivalent, for the
-				// same structural reason as parallax above.
+				// background-attachment:fixed has no <img> equivalent: it pins the
+				// CSS background box to the viewport, which an <img> painting the
+				// section's own box cannot reproduce.
 				&& empty( $bg_image_tablet['url'] )
 				&& empty( $bg_image_mobile['url'] );
 				// The tablet/mobile tier overrides (below, ~L2079-2083) swap the
@@ -1315,45 +1277,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						'decoding'      => $sgs_bg_img_is_first ? 'sync' : 'async',
 					)
 				);
-			}
-
-			// Surface treatment (Spec 38 §1.2b, D479) — addendum 2026-09-11. Reached via
-			// `BackgroundPanel.js` for blocks outside the shared fx ToolsPanel roster
-			// (`sgs/site-header`, `sgs/site-footer`, `sgs/container`, `sgs/multi-button`),
-			// stamped ONCE here in the shared wrapper rather than per-block, so every
-			// current and future consumer gets it for free. `includes/fx-surface-
-			// treatment.php` already does the actual colour resolution + scoped <style> —
-			// it is a global `render_block` filter keyed on `data-sgs-fx="surface-
-			// treatment"` in the rendered markup, not on the fx-panel roster, so raw
-			// values are all this wrapper needs to stamp.
-			//
-			// Gated on the SAME condition `SurfaceTreatmentPanel.js`'s
-			// `isSimpleBackgroundImage()` mirrors: the runtime needs a real nested
-			// `<img>` to repaint (`fx-surface-treatment.js`'s own docblock) — a CSS
-			// `background-image` on `::before` has no pixel source for the shader to
-			// read, so this can ONLY reach the `<img>` fast path above, never the
-			// `::before` path (parallax/fixed-attachment/per-tier images).
-			if ( $has_bg_image && ! $has_bg_video && $sgs_bg_img_is_simple && ! empty( $attributes['fxTreatment'] ) ) {
-				$opt_extra_attrs['data-sgs-fx']           = 'surface-treatment';
-				$opt_extra_attrs['data-sgs-fx-treatment'] = (string) $attributes['fxTreatment'];
-				if ( ! empty( $attributes['fxTreatmentTint'] ) ) {
-					$opt_extra_attrs['data-sgs-fx-treatment-tint'] = (string) $attributes['fxTreatmentTint'];
-				}
-				if ( ! empty( $attributes['fxTreatmentInk'] ) ) {
-					$opt_extra_attrs['data-sgs-fx-treatment-ink'] = (string) $attributes['fxTreatmentInk'];
-				}
-				if ( ! empty( $attributes['fxTreatmentShadow'] ) ) {
-					$opt_extra_attrs['data-sgs-fx-treatment-shadow'] = (string) $attributes['fxTreatmentShadow'];
-				}
-				if ( ! empty( $attributes['fxTreatmentHighlight'] ) ) {
-					$opt_extra_attrs['data-sgs-fx-treatment-highlight'] = (string) $attributes['fxTreatmentHighlight'];
-				}
-				if ( isset( $attributes['fxTreatmentIntensity'] ) && is_numeric( $attributes['fxTreatmentIntensity'] ) ) {
-					$opt_extra_attrs['data-sgs-fx-treatment-intensity'] = (string) $attributes['fxTreatmentIntensity'];
-				}
-				if ( 'off' === ( $attributes['fxTreatmentReveal'] ?? '' ) ) {
-					$opt_extra_attrs['data-sgs-fx-treatment-reveal'] = 'off';
-				}
 			}
 
 			// object-fit/object-position for the <img> path above — built here
@@ -1432,13 +1355,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$sgs_media_layer_decls[] = 'background-size:' . esc_attr( $bg_size );
 				$sgs_media_layer_decls[] = 'background-position:' . esc_attr( $bg_position );
 				$sgs_media_layer_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
-				// D4 (2026-08-11): `bgParallax` was declared, controlled and given a
-				// CSS class marker + a touch-device disable mechanism
-				// (`sgs-container--parallax` / `.no-parallax`, `view.js`) — but
-				// nothing ever actually turned parallax ON. Fixed here: parallax
-				// implies fixed attachment structurally, so it wins over the
-				// separate manual "Attachment" dropdown when both are set.
-				if ( 'fixed' === $bg_attachment || $bg_parallax ) {
+				if ( 'fixed' === $bg_attachment ) {
 					$sgs_media_layer_decls[] = 'background-attachment:fixed';
 				}
 				// D5 (Background panel redesign, 2026-08-11): the media-opacity
@@ -1450,11 +1367,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Box shape — parsed above, beside the min-height flex-fill it shares.
 			if ( '' !== $sgs_box_ratio ) {
 				$styles[] = 'aspect-ratio:' . $sgs_box_ratio;
-			}
-
-			// Ken-burns duration.
-			if ( $bg_ken_burns && $has_bg_image ) { // D6: universal, was section-only.
-				$styles[] = '--sgs-ken-burns-duration:' . absint( $bg_animation_duration ) . 's';
 			}
 
 			// Grid / flex display — section + layout kinds. No-inline contract
@@ -1929,31 +1841,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// D6: universal, was section-only (the `if ( true )` wrapper this was
 			// left inside of has been removed as dead-conditional cleanup).
 			//
-			// U-17 (design §3.1/§6) — bgLottie IS the moving layer and takes
-			// precedence over both bgImage (which becomes its poster) and
-			// bgVideo (suppressed the same way): neither of their own classes
-			// apply once bgLottie is set. With no bgLottie this condition is
-			// unchanged from before — the byte-identical guarantee §6 requires.
-			if ( $has_bg_image && ! $has_bg_video && ! $has_bg_lottie ) {
+			if ( $has_bg_image && ! $has_bg_video ) {
 				$classes[] = 'sgs-container--has-bg-image';
-				if ( $bg_parallax ) {
-					$classes[] = 'sgs-container--parallax';
-				}
-				if ( $bg_ken_burns ) {
-					$classes[] = 'sgs-container--ken-burns';
-				}
 			}
-			if ( $has_bg_video && ! $has_bg_lottie ) {
+			if ( $has_bg_video ) {
 				$classes[] = 'sgs-container--has-bg-video';
-			}
-			if ( $has_bg_lottie ) {
-				$classes[] = 'sgs-container--has-bg-lottie';
 			}
 			if ( $has_bg_svg ) {
 				$classes[] = 'sgs-container--has-bg-svg';
 				$classes[] = 'sgs-container--svg-' . esc_attr( $bg_svg_position );
-				$classes[] = 'sgs-container--svg-anim-' . esc_attr( $bg_svg_animation );
-				$classes[] = 'sgs-container--svg-speed-' . esc_attr( $bg_svg_speed );
 				if ( $bg_svg_text_shadow ) {
 					$classes[] = 'sgs-container--svg-text-shadow';
 				}
@@ -2065,42 +1961,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 			}
 
-			// ----------------------------------------------------------------
-			// Lottie HTML — U-17 (design §3.1/§6). Precedence: when bgLottie is
-			// set it IS the moving layer — the background image, if any, becomes
-			// its poster (shown until the player mounts, and always shown under
-			// reduced motion) rather than a separately painted background, and
-			// any bgVideo is suppressed the same way (§6: "a Lottie background
-			// without an image shows nothing under reduced motion: allowed,
-			// decorative"). With NO bgLottie this whole block is a no-op and
-			// $bg_img_html/$video_html reach final assembly completely
-			// untouched — the byte-identical guarantee §6 requires.
-			// ----------------------------------------------------------------
-			$lottie_html       = '';
-			$lottie_pause_html = '';
-			if ( $has_bg_lottie ) {
-				$lottie_result = sgs_render_lottie(
-					$bg_lottie_id,
-					array(
-						'poster_html' => $bg_img_html,
-						'decorative'  => true,
-						'trigger'     => 'visible',
-						'loop'        => $bg_lottie_loop,
-						'speed'       => 1.0,
-						'extra_class' => 'sgs-container__lottie-bg',
-					)
-				);
-				$lottie_html       = $lottie_result['wrapper'];
-				$lottie_pause_html = $lottie_result['pause'];
-
-				// The poster is now INSIDE the lottie wrapper — suppress the
-				// separate background-image/video layers so the poster does not
-				// also paint underneath it.
-				$bg_img_html = '';
-				$video_html  = '';
-			}
 			// The background Lottie layer's holder takes the image's place, with the image inside as its poster; a video
-			// gives way to it as it does to bgLottie.
+			// gives way to it.
 			if ( $has_bg_lottie_layer ) {
 				$bg_img_html = \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::holder( $bg_img_html );
 				$video_html  = '';
@@ -2438,13 +2300,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $has_base_outer
 				|| $container_queries
 				|| '' !== $overlay_decls
-				|| ( $bg_parallax || $bg_ken_burns ) // D6: universal.
-				|| ( $bg_hover_zoom && $has_bg_image )
 				|| ( $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) ) // D6: universal.
-				// U-17 — the pause control's scoped positioning rule and the
-				// Lottie layer's own aspect-ratio custom property both need a
-				// uid to scope to.
-				|| $has_bg_lottie
 				// An SVG background emits `--sgs-svg-opacity` as a scoped rule on the
 				// `.sgs-container__svg-bg` layer (FR-32-4 / D345 — it used to ride inline
 				// on that div). Without a uid there is nowhere to scope it, so the SVG
@@ -2536,40 +2392,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// The transition-property + hover/focus-within scale rules need no such
 			// guard — they simply match nothing when no `.sgs-media-el` exists.
 			//
-			// Scale VALUE (2026-09-10, dedup follow-up): reuses `--sgs-hover-scale`,
-			// the SAME custom property `hover-effects.php` already emits for the
-			// client-configurable `sgsHoverScale`/`sgsHoverScalePreset` attributes
-			// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover-
-			// scale,1))}` in `assets/css/extensions.css`). This is NOT the same
-			// mechanism as that root-hover rule — it scales a nested media CHILD on
-			// hovering its own box, not the composite root, so it stays its own
-			// selector — but it must not be a SECOND hardcoded literal beside an
-			// existing configurable one (CLAUDE.md Rule 3, no carve-outs). `var()`
-			// falls back to the previous hardcoded 1.05 when the block hasn't
-			// opted into the generic hover panel (or the client hasn't set a
-			// value), so this is a zero-regression change: identical output until
-			// a block also declares `enabledExtensions:['hover']`, at which point
-			// the client's own hover-scale setting (already inherited from the
-			// shared root ancestor — custom properties cascade by DOM position,
-			// not by which class scoped the declaration) drives this rule too.
+			// Scale VALUE: `--sgs-hover-scale`, the custom property the hover layer sets on the composite root, falling
+			// back to 1.05 where the block has no hover scale of its own. This rule scales a nested media CHILD when its own
+			// box is hovered, not the composite root, so it stays its own selector.
 			if ( $hover_spill_scale && $uid ) {
 				$responsive_css .= '.' . $uid . ':has(.sgs-media-box){overflow-x:clip;overflow-y:visible;position:relative;z-index:2;}';
 				$responsive_css .= '.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}';
 				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}';
-			}
-
-			// Background image zoom on hover: the real <img> when one rendered, else the
-			// root's ::before image layer (tiled or sized backgrounds).
-			if ( $bg_hover_zoom && $has_bg_image && ! $has_bg_video && ! $has_bg_lottie && ! $has_bg_lottie_layer && $uid
-				&& ( '' !== $bg_img_html || ! empty( $sgs_media_layer_decls ) ) ) {
-				$responsive_css .= sgs_container_bg_hover_zoom_css(
-					$uid,
-					'' !== $bg_img_html,
-					$attributes['bgHoverZoomScale'] ?? 105,
-					$attributes['bgHoverZoomDuration'] ?? 600,
-					(string) ( $attributes['bgHoverZoomEasing'] ?? 'ease' ),
-					(string) ( $attributes['bgHoverZoomEasingCustom'] ?? '' )
-				);
 			}
 
 			// FR-32-1 / D345 — shape-divider height + colour, captured as declarations
@@ -2662,7 +2491,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			} elseif ( $shadow && $uid ) {
 				// AUTOMATIC LIFT (design H4) — only when this block sets NO explicit hover
 				// colour at all; the explicit branch above always wins outright. Gated by
-				// sgs_shadow_hover_rules() itself (the `shadowLiftOnHover` switch and
+				// sgs_shadow_hover_rules() itself (the block's lift switch and
 				// `supports.sgs.shadowLift` on the composite's OWN block type — overlay
 				// composites such as sgs/mega-panel declare the latter false and never lift).
 				$responsive_css .= sgs_shadow_hover_rules(
@@ -2703,18 +2532,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// stays as the CSS fallback default for the (rare) no-uid case).
 			if ( $sgs_bg_video_style_decls && $uid ) {
 				$responsive_css .= '.' . $uid . ' > .sgs-container__video-bg{' . implode( ';', $sgs_bg_video_style_decls ) . '}';
-			}
-
-			// Lottie background layer + its WCAG 2.2.2 pause control (U-17,
-			// design §3.1/§6, no-inline contract). The block needs `position:
-			// relative` to host the pause button's `position: absolute` corner
-			// placement — every existing use of `.{uid}` already establishes a
-			// real element to attach to, and this rule is additive (only fires
-			// when $has_bg_lottie), so a block with no Lottie background is
-			// completely unaffected.
-			if ( $has_bg_lottie && $uid ) {
-				$responsive_css .= '.' . $uid . '{position:relative;}';
-				$responsive_css .= '.' . $uid . ' > .sgs-lottie__pause{position:absolute;inset-block-end:1rem;inset-inline-end:1rem;z-index:5;}';
 			}
 
 			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay
@@ -3257,15 +3074,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				 * so the full parameter set is built here via the shared
 				 * `sgs_fx_data_attr_string()` rather than a hand-rolled subset.
 				 *
-				 * NO COLLISION WITH `bgSvgAnimation` — the two animate different
-				 * things and compose. `bgSvgAnimation` (pulse|float|wave) is a
-				 * CSS `animation` on THIS DIV, moving its `transform`/`opacity`
-				 * as an ambient loop. DrawSVG animates `stroke-dashoffset` on
+				 * NO COLLISION WITH THE `svg-loop` EFFECT — the two animate different
+				 * things and compose. The `svg-loop` and `ambient-float` layers on the
+				 * `svg-bg` part move THIS DIV's `transform`/`opacity` as an ambient
+				 * loop. DrawSVG animates `stroke-dashoffset` on
 				 * the `<path>` elements INSIDE it, once, on scroll. Different
 				 * element, different property, different trigger; an operator
 				 * can legitimately run both, and `providesNatively` (the
 				 * subtract-an-effect declaration `sgs/responsive-logo` uses to
-				 * suppress `draw`, because its `animationStyle` enum IS
+				 * suppress `draw`, because its own draw style IS
 				 * stroke-draw) would be wrong here — it would deny a capability
 				 * this block does not otherwise have.
 				 */
@@ -4005,7 +3822,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			 * without a forcing mechanism is a guess.
 			 *
 			 * Why here and not in the fx layer: only the wrapper decides whether
-			 * __inner renders. The fx layer (includes/fx-attributes.php) does the
+			 * __inner renders. The fx layer does the
 			 * MARKING — it stamps data-sgs-fx-track onto this element — so the
 			 * two concerns stay split and this file gains no knowledge of the
 			 * effect beyond "it needs an inner wrapper".
@@ -4067,7 +3884,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// ----------------------------------------------------------------
 			// Final assembly — order:
-			// shape_top / bg_img / video / lottie / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom / lottie_pause
+			// shape_top / bg_img / video / overlay / svg_bg / [__inner] content [/__inner] / svg_fg / shape_bottom
 			//
 			// $bg_img_html sits IMMEDIATELY BEFORE $video_html (Phase 2 LCP fast
 			// path, above) so today's z-order is preserved: a background video was
@@ -4077,30 +3894,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// the image ahead of the video slot keeps that ordering intact for the
 			// (currently impossible) case either changes.
 			//
-			// U-17 (design §3.1/§6): $lottie_html/$lottie_pause_html are both ''
-			// unless $has_bg_lottie, and $bg_img_html/$video_html are ALREADY
-			// suppressed above when it is set — so this sprintf is
-			// byte-identical to before this feature for every block with no
-			// bgLottie. $lottie_pause_html prints LAST, after $shape_bottom_html
-			// (a real, positioned element inside the wrapper — WCAG 2.2.2 —
-			// never nested inside $inner_html/the content it must sit above).
+			// A `lottie` layer's holder replaces $bg_img_html above and carries its own pause control.
 			// ----------------------------------------------------------------
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped), $lottie_html/$lottie_pause_html built exclusively by sgs_render_lottie(), which escapes every value itself.
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- All variables pre-sanitised: $html_tag allowlisted, $wrapper_attributes from get_block_wrapper_attributes(), HTML vars built with esc_*/wp_kses(), $inner_html is caller-rendered blocks, $inner_open/$inner_close built with esc_attr(), $bg_img_html built via sgs_responsive_image()/wp_get_attachment_image() (core-escaped).
 			$open_attrs = '' !== $opt_extra_attr_html ? $wrapper_attributes . ' ' . $opt_extra_attr_html : $wrapper_attributes;
 			$element    = sprintf(
-				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s%11$s%12$s</%1$s>',
+				'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s%8$s%9$s%10$s</%1$s>',
 				$html_tag,
 				$open_attrs,
 				$shape_top_html,
 				$bg_img_html,
 				$video_html,
-				$lottie_html,
 				$overlay_html,
 				$svg_bg_html,
 				$inner_open . $inner_html . $inner_close,
 				$svg_fg_html,
-				$shape_bottom_html,
-				$lottie_pause_html
+				$shape_bottom_html
 			);
 			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 

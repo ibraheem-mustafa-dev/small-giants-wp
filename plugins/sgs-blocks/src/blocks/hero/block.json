@@ -40,7 +40,7 @@
 				"hoverSpillScale"
 			],
 			"_comment_hoverSpillScale": "2026-09-10, Bean-directed — shared wrapper capability (class-sgs-container-wrapper.php), migrated off hero's own private CSS. Promotes the whole composite root's stacking context above a document-later sibling and lets the split-media hover-zoom spill past its column without a page-level horizontal scrollbar. Universal — targets the shared .sgs-media-box/.sgs-media-el marker pair, so it applies to ANY composite that opts in, not just hero. Inert on the standard variant (no .sgs-media-box descendant there).",
-			"_comment_mediaElements": "Wave 6 (2026-09-01, uniform-prefix rename 2026-09-07). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/bgParallax/bgKenBurns/backgroundOverlay*), which stays on SGS_Container_Wrapper. Every split-media attribute uses ONE uniform prefix, 'splitMedia' — the earlier three-prefix split ('split'/'splitMedia'/'media') was naming drift, not a real constraint. The one exception is the media-type atom (base literally 'MediaType'), which stays prefix 'split' to avoid a double-noun 'splitMediaMediaType'; it already produces the correct 'splitMediaType' name. The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): R-31-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution).",
+			"_comment_mediaElements": "Wave 6 (2026-09-01, uniform-prefix rename 2026-09-07). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/backgroundOverlay*), which stays on SGS_Container_Wrapper. Every split-media attribute uses ONE uniform prefix, 'splitMedia' — the earlier three-prefix split ('split'/'splitMedia'/'media') was naming drift, not a real constraint. The one exception is the media-type atom (base literally 'MediaType'), which stays prefix 'split' to avoid a double-noun 'splitMediaMediaType'; it already produces the correct 'splitMediaType' name. The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): R-31-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution).",
 			"mediaElements": [
 				{
 					"prefix": "split",
@@ -118,9 +118,6 @@
 					"splitMediaMaxHeightUnit",
 					"splitMediaOverlayColour",
 					"splitMediaOverlayGradient",
-					"splitMediaParallax",
-					"splitMediaKenBurns",
-					"splitMediaAnimationDuration",
 					"splitMediaBoxShadow",
 					"splitMediaBoxShadowColour",
 					"splitMediaBoxShadowColourHover",
@@ -193,9 +190,7 @@
 						"css:letter-spacing": "letterSpacing",
 						"css:text-transform": "textTransform",
 						"css:grid-template-columns": "gridTemplateColumns",
-						"css:columns": "columns",
-						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration"
+						"css:columns": "columns"
 					},
 					"states": {
 						"hover": {
@@ -207,7 +202,7 @@
 							}
 						}
 					},
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block. D701 (2026-08-20): `borderColourGradient` (resting) added as the base-level sibling to `borderColourHoverGradient` — the wrapper's resting border colour comes from WP-native `__experimentalBorder.color` (already mapped above at `css:border-color`), and this new gradient wins over that native solid colour at render time when set (mirrors `borderColourHover`/`borderColourHoverGradient` and `sgs/quote`'s `borderColour`/`borderColourGradient` pair). See render.php for the emission order that makes the override work without `!important`. D702 (2026-08-20): `css:background-color`/`css:color` retargeted from the dead `native:color.background` reference (WordPress never registered that attribute — `supports.color` was absent) to the plain `backgroundColour`/`textColour` string attrs, mirroring `sgs/testimonial-slider`'s `slider` element. The hover pair (`backgroundColourHover`/`textColourHover`) was already declared on this block but bound to nothing until now."
+					"_note_animation": "The animation cluster (anim:*) has no member on this block: its motion is the sgsMotion model (Spec 38A), not attributes. D701 (2026-08-20): `borderColourGradient` (resting) added as the base-level sibling to `borderColourHoverGradient` — the wrapper's resting border colour comes from WP-native `__experimentalBorder.color` (already mapped above at `css:border-color`), and this new gradient wins over that native solid colour at render time when set (mirrors `borderColourHover`/`borderColourHoverGradient` and `sgs/quote`'s `borderColour`/`borderColourGradient` pair). See render.php for the emission order that makes the override work without `!important`. D702 (2026-08-20): `css:background-color`/`css:color` retargeted from the dead `native:color.background` reference (WordPress never registered that attribute — `supports.color` was absent) to the plain `backgroundColour`/`textColour` string attrs, mirroring `sgs/testimonial-slider`'s `slider` element. The hover pair (`backgroundColourHover`/`textColourHover`) was already declared on this block but bound to nothing until now."
 				},
 				"inner": {
 					"absentIn": ["split", "bg-css-layer"],
@@ -275,11 +270,9 @@
 					],
 					"prefix": "image",
 					"attrMap": {
-						"css:background-color": "mediaBackground",
-						"anim:parallax": "splitMediaParallax",
-						"anim:duration": "splitMediaAnimationDuration"
+						"css:background-color": "mediaBackground"
 					},
-					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via splitMediaParallax/splitMediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. splitMediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
+					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. The motion of the split media is the sgsMotion model's `media` part, not attributes."
 				},
 				"headline": {
 					"motion": false,
@@ -665,28 +658,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"bgParallax": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgKenBurns": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgKenBurnsMode": {
-			"type": "string",
-			"default": "loop",
-			"enum": [
-				"loop",
-				"zoom-out-once"
-			],
-			"description": "Ken-burns style: loop drifts back and forth for ever; zoom-out-once starts at bgZoomStart percent and settles to full size one time (duration from bgAnimationDuration, easing from the theme entrance token)."
-		},
-		"bgZoomStart": {
-			"type": "number",
-			"default": 108,
-			"description": "Starting zoom, in percent, for the zoom-out-once ken-burns style."
-		},
 		"bgVideo": {
 			"type": "object"
 		},
@@ -695,14 +666,6 @@
 		},
 		"bgVideoMobile": {
 			"type": "object"
-		},
-		"bgLottie": {
-			"type": "integer",
-			"default": 0
-		},
-		"bgLottieLoop": {
-			"type": "boolean",
-			"default": true
 		},
 		"splitMediaObjectFit": {
 			"type": "string",
@@ -848,18 +811,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"splitMediaParallax": {
-			"type": "boolean",
-			"default": false
-		},
-		"splitMediaKenBurns": {
-			"type": "boolean",
-			"default": false
-		},
-		"splitMediaAnimationDuration": {
-			"type": "number",
-			"default": 20
-		},
 		"contentPadding": {
 			"type": "object",
 			"default": {
@@ -976,49 +927,6 @@
 				"cover",
 				"contain",
 				"auto"
-			]
-		},
-		"bgAnimationDuration": {
-			"type": "number",
-			"default": 20
-		},
-		"bgHoverZoom": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgHoverZoomScale": {
-			"type": "number",
-			"default": 105
-		},
-		"bgHoverZoomDuration": {
-			"type": "number",
-			"default": 600
-		},
-		"bgHoverZoomEasing": {
-			"type": "string",
-			"default": "ease"
-		},
-		"bgHoverZoomEasingCustom": {
-			"type": "string",
-			"default": ""
-		},
-		"bgSvgAnimation": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"pulse",
-				"float",
-				"wave"
-			]
-		},
-		"bgSvgAnimationSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [
-				"slow",
-				"medium",
-				"fast"
 			]
 		},
 		"bgSvgContent": {

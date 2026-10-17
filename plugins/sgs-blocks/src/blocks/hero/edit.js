@@ -202,12 +202,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
 	const {
 		variant,
-		// Split-media motion (2026-08-13) — mirrors the section's own
-		// bgParallax/bgKenBurns/bgAnimationDuration pair, scoped to the
-		// FOREGROUND media column, never the section background.
-		splitMediaParallax,
-		splitMediaKenBurns,
-		splitMediaAnimationDuration = 20,
 		alignment,
 		backgroundImage,
 		backgroundOverlayColour,
@@ -391,8 +385,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const svgPreview = svgBackgroundPreview( {
 		bgSvgContent: attributes.bgSvgContent,
 		bgSvgPosition: attributes.bgSvgPosition,
-		bgSvgAnimation: attributes.bgSvgAnimation,
-		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
 		bgSvgOpacity: attributes.bgSvgOpacity,
 		bgSvgMinHeight: attributes.bgSvgMinHeight,
 		bgSvgTextShadow: attributes.bgSvgTextShadow,
@@ -401,14 +393,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// Background media (backgroundRepeat/backgroundAttachment) — editor mirror,
 	// CHECK A findings 2026-09-05. Narrower than container's own backgroundPreview()
 	// call on purpose: hero already renders its OWN hand-built overlay <span>
-	// further down (mirrors render.php's overlay markup exactly) and its OWN
-	// split-media ken-burns/parallax (splitMediaKenBurns/splitMediaParallax — a SEPARATE
-	// attribute family scoped to the foreground media column, see
-	// mediaWrapperStyle above). Passing backgroundOverlayColour/overlayGradient/
-	// bgKenBurns/bgParallax into backgroundPreview() here would mount a SECOND,
-	// overlapping preview mechanism (its own `::after` overlay / ken-burns
-	// custom-property layer) for effects this file already previews by hand —
-	// two overlapping previews for one setting is unfalsifiable (prove-the-
+	// further down (mirrors render.php's overlay markup exactly). Passing
+	// backgroundOverlayColour/overlayGradient into backgroundPreview() here would
+	// mount a SECOND, overlapping preview mechanism (its own `::after` overlay
+	// layer) for an effect this file already previews by hand — two overlapping
+	// previews for one setting is unfalsifiable (prove-the-
 	// cause-before-fix), so only the fields hero previews NOWHERE else
 	// (backgroundImage/backgroundSize/backgroundPosition/backgroundRepeat/
 	// backgroundAttachment/bgVideo) are passed. `[]` stands in for the colour
@@ -431,16 +420,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	const bgMediaPreview = backgroundPreview( {
 		backgroundImage: attributes.backgroundImage,
 		bgVideo: attributes.bgVideo,
-		bgLottie: attributes.bgLottie,
 		backgroundSize: attributes.backgroundSize,
 		backgroundPosition: attributes.backgroundPosition,
 		backgroundRepeat: attributes.backgroundRepeat,
 		backgroundAttachment: attributes.backgroundAttachment,
-		bgHoverZoom: attributes.bgHoverZoom,
-		bgHoverZoomScale: attributes.bgHoverZoomScale,
-		bgHoverZoomDuration: attributes.bgHoverZoomDuration,
-		bgHoverZoomEasing: attributes.bgHoverZoomEasing,
-		bgHoverZoomEasingCustom: attributes.bgHoverZoomEasingCustom,
 		backgroundImageTablet: attributes.backgroundImageTablet,
 		backgroundImageMobile: attributes.backgroundImageMobile,
 	}, [], [], previewTier );
@@ -551,12 +534,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// emit when style isn't 'none' OR a width is set.
 	Object.assign( imagePreviewStyle, sgsBorderPreview( { widthValues: splitMediaBorderWidth, styleValue: splitMediaBorderStyle, colourValue: splitMediaBorderColour, colourGradientValue: attributes.splitMediaBorderColourGradient }, previewTier, colourPalette ) );
 
-	// Media-wrapper (`.sgs-hero__media`) class + style preview — mirrors
-	// render.php's `--ken-burns` modifier class + the ken-burns duration
-	// custom property. splitMediaKenBurns
-	// is mutually exclusive with splitMediaParallax, matching render.php:686's
-	// `$media_ken_burns = ! empty( $attributes['splitMediaKenBurns'] ) && ! $media_parallax;`
-	const mediaKenBurnsActive = !! splitMediaKenBurns && ! splitMediaParallax;
+	// Media-wrapper (`.sgs-hero__media`) class + style preview.
 	// Wave 6 — the overlay atom (prefix 'media', attachesTo: 'box') paints via
 	// `.sgs-media-box::after`, so `.sgs-hero__media` (the wrapper this atom's
 	// "box" IS) carries the universal `sgs-media-box` marker + this element's
@@ -567,7 +545,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		'sgs-hero__media',
 		'sgs-media-box',
 		mediaBoxScopeClass,
-		mediaKenBurnsActive ? 'sgs-hero__media--ken-burns' : null,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -592,22 +569,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		...backgroundPaintPreview( mediaBackground, mediaBackgroundGradient, colourPalette ),
 	};
 	Object.assign( mediaWrapperStyle, heroPreview.media );
-	if ( mediaKenBurnsActive ) {
-		mediaWrapperStyle[ '--sgs-hero-media-ken-burns-duration' ] = `${ splitMediaAnimationDuration }s`;
-	}
 	// Wave 6 — object-fit + focal-point (prefix 'splitMedia', attachesTo:
 	// 'element') target `.sgs-media-el` directly, so this element carries the
-	// universal marker + its own scope class. Motion is DELIBERATELY NOT
-	// routed through this marker — see the "judgement calls" section of this
-	// migration's task report: hero's existing ken-burns/parallax CSS
-	// (style.css, ~line 495 onward) has a subtle clipping interaction with
-	// its own hover-zoom rule (a compound-selector specificity fight) that
-	// this migration did not risk reproducing under the shared `.sgs-media-el`
-	// mechanism without a live canary to verify against. The motion atom's
-	// EDITOR CONTROL is still fully adopted (HeroSplitMediaSourceSection) and
-	// writes to the SAME splitMediaParallax/splitMediaKenBurns/splitMediaAnimationDuration
-	// attributes hero's own render.php already reads — only the CSS
-	// consumption mechanism stays hero-private.
+	// universal marker + its own scope class.
 	const splitMediaScopeClass = elementScopeClass( clientId, 'splitMedia' );
 	const splitImageClassName = [
 		'sgs-hero__split-image',
@@ -1524,22 +1488,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 				{/* ── 4. Split image styling (SPLIT VARIANT ONLY — appearance for the split
 				   media column; media SELECTION for this image lives in the "Split image"
-				   panel on the Settings tab).
-				   Media-panel consolidation (this task): this panel used to also carry
-				   !isSplit-only content — a legacy "Overlay colour" control writing the
-				   deleted `overlayColour` attribute, and duplicate "Parallax scroll"/
-				   "Ken Burns animation" toggles. Both are REMOVED, not moved: the shared
-				   <BackgroundPanel> mounted further down this same Styles tab (see the
-				   "Background" panel below) already provides the canonical overlay
-				   colour/gradient control (writing `backgroundOverlayColour`) and the
-				   canonical Parallax/Ken Burns toggles (writing `bgParallax`/`bgKenBurns`)
-				   — and that panel is UNGATED, so it was always reachable on both variants,
-				   including split (which the deleted local toggles here never were — they
-				   were `!isSplit`-only, so a split hero could only reach Parallax/Ken Burns
-				   through the shared panel anyway). Keeping both would have shown the
-				   client two knobs for the same setting; the shared panel is the one that
-				   already covers every variant, so it is the one that stays. This panel is
-				   now entirely split-specific, so it is gated + retitled to say so. */ }
+				   panel on the Settings tab). The overlay colour and gradient live in the
+				   shared <BackgroundPanel> below, which is ungated and so reachable on
+				   both variants. This panel is entirely split-specific. */ }
 				{ isSplit && (
 					<PanelBody title={ __( 'Split image styling', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* The ToolsPanel `label` deliberately does NOT repeat the PanelBody
@@ -1869,44 +1820,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				</PanelBody>
 
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
-
-				{ attributes.bgKenBurns && (
-					<PanelBody title={ __( 'Ken-burns style', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl
-							label={ __( 'Ken-burns style', 'sgs-blocks' ) }
-							help={ __( 'Loop drifts back and forth for ever. Zoom out once starts zoomed in and settles to full size, one time, as the page loads. Its length is the animation duration in the Background panel.', 'sgs-blocks' ) }
-							value={ attributes.bgKenBurnsMode || 'loop' }
-							options={ [
-								{ label: __( 'Loop', 'sgs-blocks' ), value: 'loop' },
-								{ label: __( 'Zoom out once', 'sgs-blocks' ), value: 'zoom-out-once' },
-							] }
-							onChange={ ( val ) =>
-								setAttributes( {
-									bgKenBurnsMode: val,
-									// A one-off zoom at the loop's 20s default reads as no motion;
-									// it starts at 3s unless a duration was chosen.
-									...( 'zoom-out-once' === val && ( attributes.bgAnimationDuration ?? 20 ) === 20
-										? { bgAnimationDuration: 3 }
-										: {} ),
-								} )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						{ 'zoom-out-once' === attributes.bgKenBurnsMode && (
-							<RangeControl
-								label={ __( 'Starting zoom (%)', 'sgs-blocks' ) }
-								value={ attributes.bgZoomStart ?? 108 }
-								onChange={ ( val ) => setAttributes( { bgZoomStart: val ?? 108 } ) }
-								min={ 100 }
-								max={ 150 }
-								step={ 1 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</PanelBody>
-				) }
 
 				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
 					CSS string built by ShadowControl), resolved by sgs_shadow_value()

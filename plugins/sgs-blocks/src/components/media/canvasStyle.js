@@ -62,7 +62,6 @@ import { css as objectFitCss } from './atoms/object-fit.js';
 import { css as focalPointCss } from './atoms/focal-point.js';
 import { css as boxShapeCss, resolveSizingMode } from './atoms/box-shape.js';
 import { css as overlayCss } from './atoms/overlay.js';
-import { css as motionCss } from './atoms/motion.js';
 import { css as opacityCss } from './atoms/opacity.js';
 import { css as shadowCss } from './atoms/shadow.js';
 import { css as mediaPaddingCss } from './atoms/media-padding.js';
@@ -90,7 +89,6 @@ const ATOM_CSS = {
 	'focal-point': focalPointCss,
 	'box-shape': boxShapeCss,
 	overlay: overlayCss,
-	motion: motionCss,
 	opacity: opacityCss,
 	shadow: shadowCss,
 	'media-padding': mediaPaddingCss,

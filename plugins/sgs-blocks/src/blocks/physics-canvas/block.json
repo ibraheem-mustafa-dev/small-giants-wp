@@ -238,57 +238,6 @@
 				"auto"
 			]
 		},
-		"bgAnimationDuration": {
-			"type": "number",
-			"default": 20
-		},
-		"bgHoverZoom": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgHoverZoomScale": {
-			"type": "number",
-			"default": 105
-		},
-		"bgHoverZoomDuration": {
-			"type": "number",
-			"default": 600
-		},
-		"bgHoverZoomEasing": {
-			"type": "string",
-			"default": "ease"
-		},
-		"bgHoverZoomEasingCustom": {
-			"type": "string",
-			"default": ""
-		},
-		"bgKenBurns": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgParallax": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgSvgAnimation": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"pulse",
-				"float",
-				"wave"
-			]
-		},
-		"bgSvgAnimationSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [
-				"slow",
-				"medium",
-				"fast"
-			]
-		},
 		"bgSvgContent": {
 			"type": "string",
 			"default": ""
@@ -321,14 +270,6 @@
 		},
 		"bgVideoMobile": {
 			"type": "object"
-		},
-		"bgLottie": {
-			"type": "integer",
-			"default": 0
-		},
-		"bgLottieLoop": {
-			"type": "boolean",
-			"default": true
 		},
 		"overlayGradient": {
 			"type": "string",

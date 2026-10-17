@@ -146,45 +146,22 @@
  * sized wrapper. Never widen a fit selector to cover it.
  */
 
-/* ── Cross-atom rule: composed animation (motion + svg-presentation) ──────────
+/* ── Composed animation (svg presentation plus a reserved second position) ───
  *
- * `motion.css` (ken-burns/parallax) and `svg-presentation.css` (pulse/float/
- * wave) each write only to their OWN uniquely named custom properties
- * (`--sgs-media-motion-animation-*` / `--sgs-media-svg-animation-*` — never
- * renamed, never merged). Neither atom declares a real `animation-*`
- * property any more; that ownership lives here, once, because two atom
- * partials both declaring the same real property at the same specificity
- * (0,1,0) is unresolvable by cascade alone — whichever partial the alphabet
- * loads last always wins outright, silently killing the other (fixed
- * 2026-09-01, Bean's direction: svg-presentation keeps sole ownership of the
- * SVG decorative vocabulary, motion's ken-burns/parallax must still WORK,
- * including on an element that also has an SVG animation active).
+ * `svg-presentation.css` (pulse/float/wave) writes only to its own uniquely
+ * named custom properties (`--sgs-media-svg-animation-*`). It declares no real
+ * `animation-*` property: that ownership lives here, once, as the element's
+ * base animation (`--sgs-base-animation-*`, registered in the motion
+ * stylesheet), and the real longhands read it. Every list holds two positions,
+ * matched by list order. Position 2 reads `--sgs-media-motion-animation-*`,
+ * which nothing sets, so it stays at its inert default (`none`/`0s`).
  *
- * CSS's native comma-separated multi-value animation syntax runs BOTH
- * animations simultaneously, positionally matched by list order — position 1
- * is svg-presentation's, position 2 is motion's, in every sub-property
- * below. An atom that hasn't set its custom properties falls back to a
- * harmless steady-state default (`none`/`0s`), so an element carrying only
- * one of the two atoms still animates correctly; it just runs one animation
- * instead of two.
- *
- * `animation-fill-mode` has no svg-presentation custom property (that atom
- * never declared one) — position 1 is the literal `none`, matching what
- * svg-presentation always rendered before this change.
- *
- * If a THIRD atom ever needs `.sgs-media-el` animation, extend this rule
- * with a third comma-separated position — do not give it its own bare
- * `animation-*` declaration elsewhere.
- *
- * The composed lists are written once, as the element's base animation
- * (`--sgs-base-animation-*`, registered in `motion.css`), and the real
- * longhands read them. A Spec 38A entrance on the same element (a product
- * card image with a scroll Fade up, say) plays through its own rule, which
- * puts these lists first and its channels after them: the entrance keeps its
- * own duration, one iteration and normal direction, wins any property both
- * animate while it plays, and the loop runs on underneath it and after it,
- * never restarted. Each list holds exactly two positions; a new position
- * goes into every list, the timeline included (`motion.css` partial).
+ * A Spec 38A entrance on the same element (a product card image with a scroll
+ * Fade up, say) plays through its own rule, which puts these lists first and
+ * its channels after them: the entrance keeps its own duration, one iteration
+ * and normal direction, wins any property both animate while it plays, and the
+ * loop runs on underneath it and after it, never restarted. A new position
+ * goes into every list, the timeline included.
  */
 
 @media ( prefers-reduced-motion: no-preference ) {

@@ -296,46 +296,6 @@
     "bgVideoMobile": {
       "type": "object"
     },
-    "bgLottie": {
-      "type": "integer",
-      "default": 0
-    },
-    "bgLottieLoop": {
-      "type": "boolean",
-      "default": true
-    },
-    "bgParallax": {
-      "type": "boolean",
-      "default": false
-    },
-    "bgKenBurns": {
-      "type": "boolean",
-      "default": false
-    },
-    "bgAnimationDuration": {
-      "type": "number",
-      "default": 20
-    },
-    "bgHoverZoom": {
-    	"type": "boolean",
-    	"default": false
-    },
-    "bgHoverZoomScale": {
-    	"type": "number",
-    	"default": 105
-    },
-    "bgHoverZoomDuration": {
-    	"type": "number",
-    	"default": 600
-    },
-    "bgHoverZoomEasing": {
-    	"type": "string",
-    	"default": "ease"
-    },
-    "bgHoverZoomEasingCustom": {
-    	"type": "string",
-    	"default": ""
-    },
     "bgSvgContent": {
       "type": "string",
       "default": ""
@@ -346,25 +306,6 @@
       "enum": [
         "background",
         "foreground"
-      ]
-    },
-    "bgSvgAnimation": {
-      "type": "string",
-      "default": "none",
-      "enum": [
-        "none",
-        "pulse",
-        "float",
-        "wave"
-      ]
-    },
-    "bgSvgAnimationSpeed": {
-      "type": "string",
-      "default": "medium",
-      "enum": [
-        "slow",
-        "medium",
-        "fast"
       ]
     },
     "bgSvgOpacity": {
@@ -516,33 +457,6 @@
       "default": {
         "desktop": {}
       }
-    },
-    "fxTreatment": {
-      "type": "string",
-      "default": ""
-    },
-    "fxTreatmentShadow": {
-      "type": "string",
-      "default": ""
-    },
-    "fxTreatmentHighlight": {
-      "type": "string",
-      "default": ""
-    },
-    "fxTreatmentTint": {
-      "type": "string",
-      "default": ""
-    },
-    "fxTreatmentInk": {
-      "type": "string",
-      "default": ""
-    },
-    "fxTreatmentIntensity": {
-      "type": "number"
-    },
-    "fxTreatmentReveal": {
-      "type": "string",
-      "default": ""
     }
   },
   "example": {

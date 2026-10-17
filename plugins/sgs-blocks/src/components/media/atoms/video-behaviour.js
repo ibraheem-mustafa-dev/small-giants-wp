@@ -82,8 +82,7 @@ export function validate( value, base = 'VideoAutoplay' ) {
 	if ( 'VideoCaptionsId' === base ) {
 		return Number.isInteger( value ) && value > 0 ? value : null;
 	}
-	// Added 2026-09-26 (U-17, design §3.1) — the two Lottie-only bases.
-	// Mirrors the PHP twin's `sgs_media_atom_video_behaviour_resolve_lottie()`.
+	// The two Lottie-only bases.
 	if ( 'LottieTrigger' === base ) {
 		const allowed = [ 'load', 'visible', 'hover', 'scroll' ];
 		return allowed.includes( value ) ? value : 'visible';

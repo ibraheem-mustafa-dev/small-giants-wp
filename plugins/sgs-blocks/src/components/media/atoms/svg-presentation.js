@@ -4,16 +4,15 @@
  * Bases (registry.js): `SvgAnimation`, `SvgAnimationSpeed`, `SvgOpacity`,
  * `SvgPosition`, `SvgMinHeight`, `SvgTextShadow`. Vocabulary mirrors
  * `sgs/container`'s `BackgroundPanel` SVG tab (`bgSvgPosition`/
- * `bgSvgAnimation`/`bgSvgAnimationSpeed`/`bgSvgOpacity`/`bgSvgTextShadow`/
- * `bgSvgMinHeight`, applied via `class-sgs-container-wrapper.php`) — same
+ * `bgSvgOpacity`/`bgSvgTextShadow`/`bgSvgMinHeight`, applied via
+ * `class-sgs-container-wrapper.php`) — same
  * client-facing questions, so a fresh block adopting this atom gets the
  * identical capability container that surface already proved out.
  *
- * This is a NEW, PARALLEL implementation, not a rewire of container's own
- * markup: container paints via BEM MODIFIER CLASSES
- * (`.sgs-container--svg-anim-pulse`) on its own `.sgs-container__svg-bg`
- * element, which this atom's contract (custom properties on `.sgs-media-el`
- * only, no classes) cannot reuse directly. `position`/`animation` are
+ * This is a PARALLEL implementation, not a rewire of container's own markup:
+ * container paints its SVG layer on a `.sgs-container__svg-bg` element, which
+ * this atom's contract (custom properties on `.sgs-media-el` only, no
+ * classes) cannot reuse directly. `position`/`animation` are
  * therefore re-expressed as custom properties consumed by
  * `assets/css/media-atoms/svg-presentation.css`:
  *   - `SvgPosition` -> a z-index custom property (`background` sits behind

@@ -22,14 +22,12 @@
  *
  *   - An atom with an EMPTY `requires` map ({}) gets one TRIVIAL case: call
  *     `disclosure({})` and assert the result conforms to the closed
- *     vocabulary. ⚠ This does NOT assert `state === 'shown'` — three atoms
- *     with empty `requires` (`intrinsic`, `svg-presentation`, `motion`)
+ *     vocabulary. ⚠ This does NOT assert `state === 'shown'` — two atoms
+ *     with empty `requires` (`intrinsic`, `svg-presentation`)
  *     legitimately return something else from `disclosure({})`:
  *     `intrinsic` ALWAYS returns `state: 'omitted'` (it is `clientEditable:
- *     false` — a client never edits it, so it is never "shown"); `motion`
- *     returns a MAP where `AnimationDuration` is `disabled` until KenBurns is
- *     explicitly turned on; `svg-presentation` disables `SvgAnimationSpeed`
- *     until an animation is chosen. All three are internal gates the atom
+ *     false` — a client never edits it, so it is never "shown"); `svg-presentation` disables `SvgAnimationSpeed`
+ *     until an animation is chosen. Both are internal gates the atom
  *     enforces WITHOUT declaring them in `requires` (registry.js's own
  *     `video-behaviour`/`svg-presentation` docblocks note requires is not
  *     exhaustive of every internal branch). Asserting a blind "always shown"
@@ -80,12 +78,12 @@
  *
  * EXPECTED POPULATION (independently summed from registry.js `requires`,
  * verified against the live count at the end of every run — see `run()`):
- *   16 atoms -> 16 all-satisfied/trivial cases, ONE PER ATOM.
+ *   15 atoms -> 15 all-satisfied/trivial cases, ONE PER ATOM.
  *   6 atoms declare non-empty `requires`, with these key counts:
  *     video-behaviour(1) + meaning(1) + focal-point(1) + box-shape(2) +
  *     overlay(2) + shadow(1) = 8 violated cases.
- *   TOTAL: 24 cases (16 + 8).
- * If the live count ever differs from 24, the run says so loudly rather than
+ *   TOTAL: 23 cases (15 + 8).
+ * If the live count ever differs from 23, the run says so loudly rather than
  * silently trusting either number — `zeroIsAClaim` applies here exactly as
  * it does in `test-media-atom-parity.mjs`.
  *

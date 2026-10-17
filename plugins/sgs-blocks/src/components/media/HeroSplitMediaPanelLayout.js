@@ -2,13 +2,13 @@
  * HeroSplitMediaPanelLayout — Wave 6 panel assembly for `sgs/hero`'s
  * SPLIT-MEDIA feature (the image/video/SVG slot beside the text column).
  *
- * NOT the section-level background (bgVideo/bgParallax/bgKenBurns/
+ * NOT the section-level background (bgVideo/
  * backgroundOverlay*) — that stays on `SGS_Container_Wrapper` and is out of
  * scope for this component.
  *
  * Sibling to `MediaPanelLayout.js` (sgs/media's own panel assembly). Every
  * split-media attribute — source, media-type, object-fit, focal-point,
- * overlay and motion — is normalised onto ONE uniform prefix, `'splitMedia'`
+ * and overlay — is normalised onto ONE uniform prefix, `'splitMedia'`
  * (2026-09-07 rename; hero used to spread these across three different
  * ad-hoc prefixes — 'split' / 'splitMedia' / 'media' — a leftover of naming
  * drift, not a real constraint; the framework is pre-production so renaming
@@ -83,7 +83,7 @@ function splitMediaAltRow( { attributes, setAttributes } ) {
 
 /**
  * The "Split image" panel's rows — media type + source pickers, plus the
- * media overlay + motion controls (all prefix 'splitMedia', except the
+ * media overlay controls (all prefix 'splitMedia', except the
  * media-type atom itself, which stays prefix 'split' — see the module-level
  * note), which lived in this same panel before the migration and stay here
  * rather than moving to "Split image styling" (no reason to relocate a
@@ -135,12 +135,6 @@ export function HeroSplitMediaSourceSection( { attributes, setAttributes } ) {
 				{ ...commonProps }
 				prefix="splitMedia"
 				atoms={ [ 'overlay' ] }
-			/>
-			<hr style={ { margin: '16px 0' } } />
-			<MediaElementPanel
-				{ ...commonProps }
-				prefix="splitMedia"
-				atoms={ [ 'motion' ] }
 			/>
 		</>
 	);

@@ -356,28 +356,6 @@ export const MEDIA_ATOMS = {
 		},
 	},
 
-	// Atom 11 — added 2026-09-01 (Bean-directed, harvested not designed).
-	// Ken-burns and parallax are a mutually-exclusive pair on TWO working
-	// surfaces already: sgs/hero's split-media (splitMediaParallax/splitMediaKenBurns/
-	// splitMediaAnimationDuration) and sgs/container's background
-	// (bgParallax/bgKenBurns/bgAnimationDuration). `types` is confirmed from
-	// hero's own help text ("the split media (image, video, or SVG)") and its
-	// render.php gate (`$media_ken_burns = !empty(...) && !$media_parallax`),
-	// which carries NO type restriction — never assume image-only.
-	motion: {
-		id: 'motion',
-		bases: MEDIA_BASES.motion,
-		types: [ 'image', 'video', 'svg' ],
-		scope: 'element',
-		attachesTo: 'element',
-		// Mutual exclusivity (KenBurns vs Parallax) is enforced in the
-		// control's own onChange, mirroring both reference implementations —
-		// `requires` here expresses "X requires Y", not "X excludes Y", so
-		// there is no registry field for this yet.
-		requires: {},
-		reads: {},
-	},
-
 	// Atoms 12-16 — Wave 5c (2026-09-01, Bean-directed). The five atoms the
 	// original design doc's Layer 1 list named but never built:
 	// media-padding/opacity/shadow/caption/link. Harvested from `sgs/media`'s

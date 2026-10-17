@@ -12,7 +12,7 @@
  *   splitImage, splitImageMobile, splitMediaObjectPosition (TIER OBJECT, Priority 4
  *   2026-09-07), minHeight*, background/text/border colour
  *   (resting + Hover, each with a {attr}Gradient sibling — D702),
- *   transitionDuration, transitionEasing, bgParallax, bgKenBurns,
+ *   transitionDuration, transitionEasing,
  *   bgVideo*,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
  *   splitMediaObjectFit/Position, splitMediaWidth*, splitMediaHeight (TIER OBJECT), splitMediaBorderStyle/Colour,
@@ -262,9 +262,7 @@ $hover_text_colour_gradient         = $attributes['textColourHoverGradient'] ?? 
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
-// Background effect attributes.
-$bg_parallax     = ! empty( $attributes['bgParallax'] );
-$bg_ken_burns    = ! empty( $attributes['bgKenBurns'] );
+// Background video attributes.
 $bg_video_attr   = $attributes['bgVideo'] ?? null;
 $bg_video_tablet = $attributes['bgVideoTablet'] ?? null;
 $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
@@ -548,25 +546,6 @@ if ( $hover_decls ) {
 	}
 }
 
-
-// Background zoom on hover. The wrapper's rule (includes/container-bg-hover-zoom.php) aims at
-// its own `.sgs-container__image-bg` or ::before, neither of which the standard hero renders
-// (it paints a private <img class="sgs-hero__bg-img"> and nulls backgroundImage before the
-// wrapper), so the hero emits the same rule at that <img>. The `scale` property composes with
-// the transform that parallax or ken-burns set on the same element. Off with parallax,
-// ken-burns or a video, exactly as the wrapper gates it.
-if ( $has_standard_bg_image && ! empty( $attributes['bgHoverZoom'] ) && ! $bg_parallax && ! $bg_ken_burns && empty( $bg_video_attr['url'] ) ) {
-	$responsive_css .= sgs_container_bg_hover_zoom_css(
-		$uid,
-		false,
-		$attributes['bgHoverZoomScale'] ?? 105,
-		$attributes['bgHoverZoomDuration'] ?? 600,
-		(string) ( $attributes['bgHoverZoomEasing'] ?? 'ease' ),
-		(string) ( $attributes['bgHoverZoomEasingCustom'] ?? '' ),
-		'.sgs-hero__bg-img',
-		'scale'
-	);
-}
 
 // Split variant: replace the default flex layout with CSS Grid.
 // NO-INLINE: this block emits zero inline style property declarations.
@@ -1034,15 +1013,6 @@ if ( $media_bg_gradient_value ) {
 // — see the `SGS_Media_Element::style()` call at the media-assembly site
 // further down this file, and block.json's `_comment_mediaElements`.
 
-// Media motion — splitMediaParallax/splitMediaKenBurns/splitMediaAnimationDuration (2026-08-13).
-// A SEPARATE control family from the section's own bgParallax/bgKenBurns
-// (read further below): those animate the SECTION BACKGROUND; these animate
-// the foreground split-media column (`.sgs-hero__media`) itself. Mutually
-// exclusive in the editor (edit.js); Ken-burns wins if somehow both are set.
-$media_parallax           = ! empty( $attributes['splitMediaParallax'] );
-$media_ken_burns          = ! empty( $attributes['splitMediaKenBurns'] ) && ! $media_parallax;
-$media_animation_duration = isset( $attributes['splitMediaAnimationDuration'] ) ? absint( $attributes['splitMediaAnimationDuration'] ) : 20;
-
 // ── contentPadding: box-object family — base + tablet + mobile (on .sgs-hero__content).
 $content_pad_base = sgs_box_object_longhands( $content_padding_obj, 'padding' );
 if ( null !== $content_pad_base ) {
@@ -1112,31 +1082,6 @@ $classes = array(
 	'alignfull',
 	$uid,
 );
-
-if ( $bg_parallax ) {
-	$classes[] = 'sgs-hero--parallax';
-}
-if ( $bg_ken_burns ) {
-	$classes[] = 'sgs-hero--ken-burns';
-	// Ken-burns style and its per-instance values reach CSS as scoped custom
-	// properties on the root (never inline). The wrapper emits
-	// --sgs-ken-burns-duration itself only for a wrapper-painted background;
-	// the standard variant paints a private <img>, so the duration is set here.
-	$hero_kb_decls = '';
-	if ( $has_standard_bg_image ) {
-		$hero_kb_duration = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
-		$hero_kb_decls   .= '--sgs-ken-burns-duration:' . ( $hero_kb_duration > 0 ? $hero_kb_duration : 20 ) . 's;';
-	}
-	if ( 'zoom-out-once' === ( $attributes['bgKenBurnsMode'] ?? 'loop' ) ) {
-		$classes[]      = 'sgs-hero--ken-burns-once';
-		$hero_kb_zoom   = isset( $attributes['bgZoomStart'] ) ? (float) $attributes['bgZoomStart'] : 108.0;
-		$hero_kb_zoom   = max( 100.0, min( 150.0, $hero_kb_zoom ) );
-		$hero_kb_decls .= '--sgs-ken-burns-zoom-start:' . rtrim( rtrim( number_format( $hero_kb_zoom / 100, 3, '.', '' ), '0' ), '.' ) . ';';
-	}
-	if ( '' !== $hero_kb_decls ) {
-		$responsive_css .= '.' . $uid . '{' . $hero_kb_decls . '}';
-	}
-}
 
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
@@ -1323,10 +1268,6 @@ if ( $has_standard_bg_image ) {
 		'decoding'      => $sgs_is_first ? 'sync' : 'async',
 		'alt'           => '',
 	);
-
-	if ( $bg_parallax ) {
-		$img_attrs['class'] .= ' sgs-hero__bg-img--parallax';
-	}
 
 	$bg_img_html = sgs_responsive_image(
 		$img_id,
@@ -1609,30 +1550,6 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 		// `overlay.css`'s own `::after` paints fully transparent when no
 		// custom property is set, so an unused marker costs nothing.
 		$media_class = 'sgs-hero__media sgs-media-box ' . SGS_Media_Element::scope_class( $uid, 'splitMedia' );
-		// Media motion classes — scoped to `.sgs-hero__media` ONLY (never the
-		// root `<section>`), and gated inside this `'' !== …['html']` branch so
-		// they can only ever land on a media column that genuinely rendered
-		// something (an operator toggling these before picking media leaves
-		// $sgs_hero_tier_result['html'] empty, so $media_html itself never
-		// prints and neither class reaches the page). Deliberately NOT routed
-		// through the shared `motion` atom's `.sgs-media-el` mechanism — see
-		// this migration's task report ("judgement calls") for why hero keeps
-		// its own ken-burns/parallax CSS (a subtle clipping interaction with
-		// the split-image hover-zoom rule that this migration did not risk
-		// reproducing without a live canary). The motion atom's EDITOR
-		// CONTROL is still fully adopted and writes to these SAME attributes.
-		if ( $media_parallax ) {
-			$media_class .= ' sgs-hero__media--parallax';
-		}
-		if ( $media_ken_burns ) {
-			$media_class .= ' sgs-hero__media--ken-burns';
-			// Distinct custom property from the section's own
-			// `--sgs-ken-burns-duration` (SGS_Container_Wrapper) — this one is
-			// scoped to `.sgs-hero__media`, not the section root, so a hero with
-			// BOTH the section and the media animating at different speeds
-			// never collide on the same variable.
-			$responsive_css .= '.' . $uid . ' .sgs-hero__media{--sgs-hero-media-ken-burns-duration:' . $media_animation_duration . 's}';
-		}
 		$responsive_css .= SGS_Media_Element::style( $attributes, 'splitMedia', 'sgs/hero', $uid, array( 'overlay' ) );
 		// Decorative wrapper: covers video/svg tiers, which carry no alt attribute
 		// of their own; the image tier's alt was already blanked above.

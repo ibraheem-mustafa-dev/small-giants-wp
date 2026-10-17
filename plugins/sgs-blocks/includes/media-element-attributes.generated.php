@@ -24,7 +24,6 @@
 
 return array(
 	'bases'  => array(
-		"AnimationDuration"        => "number",
 		"AspectRatio"              => "string",
 		"Attachment"               => "string",
 		"BorderColour"             => "string",
@@ -46,7 +45,6 @@ return array(
 		"ImageId"                  => "integer",
 		"ImageUrl"                 => "string",
 		"ImageWidth"               => "number",
-		"KenBurns"                 => "boolean",
 		"LinkOpensNewTab"          => "boolean",
 		"LinkRel"                  => "string",
 		"LinkUrl"                  => "string",
@@ -71,7 +69,6 @@ return array(
 		"OverlayGradientHover"     => "string",
 		"OverlayOpacity"           => "number",
 		"Padding"                  => "object",
-		"Parallax"                 => "boolean",
 		"Position"                 => "string",
 		"Repeat"                   => "string",
 		"Shape"                    => "string",
@@ -146,11 +143,6 @@ return array(
 			"ImageAlt",
 			"VideoAlt",
 			"ImageDecorative",
-		),
-		"motion"       => array(
-			"KenBurns",
-			"Parallax",
-			"AnimationDuration",
 		),
 		"opacity"      => array(
 			"Opacity",
@@ -294,11 +286,6 @@ return array(
 			"MediaType",
 			"VideoSource",
 			"VideoMimeType",
-		),
-		"motion"             => array(
-			"KenBurns",
-			"Parallax",
-			"AnimationDuration",
 		),
 		"object-fit"         => array(
 			"ObjectFit",

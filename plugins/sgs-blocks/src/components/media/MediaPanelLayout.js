@@ -6,7 +6,7 @@
  * (`source` for all types, `meaning` for image/video, `svg-presentation` for
  * svg — each self-gates via the atom's own `types` list, so only the
  * relevant rows render for the active `mediaType`), an "Image Styling"
- * section (`object-fit` / `focal-point` / `motion`, also self-gated by
+ * section (`object-fit` / `focal-point`, also self-gated by
  * `types` so video gets them too), and an "Overlay" section that applies
  * regardless of the active type.
  *
@@ -95,7 +95,7 @@ export default function MediaPanelLayout( {
 			<PanelBody title={ __( 'Image Styling', 'sgs-blocks' ) } initialOpen={ false }>
 				<MediaElementPanel
 					{ ...commonProps }
-					atoms={ [ 'object-fit', 'focal-point', 'motion' ] }
+					atoms={ [ 'object-fit', 'focal-point' ] }
 					previewUrl={ previewUrl }
 				/>
 			</PanelBody>

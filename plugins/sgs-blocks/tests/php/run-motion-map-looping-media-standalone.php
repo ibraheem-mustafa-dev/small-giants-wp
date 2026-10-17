@@ -227,29 +227,16 @@ namespace SGS\Blocks\Motion {
 
 	$mapper = new Sgs_Motion_Map_Looping_Media();
 
-	// 0. Contract, and the mapper's constants against the shipped block files.
+	// 0. Contract.
 	ok( 'looping-media' === $mapper->family(), 'the family slug is the file suffix' );
 	ok( 'SGS\\Blocks\\Motion\\Sgs_Motion_Map_Looping_Media' === Sgs_Motion_Migrate_Runner::mapper_class( 'looping-media' ) && $mapper instanceof Sgs_Motion_Mapper_Interface, 'the runner finds the class from the family slug' );
-	$read = static function ( string $slug ) use ( $real ): array {
-		$json = json_decode( (string) file_get_contents( $real . '/src/blocks/' . $slug . '/block.json' ), true );
-		return is_array( $json['attributes'] ?? null ) ? $json['attributes'] : array();
-	};
 	foreach ( Sgs_Motion_Map_Looping_Media::BACKGROUND_BLOCKS as $block ) {
-		$declared = $read( substr( $block, 4 ) );
-		$base     = array( 'bgKenBurns', 'bgAnimationDuration', 'bgSvgAnimation', 'bgSvgAnimationSpeed' );
-		ok( array() === array_diff( $base, array_keys( $declared ) ), "{$block} declares the four bg looping-media attributes" );
-		ok( false === ( $declared['bgKenBurns']['default'] ?? null ) && 20 === ( $declared['bgAnimationDuration']['default'] ?? null ) && 'none' === ( $declared['bgSvgAnimation']['default'] ?? null ), "{$block} defaults: Ken Burns off, 20 seconds, no SVG animation" );
 		ok( $mapper->handles( $block, array( 'bgKenBurns' => true ) ), "{$block} is handled for bgKenBurns" );
 	}
-	$hero = $read( 'hero' );
-	ok( 'loop' === ( $hero['bgKenBurnsMode']['default'] ?? null ) && Sgs_Motion_Map_Looping_Media::DEFAULT_ZOOM_START === ( $hero['bgZoomStart']['default'] ?? null ), 'hero bgKenBurnsMode defaults to loop and bgZoomStart to the mapper default' );
-	ok( 20 === ( $hero['splitMediaAnimationDuration']['default'] ?? null ) && false === ( $hero['splitMediaKenBurns']['default'] ?? null ), 'hero split media defaults: 20 seconds, Ken Burns off' );
-	ok( 'none' === ( $read( 'media' )['svgAnimation']['default'] ?? null ) && 'medium' === ( $read( 'media' )['svgAnimationSpeed']['default'] ?? null ), 'media svgAnimation defaults to none and its speed to medium' );
 	ok( array() === Sgs_Motion_Map_Looping_Media::owned( 'sgs/text' ) && false === $mapper->handles( 'sgs/text', array( 'bgKenBurns' => true ) ), 'a block that does not declare the attributes is left alone' );
 	foreach ( Sgs_Motion_Map_Looping_Media::BACKGROUND_BLOCKS as $block ) {
 		ok( $mapper->handles( $block, array( 'bgLottie' => 4079 ) ) && $mapper->handles( $block, array( 'bgLottieLoop' => false ) ), "{$block} is handled for bgLottie and bgLottieLoop" );
 	}
-	ok( 0 === ( $read( 'container' )['bgLottie']['default'] ?? null ) && true === ( $read( 'container' )['bgLottieLoop']['default'] ?? null ), 'container bgLottie defaults to 0 (none) and bgLottieLoop to true, as the mapper reads an absent loop' );
 	ok( false === $mapper->handles( 'sgs/container', array( 'bgSvgContent' => '<svg/>', 'bgSvgOpacity' => 50 ) ), 'the background SVG content and styling stay block settings' );
 
 	// The retired stylesheets, while they exist: speeds and the float cycle.

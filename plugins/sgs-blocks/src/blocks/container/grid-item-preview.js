@@ -19,7 +19,6 @@ import {
 	backgroundPaintPreview,
 	textPaintPreview,
 	isCssGradient,
-	isSlug,
 	shadowHoverValue,
 	BORDER_STYLE_KEYWORDS,
 } from '../../utils';
@@ -120,8 +119,8 @@ export function gridItemStateCss( attributes, scope, palette, shadowHoverMap ) {
 	const borderGradient = wholeGradient( attributes.gridItemBorderGradient );
 	const borderGradientHover = wholeGradient( attributes.gridItemBorderGradientHover );
 	// The automatic lift (helpers-shadow-hover.php::sgs_shadow_hover_rules): on unless the
-	// switch is off or a hover shadow preset replaces it.
-	const liftOn = false !== attributes.shadowLiftOnHover && ! isSlug( String( attributes.sgsHoverShadow ?? '' ) );
+	// switch is off.
+	const liftOn = false !== attributes.shadowLiftOnHover;
 	const liftValue = liftOn ? shadowHoverValue( attributes.gridItemShadow, attributes.gridItemShadowColour, shadowHoverMap ) : '';
 	const lift = liftValue ? paintDecls( { boxShadow: liftValue } ) : '';
 	const ringWidth = gridBorderParts( attributes.gridItemBorder ).width || '2px';

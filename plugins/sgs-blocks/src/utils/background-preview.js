@@ -1,13 +1,12 @@
 import { resolveColourToken } from '../components/DesignTokenPicker';
 import { sanitiseSvg } from './sanitise-svg';
 import { surfaceBackdropPreview, wrapperToneClass } from './surface-preview';
-import { motionEasingCss } from '../components/MotionEasingControl';
 
 
 /**
  * Shared editor-canvas mirror of the container/composite background stack —
  * background image / video, overlay (colour or gradient, opacity, blend
- * mode), ken-burns, and parallax.
+ * mode).
  *
  * Every block mounting the shared `BackgroundPanel`
  * (`src/blocks/container/components/ContainerWrapperControls.js`) shows the
@@ -202,7 +201,7 @@ export function tierBackgroundImageUrl( desktop, tablet, mobile, tier ) {
 }
 
 /**
- * Build the FULL editor-canvas background/overlay/ken-burns/parallax preview
+ * Build the FULL editor-canvas background/overlay preview
  * for any block mounting the shared `BackgroundPanel` — a `style` object of
  * CSS custom properties to merge into the block's own `blockProps.style`,
  * plus a `className` string to merge into `blockProps.className` so the
@@ -213,12 +212,6 @@ export function tierBackgroundImageUrl( desktop, tablet, mobile, tier ) {
  * Video is NOT previewed inline (too complex for a static editor canvas) —
  * a themed placeholder colour stands in for it instead, matching
  * `sgs/container`'s original behaviour exactly.
- *
- * `sgs-container--parallax` is deliberately NOT renamed to an `sgs-ed-*`
- * marker: it is a REAL frontend class (`class-sgs-container-wrapper.php`
- * ~:1604), applied by the shared wrapper to every block that renders through
- * it — not container-specific despite the name — so the editor mirrors that
- * exact class rather than inventing a parallel one.
  *
  * @param {Object} attributes    Full block attributes object — pass the
  *                                 block's own `attributes` verbatim.
@@ -236,7 +229,7 @@ export function tierBackgroundImageUrl( desktop, tablet, mobile, tier ) {
  *                                 tablet/mobile image replaces the desktop one on
  *                                 the same media layer, as the wrapper's
  *                                 `@media` overrides do. Defaults to desktop.
- * @return {{style: Object, hasBgMedia: boolean, hasOverlay: boolean, hasParallax: boolean, className: string}}
+ * @return {{style: Object, hasBgMedia: boolean, hasOverlay: boolean, className: string}}
  */
 export function backgroundPreview( attributes, colourPalette, gradientPresets = [], tier = 'desktop' ) {
 	const {
@@ -244,19 +237,10 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		backgroundImageTablet,
 		backgroundImageMobile,
 		bgVideo,
-		bgLottie,
 		backgroundSize,
 		backgroundPosition,
 		backgroundRepeat,
 		backgroundAttachment,
-		bgKenBurns = false,
-		bgAnimationDuration = 20,
-		bgParallax = false,
-		bgHoverZoom = false,
-		bgHoverZoomScale = 105,
-		bgHoverZoomDuration = 600,
-		bgHoverZoomEasing = 'ease',
-		bgHoverZoomEasingCustom = '',
 		backgroundOverlayColour,
 		overlayGradient,
 		backgroundOverlayOpacity,
@@ -267,11 +251,7 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 
 	const hasBgImage = !! backgroundImage?.url;
 	const hasBgVideo = !! bgVideo?.url;
-	const hasBgLottie = ! hasBgImage && ! hasBgVideo && !! bgLottie;
 	const hasBgMedia = hasBgImage && ! hasBgVideo;
-	// Background zoom on hover — mirrors includes/container-bg-hover-zoom.php (same clamps,
-	// same easing resolution, off while Ken Burns or parallax moves the image).
-	const bgZoom = bgHoverZoom && hasBgMedia && ! bgKenBurns && ! bgParallax;
 
 	const overlayPreview = overlayPaintPreview(
 		backgroundOverlayColour,
@@ -296,21 +276,6 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 			// Show a teal placeholder in editor when video is set
 			backgroundColor: 'var(--wp--preset--color--primary, #0F7E80)',
 		} ),
-		...( hasBgLottie && {
-			// Same placeholder-only treatment as bgVideo (Tier H Lottie player,
-			// D1151): the editor never mounts the real player, so a flat
-			// placeholder is the only honest preview — bgLottieLoop has no
-			// static-frame effect to show either way.
-			backgroundColor: 'var(--wp--preset--color--primary, #0F7E80)',
-		} ),
-		...( bgKenBurns && hasBgImage && {
-			'--sgs-ken-burns-duration': `${ bgAnimationDuration }s`,
-		} ),
-		...( bgZoom && {
-			'--sgs-ed-bg-zoom': String( Math.max( 101, Math.min( 150, Number( bgHoverZoomScale ) || 105 ) ) / 100 ),
-			'--sgs-ed-bg-zoom-duration': `${ Math.max( 0, Math.min( 3000, Math.round( Number( bgHoverZoomDuration ) || 0 ) ) ) }ms`,
-			'--sgs-ed-bg-zoom-easing': motionEasingCss( bgHoverZoomEasing || 'ease', bgHoverZoomEasingCustom, 'ease' ),
-		} ),
 		// Overlay layer — a ::after mirror in the shared editor stylesheet, same
 		// reasoning as the background-image ::before above: painting it on the
 		// element itself would dim the client's real content, not just the
@@ -333,8 +298,6 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 	// emitted when there is media/overlay to paint).
 	const className = [
 		hasBgMedia ? 'sgs-ed-has-bg-media' : '',
-		bgParallax ? 'sgs-container--parallax' : '',
-		bgZoom ? 'sgs-ed-bg-hover-zoom' : '',
 		overlayPreview.hasOverlay ? 'sgs-ed-has-overlay' : '',
 		toneClass,
 	]
@@ -345,7 +308,6 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
 		style,
 		hasBgMedia,
 		hasOverlay: overlayPreview.hasOverlay,
-		hasParallax: !! bgParallax,
 		className,
 	};
 }
@@ -359,26 +321,21 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
  * REAL ELEMENT, and every rule that paints it already ships in the block's
  * `style.css` — which `block.json`'s `style` field loads into the editor
  * canvas as well as the front end. So rendering the SAME element with the
- * SAME class names makes the EXISTING stylesheet do all the work: opacity,
- * foreground/background stacking, the four animation modes and all three
- * speeds, with ZERO new CSS and no second vocabulary to drift.
- * (`src/blocks/container/style.css:294-310` paints the layer;
- * `:349-392` the animations.)
+ * SAME class names makes the EXISTING stylesheet do all the work: opacity and
+ * foreground/background stacking, with ZERO new CSS and no second vocabulary
+ * to drift. (`src/blocks/container/style.css` paints the layer.)
  *
  * Mirrors `SGS_Container_Wrapper::render()` exactly:
- *  - classes            class-sgs-container-wrapper.php:1634-1641
- *  - layer markup       :2794-2798
- *  - position routing   :2801-2802
- *  - --sgs-svg-opacity  :2750  (scoped to `.{uid} .sgs-container__svg-bg`
- *                              server-side; set here on the block wrapper
- *                              instead, where it inherits to the same layer —
- *                              the editor has no per-instance uid stylesheet)
- *  - --sgs-svg-min-height :1403-1404
+ *  - classes            class-sgs-container-wrapper.php (the `sgs-container--has-bg-svg` family)
+ *  - layer markup       class-sgs-container-wrapper.php (`.sgs-container__svg-bg`)
+ *  - --sgs-svg-opacity  scoped to `.{uid} .sgs-container__svg-bg` server-side; set here on the
+ *                       block wrapper instead, where it inherits to the same layer (the editor
+ *                       has no per-instance uid stylesheet)
+ *  - --sgs-svg-min-height  set on the same wrapper
  *
- * ⛔ Keep the enum allowlists below in step with the PHP. They are the same
- * three the server validates against (:958-970); an out-of-enum value must
- * fall back to the SAME default on both sides or the canvas lies about what
- * the page will render.
+ * ⛔ Keep the position allowlist below in step with the PHP: an out-of-enum
+ * value must fall back to the SAME default on both sides or the canvas lies
+ * about what the page will render.
  *
  * ⛔ The SVG is sanitised through the shared `sanitiseSvg()` before it is ever
  * handed to `dangerouslySetInnerHTML`. That helper's allowlist is GENERATED
@@ -387,8 +344,6 @@ export function backgroundPreview( attributes, colourPalette, gradientPresets = 
  */
 
 const SVG_POSITIONS = [ 'background', 'foreground' ];
-const SVG_ANIMATIONS = [ 'none', 'pulse', 'float', 'wave' ];
-const SVG_SPEEDS = [ 'slow', 'medium', 'fast' ];
 
 /**
  * Editor-canvas mirror of the wrapper's decorative SVG background layer.
@@ -401,8 +356,6 @@ export function svgBackgroundPreview( attributes ) {
 	const {
 		bgSvgContent = '',
 		bgSvgPosition = 'background',
-		bgSvgAnimation = 'none',
-		bgSvgAnimationSpeed = 'medium',
 		bgSvgOpacity = 100,
 		bgSvgMinHeight = '',
 		bgSvgTextShadow = false,
@@ -416,8 +369,6 @@ export function svgBackgroundPreview( attributes ) {
 	}
 
 	const position = SVG_POSITIONS.includes( bgSvgPosition ) ? bgSvgPosition : 'background';
-	const animation = SVG_ANIMATIONS.includes( bgSvgAnimation ) ? bgSvgAnimation : 'none';
-	const speed = SVG_SPEEDS.includes( bgSvgAnimationSpeed ) ? bgSvgAnimationSpeed : 'medium';
 
 	// `absint()` server-side: negatives become their absolute value, non-numeric
 	// becomes 0. Mirrored rather than clamped so an out-of-range value shows the
@@ -428,8 +379,6 @@ export function svgBackgroundPreview( attributes ) {
 	const className = [
 		'sgs-container--has-bg-svg',
 		`sgs-container--svg-${ position }`,
-		`sgs-container--svg-anim-${ animation }`,
-		`sgs-container--svg-speed-${ speed }`,
 	];
 	if ( bgSvgTextShadow ) {
 		className.push( 'sgs-container--svg-text-shadow' );

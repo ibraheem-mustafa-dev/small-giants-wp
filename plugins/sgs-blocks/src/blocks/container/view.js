@@ -3,7 +3,6 @@
  *
  * Handles:
  * - Responsive video background: swaps src to mobile version on narrow viewports.
- * - Parallax: adds no-parallax class on touch devices to prevent iOS fixed-bg jitter.
  * - Separators: in a browser without CSS gap decorations, paints the lines between a
  *   grid or flex layout's items (src/shared/separators/); a no-op elsewhere.
  *
@@ -65,28 +64,9 @@ import { initSeparators } from '../../shared/separators';
 	}
 
 	/**
-	 * Disable parallax on touch / iOS devices where background-attachment:fixed
-	 * causes repaint jitter or is completely unsupported.
-	 */
-	function disableParallaxOnTouch() {
-		const isTouchDevice =
-			navigator.maxTouchPoints > 0 ||
-			window.matchMedia( '(pointer: coarse)' ).matches;
-
-		if ( ! isTouchDevice ) {
-			return;
-		}
-
-		document
-			.querySelectorAll( '.sgs-container--parallax' )
-			.forEach( ( el ) => el.classList.add( 'no-parallax' ) );
-	}
-
-	/**
 	 * Initialise all container blocks on the page.
 	 */
 	function init() {
-		disableParallaxOnTouch();
 		initSeparators();
 
 		const responsiveVideos = document.querySelectorAll(

@@ -150,13 +150,8 @@ namespace SGS\Blocks\Motion {
 		$json = json_decode( (string) file_get_contents( $root . '/src/blocks/' . $slug . '/block.json' ), true );
 		return is_array( $json['attributes'] ?? null ) ? $json['attributes'] : array();
 	};
-	$hero = $read( 'hero' );
-	ok( false === ( $hero['splitMediaParallax']['default'] ?? null ) && false === ( $hero['bgParallax']['default'] ?? null ), 'hero splitMediaParallax and bgParallax default to false in block.json' );
 	ok( 0 === ( $read( 'decorative-image' )['parallaxStrength']['default'] ?? null ), 'decorative-image parallaxStrength defaults to 0 in block.json' );
 	ok( false !== strpos( (string) file_get_contents( $root . '/src/blocks/extensions/parallax.js' ), "sgsParallaxStrength: { type: 'number', default: 30 }" ), 'sgsParallaxStrength default 30 matches the extension' );
-	foreach ( Sgs_Motion_Map_Parallax::BACKGROUND_BLOCKS as $block ) {
-		ok( array_key_exists( 'bgParallax', $read( substr( $block, 4 ) ) ), "{$block} declares bgParallax" );
-	}
 	$swing = Sgs_Motion_Map_Parallax::SPLIT_MEDIA_SWING;
 	$css   = (string) file_get_contents( $root . '/src/blocks/hero/style.css' );
 	ok( 1 === preg_match( '/translateY\(-' . ( $swing / 2 ) . 'px\)[^}]*\}\s*to\s*\{\s*transform:\s*translateY\(' . ( $swing / 2 ) . 'px\)/s', $css ) || false === strpos( $css, 'sgs-hero-media-parallax' ), 'the hero keyframe swing is -16px to 16px (or the keyframe is already removed)' );

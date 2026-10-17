@@ -33,22 +33,8 @@ import {
 	MediaElementPanel,
 	SurfaceGroundControls,
 } from '../../../components';
-import { SurfaceTreatmentPanel, isSimpleBackgroundImage } from '../../../components/SurfaceTreatmentPanel';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
-import qualifyingBlocks from '../../extensions/generated-fx-qualifying-blocks.json';
 import { LENGTH_UNITS } from './_shared';
-import MotionEasingControl from '../../../components/MotionEasingControl';
-
-/*
- * Blocks that already offer `surface-treatment` via the shared fx ToolsPanel
- * (Spec 38 §1.2b) — read from the same generated roster `fx.js` reads, never a
- * hardcoded list (R-31-1), so this stays correct automatically if that roster
- * changes. Mounting the control again here for one of these would be a second,
- * duplicate place to set the identical `fxTreatment*` attributes.
- */
-function alreadyOffersSurfaceTreatmentViaFxPanel( name ) {
-	return !! qualifyingBlocks[ name ]?.includes( 'surface-treatment' );
-}
 
 const BG_POSITION_OPTIONS = [
 	{ label: __( 'Centre centre', 'sgs-blocks' ), value: 'center center' },
@@ -92,9 +78,6 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		return null;
 	}
 
-	// A block that registers the ken-burns style (the hero, whose own panel holds
-	// it) runs ken-burns with parallax and allows a short one-off zoom.
-	const hasKenBurnsMode = !! getBlockType( name )?.attributes?.bgKenBurnsMode;
 	const showSurfaceOpacity = !! getBlockType( name )?.attributes?.surfaceOpacity;
 
 	const {
@@ -108,24 +91,8 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		bgVideo,
 		bgVideoTablet,
 		bgVideoMobile,
-		// U-17 (design §3.1/§6) — the Lottie background layer. Plain attachment
-		// id (not the {id,url} object bgVideo uses), matching LottieId
-		// everywhere else. Untiered — no per-device art direction for the
-		// shared background's moving layers.
-		bgLottie = 0,
-		bgLottieLoop = true,
-		bgParallax = false,
-		bgKenBurns = false,
-		bgAnimationDuration = 20,
-		bgHoverZoom = false,
-		bgHoverZoomScale = 105,
-		bgHoverZoomDuration = 600,
-		bgHoverZoomEasing = 'ease',
-		bgHoverZoomEasingCustom = '',
 		bgSvgContent = '',
 		bgSvgPosition = 'background',
-		bgSvgAnimation = 'none',
-		bgSvgAnimationSpeed = 'medium',
 		backgroundOverlayOpacity = 30,
 		backgroundOverlayBlendMode = 'normal',
 		backgroundOverlayColour = '',
@@ -326,7 +293,6 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				tabs={ [
 					{ name: 'image', title: __( 'Image', 'sgs-blocks' ) },
 					{ name: 'video', title: __( 'Video', 'sgs-blocks' ) },
-					{ name: 'lottie', title: __( 'Lottie', 'sgs-blocks' ) },
 					{ name: 'svg', title: __( 'SVG', 'sgs-blocks' ) },
 				] }
 			>
@@ -470,32 +436,6 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 											__next40pxDefaultSize
 										/>
 									</>
-								) }
-
-								{ /* Surface treatment (grain/halftone/duotone) — Spec 38 §1.2b, D479,
-								     addendum 2026-09-11. Gated on: (a) a background image actually SET
-								     (not just structurally eligible — Bean's explicit ask); (b) the
-								     image config being one the wrapper's <img> fast path can express
-								     (isSimpleBackgroundImage — the runtime needs a real nested <img> to
-								     repaint; a CSS background-image on ::before has no pixel source for
-								     it); (c) not already offered via the shared fx ToolsPanel on this
-								     block (hero/trust-bar already have it there — checked
-								     against the same generated roster, never hardcoded). */ }
-								{ hasBgImage && isSimpleBackgroundImage( attributes ) &&
-									! alreadyOffersSurfaceTreatmentViaFxPanel( name ) && (
-									<SurfaceTreatmentPanel
-										attributes={ attributes }
-										setAttributes={ setAttributes }
-									/>
-								) }
-								{ hasBgImage && ! isSimpleBackgroundImage( attributes ) &&
-									! alreadyOffersSurfaceTreatmentViaFxPanel( name ) && (
-									<p className="components-base-control__help" style={ { fontStyle: 'italic' } }>
-										{ __(
-											'Surface treatment (grain, halftone, duotone) is not available with parallax, fixed attachment, or a different image per device — turn those off to use it.',
-											'sgs-blocks'
-										) }
-									</p>
 								) }
 							</>
 						);
@@ -665,33 +605,6 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
 										/>
-										<ToggleGroupControl
-											label={ __( 'Animation', 'sgs-blocks' ) }
-											value={ bgSvgAnimation }
-											onChange={ ( val ) => setAttributes( { bgSvgAnimation: val } ) }
-											isBlock
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										>
-											<ToggleGroupControlOption value="none" label={ __( 'None', 'sgs-blocks' ) } />
-											<ToggleGroupControlOption value="pulse" label={ __( 'Pulse', 'sgs-blocks' ) } />
-											<ToggleGroupControlOption value="float" label={ __( 'Float', 'sgs-blocks' ) } />
-											<ToggleGroupControlOption value="wave" label={ __( 'Wave', 'sgs-blocks' ) } />
-										</ToggleGroupControl>
-										{ bgSvgAnimation !== 'none' && (
-											<ToggleGroupControl
-												label={ __( 'Animation speed', 'sgs-blocks' ) }
-												value={ bgSvgAnimationSpeed }
-												onChange={ ( val ) => setAttributes( { bgSvgAnimationSpeed: val } ) }
-												isBlock
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											>
-												<ToggleGroupControlOption value="slow" label={ __( 'Slow', 'sgs-blocks' ) } />
-												<ToggleGroupControlOption value="medium" label={ __( 'Medium', 'sgs-blocks' ) } />
-												<ToggleGroupControlOption value="fast" label={ __( 'Fast', 'sgs-blocks' ) } />
-											</ToggleGroupControl>
-										) }
 										<ToggleControl
 											label={ __( 'Text shadow', 'sgs-blocks' ) }
 											help={ __( 'Adds a subtle shadow to inner text for readability over busy SVG layers.', 'sgs-blocks' ) }
@@ -716,156 +629,9 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 						);
 					}
 
-					// ---- Lottie tab (U-17, design §3.1/§6) ----
-					if ( tab.name === 'lottie' ) {
-						return (
-							<>
-								<Notice isDismissible={ false } status="info">
-									{ __(
-										'A Lottie/Bodymovin JSON as the moving background layer. It replaces the background image and video above — the image becomes its poster, shown until the animation mounts and to visitors who prefer reduced motion.',
-										'sgs-blocks'
-									) }
-								</Notice>
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) => {
-											if ( ! media || 'application/json' !== ( media.mime || '' ) ) {
-												return;
-											}
-											setAttributes( { bgLottie: media.id || 0 } );
-										} }
-										allowedTypes={ [ 'application/json' ] }
-										value={ bgLottie }
-										render={ ( { open } ) => (
-											<div style={ { marginBottom: '8px' } }>
-												{ bgLottie ? (
-													<>
-														<p style={ { fontSize: '12px', marginBottom: '4px' } }>
-															{ __( 'Lottie animation selected', 'sgs-blocks' ) }
-														</p>
-														<Button variant="secondary" onClick={ open }>
-															{ __( 'Replace Lottie file', 'sgs-blocks' ) }
-														</Button>
-														<Button
-															variant="link"
-															isDestructive
-															onClick={ () => setAttributes( { bgLottie: 0 } ) }
-														>
-															{ __( 'Remove Lottie file', 'sgs-blocks' ) }
-														</Button>
-													</>
-												) : (
-													<Button variant="secondary" onClick={ open }>
-														{ __( 'Select Lottie JSON', 'sgs-blocks' ) }
-													</Button>
-												) }
-											</div>
-										) }
-									/>
-								</MediaUploadCheck>
-								<ToggleControl
-									label={ __( 'Loop', 'sgs-blocks' ) }
-									checked={ !! bgLottieLoop }
-									onChange={ ( val ) => setAttributes( { bgLottieLoop: val } ) }
-									__nextHasNoMarginBottom
-								/>
-							</>
-						);
-					}
-
 					return null;
 				} }
 			</TabPanel>
-
-			{ /* Ken-burns/parallax are MODIFIERS on whichever media source is active
-			    above (image/video), not a media source themselves — so they sit
-			    below the tabs rather than as a peer "Anim" tab. Same relocation
-			    technique as the Overlay colour/gradient row above the tabs. */ }
-			<hr style={ { margin: '16px 0' } } />
-			<p className="components-base-control__help">
-				{ hasKenBurnsMode
-					? __( 'Requires a background image. Ken-burns and parallax can run together: the photo zooms while the page scrolls past it.', 'sgs-blocks' )
-					: __( 'Requires a background image. Ken-burns and parallax are mutually exclusive — ken-burns takes priority.', 'sgs-blocks' ) }
-			</p>
-			<ToggleControl
-				label={ __( 'Ken-burns zoom', 'sgs-blocks' ) }
-				help={ __( 'Slow zoom animation on the background image.', 'sgs-blocks' ) }
-				checked={ bgKenBurns }
-				onChange={ ( val ) =>
-					setAttributes( { bgKenBurns: val, bgParallax: val && ! hasKenBurnsMode ? false : bgParallax, bgHoverZoom: val ? false : bgHoverZoom } )
-				}
-				__nextHasNoMarginBottom
-			/>
-			<ToggleControl
-				label={ __( 'Parallax scroll', 'sgs-blocks' ) }
-				help={ __( 'Fixed background-attachment parallax effect. Disabled on touch devices.', 'sgs-blocks' ) }
-				checked={ bgParallax }
-				onChange={ ( val ) =>
-					setAttributes( { bgParallax: val, bgKenBurns: val && ! hasKenBurnsMode ? false : bgKenBurns, bgHoverZoom: val ? false : bgHoverZoom } )
-				}
-				__nextHasNoMarginBottom
-			/>
-			{ bgKenBurns && (
-				<RangeControl
-					label={ __( 'Animation duration (seconds)', 'sgs-blocks' ) }
-					value={ bgAnimationDuration }
-					onChange={ ( val ) => setAttributes( { bgAnimationDuration: val } ) }
-					min={ hasKenBurnsMode ? 1 : 5 }
-					max={ 60 }
-					step={ 1 }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-			) }
-			<ToggleControl
-				label={ __( 'Zoom background on hover', 'sgs-blocks' ) }
-				help={ __( 'The background image grows slightly, inside the block, while the block is hovered or focused. Turns off Ken-burns and parallax.', 'sgs-blocks' ) }
-				checked={ bgHoverZoom }
-				onChange={ ( val ) =>
-					setAttributes( {
-						bgHoverZoom: val,
-						bgKenBurns: val ? false : bgKenBurns,
-						bgParallax: val ? false : bgParallax,
-					} )
-				}
-				__nextHasNoMarginBottom
-			/>
-			{ bgHoverZoom && (
-				<>
-					<RangeControl
-						label={ __( 'Zoom (%)', 'sgs-blocks' ) }
-						value={ bgHoverZoomScale }
-						onChange={ ( val ) => setAttributes( { bgHoverZoomScale: val ?? 105 } ) }
-						min={ 101 }
-						max={ 150 }
-						step={ 1 }
-						allowReset
-						resetFallbackValue={ 105 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Zoom duration (ms)', 'sgs-blocks' ) }
-						value={ bgHoverZoomDuration }
-						onChange={ ( val ) => setAttributes( { bgHoverZoomDuration: val ?? 600 } ) }
-						min={ 0 }
-						max={ 3000 }
-						step={ 50 }
-						allowReset
-						resetFallbackValue={ 600 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<MotionEasingControl
-						label={ __( 'Zoom easing', 'sgs-blocks' ) }
-						value={ bgHoverZoomEasing }
-						custom={ bgHoverZoomEasingCustom }
-						fallback="ease"
-						onChange={ ( val ) => setAttributes( { bgHoverZoomEasing: val } ) }
-						onCustomChange={ ( val ) => setAttributes( { bgHoverZoomEasingCustom: val } ) }
-					/>
-				</>
-			) }
 		</PanelBody>
 	);
 }

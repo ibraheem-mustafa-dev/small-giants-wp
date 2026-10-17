@@ -58,7 +58,7 @@ $ok( 1 === substr_count( $html, 'sgs-container__image-bg' ), 'only the holder ca
 $ok( '<div class="sgs-container__image-bg sgs-container__lottie-bg" aria-hidden="true"></div>' === Holder::holder( '' ), 'with no image the holder is still printed, empty, so the layer has an element' );
 
 $hero_src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/hero/render.php' );
-$ok( false !== strpos( $hero_src, '<div class="sgs-hero__bg-img sgs-container__lottie-bg" aria-hidden="true">' ) && false !== strpos( $hero_src, "'no_background_holder' => true" ), 'the hero prints the holder under its own background class and turns the wrapper holder off' );
+$ok( false !== strpos( $hero_src, '<div class="sgs-hero__bg-img sgs-hero__background sgs-container__lottie-bg" aria-hidden="true">' ) && false !== strpos( $hero_src, "'no_background_holder' => true" ), 'the hero prints the holder under its own background class and turns the wrapper holder off' );
 
 $css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/fx-lottie.css' );
 $ok( 1 === preg_match( '/\.sgs-container__lottie-bg > \.sgs-container__lottie-poster \{[^}]*object-position: inherit;/', $css ), 'fx-lottie.css fills the poster and passes it the holder\'s focal point' );

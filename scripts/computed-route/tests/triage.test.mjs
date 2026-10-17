@@ -390,11 +390,12 @@ test( 'the negative control: two measured descendants under that ancestor refuse
 } );
 
 // R1: a control is credited with a row only when the selector it emits to can match the row's element. The emission is
-// read from the PHP that writes it, here the real background-zoom helper.
+// read from the PHP that writes it, here a background-zoom helper fixture.
 import fs from 'node:fs';
 import { helperIndex } from '../lib/triage-source.mjs';
-const ZOOM_PHP = new URL( '../../../plugins/sgs-blocks/includes/container-bg-hover-zoom.php', import.meta.url );
-const zoomHelpers = () => helperIndex( [ { file: 'includes/container-bg-hover-zoom.php', text: fs.readFileSync( ZOOM_PHP, 'utf8' ) } ] );
+// A background-zoom helper's source, held as a fixture so the emission reading has a real helper to read.
+const ZOOM_PHP = new URL( './fixtures/bg-zoom-helper.php.txt', import.meta.url );
+const zoomHelpers = () => helperIndex( [ { file: 'includes/zoom-helper-fixture.php', text: fs.readFileSync( ZOOM_PHP, 'utf8' ) } ] );
 const ZOOM_ROWS = [
 	{ attr_name: 'bgHoverZoomDuration', css_property: 'transition-duration', css_element: null, css_state: null, source: 'sgs' },
 	{ attr_name: 'bgHoverZoomEasing', css_property: 'transition-timing-function', css_element: null, css_state: null, source: 'sgs' },

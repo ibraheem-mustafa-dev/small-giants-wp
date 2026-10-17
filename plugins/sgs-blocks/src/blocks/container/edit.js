@@ -161,7 +161,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     return { Tablet: "tablet", Mobile: "mobile" }[ device ] || "desktop";
   }, [] );
 
-  // Editor preview: media (image/video), overlay, ken-burns and parallax —
+  // Editor preview: media (image/video) and overlay —
   // extracted to the shared `backgroundPreview()` (`src/utils/background-preview.js`,
   // 2026-08-26) so the same mirror serves every other block mounting
   // `BackgroundPanel` (composite wrapper rule, CLAUDE.md). `bgPreview.style`
@@ -181,8 +181,6 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   const svgPreview = svgBackgroundPreview( {
     bgSvgContent: attributes.bgSvgContent,
     bgSvgPosition: attributes.bgSvgPosition,
-    bgSvgAnimation: attributes.bgSvgAnimation,
-    bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
     bgSvgOpacity: attributes.bgSvgOpacity,
     bgSvgMinHeight: attributes.bgSvgMinHeight,
     bgSvgTextShadow: attributes.bgSvgTextShadow,
@@ -194,19 +192,10 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     backgroundImageMobile: attributes.backgroundImageMobile,
     surfaceTone: attributes.surfaceTone,
     bgVideo: attributes.bgVideo,
-    bgLottie: attributes.bgLottie,
     backgroundSize: attributes.backgroundSize,
     backgroundPosition: attributes.backgroundPosition,
     backgroundRepeat: attributes.backgroundRepeat,
     backgroundAttachment: attributes.backgroundAttachment,
-    bgHoverZoom: attributes.bgHoverZoom,
-    bgHoverZoomScale: attributes.bgHoverZoomScale,
-    bgHoverZoomDuration: attributes.bgHoverZoomDuration,
-    bgHoverZoomEasing: attributes.bgHoverZoomEasing,
-    bgHoverZoomEasingCustom: attributes.bgHoverZoomEasingCustom,
-    bgKenBurns: attributes.bgKenBurns,
-    bgAnimationDuration: attributes.bgAnimationDuration,
-    bgParallax: attributes.bgParallax,
     backgroundOverlayColour: attributes.backgroundOverlayColour,
     overlayGradient: attributes.overlayGradient,
     backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
@@ -393,25 +382,19 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
     .filter(Boolean)
     .join(" ");
 
-  // Gate the editor's ::before media / ::after overlay layers + the parallax
-  // class on marker classes so the pseudo-elements exist ONLY on containers
+  // Gate the editor's ::before media / ::after overlay layers on marker
+  // classes so the pseudo-elements exist ONLY on containers
   // that actually have something to paint — every other container in the
   // canvas is untouched (mirrors the frontend, where the layer's box
   // properties are only emitted when there is media/overlay to paint).
-  // bgParallax: mirrors the frontend's `sgs-container--parallax` class
-  // (class-sgs-container-wrapper.php ~:1455) — full scroll-driven playback
-  // isn't previewed in a static canvas, but the class itself IS what the
-  // frontend gates its `background-attachment:fixed` styling on, so applying
-  // it here at least shows the state took effect instead of looking silent.
   // `bgPreview.className` is the shared marker set (`src/utils/background-preview.js`,
   // 2026-08-26) — the same one every other adopting block now applies.
   // NOTE the SPREAD on svgPreview.className. `backgroundPreview()` returns its
   // className as a STRING, but `svgBackgroundPreview()` returns a string ARRAY
   // (see its @return). Passing the array to `.join(' ')` unspread stringifies it
   // with COMMAS — `[ 'a', [ 'x', 'y' ] ].join(' ')` is `"a x,y"` — which emits
-  // one unusable comma-joined token and silently drops all four SVG classes
-  // (has-bg-svg / svg-<position> / svg-anim-<n> / svg-speed-<n>), so position,
-  // animation and speed do nothing on the canvas. Caught 2026-09-05 while
+  // one unusable comma-joined token and silently drops the SVG classes
+  // (has-bg-svg / svg-<position>), so position does nothing on the canvas. Caught 2026-09-05 while
   // wiring site-header; CHECK A still passed throughout, because it verifies an
   // attribute NAME is referenced outside the Inspector, not that the CSS it
   // produces is correct.

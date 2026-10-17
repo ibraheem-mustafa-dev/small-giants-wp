@@ -3,7 +3,6 @@
  *
  * Handles:
  * - Responsive video background: swaps src to mobile version on narrow viewports.
- * - Parallax: adds no-parallax class on touch devices to prevent iOS fixed-bg jitter.
  *
  * Loaded only when the hero block is on the page.
  *
@@ -53,28 +52,9 @@
 	}
 
 	/**
-	 * Disable parallax on touch / iOS devices where background-attachment:fixed
-	 * causes repaint jitter or is completely unsupported.
-	 */
-	function disableParallaxOnTouch() {
-		const isTouchDevice =
-			navigator.maxTouchPoints > 0 ||
-			window.matchMedia( '(pointer: coarse)' ).matches;
-
-		if ( ! isTouchDevice ) {
-			return;
-		}
-
-		document
-			.querySelectorAll( '.sgs-hero--parallax' )
-			.forEach( ( hero ) => hero.classList.add( 'no-parallax' ) );
-	}
-
-	/**
 	 * Initialise all hero blocks on the page.
 	 */
 	function init() {
-		disableParallaxOnTouch();
 
 		const responsiveVideos = document.querySelectorAll(
 			'.sgs-hero__video-bg--responsive'

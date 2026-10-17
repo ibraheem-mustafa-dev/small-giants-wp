@@ -95,8 +95,6 @@
 						"css:background-position": "backgroundPosition",
 						"css:background-repeat": "backgroundRepeat",
 						"css:background-size": "backgroundSize",
-						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration",
 						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
@@ -110,7 +108,7 @@
 							}
 						}
 					},
-					"_note": "The rendered <header>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite wrapper rule R-31-9). Colour, spacing and border are SGS-owned attributes (see attrMap), each emitted into this block's own scoped <style> rather than inline (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
+					"_note": "The rendered <header>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite wrapper rule R-31-9). Colour, spacing and border are SGS-owned attributes (see attrMap), each emitted into this block's own scoped <style> rather than inline (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. The animation cluster (anim:*) has no member here: motion is the sgsMotion model (Spec 38A), not attributes."
 				},
 				"inner": {
 					"selector": ".sgs-site-header__content-band",
@@ -430,57 +428,6 @@
 				"auto"
 			]
 		},
-		"bgAnimationDuration": {
-			"type": "number",
-			"default": 20
-		},
-		"bgHoverZoom": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgHoverZoomScale": {
-			"type": "number",
-			"default": 105
-		},
-		"bgHoverZoomDuration": {
-			"type": "number",
-			"default": 600
-		},
-		"bgHoverZoomEasing": {
-			"type": "string",
-			"default": "ease"
-		},
-		"bgHoverZoomEasingCustom": {
-			"type": "string",
-			"default": ""
-		},
-		"bgKenBurns": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgParallax": {
-			"type": "boolean",
-			"default": false
-		},
-		"bgSvgAnimation": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"pulse",
-				"float",
-				"wave"
-			]
-		},
-		"bgSvgAnimationSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [
-				"slow",
-				"medium",
-				"fast"
-			]
-		},
 		"bgSvgContent": {
 			"type": "string",
 			"default": ""
@@ -513,14 +460,6 @@
 		},
 		"bgVideoMobile": {
 			"type": "object"
-		},
-		"bgLottie": {
-			"type": "integer",
-			"default": 0
-		},
-		"bgLottieLoop": {
-			"type": "boolean",
-			"default": true
 		},
 		"contentBandPadding": {
 			"type": "object",
@@ -633,33 +572,6 @@
 			"default": {
 				"desktop": {}
 			}
-		},
-		"fxTreatment": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentHighlight": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentTint": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentInk": {
-			"type": "string",
-			"default": ""
-		},
-		"fxTreatmentIntensity": {
-			"type": "number"
-		},
-		"fxTreatmentReveal": {
-			"type": "string",
-			"default": ""
 		}
 	},
 	"render": "file:./render.php",

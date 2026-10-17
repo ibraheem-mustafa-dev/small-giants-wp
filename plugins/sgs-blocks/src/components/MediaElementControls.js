@@ -189,21 +189,6 @@ export const MEDIA_BASES = {
 		'OverlayOpacity',
 		'OverlayBlendMode',
 	],
-	// Motion (atom 11, added 2026-09-01, Bean-directed). Harvested from two
-	// working implementations rather than designed fresh — sgs/hero's
-	// splitMediaParallax/splitMediaKenBurns/splitMediaAnimationDuration (split-media, element
-	// scope) and sgs/container's bgParallax/bgKenBurns/bgAnimationDuration
-	// (backdrop scope). Mutually exclusive pair (KenBurns/Parallax), enforced
-	// in the control's own onChange exactly as hero already does — the
-	// registry's `requires` field expresses "X requires Y", not "X excludes
-	// Y", so exclusivity is a control-layer rule, not a registry one. Not
-	// tiered: neither reference implementation has Tablet/Mobile variants.
-	motion: [
-		'KenBurns',
-		'Parallax',
-		'AnimationDuration',
-	],
-
 	// ── Wave 5c atoms (12-16, added 2026-09-01) ─────────────────────────────
 	//
 	// Harvested from `sgs/media`'s own hand-rolled controls — every base name
@@ -363,10 +348,6 @@ export const MEDIA_ATTR_TYPES = {
 	OverlayGradientHover: 'string',
 	OverlayOpacity: 'number',
 	OverlayBlendMode: 'string',
-	// Motion (atom 11).
-	KenBurns: 'boolean',
-	Parallax: 'boolean',
-	AnimationDuration: 'number',
 
 	// ── Wave 5c atoms (12-16). ──────────────────────────────────────────────
 	Opacity: 'number',
