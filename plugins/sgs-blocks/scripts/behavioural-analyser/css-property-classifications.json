@@ -2298,8 +2298,7 @@
       "slug": "sgs/button",
       "attr": "scaleHover",
       "fields": {
-        "css_property": "transform",
-        "css_element": "face"
+        "css_property": "transform"
       }
     },
     {
@@ -28451,30 +28450,6 @@
       }
     },
     {
-      "slug": "sgs/decorative-image",
-      "attr": "pathDrawDurationMs",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "pathDrawEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
-      "attr": "pathDrawOnScroll",
-      "fields": {
-        "css_property": "anim:trigger",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/diagram-dimension",
       "attr": "labelX",
       "fields": {
@@ -34063,30 +34038,6 @@
     },
     {
       "slug": "sgs/process-steps",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_element": "animation"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_element": "animation"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_element": "animation"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -36742,33 +36693,6 @@
       "fields": {
         "css_property": "tag",
         "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/trustpilot-reviews",
-      "attr": "sgsAnimation",
-      "fields": {
-        "css_property": "anim:preset",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trustpilot-reviews",
-      "attr": "sgsAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trustpilot-reviews",
-      "attr": "sgsAnimationEasing",
-      "fields": {
-        "css_property": "anim:easing",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
