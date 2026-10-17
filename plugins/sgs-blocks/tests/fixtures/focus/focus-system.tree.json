@@ -1,0 +1,860 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"className": "focus-fx-light",
+			"padding": {
+				"desktop": {
+					"top": "48px",
+					"right": "24px",
+					"bottom": "48px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "40px",
+					"right": "20px",
+					"bottom": "40px",
+					"left": "20px"
+				},
+				"mobile": {
+					"top": "32px",
+					"right": "16px",
+					"bottom": "32px",
+					"left": "16px"
+				}
+			},
+			"backgroundColour": "#ffffff",
+			"surfaceTone": "light"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Focus fixture: light",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/multi-button",
+				"attributes": {
+					"className": "focus-fx-multi-light"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Primary",
+							"url": "https://example.com/",
+							"inheritStyle": "primary",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Secondary",
+							"url": "https://example.com/",
+							"inheritStyle": "secondary",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Outline",
+							"url": "https://example.com/",
+							"inheritStyle": "outline",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Link style",
+							"url": "https://example.com/",
+							"inheritStyle": "link",
+							"className": ""
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Single SGS button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "focus-fx-single-light"
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Core-styled button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "wp-block-button__link wp-element-button focus-fx-core-light"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it."
+				}
+			},
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formName": "Focus fixture light",
+					"submitLabel": "Send",
+					"storeSubmissions": false
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"fieldName": "name_light",
+							"label": "Your name",
+							"placeholder": "Full name"
+						}
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"fieldName": "topic_light",
+							"label": "Topic",
+							"options": [
+								{
+									"value": "a",
+									"label": "Option A"
+								},
+								{
+									"value": "b",
+									"label": "Option B"
+								}
+							]
+						}
+					},
+					{
+						"name": "sgs/form-field-checkbox",
+						"attributes": {
+							"fieldName": "agree_light",
+							"label": "Agree",
+							"options": [
+								{
+									"value": "yes",
+									"label": "I agree"
+								}
+							]
+						}
+					},
+					{
+						"name": "sgs/form-field-radio",
+						"attributes": {
+							"fieldName": "pick_light",
+							"label": "Choose one",
+							"options": [
+								{
+									"value": "x",
+									"label": "Choice X"
+								},
+								{
+									"value": "y",
+									"label": "Choice Y"
+								}
+							]
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/option-picker",
+				"attributes": {
+					"label": "Pick a size",
+					"optionItems": [
+						{
+							"key": "s",
+							"label": "Small"
+						},
+						{
+							"key": "m",
+							"label": "Medium"
+						},
+						{
+							"key": "l",
+							"label": "Large"
+						}
+					]
+				}
+			},
+			{
+				"name": "sgs/accordion",
+				"attributes": {
+					"defaultOpen": -1
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/accordion-item",
+						"attributes": {
+							"title": "First question"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "First answer."
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/accordion-item",
+						"attributes": {
+							"title": "Second question"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Second answer."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/tabs",
+				"attributes": {},
+				"innerBlocks": [
+					{
+						"name": "sgs/tab",
+						"attributes": {
+							"label": "Tab one"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Panel one."
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/tab",
+						"attributes": {
+							"label": "Tab two"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Panel two."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/testimonial-slider",
+				"attributes": {
+					"autoplay": false,
+					"slidesVisible": 1
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/testimonial",
+						"attributes": {
+							"quote": "First testimonial quote.",
+							"reviewerName": "Reviewer One"
+						}
+					},
+					{
+						"name": "sgs/testimonial",
+						"attributes": {
+							"quote": "Second testimonial quote.",
+							"reviewerName": "Reviewer Two"
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"className": "focus-fx-dark",
+			"padding": {
+				"desktop": {
+					"top": "48px",
+					"right": "24px",
+					"bottom": "48px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "40px",
+					"right": "20px",
+					"bottom": "40px",
+					"left": "20px"
+				},
+				"mobile": {
+					"top": "32px",
+					"right": "16px",
+					"bottom": "32px",
+					"left": "16px"
+				}
+			},
+			"backgroundColour": "#101828",
+			"surfaceTone": "dark"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Focus fixture: dark",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/multi-button",
+				"attributes": {
+					"className": "focus-fx-multi-dark"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Primary",
+							"url": "https://example.com/",
+							"inheritStyle": "primary",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Secondary",
+							"url": "https://example.com/",
+							"inheritStyle": "secondary",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Outline",
+							"url": "https://example.com/",
+							"inheritStyle": "outline",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Link style",
+							"url": "https://example.com/",
+							"inheritStyle": "link",
+							"className": ""
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Single SGS button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "focus-fx-single-dark"
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Core-styled button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "wp-block-button__link wp-element-button focus-fx-core-dark"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it."
+				}
+			},
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formName": "Focus fixture dark",
+					"submitLabel": "Send",
+					"storeSubmissions": false
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"fieldName": "name_dark",
+							"label": "Your name",
+							"placeholder": "Full name"
+						}
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"fieldName": "topic_dark",
+							"label": "Topic",
+							"options": [
+								{
+									"value": "a",
+									"label": "Option A"
+								},
+								{
+									"value": "b",
+									"label": "Option B"
+								}
+							]
+						}
+					},
+					{
+						"name": "sgs/form-field-checkbox",
+						"attributes": {
+							"fieldName": "agree_dark",
+							"label": "Agree",
+							"options": [
+								{
+									"value": "yes",
+									"label": "I agree"
+								}
+							]
+						}
+					},
+					{
+						"name": "sgs/form-field-radio",
+						"attributes": {
+							"fieldName": "pick_dark",
+							"label": "Choose one",
+							"options": [
+								{
+									"value": "x",
+									"label": "Choice X"
+								},
+								{
+									"value": "y",
+									"label": "Choice Y"
+								}
+							]
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/option-picker",
+				"attributes": {
+					"label": "Pick a size",
+					"optionItems": [
+						{
+							"key": "s",
+							"label": "Small"
+						},
+						{
+							"key": "m",
+							"label": "Medium"
+						},
+						{
+							"key": "l",
+							"label": "Large"
+						}
+					]
+				}
+			},
+			{
+				"name": "sgs/accordion",
+				"attributes": {
+					"defaultOpen": -1
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/accordion-item",
+						"attributes": {
+							"title": "First question"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "First answer."
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/accordion-item",
+						"attributes": {
+							"title": "Second question"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Second answer."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/tabs",
+				"attributes": {},
+				"innerBlocks": [
+					{
+						"name": "sgs/tab",
+						"attributes": {
+							"label": "Tab one"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Panel one."
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/tab",
+						"attributes": {
+							"label": "Tab two"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Panel two."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/testimonial-slider",
+				"attributes": {
+					"autoplay": false,
+					"slidesVisible": 1
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/testimonial",
+						"attributes": {
+							"quote": "First testimonial quote.",
+							"reviewerName": "Reviewer One"
+						}
+					},
+					{
+						"name": "sgs/testimonial",
+						"attributes": {
+							"quote": "Second testimonial quote.",
+							"reviewerName": "Reviewer Two"
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"className": "focus-fx-photo",
+			"padding": {
+				"desktop": {
+					"top": "48px",
+					"right": "24px",
+					"bottom": "48px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "40px",
+					"right": "20px",
+					"bottom": "40px",
+					"left": "20px"
+				},
+				"mobile": {
+					"top": "32px",
+					"right": "16px",
+					"bottom": "32px",
+					"left": "16px"
+				}
+			},
+			"backgroundImage": {
+				"id": 3457,
+				"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg"
+			},
+			"backgroundOverlayColour": "#000000",
+			"backgroundOverlayOpacity": {
+				"desktop": 35
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Focus fixture: photo",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/multi-button",
+				"attributes": {
+					"className": "focus-fx-multi-photo"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Primary",
+							"url": "https://example.com/",
+							"inheritStyle": "primary",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Secondary",
+							"url": "https://example.com/",
+							"inheritStyle": "secondary",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Outline",
+							"url": "https://example.com/",
+							"inheritStyle": "outline",
+							"className": ""
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Link style",
+							"url": "https://example.com/",
+							"inheritStyle": "link",
+							"className": ""
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Single SGS button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "focus-fx-single-photo"
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"label": "Core-styled button",
+					"url": "https://example.com/",
+					"inheritStyle": "primary",
+					"className": "wp-block-button__link wp-element-button focus-fx-core-photo"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "A paragraph with <a href=\"https://example.com/one\">a text link</a> and <a href=\"https://example.com/two\">a second text link</a> inside it."
+				}
+			},
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formName": "Focus fixture photo",
+					"submitLabel": "Send",
+					"storeSubmissions": false
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"fieldName": "name_photo",
+							"label": "Your name",
+							"placeholder": "Full name"
+						}
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"fieldName": "topic_photo",
+							"label": "Topic",
+							"options": [
+								{
+									"value": "a",
+									"label": "Option A"
+								},
+								{
+									"value": "b",
+									"label": "Option B"
+								}
+							]
+						}
+					},
+					{
+						"name": "sgs/form-field-checkbox",
+						"attributes": {
+							"fieldName": "agree_photo",
+							"label": "Agree",
+							"options": [
+								{
+									"value": "yes",
+									"label": "I agree"
+								}
+							]
+						}
+					},
+					{
+						"name": "sgs/form-field-radio",
+						"attributes": {
+							"fieldName": "pick_photo",
+							"label": "Choose one",
+							"options": [
+								{
+									"value": "x",
+									"label": "Choice X"
+								},
+								{
+									"value": "y",
+									"label": "Choice Y"
+								}
+							]
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/option-picker",
+				"attributes": {
+					"label": "Pick a size",
+					"optionItems": [
+						{
+							"key": "s",
+							"label": "Small"
+						},
+						{
+							"key": "m",
+							"label": "Medium"
+						},
+						{
+							"key": "l",
+							"label": "Large"
+						}
+					]
+				}
+			},
+			{
+				"name": "sgs/accordion",
+				"attributes": {
+					"defaultOpen": -1
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/accordion-item",
+						"attributes": {
+							"title": "First question"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "First answer."
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/accordion-item",
+						"attributes": {
+							"title": "Second question"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Second answer."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/tabs",
+				"attributes": {},
+				"innerBlocks": [
+					{
+						"name": "sgs/tab",
+						"attributes": {
+							"label": "Tab one"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Panel one."
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/tab",
+						"attributes": {
+							"label": "Tab two"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Panel two."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/testimonial-slider",
+				"attributes": {
+					"autoplay": false,
+					"slidesVisible": 1
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/testimonial",
+						"attributes": {
+							"quote": "First testimonial quote.",
+							"reviewerName": "Reviewer One"
+						}
+					},
+					{
+						"name": "sgs/testimonial",
+						"attributes": {
+							"quote": "Second testimonial quote.",
+							"reviewerName": "Reviewer Two"
+						}
+					}
+				]
+			}
+		]
+	}
+]

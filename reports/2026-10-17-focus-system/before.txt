@@ -1,0 +1,62 @@
+loading home @1440 (https://sandybrown-nightingale-600381.hostingersite.com/)
+loading home @768 (https://sandybrown-nightingale-600381.hostingersite.com/)
+loading home @375 (https://sandybrown-nightingale-600381.hostingersite.com/)
+loading shop @1440 (https://sandybrown-nightingale-600381.hostingersite.com/shop/)
+loading shop @768 (https://sandybrown-nightingale-600381.hostingersite.com/shop/)
+loading shop @375 (https://sandybrown-nightingale-600381.hostingersite.com/shop/)
+loading product @1440 (https://sandybrown-nightingale-600381.hostingersite.com/product/qa-photo-swap-target/)
+loading product @768 (https://sandybrown-nightingale-600381.hostingersite.com/product/qa-photo-swap-target/)
+loading product @375 (https://sandybrown-nightingale-600381.hostingersite.com/product/qa-photo-swap-target/)
+loading cart @1440 (https://sandybrown-nightingale-600381.hostingersite.com/cart/)
+loading cart @768 (https://sandybrown-nightingale-600381.hostingersite.com/cart/)
+loading cart @375 (https://sandybrown-nightingale-600381.hostingersite.com/cart/)
+loading 5389 @1440 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+loading 5389 @768 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+loading 5389 @375 (https://sandybrown-nightingale-600381.hostingersite.com/?page_id=5389)
+
+home @1440: 38 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 27, css 856650 B
+home @768: 36 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 24, css 856650 B
+home @375: 36 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 24, css 856650 B
+home axe: color-contrastx2
+shop @1440: 45 stops (focus left the document), looks 3, min contrast 1.00, clipped 6, radius changed 40, css 831542 B
+shop @768: 49 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 44, css 831542 B
+shop @375: 49 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 44, css 831542 B
+shop axe: target-sizex17
+product @1440: 48 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 43, css 870147 B
+product @768: 44 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 38, css 870147 B
+product @375: 44 stops (focus left the document), looks 4, min contrast 1.00, clipped 1, radius changed 36, css 870147 B
+product axe: color-contrastx1 target-sizex8
+cart @1440: 31 stops (focus left the document), looks 4, min contrast 1.06, clipped 0, radius changed 30, css 918067 B
+cart @768: 29 stops (focus left the document), looks 4, min contrast 1.08, clipped 0, radius changed 27, css 918067 B
+cart @375: 29 stops (focus left the document), looks 4, min contrast 1.00, clipped 0, radius changed 27, css 918067 B
+cart axe: no violations
+5389 @1440: 60 stops (max stops), looks 4, min contrast 1.00, clipped 0, radius changed 44, css 825930 B
+5389 @768: 60 stops (max stops), looks 4, min contrast 1.00, clipped 0, radius changed 41, css 825930 B
+5389 @375: 60 stops (max stops), looks 4, min contrast 1.00, clipped 0, radius changed 37, css 825930 B
+5389 axe: color-contrastx22
+
+looks: 5   [wider tuple incl. colour, shadow shape, radius: 16]
+min contrast: 1.00
+clipped: 7
+radius changed on focus: 526
+css bytes per page (first width): {"5389":825930,"home":856650,"shop":831542,"product":870147,"cart":918067}
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": contrast 1.35 < 3
+  FAIL #1 a.skip-link.screen-reader-text "Skip to content": radius 0px -> 3px on focus
+  FAIL #2 a.sgs-business-info__link "0121 496 0123": contrast 1.35 < 3
+  FAIL #2 a.sgs-business-info__link "0121 496 0123": radius 0px -> 4px on focus
+  FAIL #3 a.sgs-business-info__link "Zainab@mamasmunches.com": contrast 1.35 < 3
+  FAIL #3 a.sgs-business-info__link "Zainab@mamasmunches.com": radius 0px -> 4px on focus
+  FAIL #4 a.sgs-business-socials__link "Instagram": contrast 1.35 < 3
+  FAIL #4 a.sgs-business-socials__link "Instagram": radius 0px -> 4px on focus
+  FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": contrast 1.30 < 3
+  FAIL #5 a.sgs-responsive-logo__link "Go to Mama's Munches homepage": radius 0px -> 2px on focus
+  FAIL #6 button.sgs-nav-bar-menu__burger.sgs-nav-bar-menu__burger--icon-and-text "MenuClose": contrast 1.35 < 3
+  FAIL #6 button.sgs-nav-bar-menu__burger.sgs-nav-bar-menu__burger--icon-and-text "MenuClose": radius 8px -> 4px on focus
+  FAIL #7 button.sgs-cart__trigger "View your cart (0 items in cart)": contrast 1.35 < 3
+  FAIL #8 a.sgs-button.sgs-button--primary "Shop Zookies": contrast 1.04 < 3
+  FAIL #9 a.sgs-button.sgs-button--secondary "Try 3 for £5": contrast 1.04 < 3
+  ... 953 more (all in the JSON)
+
+focus system (sandybrown): FAIL
+json: reports/2026-10-17-focus-system/before.json
+exit=1
