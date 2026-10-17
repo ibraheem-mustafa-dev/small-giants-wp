@@ -26,6 +26,9 @@
  *   - registers the three per-element override properties (`--sgs-focus-offset`, `--sgs-focus-halo`, `--sgs-focus-under`)
  *     with `@property` and `inherits: false`, so an inset or shadowed card never hands its inset ring, halo or shadow to a
  *     focusable descendant that carries no such class of its own;
+ *   - rings a card's block-link overlay (`.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay`)
+ *     in the one declaration set and in forced colours, and gives it the inset offset and halo on an inset card: the card's
+ *     own outline paints below its positioned children, so the overlay carries the ring over a photo;
  * and that no other theme stylesheet holds an indicator, apart from the files a later plan task owns (PENDING; an
  * entry that no longer holds a finding fails, so the list only shrinks).
  * Each focus.css check also runs against a planted fault (negative control), so a check that cannot fail fails here.
@@ -296,6 +299,37 @@ const CHECKS = {
 		}
 		return problems;
 	},
+	cardOverlayCarriesTheRing( root ) {
+		const OVERLAY = '.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay:not(#wpadminbar *)';
+		const INSET = '.sgs-focus--inset.sgs-focus-card > .sgs-block-link-overlay';
+		let base = false;
+		let forced = false;
+		let inset = false;
+		root.walkRules( ( rule ) => {
+			const sels = rule.selectors.map( norm );
+			if ( sels.includes( OVERLAY ) && rule.some( ( n ) => 'decl' === n.type && 'outline' === n.prop ) ) {
+				if ( inForced( rule ) ) {
+					forced = true;
+				} else if ( ! inSupports( rule ) ) {
+					base = true;
+				}
+			}
+			if ( sels.includes( INSET ) && rule.some( ( n ) => 'decl' === n.type && '--sgs-focus-offset' === n.prop ) && rule.some( ( n ) => 'decl' === n.type && '--sgs-focus-halo' === n.prop ) ) {
+				inset = true;
+			}
+		} );
+		const problems = [];
+		if ( ! base ) {
+			problems.push( `the indicator declaration set has no ${ OVERLAY } arm` );
+		}
+		if ( ! forced ) {
+			problems.push( 'no forced-colours repeat of the card overlay arm' );
+		}
+		if ( ! inset ) {
+			problems.push( `${ INSET } does not carry the inset offset and halo` );
+		}
+		return problems;
+	},
 	signatureClearsHostBorder( root ) {
 		let found = false;
 		const problems = [];
@@ -351,6 +385,7 @@ describe( 'focus.css, the one focus system', () => {
 		darkDuotoneRingIsLight: ( text ) => text.replace( /(\.sgs-on-dark \.sgs-focus--duotone[^{]*\{[^}]*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
 		signaturePreviewMirrorsFocus: ( text ) => text.replace( /\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\)::before/g, '.sgs-focus--signature.sgs-focus-preview-x:not(#wpadminbar *)::before' ),
 		noHasFallbackKeepsAFocusRing: ( text ) => text.replace( /@supports not selector\(:has\(\*\)\)/, '@supports not selector(:is(*))' ),
+		cardOverlayCarriesTheRing: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\) > \.sgs-block-link-overlay/g, '.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay-x' ),
 		overridePropertiesDoNotInherit: ( text ) => text.replace( /@property --sgs-focus-halo \{[^}]*\}/, '@property --sgs-focus-halo { syntax: "*"; inherits: true; }' ),
 		signatureClearsHostBorder: ( text ) => text.replace( /inset: calc\([^;]*--sgs-focus-host-border[^;]*\);/, 'inset: calc(var(--sgs-focus-width) * -3);' ),
 	};

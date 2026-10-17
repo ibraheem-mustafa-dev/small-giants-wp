@@ -57,18 +57,23 @@
 	--sgs-focus-far: var(--sgs-focus-ink);
 }
 /* Inside a clipping or full-bleed container: the ring sits on the element's edge, the hairline inside it. */
-.sgs-focus--inset {
+.sgs-focus--inset,
+.sgs-focus--inset.sgs-focus-card > .sgs-block-link-overlay {
 	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
 	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2) var(--sgs-focus-inner);
 }
 
-/* 2. The indicator: one declaration set, five arms (element, adjacent proxy, scoped proxy, card proxy, editor preview).
+/* 2. The indicator: one declaration set, six arms (element, adjacent proxy, scoped proxy, card proxy, card overlay, editor preview).
    A card whose stretched link (`.sgs-focus-source`, with a `::after` overlay covering the card) holds focus rings the
-   whole card, because the overlay is a pseudo-element and an outline on the link would wrap only its own text box. */
+   whole card, because the overlay is a pseudo-element and an outline on the link would wrap only its own text box.
+   A card that also carries the block-link overlay (`.sgs-block-link-overlay`, positioned above the card's media) rings
+   that overlay too: an outline on the card itself paints below its positioned children, so the overlay carries the same
+   ring over the photo. */
 :focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .components-button, [class*="block-editor-"]), [tabindex="-1"], .sgs-focus-source, input[type="range"]),
 .sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
 .sgs-focus-scope:has(.sgs-focus-source:focus-visible) .sgs-focus-proxy:not(#wpadminbar *),
 .sgs-focus-card:has(.sgs-focus-source:focus-visible):not(#wpadminbar *),
+.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay:not(#wpadminbar *),
 .sgs-focus-preview:not(#wpadminbar *) {
 	outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
 	outline-offset: var(--sgs-focus-offset, var(--sgs-focus-width));
@@ -191,6 +196,7 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 	.sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
 	.sgs-focus-scope:has(.sgs-focus-source:focus-visible) .sgs-focus-proxy:not(#wpadminbar *),
 	.sgs-focus-card:has(.sgs-focus-source:focus-visible):not(#wpadminbar *),
+	.sgs-focus-card:has(.sgs-focus-source:focus-visible) > .sgs-block-link-overlay:not(#wpadminbar *),
 	.sgs-focus-preview:not(#wpadminbar *) {
 		outline: var(--sgs-focus-width) solid Highlight;
 		box-shadow: none;

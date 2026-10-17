@@ -770,6 +770,18 @@
 	display: block;
 }
 
+/* The photo link duplicates the title link (tabindex -1, aria-hidden), so it sits below the block-link overlay, which
+   takes the same click. Raised above the overlay (extensions.css gives every link in a block-link card z-index 2) it
+   would paint over the overlay's focus ring along the photo edge. */
+.product-card.sgs-has-block-link .product-card__img-link {
+	z-index: auto;
+}
+
+/* The overlay carries the card's focus ring over the photo (focus.css), so it takes the card's corners. */
+.product-card.sgs-has-block-link > .sgs-block-link-overlay {
+	border-radius: inherit;
+}
+
 /* Title link inherits the card heading colour and never underlines: the whole
    card is the link, so the cursor already carries the affordance. */
 .product-card--live .product-card__title-link {
