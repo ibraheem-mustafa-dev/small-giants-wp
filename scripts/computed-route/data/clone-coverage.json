@@ -4,6 +4,751 @@
 		"reference": "construct:<kind> (a construct registry kind with a reader) or a repo-relative path with an optional #symbol"
 	},
 	"entries": {
+		"block-setting:a11y-text:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:array": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:boolean": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:integer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:motion": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:behaviour:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:boolean-visibility:boolean": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:boolean-visibility:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:boolean-visibility:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:color:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:color:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:colour-gradient:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:colour-gradient:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:content:array": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:content:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:content:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:content:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:css-gate:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:css-modifier:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-class-probe:integer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-class-probe:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-class-probe:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-class-probe:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-class-probe:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-class-probe:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-mode:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-mode:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-mode:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:enum-mode:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:icon-dashicon:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:icon-emoji:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:icon-lucide:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:icon-wp-icon:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:identity:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:identity:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:identity:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:identity:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:image-alt:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:image-object:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:image-object:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:image-object:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:layout:boolean": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:layout:integer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:layout:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:layout:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:layout:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:layout:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:layout:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:link-content:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:link-href:array": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:link-href:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:link-href:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:motion:motion": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:number-css-percent:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:number-css-px:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:number-css-px:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:numeric-content:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:position:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:position:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:presence-boolean:boolean": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:rating:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:rating:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:scalar-media:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:select-from-enum:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:select-from-enum:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:select-from-enum:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:select-from-enum:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:select-from-enum:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:spacing-token:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:styling:boolean": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:styling:motion": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:styling:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:styling:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:styling:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:styling:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:svg:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:tag-identity:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:tag-identity:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:technical:array": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:technical:boolean": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:technical:integer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:technical:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:technical:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:technical:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:text-content:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:text-content:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:text-content:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:text-content:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:typography:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:typography:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:typography:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:unclassified:array": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:unclassified:integer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:unclassified:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:unclassified:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:unclassified:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:visual:boolean": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:visual:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:visual:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:visual:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:visual:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"block-setting:visual:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
 		"construct:binding": {
 			"recognise": null,
 			"write": null,
@@ -762,6 +1507,270 @@
 			"write": null,
 			"check": null,
 			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:ambient-float": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:carousel-loop": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:cursor-field": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:curtain": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:draggable": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:draw": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:flip": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:follow-pointer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:generative-background": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:glare": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:grid-dots": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:horizontal-panel": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:image-sequence": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:ken-burns": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:lottie": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:magnet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:marquee": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:morph": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:motion-path": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:page-transitions": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:parallax": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:particles": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:pin-scrub": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:ripple": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:scramble": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:scroll-progress": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:scroll-smoother": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:scrub": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:sheen": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:split-reveal": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:surface-treatment": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:svg-loop": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"fx:wave-gradient": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
 			"note": "seeded 2026-10-17, not yet triaged"
 		},
 		"html:a": {
@@ -1805,6 +2814,462 @@
 			"write": null,
 			"check": null,
 			"wave": "unassigned",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:ambient-float": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:cursor-field": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:draw-hover": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:ken-burns": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:morph": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:motion-path": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:parallax": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:particles": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:pin-scrub": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:ripple": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:scramble-hover": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:scrub": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:effects:svg-loop": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:draw": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-blur-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-bounce-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-fade-down": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-fade-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-fade-left": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-fade-right": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-fade-up": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-reveal-up": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-rotate-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-scale-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-scale-out": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-slide-down": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-slide-left": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-slide-right": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:entrance-slide-up": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-bounce": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-fade-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-fade-out": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-fade-up": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-pulse": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-slide-up": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-spin": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:keyframe-zoom-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:nav-panel-item": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:scramble": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:split-reveal": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:state-burger-morph": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:state-count-pop": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:state-icon-turn": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:state-result-scale-in": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:state-shake": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:entrance:state-step-slide": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:follow-pointer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-border-accent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-grayscale-to-colour": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-indent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-lift": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-none": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-rotate": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-scale": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:hover-translate": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:magnet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
+			"note": "seeded 2026-10-17, not yet triaged"
+		},
+		"motion-preset:hover:sheen": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"waiting": "phase-0",
 			"note": "seeded 2026-10-17, not yet triaged"
 		},
 		"part:footer": {

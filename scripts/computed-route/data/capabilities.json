@@ -3,20 +3,2116 @@
 		"block-setting": {
 			"side": "framework",
 			"source": "db",
-			"status": "absent",
-			"entries": []
+			"status": "ok",
+			"entries": [
+				{
+					"id": "block-setting:a11y-text:string",
+					"label": "block settings, role a11y-text, string",
+					"count": 8,
+					"examples": [
+						"sgs/before-after.afterVideoAlt",
+						"sgs/before-after.beforeVideoAlt",
+						"sgs/button.ariaLabel",
+						"sgs/cart.ariaLabel",
+						"sgs/form.formName"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:array",
+					"label": "block settings, role behaviour, array",
+					"count": 194,
+					"examples": [
+						"sgs/accordion-item.sgsConditionDays",
+						"sgs/accordion-item.sgsConditionUserRole",
+						"sgs/accordion.sgsConditionDays",
+						"sgs/accordion.sgsConditionUserRole",
+						"sgs/account.sgsConditionDays"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:boolean",
+					"label": "block settings, role behaviour, boolean",
+					"count": 37,
+					"examples": [
+						"sgs/accordion.allowMultiple",
+						"sgs/container.bgSvgTextShadow",
+						"sgs/container.sgsBlockLinkTarget",
+						"sgs/counter.accentStroke",
+						"sgs/form-field-address.required"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:integer",
+					"label": "block settings, role behaviour, integer",
+					"count": 1,
+					"examples": [
+						"sgs/form.rateLimit"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:mode",
+					"label": "block settings, role behaviour, mode",
+					"count": 232,
+					"examples": [
+						"sgs/accordion-item.sgsConditionLoggedIn",
+						"sgs/accordion-item.sgsConditionProductReviews",
+						"sgs/accordion.sgsConditionLoggedIn",
+						"sgs/accordion.sgsConditionProductReviews",
+						"sgs/account.sgsConditionLoggedIn"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:motion",
+					"label": "block settings, role behaviour, motion",
+					"count": 21,
+					"examples": [
+						"sgs/before-after.fxDraggable",
+						"sgs/buybox.dragMomentum",
+						"sgs/buybox.dragToScroll",
+						"sgs/buybox.loopCarousel",
+						"sgs/gallery.dragMomentum"
+					],
+					"motion": true
+				},
+				{
+					"id": "block-setting:behaviour:number",
+					"label": "block settings, role behaviour, number",
+					"count": 193,
+					"examples": [
+						"sgs/accordion-item.sgsClickRippleDuration",
+						"sgs/accordion-item.sgsConditionCollectionQueryId",
+						"sgs/accordion.defaultOpen",
+						"sgs/accordion.sgsClickRippleDuration",
+						"sgs/accordion.sgsConditionCollectionQueryId"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:object",
+					"label": "block settings, role behaviour, object",
+					"count": 13,
+					"examples": [
+						"sgs/google-reviews.arrowStep",
+						"sgs/nav-bar-menu.triggerDetachAfter",
+						"sgs/nav-drawer-menu.itemOrnamentFramePlay",
+						"sgs/site-footer-row.rowHideOnScroll",
+						"sgs/site-footer-row.rowShrink"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:string",
+					"label": "block settings, role behaviour, string",
+					"count": 890,
+					"examples": [
+						"sgs/accordion-item.sgsClickEffect",
+						"sgs/accordion-item.sgsClickRippleColour",
+						"sgs/accordion-item.sgsCollapseVisibility",
+						"sgs/accordion-item.sgsConditionDateEnd",
+						"sgs/accordion-item.sgsConditionDateStart"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:behaviour:styling",
+					"label": "block settings, role behaviour, styling",
+					"count": 7,
+					"examples": [
+						"sgs/google-reviews.scrollbarStyle",
+						"sgs/google-reviews.textClampLines",
+						"sgs/hero.verticalAlignment",
+						"sgs/measured-diagram.extensionStyle",
+						"sgs/nav-drawer-menu.itemExpanderRotate"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:boolean-visibility:boolean",
+					"label": "block settings, role boolean-visibility, boolean",
+					"count": 272,
+					"examples": [
+						"sgs/accordion-item.isOpen",
+						"sgs/account.showGuestLine",
+						"sgs/account.showMenuIcons",
+						"sgs/account.showOrderTracking",
+						"sgs/account.showQuickCards"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:boolean-visibility:object",
+					"label": "block settings, role boolean-visibility, object",
+					"count": 3,
+					"examples": [
+						"sgs/nav-drawer.chromeLogoShow",
+						"sgs/nav-drawer.chromeRatingShow",
+						"sgs/nav-drawer.chromeSlotShow"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:boolean-visibility:styling",
+					"label": "block settings, role boolean-visibility, styling",
+					"count": 291,
+					"examples": [
+						"sgs/accordion-item.sgsHideOnDesktop",
+						"sgs/accordion-item.sgsHideOnMobile",
+						"sgs/accordion-item.sgsHideOnTablet",
+						"sgs/accordion.sgsHideOnDesktop",
+						"sgs/accordion.sgsHideOnMobile"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:color:string",
+					"label": "block settings, role color, string",
+					"count": 69,
+					"examples": [
+						"sgs/accordion-item.backgroundColourHover",
+						"sgs/brand-strip.tileShadowColourHover",
+						"sgs/business-info.openStatusClosedBackground",
+						"sgs/business-info.openStatusOpenBackground",
+						"sgs/buybox.guidedMeterColour"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:color:styling",
+					"label": "block settings, role color, styling",
+					"count": 862,
+					"examples": [
+						"sgs/accordion-item.backgroundColour",
+						"sgs/accordion-item.borderColour",
+						"sgs/accordion-item.textColour",
+						"sgs/accordion-item.textColourHover",
+						"sgs/accordion.borderColour"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:colour-gradient:string",
+					"label": "block settings, role colour-gradient, string",
+					"count": 76,
+					"examples": [
+						"sgs/accordion-item.backgroundColourGradient",
+						"sgs/accordion-item.backgroundColourHoverGradient",
+						"sgs/brand-strip.itemBorderColourHoverGradient",
+						"sgs/breadcrumbs.currentColourGradient",
+						"sgs/breadcrumbs.separatorColourGradient"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:colour-gradient:styling",
+					"label": "block settings, role colour-gradient, styling",
+					"count": 518,
+					"examples": [
+						"sgs/accordion-item.borderColourGradient",
+						"sgs/accordion-item.textColourGradient",
+						"sgs/accordion-item.textColourHoverGradient",
+						"sgs/accordion.borderColourGradient",
+						"sgs/accordion.headerBackgroundGradient"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:content:array",
+					"label": "block settings, role content, array",
+					"count": 20,
+					"examples": [
+						"sgs/brand-strip.logos",
+						"sgs/card-grid.items",
+						"sgs/form-field-address.fields",
+						"sgs/form-field-checkbox.options",
+						"sgs/form-field-file.allowedTypes"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:content:number",
+					"label": "block settings, role content, number",
+					"count": 6,
+					"examples": [
+						"sgs/counter.number",
+						"sgs/product-card.indexVariationUrl",
+						"sgs/star-rating.schemaReviewCount",
+						"sgs/trustpilot-reviews.reviewsAverage",
+						"sgs/trustpilot-reviews.totalReviews"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:content:object",
+					"label": "block settings, role content, object",
+					"count": 1,
+					"examples": [
+						"sgs/choice-flow.stageNoteLink"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:content:string",
+					"label": "block settings, role content, string",
+					"count": 48,
+					"examples": [
+						"sgs/audio.audioUrl",
+						"sgs/before-after.afterImageUrlMobile",
+						"sgs/before-after.afterImageUrlTablet",
+						"sgs/before-after.afterVideoUrl",
+						"sgs/before-after.beforeImageUrlMobile"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:css-gate:styling",
+					"label": "block settings, role css-gate, styling",
+					"count": 4,
+					"examples": [
+						"sgs/card-grid.grayscaleHover",
+						"sgs/gallery.grayscaleHover",
+						"sgs/info-box.grayscaleHover",
+						"sgs/team-member.grayscaleHover"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:css-modifier:mode",
+					"label": "block settings, role css-modifier, mode",
+					"count": 3,
+					"examples": [
+						"sgs/google-reviews.logoPosition",
+						"sgs/google-reviews.navPosition",
+						"sgs/testimonial.ratingType"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-class-probe:integer",
+					"label": "block settings, role enum-class-probe, integer",
+					"count": 27,
+					"examples": [
+						"sgs/audio.audioId",
+						"sgs/before-after.afterImageId",
+						"sgs/before-after.afterImageIdMobile",
+						"sgs/before-after.afterImageIdTablet",
+						"sgs/before-after.afterVideoId"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-class-probe:mode",
+					"label": "block settings, role enum-class-probe, mode",
+					"count": 2,
+					"examples": [
+						"sgs/audio.toggleIcon",
+						"sgs/choice-flow.stageNoteIcon"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-class-probe:number",
+					"label": "block settings, role enum-class-probe, number",
+					"count": 10,
+					"examples": [
+						"sgs/decorative-image.imageId",
+						"sgs/decorative-image.imageIdMobile",
+						"sgs/decorative-image.imageIdTablet",
+						"sgs/filter-search.attributeId",
+						"sgs/nav-drawer.chromeLogoId"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-class-probe:object",
+					"label": "block settings, role enum-class-probe, object",
+					"count": 8,
+					"examples": [
+						"sgs/nav-bar-menu.triggerIcon",
+						"sgs/nav-drawer-menu.itemExpanderIcon",
+						"sgs/nav-drawer-menu.itemOrnamentIcon",
+						"sgs/nav-drawer-menu.itemOrnamentIconHover",
+						"sgs/nav-drawer-menu.sublinkMarkerIcon"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-class-probe:string",
+					"label": "block settings, role enum-class-probe, string",
+					"count": 17,
+					"examples": [
+						"sgs/accordion.closeIcon",
+						"sgs/accordion.openIcon",
+						"sgs/button.icon",
+						"sgs/button.linkId",
+						"sgs/buybox.addToCartModalId"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-class-probe:styling",
+					"label": "block settings, role enum-class-probe, styling",
+					"count": 3,
+					"examples": [
+						"sgs/responsive-logo.logoId",
+						"sgs/responsive-logo.logoIdMobile",
+						"sgs/responsive-logo.logoIdTablet"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-mode:mode",
+					"label": "block settings, role enum-mode, mode",
+					"count": 101,
+					"examples": [
+						"sgs/audio.audioPreload",
+						"sgs/audio.audioSource",
+						"sgs/before-after.orientation",
+						"sgs/brand-strip.brandDisplay",
+						"sgs/brand-strip.source"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-mode:object",
+					"label": "block settings, role enum-mode, object",
+					"count": 1,
+					"examples": [
+						"sgs/site-header.contrastSafe"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-mode:string",
+					"label": "block settings, role enum-mode, string",
+					"count": 9,
+					"examples": [
+						"sgs/before-after.handleIconSource",
+						"sgs/form.successRedirectSource",
+						"sgs/google-rating-badge.listingUrlSource",
+						"sgs/icon.linkUrlSource",
+						"sgs/media.linkUrlSource"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:enum-mode:styling",
+					"label": "block settings, role enum-mode, styling",
+					"count": 17,
+					"examples": [
+						"sgs/business-info.hoursRowJustify",
+						"sgs/buybox.stackBelow",
+						"sgs/card-grid.headingLevel",
+						"sgs/form-review.headingLevel",
+						"sgs/form.submitAlign"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:icon-dashicon:string",
+					"label": "block settings, role icon-dashicon, string",
+					"count": 2,
+					"examples": [
+						"sgs/icon.dashiconName",
+						"sgs/separator.contentIconDashicon"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:icon-emoji:string",
+					"label": "block settings, role icon-emoji, string",
+					"count": 2,
+					"examples": [
+						"sgs/icon.emojiChar",
+						"sgs/separator.contentIconEmoji"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:icon-lucide:string",
+					"label": "block settings, role icon-lucide, string",
+					"count": 2,
+					"examples": [
+						"sgs/icon.iconName",
+						"sgs/separator.contentIconName"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:icon-wp-icon:string",
+					"label": "block settings, role icon-wp-icon, string",
+					"count": 2,
+					"examples": [
+						"sgs/icon.wpIconName",
+						"sgs/separator.contentIconWpIcon"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:identity:mode",
+					"label": "block settings, role identity, mode",
+					"count": 1,
+					"examples": [
+						"sgs/icon.iconSource"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:identity:object",
+					"label": "block settings, role identity, object",
+					"count": 1,
+					"examples": [
+						"sgs/nav-drawer-menu.itemTrailingIcons"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:identity:string",
+					"label": "block settings, role identity, string",
+					"count": 6,
+					"examples": [
+						"sgs/cart.iconName",
+						"sgs/notice-banner.iconName",
+						"sgs/notice-banner.iconSource",
+						"sgs/product-card.productName",
+						"sgs/wishlist-link.iconName"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:identity:styling",
+					"label": "block settings, role identity, styling",
+					"count": 2,
+					"examples": [
+						"sgs/icon.iconRotate",
+						"sgs/nav-drawer-menu.itemOrnamentFrames"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:image-alt:string",
+					"label": "block settings, role image-alt, string",
+					"count": 8,
+					"examples": [
+						"sgs/before-after.afterImageAlt",
+						"sgs/before-after.beforeImageAlt",
+						"sgs/decorative-image.imageAlt",
+						"sgs/image-sequence.thumbnailAlt",
+						"sgs/measured-diagram.drawingImageAlt"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:image-object:object",
+					"label": "block settings, role image-object, object",
+					"count": 32,
+					"examples": [
+						"sgs/container.bgVideo",
+						"sgs/container.bgVideoMobile",
+						"sgs/container.bgVideoTablet",
+						"sgs/hero.bgVideo",
+						"sgs/hero.bgVideoMobile"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:image-object:string",
+					"label": "block settings, role image-object, string",
+					"count": 7,
+					"examples": [
+						"sgs/before-after.afterImageUrl",
+						"sgs/before-after.beforeImageUrl",
+						"sgs/decorative-image.imageUrl",
+						"sgs/media.imageUrl",
+						"sgs/media.thumbnail"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:image-object:styling",
+					"label": "block settings, role image-object, styling",
+					"count": 22,
+					"examples": [
+						"sgs/container.backgroundImage",
+						"sgs/container.backgroundImageMobile",
+						"sgs/container.backgroundImageTablet",
+						"sgs/hero.backgroundImage",
+						"sgs/hero.backgroundImageMobile"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:layout:boolean",
+					"label": "block settings, role layout, boolean",
+					"count": 3,
+					"examples": [
+						"sgs/account.showLatestOrder",
+						"sgs/google-rating-badge.fullWidth",
+						"sgs/label.fullWidth"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:layout:integer",
+					"label": "block settings, role layout, integer",
+					"count": 2,
+					"examples": [
+						"sgs/media.imageHeight",
+						"sgs/media.imageWidth"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:layout:mode",
+					"label": "block settings, role layout, mode",
+					"count": 45,
+					"examples": [
+						"sgs/accordion.layout",
+						"sgs/brand-strip.brandOrder",
+						"sgs/business-info.hoursLayout",
+						"sgs/button.sgsChildSizing",
+						"sgs/buybox.buyboxLayout"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:layout:number",
+					"label": "block settings, role layout, number",
+					"count": 8,
+					"examples": [
+						"sgs/feature-grid.minItemWidth",
+						"sgs/measured-diagram.drawingImageHeight",
+						"sgs/measured-diagram.drawingImageWidth",
+						"sgs/nav-bar-menu.itemTextColumns",
+						"sgs/nav-bar-menu.submenuTextColumns"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:layout:object",
+					"label": "block settings, role layout, object",
+					"count": 29,
+					"examples": [
+						"sgs/accordion-item.contentWidth",
+						"sgs/account.contentMaxWidth",
+						"sgs/account.gap",
+						"sgs/account.navLayout",
+						"sgs/account.navWidth"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:layout:string",
+					"label": "block settings, role layout, string",
+					"count": 47,
+					"examples": [
+						"sgs/account.authLayout",
+						"sgs/before-after.heightUnit",
+						"sgs/before-after.maxWidthUnit",
+						"sgs/button.minHeightMobileUnit",
+						"sgs/button.minHeightTabletUnit"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:layout:styling",
+					"label": "block settings, role layout, styling",
+					"count": 671,
+					"examples": [
+						"sgs/accordion-item.maxWidth",
+						"sgs/accordion.alignContent",
+						"sgs/accordion.alignItems",
+						"sgs/accordion.columns",
+						"sgs/accordion.contentPadding"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:link-content:string",
+					"label": "block settings, role link-content, string",
+					"count": 2,
+					"examples": [
+						"sgs/whatsapp-cta.message",
+						"sgs/whatsapp-cta.phoneNumber"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:link-href:array",
+					"label": "block settings, role link-href, array",
+					"count": 1,
+					"examples": [
+						"sgs/social-icons.hiddenLinks"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:link-href:mode",
+					"label": "block settings, role link-href, mode",
+					"count": 1,
+					"examples": [
+						"sgs/icon.linkTarget"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:link-href:string",
+					"label": "block settings, role link-href, string",
+					"count": 12,
+					"examples": [
+						"sgs/button.linkTarget",
+						"sgs/button.url",
+						"sgs/buybox.pickerLabelLinkAxis",
+						"sgs/cart.itemAddOptionsLabel",
+						"sgs/filter-search.taxonomy"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:motion:motion",
+					"label": "block settings, role motion, motion",
+					"count": 967,
+					"examples": [
+						"sgs/accordion-item.sgsParallax",
+						"sgs/accordion-item.sgsParallaxStrength",
+						"sgs/accordion.sgsAnimation",
+						"sgs/accordion.sgsAnimationDelay",
+						"sgs/accordion.sgsAnimationDistance"
+					],
+					"motion": true
+				},
+				{
+					"id": "block-setting:number-css-percent:styling",
+					"label": "block settings, role number-css-percent, styling",
+					"count": 1,
+					"examples": [
+						"sgs/decorative-image.maxWidthPercent"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:number-css-px:string",
+					"label": "block settings, role number-css-px, string",
+					"count": 9,
+					"examples": [
+						"sgs/container.surfaceBlur",
+						"sgs/hero.surfaceBlur",
+						"sgs/mega-panel.surfaceBlur",
+						"sgs/multi-button.surfaceBlur",
+						"sgs/nav-drawer.surfaceBlur"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:number-css-px:styling",
+					"label": "block settings, role number-css-px, styling",
+					"count": 6,
+					"examples": [
+						"sgs/cart.scrimBlur",
+						"sgs/gallery.scrimBlur",
+						"sgs/modal.scrimBlur",
+						"sgs/nav-bar-menu.scrimBlur",
+						"sgs/nav-drawer.scrimBlur"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:numeric-content:number",
+					"label": "block settings, role numeric-content, number",
+					"count": 3,
+					"examples": [
+						"sgs/google-reviews.averageRating",
+						"sgs/google-reviews.reviewCount",
+						"sgs/testimonial.ratingScale"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:position:object",
+					"label": "block settings, role position, object",
+					"count": 2,
+					"examples": [
+						"sgs/site-header.headerFloatInset",
+						"sgs/site-header.zIndex"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:position:styling",
+					"label": "block settings, role position, styling",
+					"count": 2,
+					"examples": [
+						"sgs/decorative-image.zIndex",
+						"sgs/nav-bar-menu.triggerDetachZIndex"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:presence-boolean:boolean",
+					"label": "block settings, role presence-boolean, boolean",
+					"count": 3,
+					"examples": [
+						"sgs/google-reviews.showCardLogo",
+						"sgs/google-reviews.showReviewLink",
+						"sgs/testimonial.verified"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:rating:number",
+					"label": "block settings, role rating, number",
+					"count": 4,
+					"examples": [
+						"sgs/product-card.ratingValue",
+						"sgs/product-card.reviewCount",
+						"sgs/star-rating.rating",
+						"sgs/testimonial.ratingStars"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:rating:string",
+					"label": "block settings, role rating, string",
+					"count": 1,
+					"examples": [
+						"sgs/testimonial.ratingScaleMax"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:scalar-media:mode",
+					"label": "block settings, role scalar-media, mode",
+					"count": 1,
+					"examples": [
+						"sgs/hero.splitMediaType"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:select-from-enum:mode",
+					"label": "block settings, role select-from-enum, mode",
+					"count": 53,
+					"examples": [
+						"sgs/before-after.afterMediaType",
+						"sgs/before-after.beforeMediaType",
+						"sgs/brand-strip.logoLayout",
+						"sgs/business-info.displayType",
+						"sgs/buybox.framingMode"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:select-from-enum:number",
+					"label": "block settings, role select-from-enum, number",
+					"count": 2,
+					"examples": [
+						"sgs/form-field-file.maxSize",
+						"sgs/star-rating.starSize"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:select-from-enum:object",
+					"label": "block settings, role select-from-enum, object",
+					"count": 18,
+					"examples": [
+						"sgs/button.iconShapeSize",
+						"sgs/button.iconSize",
+						"sgs/button.widthType",
+						"sgs/choice-flow.optionMediaSize",
+						"sgs/container.shapeDividerBottomScale"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:select-from-enum:string",
+					"label": "block settings, role select-from-enum, string",
+					"count": 26,
+					"examples": [
+						"sgs/accordion.iconPosition",
+						"sgs/audio.audioMimeType",
+						"sgs/brand-strip.imageEffect",
+						"sgs/button.iconPosition",
+						"sgs/buybox.pickerBandScale"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:select-from-enum:styling",
+					"label": "block settings, role select-from-enum, styling",
+					"count": 171,
+					"examples": [
+						"sgs/accordion.iconSize",
+						"sgs/accordion.writingMode",
+						"sgs/before-after.labelWritingMode",
+						"sgs/before-after.startPosition",
+						"sgs/brand-strip.nameWritingMode"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:spacing-token:styling",
+					"label": "block settings, role spacing-token, styling",
+					"count": 1,
+					"examples": [
+						"sgs/mega-panel.drawerCardSpacing"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:styling:boolean",
+					"label": "block settings, role styling, boolean",
+					"count": 16,
+					"examples": [
+						"sgs/container.shapeDividerBottomFlip",
+						"sgs/container.shapeDividerBottomInvert",
+						"sgs/container.shapeDividerTopFlip",
+						"sgs/container.shapeDividerTopInvert",
+						"sgs/hero.shapeDividerBottomFlip"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:styling:motion",
+					"label": "block settings, role styling, motion",
+					"count": 2,
+					"examples": [
+						"sgs/decorative-image.pathDrawDurationMs",
+						"sgs/decorative-image.pathDrawOnScroll"
+					],
+					"motion": true
+				},
+				{
+					"id": "block-setting:styling:number",
+					"label": "block settings, role styling, number",
+					"count": 3,
+					"examples": [
+						"sgs/nav-bar-menu.collapsePoint",
+						"sgs/responsive-logo.logoSwitchCustomPx",
+						"sgs/table-of-contents.scrollOffset"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:styling:object",
+					"label": "block settings, role styling, object",
+					"count": 2,
+					"examples": [
+						"sgs/decorative-image.decorMedia",
+						"sgs/nav-drawer.anchor"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:styling:string",
+					"label": "block settings, role styling, string",
+					"count": 106,
+					"examples": [
+						"sgs/accordion-item.sgsCustomCss",
+						"sgs/accordion.sgsCustomCss",
+						"sgs/account.sgsCustomCss",
+						"sgs/audio.sgsCustomCss",
+						"sgs/before-after.sgsCustomCss"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:styling:styling",
+					"label": "block settings, role styling, styling",
+					"count": 57,
+					"examples": [
+						"sgs/accordion.headerFontWeightOpen",
+						"sgs/accordion.iconRotation",
+						"sgs/accordion.textIndent",
+						"sgs/brand-strip.logoFit",
+						"sgs/button.liftHover"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:svg:string",
+					"label": "block settings, role svg, string",
+					"count": 12,
+					"examples": [
+						"sgs/before-after.afterSvgContent",
+						"sgs/before-after.beforeSvgContent",
+						"sgs/button.iconSvg",
+						"sgs/container.bgSvgContent",
+						"sgs/hero.bgSvgContent"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:tag-identity:mode",
+					"label": "block settings, role tag-identity, mode",
+					"count": 4,
+					"examples": [
+						"sgs/heading.level",
+						"sgs/icon-list.headingLevel",
+						"sgs/media.mediaType",
+						"sgs/product-faq.headingLevel"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:tag-identity:styling",
+					"label": "block settings, role tag-identity, styling",
+					"count": 1,
+					"examples": [
+						"sgs/product-card.headingLevel"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:technical:array",
+					"label": "block settings, role technical, array",
+					"count": 9,
+					"examples": [
+						"sgs/card-grid.handpickedIds",
+						"sgs/card-grid.productCategories",
+						"sgs/card-grid.productIds",
+						"sgs/card-grid.productTags",
+						"sgs/option-picker.contentImpact"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:technical:boolean",
+					"label": "block settings, role technical, boolean",
+					"count": 4,
+					"examples": [
+						"sgs/accordion.faqSchema",
+						"sgs/star-rating.schemaEnabled",
+						"sgs/testimonial.schemaEnabled",
+						"sgs/trustpilot-reviews.showSchema"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:technical:integer",
+					"label": "block settings, role technical, integer",
+					"count": 2,
+					"examples": [
+						"sgs/filter-search.threshold",
+						"sgs/icon-list.menuRef"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:technical:number",
+					"label": "block settings, role technical, number",
+					"count": 19,
+					"examples": [
+						"sgs/card-grid.categoryTerm",
+						"sgs/card-grid.count",
+						"sgs/card-grid.productLimit",
+						"sgs/card-grid.queryCategory",
+						"sgs/card-grid.queryPostsPerPage"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:technical:object",
+					"label": "block settings, role technical, object",
+					"count": 1,
+					"examples": [
+						"sgs/product-search.maxResults"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:technical:string",
+					"label": "block settings, role technical, string",
+					"count": 92,
+					"examples": [
+						"sgs/button.anchor",
+						"sgs/button.className",
+						"sgs/button.rel",
+						"sgs/button.transitionEasingCustom",
+						"sgs/buybox.pickerBandAxis"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:text-content:number",
+					"label": "block settings, role text-content, number",
+					"count": 1,
+					"examples": [
+						"sgs/nav-drawer-menu.itemMagnetStrength"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:text-content:object",
+					"label": "block settings, role text-content, object",
+					"count": 3,
+					"examples": [
+						"sgs/business-info.separators",
+						"sgs/cart.separators",
+						"sgs/pricing-table.featureSeparators"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:text-content:string",
+					"label": "block settings, role text-content, string",
+					"count": 180,
+					"examples": [
+						"sgs/accordion-item.title",
+						"sgs/account.guestLineText",
+						"sgs/account.noOrdersText",
+						"sgs/account.orderTrackingHeading",
+						"sgs/audio.title"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:text-content:styling",
+					"label": "block settings, role text-content, styling",
+					"count": 2,
+					"examples": [
+						"sgs/button.contentAlign",
+						"sgs/icon.brandName"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:typography:mode",
+					"label": "block settings, role typography, mode",
+					"count": 5,
+					"examples": [
+						"sgs/button.textDecorationHover",
+						"sgs/nav-bar-menu.itemTextAlign",
+						"sgs/nav-bar-menu.itemTextWrap",
+						"sgs/nav-drawer-menu.itemTextAlign",
+						"sgs/nav-drawer-menu.itemTextWrap"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:typography:string",
+					"label": "block settings, role typography, string",
+					"count": 500,
+					"examples": [
+						"sgs/accordion.fontSizeUnit",
+						"sgs/accordion.letterSpacingUnit",
+						"sgs/accordion.lineHeightUnit",
+						"sgs/account.cardDescFontSizeUnit",
+						"sgs/account.cardDescLetterSpacingUnit"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:typography:styling",
+					"label": "block settings, role typography, styling",
+					"count": 1622,
+					"examples": [
+						"sgs/accordion.fontFamily",
+						"sgs/accordion.fontSize",
+						"sgs/accordion.fontStyle",
+						"sgs/accordion.fontWeight",
+						"sgs/accordion.headerFontWeight"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:unclassified:array",
+					"label": "block settings, role unclassified, array",
+					"count": 11,
+					"examples": [
+						"sgs/account.hiddenEndpoints",
+						"sgs/buybox.pickerAlwaysShowAxes",
+						"sgs/choice-flow-question.options",
+						"sgs/choice-flow-result.matchTags",
+						"sgs/language-switch.languages"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:unclassified:integer",
+					"label": "block settings, role unclassified, integer",
+					"count": 4,
+					"examples": [
+						"sgs/choice-flow-result.rateLimit",
+						"sgs/google-rating-badge.compactBelow",
+						"sgs/google-rating-badge.hideBelow",
+						"sgs/google-rating-badge.reviewCount"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:unclassified:number",
+					"label": "block settings, role unclassified, number",
+					"count": 25,
+					"examples": [
+						"sgs/audio.reactiveSensitivity",
+						"sgs/brand-strip.brandMaxItems",
+						"sgs/container.surfaceSaturate",
+						"sgs/diagram-dimension.extOvershoot",
+						"sgs/diagram-dimension.extReach"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:unclassified:object",
+					"label": "block settings, role unclassified, object",
+					"count": 21,
+					"examples": [
+						"sgs/account.cardDescriptions",
+						"sgs/account.navIcons",
+						"sgs/account.statusStepLabels",
+						"sgs/card-grid.separators",
+						"sgs/choice-flow.headerLogo"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:unclassified:string",
+					"label": "block settings, role unclassified, string",
+					"count": 73,
+					"examples": [
+						"sgs/account.greeting",
+						"sgs/account.latestOrderHeading",
+						"sgs/account.parcelTrackingLabel",
+						"sgs/account.shopLinkLabel",
+						"sgs/account.viewOrderLabel"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:visual:boolean",
+					"label": "block settings, role visual, boolean",
+					"count": 33,
+					"examples": [
+						"sgs/container.sgsHoverBorderAccent",
+						"sgs/container.sgsHoverGrayscale",
+						"sgs/container.sgsHoverImageZoom",
+						"sgs/container.sgsHoverTilt3D",
+						"sgs/google-reviews.sgsHoverBorderAccent"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:visual:mode",
+					"label": "block settings, role visual, mode",
+					"count": 12,
+					"examples": [
+						"sgs/container.backgroundAttachment",
+						"sgs/container.sgsHoverScalePreset",
+						"sgs/google-reviews.sgsHoverScalePreset",
+						"sgs/hero.backgroundAttachment",
+						"sgs/info-box.sgsHoverScalePreset"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:visual:number",
+					"label": "block settings, role visual, number",
+					"count": 30,
+					"examples": [
+						"sgs/container.sgsHoverScale",
+						"sgs/container.sgsHoverZoom",
+						"sgs/google-reviews.sgsHoverScale",
+						"sgs/google-reviews.sgsHoverZoom",
+						"sgs/info-box.sgsHoverScale"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:visual:object",
+					"label": "block settings, role visual, object",
+					"count": 7,
+					"examples": [
+						"sgs/brand-strip.separators",
+						"sgs/container.separators",
+						"sgs/icon-list.separators",
+						"sgs/nav-bar-menu.separators",
+						"sgs/nav-bar-menu.submenuSeparators"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:visual:string",
+					"label": "block settings, role visual, string",
+					"count": 22,
+					"examples": [
+						"sgs/container.sgsHoverShadow",
+						"sgs/container.sgsHoverShadowCustom",
+						"sgs/container.sgsHoverZoomStyle",
+						"sgs/google-rating-badge.shadow",
+						"sgs/google-reviews.sgsHoverShadow"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:visual:styling",
+					"label": "block settings, role visual, styling",
+					"count": 415,
+					"examples": [
+						"sgs/accordion-item.borderRadius",
+						"sgs/accordion-item.borderStyle",
+						"sgs/accordion-item.borderWidth",
+						"sgs/accordion.borderRadius",
+						"sgs/accordion.borderStyle"
+					],
+					"motion": false
+				}
+			]
 		},
 		"fx": {
 			"side": "framework",
 			"source": "db",
-			"status": "absent",
-			"entries": []
+			"status": "ok",
+			"entries": [
+				{
+					"id": "fx:ambient-float",
+					"label": "fx effect ambient-float (V, load,visible)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:carousel-loop",
+					"label": "fx effect carousel-loop (V, load)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:cursor-field",
+					"label": "fx effect cursor-field (V, hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:curtain",
+					"label": "fx effect curtain (V, open)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:draggable",
+					"label": "fx effect draggable (G, load)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:draw",
+					"label": "fx effect draw (G, scroll,load,hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:flip",
+					"label": "fx effect flip (G, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:follow-pointer",
+					"label": "fx effect follow-pointer (V, hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:generative-background",
+					"label": "fx effect generative-background (W, load)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:glare",
+					"label": "fx effect glare (V, hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:grid-dots",
+					"label": "fx effect grid-dots (V, hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:horizontal-panel",
+					"label": "fx effect horizontal-panel (G, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:image-sequence",
+					"label": "fx effect image-sequence (G, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:ken-burns",
+					"label": "fx effect ken-burns (V, load,visible)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:lottie",
+					"label": "fx effect lottie (H, load,visible,hover,scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:magnet",
+					"label": "fx effect magnet (V, hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:marquee",
+					"label": "fx effect marquee (V, load,visible)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:morph",
+					"label": "fx effect morph (G, scroll,load,hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:motion-path",
+					"label": "fx effect motion-path (G, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:page-transitions",
+					"label": "fx effect page-transitions (V, load)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:parallax",
+					"label": "fx effect parallax (V, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:particles",
+					"label": "fx effect particles (V, hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:pin-scrub",
+					"label": "fx effect pin-scrub (G, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:ripple",
+					"label": "fx effect ripple (V, pointerdown,click)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:scramble",
+					"label": "fx effect scramble (G, scroll,load,hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:scroll-progress",
+					"label": "fx effect scroll-progress (V, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:scroll-smoother",
+					"label": "fx effect scroll-smoother (H, scroll)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:scrub",
+					"label": "fx effect scrub (G, scroll,load,hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:sheen",
+					"label": "fx effect sheen (V, hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:split-reveal",
+					"label": "fx effect split-reveal (G, scroll,load,hover)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:surface-treatment",
+					"label": "fx effect surface-treatment (W, load)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:svg-loop",
+					"label": "fx effect svg-loop (V, load,visible)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				},
+				{
+					"id": "fx:wave-gradient",
+					"label": "fx effect wave-gradient (W, load)",
+					"count": 1,
+					"examples": [],
+					"motion": true
+				}
+			]
 		},
 		"motion-preset": {
 			"side": "framework",
 			"source": "db",
-			"status": "absent",
-			"entries": []
+			"status": "ok",
+			"entries": [
+				{
+					"id": "motion-preset:effects:ambient-float",
+					"label": "effects presets, family ambient-float",
+					"count": 3,
+					"examples": [
+						"ambient-float-bold",
+						"ambient-float-standard",
+						"ambient-float-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:cursor-field",
+					"label": "effects presets, family cursor-field",
+					"count": 3,
+					"examples": [
+						"cursor-field-bold",
+						"cursor-field-standard",
+						"cursor-field-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:draw-hover",
+					"label": "effects presets, family draw-hover",
+					"count": 3,
+					"examples": [
+						"draw-hover-bold",
+						"draw-hover-standard",
+						"draw-hover-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:ken-burns",
+					"label": "effects presets, family ken-burns",
+					"count": 3,
+					"examples": [
+						"ken-burns-bold",
+						"ken-burns-standard",
+						"ken-burns-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:morph",
+					"label": "effects presets, family morph",
+					"count": 3,
+					"examples": [
+						"morph-bold",
+						"morph-standard",
+						"morph-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:motion-path",
+					"label": "effects presets, family motion-path",
+					"count": 3,
+					"examples": [
+						"motion-path-bold",
+						"motion-path-standard",
+						"motion-path-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:parallax",
+					"label": "effects presets, family parallax",
+					"count": 3,
+					"examples": [
+						"parallax-bold",
+						"parallax-standard",
+						"parallax-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:particles",
+					"label": "effects presets, family particles",
+					"count": 3,
+					"examples": [
+						"particles-bold",
+						"particles-standard",
+						"particles-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:pin-scrub",
+					"label": "effects presets, family pin-scrub",
+					"count": 3,
+					"examples": [
+						"pin-scrub-bold",
+						"pin-scrub-standard",
+						"pin-scrub-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:ripple",
+					"label": "effects presets, family ripple",
+					"count": 3,
+					"examples": [
+						"ripple-bold",
+						"ripple-standard",
+						"ripple-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:scramble-hover",
+					"label": "effects presets, family scramble-hover",
+					"count": 3,
+					"examples": [
+						"scramble-hover-bold",
+						"scramble-hover-standard",
+						"scramble-hover-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:scrub",
+					"label": "effects presets, family scrub",
+					"count": 3,
+					"examples": [
+						"scrub-bold",
+						"scrub-standard",
+						"scrub-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:effects:svg-loop",
+					"label": "effects presets, family svg-loop",
+					"count": 3,
+					"examples": [
+						"svg-loop-bold",
+						"svg-loop-standard",
+						"svg-loop-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:draw",
+					"label": "entrance presets, family draw",
+					"count": 3,
+					"examples": [
+						"draw-bold",
+						"draw-standard",
+						"draw-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-blur-in",
+					"label": "entrance presets, family entrance-blur-in",
+					"count": 4,
+					"examples": [
+						"entrance-blur-in",
+						"entrance-blur-in-bold",
+						"entrance-blur-in-standard",
+						"entrance-blur-in-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-bounce-in",
+					"label": "entrance presets, family entrance-bounce-in",
+					"count": 4,
+					"examples": [
+						"entrance-bounce-in",
+						"entrance-bounce-in-bold",
+						"entrance-bounce-in-standard",
+						"entrance-bounce-in-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-fade-down",
+					"label": "entrance presets, family entrance-fade-down",
+					"count": 4,
+					"examples": [
+						"entrance-fade-down",
+						"entrance-fade-down-bold",
+						"entrance-fade-down-standard",
+						"entrance-fade-down-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-fade-in",
+					"label": "entrance presets, family entrance-fade-in",
+					"count": 1,
+					"examples": [
+						"entrance-fade-in"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-fade-left",
+					"label": "entrance presets, family entrance-fade-left",
+					"count": 4,
+					"examples": [
+						"entrance-fade-left",
+						"entrance-fade-left-bold",
+						"entrance-fade-left-standard",
+						"entrance-fade-left-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-fade-right",
+					"label": "entrance presets, family entrance-fade-right",
+					"count": 4,
+					"examples": [
+						"entrance-fade-right",
+						"entrance-fade-right-bold",
+						"entrance-fade-right-standard",
+						"entrance-fade-right-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-fade-up",
+					"label": "entrance presets, family entrance-fade-up",
+					"count": 4,
+					"examples": [
+						"entrance-fade-up",
+						"entrance-fade-up-bold",
+						"entrance-fade-up-standard",
+						"entrance-fade-up-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-reveal-up",
+					"label": "entrance presets, family entrance-reveal-up",
+					"count": 1,
+					"examples": [
+						"entrance-reveal-up"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-rotate-in",
+					"label": "entrance presets, family entrance-rotate-in",
+					"count": 4,
+					"examples": [
+						"entrance-rotate-in",
+						"entrance-rotate-in-bold",
+						"entrance-rotate-in-standard",
+						"entrance-rotate-in-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-scale-in",
+					"label": "entrance presets, family entrance-scale-in",
+					"count": 4,
+					"examples": [
+						"entrance-scale-in",
+						"entrance-scale-in-bold",
+						"entrance-scale-in-standard",
+						"entrance-scale-in-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-scale-out",
+					"label": "entrance presets, family entrance-scale-out",
+					"count": 4,
+					"examples": [
+						"entrance-scale-out",
+						"entrance-scale-out-bold",
+						"entrance-scale-out-standard",
+						"entrance-scale-out-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-slide-down",
+					"label": "entrance presets, family entrance-slide-down",
+					"count": 4,
+					"examples": [
+						"entrance-slide-down",
+						"entrance-slide-down-bold",
+						"entrance-slide-down-standard",
+						"entrance-slide-down-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-slide-left",
+					"label": "entrance presets, family entrance-slide-left",
+					"count": 4,
+					"examples": [
+						"entrance-slide-left",
+						"entrance-slide-left-bold",
+						"entrance-slide-left-standard",
+						"entrance-slide-left-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-slide-right",
+					"label": "entrance presets, family entrance-slide-right",
+					"count": 4,
+					"examples": [
+						"entrance-slide-right",
+						"entrance-slide-right-bold",
+						"entrance-slide-right-standard",
+						"entrance-slide-right-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:entrance-slide-up",
+					"label": "entrance presets, family entrance-slide-up",
+					"count": 4,
+					"examples": [
+						"entrance-slide-up",
+						"entrance-slide-up-bold",
+						"entrance-slide-up-standard",
+						"entrance-slide-up-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-bounce",
+					"label": "entrance presets, family keyframe-bounce",
+					"count": 1,
+					"examples": [
+						"keyframe-bounce"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-fade-in",
+					"label": "entrance presets, family keyframe-fade-in",
+					"count": 1,
+					"examples": [
+						"keyframe-fade-in"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-fade-out",
+					"label": "entrance presets, family keyframe-fade-out",
+					"count": 1,
+					"examples": [
+						"keyframe-fade-out"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-fade-up",
+					"label": "entrance presets, family keyframe-fade-up",
+					"count": 1,
+					"examples": [
+						"keyframe-fade-up"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-pulse",
+					"label": "entrance presets, family keyframe-pulse",
+					"count": 1,
+					"examples": [
+						"keyframe-pulse"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-slide-up",
+					"label": "entrance presets, family keyframe-slide-up",
+					"count": 1,
+					"examples": [
+						"keyframe-slide-up"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-spin",
+					"label": "entrance presets, family keyframe-spin",
+					"count": 1,
+					"examples": [
+						"keyframe-spin"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:keyframe-zoom-in",
+					"label": "entrance presets, family keyframe-zoom-in",
+					"count": 1,
+					"examples": [
+						"keyframe-zoom-in"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:nav-panel-item",
+					"label": "entrance presets, family nav-panel-item",
+					"count": 3,
+					"examples": [
+						"nav-panel-item-bold",
+						"nav-panel-item-standard",
+						"nav-panel-item-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:scramble",
+					"label": "entrance presets, family scramble",
+					"count": 3,
+					"examples": [
+						"scramble-bold",
+						"scramble-standard",
+						"scramble-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:split-reveal",
+					"label": "entrance presets, family split-reveal",
+					"count": 3,
+					"examples": [
+						"split-reveal-bold",
+						"split-reveal-standard",
+						"split-reveal-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:state-burger-morph",
+					"label": "entrance presets, family state-burger-morph",
+					"count": 1,
+					"examples": [
+						"state-burger-morph"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:state-count-pop",
+					"label": "entrance presets, family state-count-pop",
+					"count": 1,
+					"examples": [
+						"state-count-pop"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:state-icon-turn",
+					"label": "entrance presets, family state-icon-turn",
+					"count": 1,
+					"examples": [
+						"state-icon-turn"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:state-result-scale-in",
+					"label": "entrance presets, family state-result-scale-in",
+					"count": 1,
+					"examples": [
+						"state-result-scale-in"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:state-shake",
+					"label": "entrance presets, family state-shake",
+					"count": 1,
+					"examples": [
+						"state-shake"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:entrance:state-step-slide",
+					"label": "entrance presets, family state-step-slide",
+					"count": 1,
+					"examples": [
+						"state-step-slide"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:follow-pointer",
+					"label": "hover presets, family follow-pointer",
+					"count": 4,
+					"examples": [
+						"follow-pointer-bold",
+						"follow-pointer-standard",
+						"follow-pointer-subtle",
+						"hover-follow-pointer"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-border-accent",
+					"label": "hover presets, family hover-border-accent",
+					"count": 1,
+					"examples": [
+						"hover-border-accent"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-grayscale-to-colour",
+					"label": "hover presets, family hover-grayscale-to-colour",
+					"count": 1,
+					"examples": [
+						"hover-grayscale-to-colour"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-indent",
+					"label": "hover presets, family hover-indent",
+					"count": 1,
+					"examples": [
+						"hover-indent"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-lift",
+					"label": "hover presets, family hover-lift",
+					"count": 4,
+					"examples": [
+						"hover-lift",
+						"hover-lift-bold",
+						"hover-lift-standard",
+						"hover-lift-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-none",
+					"label": "hover presets, family hover-none",
+					"count": 1,
+					"examples": [
+						"hover-none"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-rotate",
+					"label": "hover presets, family hover-rotate",
+					"count": 4,
+					"examples": [
+						"hover-rotate",
+						"hover-rotate-bold",
+						"hover-rotate-standard",
+						"hover-rotate-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-scale",
+					"label": "hover presets, family hover-scale",
+					"count": 5,
+					"examples": [
+						"hover-image-zoom",
+						"hover-scale",
+						"hover-scale-bold",
+						"hover-scale-standard",
+						"hover-scale-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:hover-translate",
+					"label": "hover presets, family hover-translate",
+					"count": 4,
+					"examples": [
+						"hover-translate",
+						"hover-translate-bold",
+						"hover-translate-standard",
+						"hover-translate-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:magnet",
+					"label": "hover presets, family magnet",
+					"count": 3,
+					"examples": [
+						"magnet-bold",
+						"magnet-standard",
+						"magnet-subtle"
+					],
+					"motion": true
+				},
+				{
+					"id": "motion-preset:hover:sheen",
+					"label": "hover presets, family sheen",
+					"count": 3,
+					"examples": [
+						"sheen-bold",
+						"sheen-standard",
+						"sheen-subtle"
+					],
+					"motion": true
+				}
+			]
 		},
 		"sgs-support": {
 			"side": "framework",
