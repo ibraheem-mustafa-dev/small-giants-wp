@@ -185,6 +185,8 @@ function readFocused() {
 			// A G2 element on a dark ground paints its core in the light inner token (focus.css).
 			return g2.closest( '.sgs-on-dark' ) ? 'inner' : 'ink';
 		} )(),
+		// A fixture stop may name the colour its section's own tokens must give the ring (data-focus-expect-ring).
+		expectRing: target.dataset.focusExpectRing || null,
 	};
 	return {
 		tokens,

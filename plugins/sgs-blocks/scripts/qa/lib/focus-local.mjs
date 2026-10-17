@@ -8,6 +8,9 @@
  * (`data-focus-assert="ring"`), a title-link card (an `a.sgs-focus-source` with a stretched `::after` overlay inside an
  * `.sgs-focus-card`) whose ring must wrap the card and leave the link bare, and the same card with its own
  * `overflow:hidden`, an `sgs-focus--inset` ring and an `overflow:hidden` parent, which the clip test must not flag.
+ * A fifth block carries a section's own tokens (two more EXTRA_STOPS, `data-focus-expect-ring`): a section that sets
+ * `--sgs-focus-ring` itself, and an `sgs-on-light` section that sets its own accent preset, each of whose buttons must
+ * ring in that section's colour, not the site default.
  *
  * @package SGS\Blocks
  */
@@ -17,7 +20,8 @@ import { summarise } from './focus-probe-lib.mjs';
 import { tabThrough } from './focus-measure.mjs';
 
 export const CONTROLS_PER_GROUND = 9;
-export const EXTRA_STOPS = 3;
+export const EXTRA_STOPS = 5;
+const SECTION_RING = 'rgb(180, 35, 24)';
 export const GROUNDS = [
 	{ key: 'light', cls: 'sgs-on-light', css: 'background:#ffffff;color:#0b1020' },
 	{ key: 'dark', cls: 'sgs-on-dark', css: 'background:#101828;color:#ffffff' },
@@ -47,11 +51,18 @@ export function fixtureHtml( focusCss ) {
 	<div class="cardwrap"><article class="card sgs-focus-card"><p>Product title-link card</p><a class="sgs-focus-source cardlink" href="#card-plain">Card title link</a></article></div>
 	<div class="cardclip"><article class="card card-clipped sgs-focus-card sgs-focus--inset"><p>Overflow-hidden card</p><a class="sgs-focus-source cardlink" href="#card-clipped">Clipped card title link</a></article></div>
 </section>`;
+	const ownTokens = `
+<section class="g" data-ground="own-ring">
+	<a class="b b-fill" data-focus-expect-ring="${ SECTION_RING }" href="#own-ring">Section ring token</a>
+</section>
+<section class="g sgs-on-light" data-ground="own-accent">
+	<a class="b b-fill" data-focus-expect-ring="${ SECTION_RING }" href="#own-accent">Section accent preset</a>
+</section>`;
 	return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--wp--preset--color--surface:#ffffff;--wp--preset--color--text:#0b1020;--wp--preset--color--accent:#0e7c86;--wp--preset--color--primary:#1f3a5f;--wp--preset--color--accent-light:#7ad0d8}
 body{margin:0;font:16px/1.4 system-ui,sans-serif}
-${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffffff' }, { key: 'cards', css: 'background:#ffffff;color:#0b1020' } ] ).map( ( g ) => `[data-ground="${ g.key }"]{${ g.css }}` ).join( ' ' ) }
+${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffffff' }, { key: 'cards', css: 'background:#ffffff;color:#0b1020' }, { key: 'own-ring', css: `background:#ffffff;color:#0b1020;--sgs-focus-ring:${ SECTION_RING }` }, { key: 'own-accent', css: `background:#ffffff;color:#0b1020;--wp--preset--color--accent:${ SECTION_RING }` } ] ).map( ( g ) => `[data-ground="${ g.key }"]{${ g.css }}` ).join( ' ' ) }
 .g{padding:28px 24px;display:flex;flex-wrap:wrap;gap:28px;align-items:center}
 .b{font:inherit;padding:10px 18px;border:2px solid transparent;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
 .b-fill{background:#0e7c86;color:#ffffff;border-width:0}
@@ -77,7 +88,7 @@ ${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffff
 .cardclip{overflow:hidden;display:inline-block}
 </style>
 <style id="focus-under-test">${ focusCss }</style>
-</head><body>${ GROUNDS.map( ground ).join( '' ) }${ darkDuotone }${ extras }</body></html>`;
+</head><body>${ GROUNDS.map( ground ).join( '' ) }${ darkDuotone }${ extras }${ ownTokens }</body></html>`;
 }
 
 /** The deliberately bad CSS for the negative control: a 1px outline in the background's own colour, no shadow. */

@@ -210,8 +210,9 @@ export const isExempt = ( s ) => s.kinds.inset || s.kinds.signature;
 /**
  * Judge one stop. Returns the list of failure strings (empty when the stop passes). Rules: contrast under 3 (when
  * measured), clipped and not inset, radius at rest differs from radius on focus, and, in forced-colours mode, a missing
- * Highlight outline, and token-mismatch (the computed outline colour or the box-shadow hairline is not the resolved
- * --sgs-focus-* token for the stop). An obscured stop (something else sits over its centre) is reported, never failed on contrast.
+ * Highlight outline, token-mismatch (the computed outline colour or the box-shadow hairline is not the resolved
+ * --sgs-focus-* token for the stop), and a section token ignored (a stop naming its section's ring colour through
+ * data-focus-expect-ring paints another). An obscured stop (something else sits over its centre) is reported, never failed on contrast.
  */
 export function judgeStop( s, mode ) {
 	const fails = [];
@@ -233,6 +234,10 @@ export function judgeStop( s, mode ) {
 	if ( ! mode.forcedColors ) {
 		const tokens = judgeTokens( s );
 		if ( tokens.status === 'mismatch' ) fails.push( `token-mismatch: ${ tokens.detail }` );
+		// A section's own tokens re-colour the focus look: the ring is the colour the stop names, not the site default.
+		if ( s.tokens && s.tokens.expectRing && ! sameColour( parseColour( s.outline.colour ), parseColour( s.tokens.expectRing ) ) ) {
+			fails.push( `section token ignored: outline-color ${ s.outline.colour } is not the section's own ${ s.tokens.expectRing }` );
+		}
 	}
 	if ( s.clip.clipped && ! s.kinds.inset ) fails.push( `outline clipped by ${ s.clip.by }` );
 	if ( s.radiusRest !== s.radius ) fails.push( `radius ${ s.radiusRest } -> ${ s.radius } on focus` );
@@ -375,6 +380,11 @@ export function selfTest() {
 	check( 'tokens: undefined tokens judge nothing', judgeStop( tokenStop( { outline: ringOutline( rgb( 1, 2, 3 ) ), tokens: { defined: false } } ), mode ).length === 0 );
 	check( 'tokens: the run says "tokens not defined" when no stop has them', summarise( [ tokenStop( { tokens: { defined: false } } ) ], mode ).tokenStatus === 'tokens not defined' );
 	check( 'tokens: the run counts checked stops when they exist', summarise( [ tokenStop( {} ), tokenStop( {} ) ], mode ).tokenStatus === 'token match checked on 2 of 2 stops' );
+	const red = rgb( 180, 35, 24 );
+	const sectionStop = ( colour ) => tokenStop( { outline: ringOutline( colour ), tokens: tok( { ring: colour, expectRing: red } ) } );
+	check( 'section tokens: a ring in the section own colour passes', judgeStop( sectionStop( red ), mode ).length === 0 );
+	const ignored = judgeStop( sectionStop( rgb( 190, 123, 19 ) ), mode );
+	check( 'section tokens: a ring in the site default fails', ignored.length === 1 && ignored[ 0 ].startsWith( 'section token ignored' ) );
 	check( 'tokens: forced colours skips the token match', judgeStop( tokenStop( { forced: { ok: true }, outline: ringOutline( rgb( 0, 0, 0 ) ) } ), { forcedColors: true } ).length === 0 );
 	// Sample geometry: inset stops read the fill inside the ring; fractional rects snap to whole pixels.
 	const inset = samplePlan( { x: 100, y: 100, width: 200, height: 40 }, 4, { width: 2, offset: -2 }, { inset: true, spread: 4 } );
