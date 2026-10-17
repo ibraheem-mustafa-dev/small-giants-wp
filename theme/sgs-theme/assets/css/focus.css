@@ -93,6 +93,34 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 	outline-style: none;
 }
 
+/* Without :has() (Firefox before 121) the selector list above is invalid and the browser drops the whole rule, so this
+   branch restates the arms that need no :has(): the element, the adjacent proxy, the editor preview, and a card's own
+   focus source, which rings itself because no card ancestor can. The scoped proxy and the card ring need :has(). */
+@supports not selector(:has(*)) {
+	:focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .components-button, [class*="block-editor-"]), [tabindex="-1"], .sgs-focus-source, input[type="range"]),
+	.sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
+	.sgs-focus-card .sgs-focus-source:focus-visible:not(#wpadminbar *),
+	.sgs-focus-preview:not(#wpadminbar *) {
+		outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
+		outline-offset: var(--sgs-focus-offset, var(--sgs-focus-width));
+		box-shadow:
+			var(--sgs-focus-halo,
+				0 0 0 var(--sgs-focus-offset, var(--sgs-focus-width)) var(--sgs-focus-inner),
+				0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) 55%, transparent),
+				0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) 30%, transparent)),
+			var(--sgs-focus-under, 0 0 #0000);
+	}
+	@media (forced-colors: active) {
+		:focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .components-button, [class*="block-editor-"]), [tabindex="-1"], .sgs-focus-source, input[type="range"]),
+		.sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
+		.sgs-focus-card .sgs-focus-source:focus-visible:not(#wpadminbar *),
+		.sgs-focus-preview:not(#wpadminbar *) {
+			outline: var(--sgs-focus-width) solid Highlight;
+			box-shadow: none;
+		}
+	}
+}
+
 /* Browsers without color-mix(): the core and the hairline, no bloom. */
 @supports not (color: color-mix(in srgb, red 50%, transparent)) {
 	:root, .sgs-on-light, .sgs-on-dark { --sgs-focus-near: transparent; --sgs-focus-far: transparent; }
@@ -101,14 +129,16 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 
 /* 3. G3 signature: a G2 core plus a rotating conic border in the client's own colours (opt-in per button). */
 .sgs-focus--signature { position: relative; }
-.sgs-focus--signature:focus-visible:not(#wpadminbar *) {
+.sgs-focus--signature:focus-visible:not(#wpadminbar *),
+.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *) {
 	--sgs-focus-ring: var(--sgs-focus-ink);
 	--sgs-focus-near: var(--sgs-focus-sig-b);
 	--sgs-focus-far: var(--sgs-focus-sig-a);
 }
 @supports (mask-composite: exclude) {
 	/* Anchored to the host's border box: the band runs from 2x to 3x the width outside it, beyond the ring. */
-	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before {
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before,
+	.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)::before {
 		content: "";
 		position: absolute;
 		inset: calc(var(--sgs-focus-width) * -3 - var(--sgs-focus-host-border, 0px));
@@ -124,7 +154,8 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 
 /* 4. Preferences. */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before { animation: none; }
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before,
+	.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)::before { animation: none; }
 }
 @media (prefers-contrast: more) {
 	:root, .sgs-on-light, .sgs-on-dark, .sgs-container--has-bg-image, .sgs-container--has-bg-video, .sgs-focus--duotone {
@@ -140,8 +171,10 @@ input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
 		--sgs-focus-near: transparent;
 		--sgs-focus-far: transparent;
 	}
-	.sgs-focus--signature:focus-visible:not(#wpadminbar *) { --sgs-focus-near: transparent; --sgs-focus-far: transparent; }
-	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before { display: none; }
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *),
+	.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *) { --sgs-focus-near: transparent; --sgs-focus-far: transparent; }
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before,
+	.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)::before { display: none; }
 }
 /* Forced colours: every arm repeated with its own selector, so equal weight and later source order paint a solid
    Highlight core and drop the shadows. */

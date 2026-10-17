@@ -738,7 +738,7 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 		<?php if ( $has_video_slot ) : ?>
 			<button
 				type="button"
-				class="wp-block-sgs-before-after__video-toggle"
+				class="wp-block-sgs-before-after__video-toggle sgs-focus--duotone"
 				data-sgs-before-after-video-toggle
 				aria-pressed="false"
 				aria-label="<?php esc_attr_e( 'Play comparison videos', 'sgs-blocks' ); ?>"

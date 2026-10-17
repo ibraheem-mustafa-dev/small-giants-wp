@@ -286,7 +286,7 @@ function insert_block_link_overlay(
 		}
 
 		$overlay_html = sprintf(
-			'<a class="sgs-block-link-overlay" href="%s" aria-label="%s"%s></a>',
+			'<a class="sgs-block-link-overlay sgs-focus--inset" href="%s" aria-label="%s"%s></a>',
 			esc_url( $block_link ),
 			esc_attr( $link_label ),
 			$target_attr

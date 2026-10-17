@@ -11,6 +11,9 @@
  * A fifth block carries a section's own tokens (two more EXTRA_STOPS, `data-focus-expect-ring`): a section that sets
  * `--sgs-focus-ring` itself, and an `sgs-on-light` section that sets its own accent preset, each of whose buttons must
  * ring in that section's colour, not the site default.
+ * A sixth block holds a signature button that is never focused and carries `sgs-focus-preview` (the editor's Focus look
+ * toggle, `tabindex="-1"` so Tab skips it): its `::before` must paint the conic band and spin it, or hold no animation
+ * under reduced motion, or be hidden under forced colours (`checkSignaturePreview`).
  *
  * @package SGS\Blocks
  */
@@ -45,6 +48,10 @@ export function fixtureHtml( focusCss ) {
 	const darkDuotone = `
 <section class="g sgs-on-dark" data-ground="dark-duotone">
 	<a class="b b-fill sgs-focus--duotone" data-focus-assert="ring" href="#dark-duotone">Duotone on dark</a>
+</section>`;
+	const preview = `
+<section class="g sgs-on-light" data-ground="preview">
+	<button type="button" tabindex="-1" id="sig-preview" class="b b-fill sgs-focus--signature sgs-focus-preview">Signature preview</button>
 </section>`;
 	const extras = `
 <section class="g sgs-on-light" data-ground="cards">
@@ -88,7 +95,7 @@ ${ GROUNDS.concat( [ { key: 'dark-duotone', css: 'background:#101828;color:#ffff
 .cardclip{overflow:hidden;display:inline-block}
 </style>
 <style id="focus-under-test">${ focusCss }</style>
-</head><body>${ GROUNDS.map( ground ).join( '' ) }${ darkDuotone }${ extras }${ ownTokens }</body></html>`;
+</head><body>${ GROUNDS.map( ground ).join( '' ) }${ darkDuotone }${ extras }${ ownTokens }${ preview }</body></html>`;
 }
 
 /** The deliberately bad CSS for the negative control: a 1px outline in the background's own colour, no shadow. */
@@ -97,6 +104,26 @@ export const BAD_CSS = `
 .sgs-on-dark :focus-visible{outline:1px solid #101828;box-shadow:none}
 .sgs-container--has-bg-image :focus-visible{outline:1px solid #808080;box-shadow:none}
 `;
+
+/**
+ * The unfocused `sgs-focus-preview` signature button must show the band: a conic `::before` that spins (no animation under
+ * reduced motion, no band under forced colours). Returns a list of problems.
+ */
+export async function checkSignaturePreview( page, mode ) {
+	const got = await page.evaluate( () => {
+		const el = document.getElementById( 'sig-preview' );
+		const before = getComputedStyle( el, '::before' );
+		return { image: before.backgroundImage, animation: before.animationName, display: before.display, content: before.content };
+	} );
+	if ( mode.forcedColors ) {
+		return 'none' === got.display || 'none' === got.content ? [] : [ `signature preview: the band shows under forced colours (display ${ got.display })` ];
+	}
+	const problems = [];
+	if ( ! /conic-gradient/.test( got.image ) ) problems.push( `signature preview: ::before has no conic band (${ got.image })` );
+	const want = mode.reducedMotion ? 'none' : 'sgs-focus-spin';
+	if ( want !== got.animation ) problems.push( `signature preview: ::before animation-name is ${ got.animation }, want ${ want }` );
+	return problems;
+}
 
 /**
  * Tab through the fixture in one engine at each width. Returns the per-width results and an `ok` flag that is false
@@ -113,6 +140,7 @@ export async function runLocalEngine( browser, engine, cssText, opts, scratch ) 
 		} );
 		const page = await context.newPage();
 		await page.setContent( fixtureHtml( cssText ) );
+		const previewProblems = await checkSignaturePreview( page, mode );
 		const run = await tabThrough( page, {
 			maxStops: opts.maxStops,
 			tabKey: engine === 'webkit' ? 'programmatic' : 'Tab',
@@ -124,6 +152,7 @@ export async function runLocalEngine( browser, engine, cssText, opts, scratch ) 
 		} );
 		await context.close();
 		const summary = summarise( run.stops, mode );
+		summary.fails.push( ...previewProblems );
 		if ( run.capHit ) summary.fails.push( `STOP CAP HIT at ${ width }px: ${ opts.maxStops } stops measured and more focusable elements follow; raise --max-stops` );
 		const expected = GROUNDS.length * CONTROLS_PER_GROUND + EXTRA_STOPS;
 		if ( run.stops.length < expected ) {

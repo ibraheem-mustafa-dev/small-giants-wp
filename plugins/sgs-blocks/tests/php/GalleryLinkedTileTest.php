@@ -109,11 +109,11 @@ final class GalleryLinkedTileTest extends TestCase {
 			)
 		);
 		$html = $out['html'];
-		$this->assertStringContainsString( '<a class="sgs-gallery__item-link" href="/brands/a/">', $html );
-		$this->assertMatchesRegularExpression( '#<a class="sgs-gallery__item-link" href="https://example.com/b" target="_blank" rel="noopener noreferrer" aria-label="Brand B range \(opens in a new tab\)">#', $html );
+		$this->assertStringContainsString( '<a class="sgs-gallery__item-link sgs-focus--inset" href="/brands/a/">', $html );
+		$this->assertMatchesRegularExpression( '#<a class="sgs-gallery__item-link sgs-focus--inset" href="https://example.com/b" target="_blank" rel="noopener noreferrer" aria-label="Brand B range \(opens in a new tab\)">#', $html );
 		$this->assertSame( 2, substr_count( $html, 'sgs-gallery__item--linked' ) );
 		// Only the two unlinked items keep a lightbox button, numbered from 0 within the lightbox list.
-		$this->assertSame( 2, substr_count( $html, 'class="sgs-gallery__item-btn"' ) );
+		$this->assertSame( 2, substr_count( $html, 'class="sgs-gallery__item-btn sgs-focus--inset"' ) );
 		$this->assertStringContainsString( '{&quot;currentIndex&quot;:0}', $html );
 		$this->assertStringContainsString( '{&quot;currentIndex&quot;:1}', $html );
 		$this->assertStringNotContainsString( '{&quot;currentIndex&quot;:2}', $html );
@@ -137,7 +137,7 @@ final class GalleryLinkedTileTest extends TestCase {
 		);
 		$html = $out['html'];
 		// A hidden (decorative) image leaves the link no visible name, so the link names itself.
-		$this->assertMatchesRegularExpression( '#<a class="sgs-gallery__item-link" href="https://brand.example/range/" aria-label="brand.example">#', $html );
+		$this->assertMatchesRegularExpression( '#<a class="sgs-gallery__item-link sgs-focus--inset" href="https://brand.example/range/" aria-label="brand.example">#', $html );
 	}
 
 	public function test_a_link_with_an_unsafe_scheme_is_refused(): void {
@@ -148,7 +148,7 @@ final class GalleryLinkedTileTest extends TestCase {
 		$this->assertStringNotContainsString( 'javascript:', $out['html'] );
 		$this->assertStringNotContainsString( 'data:text', $out['html'] );
 		$this->assertStringNotContainsString( 'sgs-gallery__item-link', $out['html'] );
-		$this->assertSame( 4, substr_count( $out['html'], 'class="sgs-gallery__item-btn"' ) );
+		$this->assertSame( 4, substr_count( $out['html'], 'class="sgs-gallery__item-btn sgs-focus--inset"' ) );
 	}
 
 	public function test_a_linked_item_is_an_anchor_without_the_lightbox_too(): void {

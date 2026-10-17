@@ -18,6 +18,10 @@
  *     never lands on the outline ring of a bordered button;
  *   - carries the card arm (`.sgs-focus-card:has(.sgs-focus-source:focus-visible)`) in the one declaration set and in
  *     forced colours, and turns the focus source's own outline off while its proxy draws the ring;
+ *   - mirrors every signature `:focus-visible` rule (variables, `::before`, reduced motion, higher contrast) for the
+ *     `.sgs-focus--signature.sgs-focus-preview` editor arm, so the preview shows the band;
+ *   - restates the arms that need no `:has()` (and a card's own focus source) in `@supports not selector(:has(*))`, in
+ *     forced colours too, because a browser without `:has()` drops the whole selector list above;
  *   - gives a duotone or photo element on a dark ground a light ring (`--sgs-focus-inner`) and an ink far bloom;
  * and that no other theme stylesheet holds an indicator, apart from the files a later plan task owns (PENDING; an
  * entry that no longer holds a finding fails, so the list only shrinks).
@@ -97,10 +101,10 @@ const CHECKS = {
 				problems.push( `transition declared (${ d.prop })` );
 			}
 			if ( /^border(?:-[a-z]+)*-radius$/.test( d.prop ) ) {
-				const sel = 'rule' === d.parent.type ? d.parent.selector : '';
-				const allowed = 'inherit' === d.value.trim() && /^\.sgs-focus--signature:focus-visible:not\(#wpadminbar \*\)::before$/.test( norm( sel ) );
+				const sels = 'rule' === d.parent.type ? d.parent.selectors.map( norm ) : [];
+				const allowed = 'inherit' === d.value.trim() && sels.length > 0 && sels.every( ( sel ) => /^\.sgs-focus--signature(?::focus-visible|\.sgs-focus-preview):not\(#wpadminbar \*\)::before$/.test( sel ) );
 				if ( ! allowed ) {
-					problems.push( `border-radius on ${ norm( sel ) }` );
+					problems.push( `border-radius on ${ sels.join( ', ' ) }` );
 				}
 			}
 		} );
@@ -210,6 +214,55 @@ const CHECKS = {
 		} );
 		return WANT.filter( ( sel ) => ! got[ sel ] ).map( ( sel ) => `no light ring and ink far bloom for ${ sel }` );
 	},
+	signaturePreviewMirrorsFocus( root ) {
+		const problems = [];
+		let seen = 0;
+		root.walkRules( ( rule ) => {
+			if ( inForced( rule ) ) {
+				return;
+			}
+			const sels = rule.selectors.map( norm );
+			for ( const sel of sels ) {
+				const m = /^\.sgs-focus--signature:focus-visible:not\(#wpadminbar \*\)(::before)?$/.exec( sel );
+				if ( m ) {
+					seen++;
+					const twin = `.sgs-focus--signature.sgs-focus-preview:not(#wpadminbar *)${ m[ 1 ] || '' }`;
+					if ( ! sels.includes( twin ) ) {
+						problems.push( `the editor preview arm is missing beside ${ sel }: ${ twin }` );
+					}
+				}
+			}
+		} );
+		return seen >= 5 ? problems : [ `only ${ seen } signature focus-visible selectors found, want the variables, ::before, reduced-motion and the two contrast rules` ];
+	},
+	noHasFallbackKeepsAFocusRing( root ) {
+		const CARD_SOURCE = '.sgs-focus-card .sgs-focus-source:focus-visible:not(#wpadminbar *)';
+		let base = false;
+		let forced = false;
+		root.walkRules( ( rule ) => {
+			if ( ! rule.selectors.map( norm ).includes( CARD_SOURCE ) ) {
+				return;
+			}
+			const chain = atRuleChain( rule );
+			if ( ! chain.includes( '@supports not selector(:has(*))' ) ) {
+				return;
+			}
+			const has = ( prop ) => ( rule.nodes || [] ).some( ( n ) => 'decl' === n.type && prop === n.prop );
+			if ( chain.includes( `@media ${ FORCED }` ) ) {
+				forced = has( 'outline' ) && rule.nodes.some( ( n ) => 'box-shadow' === n.prop && 'none' === n.value.trim() );
+			} else {
+				base = has( 'outline' ) && has( 'outline-offset' ) && has( 'box-shadow' );
+			}
+		} );
+		const problems = [];
+		if ( ! base ) {
+			problems.push( `no @supports not selector(:has(*)) arm gives ${ CARD_SOURCE } the indicator` );
+		}
+		if ( ! forced ) {
+			problems.push( `no forced-colours repeat of ${ CARD_SOURCE } inside the :has() fallback` );
+		}
+		return problems;
+	},
 	signatureClearsHostBorder( root ) {
 		let found = false;
 		const problems = [];
@@ -252,9 +305,9 @@ describe( 'focus.css, the one focus system', () => {
 		everyArmExcludesAdminBar: ( text ) => `${ text }\n.x:focus-visible{color:red}\n`,
 		noImportantTransitionRadius: ( text ) => `${ text }\n.x:not(#wpadminbar *){transition:none;border-radius:4px;color:red !important}\n`,
 		preferenceBlocks: ( text ) => text.replace( /@media \(prefers-contrast: more\)/, '@media (min-width: 1px)' ),
-		forcedColoursMirrorsEveryArm: ( text ) => text.replace( /@media \(forced-colors: active\) \{[\s\S]*$/, [
+		forcedColoursMirrorsEveryArm: ( text ) => text.replace( /\n@media \(forced-colors: active\) \{[\s\S]*$/, [
 			// The plan's original §2.2 block: lower weight than the proxy arms and no thumb arms.
-			'@media (forced-colors: active) {',
+			'\n@media (forced-colors: active) {',
 			'\t:focus-visible:not(#wpadminbar *), .sgs-focus-proxy:not(#wpadminbar *), .sgs-focus-preview:not(#wpadminbar *) { outline-color: Highlight; }',
 			'\t.sgs-focus--signature::before { display: none; }',
 			'}',
@@ -263,6 +316,8 @@ describe( 'focus.css, the one focus system', () => {
 		cardArmCarriesTheIndicator: ( text ) => text.replace( /\.sgs-focus-card:has\(\.sgs-focus-source:focus-visible\):not\(#wpadminbar \*\)/g, '.sgs-focus-card:focus-visible:not(#wpadminbar *)' ),
 		sourceDrawsNothing: ( text ) => text.replace( /(\n\.sgs-focus-source:focus-visible:not\(#wpadminbar \*\) \{\s*)outline-style: none;/, '$1color: inherit;' ),
 		darkDuotoneRingIsLight: ( text ) => text.replace( /(\.sgs-on-dark \.sgs-focus--duotone[^{]*\{[^}]*--sgs-focus-ring:) var\(--sgs-focus-inner\)/, '$1 var(--sgs-focus-ink)' ),
+		signaturePreviewMirrorsFocus: ( text ) => text.replace( /\.sgs-focus--signature\.sgs-focus-preview:not\(#wpadminbar \*\)::before/g, '.sgs-focus--signature.sgs-focus-preview-x:not(#wpadminbar *)::before' ),
+		noHasFallbackKeepsAFocusRing: ( text ) => text.replace( /@supports not selector\(:has\(\*\)\)/, '@supports not selector(:is(*))' ),
 		signatureClearsHostBorder: ( text ) => text.replace( /inset: calc\([^;]*--sgs-focus-host-border[^;]*\);/, 'inset: calc(var(--sgs-focus-width) * -3);' ),
 	};
 

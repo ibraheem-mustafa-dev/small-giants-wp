@@ -260,6 +260,10 @@ $tp_extra_classes = array(
 	'sgs-trustpilot-reviews--card-' . sanitize_html_class( $card_style ),
 	$tp_uid,
 );
+// The dark theme paints its own dark ground, so the focus system takes its on-dark tokens.
+if ( 'dark' === $theme ) {
+	$tp_extra_classes[] = 'sgs-on-dark';
+}
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add

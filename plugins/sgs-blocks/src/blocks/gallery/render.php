@@ -747,7 +747,7 @@ ob_start();
 		   both, and authoring them on a native dialog is redundant. */
 		?>
 		<dialog
-			class="sgs-gallery__lightbox <?php echo esc_attr( $uid ); ?>"
+			class="sgs-gallery__lightbox sgs-on-dark <?php echo esc_attr( $uid ); ?>"
 			aria-label="<?php esc_attr_e( 'Image lightbox', 'sgs-blocks' ); ?>"
 			data-wp-class--sgs-gallery__lightbox--open="state.isLightboxOpen"
 			data-wp-on--close="actions.closeLightbox"

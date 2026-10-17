@@ -65,6 +65,10 @@ $gr_extra_classes = array(
 	'sgs-google-reviews--cols-tablet-' . (int) $columns_tablet,
 	'sgs-google-reviews--cols-mobile-' . (int) $columns_mobile,
 );
+// The dark theme paints its own dark ground, so the focus system takes its on-dark tokens.
+if ( 'dark' === $theme ) {
+	$gr_extra_classes[] = 'sgs-on-dark';
+}
 
 // Structural choices are classes (style.css owns what each one does), written only when the author made the
 // choice, so a ready-made look can set them itself. They sit after the looks in style.css, so they win a tie.
