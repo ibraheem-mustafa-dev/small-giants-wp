@@ -289,9 +289,9 @@ final class NavDrawerChromeRatingTest extends TestCase {
 		$this->assertStringNotContainsString( '#00ff00', $this->rating( $base + array( 'chromeSlotColour' => '#00ff00' ) ) );
 	}
 
-	public function test_the_slot_types_are_the_original_five(): void {
+	public function test_the_slot_types_are_the_five_content_types_and_icons(): void {
 		$list = json_decode( $this->run_child( 'echo json_encode( sgs_nav_drawer_chrome_slot_types() );', array(), array() ), true );
-		$this->assertSame( array( '', 'heading', 'label', 'text', 'button' ), $list );
+		$this->assertSame( array( '', 'heading', 'label', 'text', 'button', 'icons' ), $list );
 		// Negative control: the rating is not a slot type.
 		$this->assertNotContains( 'google-rating', $list );
 
