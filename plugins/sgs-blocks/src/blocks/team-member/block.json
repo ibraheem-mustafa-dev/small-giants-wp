@@ -112,7 +112,7 @@
 							}
 						}
 					},
-					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix) — imageZoomHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/card-grid, sgs/gallery and sgs/post-grid for this identical hover-effect pattern. The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover/grayscaleHover/imageZoomHover behaviour toggles — none are Text/Fill/Layout style-cluster members. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
+					"_note": "Renamed from 'photo' 2026-08-15 (element-manifest drift fix) — grayscaleHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json). The real rendered class is `.sgs-team-member__photo` (render.php:295) — the label stays 'Photo' (client-facing, unchanged) even though the manifest KEY is now 'image', matching the sibling-block vocabulary. Governed by the universal image-controls extension (supports.sgs.imageControls) plus photoShape/overlayHover/grayscaleHover behaviour toggles — none are Text/Fill/Layout style-cluster members. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"name": {
 					"text": true,
@@ -364,10 +364,6 @@
 		"cardShadowColour": {
 			"type": "string"
 		},
-		"imageZoomHover": {
-			"type": "boolean",
-			"default": false
-		},
 		"grayscaleHover": {
 			"type": "boolean",
 			"default": false
@@ -379,18 +375,6 @@
 		"transitionEasing": {
 			"type": "string",
 			"default": "ease-in-out"
-		},
-		"sgsAnimation": {
-			"type": "string",
-			"default": "fade-up"
-		},
-		"sgsAnimationDuration": {
-			"type": "string",
-			"default": "medium"
-		},
-		"sgsAnimationEasing": {
-			"type": "string",
-			"default": "default"
 		},
 		"overlayHover": {
 			"type": "boolean",

@@ -75,11 +75,8 @@ $caption_reveal  = (bool) ( $attributes['captionReveal'] ?? false );
 $image_size      = sanitize_key( $attributes['imageSize'] ?? 'large' );
 
 $hover_scale     = sanitize_text_field( $attributes['scaleHover'] ?? '' );
-$hover_img_zoom  = (bool) ( $attributes['imageZoomHover'] ?? true );
-$hover_effect    = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 $hover_grayscale = (bool) ( $attributes['grayscaleHover'] ?? false );
 $hover_shadow    = sanitize_key( $attributes['shadowHover'] ?? '' );
-$stagger_delay   = absint( $attributes['staggerDelay'] ?? 0 );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -140,9 +137,6 @@ if ( $hover_scale ) {
 }
 if ( $hover_shadow ) {
 	$inline_styles_parts[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
-}
-if ( $stagger_delay > 0 ) {
-	$inline_styles_parts[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 }
 // Always emit colour CSS vars — fallbacks are set above so these are never empty.
 // overlayColourHover paints an EXISTING .sgs-gallery__img-wrap::after (the
@@ -410,13 +404,10 @@ $gallery_preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_h
 $wrapper_classes = implode( ' ', array_filter( [
 	'sgs-gallery',
 	'sgs-gallery--' . $layout,
-	'sgs-gallery--hover-' . $hover_effect,
 	$enable_lightbox ? 'sgs-gallery--lightbox-enabled' : '',
 	sgs_gallery_tile_mode( $attributes ) ? 'sgs-gallery--tile' : '',
-	$hover_img_zoom  ? 'sgs-gallery--zoom'             : '',
 	$hover_shadow    ? 'sgs-has-hover'                 : '',
 	$hover_grayscale ? 'sgs-has-grayscale'             : '',
-	$stagger_delay   ? 'sgs-has-stagger'               : '',
 	( $show_captions && $caption_reveal ) ? 'sgs-gallery--caption-reveal' : '',
 	$uid,
 	// Skip-serialised `color` support also stops WP auto-adding the standard
@@ -497,8 +488,8 @@ ob_start();
 					$item_html = preg_replace( '/^<(img|video)\s/', '<$1 aria-hidden="true" ', $item_html, 1 );
 				}
 
-				// Determine the aspect-ratio and stagger delay for this item. Both
-				// are CSS custom-PROPERTY VALUES (never a raw property
+				// Determine the aspect-ratio for this item. It is a
+				// CSS custom-PROPERTY VALUE (never a raw property
 				// declaration) — style.css reads --sgs-item-aspect via a scoped
 				// `aspect-ratio: var(...)` rule. VARIES per item (FR-32-4, D345),
 				// so it cannot be a single scoped rule on the block root; emitted
@@ -512,16 +503,13 @@ ob_start();
 				if ( $aspect_ratio ) {
 					$item_style_decls[] = '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio );
 				}
-				if ( $stagger_delay > 0 ) {
-					$item_style_decls[] = '--sgs-item-index:' . absint( $index );
-				}
 				if ( ! empty( $item_style_decls ) ) {
 					$gallery_responsive_css .= $root_sel . ' .sgs-gallery__item:nth-child(' . ( absint( $index ) + 1 ) . '){' . implode( ';', $item_style_decls ) . ';}';
 				}
 
 				// Spec 35 Part 4 — per-item crop, keyed by the item's OWN
 				// stable `_key`, never `:nth-child`/array index (unlike the
-				// aspect-ratio/stagger rule just above, which is genuinely
+				// aspect-ratio rule just above, which is genuinely
 				// POSITION-bound and safe with nth-child — crop is IDENTITY-
 				// bound: reordering must keep each photo's own crop, not the
 				// crop that happened to sit at that grid position). Additive
@@ -557,7 +545,6 @@ ob_start();
 						$gallery_item_key,
 						sgs_gallery_media_html( $img, (int) $index, $image_size, $sgs_gallery_img_class, $img_decorative, (string) $item_html ),
 						$img_alt,
-						( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) ? ( $img_caption ? $img_caption : $img_alt ) : '',
 						( $show_captions && $img_caption ) ? $img_caption : ''
 					);
 
@@ -608,11 +595,6 @@ ob_start();
 								?>
 							</div>
 						</button>
-						<?php if ( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) : ?>
-							<div class="sgs-gallery__overlay">
-								<?php echo $img_caption ? $img_caption : $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already escaped above. ?>
-							</div>
-						<?php endif; ?>
 						<?php if ( $show_captions && $img_caption ) : ?>
 							<figcaption class="sgs-gallery__caption">
 								<?php echo $img_caption; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already esc_html() above. ?>
@@ -652,11 +634,6 @@ ob_start();
 							}
 							?>
 						</div>
-						<?php if ( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) : ?>
-							<div class="sgs-gallery__overlay">
-								<?php echo $img_caption ? $img_caption : $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already escaped above. ?>
-							</div>
-						<?php endif; ?>
 						<?php if ( $show_captions && $img_caption ) : ?>
 							<figcaption class="sgs-gallery__caption">
 								<?php echo $img_caption; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already esc_html() above. ?>

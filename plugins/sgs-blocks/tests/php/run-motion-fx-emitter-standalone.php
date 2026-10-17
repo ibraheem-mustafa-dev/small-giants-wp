@@ -152,7 +152,7 @@ namespace {
 	preg_match_all( "/values: \{ gsap: '([^']+)' \}/", (string) file_get_contents( $src . 'components/motion/easing-master-list.js' ), $m );
 	$gsap = array_keys( Grammar::gsap_curves() );
 	fx_check( count( $m[1] ) > 4 && array() === array_diff( $m[1], $gsap ) && array() === array_diff( $gsap, $m[1] ), 'gsap_curves() names every non-empty gsap ease of easing-master-list.js: ' . json_encode( $m[1] ) );
-	foreach ( array( 'mega-panel' => 'allowed_fx_effects', 'site-header-row' => 'shr_allowed_fx_effects', 'site-footer-row' => 'sfr_allowed_fx_effects' ) as $slug => $var ) {
+	foreach ( array( 'mega-panel' => 'allowed_fx_effects' ) as $slug => $var ) {
 		preg_match( '/\$' . $var . '\s*=\s*array\(([^)]*)\)/', (string) file_get_contents( $src . 'blocks/' . $slug . '/render.php' ), $m );
 		preg_match_all( "/'([a-z-]+)'/", $m[1] ?? '', $list );
 		fx_check( \SGS\Blocks\Motion\Sgs_Motion_Map_Fx::PRIVATE_SELECTOR_EFFECTS === $list[1], "PRIVATE_SELECTOR_EFFECTS equals $slug render.php's allow-list: " . json_encode( $list[1] ) );

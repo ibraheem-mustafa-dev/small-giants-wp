@@ -1035,7 +1035,7 @@ $sgs_pc_stretched_link = sgs_stretched_link_apply(
 // `tabindex="-1" aria-hidden="true"` and so is skipped). The extension demotes
 // any FURTHER link to the same product, which is what keeps a `learn-more` CTA
 // from being a second tab stop to one destination; see
-// `includes/hover-effects/link-overlay.php::insert_block_link_overlay`.
+// `includes/helpers-stretched-link.php`.
 $sgs_pc_title_link = true;
 
 $sgs_resolved_desc = ( isset( $attributes['showDescription'] ) && false === $attributes['showDescription'] )

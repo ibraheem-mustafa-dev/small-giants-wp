@@ -34,8 +34,7 @@
 			"motion": true,
 			"containerKind": "content",
 			"presetSelectors": [
-				"cardStyle",
-				"effectHover"
+				"cardStyle"
 			],
 			"enabledExtensions": [
 				"blockLink",
@@ -67,8 +66,7 @@
 					"order": 1,
 					"clusters": [
 						"fill",
-						"layout",
-						"animation"
+						"layout"
 					],
 					"isWrapper": true,
 					"attrMap": {
@@ -84,10 +82,7 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:box-shadow": "native:shadow",
-						"css:border-color-gradient": "borderColourGradient",
-						"anim:preset": "sgsAnimation",
-						"anim:duration": "sgsAnimationDuration",
-						"anim:easing": "sgsAnimationEasing"
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -177,10 +172,6 @@
 			"type": "string",
 			"default": "elevated"
 		},
-		"effectHover": {
-			"type": "string",
-			"default": "lift"
-		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
@@ -219,24 +210,12 @@
 			"type": "string",
 			"default": ""
 		},
-		"shadowHoverColour": {
+		"shadowColourHover": {
 			"type": "string"
 		},
 		"grayscaleHover": {
 			"type": "boolean",
 			"default": false
-		},
-		"sgsAnimation": {
-			"type": "string",
-			"default": "fade-up"
-		},
-		"sgsAnimationDuration": {
-			"type": "string",
-			"default": "medium"
-		},
-		"sgsAnimationEasing": {
-			"type": "string",
-			"default": "default"
 		},
 		"width": {
 			"type": "string",

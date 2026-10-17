@@ -11,7 +11,6 @@ import ProductTemplateCanvas from './ProductTemplateCanvas';
 export default function CardGridCanvas( { attributes, clientId, sep, isWcProductMode, isCptCollectionMode, blockProps, pageButtonPreviewCss, wrapper, gridStyle, items, cardPreview, titleStyle, subtitleStyle, HeadingTag } ) {
 	const {
 		variant,
-		effectHover,
 		glyphSize,
 		glyphColour,
 		imageFallback,
@@ -134,7 +133,7 @@ export default function CardGridCanvas( { attributes, clientId, sep, isWcProduct
 						}
 						// Mirrors render.php: a text-only card renders no image area.
 						const needsWrap = hasMedia || useFallback || !! item.glyphImage?.url || !! item.glyph
-							|| variant === 'overlay' || effectHover === 'overlay-slide';
+							|| variant === 'overlay';
 						return (
 						<div key={ item._key } className="sgs-card-grid__item" style={ cardPreview.itemStyle }>
 							{ needsWrap && (

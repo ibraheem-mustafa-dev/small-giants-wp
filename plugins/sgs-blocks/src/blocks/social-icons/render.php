@@ -110,25 +110,9 @@ if ( '' !== (string) ( $attributes['childIconBackground'] ?? '' ) && '' === sgs_
 	$root_decls[] = '--sgs-si-bg-gradient:none';
 }
 
-// ── Group hover move, motion and shadow (includes/helpers-icon-motion.php; icon/style.css reads them after an icon's own) ─
-$group_scale = is_numeric( $attributes['childIconScaleHover'] ?? null ) ? (float) $attributes['childIconScaleHover'] : 0.0;
-if ( $group_scale >= 1.0 ) {
-	$root_decls[] = '--sgs-si-hover-scale:' . round( min( 1.5, $group_scale ), 3 );
-}
+// ── Group shadow (includes/helpers-icon-shadow.php; icon/style.css reads it after an icon's own) ─
 $root_decls = array_merge(
 	$root_decls,
-	sgs_icon_motion_decls(
-		array(
-			'x'             => $attributes['childIconOffsetXHover'] ?? null,
-			'y'             => $attributes['childIconOffsetYHover'] ?? null,
-			'rotate'        => $attributes['childIconRotateHover'] ?? null,
-			'move_ms'       => $attributes['childIconTransitionDuration'] ?? null,
-			'paint_ms'      => $attributes['childIconPaintDuration'] ?? null,
-			'easing'        => $attributes['childIconTransitionEasing'] ?? '',
-			'easing_custom' => $attributes['childIconTransitionEasingCustom'] ?? '',
-		),
-		'--sgs-si'
-	),
 	sgs_icon_shadow_vars(
 		array_merge( $attributes, array( 'shadowLiftOnHover' => $attributes['childIconShadowLiftOnHover'] ?? true ) ),
 		array(

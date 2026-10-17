@@ -479,11 +479,6 @@
  * visible change on hover (matches sgs/info-box).
  */
 
-/* Image zoom — enabled by data-hover-image-zoom="true" on wrapper */
-.sgs-post-grid[data-hover-image-zoom="true"] .sgs-post-grid__card:hover .sgs-post-grid__img {
-	transform: scale( 1.05 );
-}
-
 /* Respect prefers-reduced-motion — non-negotiable */
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-post-grid__card,

@@ -5,7 +5,7 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $items, $card_grid_loop_style, $card_grid_loop_i, $variant, $root_sel, $hover_effect, $heading_level, $no_image_label, $image_fallback, $sgs_cg_media_classes, $card_grid_overlay_active and $card_grid_per_item_css.
+ * Reads: $items, $card_grid_loop_style, $card_grid_loop_i, $variant, $root_sel, $heading_level, $no_image_label, $image_fallback, $sgs_cg_media_classes, $card_grid_overlay_active and $card_grid_per_item_css.
  * Writes: $card_grid_per_item_css (extended); the echoed card markup goes into the buffer render.php collects as $inner_html.
  *
  * @package SGS\Blocks
@@ -122,7 +122,7 @@ foreach ( $items as $index => $item ) :
 	// title sits below rather than over the image) has nothing to put in the image
 	// area, so it renders none: an empty wrap still took the aspect-ratio height.
 	$item_needs_wrap = $item_has_media || $item_use_fallback || '' !== $item_glyph_html
-		|| 'overlay' === $variant || 'overlay-slide' === $hover_effect;
+		|| 'overlay' === $variant;
 	?>
 	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo null !== $card_grid_loop_style ? \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_attr( $card_grid_loop_i++ ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ` data-sgs-loop-i="<int>"`. ?><?php echo $link_attr; ?>>
 		<?php if ( $item_needs_wrap ) : ?>
@@ -141,7 +141,7 @@ foreach ( $items as $index => $item ) :
 			<?php elseif ( '' === $item_glyph_html && $item_use_fallback && ! empty( $item['title'] ) ) : ?>
 				<?php echo sgs_card_grid_fallback_initial( $item['title'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_card_grid_fallback_initial() via esc_html(). ?>
 			<?php endif; ?>
-			<?php if ( 'overlay' === $variant || 'overlay-slide' === $hover_effect ) : ?>
+			<?php if ( 'overlay' === $variant ) : ?>
 				<div class="sgs-card-grid__overlay">
 					<?php if ( '' !== $item_glyph_html && $glyph_in_caption ) : ?>
 						<?php echo $item_glyph_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside the glyph helpers via wp_kses()/esc_url(). ?>

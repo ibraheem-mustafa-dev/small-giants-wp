@@ -771,32 +771,6 @@
 	}
 }
 
-/* Main photo entrance (photoEntrance): plays once at load, on the shared
-   entrance tokens (theme.json settings.custom.entrance). */
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-buybox--photo-fade .product-card__media .product-card-img,
-	.sgs-buybox--photo-rise .product-card__media .product-card-img {
-		animation: sgs-buybox-photo-in var(--wp--custom--entrance--duration, 500ms) var(--wp--custom--entrance--easing, cubic-bezier(0.16, 1, 0.3, 1)) both;
-	}
-
-	.sgs-buybox--photo-rise .product-card__media .product-card-img {
-		animation-name: sgs-buybox-photo-rise-in;
-	}
-}
-
-@keyframes sgs-buybox-photo-in {
-	from {
-		opacity: 0;
-	}
-}
-
-@keyframes sgs-buybox-photo-rise-in {
-	from {
-		opacity: 0;
-		translate: 0 var(--wp--custom--entrance--distance, 30px);
-	}
-}
-
 .sgs-buybox .product-card__no-image {
 	display: flex;
 	align-items: center;

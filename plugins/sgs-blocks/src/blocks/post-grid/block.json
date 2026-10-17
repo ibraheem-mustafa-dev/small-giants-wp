@@ -93,13 +93,9 @@
             "css:align-content": "alignContent",
             "css:flex-direction": "flexDirection",
             "css:flex-wrap": "flexWrap",
-            "anim:preset": "sgsAnimation",
-            "anim:duration": "sgsAnimationDuration",
-            "anim:easing": "sgsAnimationEasing",
             "css:border-color-gradient": "borderColourGradient"
           },
-          "_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs.",
-          "_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) resolves via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). This block has NO staggerDelay attribute, so anim:stagger is an honest gap; anim:parallax/anim:trigger are also honest gaps (no bgParallax/scroll-trigger attrs)."
+          "_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs."
         },
         "card": {
           "restingShadow": true,
@@ -138,7 +134,7 @@
           "attrMap": {
             "css:aspect-ratio": "aspectRatio"
           },
-          "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling for imageZoomHover (transform) - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage/imageZoomHover govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it.",
+          "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it.",
         	"absentIn": [ "minimal-no-image" ],
         	"absentWhy": "cardStyle minimal prints no image link and no placeholder for a post without a featured image."
         },
@@ -570,10 +566,6 @@
     "shadowColourHover": {
       "type": "string"
     },
-    "imageZoomHover": {
-      "type": "boolean",
-      "default": true
-    },
     "transitionDuration": {
       "type": "string",
       "default": "300"
@@ -614,18 +606,6 @@
     "loopCarousel": {
       "type": "boolean",
       "default": false
-    },
-    "sgsAnimation": {
-      "type": "string",
-      "default": "fade-up"
-    },
-    "sgsAnimationDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsAnimationEasing": {
-      "type": "string",
-      "default": "ease-out"
     },
     "contentWidth": {
       "type": "object",

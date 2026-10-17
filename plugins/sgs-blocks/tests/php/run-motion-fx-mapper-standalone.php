@@ -167,7 +167,6 @@ namespace {
 		'split mask chars no split' => array( 'sgs/heading', array( 'fx' => 'split-reveal', 'fxMask' => 'chars' ), 'same' ),
 		'split mask words' => array( 'sgs/heading', array( 'fx' => 'split-reveal', 'fxMask' => 'words', 'fxSplit' => 'words' ), 'same' ),
 		'mega fxEffect off-list' => array( 'sgs/mega-panel', array( 'fxEffect' => 'split-reveal', 'fxStagger' => 0.04 ), 'flat' ),
-		'header row cursor' => array( 'sgs/site-header-row', array( 'fxEffect' => 'cursor-field', 'fxFieldType' => 'hue-shift', 'fxFieldColour' => 'accent', 'fxFieldRadius' => 300, 'fxFieldShape' => 'wide', 'fxFieldBlend' => 0, 'fxGridCell' => 30 ), 'same' ),
 	);
 	$wrong = array();
 	foreach ( $sets as $label => $set ) {
@@ -194,7 +193,7 @@ namespace {
 	fx_check( array() === $r['motion'] && array() === $r['consumed'] && array( 'fxStart' ) === array_column( $r['reported'], 'attr' ), 'an offset start leaves scrub flat, nothing consumed, fxStart reported: ' . json_encode( $r['reported'] ) );
 
 	// 5. Placement: split-reveal on scroll in entrance.text, scramble on hover in effects, magnet in hover.effects,
-	// draw on the container's svg-bg part, image-sequence on its canvas, the footer row's stagger as a root scrub.
+	// draw on the container's svg-bg part, image-sequence on its canvas.
 	$r = $m->map( 'sgs/heading', array( 'fx' => 'split-reveal', 'fxTrigger' => 'scroll', 'fxSplit' => 'lines' ) );
 	fx_check( 'scroll' === ( $r['motion']['elements']['root']['entrance']['text'][0]['trigger'] ?? '' ), 'split-reveal on scroll maps into entrance.text' );
 	$r = $m->map( 'sgs/heading', array( 'fx' => 'scramble', 'fxTrigger' => 'hover' ) );
@@ -207,8 +206,6 @@ namespace {
 	fx_check( isset( $r['motion']['elements']['root'] ), 'draw on a block with no svg-bg part stays on the root' );
 	$r = $m->map( 'sgs/image-sequence', array( 'fxStart' => 'top 80%', 'fxPin' => true ) );
 	fx_check( array( 'startElement' => 'top', 'startViewport' => 80, 'pin' => true ) === ( $r['motion']['elements']['canvas']['effects'][0]['values'] ?? null ), 'image-sequence maps onto its canvas part' );
-	$r = $m->map( 'sgs/site-footer-row', array( 'fxFooterStagger' => true ) );
-	fx_check( 'scrub' === ( $r['motion']['elements']['root']['effects'][0]['effect'] ?? '' ) && array( 'fxFooterStagger' ) === $r['consumed'], 'the footer row stagger maps to a root scrub layer' );
 
 	// 6. The block-private selector: only blocks that declare it, only effects their render accepts.
 	fx_check( ! $m->handles( 'sgs/hero', array( 'fxEffect' => 'particles' ) ), 'fxEffect is read only on a block that declares it' );

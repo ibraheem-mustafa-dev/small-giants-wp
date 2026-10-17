@@ -6,7 +6,7 @@
  *   (b) a site-saved `sgsMotion` wins over the shipped one;
  *   (c) a site-saved other attribute keeps the shipped `sgsMotion`;
  *   (d) every shipped value survives the motion schema unchanged;
- *   (e) none of the eleven blocks declares an `sgsMotion` default in block.json, and the reset route still only
+ *   (e) none of the twelve blocks declares an `sgsMotion` default in block.json, and the reset route still only
  *       clears the site's own entry (the shipped layer is never written to the option).
  *
  *   php plugins/sgs-blocks/tests/php/run-shipped-block-defaults-standalone.php
@@ -73,9 +73,9 @@ namespace {
 		return is_array( $out ) ? $out : array();
 	};
 
-	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'team-member', 'testimonial', 'timeline', 'trustpilot-reviews' );
+	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'icon', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'team-member', 'testimonial', 'timeline', 'trustpilot-reviews' );
 	$shipped = SGS\Blocks\Shipped_Block_Defaults::all();
-	$check( 'data file names exactly the eleven blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
+	$check( 'data file names exactly the twelve blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
 
 	// (a) no saved defaults.
 	$GLOBALS['t_option'] = array();

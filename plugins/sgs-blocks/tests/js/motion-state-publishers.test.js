@@ -123,7 +123,6 @@ describe( 'sgs/cart count pop', () => {
 			( r ) => ! ( r.oldValue || '' ).includes( 'count-changed' )
 		);
 		expect( adds ).toHaveLength( 2 );
-		expect( el.classList.contains( 'sgs-cart__badge--pop' ) ).toBe( false );
 	} );
 
 	it( 'pulses count-loaded on the first render in load-and-change mode, then on each increase', async () => {
@@ -155,24 +154,15 @@ describe( 'sgs/cart count pop', () => {
 		).toHaveLength( 0 );
 	} );
 
-	it( 'keeps the old class path for a badge with no layer, and loads nothing', async () => {
-		const el = badge( { state: false } );
-		const { maybeAnimateCountPop } = load();
-		maybeAnimateCountPop( el, 0, 'change' );
-		maybeAnimateCountPop( el, 1, 'change' );
-		await settle();
-		expect( el.classList.contains( 'sgs-cart__badge--pop' ) ).toBe( true );
-		expect( mockCalls ).toHaveLength( 0 );
-	} );
-
-	it( 'plays no old pop under reduced motion', async () => {
-		reducedMotion( true );
+	it( 'records the count and loads nothing for a badge with no layer', async () => {
 		const el = badge( { state: false } );
 		const { maybeAnimateCountPop } = load();
 		maybeAnimateCountPop( el, 0, 'change' );
 		maybeAnimateCountPop( el, 1, 'change' );
 		await settle();
 		expect( el.classList.contains( 'sgs-cart__badge--pop' ) ).toBe( false );
+		expect( el.dataset.sgsPrevCount ).toBe( '1' );
+		expect( mockCalls ).toHaveLength( 0 );
 	} );
 } );
 

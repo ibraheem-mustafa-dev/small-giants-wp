@@ -3,8 +3,6 @@
  */
 import { __ } from '@wordpress/i18n';
 import { MEDIA_SIZING_RATIO_OPTIONS } from '../../../components';
-import { CSS_EASING_OPTIONS as EASING_OPTIONS } from '../../../components/motion/easing-master-list';
-export { EASING_OPTIONS };
 
 export const LAYOUT_OPTIONS = [
 	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },

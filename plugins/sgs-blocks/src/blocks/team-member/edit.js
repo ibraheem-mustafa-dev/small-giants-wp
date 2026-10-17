@@ -201,7 +201,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 		cardShadowHover,
 		cardShadowColourHover,
 		scaleHover,
-		imageZoomHover,
 		grayscaleHover,
 		transitionDuration,
 		transitionEasing,
@@ -400,7 +399,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 							cardShadowHover: '',
 							cardShadowColourHover: null,
 							scaleHover: '',
-							imageZoomHover: false,
 							grayscaleHover: false,
 							transitionDuration: '300',
 							transitionEasing: 'ease-in-out',
@@ -528,19 +526,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 							step={ 0.01 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						hasValue={ () => imageZoomHover !== false }
-						onDeselect={ () => setAttributes( { imageZoomHover: false } ) }
-					>
-						<ToggleControl
-							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-							help={ __( 'Zooms the photo inside the card on hover.', 'sgs-blocks' ) }
-							checked={ imageZoomHover }
-							onChange={ ( val ) => setAttributes( { imageZoomHover: val } ) }
-							__nextHasNoMarginBottom
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

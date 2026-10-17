@@ -1,7 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl } from '@wordpress/components';
 import {
-	MotionEasingControl,
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	SgsLengthControl,
@@ -10,6 +9,7 @@ import {
 	shadowAttrKeys,
 	TypographyControls,
 } from '../../components';
+import EasingAtom from '../../components/motion/EasingAtom';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // Typography per panel text element: [prefix, label, fields]. The fields match
@@ -168,7 +168,8 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<MotionEasingControl
+						<EasingAtom
+							vocab="nav"
 							label={ __( 'Slide-in speed curve', 'sgs-blocks' ) }
 							value={ attributes.panelSlideEasing }
 							custom={ attributes.panelSlideEasingCustom }

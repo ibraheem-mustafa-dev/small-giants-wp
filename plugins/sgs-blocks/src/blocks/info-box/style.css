@@ -63,19 +63,8 @@
 	transform: translateY(-3px);
 }
 
-/* Icon scales in when scroll-reveal fires (works with sgsAnimation extension) */
-.sgs-info-box[data-sgs-animation] .sgs-info-box__icon {
-	transform: scale(0.8);
-	transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
-}
-
-.sgs-info-box[data-sgs-animation].sgs-animated .sgs-info-box__icon {
-	transform: scale(1);
-}
-
 @media (prefers-reduced-motion: reduce) {
-	.sgs-info-box__icon,
-	.sgs-info-box[data-sgs-animation] .sgs-info-box__icon {
+	.sgs-info-box__icon {
 		transition: none !important;
 		transform: none !important;
 	}
@@ -121,47 +110,6 @@
  * variant base (0,2,0) and applies only when a hover colour is set, so it is
  * variant-safe with no resting-value fallback. */
 
-/* ===== Hover Effects ===== */
-
-/* Lift — translateY + shadow increase */
-.sgs-info-box--hover-lift:hover {
-	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--floating);
-}
-
-/* Border accent — accent top border slides in + slight lift */
-.sgs-info-box--hover-border-accent {
-	overflow: hidden;
-}
-
-.sgs-info-box--hover-border-accent::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 3px;
-	background-color: var(--wp--preset--color--accent);
-	transform: scaleX(0);
-	transform-origin: left;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-	transition-property: transform;
-}
-
-.sgs-info-box--hover-border-accent:hover::before {
-	transform: scaleX(1);
-}
-
-.sgs-info-box--hover-border-accent:hover {
-	transform: translateY(-2px);
-}
-
-/* Glow — accent box-shadow */
-.sgs-info-box--hover-glow:hover {
-	box-shadow: 0 0 20px rgba(248, 122, 31, 0.3);
-}
-
 /* ===== Hover Scale (#87, #101) ===== */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -194,15 +142,6 @@
 @media (prefers-reduced-motion: reduce) {
 	.sgs-info-box {
 		transition: none;
-	}
-
-	.sgs-info-box--hover-border-accent::before {
-		transition: none;
-	}
-
-	.sgs-info-box--hover-lift:hover,
-	.sgs-info-box--hover-border-accent:hover {
-		transform: none;
 	}
 }
 

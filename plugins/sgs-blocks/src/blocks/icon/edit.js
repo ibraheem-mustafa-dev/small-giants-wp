@@ -38,7 +38,7 @@ import {
 } from './icon-state';
 import { CanvasOutline } from './shape-options';
 import { shapeUsesWidthOnly, isOutlineShape } from '../../utils/icon-shapes';
-import { ICON_MOTION_NAMES, iconMotionStyle, iconShadowStyle } from './icon-motion';
+import { iconShadowStyle } from './icon-shadow';
 
 /**
  * The canvas root's custom properties and spacing: render.php's root rule for the previewed device.
@@ -51,7 +51,7 @@ import { ICON_MOTION_NAMES, iconMotionStyle, iconShadowStyle } from './icon-moti
  * @return {Object} React style.
  */
 export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap = {} ) {
-	const { iconSize, shapeSize, shape, shapeSizeLinked = true, iconRotate, scaleHover, opacityHover, textAlign } = attributes;
+	const { iconSize, shapeSize, shape, shapeSizeLinked = true, iconRotate, textAlign } = attributes;
 	const style = {};
 	const size = iconLengthValue( resolveTier( iconSize, tier ).value, 512, presetSlugs );
 	if ( size ) {
@@ -106,16 +106,9 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap 
 	if ( iconRotate ) {
 		style[ '--sgs-icon-rotate' ] = `${ iconRotate }deg`;
 	}
-	Object.assign( style, iconMotionStyle( attributes, ICON_MOTION_NAMES, '--sgs-icon' ) );
 	if ( ! isOutlineShape( shape ) ) {
 		const { boxShadow, boxShadowColour, boxShadowHover, boxShadowColourHover, shadowLiftOnHover } = attributes;
 		Object.assign( style, iconShadowStyle( { shadow: boxShadow, colour: boxShadowColour, hover: boxShadowHover, hoverColour: boxShadowColourHover, lift: shadowLiftOnHover }, '--sgs-icon', { pinHover: true, hoverMap } ) );
-	}
-	if ( 'number' === typeof scaleHover && Math.abs( scaleHover - 1.1 ) > 0.0001 ) {
-		style[ '--sgs-icon-hover-scale' ] = scaleHover;
-	}
-	if ( opacityHover > 0 ) {
-		style[ '--sgs-icon-opacity-hover' ] = opacityHover;
 	}
 	if ( [ 'left', 'center', 'right', 'justify' ].includes( textAlign ) ) {
 		style.textAlign = textAlign;

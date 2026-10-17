@@ -14,7 +14,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
@@ -37,7 +37,7 @@ import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../compone
  *
  * Inspector controls cover only WRAPPER-level styling/layout that render.php
  * actually consumes:
- *   - cardStyle, effectHover, iconPosition (drive wrapper BEM classes)
+ *   - cardStyle, iconPosition (drive wrapper BEM classes)
  *   - Width (maxWidth / width — kept-scalar, base only)
  *   - Spacing (padding / margin — each ONE tier-of-boxes object attr
  *     {desktop,tablet,mobile}, each tier a {top,right,bottom,left} box)
@@ -165,13 +165,6 @@ const CARD_STYLE_OPTIONS = [
 	{ label: __( 'Filled', 'sgs-blocks' ), value: 'filled' },
 ];
 
-const HOVER_EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-	{ label: __( 'Border accent', 'sgs-blocks' ), value: 'border-accent' },
-	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-];
-
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
@@ -272,7 +265,6 @@ const INFO_BOX_TEMPLATE = [
 export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		cardStyle,
-		effectHover,
 		iconPosition,
 		textAlign,
 		width,
@@ -379,7 +371,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const className = [
 		'sgs-info-box',
 		`sgs-info-box--${ cardStyle }`,
-		`sgs-info-box--hover-${ effectHover }`,
 		`sgs-info-box--media-${ iconPosition }`,
 	].join( ' ' );
 
@@ -613,7 +604,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					resetAll={ () =>
 						setAttributes( {
 							cardStyle: 'elevated',
-							effectHover: 'lift',
 							scaleHover: '',
 							grayscaleHover: false,
 							transitionDuration: '300',
@@ -638,21 +628,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						hasValue={ () => effectHover !== 'lift' }
-						onDeselect={ () => setAttributes( { effectHover: 'lift' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Hover effect', 'sgs-blocks' ) }
-							value={ effectHover }
-							options={ HOVER_EFFECT_OPTIONS }
-							onChange={ ( val ) => setAttributes( { effectHover: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
 						hasValue={ () => shadowHover !== '' }
 						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
@@ -667,7 +642,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ shadowAttrKeys( 'shadowHover' ) }
+							attrNames={ { base: 'shadowHover', colour: 'shadowColourHover' } }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

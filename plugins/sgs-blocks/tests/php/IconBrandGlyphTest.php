@@ -282,7 +282,7 @@ final class IconBrandGlyphTest extends TestCase {
 			)
 		);
 		$this->assertStringNotContainsString( 'scale(', $css );
-		$this->assertStringNotContainsString( '--sgs-icon-hover-scale', $css, 'scaleHover stays its own control' );
+		$this->assertStringNotContainsString( '--sgs-icon-hover-scale', $css, 'the hover growth is drawn by the motion model, not a custom property' );
 	}
 
 	public function test_theme_and_brand_modes_are_unchanged(): void {

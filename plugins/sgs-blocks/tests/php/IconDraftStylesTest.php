@@ -71,45 +71,13 @@ final class IconDraftStylesTest extends TestCase {
 		return implode( '', $m[1] );
 	}
 
-	// ── Hover move and rotation ──────────────────────────────────────────────
+	// ── Hover motion ─────────────────────────────────────────────────────────
 
-	public function test_hover_move_and_rotation_print_custom_properties(): void {
-		$css = $this->css( $this->icon( array( 'offsetXHover' => -2, 'offsetYHover' => -3, 'iconRotateHover' => -8, 'scaleHover' => 1.15 ) ) );
-		$this->assertStringContainsString( '--sgs-icon-hover-x:-2px', $css );
-		$this->assertStringContainsString( '--sgs-icon-hover-y:-3px', $css );
-		$this->assertStringContainsString( '--sgs-icon-hover-rotate:-8deg', $css );
-		$this->assertStringContainsString( '--sgs-icon-hover-scale:1.15', $css );
-	}
-
-	public function test_an_untouched_icon_prints_no_hover_move_properties(): void {
+	public function test_an_untouched_icon_prints_no_hover_motion_or_shadow_properties(): void {
 		$css = $this->css( $this->icon( array() ) );
-		foreach ( array( 'hover-x', 'hover-y', 'hover-rotate', 'move-duration', 'paint-duration', 'move-easing', 'icon-shadow' ) as $needle ) {
+		foreach ( array( 'hover-x', 'hover-y', 'hover-rotate', 'hover-scale', 'opacity-hover', 'move-duration', 'paint-duration', 'move-easing', 'icon-shadow' ) as $needle ) {
 			$this->assertStringNotContainsString( $needle, $css );
 		}
-	}
-
-	public function test_hover_move_is_clamped(): void {
-		$css = $this->css( $this->icon( array( 'offsetXHover' => 999, 'offsetYHover' => -999, 'iconRotateHover' => 900 ) ) );
-		$this->assertStringContainsString( '--sgs-icon-hover-x:40px', $css );
-		$this->assertStringContainsString( '--sgs-icon-hover-y:-40px', $css );
-		$this->assertStringContainsString( '--sgs-icon-hover-rotate:180deg', $css );
-	}
-
-	// ── Motion ───────────────────────────────────────────────────────────────
-
-	public function test_move_and_paint_durations_and_easing(): void {
-		$css = $this->css( $this->icon( array( 'transitionDuration' => 350, 'paintDuration' => 250, 'transitionEasing' => 'spring' ) ) );
-		$this->assertStringContainsString( '--sgs-icon-move-duration:350ms', $css );
-		$this->assertStringContainsString( '--sgs-icon-paint-duration:250ms', $css );
-		$this->assertStringContainsString( '--sgs-icon-move-easing:var(--wp--custom--easing--spring)', $css );
-	}
-
-	public function test_custom_easing_is_validated(): void {
-		$ok = $this->css( $this->icon( array( 'transitionEasing' => 'custom', 'transitionEasingCustom' => 'cubic-bezier(0.34, 1.56, 0.64, 1)' ) ) );
-		$this->assertStringContainsString( '--sgs-icon-move-easing:cubic-bezier(0.34, 1.56, 0.64, 1)', $ok );
-		$bad = $this->css( $this->icon( array( 'transitionEasing' => 'custom', 'transitionEasingCustom' => 'url(x);position:fixed' ) ) );
-		$this->assertStringNotContainsString( 'position:fixed', $bad );
-		$this->assertStringNotContainsString( 'move-easing', $bad );
 	}
 
 	// ── Shadow ───────────────────────────────────────────────────────────────
@@ -144,7 +112,7 @@ final class IconDraftStylesTest extends TestCase {
 	}
 
 	public function test_no_inline_style_attribute_is_ever_printed(): void {
-		$html = $this->icon( array( 'boxShadow' => '3px 3px 0 0', 'offsetXHover' => -2, 'iconRotateHover' => -8, 'transitionDuration' => 200 ), 'socials.instagram' );
+		$html = $this->icon( array( 'boxShadow' => '3px 3px 0 0' ), 'socials.instagram' );
 		$this->assertDoesNotMatchRegularExpression( '/<[a-z][^>]*\sstyle=/i', $html );
 	}
 
@@ -187,17 +155,10 @@ final class IconDraftStylesTest extends TestCase {
 
 	// ── Row defaults ─────────────────────────────────────────────────────────
 
-	public function test_row_prints_group_hover_motion_and_shadow(): void {
+	public function test_row_prints_group_shadow(): void {
 		$css = $this->css(
 			$this->row(
 				array(
-					'childIconScaleHover'            => 1.15,
-					'childIconOffsetXHover'          => -2,
-					'childIconOffsetYHover'          => -2,
-					'childIconRotateHover'           => -8,
-					'childIconTransitionDuration'    => 200,
-					'childIconPaintDuration'         => 200,
-					'childIconTransitionEasing'      => 'spring',
 					'childIconBoxShadow'             => '3px 3px 0 0',
 					'childIconBoxShadowColour'       => '#3A2A22',
 					'childIconBoxShadowHover'        => '5px 5px 0 0',
@@ -207,13 +168,6 @@ final class IconDraftStylesTest extends TestCase {
 		);
 		foreach (
 			array(
-				'--sgs-si-hover-scale:1.15',
-				'--sgs-si-hover-x:-2px',
-				'--sgs-si-hover-y:-2px',
-				'--sgs-si-hover-rotate:-8deg',
-				'--sgs-si-move-duration:200ms',
-				'--sgs-si-paint-duration:200ms',
-				'--sgs-si-move-easing:var(--wp--custom--easing--spring)',
 				'--sgs-si-shadow:3px 3px 0px 0px #3A2A22',
 				'--sgs-si-shadow-hover:5px 5px 0px 0px #3A2A22',
 			) as $needle
@@ -222,7 +176,7 @@ final class IconDraftStylesTest extends TestCase {
 		}
 	}
 
-	public function test_row_with_no_motion_prints_none_of_it(): void {
+	public function test_row_with_no_shadow_prints_none_of_it(): void {
 		$css = $this->css( $this->row( array(), array( array( array(), 'socials.instagram' ) ) ) );
 		$this->assertStringNotContainsString( '--sgs-si-hover-', $css );
 		$this->assertStringNotContainsString( '--sgs-si-shadow', $css );

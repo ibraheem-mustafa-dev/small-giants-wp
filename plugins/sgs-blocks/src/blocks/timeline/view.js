@@ -1,20 +1,11 @@
 /**
- * SGS Timeline — view.js (frontend scroll-reveal + progress-line driver)
+ * SGS Timeline — view.js (connector progress-line driver)
  *
- * Uses IntersectionObserver to add .is-revealed to each .sgs-timeline__entry
- * as it enters the viewport. Stagger delay is read from the
- * data-reveal-stagger attribute on the root <ol>.
- *
- * Respects prefers-reduced-motion: when the user has requested reduced
- * motion, all entries are immediately marked as revealed without any
- * stagger or transition delay.
- *
- * Each observer is disconnected per-entry after it fires (one-shot).
- *
- * Also drives the connector progress-line fill (--sgs-timeline-fill-progress)
+ * Drives the connector progress-line fill (--sgs-timeline-fill-progress)
  * on every browser — see initProgressDriver() below. There is no native
- * `animation-timeline: view()` CSS branch any more; this rAF driver is the
- * ONLY thing that writes the property.
+ * `animation-timeline: view()` CSS branch; this rAF driver is the ONLY thing
+ * that writes the property. The entry reveal is the sgsMotion entrance on the
+ * timeline (Spec 38A), not this file.
  */
 
 import {
@@ -25,15 +16,6 @@ import {
 
 ( function () {
 	'use strict';
-
-	/**
-	 * Whether the user has requested reduced motion.
-	 *
-	 * @type {boolean}
-	 */
-	const prefersReducedMotion = window.matchMedia(
-		'(prefers-reduced-motion: reduce)'
-	).matches;
 
 	// ── Shared sparkler coordinator ───────────────────────────────────────
 	//
@@ -132,10 +114,8 @@ import {
 	 *
 	 * — flat for 200-250px at a time, and it reports 1 while the block is still
 	 * BELOW the viewport. The painted fill is smooth; the value handed back to JS
-	 * is quantised. Anything keyed off that read therefore fires in clumps, which
-	 * is exactly how the connector-triggered reveal failed: milestones appeared
-	 * three at once instead of one at a time, and the owner reported the effect as
-	 * simply not working.
+	 * is quantised. Anything keyed off that read therefore fires in clumps, with
+	 * milestones marked three at once instead of one at a time.
 	 *
 	 * Progress is driven by a READING LINE, not raw viewport transit: 0 when the
 	 * line sits above the block's top edge, 1 once it has passed the block's
@@ -159,83 +139,6 @@ import {
 		}
 		const progress = ( readingLine - rect.top ) / rect.height;
 		return Math.min( 1, Math.max( 0, progress ) );
-	}
-
-	/**
-	 * Initialise scroll-reveal for a single timeline root element.
-	 *
-	 * @param {HTMLElement} root - The .sgs-timeline <ol> element.
-	 */
-	function initTimeline( root ) {
-		const revealOnScroll = root.dataset.revealOnScroll === 'true';
-		const revealByConnector = 'connector' === root.dataset.revealTrigger;
-
-		// The connector path is reached WITHOUT `data-reveal-on-scroll` (see
-		// render.php), so it is handled before the gate below rather than after.
-		// `is-js` is what licenses the hidden state; the milestone observer does
-		// the revealing.
-		if ( revealByConnector ) {
-			root.classList.add( 'is-js' );
-			return;
-		}
-
-		if ( ! revealOnScroll ) {
-			// revealOnScroll=false: render.php bakes in is-revealed already.
-			// Nothing for view.js to do.
-			return;
-		}
-
-		const stagger = parseInt( root.dataset.revealStagger || '100', 10 );
-		const entries = root.querySelectorAll( '.sgs-timeline__entry' );
-
-		if ( ! entries.length ) {
-			return;
-		}
-
-		// The viewport path keeps its ATTRIBUTE-keyed hidden state (style.scss:392)
-		// and therefore its pre-existing behaviour, unchanged. `is-js` is added
-		// anyway so the two paths carry the same marker.
-		//
-		// ⚠ PRE-EXISTING, RAISED NOT FIXED: because that rule keys on the
-		// attribute rather than on `is-js`, a viewport-reveal timeline hides its
-		// entries with JS disabled and nothing unhides them. Re-keying it would
-		// trade a hidden-forever bug for a flash-then-hide one, which is a
-		// decision for the owner rather than a tidy-up to slip into this change.
-		root.classList.add( 'is-js' );
-
-		// Reduced motion: reveal everything immediately, no stagger.
-		if ( prefersReducedMotion ) {
-			entries.forEach( ( entry ) => entry.classList.add( 'is-revealed' ) );
-			return;
-		}
-
-		// Normal motion: observe each entry and reveal with stagger.
-		entries.forEach( ( entry, index ) => {
-			const observer = new IntersectionObserver(
-				( observedEntries, obs ) => {
-					observedEntries.forEach( ( observed ) => {
-						if ( observed.isIntersecting ) {
-							const delay = index * stagger;
-							if ( delay > 0 ) {
-								setTimeout( () => {
-									observed.target.classList.add( 'is-revealed' );
-								}, delay );
-							} else {
-								observed.target.classList.add( 'is-revealed' );
-							}
-							// One-shot: stop watching after reveal.
-							obs.unobserve( observed.target );
-						}
-					} );
-				},
-				{
-					// Trigger when 15% of the entry is visible.
-					threshold: 0.15,
-				}
-			);
-
-			observer.observe( entry );
-		} );
 	}
 
 	/**
@@ -338,8 +241,8 @@ import {
 		// (style.scss:1442 `display:none`) and has no rail to fill: each entry is
 		// an independent snap-scrolled card, not a single scroll-through
 		// timeline. Without this bail, `measureNodes()` below reads zero-size
-		// nodes, every `frac` computes negative, `applyReached()` reveals every
-		// entry at once, and sparks append into a `display:none` parent — no
+		// nodes, every `frac` computes negative, `applyReached()` marks every
+		// node reached at once, and sparks append into a `display:none` parent — no
 		// visible loss (this degrades to MORE content, never less), but it is
 		// meaningless work on every scroll event. Read once at init, same as the
 		// other server-rendered-attribute reads in this file: a carousel
@@ -370,14 +273,6 @@ import {
 		// setting can change while the page is open.
 		const sparksAllowed = () => ! isReducedMotionNow();
 
-		// Whether this timeline hands its entry reveal to the fill rather than to
-		// the viewport. Read once: it is a server-rendered attribute and cannot
-		// change for the life of the page.
-		// Keyed on the TRIGGER alone. It used to also require
-		// `data-reveal-on-scroll`, which a connector timeline deliberately does
-		// not carry any more — that conjunction would have switched the whole
-		// feature off silently.
-		const revealOnReached = 'connector' === root.dataset.revealTrigger;
 		const horizontal = root.classList.contains( 'sgs-timeline--horizontal' );
 
 		/**
@@ -517,21 +412,6 @@ import {
 			nodes.forEach( ( node ) => {
 				const reached = node.frac <= now;
 				node.el.classList.toggle( 'is-reached', reached );
-				// Connector-triggered reveal: the entry appears as its own dot
-				// lights up, so the journey assembles in step with the line.
-				//
-				// ⛔ One-way ON, deliberately — unlike `is-reached`, which is
-				// recomputed both ways. Un-revealing on the way back up would
-				// make content the reader has already seen VANISH as they scroll
-				// up to re-read it, which is the same content-loss failure the
-				// `is-js` gate exists to prevent, just triggered by scrolling
-				// rather than by a broken script.
-				if ( revealOnReached && reached ) {
-					const entry = node.el.closest( '.sgs-timeline__entry' );
-					if ( entry ) {
-						entry.classList.add( 'is-revealed' );
-					}
-				}
 			} );
 		}
 
@@ -703,9 +583,8 @@ import {
 			} );
 
 			// F5 — joined to the SAME teardown as the driver/sparks above rather
-			// than left to register-and-never-remove. Independent of reveal
-			// config: a carousel timeline may have reveal on or off, so this is
-			// its own selector rather than reusing `timelines`/`roots`.
+			// than left to register-and-never-remove. A carousel
+			// timeline is its own selector rather than reusing `timelines`/`roots`.
 			document
 				.querySelectorAll( '.sgs-timeline--mobile-carousel' )
 				.forEach( ( root ) => {
@@ -846,15 +725,6 @@ import {
 	 * Boot on DOMContentLoaded.
 	 */
 	function boot() {
-		// BOTH reveal triggers, and the second selector is load-bearing: a
-		// connector-reveal timeline deliberately does NOT carry
-		// `data-reveal-on-scroll` (render.php explains why), so selecting on that
-		// attribute alone would silently skip it and `is-js` would never be added.
-		const timelines = document.querySelectorAll(
-			'.sgs-timeline[data-reveal-on-scroll], .sgs-timeline[data-reveal-trigger="connector"]'
-		);
-		timelines.forEach( initTimeline );
-
 		// F5 — carousel a11y init moved INSIDE bootProgressDriver()'s own
 		// init()/teardown() pair (see there), so its `change` + `scroll`
 		// listeners are torn down and re-attached together with everything

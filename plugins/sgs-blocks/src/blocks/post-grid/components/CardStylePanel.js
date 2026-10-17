@@ -3,9 +3,10 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl, RadioControl } from '@wordpress/components';
+import { PanelBody, RangeControl, RadioControl, SelectControl } from '@wordpress/components';
 import { DesignTokenPicker } from '../../../components';
 import ShadowControl, { shadowAttrKeys } from '../../../components/ShadowControl';
+import { CSS_EASING_OPTIONS } from '../../../components/motion/easing-master-list';
 import { CARD_STYLE_OPTIONS } from './constants';
 
 export default function CardStylePanel( { attributes, setAttributes, set } ) {
@@ -13,6 +14,8 @@ export default function CardStylePanel( { attributes, setAttributes, set } ) {
 		cardStyle,
 		borderColourHover,
 		scaleHover,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	return (
@@ -60,6 +63,24 @@ export default function CardStylePanel( { attributes, setAttributes, set } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						attrNames={ shadowAttrKeys( 'shadow', { hover: true, hoverColour: true } ) }
+					/>
+					<RangeControl
+						label={ __( 'Card hover transition duration (ms)', 'sgs-blocks' ) }
+						value={ parseInt( transitionDuration, 10 ) || 300 }
+						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
+						min={ 100 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<SelectControl
+						label={ __( 'Card hover transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ CSS_EASING_OPTIONS }
+						onChange={ set( 'transitionEasing' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 	);

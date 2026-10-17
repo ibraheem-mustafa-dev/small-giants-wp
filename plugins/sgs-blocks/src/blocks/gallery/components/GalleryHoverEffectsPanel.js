@@ -1,5 +1,5 @@
 /**
- * Gallery settings-tab Hover Effects panel: image size, hover effect, transition, grayscale, stagger and shadow.
+ * Gallery settings-tab Hover Effects panel: image size, scale, transition, grayscale and shadow.
  */
 import { __ } from '@wordpress/i18n';
 import { RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
@@ -7,29 +7,26 @@ import { RangeControl, SelectControl, ToggleControl } from '@wordpress/component
 // React error #130 on selecting the block): they must come from the primitives boundary.
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { ShadowControl } from '../../../components';
-import { IMAGE_SIZE_OPTIONS, HOVER_EFFECT_OPTIONS, EASING_OPTIONS } from './gallery-options';
+import { IMAGE_SIZE_OPTIONS, EASING_OPTIONS } from './gallery-options';
 
 export default function GalleryHoverEffectsPanel( { attributes, setAttributes, set } ) {
 	const {
 		imageSize,
-		effectHover,
 		scaleHover,
-		imageZoomHover,
 		transitionDuration,
 		transitionEasing,
 		grayscaleHover,
-		staggerDelay,
 	} = attributes;
 
 	return (
 		<>
 				{ /* Panel 3: Hover Effects — moved ahead of Content 2026-09-08
 				     (rule 41 dom-order-vs-declared-order finding). This panel
-				     holds Image's owned attrs (imageSize/imageZoomHover/
+				     holds Image's owned attrs (imageSize/
 				     grayscaleHover; block.json supports.sgs.elements.image,
 				     order 2) alongside the block-wide hover-effect controls
-				     (effectHover/scaleHover/transitionDuration/Easing/
-				     staggerDelay/shadowHover). render.php genuinely draws
+				     (scaleHover/transitionDuration/Easing/
+				     shadowHover). render.php genuinely draws
 				     <img> before <figcaption> (Image element order 2 before
 				     Caption order 3), so the panel carrying Image's controls
 				     must render before the panel carrying Caption's — moving
@@ -40,13 +37,10 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 					label={ __( 'Hover Effects', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
-							effectHover: 'zoom',
 							scaleHover: '',
-							imageZoomHover: true,
 							transitionDuration: '300',
 							transitionEasing: 'ease',
 							grayscaleHover: false,
-							staggerDelay: 60,
 							shadowHover: '',
 						} )
 					}
@@ -54,7 +48,7 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 					{ /* Moved in from the "Content" panel (D622 — an
 					     element-scoped control belongs in its own element's
 					     TIER 1 panel; "image" is a declared element whose
-					     attrMap claims imageSize alongside imageZoomHover/
+					     attrMap claims imageSize alongside
 					     grayscaleHover below). */ }
 					<ToolsPanelItem
 						label={ __( 'Image size', 'sgs-blocks' ) }
@@ -69,38 +63,6 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 							onChange={ set( 'imageSize' ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						hasValue={ () => effectHover !== 'zoom' }
-						onDeselect={ () => setAttributes( { effectHover: 'zoom' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Hover effect', 'sgs-blocks' ) }
-							value={ effectHover }
-							options={ HOVER_EFFECT_OPTIONS }
-							onChange={ set( 'effectHover' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						hasValue={ () => imageZoomHover !== true }
-						onDeselect={ () => setAttributes( { imageZoomHover: true } ) }
-						isShownByDefault
-					>
-						<ToggleControl
-							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-							checked={ imageZoomHover }
-							onChange={ set( 'imageZoomHover' ) }
-							help={ __(
-								'Zooms the image inside the card on hover.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem
@@ -190,26 +152,6 @@ export default function GalleryHoverEffectsPanel( { attributes, setAttributes, s
 								'sgs-blocks'
 							) }
 							__nextHasNoMarginBottom
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-						hasValue={ () => staggerDelay !== 60 }
-						onDeselect={ () => setAttributes( { staggerDelay: 60 } ) }
-					>
-						<RangeControl
-							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-							help={ __(
-								'Each image is delayed by a multiple of this value on entrance.',
-								'sgs-blocks'
-							) }
-							value={ staggerDelay }
-							onChange={ set( 'staggerDelay' ) }
-							min={ 0 }
-							max={ 500 }
-							step={ 25 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

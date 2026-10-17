@@ -78,7 +78,6 @@ $allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4',
 if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
 	$aspect_ratio = '16/10';
 }
-$hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 
 $title_colour             = $attributes['titleColour'] ?? '';
 $title_colour_gradient    = $attributes['titleColourGradient'] ?? '';
@@ -107,7 +106,6 @@ $card_border_width        = $attributes['cardBorderWidth'] ?? array();
 $card_radius              = $attributes['cardRadius'] ?? '';
 $card_shadow              = $attributes['cardShadow'] ?? '';
 $card_shadow_colour       = $attributes['cardShadowColour'] ?? '';
-$hover_image_zoom         = ! empty( $attributes['imageZoomHover'] );
 $hover_grayscale          = ! empty( $attributes['grayscaleHover'] );
 $query_post_type          = sanitize_key( $attributes['queryPostType'] ?? 'post' );
 $query_per_page           = absint( $attributes['queryPostsPerPage'] ?? 6 );
@@ -241,7 +239,6 @@ $class_names  = array_merge(
 	array(
 		'sgs-card-grid',
 		'sgs-card-grid--' . esc_attr( $variant ),
-		'sgs-card-grid--hover-' . esc_attr( $hover_effect ),
 		$sgs_grid_uid,
 	),
 	$card_grid_preset_classes
@@ -333,9 +330,6 @@ if ( $hover_scale ) {
 if ( $hover_shadow ) {
 	$class_names[] = 'sgs-has-hover';
 }
-if ( $hover_image_zoom ) {
-	$class_names[] = 'sgs-has-img-zoom';
-}
 if ( $hover_grayscale ) {
 	$class_names[] = 'sgs-has-grayscale';
 }
@@ -373,9 +367,6 @@ if ( $hover_scale ) {
 if ( $hover_shadow ) {
 	$grid_style_parts[] = '--sgs-hover-shadow: ' . sgs_shadow_value_composed( $hover_shadow, $hover_shadow_colour );
 }
-// staggerDelay (attrMap anim:stagger) reaches the page as the grid's
-// data-sgs-animation-stagger-children (includes/animation-stagger.php): the
-// step between tiles entering one by one (supports.sgs.animationItems).
 
 // Spec 35 Part 4 — per-item crop, keyed by the item's OWN stable `_key`
 // (src/utils/generateItemKey.js), never by array index/`:nth-child` (both

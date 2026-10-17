@@ -83,19 +83,8 @@ $trigger_style     = ( 'pill' === ( $attributes['triggerStyle'] ?? 'icon' ) ) ? 
 $pill_label        = sanitize_text_field( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
 $pill_bg_colour    = (string) ( $attributes['pillBgColour'] ?? '' );
 $pill_text_colour  = (string) ( $attributes['pillTextColour'] ?? '' );
-$sgs_count_pop_raw = $attributes['countPopAnimation'] ?? 'off';
-// The legacy boolean (before this setting had three modes) still reads correctly:
-// true was 'pop on change', and the draft also pops on load, so it maps to the full mode.
-if ( is_bool( $sgs_count_pop_raw ) ) {
-	$sgs_count_pop_raw = $sgs_count_pop_raw ? 'load-and-change' : 'off';
-}
-$count_pop_animation = in_array( $sgs_count_pop_raw, array( 'change', 'load-and-change' ), true ) ? $sgs_count_pop_raw : 'off';
-// Spec 38A FR-38A-53 (overlap rule): a badge that holds an Entrance layer takes the pop from that layer, so the old
-// attribute is ignored; with no layer this block renders exactly as before.
-$sgs_count_pop_model = sgs_cart_count_pop_mode( $attributes );
-if ( null !== $sgs_count_pop_model ) {
-	$count_pop_animation = $sgs_count_pop_model;
-}
+// Spec 38A FR-38A-53: the count pop is the Entrance layer on the badge part; with no layer the count does not pop.
+$count_pop_animation = sgs_cart_count_pop_mode( $attributes ) ?? 'off';
 
 // FR-36-19 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );

@@ -5,13 +5,12 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl } from '@wordpress/components';
 import { ResponsiveOverride, SgsBoxControl, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl } from '../../../components';
-import { VARIANT_OPTIONS, ASPECT_RATIO_OPTIONS, HOVER_OPTIONS } from './card-grid-options';
+import { VARIANT_OPTIONS, ASPECT_RATIO_OPTIONS } from './card-grid-options';
 
 export default function GridSettingsPanel( { attributes, setAttributes } ) {
 	const {
 		variant,
 		aspectRatio,
-		effectHover,
 	} = attributes;
 
 	return (
@@ -73,16 +72,6 @@ export default function GridSettingsPanel( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<SelectControl
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ effectHover }
-						options={ HOVER_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { effectHover: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 				</PanelBody>
 	);
 }

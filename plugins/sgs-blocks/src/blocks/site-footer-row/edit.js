@@ -14,8 +14,6 @@ import {
 	SelectControl,
 	RangeControl,
 	TextControl,
-	ToggleControl,
-	Notice,
 } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import {
@@ -31,27 +29,10 @@ import {
 	resolveColourToken,
 	DesignTokenPicker,
 	GradientCapableColourControl, SgsBoxControl } from '../../components';
-import { CursorFieldRowControls } from '../../components/CursorFieldRowControls';
-import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
-import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
-import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveResponsiveTier, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
 import { footerRowPaint } from './preview-style';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
-
-// Motion — block-private `fxEffect` selector, NOT the
-// shared fx ToolsPanel roster's `fx` attribute (this block declares no `fx`
-// and must never join `generated-fx-qualifying-blocks.json`). Each option
-// mounts the matching shared *RowControls component built for exactly this
-// escape-hatch pattern (see those components' own docblocks).
-const FX_EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Cursor field', 'sgs-blocks' ), value: 'cursor-field' },
-	{ label: __( 'Particle trail', 'sgs-blocks' ), value: 'particles' },
-	{ label: __( 'Grid dots', 'sgs-blocks' ), value: 'grid-dots' },
-	{ label: __( 'Flowing gradient', 'sgs-blocks' ), value: 'wave-gradient' },
-];
 
 // TIER 2 (THE PLACEMENT RULE, Spec 35 Part O) — `row` is the block's
 // isWrapper element with clusters [text, fill, layout], so its controls
@@ -251,8 +232,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		margin,
 		maxWidth,
 		contentWidth,
-		fxEffect,
-		fxFooterStagger,
 		hidePromotedPlaceholder,
 		rowShrinkPadding,
 		rowShrinkDuration,
@@ -262,22 +241,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const isGrid = 'grid' === layout;
 
-	// Motion-effect reachability flags — each names the SINGLE
-	// selected effect so the "not available in editor" Notice below and the
-	// matching *RowControls panel gate on the same condition. The editor
-	// canvas is static and cannot follow a pointer, animate particles, tick a
-	// lattice, or scroll a gradient, so none of these four effects can be
-	// shown live in the block preview — only the current settings can be
-	// summarised. Mirrors sgs/media/edit.js's `isVideo`-style reachability
-	// flag + fallback `<Notice>` (Signal 3, check-editor-render-parity.js).
-	const isFxCursorField = 'cursor-field' === fxEffect;
-	const isFxParticleTrail = 'particles' === fxEffect;
-	const isFxGridDotField = 'grid-dots' === fxEffect;
-	const isFxWaveGradient = 'wave-gradient' === fxEffect;
-	// The reveal-on-scroll toggle is independent of `fxEffect` — its own
-	// reachability flag mirrors the same shape (a `===` boolean comparison,
-	// not itself an early-return guard) so it earns the same exemption.
-	const isFxFooterStaggerOn = true === Boolean( fxFooterStagger );
 
 	// Editor-preview only: "Show me the shrunk size" (Row behaviour panel).
 	// Local UI state — never persisted, never rendered on the front end.
@@ -1063,203 +1026,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-				</PanelBody>
-
-				{ /* Motion — block-private escape hatch, NOT
-				   the shared fx ToolsPanel (fx.js is not touched by this block).
-				   `fxEffect` is this block's OWN selector attribute; only one of
-				   the four param panels mounts at a time, matching whichever
-				   effect is chosen. `fxFooterStagger` is a SEPARATE, footer-row-
-				   only reveal-on-scroll toggle — not gated by fxEffect, since it
-				   is a reveal-timing behaviour rather than a paint effect and can
-				   be combined with any of the four (or with none). */ }
-				<PanelBody title={ __( 'Motion', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-						label={ __( 'Background effect', 'sgs-blocks' ) }
-						value={ fxEffect || '' }
-						options={ FX_EFFECT_OPTIONS }
-						onChange={ ( value ) =>
-							setAttributes( { fxEffect: value } )
-						}
-						help={ __(
-							'An interactive motion effect for this row, on the live site only.',
-							'sgs-blocks'
-						) }
-					/>
-
-					{ isFxCursorField && (
-						<>
-							<Notice status="info" isDismissible={ false }>
-								{ __(
-									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
-									'sgs-blocks'
-								) }
-								{ ' ' }
-								{ __( 'Current settings:', 'sgs-blocks' ) }
-								{ ' ' }
-								{ [
-									attributes.fxFieldType ||
-										__( 'glow', 'sgs-blocks' ),
-									attributes.fxFieldColour ||
-										__( 'default colour', 'sgs-blocks' ),
-									attributes.fxFieldShape ||
-										__( 'circle', 'sgs-blocks' ),
-									attributes.fxFieldRadius
-										? `${ attributes.fxFieldRadius }px`
-										: '',
-									attributes.fxFieldBlend
-										? `${ attributes.fxFieldBlend }% blend`
-										: '',
-									attributes.fxFieldTrail
-										? `${ attributes.fxFieldTrail }% drag`
-										: '',
-								]
-									.filter( Boolean )
-									.join( ', ' ) }
-							</Notice>
-							<CursorFieldRowControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</>
-					) }
-					{ isFxParticleTrail && (
-						<>
-							<Notice status="info" isDismissible={ false }>
-								{ __(
-									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
-									'sgs-blocks'
-								) }
-								{ ' ' }
-								{ __( 'Current settings:', 'sgs-blocks' ) }
-								{ ' ' }
-								{ [
-									attributes.fxParticlePreset ||
-										__( 'sparks', 'sgs-blocks' ),
-									attributes.fxParticleColour ||
-										__( 'default colour', 'sgs-blocks' ),
-									attributes.fxParticleDensity
-										? `${ attributes.fxParticleDensity } density`
-										: '',
-									attributes.fxParticleSize
-										? `${ attributes.fxParticleSize }px size`
-										: '',
-								]
-									.filter( Boolean )
-									.join( ', ' ) }
-							</Notice>
-							<ParticleTrailRowControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</>
-					) }
-					{ isFxGridDotField && (
-						<>
-							<Notice status="info" isDismissible={ false }>
-								{ __(
-									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
-									'sgs-blocks'
-								) }
-								{ ' ' }
-								{ __( 'Current settings:', 'sgs-blocks' ) }
-								{ ' ' }
-								{ [
-									attributes.fxGridDotColour ||
-										__( 'default colour', 'sgs-blocks' ),
-									attributes.fxGridDotHoverColour ||
-										__( 'default hover colour', 'sgs-blocks' ),
-									attributes.fxGridDotShape ||
-										__( 'circle', 'sgs-blocks' ),
-									attributes.fxGridCell
-										? `${ attributes.fxGridCell }px cell`
-										: '',
-									attributes.fxGridDotSize
-										? `${ attributes.fxGridDotSize }px dots`
-										: '',
-									attributes.fxGridRadius
-										? `${ attributes.fxGridRadius }px radius`
-										: '',
-									attributes.fxGridLean
-										? `${ attributes.fxGridLean }deg lean`
-										: '',
-									attributes.fxGridEase
-										? `${ attributes.fxGridEase }ms ease`
-										: '',
-								]
-									.filter( Boolean )
-									.join( ', ' ) }
-							</Notice>
-							<GridDotFieldRowControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</>
-					) }
-					{ isFxWaveGradient && (
-						<>
-							<Notice status="info" isDismissible={ false }>
-								{ __(
-									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
-									'sgs-blocks'
-								) }
-								{ ' ' }
-								{ __( 'Current settings:', 'sgs-blocks' ) }
-								{ ' ' }
-								{ [
-									attributes.fxWaveVariant ||
-										__( 'pastel', 'sgs-blocks' ),
-									attributes.fxWaveBase ||
-										__( 'default base colour', 'sgs-blocks' ),
-									attributes.fxWave1 || '',
-									attributes.fxWave2 || '',
-									attributes.fxWave3 || '',
-									attributes.fxWaveSpeed
-										? `${ attributes.fxWaveSpeed }s speed`
-										: '',
-									attributes.fxWaveAmplitude
-										? `${ attributes.fxWaveAmplitude }% amplitude`
-										: '',
-								]
-									.filter( Boolean )
-									.join( ', ' ) }
-							</Notice>
-							<FlowingGradientRowControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-							/>
-						</>
-					) }
-
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __(
-							'Reveal this row as it scrolls into view',
-							'sgs-blocks'
-						) }
-						checked={ !! fxFooterStagger }
-						onChange={ ( value ) =>
-							setAttributes( { fxFooterStagger: value } )
-						}
-						help={ __(
-							'Fades and slides the row in as the reader scrolls to it, on the live site only.',
-							'sgs-blocks'
-						) }
-					/>
-					{ isFxFooterStaggerOn && (
-						<Notice status="info" isDismissible={ false }>
-							{ __(
-								'Reveal-on-scroll is not available to preview in the editor — it plays out on the live site, handled by the browser as the reader scrolls to this row.',
-								'sgs-blocks'
-							) }
-							{ ' ' }
-							{ fxFooterStagger
-								? __( 'Currently turned on.', 'sgs-blocks' )
-								: '' }
-						</Notice>
-					) }
 				</PanelBody>
 
 				{ /* Alignment & grid, padding/margin/max-width, and Border now live

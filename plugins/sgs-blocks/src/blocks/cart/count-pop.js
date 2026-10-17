@@ -1,17 +1,12 @@
 /**
- * SGS Cart — "count pop" animation trigger (Wave B, U-1).
+ * SGS Cart — "count pop" state publisher.
  *
- * A short grow-and-fade pop on the live item count. The per-instance mode
- * (`countPopAnimation`) is 'off', 'change' (only when the count increases,
- * never on the first render) or 'load-and-change' (also once on the first
- * render, at any count including 0). Never plays under reduced motion. Split
- * out of view.js to keep it under the project's 250-line JS budget.
- *
- * A cart whose badge holds a `state` Entrance layer (Spec 38A FR-38A-53) plays
- * the pop from that layer instead: the same decision (`mode` is derived from the
- * layer's state by render.php) pulses `count-changed` (an item was added) or
- * `count-loaded` (also once at load) on the badge through `@sgs/motion-state`,
- * so two adds replay it twice. A cart with no layer keeps the class below.
+ * The count pop is the Entrance layer on the badge part (Spec 38A FR-38A-53); render.php derives `mode` from the layer's
+ * state and prints it as `data-count-pop`: 'off' (the layer plays by another trigger, or the badge has no layer), 'change'
+ * (the `count-changed` state: an item was added) or 'load-and-change' (the `count-loaded` state: also once at load, at any
+ * count including 0). This file pulses that state on the badge through `@sgs/motion-state`, so two adds replay the layer
+ * twice, and stores the previous count on the badge to tell an increase from the first render. Split out of view.js to
+ * keep it under the project's 250-line JS budget.
  *
  * @package
  */
@@ -24,24 +19,9 @@ import {
 const STATE_BADGE = '[data-sgs-me~="state"]';
 
 /**
- * Whether the visitor's OS/browser has requested reduced motion. Read fresh
- * on every call rather than cached — a rare but real mid-session change
- * (some OSes flip this live via an accessibility toggle).
- *
- * @return {boolean} True when `prefers-reduced-motion: reduce` matches.
- */
-function prefersReducedMotion() {
-	return (
-		'function' === typeof window.matchMedia &&
-		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
-	);
-}
-
-/**
- * Play the pop animation on `badge` according to `mode`, and update its
- * stored previous count either way. The first call for an element has no
- * previous count: it pops only in 'load-and-change' mode. Later calls pop
- * only when the count has increased since the last call.
+ * Pulse the count state on `badge` according to `mode`, and update its stored previous count either way. The first call
+ * for an element has no previous count: it pulses only in 'load-and-change' mode. Later calls pulse only when the count
+ * has increased since the last call. A badge with no state layer only records the count.
  *
  * @param {HTMLElement} badge The `[data-sgs-cart-count]` element.
  * @param {number}      count The new, current item count.
@@ -64,13 +44,6 @@ export function maybeAnimateCountPop( badge, count, mode ) {
 			badge,
 			'load-and-change' === mode ? 'count-loaded' : 'count-changed'
 		);
-	} else if ( shouldPop && ! prefersReducedMotion() ) {
-		badge.classList.remove( 'sgs-cart__badge--pop' );
-		// Force reflow so re-adding the class restarts the animation on
-		// consecutive adds.
-		// eslint-disable-next-line no-unused-expressions
-		badge.offsetWidth;
-		badge.classList.add( 'sgs-cart__badge--pop' );
 	}
 
 	badge.dataset.sgsPrevCount = String( count );

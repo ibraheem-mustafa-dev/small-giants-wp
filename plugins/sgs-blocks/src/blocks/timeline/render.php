@@ -3,11 +3,11 @@
  * Server-side render for sgs/timeline.
  *
  * Renders a date-based timeline as a semantic <ol>/<li>/<time> structure.
- * Vertical and horizontal orientations supported. When revealOnScroll is
- * false, all entries are pre-revealed (is-revealed baked in, no JS dep).
+ * Vertical and horizontal orientations supported. The entry reveal is the
+ * sgsMotion entrance on the timeline (Spec 38A), not a block attribute.
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. Block-private LEAF pattern (mirrors sgs/label/sgs/quote).
- * The `--sgs-connector-colour` / `--sgs-date-colour` / `--sgs-reveal-stagger`
+ * The `--sgs-connector-colour` / `--sgs-date-colour`
  * custom-property VALUES route to the scoped `.{uid}` rule like everything
  * else — inline `--var` is FORBIDDEN by the FR-32-4 amendment (2026-07-18,
  * D345).
@@ -124,8 +124,6 @@ $date_colour_hover          = $attributes['dateColourHover'] ?? '';
 $date_colour_hover_gradient = $attributes['dateColourHoverGradient'] ?? '';
 $progress_fill              = ! empty( $attributes['connectorProgressFill'] );
 $fill_colour                = $attributes['connectorFillColour'] ?? 'accent';
-$reveal_on_scroll           = isset( $attributes['revealOnScroll'] ) ? (bool) $attributes['revealOnScroll'] : true;
-$reveal_stagger             = isset( $attributes['revealStagger'] ) ? absint( $attributes['revealStagger'] ) : 100;
 
 // Step 4b — curated scroll-effect mode. Reuses the EXISTING GSAP fx slugs
 // (`scrub` / `pin-scrub` / `horizontal-panel`) rather than registering a new
@@ -144,22 +142,6 @@ if ( 'pinned-journey' === $scroll_effect && 'vertical' !== $orientation ) {
 }
 if ( 'pinned-horizontal' === $scroll_effect && 'horizontal' !== $orientation ) {
 	$scroll_effect = 'basic';
-}
-
-// Reveal trigger. `connector` reveals each entry as the progress fill reaches ITS
-// dot rather than when the entry enters the viewport, so the journey assembles
-// itself in step with the line. Sanitised to the declared enum: an out-of-enum
-// stored value is otherwise silently coerced to the default anyway, but stating
-// it here keeps the class name it emits safe.
-$reveal_trigger = $attributes['revealTrigger'] ?? 'viewport';
-$reveal_trigger = in_array( $reveal_trigger, array( 'viewport', 'connector' ), true )
-	? $reveal_trigger
-	: 'viewport';
-// A connector-triggered reveal is meaningless without the fill that drives it —
-// fall back rather than leave every entry hidden forever with nothing to reveal
-// them. This is the degrade-to-MORE-content direction, deliberately.
-if ( 'connector' === $reveal_trigger && ! $progress_fill ) {
-	$reveal_trigger = 'viewport';
 }
 
 // Milestone media width (block-wide, not per entry).
@@ -485,7 +467,7 @@ if ( $mobile_decls ) {
 // the ToC target). is-style-*/align* classes are merged in automatically by
 // get_block_wrapper_attributes() via the block's className attribute. The
 // `style` attr carries ONLY the pre-existing custom-property VALUES
-// (--sgs-connector-colour / --sgs-date-colour / --sgs-reveal-stagger) — no
+// (--sgs-connector-colour / --sgs-date-colour) — no
 // property declaration (contract §A); every declaration lives in the scoped
 // <style> above.
 // ---------------------------------------------------------------------------
@@ -521,9 +503,6 @@ if ( $progress_fill ) {
 $wrapper_classes[] = 'sgs-timeline--media-under';
 if ( $row_stripes ) {
 	$wrapper_classes[] = 'sgs-timeline--row-stripes';
-}
-if ( 'connector' === $reveal_trigger ) {
-	$wrapper_classes[] = 'sgs-timeline--reveal-connector';
 }
 if ( $date_gutter ) {
 	$wrapper_classes[] = 'sgs-timeline--date-gutter';
@@ -608,9 +587,6 @@ if ( $progress_fill && $fill_colour ) {
 	$fill_colour_hover          = $attributes['connectorFillColourHover'] ?? '';
 	$fill_colour_hover_gradient = $attributes['connectorFillColourHoverGradient'] ?? '';
 	$wrapper_style_parts        = array_merge( $wrapper_style_parts, sgs_custom_property_gradient_decls( 'sgs-timeline-fill-colour', $fill_colour, $fill_colour_gradient, $fill_colour_hover, $fill_colour_hover_gradient ) );
-}
-if ( $reveal_stagger > 0 ) {
-	$wrapper_style_parts[] = '--sgs-reveal-stagger:' . $reveal_stagger . 'ms';
 }
 if ( '' !== $media_width ) {
 	$wrapper_style_parts[] = '--sgs-timeline-media-width:' . $media_width;
@@ -697,41 +673,6 @@ if ( 'basic' !== $scroll_effect ) {
 	}
 }
 
-// Pass scroll-reveal config to view.js via data attributes.
-if ( $reveal_on_scroll ) {
-	// ⛔ 'pinned-journey' owns entry opacity/transform itself (GSAP drives
-	// each milestone as the progress fill reaches it), so the viewport/
-	// connector reveal must not ALSO run. Suppressing the driver alone is not
-	// enough — style.scss hides `.sgs-timeline__entry:not(.is-revealed)`
-	// under `[data-reveal-on-scroll].is-js`, and view.js adds `.is-js`
-	// regardless of which fx is active. Shipped once as a "carousel that
-	// painted nothing but a scrollbar" (D896) when a suppressed driver left
-	// `data-reveal-on-scroll` on the wrapper with nothing left to reveal the
-	// entries. Fix: don't emit the attribute at all in this mode, so the hide
-	// rule can never match — entries render visible and GSAP animates them.
-	if ( 'pinned-journey' !== $scroll_effect ) {
-		$wrapper_args['data-reveal-stagger'] = (string) $reveal_stagger;
-		$wrapper_args['data-reveal-trigger'] = $reveal_trigger;
-
-		// ⛔ THE TWO TRIGGERS MUST NOT BOTH EMIT `data-reveal-on-scroll`, and this is
-		// the whole reason the attribute is conditional. style.scss:392 hides an
-		// unrevealed entry on the ATTRIBUTE alone, with no `.is-js` guard — so if a
-		// connector-reveal timeline also carried it, that rule would hide every entry
-		// with JS disabled and nothing would ever unhide them. Measured live on the
-		// canary: the `.is-js` gate on the connector rule was completely defeated by
-		// this older selector, and all four entries stayed at opacity 0.
-		//
-		// The viewport path keeps the attribute and therefore keeps its existing
-		// behaviour exactly (including its own no-JS weakness, which is pre-existing
-		// and raised separately rather than changed here — re-keying a shipped reveal
-		// to `.is-js` trades a hidden-forever bug for a flash-then-hide one, and that
-		// is a decision, not a tidy-up).
-		if ( 'connector' !== $reveal_trigger ) {
-			$wrapper_args['data-reveal-on-scroll'] = 'true';
-		}
-	}
-}
-
 // Task 2 — the carousel's accessible name (SC 2.1.1). The block has no
 // heading attribute of its own (entry titles are per-milestone, not a
 // block-wide label), so this is a sensible i18n'd default rather than a
@@ -811,14 +752,7 @@ $sgs_tl_loop_i     = 0;
 					}
 				}
 
-				// Pre-reveal when revealOnScroll is disabled, and also in
-				// 'pinned-journey' mode — that fx owns entry opacity/transform
-				// itself and no data-reveal-* attribute is emitted for it (see
-				// above), so entries must start visible for GSAP to animate.
-				$entry_classes = array( 'sgs-timeline__entry' );
-				if ( ! $reveal_on_scroll || 'pinned-journey' === $scroll_effect ) {
-					$entry_classes[] = 'is-revealed';
-				}
+				$entry_classes    = array( 'sgs-timeline__entry' );
 				$entry_class_attr = implode( ' ', $entry_classes );
 
 				$image_alt = ( $image_id > 0 ) ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';

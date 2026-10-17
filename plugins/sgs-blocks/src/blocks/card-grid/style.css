@@ -341,61 +341,6 @@
    with its fallbacks; unset now means no hover colour, matching every other
    SGS block. --sgs-hover-scale / --sgs-hover-shadow below are UNAFFECTED. */
 
-/* ===== Hover Effects ===== */
-
-/* Zoom — image scales up */
-.sgs-card-grid--hover-zoom .sgs-card-grid__item:hover .sgs-card-grid__image,
-.sgs-card-grid--hover-zoom .sgs-card-grid__item:hover .sgs-card-grid__image-wrap .sgs-media-el {
-	transform: scale(1.05);
-}
-
-/* Lift — card lifts */
-.sgs-card-grid--hover-lift .sgs-card-grid__item:hover {
-	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--floating);
-}
-
-/* Overlay Slide — slides up from bottom */
-.sgs-card-grid--overlay-slide .sgs-card-grid__item {
-    position: relative;
-    overflow: hidden;
-}
-
-.sgs-card-grid--overlay-slide .sgs-card-grid__overlay {
-    position: absolute;
-    inset: auto 0 0 0;
-    background: linear-gradient(to top, var(--wp--preset--color--text, #1e1e1e) 0%, transparent 100%);
-    color: var(--wp--preset--color--text-inverse, #fff);
-    padding: 1rem;
-    transform: translateY(100%);
-    transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-/* M25: Ensure text on overlay is readable */
-.sgs-card-grid--overlay-slide .sgs-card-grid__title,
-.sgs-card-grid--overlay-slide .sgs-card-grid__subtitle {
-	color: inherit !important;
-}
-
-.sgs-card-grid--overlay-slide .sgs-card-grid__item:hover .sgs-card-grid__overlay,
-.sgs-card-grid--overlay-slide .sgs-card-grid__item:focus-within .sgs-card-grid__overlay {
-    transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-card-grid--overlay-slide .sgs-card-grid__overlay {
-		transition: none;
-	}
-	.sgs-card-grid--overlay-slide .sgs-card-grid__item:hover .sgs-card-grid__overlay,
-	.sgs-card-grid--overlay-slide .sgs-card-grid__item:focus-within .sgs-card-grid__overlay {
-		transform: translateY(0);
-	}
-}
-
 /* ===== Hover Scale (#87, #101) ===== */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -425,21 +370,6 @@
 	/* Hover Shadow (#88, #102) */
 	.sgs-card-grid.sgs-has-hover .sgs-card-grid__item:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
-	}
-
-	/* Hover Image Zoom (#90, #104) */
-	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item {
-		overflow: hidden;
-	}
-
-	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__image,
-	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__image-wrap .sgs-media-el {
-		transition: transform var(--sgs-hover-zoom-duration, 0.5s) ease;
-	}
-
-	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image,
-	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image-wrap .sgs-media-el {
-		transform: scale(var(--sgs-hover-zoom, 1.1));
 	}
 
 	/* Grayscale to colour (#130) */
@@ -486,12 +416,7 @@
 		transition: none;
 	}
 
-	.sgs-card-grid--hover-zoom .sgs-card-grid__item:hover .sgs-card-grid__image,
-	.sgs-card-grid--hover-zoom .sgs-card-grid__item:hover .sgs-card-grid__image-wrap .sgs-media-el,
-	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image,
-	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image-wrap .sgs-media-el,
-	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item:hover,
-	.sgs-card-grid--hover-lift .sgs-card-grid__item:hover {
+	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item:hover {
 		transform: none;
 	}
 

@@ -101,7 +101,6 @@
 					"showCaptions": true,
 					"captionReveal": true,
 					"enableLightbox": false,
-					"effectHover": "none",
 					"className": "m310-reveal",
 					"mediaItems": [
 						{

@@ -187,11 +187,10 @@ if ( ! function_exists( 'sgs_gallery_linked_item_html' ) ) {
 	 * @param string $item_key   The item's stable key.
 	 * @param string $media_html Escaped image markup.
 	 * @param string $img_alt    Escaped alt text, the link's name when it has no label.
-	 * @param string $overlay    Escaped overlay-slide text, or ''.
 	 * @param string $caption    Escaped caption text, or ''.
 	 * @return string Markup; every dynamic part is escaped before it arrives or here.
 	 */
-	function sgs_gallery_linked_item_html( array $link, string $item_key, string $media_html, string $img_alt, string $overlay, string $caption ): string {
+	function sgs_gallery_linked_item_html( array $link, string $item_key, string $media_html, string $img_alt, string $caption ): string {
 		// The link's accessible name: its label, else the image's alt text, else the caption, else the
 		// destination's host, so a decorative (hidden) image never leaves the link unnamed.
 		$alt_name = wp_strip_all_tags( html_entity_decode( $img_alt, ENT_QUOTES ) );
@@ -218,9 +217,6 @@ if ( ! function_exists( 'sgs_gallery_linked_item_html' ) ) {
 		$html .= '<a class="sgs-gallery__item-link sgs-focus--inset"' . $attrs . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- href is esc_url(), label is esc_attr().
 		$html .= '<div class="sgs-gallery__img-wrap">' . $media_html . '</div>';
 		$html .= '</a>';
-		if ( '' !== $overlay ) {
-			$html .= '<div class="sgs-gallery__overlay">' . $overlay . '</div>';
-		}
 		if ( '' !== $caption ) {
 			$html .= '<figcaption class="sgs-gallery__caption">' . $caption . '</figcaption>';
 		}

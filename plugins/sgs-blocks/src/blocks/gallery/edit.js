@@ -82,10 +82,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayColourHover,
 		overlayColourHoverGradient,
 		scaleHover,
-		imageZoomHover,
 		grayscaleHover,
-		staggerDelay,
-		effectHover,
 		transitionDuration,
 		transitionEasing,
 		carouselAutoplay,
@@ -221,7 +218,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	const blockProps = useBlockProps( {
-		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ effectHover }${ isTileMode( attributes ) ? ' sgs-gallery--tile' : '' }`,
+		className: `sgs-gallery sgs-gallery--${ layout }${ isTileMode( attributes ) ? ' sgs-gallery--tile' : '' }`,
 		style: inlineStyles,
 	} );
 

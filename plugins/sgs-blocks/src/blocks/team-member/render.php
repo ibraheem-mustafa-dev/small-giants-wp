@@ -127,7 +127,6 @@ $hover_shadow           = $attributes['cardShadowHover'] ?? '';
 $hover_shadow_colour    = $attributes['cardShadowColourHover'] ?? '';
 $card_shadow            = $attributes['cardShadow'] ?? '';
 $card_shadow_colour     = $attributes['cardShadowColour'] ?? '';
-$hover_img_zoom         = (bool) ( $attributes['imageZoomHover'] ?? false );
 $hover_grayscale        = (bool) ( $attributes['grayscaleHover'] ?? false );
 $hover_overlay          = (bool) ( $attributes['overlayHover'] ?? false );
 $display_mode           = $attributes['displayMode'] ?? 'full';
@@ -195,9 +194,6 @@ $sgs_classes = array(
 
 if ( $is_compact ) {
 	$sgs_classes[] = 'sgs-team-member--compact';
-}
-if ( $hover_img_zoom ) {
-	$sgs_classes[] = 'sgs-has-img-zoom';
 }
 if ( $hover_grayscale ) {
 	$sgs_classes[] = 'sgs-has-grayscale';
@@ -781,7 +777,7 @@ $sgs_card_html .= $scoped_css ? ( '<style>' . wp_strip_all_tags( implode( '', $s
 $sgs_card_html .= '<div ' . $wrapper_attrs . '>' . $sgs_inner_html . '</div>';
 
 // Block-link is handled universally by the sgsBlockLink extension
-// (includes/hover-effects.php, render_block filter) — it injects a
+// (its render_block filter) — it injects a
 // stretched-link overlay as this root's last child, so no per-block wrap
 // belongs here. This block's own blockLink/blockLinkTarget attrs (which had
 // no edit.js control and were therefore unreachable) were removed.

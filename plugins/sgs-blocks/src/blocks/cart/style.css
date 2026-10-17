@@ -165,36 +165,6 @@
 	justify-content: center;
 }
 
-/* "Count pop": the live count grows from 60% with a fade, overshoots to 115%
-   and settles at 100% over 0.5s. count-pop.js toggles this class according to
-   the countPopAnimation mode (off / change / load-and-change) read from
-   `data-count-pop`; in 'off' it never adds the class, so this rule is inert.
-   Skipped under prefers-reduced-motion. A badge holding an Entrance layer
-   (data-sgs-me) takes the pop from the motion model instead (Spec 38A
-   FR-38A-53), so this rule never applies to it. */
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-cart__badge--pop:where(:not([data-sgs-me])) {
-		animation: sgs-cart-count-pop 0.5s ease;
-	}
-}
-
-@keyframes sgs-cart-count-pop {
-	0% {
-		opacity: 0;
-		transform: scale(0.6);
-	}
-
-	60% {
-		opacity: 1;
-		transform: scale(1.15);
-	}
-
-	100% {
-		opacity: 1;
-		transform: scale(1);
-	}
-}
-
 /* ── Has-items modifier — added by view.js ─────────────────────────────────── */
 /* Useful for parent-chain CSS hooks (e.g. header styling when cart has items) */
 .sgs-cart--has-items .sgs-cart__trigger {

@@ -23,7 +23,6 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 		showCategory,
 		showReadMore,
 		readMoreText,
-		imageZoomHover,
 	} = attributes;
 
 	return (
@@ -35,7 +34,6 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 							imageSize: 'medium_large',
 							imageDecorative: false,
 							aspectRatio: '16 / 9',
-							imageZoomHover: true,
 							showTitle: true,
 							showExcerpt: true,
 							excerptLength: 20,
@@ -49,14 +47,9 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 				>
 					<ToolsPanelItem
 						label={ __( 'Show image', 'sgs-blocks' ) }
-						hasValue={ () =>
-							showImage !== true || imageZoomHover !== true
-						}
+						hasValue={ () => showImage !== true }
 						onDeselect={ () =>
-							setAttributes( {
-								showImage: true,
-								imageZoomHover: true,
-							} )
+							setAttributes( { showImage: true } )
 						}
 						isShownByDefault
 					>
@@ -108,15 +101,6 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 										) }
 										checked={ imageDecorative }
 										onChange={ set( 'imageDecorative' ) }
-										__nextHasNoMarginBottom
-									/>
-									{ /* Consolidated in from the "Hover Effects" panel —
-									     same TIER 1 reason; image zoom on hover is
-									     image-owned. */ }
-									<ToggleControl
-										label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-										checked={ imageZoomHover }
-										onChange={ set( 'imageZoomHover' ) }
 										__nextHasNoMarginBottom
 									/>
 								</>

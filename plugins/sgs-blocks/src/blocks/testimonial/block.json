@@ -35,9 +35,6 @@
 			"_comment_orgLogoNotAdopted": "orgLogo's object-fit:contain (style.css) is deliberately NOT a client control and NOT routed through the media-atom layer -- a logo must never be cropped, so there is no orgLogoObjectFit attribute to adopt in the first place. Disclosed here (in addition to the existing style.css comment) for consistency with the other _comment_*NotAdopted notes added during the 37-media-no-handroll remediation, per /qc-council 2026-09-03.",
 			"containerKind": "content",
 			"scalarContentLift": true,
-			"presetSelectors": [
-				"effectHover"
-			],
 			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). Replaces the old universal imageControls/imageControlsExplicit single sgsObjectFit/sgsObjectPosition pair (block-level, shared by whichever slot's render.php happened to call sgs_media_position_css()) with two independently-scoped media elements, one per slot, mirroring sgs/before-after's Wave 5b migration. `avatar` gets object-fit only (a fixed-crop circular headshot has no genuine focal-point need beyond the fit mode). `work` gets object-fit + focal-point, replacing the position control the old mechanism gave it 1:1 — case-study media varies in composition, so both crop mode and crop focus are genuine per-instance needs. The org logo is deliberately excluded — see elements.org-logo-image below.",
 			"mediaElements": [
 				{
@@ -76,10 +73,6 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
-						"anim:preset": "sgsAnimation",
-						"anim:duration": "sgsAnimationDuration",
-						"anim:easing": "sgsAnimationEasing",
-						"anim:stagger": "staggerDelay",
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:color": "textColour",
 						"css:color-gradient": "textColourGradient",
@@ -87,7 +80,6 @@
 						"css:text-decoration-thickness-link": "linkUnderlineThickness",
 						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attrs on this block.",
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -641,10 +633,6 @@
 			"default": "",
 			"description": "CSS gradient string painting the hover-state border with a masked ::before ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColourHover on hover — this block has no resting-state border colour attribute of its own to override (native __experimentalBorder.color, unaffected)."
 		},
-		"effectHover": {
-			"type": "string",
-			"default": "none"
-		},
 		"transitionDuration": {
 			"type": "string",
 			"default": "300"
@@ -661,24 +649,8 @@
 			"type": "string",
 			"default": ""
 		},
-		"shadowHoverColour": {
+		"shadowColourHover": {
 			"type": "string"
-		},
-		"staggerDelay": {
-			"type": "number",
-			"default": 0
-		},
-		"sgsAnimation": {
-			"type": "string",
-			"default": "fade-up"
-		},
-		"sgsAnimationDuration": {
-			"type": "string",
-			"default": "medium"
-		},
-		"sgsAnimationEasing": {
-			"type": "string",
-			"default": "default"
 		},
 		"_comment_wrapperAttrs": "WS-4 container wrapper (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
 		"maxWidth": {

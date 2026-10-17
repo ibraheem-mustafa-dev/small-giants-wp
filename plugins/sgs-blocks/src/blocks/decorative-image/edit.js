@@ -38,7 +38,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		opacity,
 		zIndex,
 		flipX,
-		parallaxStrength,
 		fadeOnScroll,
 		overflow,
 		hideOnTablet,
@@ -333,17 +332,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Effects', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<RangeControl
-						label={ __( 'Parallax Strength', 'sgs-blocks' ) }
-						help={ __( '0 = disabled, 100 = strong scroll effect', 'sgs-blocks' ) }
-						value={ parallaxStrength }
-						onChange={ ( val ) => setAttributes( { parallaxStrength: val } ) }
-						min={ 0 }
-						max={ 100 }
-						step={ 5 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<ToggleControl
 						label={ __( 'Fade on scroll', 'sgs-blocks' ) }
 						help={ __( 'Opacity fades to 0 as image scrolls past the top of the viewport. Disabled when "Reduce motion" is on.', 'sgs-blocks' ) }

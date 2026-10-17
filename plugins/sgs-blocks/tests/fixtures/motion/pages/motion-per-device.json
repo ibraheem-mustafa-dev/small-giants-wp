@@ -253,7 +253,6 @@
 						"alt": ""
 					},
 					"shadowLiftOnHover": false,
-					"imageZoomHover": false,
 					"sgsHoverScalePreset": "none",
 					"sgsHoverShadow": "none",
 					"sgsHoverImageZoom": false,

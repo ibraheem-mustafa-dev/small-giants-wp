@@ -24,7 +24,6 @@
 		"attributes": {
 			"orientation": "horizontal",
 			"mobileLayout": "carousel",
-			"revealOnScroll": false,
 			"className": "mlo-a",
 			"entries": [
 				{
@@ -89,7 +88,6 @@
 		"attributes": {
 			"orientation": "horizontal",
 			"mobileLayout": "carousel",
-			"revealOnScroll": false,
 			"className": "mlo-b",
 			"entries": [
 				{
@@ -151,7 +149,6 @@
 		"attributes": {
 			"orientation": "horizontal",
 			"mobileLayout": "carousel",
-			"revealOnScroll": false,
 			"className": "mlo-c",
 			"entries": [
 				{

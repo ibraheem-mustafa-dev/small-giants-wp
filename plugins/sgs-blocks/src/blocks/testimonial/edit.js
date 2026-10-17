@@ -220,7 +220,6 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		ratingSize,
 		nameFontWeight,
 		nameFontSize,
-		effectHover,
 		backgroundColour,
 		backgroundColourGradient,
 		backgroundColourHover,
@@ -231,8 +230,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		transitionEasing,
 		scaleHover,
 		shadowHover,
-		shadowHoverColour,
-		staggerDelay,
+		shadowColourHover,
 		summaryColourHover,
 		nameColourHover,
 		roleColourHover,
@@ -1455,39 +1453,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						label={ __( 'Hover states', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
-								effectHover: 'none',
 								transitionDuration: '300',
 								transitionEasing: 'ease-in-out',
 								scaleHover: '',
 								shadowHover: '',
-								staggerDelay: 0,
 							} )
 						}
 					>
-						<ToolsPanelItem
-							label={ __( 'Hover effect', 'sgs-blocks' ) }
-							hasValue={ () => effectHover !== 'none' }
-							onDeselect={ () =>
-								setAttributes( { effectHover: 'none' } )
-							}
-							isShownByDefault
-						>
-							<SelectControl
-								label={ __( 'Hover effect', 'sgs-blocks' ) }
-								value={ effectHover }
-								options={ [
-									{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-									{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-									{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
-									{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-								] }
-								onChange={ ( val ) =>
-									setAttributes( { effectHover: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 							hasValue={ () => transitionDuration !== '300' }
@@ -1585,25 +1557,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								setAttributes={ setAttributes }
 								attrNames={ {
 									base: 'shadowHover',
-									colour: 'shadowHoverColour',
+									colour: 'shadowColourHover',
 								} }
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-							hasValue={ () => !! staggerDelay }
-							onDeselect={ () => setAttributes( { staggerDelay: 0 } ) }
-						>
-							<RangeControl
-								label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-								help={ __( 'When several testimonial cards sit side by side, each is delayed by a multiple of this value on entrance.', 'sgs-blocks' ) }
-								value={ staggerDelay }
-								onChange={ ( val ) => setAttributes( { staggerDelay: val } ) }
-								min={ 0 }
-								max={ 500 }
-								step={ 25 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

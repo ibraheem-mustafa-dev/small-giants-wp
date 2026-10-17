@@ -5,7 +5,7 @@
  * Partial of render.php, included with a plain require so it shares render.php's
  * local scope (required once per block instance).
  *
- * Reads: $attributes, $block (its template sgs/product-card inner block), $source, $uid, $columns, $columns_tablet, $columns_mobile, $gap, $hover_effect, $hover_scale, $hover_shadow, $hover_shadow_colour, $transition_dur, $transition_ease, $card_grid_native_style_tag, $card_grid_preset_classes.
+ * Reads: $attributes, $block (its template sgs/product-card inner block), $source, $uid, $columns, $columns_tablet, $columns_mobile, $gap, $hover_scale, $hover_shadow, $hover_shadow_colour, $transition_dur, $transition_ease, $card_grid_native_style_tag, $card_grid_preset_classes.
  * Writes: the $collection_*, $wc_*, $card_grid_card_*, $card_grid_template_attrs, $empty_message, $empty_html and $pagination_html working locals; it always echoes the finished markup and ends in return, so render.php returns straight after the require.
  *
  * @package SGS\Blocks
@@ -56,7 +56,6 @@ defined( 'ABSPATH' ) || exit;
 		array(
 			'sgs-card-grid',
 			'sgs-card-grid--card', // Product cards always use card variant.
-			'sgs-card-grid--hover-' . esc_attr( $hover_effect ),
 			$uid,
 		),
 		$card_grid_preset_classes

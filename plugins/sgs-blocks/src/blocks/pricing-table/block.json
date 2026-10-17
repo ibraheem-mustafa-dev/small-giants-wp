@@ -251,17 +251,10 @@
 				},
 				"behaviour": {
 					"motion": false,
-					"label": "Toggle + animation behaviour",
+					"label": "Toggle behaviour",
 					"order": 10,
-					"clusters": [
-						"animation"
-					],
-					"attrMap": {
-						"anim:preset": "sgsAnimation",
-						"anim:duration": "sgsAnimationDuration",
-						"anim:easing": "sgsAnimationEasing"
-					},
-					"_note": "billingToggle/toggleStyle/billingToggleMonthlyLabel/billingToggleYearlyLabel (toggle configuration) are content/behaviour fields, not style-cluster members. sgsAnimation/sgsAnimationDuration/sgsAnimationEasing (scroll-reveal preset) now resolve via the FR-35-6 `animation` cluster (anim:preset/anim:duration/anim:easing) — this block has no staggerDelay attribute, so anim:stagger is an honest gap; anim:parallax/anim:trigger are also honest gaps (no bgParallax/scroll-trigger attrs on this block)."
+					"clusters": [],
+					"_note": "billingToggle/toggleStyle/billingToggleMonthlyLabel/billingToggleYearlyLabel (toggle configuration) are content/behaviour fields, not style-cluster members. The entrance reveal is the sgsMotion model (inserter default), not an attribute here."
 				}
 			}
 		}
@@ -614,18 +607,6 @@
 		"toggleLabelHoverColourGradient": {
 			"type": "string",
 			"default": ""
-		},
-		"sgsAnimation": {
-			"type": "string",
-			"default": "slide-up"
-		},
-		"sgsAnimationDuration": {
-			"type": "string",
-			"default": "medium"
-		},
-		"sgsAnimationEasing": {
-			"type": "string",
-			"default": "default"
 		},
 		"contentWidth": {
 			"type": "object",

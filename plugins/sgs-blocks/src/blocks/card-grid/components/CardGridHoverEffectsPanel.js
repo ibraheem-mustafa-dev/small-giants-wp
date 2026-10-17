@@ -1,5 +1,5 @@
 /**
- * Card Grid — Hover Effects panel: scale, image zoom, grayscale, stagger delay, transition duration and easing.
+ * Card Grid — Hover Effects panel: scale, grayscale, transition duration and easing.
  */
 
 import { __ } from '@wordpress/i18n';
@@ -12,9 +12,7 @@ export default function CardGridHoverEffectsPanel( { attributes, setAttributes }
 		transitionDuration,
 		transitionEasing,
 		scaleHover,
-		imageZoomHover,
 		grayscaleHover,
-		staggerDelay,
 	} = attributes;
 
 	return (
@@ -28,9 +26,7 @@ export default function CardGridHoverEffectsPanel( { attributes, setAttributes }
 						resetAll={ () =>
 							setAttributes( {
 								scaleHover: '',
-								imageZoomHover: false,
 								grayscaleHover: false,
-								staggerDelay: 80,
 								transitionDuration: '300',
 								transitionEasing: 'ease-in-out',
 							} )
@@ -54,20 +50,6 @@ export default function CardGridHoverEffectsPanel( { attributes, setAttributes }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-							hasValue={ () => imageZoomHover !== false }
-							onDeselect={ () => setAttributes( { imageZoomHover: false } ) }
-							isShownByDefault
-						>
-							<ToggleControl
-								label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-								help={ __( 'Zooms the card image on hover.', 'sgs-blocks' ) }
-								checked={ imageZoomHover }
-								onChange={ ( val ) => setAttributes( { imageZoomHover: val } ) }
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
 							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
 							hasValue={ () => grayscaleHover !== false }
 							onDeselect={ () => setAttributes( { grayscaleHover: false } ) }
@@ -78,23 +60,6 @@ export default function CardGridHoverEffectsPanel( { attributes, setAttributes }
 								checked={ grayscaleHover }
 								onChange={ ( val ) => setAttributes( { grayscaleHover: val } ) }
 								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-							hasValue={ () => staggerDelay !== 80 }
-							onDeselect={ () => setAttributes( { staggerDelay: 80 } ) }
-						>
-							<RangeControl
-								label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-								help={ __( 'Each card is delayed by a multiple of this value on entrance.', 'sgs-blocks' ) }
-								value={ staggerDelay }
-								onChange={ ( val ) => setAttributes( { staggerDelay: val } ) }
-								min={ 0 }
-								max={ 500 }
-								step={ 5 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

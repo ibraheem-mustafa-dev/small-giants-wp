@@ -38,12 +38,11 @@
  * already gone). R-31-14: NO legacy fallback hack.
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
- *   cardStyle, effectHover, iconPosition, backgroundColour, backgroundColourGradient,
+ *   cardStyle, iconPosition, backgroundColour, backgroundColourGradient,
  *   backgroundColourHover, backgroundColourHoverGradient, textColour, textColourGradient,
  *   textColourHover, textColourHoverGradient, linkColour, linkColourHover,
  *   borderColourHover, scaleHover, shadowHover, grayscaleHover,
- *   transitionDuration, transitionEasing,
- *   sgsAnimation, sgsAnimationDuration, sgsAnimationEasing, staggerDelay.
+ *   transitionDuration, transitionEasing.
  *
  * D744 — background/text/link colour were migrated OFF native supports.color
  * (background/text/link/gradients, all false in block.json now) onto these
@@ -97,11 +96,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // 2. Extract LAYOUT/STYLING scalar attributes with defaults.
 // ---------------------------------------------------------------------------
 $sgs_card_style    = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
-$sgs_hover_effect  = isset( $attributes['effectHover'] ) ? $attributes['effectHover'] : 'lift';
 $sgs_icon_position = isset( $attributes['iconPosition'] ) ? $attributes['iconPosition'] : 'top';
 $sgs_hover_scale         = isset( $attributes['scaleHover'] ) ? $attributes['scaleHover'] : '';
 $sgs_hover_shadow        = isset( $attributes['shadowHover'] ) ? $attributes['shadowHover'] : '';
-$sgs_hover_shadow_colour = isset( $attributes['shadowHoverColour'] ) ? $attributes['shadowHoverColour'] : '';
+$sgs_hover_shadow_colour = isset( $attributes['shadowColourHover'] ) ? $attributes['shadowColourHover'] : '';
 $sgs_hover_gray          = isset( $attributes['grayscaleHover'] ) ? (bool) $attributes['grayscaleHover'] : false;
 
 // D744 — background/text/link colour, block-private replacements for the
@@ -214,7 +212,6 @@ $sgs_classes = array(
 	'sgs-info-box',
 	$uid,
 	'sgs-info-box--' . esc_attr( $sgs_card_style ),
-	'sgs-info-box--hover-' . esc_attr( $sgs_hover_effect ),
 	'sgs-info-box--media-' . esc_attr( $sgs_icon_position ),
 );
 
@@ -565,8 +562,7 @@ $sgs_card_html .= '<div ' . $sgs_wrapper_attrs . '>' . $content . '</div>';
 // sgs-info-box--{cardStyle} BEM classes in style.css).
 // ---------------------------------------------------------------------------
 
-// Block-link is handled universally by the sgsBlockLink extension
-// (includes/hover-effects.php, render_block filter) — it injects a
-// stretched-link overlay as this root's last child, so no per-block wrap
-// belongs here.
+// Block-link is handled universally by the sgsBlockLink extension's
+// render_block filter — it injects a stretched-link overlay as this root's
+// last child, so no per-block wrap belongs here.
 echo $sgs_card_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from pre-sanitised/escaped parts above.

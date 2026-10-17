@@ -372,30 +372,7 @@ $icon_rotate = is_numeric( $attributes['iconRotate'] ?? null ) ? max( -360.0, mi
 if ( abs( $icon_rotate ) > 0.001 ) {
 	$root_decls[] = '--sgs-icon-rotate:' . round( $icon_rotate, 2 ) . 'deg';
 }
-$hover_scale = is_numeric( $attributes['scaleHover'] ?? null ) ? max( 1.0, min( 1.5, (float) $attributes['scaleHover'] ) ) : 1.1;
-if ( abs( $hover_scale - 1.1 ) > 0.0001 ) {
-	$root_decls[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
-}
-$hover_opacity = is_numeric( $attributes['opacityHover'] ?? null ) ? max( 0.0, min( 1.0, (float) $attributes['opacityHover'] ) ) : 0.0;
-if ( $hover_opacity > 0 ) {
-	$root_decls[] = '--sgs-icon-opacity-hover:' . number_format( $hover_opacity, 2 );
-}
-// Hover move, hover turn, motion and shadow (includes/helpers-icon-motion.php). An outline shape paints no box, so it takes no shadow.
-$root_decls = array_merge(
-	$root_decls,
-	sgs_icon_motion_decls(
-		array(
-			'x'             => $attributes['offsetXHover'] ?? null,
-			'y'             => $attributes['offsetYHover'] ?? null,
-			'rotate'        => $attributes['iconRotateHover'] ?? null,
-			'move_ms'       => $attributes['transitionDuration'] ?? null,
-			'paint_ms'      => $attributes['paintDuration'] ?? null,
-			'easing'        => $attributes['transitionEasing'] ?? '',
-			'easing_custom' => $attributes['transitionEasingCustom'] ?? '',
-		),
-		'--sgs-icon'
-	)
-);
+// Shadow (includes/helpers-icon-shadow.php). An outline shape paints no box, so it takes no shadow.
 if ( ! $is_outline ) {
 	$root_decls = array_merge(
 		$root_decls,
@@ -475,7 +452,7 @@ if ( $glyph_only && 'lucide' === $gradient_source && '' === (string) ( $attribut
 }
 // Hover and keyboard focus: the border turns the brand colour (an own border hover colour, or the row's, first) and a
 // 1px ring in it appears; the glyph and ground stay (the background flip below only undoes style.css's `has-bg`
-// swap); no scale, scaleHover is its own control. Touch-guarded through sgs_hover_state_rules().
+// swap); no scale. Touch-guarded through sgs_hover_state_rules().
 if ( $glyph_only && '' !== $brand_paint['ring'] && ! $is_outline ) {
 	$ring_decls = array();
 	if ( ! $border['hover'] ) {

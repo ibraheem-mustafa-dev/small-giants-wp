@@ -272,43 +272,22 @@ class TimelineTest extends TestCase {
 	}
 
 	/**
-	 * RevealOnScroll=false bakes is-revealed into every entry and omits the data attribute.
+	 * The entry reveal is the sgsMotion entrance: the block prints no reveal marker, class or custom property.
 	 */
-	public function test_reveal_disabled_pre_reveals_all_entries(): void {
+	public function test_render_carries_no_reveal_markers(): void {
 		$html = $this->render(
 			array(
-				'revealOnScroll' => false,
-				'entries'        => array(
+				'entries' => array(
 					$this->make_entry( '2020-01-01', 'A' ),
 					$this->make_entry( '2021-01-01', 'B' ),
 				),
 			)
 		);
 
-		$li_count       = substr_count( $html, '<li ' );
-		$revealed_count = substr_count( $html, 'is-revealed' );
-
-		$this->assertSame(
-			$li_count,
-			$revealed_count,
-			'Every entry must have is-revealed when revealOnScroll is false.'
-		);
-		$this->assertStringNotContainsString( 'data-reveal-on-scroll', $html );
-	}
-
-	/**
-	 * RevealOnScroll=true adds data-reveal-on-scroll and does not pre-reveal entries.
-	 */
-	public function test_reveal_enabled_adds_data_attribute(): void {
-		$html = $this->render(
-			array(
-				'revealOnScroll' => true,
-				'entries'        => array( $this->make_entry( '2020-01-01', 'A' ) ),
-			)
-		);
-
-		$this->assertStringContainsString( 'data-reveal-on-scroll', $html );
+		$this->assertStringNotContainsString( 'data-reveal', $html );
 		$this->assertStringNotContainsString( 'is-revealed', $html );
+		$this->assertStringNotContainsString( 'sgs-timeline--reveal-connector', $html );
+		$this->assertStringNotContainsString( 'sgs-reveal-stagger', $html );
 	}
 
 	/**

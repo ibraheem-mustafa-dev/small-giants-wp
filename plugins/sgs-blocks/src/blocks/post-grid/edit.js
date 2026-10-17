@@ -34,7 +34,6 @@ import PostGridLayoutPanel from './components/PostGridLayoutPanel';
 import ContentPanel from './components/ContentPanel';
 import CardStylePanel from './components/CardStylePanel';
 import PaginationFiltersPanel from './components/PaginationFiltersPanel';
-import HoverEffectsPanel from './components/HoverEffectsPanel';
 import CarouselPanel from './components/CarouselPanel';
 import PostGridTypographyPanel from './components/PostGridTypographyPanel';
 import BorderPanel from './components/BorderPanel';
@@ -260,7 +259,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ /* D619/D621 — ONE grouped, SGS-OWNED colour panel, mounted FIRST so
 			   it sits at the top of the Styles tab. Replaces the old scattered
 			   "Colours" ToolsPanel (Panel 6) + the colour rows that used to live
-			   in "Hover Effects" (Panel 7).
+			   in the former Hover Effects panel.
 			   Row shape verified against render.php + class-post-grid-rest.php
 			   card_vars_decls() + style.css (2026-08-15):
 			   - cardBgColour/backgroundColourHover pair into ONE row (normal +
@@ -293,7 +292,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     `shadow` shape attribute to close a STATE_WITHOUT_BASE
 			     conformance gap (client could style the hover shadow but not
 			     the resting one). Pairs with the shape attributes (shadow +
-			     shadowHover, both in the non-colour Hover Effects panel below
+			     shadowHover, both in the Card Style panel below
 			     via ShadowControl); render.php composes shape + colour via
 			     sgs_shadow_value_composed() for each state independently. An
 			     unset shadow leaves the cardStyle preset's own shadow
@@ -479,15 +478,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				{ /* Panel 5: Pagination & Filters */ }
 				<PaginationFiltersPanel attributes={ attributes } set={ set } />
-
-				{ /* Panel 6: Hover Effects — colours moved to the top-level
-				   SgsColourPanel (D619/D621). This ToolsPanel holds the
-				   non-colour hover behaviours PLUS the resting shadow shape
-				   (shadow/shadowColour, added 2026-08-20 to close a
-				   STATE_WITHOUT_BASE gap — mirrors the shadowHover pair,
-				   ordered rest-then-hover so the reading order matches the
-				   render.php/style.css cascade). */ }
-				<HoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 
 				{ /* Panel: Container wrapper (WS-4 mirror) */ }
 				{ /* showLayout={false}: this block owns its own Layout control

@@ -30,9 +30,6 @@
 	--sgs-date-colour: var(--wp--preset--color--accent, #f87a1f);
 	--sgs-node-size: 16px;
 	--sgs-connector-width: 2px;
-	--sgs-reveal-stagger: 100ms;
-	--sgs-reveal-duration: 400ms;
-	--sgs-reveal-easing: ease-out;
 }
 
 // ── FR-38-35 — scroll-driven progress connector (Tier V) ──────────────────────
@@ -369,44 +366,6 @@
 // removed together, because deleting one without the other left Chrome and
 // Safari with no driver at all (nothing writing the property) while Firefox
 // still looked correct.
-
-// ── Scroll-reveal state ────────────────────────────────────────────────────────
-
-// Default hidden state (overridden immediately for reduced motion).
-// Only applies when the timeline has data-reveal-on-scroll set.
-//
-// ⛔ GATED ON `.is-js` FOR THE SAME REASON AS THE CONNECTOR REVEAL (:1354) — with
-// no JS, an entry hidden by a plain attribute-keyed rule is unreachable FOREVER.
-// The attribute is authored into the markup, so it matches whether or not view.js
-// ever runs; `.is-js` is added BY view.js, so it cannot. Default state is VISIBLE
-// and only a running script opts an entry into being hidden.
-.sgs-timeline[data-reveal-on-scroll].is-js .sgs-timeline__entry:not(.is-revealed) {
-	opacity: 0;
-	transform: translateY(20px);
-}
-
-.sgs-timeline__entry.is-revealed {
-	opacity: 1;
-	transform: translateY(0);
-	transition-property: opacity, transform;
-	transition-duration: var(--sgs-reveal-duration);
-	transition-timing-function: var(--sgs-reveal-easing);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	// Carries `.is-js` to stay specificity-MATCHED with the hidden state above
-	// (both (0,5,0)). Without it this rule would sit at (0,4,0), lose the cascade,
-	// and leave reduced-motion users looking at permanently hidden entries — a
-	// losing rule is indistinguishable from an absent one.
-	.sgs-timeline[data-reveal-on-scroll].is-js .sgs-timeline__entry:not(.is-revealed) {
-		opacity: 1;
-		transform: none;
-	}
-
-	.sgs-timeline__entry.is-revealed {
-		transition: none;
-	}
-}
 
 // =============================================================================
 // VERTICAL orientation (default)
@@ -1255,10 +1214,10 @@
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// MILESTONE MEDIA, A/B ROW BANDS, CONNECTOR-TRIGGERED REVEAL
+// MILESTONE MEDIA AND A/B ROW BANDS
 //
 // ⭐ THE SAFETY PROPERTY FOR THIS WHOLE SECTION: every rule below is keyed on
-// `--has-media`, `--row-stripes` or `--reveal-connector`. A timeline using none
+// `--has-media` or `--row-stripes`. A timeline using neither
 // of them must render byte-identically to before, and that is an acceptance
 // criterion, not an aspiration — the entry grid is shared with the connector,
 // the fill mask and the spark positions, so an unconditional change here moves
@@ -1575,45 +1534,6 @@
 	}
 }
 
-// ── Connector-triggered reveal ────────────────────────────────────────────────
-//
-// ⛔ THE ACCESSIBILITY FLOOR COMES FIRST, and it is why the hidden state is
-// declared under `.is-js` rather than plainly. Hiding content until a scroll
-// position is reached is `degrade-to-more-content-never-less` pointed the wrong
-// way: with no JS, or if the observer ever fails to run, an entry hidden by a
-// plain CSS rule is unreachable FOREVER and the page silently loses its content.
-// So the default state is VISIBLE, and only a running view.js opts an entry into
-// being hidden. A broken script degrades to "everything shown", never to a blank
-// timeline.
-.sgs-timeline--reveal-connector.is-js {
-	.sgs-timeline__entry:not(.is-revealed) {
-		opacity: 0;
-		// Rises INTO place as its dot lights up, rather than sliding sideways —
-		// a sideways slide fights the alternating layout, where the two sides
-		// would have to travel in opposite directions.
-		transform: translateY(14px);
-	}
-
-	.sgs-timeline__entry {
-		transition:
-			opacity 420ms ease-out,
-			transform 420ms ease-out;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	// Show the end state, skip the animation — the same convention the fill
-	// itself follows. An entry must never be left hidden here.
-	.sgs-timeline--reveal-connector.is-js .sgs-timeline__entry:not(.is-revealed) {
-		opacity: 1;
-		transform: none;
-	}
-
-	.sgs-timeline--reveal-connector.is-js .sgs-timeline__entry {
-		transition: none;
-	}
-}
-
 // ── Mobile: the two-sided grid does not exist below 768px ─────────────────────
 //
 // The base rules at :913-941 give odd and even entries IDENTICAL placement and
@@ -1717,28 +1637,6 @@
 		// mis-animating.
 		.sgs-timeline__progress {
 			display: none;
-		}
-
-		// ⛔ THE CONNECTOR REVEAL MUST BE OPTED OUT OF, NOT JUST LEFT UNDRIVEN.
-		// `revealTrigger: connector` hides every entry at :1322 until view.js
-		// adds `.is-revealed`, and view.js deliberately does NOT run the reveal
-		// driver in carousel mode (there is no travelling vertical fill to reach
-		// each dot). Without this rule the hidden state never lifts: measured
-		// live 2026-08-30, all four cards sat at `opacity: 0` with an empty
-		// carousel painting nothing but a scrollbar.
-		//
-		// That is the precise failure the `.is-js` gate at :1316-1321 exists to
-		// prevent — "a broken script degrades to everything shown, never to a
-		// blank timeline". A DELIBERATELY not-run driver leaves `.is-js` on the
-		// root, so the hiding rule still matches and nothing un-hides it.
-		// Suppressing a driver therefore obliges you to suppress the hidden
-		// state it was the only thing capable of lifting.
-		//
-		// (0,6,0) here — five repetitions plus `.sgs-timeline__entry` — against
-		// the hiding rule's (0,4,0), so this wins on specificity, not order.
-		.sgs-timeline__entry {
-			opacity: 1;
-			transform: none;
 		}
 
 		.sgs-timeline__entry {

@@ -25,7 +25,6 @@
 	--sgs-transition-easing:     ease;
 	--sgs-hover-scale:           1;
 	--sgs-hover-overlay:         transparent;
-	--sgs-hover-image-zoom:      1.05;
 	--sgs-caption-colour:        var( --wp--preset--color--text-inverse, #ffffff );
 	/* Gradient overlay: transparent → primary-dark at 90% opacity covering bottom 40% of tile.
 	   Ensures caption text always has ≥85% opaque background at its position (FIX #7). */
@@ -252,41 +251,6 @@
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
-/* Image zoom on hover (toggled via class on wrapper) */
-.sgs-gallery--zoom .sgs-gallery__item:hover .sgs-gallery__img,
-.sgs-gallery--zoom .sgs-gallery__item:focus-within .sgs-gallery__img {
-	transform: scale( var( --sgs-hover-image-zoom, 1.05 ) );
-}
-
-/* Lift — card lifts */
-.sgs-gallery--hover-lift .sgs-gallery__item:hover {
-	transform: translateY(-4px);
-	box-shadow: var(--wp--preset--shadow--floating);
-}
-
-/* Overlay Slide — slides up from bottom */
-.sgs-gallery--hover-overlay-slide .sgs-gallery__item {
-    position: relative;
-    overflow: hidden;
-}
-
-.sgs-gallery--hover-overlay-slide .sgs-gallery__overlay {
-    position: absolute;
-    inset: auto 0 0 0;
-    background: linear-gradient(to top, var(--wp--preset--color--text, #1e1e1e) 0%, transparent 100%);
-    color: var(--wp--preset--color--text-inverse, #fff);
-    padding: 1rem;
-    transform: translateY(100%);
-    transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease);
-    pointer-events: none;
-    z-index: 2;
-}
-
-.sgs-gallery--hover-overlay-slide .sgs-gallery__item:hover .sgs-gallery__overlay,
-.sgs-gallery--hover-overlay-slide .sgs-gallery__item:focus-within .sgs-gallery__overlay {
-    transform: translateY(0);
-}
-
 /* Grayscale hover (#130) */
 .sgs-gallery.sgs-has-grayscale .sgs-gallery__img {
 	filter: grayscale(100%);
@@ -301,12 +265,6 @@
 /* Hover Shadow (#88, #102) */
 .sgs-gallery.sgs-has-hover .sgs-gallery__item:hover {
 	box-shadow: var(--sgs-hover-shadow, none);
-}
-
-/* Stagger delay (#93), for tiles the motion model has not tagged: a tile carrying data-sgs-loop-i takes its delay
-   from the model's per-tile rule (Spec 38A overlap rule), at unchanged specificity. */
-.sgs-gallery.sgs-has-stagger .sgs-gallery__item:where(:not([data-sgs-loop-i])) {
-	animation-delay: calc(var(--sgs-stagger, 0ms) * var(--sgs-item-index, 0));
 }
 
 /* ⛔ PREVENTATIVE — this block owns its hover target, so the generic ROOT rule
@@ -771,45 +729,20 @@
 		opacity: 1 !important;
 	}
 
-	.sgs-gallery--zoom .sgs-gallery__item:hover .sgs-gallery__img,
-	.sgs-gallery--zoom .sgs-gallery__item:focus-within .sgs-gallery__img {
-		transform: none;
-	}
-
 	.sgs-gallery__item:hover {
-		transform: none;
-	}
-
-	/* Lift effect has higher selector specificity than the generic reset
-	   above, so it needs its own override — otherwise the resting lift
-	   (translateY) survives reduced-motion as a residual transform. */
-	.sgs-gallery--hover-lift .sgs-gallery__item:hover {
 		transform: none;
 	}
 
 	.sgs-gallery--caption-reveal .sgs-gallery__caption {
 		transition: none;
 	}
-
-	.sgs-gallery--hover-overlay-slide .sgs-gallery__overlay {
-		transition: none;
-	}
-
-	.sgs-gallery--hover-overlay-slide .sgs-gallery__item:hover .sgs-gallery__overlay,
-	.sgs-gallery--hover-overlay-slide .sgs-gallery__item:focus-within .sgs-gallery__overlay {
-		transform: translateY( 0 );
-	}
 }
 
-/* Devices that cannot hover (touch) see captions and the slide overlay at rest: content never waits on a hover
+/* Devices that cannot hover (touch) see captions at rest: content never waits on a hover
    that cannot happen (Spec 38A FR-38A-30, WCAG 1.4.13). */
 @media ( hover: none ) {
 	.sgs-gallery--caption-reveal .sgs-gallery__caption {
 		opacity: 1;
 		transform: none;
-	}
-
-	.sgs-gallery--hover-overlay-slide .sgs-gallery__overlay {
-		transform: translateY( 0 );
 	}
 }

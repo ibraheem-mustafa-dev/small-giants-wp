@@ -146,7 +146,6 @@ $shadow              = sanitize_text_field( $attributes['shadow'] ?? '' );
 $shadow_colour       = sanitize_text_field( $attributes['shadowColour'] ?? '' );
 $hover_shadow        = sanitize_text_field( $attributes['shadowHover'] ?? '' );
 $hover_shadow_colour = sanitize_text_field( $attributes['shadowColourHover'] ?? '' );
-$hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? true );
 
 // HOVER shadow (design H4, task lift-2). An explicit shadowHover always wins outright —
 // the switch never suppresses an explicit choice. With nothing explicit, the automatic
@@ -369,12 +368,11 @@ $sgs_query_data     = wp_json_encode(
 
 // -------------------------------------------------------------------------
 // WS-4: data-* attrs carried verbatim into the helper's extra_attrs.
-// view.js reads data-sgs-query, data-hover-image-zoom, data-pagination,
+// view.js reads data-sgs-query, data-pagination,
 // data-layout and data-error-message for AJAX hydration/carousel/filter init.
 // -------------------------------------------------------------------------
 $extra_attrs = array(
 	'data-sgs-query'        => $sgs_query_data,
-	'data-hover-image-zoom' => $hover_img_zoom ? 'true' : 'false',
 	'data-pagination'       => $pagination,
 	'data-layout'           => $layout,
 );

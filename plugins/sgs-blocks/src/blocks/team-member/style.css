@@ -234,7 +234,7 @@
 }
 
 /* ===== Hover Scale (#87, #101) ===== */
-/* Applied via .sgs-has-hover-scale class set in render.php / hover-effects.php */
+/* Applied via .sgs-has-hover-scale class set in render.php */
 
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-team-member.sgs-has-hover-scale {
@@ -249,19 +249,6 @@
 	/* Hover Shadow (#88, #102) */
 	.sgs-team-member.sgs-has-hover:hover {
 		box-shadow: var(--sgs-hover-shadow, none);
-	}
-
-	/* Hover Image Zoom (#90, #104) */
-	.sgs-team-member.sgs-has-img-zoom .sgs-team-member__photo {
-		overflow: hidden;
-	}
-
-	.sgs-team-member.sgs-has-img-zoom .sgs-team-member__photo img {
-		transition: transform var(--sgs-hover-zoom-duration, 0.5s) ease;
-	}
-
-	.sgs-team-member.sgs-has-img-zoom:hover .sgs-team-member__photo img {
-		transform: scale(var(--sgs-hover-zoom, 1.1));
 	}
 
 	/* Grayscale to colour (#130) */
@@ -281,10 +268,9 @@
 		transition: none;
 	}
 
-	/* Kill residual resting scale/zoom transforms — genuinely zero motion,
+	/* Kill the residual resting scale transform — genuinely zero motion,
 	   matching card-grid/post-grid (no near-zero-transition fallback). */
-	.sgs-team-member.sgs-has-hover-scale:hover,
-	.sgs-team-member.sgs-has-img-zoom:hover .sgs-team-member__photo img {
+	.sgs-team-member.sgs-has-hover-scale:hover {
 		transform: none;
 	}
 }

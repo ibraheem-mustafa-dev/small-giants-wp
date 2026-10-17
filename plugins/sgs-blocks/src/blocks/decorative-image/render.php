@@ -13,11 +13,11 @@
  * collide with a user-set anchor id (Spec 32 FR-32-4), mirroring sgs/label +
  * sgs/media.
  *
- * Runtime scroll effects (parallax / fade-on-scroll, `view.js`) mutate two
- * CSS CUSTOM PROPERTIES (`--sgs-di-py` / `--sgs-di-op`) — never a real CSS
- * property — so the element carries zero inline property declarations at
- * any point in its lifecycle; the scoped `<style>` below is the only place
- * the actual `transform`/`opacity` declarations exist.
+ * The runtime fade-on-scroll effect (`view.js`) mutates one CSS CUSTOM
+ * PROPERTY (`--sgs-di-op`) — never a real CSS property — so the element
+ * carries zero inline property declarations at any point in its lifecycle;
+ * the scoped `<style>` below is the only place the actual `transform` and
+ * `opacity` declarations exist.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
@@ -29,6 +29,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 
 // ---------------------------------------------------------------------------
 // 0. Security sanitiser (contract §D) — every value that reaches the scoped
@@ -86,7 +87,6 @@ $rotation            = $rotation_obj['desktop'] ?? 0;
 $opacity             = $attributes['opacity'] ?? 85;
 $z_index             = $attributes['zIndex'] ?? 1;
 $flip_x              = $attributes['flipX'] ?? false;
-$parallax_strength   = $attributes['parallaxStrength'] ?? 0;
 $fade_on_scroll      = (bool) ( $attributes['fadeOnScroll'] ?? false );
 // overflow is interpolated straight into the scoped <style> block below —
 // allow-list it against valid CSS `overflow` keywords (never trust it
@@ -99,7 +99,7 @@ $path_draw_duration  = absint( $attributes['pathDrawDurationMs'] ?? 1500 );
 $path_draw_offset    = absint( $attributes['pathDrawTriggerOffset'] ?? 20 );
 $allowed_easings     = array( 'ease-out', 'ease-in-out', 'linear' );
 $path_draw_easing    = in_array( $attributes['pathDrawEasing'] ?? 'ease-out', $allowed_easings, true )
-	? $attributes['pathDrawEasing']
+	? ( $attributes['pathDrawEasing'] ?? 'ease-out' )
 	: 'ease-out';
 
 // Responsive overrides. positionX/positionY/rotation tablet+mobile tiers now
@@ -131,11 +131,10 @@ if ( empty( $decor_media['url'] ) && ! $image_url ) {
 $uid      = 'sgs-di-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.sgs-decorative-image';
 
-// Base declarations — position/size/opacity/z-index/transform. `opacity` and
-// the parallax translateY read from CSS custom properties so the runtime
-// scroll effects in view.js only ever mutate a --var VALUE, never a real CSS
-// property (keeps the element at zero inline property declarations even
-// after JS runs).
+// Base declarations — position/size/opacity/z-index/transform. `opacity`
+// reads a CSS custom property so the runtime fade-on-scroll in view.js only
+// ever mutates a --var VALUE, never a real CSS property (keeps the element at
+// zero inline property declarations even after JS runs).
 $pos_x_css        = $sgs_css_num( $position_x, 2 );
 $pos_y_css        = $sgs_css_num( $position_y, 2 );
 $width_css        = $sgs_css_num( $width, 2 );
@@ -144,8 +143,8 @@ $opacity_css      = $sgs_css_num( $opacity / 100, 4 );
 $z_index_css      = (int) $sgs_css_num( $z_index, 0 );
 
 // The whole transform is rebuilt per tier: rotation shares the one
-// `transform` property with the centring translate, the flip and the
-// parallax offset, so a tier rule must carry every part.
+// `transform` property with the centring translate and the flip, so a tier
+// rule must carry every part.
 $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x ) {
 	$parts   = array( 'translate(-50%, -50%)' );
 	$deg_css = $sgs_css_num( $rotation_deg, 2 );
@@ -155,7 +154,6 @@ $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x ) {
 	if ( $flip_x ) {
 		$parts[] = 'scaleX(-1)';
 	}
-	$parts[] = 'translateY(var(--sgs-di-py, 0px))';
 	return implode( ' ', $parts );
 };
 
@@ -280,9 +278,6 @@ if ( $image_decorative ) {
 	$img_attrs['role']        = 'presentation';
 }
 
-if ( $parallax_strength > 0 ) {
-	$img_attrs['data-parallax'] = esc_attr( $parallax_strength );
-}
 if ( $fade_on_scroll ) {
 	$img_attrs['data-fade-on-scroll'] = 'true';
 }
@@ -375,49 +370,27 @@ if ( $is_video ) {
 // never from $root_sel or any multi-member selector list: a descendant or
 // modifier appended to a LIST binds to the last member only, which on
 // sgs/media hid every image at every width before it was caught live.
-// SURFACE-TREATMENT WRAPPER GATE (2026-08-28).
+// SURFACE-TREATMENT WRAPPER GATE.
 //
-// THE BUG: `fx-surface-treatment.js`'s `initTreatment()` does
-// `el.querySelector( 'img' )` and returns a silent no-op closure when it finds
-// nothing. In naked mode `el` IS the <img>, and querySelector only searches
-// DESCENDANTS — so it never matches, and a client who picks grain/halftone/
-// duotone in the inspector gets absolutely nothing, with no error anywhere.
-// The second half fails too: `webgl/renderer.js` appends its
-// <canvas class="sgs-webgl-surface"> INSIDE that element, and an <img> is a
-// void element that cannot hold children.
+// The surface-treatment effect (`src/shared/effects/fx-surface-treatment.js`) takes the element that carries the
+// effect layer's `data-sgs-fx="surface-treatment"` markup as its host: it finds the `<img>` with
+// `el.querySelector( 'img' )` and appends `canvas.sgs-webgl-surface` as a CHILD of that element. An `<img>` is a void
+// element that cannot hold children, and `querySelector` only searches descendants, so on a bare `<img>` the effect
+// would find nothing and paint nothing, with no error anywhere. A block whose root stores a `surface-treatment` effect
+// layer therefore renders a `<span>` host carrying the root role (class, uid, a11y attributes and every `data-*`, which
+// is where the layer's markup lands), with the `<img>` inside it as plain fill-the-host media.
 //
-// The PHP half was never broken — `includes/fx-surface-treatment.php` stamps
-// `data-sgs-fx-treatment` onto the naked <img> correctly. Only the JS half needs
-// a host, so this gate gives it one and changes nothing else.
-
-/*
- * ⛔ GATED, never unconditional. The untreated path must stay byte-identical,
- * because three separate things assume the <img> is the root:
- *   · $root_sel / $sgs_tier_sel are COMPOUND (`.{uid}.sgs-decorative-image`) —
- *     see the tier note above; a wrapper changes which element they must hit.
- *   · style.css binds `data-hide-tablet` / `data-hide-mobile` to whatever
- *     carries the class; splitting the pair across two elements breaks both.
- *   · view.js selects `.sgs-decorative-image[data-parallax]` and writes
- *     --sgs-di-py / --sgs-di-op onto the match. If BOTH wrapper and <img> kept
- *     the class + data-*, parallax would apply twice and the inner <img> would
- *     take its own position:absolute from $root_sel.
- */
-// So in treated mode the WRAPPER takes over the root role wholesale (class,
-// uid, a11y, every data-*) and the inner <img> becomes plain fill-the-host
-// media — exactly the division the video branch above already uses.
-
-/*
- * ⛔ GATE ON `fx`, NOT ON `fxTreatment`. This was wrong in the first cut and a
- * live capture caught it. `includes/fx-attributes.php`'s FX_ATTR_MAP maps
- * `fx` => `data-sgs-fx`, and `fx-surface-treatment.php` activates on
- * `'surface-treatment' === get_attribute( 'data-sgs-fx' )` — `fxTreatment` only
- * chooses WHICH preset, and an empty one falls back to
- * SGS_FX_TREATMENT_DEFAULT ('grain'). So a client who picks the effect and
- * never touches the preset has a LIVE treatment with an empty `fxTreatment`,
- * and a gate keyed on the preset would have left exactly that client with the
- * original silent no-op — the precise bug this change exists to fix.
- */
-$has_treatment = 'surface-treatment' === ( $attributes['fx'] ?? '' );
+// The gate is conditional because the untreated path keeps the `<img>` as the root, and three things assume that:
+//   · $root_sel / $sgs_tier_sel are COMPOUND (`.{uid}.sgs-decorative-image`) — see the tier note above; a wrapper
+//     changes which element they must hit.
+//   · style.css binds `data-hide-tablet` / `data-hide-mobile` to whatever carries the class; splitting the pair across
+//     two elements breaks both.
+//   · view.js selects `.sgs-decorative-image[data-fade-on-scroll]` and writes --sgs-di-op onto the match. If BOTH the
+//     wrapper and the <img> kept the class + data-*, the fade would apply twice and the inner <img> would take its own
+//     position:absolute from $root_sel.
+// So in treated mode the WRAPPER takes over the root role wholesale and the inner <img> becomes plain fill-the-host
+// media, exactly the division the video branch above already uses.
+$has_treatment = sgs_motion_root_has_effect( $attributes, 'surface-treatment' );
 
 // A real container is needed whenever EITHER the FX surface-treatment (a
 // <canvas> host) OR the overlay atom (a ::after box paint) needs one — a
@@ -489,10 +462,8 @@ if ( $sgs_di_wants_wrapper ) {
 	if ( $has_treatment ) {
 		// The inner media carries neither uid nor base class, so $root_sel's
 		// position:absolute never reaches it — it only needs to fill the host.
-		// `[data-sgs-fx="surface-treatment"]{position:relative}` (0,1,0) loses to
-		// $root_sel's (0,2,0) position:absolute on the wrapper, which is fine:
-		// absolute is equally a containing block, so the canvas's inset:0 still
-		// resolves against the wrapper.
+		// $root_sel's position:absolute on the wrapper is a containing block, so
+		// the canvas's inset:0 resolves against the wrapper.
 		$scoped_css[] = '.' . $uid . '.sgs-decorative-image--treated>.' . $sgs_media_class
 			. '{display:block;width:100%;height:auto}';
 	}

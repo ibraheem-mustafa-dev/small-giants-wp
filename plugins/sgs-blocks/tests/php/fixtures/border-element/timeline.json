@@ -3,7 +3,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh"
         ],
@@ -15,7 +14,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "border-color:var(--wp--preset--color--primary,currentColor)",
@@ -30,7 +28,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "border-color:#ff0000",
@@ -45,7 +42,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "border-style:none",
@@ -59,7 +55,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "border-style:solid",
@@ -73,7 +68,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "border-color:var(--wp--preset--color--primary,currentColor)"
@@ -86,7 +80,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "background-clip:padding-box",
@@ -116,7 +109,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "border-radius:8px"
@@ -129,7 +121,6 @@
         " || .sgs-tl-UID.sgs-timeline": [
             "--sgs-connector-colour:var(--wp--preset--color--border,currentColor)",
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
-            "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
             "--sgs-timeline-milestone-min-height:80vh",
             "border-bottom-left-radius:4px",

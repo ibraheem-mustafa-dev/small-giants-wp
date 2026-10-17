@@ -170,13 +170,11 @@ $rating_size             = isset( $attributes['ratingSize'] ) && (int) $attribut
 // backgroundColourHover / textColourHover are NOT read here: the shared fill
 // and text emitters (section 1a) own both states for those two properties.
 // Reading them again would give one element two owners.
-$hover_effect          = $attributes['effectHover'] ?? 'none';
 $transition_duration   = $attributes['transitionDuration'] ?? '300';
 $transition_easing     = $attributes['transitionEasing'] ?? 'ease-in-out';
 $hover_scale           = $attributes['scaleHover'] ?? '';
 $hover_shadow          = $attributes['shadowHover'] ?? '';
-$hover_shadow_colour   = $attributes['shadowHoverColour'] ?? '';
-$stagger_delay         = isset( $attributes['staggerDelay'] ) ? (int) $attributes['staggerDelay'] : 0;
+$hover_shadow_colour   = $attributes['shadowColourHover'] ?? '';
 
 // ── Width (WS-4 container-wrapper, content kind: kept-scalar, no tiers) ─────
 $max_width = $attributes['maxWidth'] ?? '';
@@ -577,17 +575,11 @@ if ( $mobile_box_decls ) {
 // ── Wrapper classes ─────────────────────────────────────────────────────────
 $classes   = array( 'sgs-testimonial', $uid );
 $classes[] = 'sgs-testimonial--' . sanitize_html_class( $variant );
-if ( $hover_effect && 'none' !== $hover_effect ) {
-	$classes[] = 'sgs-testimonial--hover-' . sanitize_html_class( $hover_effect );
-}
 if ( $hover_scale ) {
 	$classes[] = 'sgs-has-hover-scale';
 }
 if ( $hover_shadow ) {
 	$classes[] = 'sgs-has-hover';
-}
-if ( $stagger_delay ) {
-	$classes[] = 'sgs-has-stagger';
 }
 
 // The preset has-* colour classes that stood here are GONE. They were re-added
@@ -596,7 +588,7 @@ if ( $stagger_delay ) {
 // so nothing could ever populate them again — unreachable code that still read
 // like a live feature (the sgs/quote precedent, 2eebbe55).
 
-// ── Wrapper hover colours + transition/scale/shadow/stagger — SCOPED, never
+// ── Wrapper hover colours + transition/scale/shadow — SCOPED, never
 // inline (Spec 32 FR-32-4 as amended 2026-07-18 / D345; matches sgs/info-box).
 // Hover COLOURS emit as a scoped `.{uid}.wp-block-sgs-testimonial:hover{…}`
 // rule with real declarations (specificity 0,3,0 beats every variant base
@@ -630,12 +622,9 @@ if ( $hover_shadow ) {
 	// raw box-shadow SHAPE string (the builder, no colour since D621/D622) or
 	// a bare theme shadow slug (the preset buttons), the same shape as
 	// sgs/team-member's cardShadow. sgs_shadow_value_composed() composes the
-	// shape with the separate shadowHoverColour attr (ignored for a preset
+	// shape with the separate shadowColourHover attr (ignored for a preset
 	// slug — self-contained).
 	$wrapper_vars[] = '--sgs-hover-shadow:' . sgs_shadow_value_composed( (string) $hover_shadow, (string) $hover_shadow_colour );
-}
-if ( $stagger_delay ) {
-	$wrapper_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 }
 
 if ( $wrapper_vars ) {

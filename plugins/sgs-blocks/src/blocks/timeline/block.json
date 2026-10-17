@@ -5,7 +5,7 @@
 	"version": "0.1.0",
 	"title": "SGS Timeline",
 	"category": "sgs-content",
-	"description": "Date-based timeline with vertical or horizontal orientation and scroll-reveal animation.",
+	"description": "Date-based timeline with vertical or horizontal orientation and an optional scroll effect.",
 	"keywords": [
 		"timeline",
 		"history",
@@ -406,23 +406,7 @@
 				"pinned-horizontal"
 			],
 			"default": "basic",
-			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' is today's viewport/connector reveal; 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only)."
-		},
-		"revealOnScroll": {
-			"type": "boolean",
-			"default": true
-		},
-		"revealTrigger": {
-			"type": "string",
-			"default": "viewport",
-			"enum": [
-				"viewport",
-				"connector"
-			]
-		},
-		"revealStagger": {
-			"type": "number",
-			"default": 100
+			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' runs no GSAP scroll effect (the entry reveal is the sgsMotion entrance); 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only)."
 		},
 		"milestoneMediaWidth": {
 			"type": "string",

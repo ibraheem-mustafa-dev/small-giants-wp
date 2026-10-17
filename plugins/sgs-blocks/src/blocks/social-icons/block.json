@@ -82,8 +82,7 @@
 					"clusters": [
 						"text",
 						"fill",
-						"layout",
-						"motion"
+						"layout"
 					],
 					"prefix": "childIcon",
 					"attrMap": {
@@ -95,8 +94,6 @@
 						"css:border-width": "childIconBorderWidth",
 						"css:border-style": "childIconBorderStyle",
 						"css:width": "childIconShapeSize",
-						"css:transition-duration": "childIconTransitionDuration",
-						"css:transition-timing-function": "childIconTransitionEasing",
 						"css:box-shadow": "childIconBoxShadow"
 					},
 					"states": {
@@ -284,46 +281,6 @@
 				"hold"
 			],
 			"description": "Brand colours on hover for icons left on Automatic: swap turns the ground and glyph around, hold keeps both. Applies to colour mode Brand colours."
-		},
-		"childIconScaleHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Group default hover growth for every icon (1 = none, 0 = each icon's own, 1.1 unless it says otherwise). An icon with its own value other than 1.1 wins."
-		},
-		"childIconOffsetXHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Group default: moves every icon sideways by this many px on hover (-40 to 40, 0 = none)."
-		},
-		"childIconOffsetYHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Group default: moves every icon up or down by this many px on hover (-40 to 40, negative = up, 0 = none)."
-		},
-		"childIconRotateHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Group default: turns every icon by this many degrees on hover (-180 to 180, 0 = none)."
-		},
-		"childIconTransitionDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "Group default: how long the hover move, scale and turn take, in ms (0 = the theme's fast transition)."
-		},
-		"childIconPaintDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "Group default: how long the hover shadow, colour and border changes take, in ms (0 = the theme's fast transition)."
-		},
-		"childIconTransitionEasing": {
-			"type": "string",
-			"default": "",
-			"description": "Group default easing of the hover move: a shared motion easing name, or custom with childIconTransitionEasingCustom. Empty = the theme's fast transition easing."
-		},
-		"childIconTransitionEasingCustom": {
-			"type": "string",
-			"default": "",
-			"description": "A cubic-bezier(x1, y1, x2, y2) curve, read when childIconTransitionEasing is custom."
 		},
 		"childIconBoxShadow": {
 			"type": "string",

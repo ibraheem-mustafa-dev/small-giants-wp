@@ -34,9 +34,3 @@ export const IMAGE_SIZE_OPTIONS = [
 	{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
 ];
 
-export const HOVER_EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Zoom', 'sgs-blocks' ), value: 'zoom' },
-	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
-];

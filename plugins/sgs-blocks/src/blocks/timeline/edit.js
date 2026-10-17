@@ -13,7 +13,6 @@ import {
 	TextareaControl,
 	Button,
 	ToggleControl,
-	RangeControl,
 	RadioControl,
 } from '@wordpress/components';
 import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, ShadowLiftControls, LinkUnderlineControl } from '../../components';
@@ -108,14 +107,6 @@ const MEDIA_TYPE_OPTIONS = [
 	{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
 	{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
 	{ label: __( 'SVG / Animation', 'sgs-blocks' ), value: 'svg' },
-];
-
-const REVEAL_TRIGGER_OPTIONS = [
-	{ label: __( 'When it scrolls into view', 'sgs-blocks' ), value: 'viewport' },
-	{
-		label: __( 'When the connector reaches it', 'sgs-blocks' ),
-		value: 'connector',
-	},
 ];
 
 // Step 4b — curated scroll-effect picker, reusing the SAME GSAP fx slugs the
@@ -463,9 +454,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		descriptionLinkUnderline,
 		descriptionLinkUnderlineThickness,
 		scrollEffect,
-		revealOnScroll,
-		revealTrigger,
-		revealStagger,
 		milestoneMediaWidth,
 		milestoneMediaDecorative,
 		milestoneSize,
@@ -521,13 +509,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// property below was set — the class is render.php's real gate, the
 		// custom property is unconditional (CHECK A).
 		'full-height' === milestoneSize ? 'sgs-timeline--milestone-full-height' : '',
-		// ⛔ `--reveal-connector` is mirrored but `is-js` is NOT. The hidden
-		// state is gated on both, so omitting `is-js` here keeps every entry
-		// VISIBLE on the canvas — an editor that hides milestones until a
-		// scroll position is reached is unusable for the person authoring them.
-		connectorProgressFill && 'connector' === revealTrigger
-			? 'sgs-timeline--reveal-connector'
-			: '',
 		linkPreviewUid,
 	].filter( Boolean ).join( ' ' );
 
@@ -1316,68 +1297,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ToggleControl
-						label={ __( 'Reveal on scroll', 'sgs-blocks' ) }
-						checked={ revealOnScroll }
-						onChange={ ( val ) => setAttributes( { revealOnScroll: val } ) }
-						help={ __(
-							'Entries animate in as they enter the viewport. Disable to show all entries immediately.',
-							'sgs-blocks'
-						) }
-					/>
-					{ revealOnScroll && (
-						<SelectControl
-							label={ __( 'Reveal each milestone', 'sgs-blocks' ) }
-							value={ revealTrigger }
-							options={ REVEAL_TRIGGER_OPTIONS }
-							disabled={ 'pinned-journey' === scrollEffect }
-							onChange={ ( val ) =>
-								setAttributes( { revealTrigger: val } )
-							}
-							help={
-								'pinned-journey' === scrollEffect
-									? __(
-											'The “Pin and reveal” scroll effect controls the reveal itself — this setting has no effect while it is active.',
-											'sgs-blocks'
-									  )
-									: connectorProgressFill
-									? __(
-											'“When the connector reaches it” makes each milestone appear as the filling line arrives at its dot.',
-											'sgs-blocks'
-									  )
-									: __(
-											'“When the connector reaches it” needs the progress fill switched on in the Connector panel — without it, this falls back to scrolling into view.',
-											'sgs-blocks'
-									  )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-					{ revealOnScroll && 'connector' !== revealTrigger && (
-						<RangeControl
-							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-							value={ revealStagger }
-							onChange={ ( val ) => setAttributes( { revealStagger: val } ) }
-							min={ 0 }
-							max={ 500 }
-							step={ 25 }
-							disabled={ 'pinned-journey' === scrollEffect }
-							help={
-								'pinned-journey' === scrollEffect
-									? __(
-											'The “Pin and reveal” scroll effect controls the reveal itself — this setting has no effect while it is active.',
-											'sgs-blocks'
-									  )
-									: __(
-											'Delay between each entry animating in.',
-											'sgs-blocks'
-									  )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
 				</PanelBody>
 			</InspectorControls>
 
@@ -1388,7 +1307,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						key={ index }
 						className={ [
 							'sgs-timeline__entry',
-							'is-revealed',
 							entryHasMedia( entry ) ? 'sgs-timeline__entry--has-media' : '',
 						]
 							.filter( Boolean )

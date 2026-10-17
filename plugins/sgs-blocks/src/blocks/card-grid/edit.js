@@ -49,7 +49,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		columns,
 		gap,
 		aspectRatio,
-		effectHover,
 		titleColour,
 		titleColourGradient,
 		subtitleColour,
@@ -59,7 +58,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		source,
 		overlayColour,
 		overlayGradient,
-		imageZoomHover,
 		grayscaleHover,
 	} = attributes;
 
@@ -126,10 +124,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const className = [
 		'sgs-card-grid',
 		`sgs-card-grid--${ variant }`,
-		`sgs-card-grid--hover-${ effectHover }`,
 		overlayColour || overlayGradient ? 'sgs-card-grid--has-image-overlay' : '',
-		// The image hover effects, as render.php classes the grid (style.css paints them on the canvas too).
-		imageZoomHover ? 'sgs-has-img-zoom' : '',
+		// The grayscale hover, as render.php classes the grid (style.css paints it on the canvas too).
 		grayscaleHover ? 'sgs-has-grayscale' : '',
 	].filter( Boolean ).join( ' ' );
 

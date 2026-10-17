@@ -222,8 +222,11 @@ def file_owner(path, data):
 
 
 def rule_match(rule, rx, hit):
-    """A rule applies when its glob matches the file and every optional field it carries (kind, family) matches the hit."""
+    """A rule applies when its glob matches the file and every optional field it carries (kind, subject, family) matches the hit."""
     if not rx.match(hit['file']) or ('kind' in rule and rule['kind'] != hit['kind']):
+        return False
+    subj = rule.get('subject')
+    if subj is not None and hit['subject'] not in ([subj] if isinstance(subj, str) else subj):
         return False
     fam = rule.get('family')
     return fam is None or hit['family'] in ([fam] if isinstance(fam, str) else fam)

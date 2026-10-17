@@ -14,7 +14,6 @@ import PanelContentControls from './PanelContentControls';
 import PanelDesignControls from './PanelDesignControls';
 import PanelPreview from './PanelPreview';
 import { triggerStyles } from './panel-preview-style';
-import { partHasEntranceLayer } from '../extensions/motion/part-layer';
 
 /**
  * SGS Cart — block editor component.
@@ -70,7 +69,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		pillBorderWidth,
 		pillBorderStyle,
 		pillBorderRadius,
-		countPopAnimation,
 		freeDeliveryThresholdOverride,
 		freeDeliveryMessage,
 		freeDeliverySuccessMessage,
@@ -153,11 +151,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					triggerStyle={ triggerStyle }
 					pillLabel={ pillLabel }
 					pillCountStyle={ attributes.pillCountStyle }
-					countPopAnimation={ countPopAnimation }
-					countPopOnModel={ partHasEntranceLayer(
-						attributes,
-						'badge'
-					) }
 					setAttributes={ setAttributes }
 				/>
 

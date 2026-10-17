@@ -51,13 +51,6 @@ export const HEADING_LEVEL_OPTIONS = [
 // before rather than breaking.
 export const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
-export const HOVER_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Zoom', 'sgs-blocks' ), value: 'zoom' },
-	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
-];
-
 export const PRODUCT_COLLECTION_OPTIONS = [
 	{ label: __( 'Latest', 'sgs-blocks' ), value: 'latest' },
 	{ label: __( 'Best selling', 'sgs-blocks' ), value: 'best-selling' },

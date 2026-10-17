@@ -3,9 +3,11 @@
  * Shipped block defaults — the framework's own inserter-default layer.
  *
  * Reads `includes/motion/data/inserter-default-motion.json`: per block, the attribute values (today the `sgsMotion`
- * default entrance) every newly inserted block of that type starts with. The layer is merged UNDER a site's saved
- * "Save as Default" values when the editor is seeded, so it is never written to the `sgs_block_defaults` option and a
- * block's block.json defaults stay empty (a block built from a draft never carries the entrance).
+ * default entrance, and the default hover of the blocks whose hover was part of their own look: the icon's growth, the
+ * info-box lift, the card, gallery and post-grid image zoom) every newly inserted block of that type starts with. The
+ * layer is merged UNDER a site's saved "Save as Default" values when the editor is seeded, so it is never written to
+ * the `sgs_block_defaults` option and a block's block.json defaults stay empty (a block built from a draft never
+ * carries the entrance or the hover).
  *
  * @package SGS\Blocks
  */

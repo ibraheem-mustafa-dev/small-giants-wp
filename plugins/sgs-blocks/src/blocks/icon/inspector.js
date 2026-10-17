@@ -40,7 +40,7 @@ import { metadataWithoutLinkBinding } from './icon-state';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 
 const ICON_LINK_SOURCES = [ ...LINK_SOURCES_PAGES, 'top' ];
-import { BrandHoverControl, HoverMotionFields, IconShadowPanel, ICON_MOTION_NAMES, ICON_SHADOW_KEYS } from './motion-panels';
+import { BrandHoverControl, IconShadowPanel, ICON_SHADOW_NAMES, ICON_SHADOW_KEYS } from './shadow-panels';
 
 /**
  * An outline shape fills with a flat colour only (render.php prints no background gradient for it), so its background
@@ -121,7 +121,7 @@ export function currentIconName( attrs ) {
  * @return {JSX.Element} Inspector panels.
  */
 export default function IconInspector( { attributes, setAttributes, state } ) {
-	const { iconSource, iconSvg, iconSize, iconFill, iconRotate, colourMode, showBackground, linkUrl, linkTarget, linkRel, ariaLabel, scaleHover, opacityHover, textAlign } = attributes;
+	const { iconSource, iconSvg, iconSize, iconFill, iconRotate, colourMode, showBackground, linkUrl, linkTarget, linkRel, ariaLabel, textAlign } = attributes;
 	const { boundKey, link, fallback, storedLinkUrl, brand, name, paintedShape, labelOn, labelFromRow, defaultLabel } = state;
 	// The shape the canvas paints (a row's group shape replaces the square), which decides what the colours can do.
 	const outlineShown = isOutlineShape( paintedShape || attributes.shape );
@@ -345,37 +345,10 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-				<PanelBody title={ __( 'Hover effects', 'sgs-blocks' ) } initialOpen={ false }>
-					<RangeControl
-						label={ __( 'Scale on hover', 'sgs-blocks' ) }
-						help={ __( 'Linked icons only. Visitors who reduce motion see no growth.', 'sgs-blocks' ) }
-						value={ scaleHover }
-						onChange={ ( value ) => setAttributes( { scaleHover: value } ) }
-						min={ 1 }
-						max={ 1.5 }
-						step={ 0.05 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<HoverMotionFields attributes={ attributes } setAttributes={ setAttributes } names={ ICON_MOTION_NAMES } />
-					<RangeControl
-						label={ __( 'Hover opacity', 'sgs-blocks' ) }
-						help={ __( 'Fades the icon link on hover. 1 = no fade. 0 disables the fade entirely.', 'sgs-blocks' ) }
-						value={ opacityHover ?? 0 }
-						onChange={ ( value ) => setAttributes( { opacityHover: value ?? 0 } ) }
-						min={ 0 }
-						max={ 1 }
-						step={ 0.05 }
-						allowReset
-						resetFallbackValue={ 0 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 				<IconShadowPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
-					names={ ICON_MOTION_NAMES }
+					names={ ICON_SHADOW_NAMES }
 					shadowKeys={ ICON_SHADOW_KEYS }
 					help={ outlineShown ? __( 'The outline shapes draw no box, so they take no shadow. Use the square, circle or pill.', 'sgs-blocks' ) : undefined }
 				/>

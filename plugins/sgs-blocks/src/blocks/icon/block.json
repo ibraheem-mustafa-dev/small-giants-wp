@@ -106,7 +106,6 @@
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient",
-								"css:transform": "scaleHover",
 								"css:box-shadow": "boxShadowHover"
 							}
 						}
@@ -486,46 +485,6 @@
 			],
 			"default": ""
 		},
-		"scaleHover": {
-			"type": "number",
-			"default": 1.1,
-			"description": "Grows the shape on hover and keyboard focus of a linked icon (1 = none). Reduced motion turns it off."
-		},
-		"offsetXHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Moves the shape sideways by this many px on hover and keyboard focus of a linked icon (-40 to 40; negative = left, 0 = none). Combines with scaleHover and iconRotateHover in one transform. Reduced motion turns it off."
-		},
-		"offsetYHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Moves the shape up or down by this many px on hover and keyboard focus of a linked icon (-40 to 40; negative = up, 0 = none). Combines with scaleHover and iconRotateHover in one transform. Reduced motion turns it off."
-		},
-		"iconRotateHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Turns the shape by this many degrees on hover and keyboard focus of a linked icon (-180 to 180, added to iconRotate; 0 = none). Reduced motion turns it off."
-		},
-		"transitionDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "How long the hover move, scale and turn take, in ms (0 = the theme's fast transition)."
-		},
-		"paintDuration": {
-			"type": "number",
-			"default": 0,
-			"description": "How long the hover shadow, colour and border changes take, in ms (0 = the theme's fast transition)."
-		},
-		"transitionEasing": {
-			"type": "string",
-			"default": "",
-			"description": "Easing of the hover move: a shared motion easing name (sgs_motion_easing_css), or custom with transitionEasingCustom. Empty = the theme's fast transition easing."
-		},
-		"transitionEasingCustom": {
-			"type": "string",
-			"default": "",
-			"description": "A cubic-bezier(x1, y1, x2, y2) curve, read when transitionEasing is custom. An invalid curve is ignored."
-		},
 		"boxShadow": {
 			"type": "string",
 			"default": "",
@@ -560,11 +519,6 @@
 				"hold"
 			],
 			"description": "Brand colours on hover: swap turns the ground and glyph around, hold keeps both. Inherit takes the sgs/social-icons row's choice (swap outside a row). Applies to colour mode Brand colours."
-		},
-		"opacityHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Fades the icon (or icon link) to this opacity on hover/focus (0-1; 1 = no visible change). 0 (default) disables the fade entirely, so an untouched icon is unaffected."
 		},
 		"iconAlign": {
 			"type": "string",

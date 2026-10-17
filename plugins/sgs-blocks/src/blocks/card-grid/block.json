@@ -53,7 +53,7 @@
       },
       "containerKind": "layout",
       "animationItems": ".sgs-card-grid__item, .sgs-product-card, .wp-block-sgs-product-card",
-      "_comment_animationItems": "The grid's entrance plays tile by tile: each card takes the block's Animation settings and the grid's staggerDelay (attrMap anim:stagger) is the step between them (includes/animation-stagger.php, assets/js/animation-entrance-timing.js). Replaces a fixed scroll-linked tile rule that read none of the settings.",
+      "_comment_animationItems": "The classes of the grid's repeated items, a delegated product card's root included: the motion model's item hover (source item) matches them through Sgs_Motion_Targets::item_matches().",
       "motionDelegate": {
         "attribute": "source",
         "values": [ "wc-product", "cpt-collection" ],
@@ -75,9 +75,6 @@
         }
       ],
       "arrayContentLift": true,
-      "presetSelectors": [
-        "effectHover"
-      ],
       "boxFamilies": {
         "cardBorderWidth": [
           "cardBorderWidth"
@@ -122,13 +119,8 @@
             "css:align-items": "alignItems",
             "css:flex-direction": "flexDirection",
             "css:flex-wrap": "flexWrap",
-            "anim:preset": "sgsAnimation",
-            "anim:duration": "sgsAnimationDuration",
-            "anim:easing": "sgsAnimationEasing",
-            "anim:stagger": "staggerDelay",
             "css:border-color-gradient": "borderColourGradient"
-          },
-          "_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
+          }
         },
         "item": {
           "absentIn": [ "products" ],
@@ -174,7 +166,7 @@
               }
             }
           },
-          "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
+          "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — grayscaleHover resolves to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json). This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
         },
         "image-wrap": {
           "absentIn": [ "products" ],
@@ -191,7 +183,7 @@
             "css:height": "imageHeight",
             "css:padding": "imagePadding"
           },
-          "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opted this element out of orphan-candidate scanning while it had no style attrs to claim; `imageFallbackColour` changed that, and the blanket opt-out ALSO hid the attrMap from check-element-manifest-conformance.js's cluster-resolution pass (an element's attrMap is only consulted for clusters it has actually declared) — with `clusters: []` the entry was inert, so `imageFallbackColour` was reported as an unrelated ORPHAN under the 'image' element instead, purely because its name happens to start with \"image\" (the same literal-prefix collision that element's own `imageZoomHover` deliberately tolerates as a BY-DESIGN orphan). Fixed by narrowing this element's `prefix` to `\"imageFallback\"` (still opts it out of the OTHER `image*`-named attrs it doesn't own, e.g. it never claims `imageZoomHover`) and declaring `clusters: [\"fill\"]` so the `css:background-color` attrMap member actually resolves and claims `imageFallbackColour` — once claimed here, the 'image' element's separate prefix scan sees it as already-claimed and stops reporting it. `imageFallback` (the boolean toggle) has no css: mapping and stays an honest BY-DESIGN orphan here, the same shape as `imageZoomHover` on 'image'."
+          "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opted this element out of orphan-candidate scanning while it had no style attrs to claim; `imageFallbackColour` changed that, and the blanket opt-out ALSO hid the attrMap from check-element-manifest-conformance.js's cluster-resolution pass (an element's attrMap is only consulted for clusters it has actually declared) — with `clusters: []` the entry was inert, so `imageFallbackColour` was reported as an unrelated ORPHAN under the 'image' element instead, purely because its name happens to start with \"image\" (a literal-prefix collision). Fixed by narrowing this element's `prefix` to `\"imageFallback\"` (still opts it out of the OTHER `image*`-named attrs it doesn't own) and declaring `clusters: [\"fill\"]` so the `css:background-color` attrMap member actually resolves and claims `imageFallbackColour` — once claimed here, the 'image' element's separate prefix scan sees it as already-claimed and stops reporting it. `imageFallback` (the boolean toggle) has no css: mapping and stays an honest BY-DESIGN orphan here."
         },
         "title": {
           "absentIn": [ "products" ],
@@ -512,10 +504,6 @@
       "default": {},
       "description": "A fixed height for each card's image area, per device (CSS length). Set, it replaces the aspect ratio: every image area is this tall and the image sits in it by its object fit (scale-down keeps a small logo at its own size). Empty keeps the aspect ratio."
     },
-    "effectHover": {
-      "type": "string",
-      "default": "zoom"
-    },
     "titleColour": {
       "type": "string",
       "default": ""
@@ -625,29 +613,9 @@
     "cardShadowColourHover": {
       "type": "string"
     },
-    "imageZoomHover": {
-      "type": "boolean",
-      "default": false
-    },
     "grayscaleHover": {
       "type": "boolean",
       "default": false
-    },
-    "staggerDelay": {
-      "type": "number",
-      "default": 80
-    },
-    "sgsAnimation": {
-      "type": "string",
-      "default": "fade-up"
-    },
-    "sgsAnimationDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsAnimationEasing": {
-      "type": "string",
-      "default": "default"
     },
     "source": {
       "type": "string",
