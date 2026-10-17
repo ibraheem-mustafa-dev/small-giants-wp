@@ -63,8 +63,8 @@ Governing documents: fix register `plans/2026-10-02-eye-care-fix-register.md` (w
 
 ## Parked
 
-- **CR12 (your ruling):** the dark-mode toggle renders nothing because no client sets dark tokens; three design options sit on its register row.
-- **CR23 (your ruling):** about 72 Eye Care differences no setting can reach (a 2026-10-07 snapshot, recount before quoting; register row CR23).
+- **CR12, parked by you:** the dark-mode toggle renders nothing because no client sets dark tokens; three design options sit on its register row.
+- **CR23:** about 72 Eye Care differences no setting can reach (a 2026-10-07 snapshot); the Track 2 session recounts them and carries the rest as missing-feature rows.
 - **WW-SH-04 (your ruling):** the Solve answer sheet labels a shop write wrong on "assumed" evidence (Spec 48 §5.4 Res 34).
 - **Unwired scripts (your ruling):** nav-qa `u1-owed-probe.mjs` with `qa-u1-owed-fixture.php`, and the `motion-qa` probes whose target pages no doc registers (`plugins/sgs-blocks/scripts/audit-live-script-closure.py` lists them).
 - **Product-card value ladder:** 24 editor-canvas controls wait for a bound-mode canvas preview (parked by you, fix register; baseline `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`).
