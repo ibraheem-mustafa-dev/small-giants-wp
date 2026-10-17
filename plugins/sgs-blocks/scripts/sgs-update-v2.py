@@ -58,12 +58,16 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
 
 Usage:
     python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y] [--prune-mode MODE] [--self-test]
+                            [--allow-stale-tree]
 
     --stage N               Run only stage N (1-13). Omit to run all.
     --dry-run               Compute row counts without writing to DB or files
     --wp-version X.Y        WP version tag for Stage 2 (default: 7.0)
     --prune-mode MODE       Stage 9 only: 'aggressive' (default) DELETEs stale support rows.
                             'conservative' sets is_stale=1 instead (opt-in cautious mode).
+    --allow-stale-tree      Write the shared DB even though this checkout is behind origin/main.
+                            Without it any run that writes the shared DB (everything except
+                            --dry-run) exits 2 from a stale checkout (dbschema/tree_guard.py).
     --self-test             Stage 13 only: test that the export stage can fail (do not use operationally).
                             Attr-level orphans are always deleted regardless of prune_mode
                             (block_attributes has no is_stale column).
@@ -7279,8 +7283,29 @@ def _guard_children_for_db_override() -> None:
     subprocess.run = guarded
 
 
+def _enforce_tree_guard(args: argparse.Namespace, shared_dbs: tuple[Path, ...] = ()) -> None:
+    """Exit 2 when a run that writes the shared DB starts from a checkout behind origin/main.
+
+    ``--dry-run`` and a ``--db`` that is not one of ``shared_dbs`` write nothing shared, so they pass.
+    """
+    dbschema = str(Path(__file__).resolve().parent / "dbschema")
+    if dbschema not in sys.path:
+        sys.path.insert(0, dbschema)
+    import tree_guard  # noqa: E402
+
+    tree_guard.enforce(
+        Path(__file__).resolve().parent,
+        allow_stale=args.allow_stale_tree,
+        dry_run=args.dry_run,
+        target_db=SGS_DB if shared_dbs else None,
+        shared_dbs=shared_dbs,
+        label="sgs-update-v2.py",
+    )
+
+
 def main() -> None:
     global SGS_DB, _CSS_PROPERTY_CLASSIFICATIONS_JSON_PATH
+    shared_dbs = (SGS_DB, _CLAUDE_DB)
     parser = argparse.ArgumentParser(
         description="SGS framework knowledge base — 13-stage holistic refresh",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -7310,6 +7335,16 @@ def main() -> None:
         "--dry-run",
         action="store_true",
         help="Compute row counts without writing to DB or files",
+    )
+    parser.add_argument(
+        "--allow-stale-tree",
+        dest="allow_stale_tree",
+        action="store_true",
+        help=(
+            "Write the shared DB even though this checkout is behind origin/main. Without it a run "
+            "from a stale checkout exits 2 (a reseed from an old tree puts retired tables back). "
+            "--dry-run needs no flag."
+        ),
     )
     parser.add_argument(
         "--wp-version",
@@ -7367,6 +7402,8 @@ def main() -> None:
 
     if args.self_test_is_responsive:
         raise SystemExit(_self_test_is_responsive())
+
+    _enforce_tree_guard(args, shared_dbs)
 
     print(f"sgs-update-v2.py — repo: {REPO_ROOT}")
     print(f"sgs-framework.db: {SGS_DB}")

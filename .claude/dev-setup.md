@@ -279,6 +279,16 @@ Gitignored; never committed.
 
 Both gates are correct; the sequence is the thing to remember. The same at-HEAD isolation is why an uncommitted fix cannot ship even though the deploy prints `[DONE]` with every gate green.
 
+### A reseed refuses to run from a stale checkout
+
+The framework DB is one file shared by every session, so `sgs-update-v2.py` and `dbschema/seed_reference_data.py` (run as scripts) exit 2 before writing it when the checkout they run from is behind `origin/main`: `git merge-base --is-ancestor origin/main HEAD` fails (`dbschema/tree_guard.py::enforce`). The cause it prevents: stage 1 of an old tree runs `CREATE TABLE IF NOT EXISTS` for every table that tree knew (`sgs-update-v2.py::_index_sgs_block_files`), so a reseed from an old worktree puts tables the current tree has retired back into the shared DB, and `check_schema_drift.py --check` then fails with `live-has-not-in-schema`.
+
+- The main checkout (equal to or ahead of `origin/main`) and a fresh worktree at `origin/main` pass. The check reads the LOCAL `origin/main` ref and never uses the network, so run `git fetch` first when you want it current.
+- The refusal names the stale commit and the fix: `git pull --rebase` in the main checkout, or `git worktree add <dir> origin/main`.
+- A missing `origin/main` ref, a non-repository directory or an unavailable `git` prints a warning and carries on, because none of them proves staleness.
+- `--allow-stale-tree` (on both scripts) overrides the refusal for deliberate use. `--dry-run` and a `--db` that is not the shared DB are not guarded.
+- Tests: `python -m pytest plugins/sgs-blocks/scripts/tests/test_tree_guard.py`.
+
 ### Removing or renaming a block attribute? Stage 1 does not delete
 
 Stage 1 of `sgs-update-v2.py` inserts the new rows and leaves the old ones in the DB, so `check-wiring-fingerprint` then flags each old name (L2, L3, L4) as a declared attribute no control writes. Run **`--stage 9`** (prune orphans) from the same clean detached worktree at `origin/main` after the stage-1 reseed; it deletes exactly the attribute rows no `block.json` declares . A name the same block's media element injects (`mediaElements` prefix plus `Size`, `Fit` and the like) must not be reused with another type: inspector-scan rule 38 fails it. A rename also trips the deploy's `oldshape-audit` while any stored post still carries the old name, and the live site's current schema rejects the new name, so the template cannot be rebuilt first: deploy with `--skip-oldshape-audit` (a test site only, naming the reason), then rebuild the tree at once.

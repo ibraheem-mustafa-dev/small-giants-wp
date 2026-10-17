@@ -23,8 +23,11 @@ Importing this module touches nothing: no database connection, no file read. ``s
 opens its own connection. The table DDL lives in ``dbschema/schema.sql``; a missing table or an
 unwritable database is reported on stderr and that seeder is skipped.
 
+Run as a script it refuses to write the shared DB from a checkout that is behind ``origin/main``
+(``dbschema/tree_guard.py``); ``--allow-stale-tree`` overrides that deliberately.
+
 Usage:
-    python dbschema/seed_reference_data.py [--db PATH]
+    python dbschema/seed_reference_data.py [--db PATH] [--allow-stale-tree]
 """
 from __future__ import annotations
 
@@ -38,6 +41,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import tree_guard  # noqa: E402
 from motion_presets_seed import MotionPresetError, seed_motion_presets  # noqa: E402
 
 _SCRIPTS_DIR = Path(__file__).resolve().parents[1]
@@ -480,10 +484,23 @@ def fx_attr_roster() -> dict[str, dict[str, str]]:
     return roster
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Seed the framework DB's reference tables.")
     parser.add_argument("--db", type=Path, help="Database to seed (default: $SGS_FRAMEWORK_DB or the shared DB).")
-    args = parser.parse_args()
+    parser.add_argument(
+        tree_guard.OVERRIDE_FLAG,
+        dest="allow_stale_tree",
+        action="store_true",
+        help="Write the shared DB even though this checkout is behind origin/main (deliberate use only).",
+    )
+    args = parser.parse_args(argv)
+    tree_guard.enforce(
+        Path(__file__).resolve().parent,
+        allow_stale=args.allow_stale_tree,
+        target_db=args.db or default_db_path(),
+        shared_dbs=(Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db",),
+        label="seed_reference_data.py",
+    )
     try:
         seed_all(args.db)
     except MotionPresetError as exc:
