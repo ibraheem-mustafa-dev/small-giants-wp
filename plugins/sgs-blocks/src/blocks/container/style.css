@@ -404,6 +404,15 @@
 	text-shadow: 0 1px 4px rgba( 0, 0, 0, 0.35 );
 }
 
+/* The layer that holds keyboard focus rises above its sibling layers. Every layer above is a z-index:1 stacking
+   context, so a later sibling would paint over the focus ring and bloom that extend past the focused control's own
+   box (the next accordion item hid the first question's bottom edge, the next block hid a tab panel's). Declared
+   after the last `> *` layer rule so source order wins the tie, and inside :where() so a layer's own explicit
+   z-index still wins. A foreground-SVG container keeps its content below the SVG, so it is left out. */
+:where(.sgs-container:not(.sgs-container--svg-foreground)) > :where(:focus-within) {
+	z-index: 2;
+}
+
 /* SVG animations — gated behind prefers-reduced-motion: no-preference */
 @media ( prefers-reduced-motion: no-preference ) {
 
