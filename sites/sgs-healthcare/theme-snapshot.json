@@ -71,6 +71,20 @@
       ]
     },
     "custom": {
+      "focus": {
+        "width": "2px",
+        "inner": "var(--wp--preset--color--surface)",
+        "ink": "var(--wp--preset--color--text)",
+        "ring": "#3a9f79",
+        "near": "var(--wp--preset--color--accent)",
+        "far": "var(--wp--preset--color--accent)",
+        "ringOnDark": "#56b991",
+        "nearOnDark": "var(--wp--preset--color--accent)",
+        "farOnDark": "var(--wp--preset--color--accent)",
+        "signatureA": "var(--wp--preset--color--primary)",
+        "signatureB": "var(--wp--preset--color--accent)",
+        "signatureC": "var(--wp--preset--color--accent-light)"
+      },
       "shadowHover": {
         "whisper": "soft",
         "soft": "lifted",

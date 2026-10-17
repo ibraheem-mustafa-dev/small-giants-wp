@@ -1479,46 +1479,6 @@
 			"category": "bespoke",
 			"group": "forms"
 		},
-		"legacy-token | sites/eye-care-ward-end/theme-snapshot.json |  | settings.custom.focus-ring | focus-ring": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "json"
-		},
-		"json-focus | sites/eye-care-ward-end/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
-			"count": 1,
-			"category": "json-focus",
-			"group": "json"
-		},
-		"json-focus | sites/helping-doctors/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
-			"count": 1,
-			"category": "json-focus",
-			"group": "json"
-		},
-		"legacy-token | sites/indus-foods/theme-snapshot.json |  | settings.custom.focus-ring | focus-ring": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "json"
-		},
-		"json-focus | sites/indus-foods/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
-			"count": 1,
-			"category": "json-focus",
-			"group": "json"
-		},
-		"legacy-token | sites/mamas-munches-redesign/theme-snapshot.json |  | settings.custom.focus-ring | focus-ring": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "json"
-		},
-		"json-focus | sites/mamas-munches-redesign/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
-			"count": 1,
-			"category": "json-focus",
-			"group": "json"
-		},
-		"json-focus | sites/mamas-munches/theme-snapshot.json |  | styles.elements.button.:focus | :focus": {
-			"count": 1,
-			"category": "json-focus",
-			"group": "json"
-		},
 		"bespoke | theme/sgs-theme/assets/css/dark-mode.css |  | .sgs-dark-mode-toggle:focus-visible | outline": {
 			"count": 1,
 			"category": "bespoke",
@@ -1833,16 +1793,6 @@
 			"count": 1,
 			"category": "bespoke",
 			"group": "woocommerce"
-		},
-		"legacy-token | theme/sgs-theme/theme.json |  | settings.custom.focus-ring | focus-ring": {
-			"count": 1,
-			"category": "legacy-token",
-			"group": "json"
-		},
-		"json-focus | theme/sgs-theme/theme.json |  | styles.elements.button.:focus | :focus": {
-			"count": 1,
-			"category": "json-focus",
-			"group": "json"
 		}
 	}
 }

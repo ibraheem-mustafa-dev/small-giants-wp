@@ -1690,5 +1690,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 189
+  },
+  {
+    "id": "check-snapshot-focus-tokens",
+    "cmd": "python scripts/check-snapshot-focus-tokens.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 190
   }
 ]

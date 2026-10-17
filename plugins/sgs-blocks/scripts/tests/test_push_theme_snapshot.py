@@ -520,7 +520,4 @@ def test_push_proceeds_with_a_complete_roster(pts, monkeypatch):
 
 def test_every_committed_snapshot_passes_the_roster_guard(pts):
     for path in sorted((REPO / "sites").glob("*/theme-snapshot.json")):
-        # The focus keys are written by `check-snapshot-focus-tokens.py --fix --apply` in the same change as their reader.
-        missing = [m for m in pts.roster_guard(json.loads(path.read_text(encoding="utf-8")))
-                   if not m.startswith("custom.focus.")]
-        assert missing == [], path.parent.name
+        assert pts.roster_guard(json.loads(path.read_text(encoding="utf-8"))) == [], path.parent.name
