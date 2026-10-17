@@ -134,6 +134,24 @@ export function focusStyleClass( {
 }
 
 /**
+ * The canvas button's focus class and the reason Signature is refused, both read from the block's attributes, so
+ * the editor file never touches the motion document itself.
+ *
+ * @param {Object} attributes The block attributes.
+ * @return {{focusClass: string, signatureRefused: string}} The class and the refusal reason.
+ */
+export function buttonFocusState( attributes ) {
+	const motion = {
+		borderColourGradient: attributes.borderColourGradient,
+		sgsMotion: attributes.sgsMotion,
+	};
+	return {
+		focusClass: focusStyleClass( { focusStyle: attributes.focusStyle, ...motion } ),
+		signatureRefused: signatureRefusal( motion ),
+	};
+}
+
+/**
  * The `--sgs-focus-host-border` value of a signature button (the twin of `sgs_button_focus_host_border()`): its own
  * border width (the widest side when the sides differ), else its preset's border width token; `''` without a border.
  *

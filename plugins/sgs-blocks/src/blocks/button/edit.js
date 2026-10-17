@@ -32,7 +32,7 @@ import { iconCirclePreviewStyle } from './icon-circle-preview';
 import { siteInfoLabelText } from './site-info-label';
 import { LINK_SOURCE_OPTIONS, FIXED_DESTINATION_LINK_SOURCES, LINK_SOURCE_HELP } from '../../shared/link-source-options';
 import { CUSTOM_WIDTH_UNITS, MIN_HEIGHT_UNITS, LINE_HEIGHT_UNITS, composeUnit, parseUnit } from './units';
-import { focusStyleClass, focusHostBorder, signatureRefusal } from './focus-style';
+import { buttonFocusState, focusHostBorder } from './focus-style';
 import { useFocusPreview } from './components/FocusPreviewToggle';
 
 const ICON_POSITION_OPTIONS = [
@@ -238,8 +238,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 	const liftScope = `sgs-button-lift-${ clientId }`;
 	if ( liftHover > 0 ) blockClasses.push( liftScope );
 	// Keyboard focus: render.php's class (none for a refused Signature), and Signature's host border width.
-	const focusClass = focusStyleClass( { focusStyle, borderColourGradient, sgsMotion: attributes.sgsMotion } );
-	const signatureRefused = signatureRefusal( { borderColourGradient, sgsMotion: attributes.sgsMotion } );
+	const { focusClass, signatureRefused } = buttonFocusState( attributes );
 	const focusPreview = useFocusPreview();
 	blockClasses.push( ...[ focusClass, focusPreview.className ].filter( Boolean ) );
 	const hostBorder = 'sgs-focus--signature' === focusClass ? focusHostBorder( { borderWidth, borderStyle, inheritStyle } ) : '';
