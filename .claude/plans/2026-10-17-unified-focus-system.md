@@ -224,7 +224,7 @@ Today's data, from the snapshots' own hex values: accent against `surface` is 1.
     - `forced-resting`: allowed. `:not(:focus-visible)` inside forced-colours.
     - `allow`: allowed, from the allow file.
     - `unrecognised`: mandatory and non-fatal.
-- **CLI** (migration-method contract): `--survey` prints counts per category and per group, plus `distinct indicator forms: N (system M)`. `--survey --json` writes the census (committed as `reports/migrations/focus-system-census.json`). `--fix [--group <g>|--path <glob>]` prints a unified diff that deletes `bespoke`, `suppress` and `radius-on-focus` declarations from CSS/SCSS and drops rules left empty; a comment directly above a dropped rule is shown in the diff for the implementer to delete by hand, never deleted automatically. `--fix --apply` writes atomically (`.tmp` then rename, `newline=''`). `--check` exits 1 on a finding not in `plugins/sgs-blocks/scripts/check-focus-system-baseline.json`, and on a baseline entry no longer reproduced. `--prune-baseline` only removes stale entries, never adds. `--self-test` runs the fixtures.
+- **CLI** (migration-method contract): `--survey` prints counts per category and per group, plus `distinct indicator forms: N (system M)`. `--survey --json` writes the census (committed as `reports/migrations/focus-system-census.json`). `--fix [--group <g>|--path <glob>]` prints a unified diff that deletes `bespoke`, `suppress` and `radius-on-focus` declarations from CSS/SCSS and drops rules left empty; a comment directly above a dropped rule is shown in the diff for the implementer to delete by hand, never deleted automatically. `--fix --apply` writes atomically (`.tmp` then rename, `newline=''`). `--check` is binary: it exits 1 on any finding in a target category, on `unrecognised`, on a stale allow or registry entry, on a corpus-control failure, and on the presence of `plugins/sgs-blocks/scripts/check-focus-system-baseline.json` (a baseline is refused). `--prune-baseline` and `--write-baseline` exit 2 with a message that the gate is binary. `--self-test` runs the fixtures.
 - **Groups** (the task partition; a path table in the script): `theme-core` (`core-blocks-critical.css`, `utilities.css`, `core-blocks.css`), `buttons`, `woocommerce`, `nav`, `forms`, `widgets`, `links-other`, `focus-ring-attr`, `motion`, `editor`, `json`, `php`.
 - **Fixtures** (`plugins/sgs-blocks/scripts/focus-system/fixtures/`, six minimum per Step 6):
     - Positive: a `:focus-visible` outline, which is removed.
@@ -234,7 +234,7 @@ Today's data, from the snapshots' own hex values: accent against `surface` is 1.
     - Idempotence: `--fix` twice gives the same output.
     - Corpus control: a dumb `:focus` substring count reconciled against the classifier's total, with a `WIDTH_OK` reason.
 - **Self-test:** copies the corpus to a temp dir, plants `.x:focus-visible{outline:2px solid red}` in a block stylesheet, expects `--check` to exit 1, removes it, expects 0.
-- **Gate:** Task 1 registers it in the fast tier in ratcheted-ceiling shape. The baseline is written once from today's census, so the gate is green at registration and red on any NEW bespoke focus rule. Each later task prunes the baseline. Task 15 deletes the baseline file, making the gate binary.
+- **Gate:** registered in the fast tier as a binary gate: `--check` fails on any target finding, with no baseline and no ceiling.
 
 ## 4. Tasks
 
@@ -492,7 +492,7 @@ Before every task: `git status --porcelain -- <the task's paths>` must be empty 
     3. Run the full chain: `npm run build`, `npm run gate:full`, `npm run gate:wired`.
 - **Failing test first:** `node plugins/sgs-blocks/scripts/check-focus-system.js --check --strict` must already be green. Deleting the baseline while any finding remains turns it red.
 - **Proof:**
-    - `--survey` prints `bespoke 0, suppress 0, legacy-token 0, php-emitter 0, json-focus 0, unrecognised 0, distinct indicator forms 6 (system 6)`.
+    - `--survey` prints `bespoke 0, suppress 0, legacy-token 0, php-emitter 0, json-focus 0, unrecognised 0, distinct indicator forms 5 (system 5)`.
     - `git grep -n -E "sgs-focus-(color|glow|shadow)|focus-ring--|formFocusRing|focusRingColour|sgsFocusRing" -- . ':!*.md' ':!reports/'` is empty.
     - `npm run gate:full` exits 0.
 - **Commit:** `focus: focus-system gate binary; DB and reference regenerated`

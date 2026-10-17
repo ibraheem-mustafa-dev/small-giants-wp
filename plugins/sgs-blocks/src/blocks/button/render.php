@@ -759,7 +759,7 @@ $sgs_focus_host_border = 'sgs-focus--signature' === $sgs_focus_class
 	: '';
 // No border of its own and no border preset: the multi-button group default border is what paints.
 if ( '' === $sgs_focus_host_border && 'sgs-focus--signature' === $sgs_focus_class && ! $has_border_width && 'custom' === $inherit_style ) {
-	$sgs_focus_host_border = sgs_button_focus_group_host_border( isset( $block ) && is_object( $block ) && is_array( $block->context ?? null ) ? $block->context : array() );
+	$sgs_focus_host_border = sgs_button_focus_group_host_border( $block->context );
 }
 if ( '' !== $sgs_focus_host_border ) {
 	$scoped_css_parts[] = ".{$uid}.sgs-button{--sgs-focus-host-border:{$sgs_focus_host_border};}";

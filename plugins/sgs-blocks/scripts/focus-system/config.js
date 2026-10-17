@@ -32,7 +32,8 @@ const ROOT = findRoot( __dirname );
 
 const SCRIPTS_DIR = path.resolve( __dirname, '..' );
 const ALLOW_FILE = process.env.FOCUS_SYSTEM_ALLOW_FILE || path.join( SCRIPTS_DIR, 'check-focus-system-allow.json' );
-const BASELINE_FILE = path.join( SCRIPTS_DIR, 'check-focus-system-baseline.json' );
+/** The retired ratchet baseline's path; the gate is binary, so the file's presence is itself a failure. */
+const BASELINE_FILE = process.env.FOCUS_SYSTEM_BASELINE_FILE || path.join( SCRIPTS_DIR, 'check-focus-system-baseline.json' );
 const CENSUS_FILE = path.join( ROOT, 'reports', 'migrations', 'focus-system-census.json' );
 
 /** The one system file (Task 4 creates it). Its rules are category `system`. */

@@ -25,7 +25,7 @@ const { analyseCss } = require( './classify-css.js' );
 const { analyseCode } = require( './emitters.js' );
 const { fixText } = require( './fixer.js' );
 const { buildCensus } = require( './census.js' );
-const { runCheck, baselineFromCensus } = require( './check.js' );
+const { runCheck } = require( './check.js' );
 const { listCorpus } = require( './corpus.js' );
 const { EXCLUDE } = require( './config.js' );
 
@@ -177,6 +177,32 @@ function caseExcludeAnchoring() {
 	return errors;
 }
 
+function caseBinaryGate() {
+	const errors = [];
+	const tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-focus-binary-' ) );
+	try {
+		const cli = path.join( __dirname, '..', 'check-focus-system.js' );
+		const run = ( args, baselinePath ) => spawnSync( process.execPath, [ cli, ...args ], { encoding: 'utf8', env: { ...process.env, FOCUS_SYSTEM_BASELINE_FILE: baselinePath } } );
+		const absent = path.join( tmp, 'absent-baseline.json' );
+		const normal = run( [ '--check' ], absent );
+		expectEqual( 'no baseline file: --check exit code (the normal state)', normal.status, 0, errors );
+		const present = path.join( tmp, 'recreated-baseline.json' );
+		fs.writeFileSync( present, JSON.stringify( { findings: {} } ) );
+		const refused = run( [ '--check' ], present );
+		expectEqual( 'a re-created baseline file: --check exit code', refused.status, 1, errors );
+		expectEqual( 'a re-created baseline file: message says the gate is binary', /gate is binary/.test( refused.stdout || '' ), true, errors );
+		for ( const flag of [ '--prune-baseline', '--write-baseline' ] ) {
+			const gone = run( [ flag ], absent );
+			expectEqual( `${ flag }: exit code`, gone.status, 2, errors );
+			expectEqual( `${ flag }: message says the gate is binary`, /gate is binary/.test( gone.stderr || '' ), true, errors );
+			expectEqual( `${ flag }: writes no baseline file`, fs.existsSync( absent ), false, errors );
+		}
+	} finally {
+		fs.rmSync( tmp, { recursive: true, force: true } );
+	}
+	return errors;
+}
+
 function caseCorpus( repoRoot, allow ) {
 	const errors = [];
 	const files = listCorpus( repoRoot );
@@ -192,8 +218,7 @@ function caseCorpus( repoRoot, allow ) {
 			errors.push( `corpus control on the copy: ${ before.control.failures.slice( 0, 3 ).join( '; ' ) }` );
 		}
 		expectEqual( 'unrecognised on the copy', before.counts.items.unrecognised || 0, 0, errors );
-		const baseline = baselineFromCensus( before );
-		expectEqual( 'clean copy --check', runCheck( before, baseline, { allow } ).failures.length, 0, errors );
+		expectEqual( 'clean copy --check', runCheck( before, {} ).failures.length, 0, errors );
 
 		const target = 'plugins/sgs-blocks/src/blocks/button/style.css';
 		const abs = path.join( tmp, target );
@@ -202,12 +227,12 @@ function caseCorpus( repoRoot, allow ) {
 		const planted = buildCensus( { root: tmp, files, allow } );
 		expectEqual( 'dumb count rises by one', planted.control.dumbTotal, before.control.dumbTotal + 1, errors );
 		expectEqual( 'planted copy control still reconciles', planted.control.failures.length, 0, errors );
-		const red = runCheck( planted, baseline, { allow } );
+		const red = runCheck( planted, {} );
 		expectEqual( 'planted rule turns --check red', red.failures.length > 0, true, errors );
 
 		fs.writeFileSync( abs, original );
 		const restored = buildCensus( { root: tmp, files, allow } );
-		expectEqual( 'restored copy --check', runCheck( restored, baseline, { allow } ).failures.length, 0, errors );
+		expectEqual( 'restored copy --check', runCheck( restored, {} ).failures.length, 0, errors );
 	} finally {
 		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
@@ -230,6 +255,7 @@ function runSelfTest( repoRoot, allow ) {
 		[ 'emitter-outline', () => caseEmitterOutline() ],
 		[ 'exclude-anchoring', () => caseExcludeAnchoring() ],
 		[ 'malformed-json', () => caseMalformedJson() ],
+		[ 'binary-gate', () => caseBinaryGate() ],
 		[ 'corpus-control-and-plant', () => caseCorpus( repoRoot, allow ) ],
 	];
 	let passed = 0;

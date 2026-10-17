@@ -12,10 +12,8 @@
  *   node scripts/check-focus-system.js --survey --json          also writes reports/migrations/focus-system-census.json
  *   node scripts/check-focus-system.js --fix [--group <g>|--path <glob>]           unified diff only
  *   node scripts/check-focus-system.js --fix --apply [--group <g>|--path <glob>]   writes atomically
- *   node scripts/check-focus-system.js --check [--strict] [--group <g>]   the ratchet gate
- *   node scripts/check-focus-system.js --prune-baseline        lowers stale baseline entries, never adds
- *   node scripts/check-focus-system.js --write-baseline        writes the first baseline (refuses if one exists)
- *   node scripts/check-focus-system.js --self-test             the six fixtures
+ *   node scripts/check-focus-system.js --check [--strict] [--group <g>]   the binary gate: any target finding fails (--strict is accepted and means the same)
+ *   node scripts/check-focus-system.js --self-test             the fixtures
  *
  * Modules: focus-system/config.js (corpus, tokens, groups), corpus.js, selector.js,
  * classify-css.js, lexer.js, emitters.js, census.js, fixer.js, diff.js, check.js, self-test.js.
@@ -31,7 +29,7 @@ const { listCorpus, checkWidth } = require( './focus-system/corpus.js' );
 const { buildCensus } = require( './focus-system/census.js' );
 const { fixText } = require( './focus-system/fixer.js' );
 const { unifiedDiff } = require( './focus-system/diff.js' );
-const { runCheck, baselineFromCensus, pruneBaseline } = require( './focus-system/check.js' );
+const { runCheck } = require( './focus-system/check.js' );
 const { runSelfTest } = require( './focus-system/self-test.js' );
 const { RULE_PRIORITY } = require( './focus-system/classify-css.js' );
 
@@ -176,32 +174,24 @@ function main( args ) {
 		return 0;
 	}
 
-	if ( args.includes( '--write-baseline' ) ) {
-		if ( fs.existsSync( BASELINE_FILE ) ) {
-			console.error( 'baseline exists; the ratchet only goes down (--prune-baseline). Delete it by hand only as a stated staleness correction.' );
-			return 1;
+	for ( const flag of [ '--write-baseline', '--prune-baseline' ] ) {
+		if ( args.includes( flag ) ) {
+			console.error( `check-focus-system: ${ flag } is retired; the gate is binary (any target finding fails, there is no baseline).` );
+			return 2;
 		}
-		writeAtomic( BASELINE_FILE, JSON.stringify( { _meta: notes().baselineMeta, ...baselineFromCensus( census ) }, null, '\t' ) + '\n' );
-		console.log( `baseline written: ${ Object.keys( baselineFromCensus( census ).findings ).length } keys` );
-		return 0;
-	}
-
-	if ( args.includes( '--prune-baseline' ) ) {
-		const { baseline, removed } = pruneBaseline( census, readJson( BASELINE_FILE ) );
-		writeAtomic( BASELINE_FILE, JSON.stringify( baseline, null, '\t' ) + '\n' );
-		console.log( `prune-baseline: ${ removed } findings removed, ${ Object.keys( baseline.findings ).length } keys remain` );
-		return 0;
 	}
 
 	if ( args.includes( '--check' ) ) {
-		const baseline = fs.existsSync( BASELINE_FILE ) ? readJson( BASELINE_FILE ) : null;
 		const width = checkWidth( ROOT );
-		const res = runCheck( census, baseline, { strict: args.includes( '--strict' ), group, width: width.failures } );
+		const res = runCheck( census, { group, width: width.failures } );
+		if ( fs.existsSync( BASELINE_FILE ) ) {
+			res.failures.push( `${ path.relative( ROOT, BASELINE_FILE ).split( path.sep ).join( '/' ) } exists; the gate is binary, so a baseline is refused: delete it and fix the findings at their source` );
+		}
 		res.failures.push( ...problems );
 		for ( const f of res.failures ) {
 			console.log( `FAIL ${ f }` );
 		}
-		const scope = `${ group ? `group ${ group}` : 'all groups' }${ args.includes( '--strict' ) || ! baseline ? ', strict' : ', against the baseline' }`;
+		const scope = `${ group ? `group ${ group }` : 'all groups' }, binary`;
 		console.log( `check-focus-system: ${ res.failures.length } failures (${ scope })` );
 		return res.failures.length ? 1 : 0;
 	}
