@@ -73,7 +73,16 @@ async function jsBlocked( ctx ) {
 			const lp = await ctx.newPage( markers[ '.m29-load-first' ], { javaScriptEnabled: false } );
 			try {
 				const load = await lp.page.evaluate( STATE, '.m29-load-first[data-sgs-me]' ).catch( () => null );
-				const animates = ( s ) => !! s && /sgs-me/.test( s.animName ) && parseFloat( s.animDur ) > 0;
+				// The playing rule writes one comma list per longhand, the element's base animation first (motion.css,
+				// `--sgs-me-a-list-*`), so each name is judged against the duration at its own position.
+				const animates = ( s ) => {
+					if ( ! s ) {
+						return false;
+					}
+					const names = String( s.animName ).split( ',' ).map( ( n ) => n.trim() );
+					const durs = String( s.animDur ).split( ',' ).map( ( d ) => parseFloat( d ) );
+					return names.some( ( n, i ) => /^sgs-me/.test( n ) && durs[ i % durs.length ] > 0 );
+				};
 				rep.check( 'js-blocked-load-entrance', { selector: '.m29-load-first', property: 'animation-name', measured: load && { animName: load.animName, animDur: load.animDur }, expected: 'an sgs-me animation with a non-zero duration', pass: animates( load ) } );
 				const still = await lp.page.evaluate( STATE, '.m29-fade-sibling' ).catch( () => null );
 				rep.control( 'js-blocked-load-entrance', { selector: '.m29-fade-sibling', property: 'animation-name', measured: still && { animName: still.animName, animDur: still.animDur }, expected: 'an element with no entrance (same page, JavaScript off) is rejected by the same animation judge', red: !! still && ! animates( still ) } );
