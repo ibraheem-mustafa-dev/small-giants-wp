@@ -874,11 +874,11 @@
 			"note": "read by the construct registry's reader; no writer or check yet"
 		},
 		"css-at:charset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "document plumbing: candidate exclusion"
+			"excluded": {
+				"reason": "document plumbing",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-at:container": {
 			"recognise": null,
@@ -895,11 +895,11 @@
 			"note": "at-rule: not read by intake"
 		},
 		"css-at:document": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete at-rule: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete at-rule",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-at:font-face": {
 			"recognise": null,
@@ -923,11 +923,11 @@
 			"note": "at-rule: not read by intake"
 		},
 		"css-at:import": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "stylesheet plumbing: candidate exclusion"
+			"excluded": {
+				"reason": "stylesheet plumbing",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-at:keyframes": {
 			"recognise": null,
@@ -952,18 +952,18 @@
 			"note": "breakpoints: draft thresholds are read (intake-breakpoints) but not written per block (FR-48-45, FR-48-50)"
 		},
 		"css-at:namespace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "document plumbing: candidate exclusion"
+			"excluded": {
+				"reason": "document plumbing",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-at:page": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "print layout: candidate exclusion"
+			"excluded": {
+				"reason": "print layout",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-at:position-try": {
 			"recognise": null,
@@ -1186,25 +1186,25 @@
 			"note": "Fill reads 0 of 20 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:mathml": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "vendor, print or speech properties (Fill reads 1 of 4): candidate exclusion"
+			"excluded": {
+				"reason": "vendor, print or speech properties (Fill reads 1 of 4)",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-group:microsoft-extensions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "vendor, print or speech properties (Fill reads 0 of 46): candidate exclusion"
+			"excluded": {
+				"reason": "vendor, print or speech properties (Fill reads 0 of 46)",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-group:mobile-text-size-adjustment": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "vendor, print or speech properties (Fill reads 0 of 1): candidate exclusion"
+			"excluded": {
+				"reason": "vendor, print or speech properties (Fill reads 0 of 1)",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-group:motion-path": {
 			"recognise": null,
@@ -1215,11 +1215,11 @@
 			"note": "Fill reads 0 of 6 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:mozilla-extensions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "vendor, print or speech properties (Fill reads 0 of 31): candidate exclusion"
+			"excluded": {
+				"reason": "vendor, print or speech properties (Fill reads 0 of 31)",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-group:multi-column-layout": {
 			"recognise": null,
@@ -1243,11 +1243,11 @@
 			"note": "Fill reads 0 of 5 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:paged-media": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "vendor, print or speech properties (Fill reads 0 of 4): candidate exclusion"
+			"excluded": {
+				"reason": "vendor, print or speech properties (Fill reads 0 of 4)",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-group:pointer-events": {
 			"recognise": null,
@@ -1321,11 +1321,11 @@
 			"note": "Fill reads 0 of 3 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:speech": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "vendor, print or speech properties (Fill reads 0 of 1): candidate exclusion"
+			"excluded": {
+				"reason": "vendor, print or speech properties (Fill reads 0 of 1)",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-group:table": {
 			"recognise": null,
@@ -1386,11 +1386,11 @@
 			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:webkit-extensions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "vendor, print or speech properties (Fill reads 0 of 50): candidate exclusion"
+			"excluded": {
+				"reason": "vendor, print or speech properties (Fill reads 0 of 50)",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"css-group:will-change": {
 			"recognise": null,
@@ -1450,11 +1450,11 @@
 			"note": "extension settings: behaviour recognisers"
 		},
 		"extension:conditionalVisibility": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "conditional display by login, role or date: candidate exclusion (no draft shows it)"
+			"excluded": {
+				"reason": "conditional display by login, role or date",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"extension:customCss": {
 			"recognise": null,
@@ -1777,11 +1777,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:acronym": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:address": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -1790,11 +1790,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:applet": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:area": {
 			"recognise": null,
@@ -1836,11 +1836,11 @@
 			"note": "document plumbing: read by intake only where a construct reader exists"
 		},
 		"html:basefont": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:bdi": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -1855,25 +1855,25 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:bgsound": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:big": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:blink": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:blockquote": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -1916,11 +1916,11 @@
 			"note": "table structure: no table writer"
 		},
 		"html:center": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:cite": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -1949,18 +1949,18 @@
 			"note": "table structure: no table writer"
 		},
 		"html:command": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:content": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:data": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2008,11 +2008,11 @@
 			"note": "native interactive element: open state and behaviour are not read"
 		},
 		"html:dir": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:div": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2033,11 +2033,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:element": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:em": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2074,11 +2074,11 @@
 			"note": "media element: no media upload or attachment map yet (FR-48-39)"
 		},
 		"html:font": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:footer": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2094,18 +2094,18 @@
 			"note": "form element: no form-field writer (FR-48-48)"
 		},
 		"html:frame": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:frameset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:h1": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2189,11 +2189,11 @@
 			"note": "media element: no media upload or attachment map yet (FR-48-39)"
 		},
 		"html:image": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:img": {
 			"recognise": null,
@@ -2216,11 +2216,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:isindex": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:kbd": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2229,11 +2229,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:keygen": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:label": {
 			"recognise": null,
@@ -2263,11 +2263,11 @@
 			"note": "document plumbing: read by intake only where a construct reader exists"
 		},
 		"html:listing": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:main": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2289,18 +2289,18 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:marquee": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:math": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:menu": {
 			"recognise": null,
@@ -2310,11 +2310,11 @@
 			"note": "native interactive element: open state and behaviour are not read"
 		},
 		"html:menuitem": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:meta": {
 			"recognise": null,
@@ -2331,11 +2331,11 @@
 			"note": "form element: no form-field writer (FR-48-48)"
 		},
 		"html:multicol": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:nav": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2344,32 +2344,32 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:nextid": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:nobr": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:noembed": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:noframes": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:noscript": {
 			"recognise": null,
@@ -2432,11 +2432,11 @@
 			"note": "media element: no media upload or attachment map yet (FR-48-39)"
 		},
 		"html:plaintext": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:pre": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2458,11 +2458,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:rb": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:rbc": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2483,11 +2483,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:rtc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:ruby": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2535,11 +2535,11 @@
 			"note": "form element: no form-field writer (FR-48-48)"
 		},
 		"html:shadow": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:slot": {
 			"recognise": null,
@@ -2562,11 +2562,11 @@
 			"note": "media element: no media upload or attachment map yet (FR-48-39)"
 		},
 		"html:spacer": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:span": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2575,11 +2575,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:strike": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:strong": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2704,11 +2704,11 @@
 			"note": "media element: no media upload or attachment map yet (FR-48-39)"
 		},
 		"html:tt": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"html:u": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -2742,11 +2742,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:xmp": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "obsolete or non-HTML element: candidate exclusion"
+			"excluded": {
+				"reason": "obsolete or non-HTML element",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"motion-preset:effects:ambient-float": {
 			"recognise": null,
@@ -3261,417 +3261,417 @@
 			"note": "theme template or part: the page map names the template; no template writer (FR-48-55 site build not built)"
 		},
 		"pattern:about-image-left": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:about-mission": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:about-stats": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:about-story": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:contact-form": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:contact-minimal": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:cta-banner": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:cta-centred": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-anchored-card-stack": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-centred-statement": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-editorial-ghost-list": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-floating-capped-card": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-offset-column": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-scratch": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-solid-brand-light": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-split-zone-serif": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:drawer-two-column-editorial": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:faq-section": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:footer-centred": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:footer-columns": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:footer-compact": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:footer-informational": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:footer-minimal": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:footer-scratch": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:footer-simple": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:framework-drawer-default": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:framework-footer-default": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:framework-header-default": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-centred": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-full": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-minimal": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-scratch": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-search-bar-above": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-search-bar-below": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-search-icon": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:header-top-icons": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:heading-subheading-cluster": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:hero-centred": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:hero-split": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:hero-video-background": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:label-heading-subheading-cluster": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-brands-1": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-compact-links": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-compact-links-numbered": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-general-1col": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-general-2col": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-general-2col-aside": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-links-with-tiles": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:mega-media-cards-1": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:pricing-columns": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:services-alternating": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:services-features": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:services-grid": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:stats-counter": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:team-section": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:testimonials-cards": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:testimonials-highlight": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"pattern:testimonials-large": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "theme pattern: an editor starting point, not something a draft holds"
+			"excluded": {
+				"reason": "theme pattern: an editor starting point, not something a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"plugin:sgs-accessibility": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "admin-side plugin with no front-end value a draft holds"
+			"excluded": {
+				"reason": "admin-side plugin with no front-end value a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"plugin:sgs-blocks": {
 			"recognise": null,
@@ -3681,11 +3681,11 @@
 			"note": "the blocks plugin: covered through its blocks and surfaces"
 		},
 		"plugin:sgs-client-notes": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "admin-side plugin with no front-end value a draft holds"
+			"excluded": {
+				"reason": "admin-side plugin with no front-end value a draft holds",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"post-type:sgs_choice_flow": {
 			"recognise": null,
@@ -3744,285 +3744,284 @@
 			"note": "form, choice flow or product template post: no writer"
 		},
 		"sgs-support:animationItems": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:arrayContentLift": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:blockLinkAlways": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:blockLinkAutoHelp": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:blockLinkAutoUrl": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:boxFamilies": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:collection": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:colourExemptions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:containerKind": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:elements": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:enabledExtensions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:fx": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:headerEssential": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:hideExtensions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:hoverDefaults": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:hoverExcludeControls": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:iconPicker": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:imageControls": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:imageControlsExplicit": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:intrinsicColumns": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:is_section_root": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:mediaElements": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:motion": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"waiting": "phase-0",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:motionDelegate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:motionItems": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:presetManualValues": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:presetSelectors": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:scalarContentLift": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:scalarStylingLift": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:scrim": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:sectionPadding": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:separators": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:shadowLift": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:siteInfoLinkRow": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:spacingAxes": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:spacingDefaults": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:specRef": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:sweepEligibility": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:variantAttr": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"sgs-support:variants": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families"
+			"excluded": {
+				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
+				"signedBy": "Bean",
+				"date": "2026-10-17"
+			}
 		},
 		"snapshot-key:settings.appearanceTools": {
 			"recognise": null,

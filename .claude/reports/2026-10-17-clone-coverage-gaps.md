@@ -1,8 +1,7 @@
-# Clone coverage gap list: 566 capabilities neither covered nor excluded
+# Clone coverage gap list: 419 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
-| exclusion candidate (awaiting Bean) | 147 |
 | motion writer (4.0) | 113 |
 | site and surfaces | 90 |
 | draft reading | 75 |
@@ -198,50 +197,7 @@
 - `motion-preset:hover:magnet`: hover presets, family magnet (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. magnet-bold, magnet-standard, magnet-subtle
 - `motion-preset:hover:sheen`: hover presets, family sheen (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sheen-bold, sheen-standard, sheen-subtle
 
-## sgs-support (40)
-
-- `sgs-support:animationItems`: supports.sgs.animationItems (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid
-- `sgs-support:arrayContentLift`: supports.sgs.arrayContentLift (9); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/brand-strip, sgs/card-grid, sgs/google-reviews, sgs/icon-list, sgs/option-picker
-- `sgs-support:blockLinkAlways`: supports.sgs.blockLinkAlways (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/product-card
-- `sgs-support:blockLinkAutoHelp`: supports.sgs.blockLinkAutoHelp (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/product-card, sgs/responsive-logo
-- `sgs-support:blockLinkAutoUrl`: supports.sgs.blockLinkAutoUrl (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/responsive-logo
-- `sgs-support:boxFamilies`: supports.sgs.boxFamilies (70); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/accordion-item, sgs/audio, sgs/before-after, sgs/brand-strip
-- `sgs-support:collection`: supports.sgs.collection (16); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/brand-strip, sgs/breadcrumbs, sgs/card-grid, sgs/gallery
-- `sgs-support:colourExemptions`: supports.sgs.colourExemptions (17); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/before-after, sgs/business-info, sgs/cart, sgs/filter-search, sgs/gallery
-- `sgs-support:containerKind`: supports.sgs.containerKind (20); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/container, sgs/feature-grid, sgs/form, sgs/hero
-- `sgs-support:elements`: supports.sgs.elements (97); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/accordion-item, sgs/account, sgs/audio, sgs/before-after
-- `sgs-support:enabledExtensions`: supports.sgs.enabledExtensions (21); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/button, sgs/container, sgs/google-reviews, sgs/heading, sgs/hero
-- `sgs-support:fx`: supports.sgs.fx (8); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/before-after, sgs/buybox, sgs/decorative-image, sgs/gallery, sgs/google-reviews
-- `sgs-support:headerEssential`: supports.sgs.headerEssential (6); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/cart, sgs/nav-bar-menu, sgs/nav-drawer-menu, sgs/product-search, sgs/responsive-logo
-- `sgs-support:hideExtensions`: supports.sgs.hideExtensions (32); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion-item, sgs/brand-strip, sgs/choice-flow, sgs/choice-flow-question, sgs/choice-flow-result
-- `sgs-support:hoverDefaults`: supports.sgs.hoverDefaults (6); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/info-box, sgs/pricing-table, sgs/product-card, sgs/team-member
-- `sgs-support:hoverExcludeControls`: supports.sgs.hoverExcludeControls (4); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/container, sgs/google-reviews, sgs/pricing-table, sgs/whatsapp-cta
-- `sgs-support:iconPicker`: supports.sgs.iconPicker (14); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/accordion, sgs/button, sgs/cart, sgs/counter, sgs/form-field-tiles
-- `sgs-support:imageControls`: supports.sgs.imageControls (14); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/cart, sgs/form-field-tiles, sgs/gallery, sgs/google-rating-badge
-- `sgs-support:imageControlsExplicit`: supports.sgs.imageControlsExplicit (3); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/gallery, sgs/team-member
-- `sgs-support:intrinsicColumns`: supports.sgs.intrinsicColumns (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/container, sgs/site-footer-row
-- `sgs-support:is_section_root`: supports.sgs.is_section_root (3); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/hero, sgs/notice-banner, sgs/trust-bar
-- `sgs-support:mediaElements`: supports.sgs.mediaElements (20); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/before-after, sgs/brand-strip, sgs/buybox, sgs/card-grid, sgs/cart
-- `sgs-support:motion`: supports.sgs.motion (77, motion); has nothing; wave exclusion candidate (awaiting Bean), waits on phase-0; e.g. sgs/accordion, sgs/account, sgs/audio, sgs/before-after, sgs/brand-strip
-- `sgs-support:motionDelegate`: supports.sgs.motionDelegate (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid
-- `sgs-support:motionItems`: supports.sgs.motionItems (8); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/choice-flow-question, sgs/form, sgs/form-field-tiles, sgs/gallery
-- `sgs-support:presetManualValues`: supports.sgs.presetManualValues (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews
-- `sgs-support:presetSelectors`: supports.sgs.presetSelectors (3); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/info-box, sgs/team-member
-- `sgs-support:scalarContentLift`: supports.sgs.scalarContentLift (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/media, sgs/option-picker, sgs/team-member, sgs/testimonial
-- `sgs-support:scalarStylingLift`: supports.sgs.scalarStylingLift (9); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/counter, sgs/media, sgs/option-picker, sgs/product-card
-- `sgs-support:scrim`: supports.sgs.scrim (6); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/cart, sgs/gallery, sgs/modal, sgs/nav-bar-menu, sgs/nav-drawer
-- `sgs-support:sectionPadding`: supports.sgs.sectionPadding (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/container
-- `sgs-support:separators`: supports.sgs.separators (15); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/brand-strip, sgs/business-info, sgs/card-grid, sgs/cart, sgs/container
-- `sgs-support:shadowLift`: supports.sgs.shadowLift (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/cart, sgs/mega-panel, sgs/modal, sgs/nav-drawer, sgs/nav-drawer-menu
-- `sgs-support:siteInfoLinkRow`: supports.sgs.siteInfoLinkRow (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/social-icons
-- `sgs-support:spacingAxes`: supports.sgs.spacingAxes (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/google-reviews, sgs/tabs
-- `sgs-support:spacingDefaults`: supports.sgs.spacingDefaults (15); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/card-grid, sgs/cart, sgs/countdown-timer, sgs/counter, sgs/filter-search
-- `sgs-support:specRef`: supports.sgs.specRef (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/account
-- `sgs-support:sweepEligibility`: supports.sgs.sweepEligibility (2); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/nav-bar-menu, sgs/nav-drawer-menu
-- `sgs-support:variantAttr`: supports.sgs.variantAttr (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/hero, sgs/notice-banner, sgs/product-card, sgs/testimonial, sgs/trust-bar
-- `sgs-support:variants`: supports.sgs.variants (5); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgs/hero, sgs/notice-banner, sgs/product-card, sgs/testimonial, sgs/trust-bar
-
-## extension (13)
+## extension (12)
 
 - `extension:animation`: extension animation (animation.js) (10, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsAnimation, sgsAnimationDelay, sgsAnimationDistance, sgsAnimationDuration, sgsAnimationEasing
 - `extension:blockLink`: extension blockLink (hover-effects/attributes.js) (4); has nothing; wave behaviour recognisers; e.g. sgsBlockLink, sgsBlockLinkLabel, sgsBlockLinkSource, sgsBlockLinkTarget
@@ -249,7 +205,6 @@
 - `extension:childSizing`: extension childSizing (child-sizing.js) (2); has nothing; wave modes and values with no CSS property; e.g. sgsChildSizing, sgsChildWidth
 - `extension:chipGap`: extension chipGap (product-filter-chips-gap.js) (1); has nothing; wave modes and values with no CSS property; e.g. sgsChipGap
 - `extension:clickEffects`: extension clickEffects (hover-effects/attributes.js) (3); has nothing; wave behaviour recognisers; e.g. sgsClickEffect, sgsClickRippleColour, sgsClickRippleDuration
-- `extension:conditionalVisibility`: extension conditionalVisibility (conditional-visibility.js) (9); has nothing; wave exclusion candidate (awaiting Bean); e.g. sgsConditionCollectionQueryId, sgsConditionDateEnd, sgsConditionDateStart, sgsConditionDays, sgsConditionLoggedIn
 - `extension:customCss`: extension customCss (custom-css.js) (3); has nothing; wave modes and values with no CSS property; e.g. sgsCustomCss, sgsCustomCssId, sgsCustomCssNote
 - `extension:hover`: extension hover (hover-effects/attributes.js) (19, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsHoverBorderAccent, sgsHoverDuration, sgsHoverDurationMs, sgsHoverEasing, sgsHoverEasingCustom
 - `extension:imageControls`: extension imageControls (image-controls.js) (8); has nothing; wave content, media and icons; e.g. sgsColourTreatment, sgsHeightDesktop, sgsHeightMobile, sgsHeightTablet, sgsHeightUnit
@@ -287,67 +242,6 @@
 - `part:sgs-pdp-buybox`: parts/sgs-pdp-buybox.html (1); has nothing; wave site and surfaces
 - `part:sgs-pdp-content`: parts/sgs-pdp-content.html (1); has nothing; wave site and surfaces
 
-## pattern (58)
-
-- `pattern:about-image-left`: patterns/about-image-left.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:about-mission`: patterns/about-mission.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:about-stats`: patterns/about-stats.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:about-story`: patterns/about-story.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:contact-form`: patterns/contact-form.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:contact-minimal`: patterns/contact-minimal.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:cta-banner`: patterns/cta-banner.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:cta-centred`: patterns/cta-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-anchored-card-stack`: patterns/drawer-anchored-card-stack.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-centred-statement`: patterns/drawer-centred-statement.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-editorial-ghost-list`: patterns/drawer-editorial-ghost-list.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-floating-capped-card`: patterns/drawer-floating-capped-card.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-offset-column`: patterns/drawer-offset-column.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-scratch`: patterns/drawer-scratch.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-solid-brand-light`: patterns/drawer-solid-brand-light.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-split-zone-serif`: patterns/drawer-split-zone-serif.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:drawer-two-column-editorial`: patterns/drawer-two-column-editorial.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:faq-section`: patterns/faq-section.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:footer-centred`: patterns/footer-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:footer-columns`: patterns/footer-columns.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:footer-compact`: patterns/footer-compact.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:footer-informational`: patterns/footer-informational.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:footer-minimal`: patterns/footer-minimal.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:footer-scratch`: patterns/footer-scratch.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:footer-simple`: patterns/footer-simple.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:framework-drawer-default`: patterns/framework-drawer-default.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:framework-footer-default`: patterns/framework-footer-default.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:framework-header-default`: patterns/framework-header-default.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-centred`: patterns/header-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-full`: patterns/header-full.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-minimal`: patterns/header-minimal.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-scratch`: patterns/header-scratch.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-search-bar-above`: patterns/header-search-bar-above.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-search-bar-below`: patterns/header-search-bar-below.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-search-icon`: patterns/header-search-icon.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:header-top-icons`: patterns/header-top-icons.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:heading-subheading-cluster`: patterns/heading-subheading-cluster.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:hero-centred`: patterns/hero-centred.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:hero-split`: patterns/hero-split.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:hero-video-background`: patterns/hero-video-background.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:label-heading-subheading-cluster`: patterns/label-heading-subheading-cluster.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-brands-1`: patterns/mega-brands-1.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-compact-links-numbered`: patterns/mega-compact-links-numbered.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-compact-links`: patterns/mega-compact-links.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-general-1col`: patterns/mega-general-1col.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-general-2col-aside`: patterns/mega-general-2col-aside.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-general-2col`: patterns/mega-general-2col.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-links-with-tiles`: patterns/mega-links-with-tiles.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:mega-media-cards-1`: patterns/mega-media-cards-1.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:pricing-columns`: patterns/pricing-columns.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:services-alternating`: patterns/services-alternating.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:services-features`: patterns/services-features.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:services-grid`: patterns/services-grid.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:stats-counter`: patterns/stats-counter.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:team-section`: patterns/team-section.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:testimonials-cards`: patterns/testimonials-cards.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:testimonials-highlight`: patterns/testimonials-highlight.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `pattern:testimonials-large`: patterns/testimonials-large.php (1); has nothing; wave exclusion candidate (awaiting Bean)
-
 ## post-type (8)
 
 - `post-type:sgs_choice_flow`: post type sgs_choice_flow (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave shop, forms and data
@@ -359,11 +253,9 @@
 - `post-type:sgs_modal`: post type sgs_modal (plugins/sgs-blocks/includes/class-sgs-block-cpts.php) (1); has nothing; wave site and surfaces
 - `post-type:sgs_product_template`: post type sgs_product_template (plugins/sgs-blocks/includes/class-product-templates-cpt.php) (1); has nothing; wave shop, forms and data
 
-## plugin (3)
+## plugin (1)
 
-- `plugin:sgs-accessibility`: plugin sgs-accessibility (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `plugin:sgs-blocks`: plugin sgs-blocks (1); has nothing; wave site and surfaces
-- `plugin:sgs-client-notes`: plugin sgs-client-notes (1); has nothing; wave exclusion candidate (awaiting Bean)
 
 ## snapshot-key (58)
 
@@ -426,81 +318,49 @@
 - `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave site and surfaces
 - `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave site and surfaces
 
-## html (90)
+## html (56)
 
-- `html:acronym`: <acronym> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:applet`: <applet> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:area`: <area> (1); has nothing; wave content, media and icons
 - `html:audio`: <audio> (1); has nothing; wave content, media and icons
 - `html:base`: <base> (1); has nothing; wave draft reading
-- `html:basefont`: <basefont> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:bgsound`: <bgsound> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:big`: <big> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:blink`: <blink> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:body`: <body> (1); has nothing; wave draft reading
 - `html:button`: <button> (1); has nothing; wave shop, forms and data
 - `html:canvas`: <canvas> (1); has nothing; wave content, media and icons
 - `html:caption`: <caption> (1); has nothing; wave content, media and icons
-- `html:center`: <center> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:col`: <col> (1); has nothing; wave content, media and icons
 - `html:colgroup`: <colgroup> (1); has nothing; wave content, media and icons
-- `html:command`: <command> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:content`: <content> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:datalist`: <datalist> (1); has nothing; wave shop, forms and data
 - `html:details`: <details> (1); has nothing; wave behaviour recognisers
 - `html:dialog`: <dialog> (1); has nothing; wave behaviour recognisers
-- `html:dir`: <dir> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:element`: <element> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:embed`: <embed> (1); has nothing; wave content, media and icons
 - `html:fieldset`: <fieldset> (1); has nothing; wave shop, forms and data
 - `html:figcaption`: <figcaption> (1); has nothing; wave content, media and icons
 - `html:figure`: <figure> (1); has nothing; wave content, media and icons
-- `html:font`: <font> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:form`: <form> (1); has nothing; wave shop, forms and data
-- `html:frame`: <frame> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:frameset`: <frameset> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:head`: <head> (1); has nothing; wave draft reading
 - `html:html`: <html> (1); has nothing; wave draft reading
 - `html:iframe`: <iframe> (1); has nothing; wave content, media and icons
-- `html:image`: <image> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:img`: <img> (1); has nothing; wave content, media and icons
 - `html:input`: <input> (1); has nothing; wave shop, forms and data
-- `html:isindex`: <isindex> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:keygen`: <keygen> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:label`: <label> (1); has nothing; wave shop, forms and data
 - `html:legend`: <legend> (1); has nothing; wave shop, forms and data
 - `html:link`: <link> (1); has nothing; wave draft reading
-- `html:listing`: <listing> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:map`: <map> (1); has nothing; wave content, media and icons
-- `html:marquee`: <marquee> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:math`: <math> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:menu`: <menu> (1); has nothing; wave behaviour recognisers
-- `html:menuitem`: <menuitem> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:meta`: <meta> (1); has nothing; wave draft reading
 - `html:meter`: <meter> (1); has nothing; wave shop, forms and data
-- `html:multicol`: <multicol> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:nextid`: <nextid> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:nobr`: <nobr> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:noembed`: <noembed> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:noframes`: <noframes> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:noscript`: <noscript> (1); has nothing; wave draft reading
 - `html:object`: <object> (1); has nothing; wave content, media and icons
 - `html:optgroup`: <optgroup> (1); has nothing; wave shop, forms and data
 - `html:option`: <option> (1); has nothing; wave shop, forms and data
 - `html:output`: <output> (1); has nothing; wave shop, forms and data
 - `html:picture`: <picture> (1); has nothing; wave content, media and icons
-- `html:plaintext`: <plaintext> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:progress`: <progress> (1); has nothing; wave shop, forms and data
-- `html:rb`: <rb> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:rtc`: <rtc> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:script`: <script> (1); has nothing; wave draft reading
 - `html:search`: <search> (1); has nothing; wave shop, forms and data
 - `html:select`: <select> (1); has nothing; wave shop, forms and data
-- `html:shadow`: <shadow> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:slot`: <slot> (1); has nothing; wave draft reading
 - `html:source`: <source> (1); has nothing; wave content, media and icons
-- `html:spacer`: <spacer> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html:strike`: <strike> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:style`: <style> (1); has nothing; wave draft reading
 - `html:summary`: <summary> (1); has nothing; wave behaviour recognisers
 - `html:svg`: <svg> (1); has nothing; wave content, media and icons
@@ -515,25 +375,18 @@
 - `html:title`: <title> (1); has nothing; wave draft reading
 - `html:tr`: <tr> (1); has nothing; wave content, media and icons
 - `html:track`: <track> (1); has nothing; wave content, media and icons
-- `html:tt`: <tt> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html:video`: <video> (1); has nothing; wave content, media and icons
-- `html:xmp`: <xmp> (1); has nothing; wave exclusion candidate (awaiting Bean)
 
-## css-at (19)
+## css-at (14)
 
-- `css-at:charset`: @charset (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-at:container`: @container (1); has nothing; wave draft reading
 - `css-at:counter-style`: @counter-style (1); has nothing; wave draft reading
-- `css-at:document`: @document (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-at:font-face`: @font-face (1); has nothing; wave site and surfaces
 - `css-at:font-feature-values`: @font-feature-values (1); has nothing; wave draft reading
 - `css-at:font-palette-values`: @font-palette-values (1); has nothing; wave draft reading
-- `css-at:import`: @import (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-at:keyframes`: @keyframes (1); has nothing; wave motion writer (4.0), waits on phase-0
 - `css-at:layer`: @layer (1); has nothing; wave draft reading
 - `css-at:media`: @media (1); has nothing; wave modes and values with no CSS property
-- `css-at:namespace`: @namespace (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-at:page`: @page (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-at:position-try`: @position-try (1); has nothing; wave draft reading
 - `css-at:property`: @property (1); has nothing; wave draft reading
 - `css-at:scope`: @scope (1); has nothing; wave draft reading
@@ -541,7 +394,7 @@
 - `css-at:supports`: @supports (1); has nothing; wave draft reading
 - `css-at:view-transition`: @view-transition (1); has nothing; wave motion writer (4.0), waits on phase-0
 
-## css-group (56)
+## css-group (49)
 
 - `css-group:anchor-positioning`: CSS properties: CSS Anchor Positioning (16); has nothing; wave draft reading; e.g. anchor-name, anchor-scope, bottom, left, margin-bottom
 - `css-group:animations`: CSS properties: CSS Animations (22, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. animation, animation-composition, animation-delay, animation-direction, animation-duration
@@ -568,15 +421,10 @@
 - `css-group:lists-and-counters`: CSS properties: CSS Lists and Counters (7); has nothing; wave draft reading; e.g. counter-increment, counter-reset, counter-set, list-style, list-style-image
 - `css-group:logical-properties-and-values`: CSS properties: CSS Logical Properties and Values (53); has nothing; wave draft reading; e.g. block-size, border-block, border-block-color, border-block-end, border-block-end-color
 - `css-group:masking`: CSS properties: CSS Masking (20); has nothing; wave draft reading; e.g. clip, clip-path, clip-rule, mask, mask-border
-- `css-group:mathml`: CSS properties: MathML (4); has nothing; wave exclusion candidate (awaiting Bean); e.g. math-depth, math-shift, math-style, text-transform
-- `css-group:microsoft-extensions`: CSS properties: Microsoft Extensions (46); has nothing; wave exclusion candidate (awaiting Bean); e.g. -ms-accelerator, -ms-block-progression, -ms-content-zoom-chaining, -ms-content-zoom-limit, -ms-content-zoom-limit-max
-- `css-group:mobile-text-size-adjustment`: CSS properties: CSS Mobile Text Size Adjustment (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. text-size-adjust
 - `css-group:motion-path`: CSS properties: Motion Path (6, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. offset, offset-anchor, offset-distance, offset-path, offset-position
-- `css-group:mozilla-extensions`: CSS properties: Mozilla Extensions (31); has nothing; wave exclusion candidate (awaiting Bean); e.g. -moz-appearance, -moz-binding, -moz-border-bottom-colors, -moz-border-left-colors, -moz-border-right-colors
 - `css-group:multi-column-layout`: CSS properties: CSS Multi-column Layout (12); has nothing; wave draft reading; e.g. column-count, column-fill, column-gap, column-height, column-rule
 - `css-group:overflow`: CSS properties: CSS Overflow (15); has nothing; wave draft reading; e.g. -webkit-line-clamp, line-clamp, max-lines, overflow, overflow-block
 - `css-group:overscroll-behavior`: CSS properties: CSS Overscroll Behavior (5); has nothing; wave draft reading; e.g. overscroll-behavior, overscroll-behavior-block, overscroll-behavior-inline, overscroll-behavior-x, overscroll-behavior-y
-- `css-group:paged-media`: CSS properties: CSS Paged Media (4); has nothing; wave exclusion candidate (awaiting Bean); e.g. page, page-break-after, page-break-before, page-break-inside
 - `css-group:pointer-events`: CSS properties: Pointer Events (1); has nothing; wave draft reading; e.g. touch-action
 - `css-group:positioned-layout`: CSS properties: CSS Positioned Layout (16); has nothing; wave draft reading; e.g. bottom, clear, float, inset, inset-block
 - `css-group:rhythmic-sizing`: CSS properties: CSS Rhythmic Sizing (1); has nothing; wave draft reading; e.g. line-height-step
@@ -587,7 +435,6 @@
 - `css-group:scroll-snap`: CSS properties: CSS Scroll Snap (32); has nothing; wave draft reading; e.g. scroll-initial-target, scroll-margin, scroll-margin-block, scroll-margin-block-end, scroll-margin-block-start
 - `css-group:scrollbars-styling`: CSS properties: CSS Scrollbars Styling (2); has nothing; wave draft reading; e.g. scrollbar-color, scrollbar-width
 - `css-group:shapes`: CSS properties: CSS Shapes (3); has nothing; wave draft reading; e.g. shape-image-threshold, shape-margin, shape-outside
-- `css-group:speech`: CSS properties: CSS Speech (1); has nothing; wave exclusion candidate (awaiting Bean); e.g. speak-as
 - `css-group:table`: CSS properties: CSS Table (5); has nothing; wave draft reading; e.g. border-collapse, border-spacing, caption-side, empty-cells, table-layout
 - `css-group:text`: CSS properties: CSS Text (24); has nothing; wave draft reading; e.g. hanging-punctuation, hyphenate-character, hyphenate-limit-chars, hyphens, letter-spacing
 - `css-group:text-decoration`: CSS properties: CSS Text Decoration (15); has nothing; wave draft reading; e.g. text-decoration, text-decoration-color, text-decoration-inset, text-decoration-line, text-decoration-skip
@@ -596,7 +443,6 @@
 - `css-group:values-and-units`: CSS properties: CSS Values and Units (2); has nothing; wave draft reading; e.g. interpolate-size, link-parameters
 - `css-group:view-transitions`: CSS properties: CSS View Transitions (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. view-transition-class, view-transition-name, view-transition-scope
 - `css-group:viewport`: CSS properties: CSS Viewport (1); has nothing; wave draft reading; e.g. zoom
-- `css-group:webkit-extensions`: CSS properties: WebKit Extensions (50); has nothing; wave exclusion candidate (awaiting Bean); e.g. -moz-appearance, -webkit-appearance, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style
 - `css-group:will-change`: CSS properties: CSS Will Change (1); has nothing; wave draft reading; e.g. will-change
 - `css-group:writing-modes`: CSS properties: CSS Writing Modes (5); has nothing; wave draft reading; e.g. direction, text-combine-upright, text-orientation, unicode-bidi, writing-mode
 
