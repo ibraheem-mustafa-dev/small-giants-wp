@@ -4,13 +4,18 @@ against temp repos and a temp server folder, never the real tree or a site.
 """
 from __future__ import annotations
 
+import contextlib
+import io
+import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 import deploy_cache
 import deploy_multi
+import deploy_timing
 
 from deploy_common import DEPLOY_ROOTS, FRAMEWORK_THEME_JSON_REL, SNAPSHOT_REL, TARBALL_NAME, TARGETS, THEME_JSON_PAYLOAD_NAME
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, split_dirty_by_payload, theme_json_guard_decision, uncommitted_snapshot_md5
@@ -134,6 +139,118 @@ def self_test_theme_json() -> list[str]:
         payload, why = resolve_theme_json_payload(tgt)
         if payload is None:
             failures.append(f"TARGETS['{key}']: {why}")
+    return failures
+
+
+def self_test_timing() -> list[str]:
+    """Self-test case 19: stage timings, the summary table and the history file (no deploy, no network).
+
+    Every check takes the implementation as an argument and runs twice: against the real
+    deploy_timing function (must find nothing wrong) and against a planted faulty copy (must
+    find something), so a check that cannot fail is reported as a failure.
+    """
+    failures: list[str] = []
+    sample = {"build": 30.0, "scp": 5.0, "gate-full": 60.0, "verify": 4.0}
+
+    def check_summary(fmt) -> list[str]:
+        rows = [(m.group(1).strip(), float(m.group(2)), float(m.group(3)))
+                for m in (re.match(r"\[time\] (.+?)\s+(\d+\.\d)\s+(\d+\.\d)%$", ln)
+                          for ln in fmt(sample, 99.0).splitlines()) if m and m.group(1).strip() != "TOTAL"]
+        problems = []
+        if [r[0] for r in rows] != ["gate-full", "build", "scp", "verify"][:len(rows)] or len(rows) < 4:
+            problems.append(f"order is not slowest first: {[r[0] for r in rows]}")
+        if not 99.0 <= sum(r[2] for r in rows) <= 101.0:
+            problems.append(f"percentages sum to {sum(r[2] for r in rows)}, not about 100")
+        return problems
+
+    def faulty_fmt(stages, total=None):
+        """Same table, but the stage rows come out fastest first."""
+        lines = deploy_timing.format_summary(stages, total).splitlines()
+        return "\n".join(lines[:2] + lines[2:-1][::-1] + lines[-1:])
+
+    def check_raise(stage_cm) -> list[str]:
+        rec: dict[str, float] = {}
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                with stage_cm("boom", recorder=rec):
+                    raise ValueError("planted")
+        except ValueError:
+            return [] if "boom" in rec else ["a stage that raised recorded no time"]
+        return ["a stage that raised did not re-raise"]
+
+    @contextlib.contextmanager
+    def faulty_stage(name, *, recorder=None):
+        yield  # records nothing when the block raises
+        deploy_timing.record(name, 0.0, recorder=recorder)
+
+    def entry_of(build) -> dict:
+        return build(commit="abc1234", target="t", scope="both", total_s=12.34, stages={"build": 1.26}, dry_run=False)
+
+    def check_entry(build) -> list[str]:
+        try:
+            data = json.loads(json.dumps(entry_of(build)))
+        except (TypeError, ValueError) as exc:
+            return [f"history entry is not valid JSON: {exc}"]
+        want = {"when", "commit", "target", "scope", "total_s", "stages", "dry_run"}
+        return [] if set(data) == want and isinstance(data["stages"], dict) else [f"keys are {sorted(data)}"]
+
+    def faulty_entry(**kw):
+        out = deploy_timing.build_entry(**kw)
+        out.pop("scope")
+        return out
+
+    def run_append(append, entry: dict, path: Path) -> tuple[bool, str]:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            try:
+                append(entry, path)
+            except Exception as exc:  # noqa: BLE001
+                return False, f"raised {type(exc).__name__}"
+        return True, buf.getvalue()
+
+    def check_unwritable(append, tmp: Path) -> list[str]:
+        ok, out = run_append(append, entry_of(deploy_timing.build_entry), tmp)  # a directory cannot be opened for append
+        if not ok:
+            return [f"an unwritable history path {out}"]
+        return [] if out.count("\n") == 1 and "could not write" in out else [f"expected one log line, got {out!r}"]
+
+    def faulty_append_raises(entry, path=None):
+        with open(path, "a", encoding="utf-8") as fh:  # no try/except
+            fh.write(json.dumps(entry) + "\n")
+
+    def check_dry(append, tmp: Path) -> list[str]:
+        dry = dict(entry_of(deploy_timing.build_entry), dry_run=True)
+        run_append(append, dry, tmp)
+        wrote_dry = tmp.exists() and tmp.read_text(encoding="utf-8") != ""
+        run_append(append, entry_of(deploy_timing.build_entry), tmp)
+        lines = tmp.read_text(encoding="utf-8").splitlines() if tmp.exists() else []
+        problems = ["a dry run wrote a history line"] if wrote_dry else []
+        if len(lines) != 1:
+            problems.append(f"a real run should leave exactly one line, found {len(lines)}")
+        return problems
+
+    def faulty_append_always(entry, path=None):
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry) + "\n")
+
+    with tempfile.TemporaryDirectory(prefix="sgs-deploy-timing-") as td:
+        base = Path(td)
+        cases = [
+            ("summary slowest first, percentages about 100", check_summary(deploy_timing.format_summary), check_summary(faulty_fmt)),
+            ("a raising stage records its time and re-raises", check_raise(deploy_timing.stage), check_raise(faulty_stage)),
+            ("history line is valid JSON with the documented keys", check_entry(deploy_timing.build_entry), check_entry(faulty_entry)),
+            ("an unwritable history path logs once and never raises", check_unwritable(deploy_timing.append_history, base),
+             check_unwritable(faulty_append_raises, base)),
+            ("a dry run writes nothing", check_dry(deploy_timing.append_history, base / "dry-real.jsonl"),
+             check_dry(faulty_append_always, base / "dry-fault.jsonl")),
+        ]
+    for label, real_problems, planted_problems in cases:
+        print(f"  [timing case] {label}: real={'GREEN' if not real_problems else 'RED'}; "
+              f"planted fault={'RED' if planted_problems else 'GREEN (check is vacuous)'}"
+              + (f" ({planted_problems[0]})" if planted_problems else ""))
+        failures.extend(f"timing: {label}: {p}" for p in real_problems)
+        if not planted_problems:
+            failures.append(f"timing NEGATIVE CONTROL: {label}: the planted fault was not detected, so the check cannot fail")
     return failures
 
 
@@ -273,6 +390,7 @@ def self_test() -> int:
     failures.extend(self_test_theme_json())
     failures.extend(deploy_cache.self_test())
     failures.extend(deploy_multi.self_test())
+    failures.extend(self_test_timing())
 
     if failures:
         print("[SELF-TEST FAIL]")
@@ -302,4 +420,7 @@ def self_test() -> int:
           "a pass restores build/ and its generated files, the packaging lock has one holder")
     print(" 18. deploy_multi: `all` and comma lists resolve canary-first, unknown names are "
           "refused, each child gets only its own --target")
+    print(" 19. deploy_timing: the summary is slowest first and sums to about 100%, a raising stage still records its time "
+          "and re-raises, the history line is valid JSON with the documented keys, an unwritable history path logs one "
+          "line and never raises, a dry run writes nothing; each check is proven red on a planted fault")
     return 0

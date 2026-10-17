@@ -25,6 +25,11 @@
  * are still runnable by hand and are NOT claimed to be covered here. Promoting one means
  * giving it a stable fixture and a negative control, then adding it to PROBES below.
  *
+ * Timing: each probe's wall-clock seconds print after it finishes, and a closing table (probe, seconds,
+ * pass/fail, slowest first, plus the total) prints before the PASS/FAIL line. To test that code without the
+ * live canary, set SGS_MOTION_QA_PROBES_JSON to a JSON array of { file, what, args } (file may be an
+ * absolute path); it replaces the probe list. Unset, the list below runs.
+ *
  * Run:  npm run qa:motion
  */
 
@@ -34,7 +39,7 @@ import path from 'node:path';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 
-const PROBES = [
+const REAL_PROBES = [
 	{
 		file: 'probe-morph-geometry.mjs',
 		what: 'fx-morph actually changes SVG geometry (D452 close-out, page 2113)',
@@ -74,9 +79,28 @@ const PROBES = [
 	},
 ];
 
+const PROBES = process.env.SGS_MOTION_QA_PROBES_JSON
+	? JSON.parse( process.env.SGS_MOTION_QA_PROBES_JSON )
+	: REAL_PROBES;
+
+/** The closing table: one row per probe (name, seconds, pass/fail), slowest first, then the total. */
+const formatProbeTable = ( results, totalSeconds ) => {
+	const rows = [ ...results ].sort( ( a, b ) => b.seconds - a.seconds );
+	const width = Math.max( 'probe'.length, ...rows.map( ( r ) => r.file.length ) );
+	return [
+		'[motion-qa] ---- probe timings, slowest first ----',
+		`[motion-qa] ${ 'probe'.padEnd( width ) }  ${ 'seconds'.padStart( 8 ) }  result`,
+		...rows.map(
+			( r ) =>
+				`[motion-qa] ${ r.file.padEnd( width ) }  ${ r.seconds.toFixed( 1 ).padStart( 8 ) }  ${ r.passed ? 'pass' : 'FAIL' }`
+		),
+		`[motion-qa] ${ 'TOTAL'.padEnd( width ) }  ${ totalSeconds.toFixed( 1 ).padStart( 8 ) }`,
+	].join( '\n' );
+};
+
 const run = ( file, args = [] ) =>
 	new Promise( ( resolve ) => {
-		const child = spawn( process.execPath, [ path.join( HERE, file ), ...args ], {
+		const child = spawn( process.execPath, [ path.resolve( HERE, file ), ...args ], {
 			stdio: 'inherit',
 		} );
 		child.on( 'close', ( code ) => resolve( code ?? 1 ) );
@@ -86,12 +110,20 @@ const run = ( file, args = [] ) =>
 console.log( `[motion-qa] running ${ PROBES.length } live probe(s) against the canary\n` );
 
 const failed = [];
+const results = [];
+const runStarted = performance.now();
 for ( const probe of PROBES ) {
 	console.log( `[motion-qa] --- ${ probe.file }: ${ probe.what }` );
+	const probeStarted = performance.now();
 	const code = await run( probe.file, probe.args );
+	const seconds = ( performance.now() - probeStarted ) / 1000;
+	console.log( `[motion-qa] ${ probe.file } took ${ seconds.toFixed( 1 ) }s` );
+	results.push( { file: probe.file, seconds, passed: code === 0 } );
 	if ( code !== 0 ) failed.push( probe.file );
 	console.log( '' );
 }
+
+console.log( formatProbeTable( results, ( performance.now() - runStarted ) / 1000 ) + '\n' );
 
 if ( failed.length ) {
 	console.error(

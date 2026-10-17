@@ -54,6 +54,7 @@ import deploy_multi  # several sites from one build (sibling module)
 from deploy_common import BUILD_DIR, NON_BLOCK_POST_TYPES, PLUGIN_DIR, REPO_ROOT, SSH_ALIAS, TARGETS, err, fmt_cmd, log, resolve_exe, run, scp_base_cmd, ssh_base_cmd, ssh_has_alias  # noqa: F401 (re-exported)
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, should_isolate, split_dirty_by_payload, step_deploy_ownership, step_oldshape_audit, step_theme_json_guard, write_deploy_marker
 from deploy_selftest import self_test
+from deploy_timing import finish as finish_timings, record as record_stage, stage, timed
 from deploy_ship import run_isolated, step_build, step_local_cleanup, step_remote_extract, step_scp, step_tar
 from deploy_verify import step_motion_qa, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
 
@@ -116,10 +117,10 @@ def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
             return 1
     elif not deploy_blocks and (args.skip_gate_full or passed):
         log("[1/5] npm run build: SKIPPED (--theme-only, and gate:full needs no build)")
-    elif passed and deploy_cache.restore_build(key, REPO_ROOT, BUILD_DIR):
+    elif passed and timed("build", deploy_cache.restore_build, key, REPO_ROOT, BUILD_DIR):
         log("[1/5] npm run build: RESTORED this commit's build from the deploy cache")
     else:
-        rc = step_build(args.dry_run)
+        rc = timed("build", step_build, args.dry_run)
         if rc != 0:
             print(f"[ABORTED] reason: build-failed (exit {rc})", flush=True)
             return 1
@@ -129,12 +130,14 @@ def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
         log("[gate:full] SKIPPED (--skip-gate-full) — four gates did NOT run")
     elif not passed:
         began = time.time()
-        rc = step_gate_full(args.dry_run)
+        rc = timed("gate-full", step_gate_full, args.dry_run)
         if rc != 0:
             print(f"[ABORTED] reason: gate-full-failed (exit {rc}). Nothing was "
                   "uploaded.", flush=True)
             return 1
         deploy_cache.record_pass(key, REPO_ROOT, BUILD_DIR, time.time() - began)
+    else:
+        record_stage("gate-full (cached)", 0.0)
     return 0
 
 
@@ -327,6 +330,8 @@ def main() -> int:
             return 0
         rc = deploy_multi.run_children(Path(__file__).resolve(), sys.argv[1:], target_keys, log)
         if rc == 0:
+            finish_timings(target=",".join(target_keys), theme_only=args.theme_only,
+                           blocks_only=args.blocks_only, total_s=time.time() - t0, dry_run=False)
             print(f"[DONE] sgs-deploy completed for {len(target_keys)} sites in "
                   f"{int(time.time() - t0)}s", flush=True)
         return rc
@@ -344,8 +349,8 @@ def main() -> int:
     if args.skip_oldshape_audit:
         log("[oldshape-audit] SKIPPED (--skip-oldshape-audit)")
     else:
-        rc = step_oldshape_audit(args.dry_run, use_alias, target_key,
-                                 target["wp_content"])
+        rc = timed("oldshape-audit", step_oldshape_audit, args.dry_run, use_alias, target_key,
+                   target["wp_content"])
         if rc != 0:
             print("[ABORTED] reason: oldshape-audit-failed (stored content would "
                   "silently lose render or attrs under the schemas being deployed)",
@@ -359,7 +364,7 @@ def main() -> int:
     # [2/5] Tar
     # Pre-deploy ownership gate: would this deploy clobber work that is live and
     # NOT in this checkout? Runs BEFORE tar/scp so an abort costs nothing.
-    rc = step_deploy_ownership(use_alias, target_key, args.takeover, args.dry_run)
+    rc = timed("deploy-ownership", step_deploy_ownership, use_alias, target_key, args.takeover, args.dry_run)
     if rc != 0:
         print("[ABORTED] reason: deploy-ownership (the live target carries work this "
               "HEAD does not have). Nothing was uploaded.", flush=True)
@@ -367,15 +372,15 @@ def main() -> int:
 
     # Would replacing the live theme.json discard a snapshot someone deliberately pushed?
     if deploy_theme and not args.dry_run:
-        rc = step_theme_json_guard(use_alias, target, theme_json_payload, theme_json_label,
-                                   args.takeover)
+        rc = timed("theme-json-guard", step_theme_json_guard, use_alias, target, theme_json_payload,
+                   theme_json_label, args.takeover)
         if rc != 0:
             print("[ABORTED] reason: theme-json-guard (the live theme.json is an uncommitted "
                   "pushed snapshot, or could not be read). Nothing was uploaded.", flush=True)
             return 1
 
     try:
-        with deploy_cache.package_lock(log):
+        with stage("package"), deploy_cache.package_lock(log):
             rc = step_tar(args.dry_run, theme=deploy_theme, blocks=deploy_blocks,
                           theme_json_payload=theme_json_payload)
     except TimeoutError as exc:
@@ -386,23 +391,23 @@ def main() -> int:
         return 1
 
     # [3/5] SCP
-    rc = step_scp(args.dry_run, use_alias, host_label)
+    rc = timed("scp", step_scp, args.dry_run, use_alias, host_label)
     if rc != 0:
         print(f"[ABORTED] reason: scp-failed (exit {rc})", flush=True)
         return 1
 
     # [4/5] Remote extract
-    rc = step_remote_extract(args.dry_run, use_alias, target["wp_content"],
-                              theme=deploy_theme, blocks=deploy_blocks,
-                              theme_json_payload=theme_json_payload is not None)
+    rc = timed("remote-extract", step_remote_extract, args.dry_run, use_alias, target["wp_content"],
+               theme=deploy_theme, blocks=deploy_blocks,
+               theme_json_payload=theme_json_payload is not None)
     if rc != 0:
         print(f"[ABORTED] reason: remote-extract-failed (exit {rc})", flush=True)
         return 1
 
     # [5/5] Local cleanup
-    write_deploy_marker(use_alias, target_key, args.dry_run)
+    timed("deploy-marker", write_deploy_marker, use_alias, target_key, args.dry_run)
 
-    rc = step_local_cleanup(args.dry_run)
+    rc = timed("local-cleanup", step_local_cleanup, args.dry_run)
     if rc != 0:
         print(f"[ABORTED] reason: local-cleanup-failed (exit {rc})", flush=True)
         return 1
@@ -413,14 +418,14 @@ def main() -> int:
     if args.skip_purge:
         log("[purge] SKIPPED (--skip-purge) — a warm cache may serve the OLD version")
     else:
-        step_purge_caches(args.dry_run, use_alias, target["wp_content"],
-                          target["host"])
+        timed("purge-caches", step_purge_caches, args.dry_run, use_alias, target["wp_content"],
+              target["host"])
 
     # Post-deploy, fail closed, NOT skippable by --skip-verify: did the client's theme.json
     # survive? A deploy that silently reverts it is exactly what this guards.
     if deploy_theme and not args.dry_run:
-        rc = step_verify_theme_json(use_alias, target["wp_content"], theme_json_payload,
-                                    theme_json_label)
+        rc = timed("verify-theme-json", step_verify_theme_json, use_alias, target["wp_content"],
+                   theme_json_payload, theme_json_label)
         if rc != 0:
             print("[DEPLOYED-BUT-THEME-SETTINGS-LOST] the deploy completed but the live "
                   "theme.json is not this target's theme.json. Re-apply the client snapshot "
@@ -434,7 +439,7 @@ def main() -> int:
     elif args.dry_run:
         log(f"[verify] SKIPPED (--dry-run); would GET {verify_url}")
     else:
-        rc = step_verify(verify_url)
+        rc = timed("verify", step_verify, verify_url)
         if rc != 0:
             # Deliberately NOT "[ABORTED]": the deploy already happened and the
             # files are live. "ABORTED" reads as "nothing shipped" and invites a
@@ -450,7 +455,7 @@ def main() -> int:
     # Post-deploy CHANGE-SPECIFIC gate: is the live plugin what we just shipped?
     # Runs after the smoke test so a broken SITE is reported before a stale PAYLOAD.
     if deploy_blocks and not args.skip_verify and not args.dry_run:
-        rc = step_verify_payload(use_alias, target["wp_content"], deploy_blocks)
+        rc = timed("verify-payload", step_verify_payload, use_alias, target["wp_content"], deploy_blocks)
         if rc != 0:
             print("[DEPLOYED-BUT-STALE] the deploy completed and the site responds, "
                   "but the LIVE plugin does not match this run's payload. Your code "
@@ -464,7 +469,7 @@ def main() -> int:
     if deploy_blocks and not args.skip_motion_qa and not args.dry_run and target_key != "sandybrown":
         log(f"[motion-qa] SKIPPED: the probes measure the sandybrown canary, not {target_key}")
     elif deploy_blocks and not args.skip_motion_qa and not args.dry_run:
-        rc = step_motion_qa(args.dry_run)
+        rc = timed("motion-qa", step_motion_qa, args.dry_run)
         if rc != 0:
             print("[DEPLOYED-BUT-MOTION-REGRESSED] the deploy completed, the site "
                   "responds and the payload matches, but a live motion probe failed. "
@@ -475,12 +480,14 @@ def main() -> int:
 
     # Post-deploy structural gate: live scoped-selector match audit.
     if args.audit_scoped_page:
-        rc = step_scoped_selector_audit(args.audit_scoped_page, args.dry_run)
+        rc = timed("scoped-selector-audit", step_scoped_selector_audit, args.audit_scoped_page, args.dry_run)
         if rc != 0:
             print("[ABORTED] reason: scoped-selector-audit-failed "
                   "(dead per-instance selectors on the deployed page)", flush=True)
             return 1
 
+    finish_timings(target=target_key, theme_only=args.theme_only, blocks_only=args.blocks_only,
+                   total_s=time.time() - t0, dry_run=args.dry_run)
     elapsed = int(time.time() - t0)
     print(f"[DONE] sgs-deploy completed in {elapsed}s", flush=True)
     return 0
