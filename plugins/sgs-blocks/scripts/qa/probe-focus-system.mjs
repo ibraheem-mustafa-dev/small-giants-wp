@@ -18,7 +18,11 @@
  * >= 3). A point whose topmost element (elementsFromPoint) is neither the target, an ancestor of it nor a descendant is a
  * neighbour's box and is skipped; the usable count is recorded, and a stop with fewer than 6 usable points is
  * `unmeasurable` (neither a pass nor a fail, counted on its own line). A focusable neighbour sitting over a sample point is
- * reported as a neighbour overlap.
+ * reported as a neighbour overlap. A rounded corner's ring colour is read from the pixel centres of the 3x3 block around
+ * its point that lie inside the band, taking the one strongest against the neighbour (the ring's core, as on a straight
+ * edge, not its antialiased fringe). A range input that paints its own ring is measured on its thumb, sized from the
+ * winning thumb rule when the engine reports no pseudo-element size; a range that is a focus source (the before-after
+ * slider) is measured on its proxy.
  * A focus source (`sgs-focus-source`, visually hidden) is measured on the element that paints its ring (the adjacent
  * `sgs-focus-proxy`, the first proxy in the nearest `sgs-focus-scope`, or the `sgs-focus-card`), recorded as
  * `measuredOn: 'proxy'`; a source with none of them is a FAIL named `no-proxy`. The radius-change criterion exempts

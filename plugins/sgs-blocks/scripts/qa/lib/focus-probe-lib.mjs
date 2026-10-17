@@ -149,8 +149,43 @@ export function samplePlan( rect, radius, outline, hairline ) {
 		if ( along( dRing ) < 1 || along( dBg ) < 1 ) continue;
 		const cx = sx < 0 ? rect.x + r : rect.x + rect.width - r;
 		const cy = sy < 0 ? rect.y + r : rect.y + rect.height - r;
-		const at = ( d ) => snap( [ cx + sx * Math.SQRT1_2 * along( d ), cy + sy * Math.SQRT1_2 * along( d ) ] );
-		push( at( dRing ), at( dBg ), dInner !== null && along( dInner ) >= 1 ? at( dInner ) : null, 'corner' );
+		// On a rounded corner the point goes to whichever of the four surrounding pixel centres lies closest to the arc
+		// (distance from the corner's centre nearest the intended radius): snapping x and y separately can move a 45-degree
+		// point 0.7px across the band, onto its antialiased edge. A square corner keeps the plain snap.
+		const at = ( d ) => {
+			const x = cx + sx * Math.SQRT1_2 * along( d );
+			const y = cy + sy * Math.SQRT1_2 * along( d );
+			if ( r < 0.5 ) return snap( [ x, y ] );
+			const fx = Math.floor( x - 0.5 ) + 0.5;
+			const fy = Math.floor( y - 0.5 ) + 0.5;
+			let best = null;
+			for ( const px of [ fx, fx + 1 ] ) {
+				for ( const py of [ fy, fy + 1 ] ) {
+					const miss = Math.abs( Math.hypot( px - cx, py - cy ) - along( d ) );
+					if ( ! best || miss < best.miss ) best = { miss, p: [ px, py ] };
+				}
+			}
+			return best.p;
+		};
+		const ring = at( dRing );
+		push( ring, at( dBg ), dInner !== null && along( dInner ) >= 1 ? at( dInner ) : null, 'corner' );
+		// A curved band has few fully covered pixels and a transformed element (a scaled active thumb) paints off the pixel
+		// grid, so one fixed pixel can land on the antialiased fringe and read a blend, not the ring. The other pixel centres
+		// of the 3x3 block around the point that lie inside the band are `ring-alt` candidates; the judge reads the one that
+		// carries the ring's core colour (the strongest against the neighbour), as a straight edge's centre pixel does.
+		if ( r >= 0.5 ) {
+			const lo = along( dRing ) - w / 2;
+			const hi = along( dRing ) + w / 2;
+			for ( const ox of [ -1, 0, 1 ] ) {
+				for ( const oy of [ -1, 0, 1 ] ) {
+					if ( 0 === ox && 0 === oy ) continue;
+					const px = ring[ 0 ] + ox;
+					const py = ring[ 1 ] + oy;
+					const dist = Math.hypot( px - cx, py - cy );
+					if ( dist >= lo && dist <= hi ) points.push( { kind: 'ring-alt', x: px, y: py, f: 'corner', group: group - 1, edge: points.length } );
+				}
+			}
+		}
 	}
 	return points;
 }
@@ -436,6 +471,19 @@ export function selfTest() {
 	const snapped = snapRect( fracRect );
 	check( 'snapRect: every edge lands on a whole pixel', snapped.x === 196 && snapped.y === 497 && snapped.width === 151 && snapped.height === 43 );
 	const corner = ( rect ) => samplePlan( rect, 6, { width: 2, offset: 2 }, { inset: false, spread: 2 } ).filter( ( p ) => p.kind === 'ring' && p.f === 'corner' )[ 2 ];
-	check( 'snapRect: the corner sample moves one pixel onto the painted ring', corner( fracRect ).x === 346.5 && corner( snapped ).x === 347.5 && corner( snapped ).y === 540.5 );
+	check( 'snapRect: the corner sample moves one pixel onto the painted ring', corner( fracRect ).y !== corner( snapped ).y && corner( snapped ).x === 347.5 && corner( snapped ).y === 540.5 );
+	// An inset card ring (radius 8, offset -2, width 2): the band runs 6 to 8px from the corner's centre. The separate x/y
+	// snap put the 45-degree point on pixel (4, 4), 6.36px out, the antialiased inner edge (read live as 93,80,28 against
+	// the ring's 77,63,8); the arc-nearest pixel centre is 7.1px out, on the band's core.
+	const card = samplePlan( { x: 1047, y: 212, width: 313, height: 398 }, 8, { width: 2, offset: -2 }, { inset: true, spread: 4 } );
+	const tl = card.find( ( p ) => p.kind === 'ring' && p.f === 'corner' );
+	const out = Math.hypot( tl.x - 1055, tl.y - 220 );
+	check( 'inset corner: the ring sample sits on the band core (6.5 to 7.5px from the corner centre)', out >= 6.5 && out <= 7.5 );
+	const alts = card.filter( ( p ) => p.kind === 'ring-alt' && p.group === tl.group );
+	check( 'corner: every ring-alt candidate is a neighbour pixel centre inside the band (6 to 8px out)', alts.length > 0 && alts.every( ( p ) => {
+		const d = Math.hypot( p.x - 1055, p.y - 220 );
+		return d >= 6 && d <= 8 && Math.abs( p.x - tl.x ) <= 1 && Math.abs( p.y - tl.y ) <= 1;
+	} ) );
+	check( 'edges carry no ring-alt candidates', card.filter( ( p ) => p.kind === 'ring-alt' && p.f !== 'corner' ).length === 0 );
 	return failed;
 }

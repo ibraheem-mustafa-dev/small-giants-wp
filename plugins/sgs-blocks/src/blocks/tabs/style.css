@@ -176,6 +176,14 @@
 	pointer-events: none;
 }
 
+/* The indicator is positioned inside the nav's padding box, so it lies over the tab's last 2px, where the tab's inset
+   focus ring (sgs-focus--inset, focus.css) runs; a positioned box paints after a static tab. The focused tab is lifted
+   above it so the whole ring shows; the indicator returns when focus leaves. */
+.sgs-tabs--style-underline .sgs-tabs__tab:focus-visible {
+	position: relative;
+	z-index: 1;
+}
+
 /* Hide box-shadow fallback when JS has set the indicator position */
 .sgs-tabs--style-underline .sgs-tabs__nav[style*="--sgs-indicator-left"] .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs--style-underline .sgs-tabs__nav[style*="--sgs-indicator-left"] .sgs-tabs__tab--active {

@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-	GROW, MIN_USABLE_POINTS, RADIUS_EXEMPT_SELECTOR, firstShadowLayer, hasSolidHairline, judgeContrast, pixelOf, samplePlan, shadowShape, snapRect,
+	GROW, MIN_USABLE_POINTS, RADIUS_EXEMPT_SELECTOR, contrast, firstShadowLayer, hasSolidHairline, judgeContrast, pixelOf, samplePlan, shadowShape, snapRect,
 } from './focus-probe-lib.mjs';
 
 /** The longest a stop waits for two consecutive screenshots of its box to be pixel-identical, after the settle time. */
@@ -45,7 +45,42 @@ function readFocused( radiusExemptSelector ) {
 	const cardEl = target !== el && target.classList.contains( 'sgs-focus-card' ) ? target : null;
 	window.__fp = { el, target };
 
-	const isRange = el instanceof HTMLInputElement && el.type === 'range';
+	// A range that paints its own ring is measured on its thumb. A range that is a focus source (the before-after slider)
+	// is measured on its proxy like any other source, because the input itself is hidden.
+	const isRange = el instanceof HTMLInputElement && el.type === 'range' && target === el;
+	// The thumb rules that match this input, in source order (media and supports blocks honoured).
+	const thumbRules = () => {
+		const out = [];
+		const visit = ( rules ) => {
+			for ( const rule of rules ) {
+				if ( rule.selectorText === undefined && rule.cssRules && rule.media && ! window.matchMedia( rule.media.mediaText ).matches ) continue;
+				if ( rule.selectorText === undefined && rule.cssRules && rule.conditionText !== undefined && rule.media === undefined && ! CSS.supports( rule.conditionText ) ) continue;
+				if ( rule.selectorText === undefined && rule.cssRules ) { visit( rule.cssRules ); continue; }
+				if ( ! rule.selectorText || ! /::-(webkit-slider|moz-range)-thumb/.test( rule.selectorText ) ) continue;
+				const base = rule.selectorText.split( ',' ).map( ( x ) => x.trim().replace( /::-(webkit-slider|moz-range)-thumb$/, '' ) );
+				if ( base.some( ( sel ) => { try { return el.matches( sel ); } catch ( e ) { return false; } } ) ) out.push( rule );
+			}
+		};
+		for ( const sheet of document.styleSheets ) {
+			try { visit( sheet.cssRules ); } catch ( e ) { /* cross-origin sheet */ }
+		}
+		return out;
+	};
+	// Resolves a thumb rule's declarations (var() included) on a throwaway span beside the input.
+	const resolveOnSpan = ( decls ) => {
+		const span = document.createElement( 'span' );
+		span.style.display = 'block';
+		el.parentNode.appendChild( span );
+		for ( const [ k, v ] of decls ) if ( v ) span.style.setProperty( k, v );
+		const cs = getComputedStyle( span );
+		const got = {
+			width: Number.parseFloat( cs.width ) || 0, height: Number.parseFloat( cs.height ) || 0,
+			outline: { width: cs.outlineWidth, style: cs.outlineStyle, offset: cs.outlineOffset, colour: cs.outlineColor },
+			boxShadow: cs.boxShadow,
+		};
+		span.remove();
+		return got;
+	};
 	let pseudo = null;
 	let thumb = null;
 	if ( isRange ) {
@@ -59,10 +94,14 @@ function readFocused( radiusExemptSelector ) {
 		}
 		const tcs = pseudo ? getComputedStyle( el, pseudo ) : null;
 		const own = getComputedStyle( el );
-		// WebKit answers a thumb query with the input's own size; only a size that differs from it is the thumb's.
+		// WebKit answers a thumb query with the input's own size, and Chromium with no size at all; only a size that differs
+		// from the input's is the thumb's. Otherwise the last matching thumb rule that sets a width gives the size (its
+		// border box, so a pressable box wider than the painted disc is measured as the box the outline wraps), else 16px.
 		const sized = tcs && tcs.width !== own.width && Number.parseFloat( tcs.width ) > 0;
-		const tw = sized ? Number.parseFloat( tcs.width ) : 16;
-		const th = sized && Number.parseFloat( tcs.height ) > 0 ? Number.parseFloat( tcs.height ) : 16;
+		const sizeRule = sized ? null : thumbRules().filter( ( rule ) => rule.style.getPropertyValue( 'width' ) ).pop();
+		const ruled = sizeRule ? resolveOnSpan( [ [ 'box-sizing', sizeRule.style.getPropertyValue( 'box-sizing' ) ], [ 'width', sizeRule.style.getPropertyValue( 'width' ) ], [ 'height', sizeRule.style.getPropertyValue( 'height' ) ] ] ) : null;
+		const tw = sized ? Number.parseFloat( tcs.width ) : ( ruled && ruled.width > 0 ? ruled.width : 16 );
+		const th = sized && Number.parseFloat( tcs.height ) > 0 ? Number.parseFloat( tcs.height ) : ( ruled && ruled.height > 0 ? ruled.height : tw );
 		const r = el.getBoundingClientRect();
 		const min = Number.parseFloat( el.min || 0 );
 		const max = Number.parseFloat( el.max || 100 );
@@ -87,34 +126,9 @@ function readFocused( radiusExemptSelector ) {
 	// Chromium reports no computed outline for a range thumb pseudo-element, so read the winning thumb rule from the
 	// stylesheets (the last matching one) and resolve its var() values on a throwaway span next to the input.
 	const thumbFromRules = () => {
-		let found = null;
-		const visit = ( rules ) => {
-			for ( const rule of rules ) {
-				if ( rule.selectorText === undefined && rule.cssRules && rule.media && ! window.matchMedia( rule.media.mediaText ).matches ) continue;
-				if ( rule.selectorText === undefined && rule.cssRules && rule.conditionText !== undefined && rule.media === undefined && ! CSS.supports( rule.conditionText ) ) continue;
-				if ( rule.selectorText === undefined && rule.cssRules ) { visit( rule.cssRules ); continue; }
-				if ( ! rule.selectorText || ! /::-(webkit-slider|moz-range)-thumb/.test( rule.selectorText ) ) continue;
-				const base = rule.selectorText.split( ',' ).map( ( x ) => x.trim().replace( /::-(webkit-slider|moz-range)-thumb$/, '' ) );
-				if ( base.some( ( sel ) => { try { return el.matches( sel ); } catch ( e ) { return false; } } ) && rule.style.getPropertyValue( 'outline' ) ) found = rule;
-			}
-		};
-		for ( const sheet of document.styleSheets ) {
-			try { visit( sheet.cssRules ); } catch ( e ) { /* cross-origin sheet */ }
-		}
-		const probe = document.createElement( 'span' );
-		el.parentNode.appendChild( probe );
-		if ( found ) {
-			probe.style.setProperty( 'outline', found.style.getPropertyValue( 'outline' ) );
-			probe.style.setProperty( 'outline-offset', found.style.getPropertyValue( 'outline-offset' ) );
-			probe.style.setProperty( 'box-shadow', found.style.getPropertyValue( 'box-shadow' ) );
-		}
-		const cs = getComputedStyle( probe );
-		const out = {
-			outline: { width: cs.outlineWidth, style: cs.outlineStyle, offset: cs.outlineOffset, colour: cs.outlineColor },
-			boxShadow: cs.boxShadow, radius: '', maxRadius: Math.min( thumb.width, thumb.height ) / 2,
-		};
-		probe.remove();
-		return out;
+		const found = thumbRules().filter( ( rule ) => rule.style.getPropertyValue( 'outline' ) ).pop();
+		const got = resolveOnSpan( found ? [ 'outline', 'outline-offset', 'box-shadow' ].map( ( k ) => [ k, found.style.getPropertyValue( k ) ] ) : [] );
+		return { outline: got.outline, boxShadow: got.boxShadow, radius: '', maxRadius: Math.min( thumb.width, thumb.height ) / 2 };
 	};
 	const state = isRange ? thumbFromRules() : read( target, null );
 	const r = isRange ? thumb : ( () => { const b = target.getBoundingClientRect(); return { x: b.left, y: b.top, width: b.width, height: b.height }; } )();
@@ -234,7 +248,7 @@ function readFocused( radiusExemptSelector ) {
 /** Runs in the page: the resting (blurred) style of the stashed target, the same properties. */
 function readResting( pseudo ) {
 	const { target, el } = window.__fp;
-	const isRange = el instanceof HTMLInputElement && el.type === 'range';
+	const isRange = el instanceof HTMLInputElement && el.type === 'range' && target === el;
 	if ( isRange ) return ''; // the thumb's radius is not readable in every engine; the system sets none
 	const cs = getComputedStyle( target );
 	const corners = [ 'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomRightRadius', 'borderBottomLeftRadius' ].map( ( k ) => cs[ k ] );
@@ -302,11 +316,12 @@ async function measurePixels( page, scratch, focusedPng, restingPng, clip, readi
 	const full = samplePlan( snapRect( reading.rect ), reading.focus.maxRadius, { width: w, offset: o }, solid );
 	const hits = await page.evaluate( hitTestPoints, full.map( ( p ) => [ p.x, p.y ] ) );
 	const blockedGroups = new Map();
+	// A `ring-alt` candidate under another element is dropped on its own; it never blocks its sample.
 	full.forEach( ( p, i ) => {
-		if ( hits[ i ] && ! blockedGroups.has( p.group ) ) blockedGroups.set( p.group, hits[ i ] );
+		if ( p.kind !== 'ring-alt' && hits[ i ] && ! blockedGroups.has( p.group ) ) blockedGroups.set( p.group, hits[ i ] );
 	} );
 	const planned = new Set( full.map( ( p ) => p.group ) ).size;
-	const plan = full.filter( ( p ) => ! blockedGroups.has( p.group ) );
+	const plan = full.filter( ( p, i ) => ! blockedGroups.has( p.group ) && ! ( p.kind === 'ring-alt' && hits[ i ] ) );
 	const usable = planned - blockedGroups.size;
 	const neighbours = [ ...new Set( [ ...blockedGroups.values() ].filter( ( h ) => h.neighbour ).map( ( h ) => h.blocked ) ) ];
 	const base = { planned, usable, neighbours };
@@ -317,7 +332,8 @@ async function measurePixels( page, scratch, focusedPng, restingPng, clip, readi
 	const toImage = ( p ) => [ pixelOf( p.x ) - clip.x, pixelOf( p.y ) - clip.y ];
 	const focused = await readPixels( scratch, focusedPng, plan.map( toImage ) );
 	const resting = await readPixels( scratch, restingPng, plan.map( toImage ) );
-	// The plan lists ring, bg[, inner] per sample; group consecutive entries by sample.
+	// The plan lists ring, bg[, inner][, ring-alt...] per sample; group consecutive entries by sample. A corner's ring
+	// colour is the in-band candidate strongest against the neighbour (its core, not its antialiased fringe).
 	const readings = [];
 	let current = null;
 	plan.forEach( ( p, i ) => {
@@ -328,6 +344,8 @@ async function measurePixels( page, scratch, focusedPng, restingPng, clip, readi
 			current.bg = resting[ i ];
 		} else if ( p.kind === 'inner' && current ) {
 			current.inner = focused[ i ];
+		} else if ( p.kind === 'ring-alt' && current && current.bg && focused[ i ] ) {
+			if ( ! current.ring || contrast( focused[ i ], current.bg ) > contrast( current.ring, current.bg ) ) current.ring = focused[ i ];
 		}
 	} );
 	return { ...judgeContrast( readings ), ...base };

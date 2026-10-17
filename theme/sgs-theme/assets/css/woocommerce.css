@@ -2541,9 +2541,13 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 	   panel — the grey bar under the last filter group. No child is actually
 	   wider than the container; it is sub-pixel rounding, so there is nothing to
 	   "fix" upstream. A filter panel never scrolls sideways by design, so the
-	   axis is simply turned off. */
-	overflow-x: hidden;
-	/* Hidden overflow clips at the padding box, so a control flush with the
+	   axis is simply turned off. `clip`, not `hidden`: `hidden` turns the other
+	   axis's `visible` into `auto`, which clipped the focus ring of the first and
+	   last group summaries (flush with the region's top and bottom) on desktop,
+	   where the region never scrolls. The modal sheet sets its own
+	   `overflow-y: auto`, where `clip` resolves to `hidden` as before. */
+	overflow-x: clip;
+	/* Clipped overflow clips at the padding box, so a control flush with the
 	   panel's inline edge lost the side of its focus ring (ring width, gap and
 	   the 2px hairline). The room below sits inside the clip as padding and is
 	   taken back as an equal negative margin, so no control moves. The modal
