@@ -22,7 +22,7 @@ import re
 from dataclasses import dataclass
 
 from wf_bugs import child_conditional, editor_shadowing, inner_depth_bug
-from wf_css import CssIndex, data_consumed
+from wf_css import CssIndex, data_consumed, own_modifier
 from wf_editor import BlockEditor, tier_only
 from wf_paint import is_motion, is_state
 from wf_tokens import FX_RUNTIME_RE, Channel
@@ -82,7 +82,7 @@ def live_channels(ch: Channel, env: LinkEnv) -> list[str]:
         out.append("declaration")
     if any(env.css.cp_read(cp) for cp in ch.cps):
         out.append("custom property")
-    if any("--" in c and (env.css.has_class(c) or c.rstrip("*") in env.js) for c in ch.classes):
+    if any(own_modifier(c) and (env.css.has_class(c) or c.rstrip("*") in env.js) for c in ch.classes):
         out.append("modifier class")
     if any(d in env.css.data_attrs for d in ch.data):
         out.append("data-attribute selector")
@@ -114,7 +114,7 @@ def _editor_links(attr: str, state: bool, canvas: str | None, be: BlockEditor, m
 def _unconsumed(ch: Channel, env: LinkEnv) -> list[str]:
     """Custom properties with no reader and modifier classes with no rule or script."""
     unconsumed = sorted(cp for cp in ch.cps if not env.css.cp_read(cp))
-    unconsumed += sorted(c for c in ch.classes if "--" in c and not env.css.has_class(c) and c.rstrip("*") not in env.js)
+    unconsumed += sorted(c for c in ch.classes if own_modifier(c) and not env.css.has_class(c) and c.rstrip("*") not in env.js)
     unconsumed = [u for u in unconsumed if u not in ch.fwd_tokens]   # the forwarded block's own consumers
     own = (set(ch.cps) | {c for c in ch.classes if "--" in c}) - ch.ctx_tokens
     if own - set(unconsumed):

@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from wf_css import CssIndex, data_consumed
+from wf_css import CssIndex, data_consumed, own_modifier
 from wf_paint import PaintClassifier
 from wf_pass import BlockResult
 from wf_tokens import Channel
@@ -72,7 +72,7 @@ class Resolver:
             # The value only selects which rows come back, and in what order.
             "query_only": ch.query and not ch.kinds() and not ch.forwards,
             "enum": enum or [],
-            "class_rule": any(css.has_class(c) for c in ch.classes if "--" in c),
+            "class_rule": any(css.has_class(c) for c in ch.classes if own_modifier(c)),
             "cp_reader": any(css.cp_read(cp) for cp in ch.cps),
             "decl_channel": ch.decl or ch.gate_decl,
             # State utility modifiers the framework styles (`sgs-on-dark`, `sgs-has-hover-overlay`).

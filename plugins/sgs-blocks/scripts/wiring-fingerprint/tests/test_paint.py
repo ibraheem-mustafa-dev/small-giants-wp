@@ -46,3 +46,10 @@ def test_extra_suffixes_and_modifier_stripping():
                       ("titleWritingMode", "WritingMode"), ("headingTextWrapTablet", "TextWrap")):
         assert pc.suffix_hit(attr) == sfx
     assert strip_modifiers("transitionEasingCustomMobile") == "transitionEasing"
+
+
+def test_shared_focus_modifier_is_not_a_switchs_own_paint(report):
+    """A behaviour switch whose guarded branch emits `sgs-focus--inset` (a focus-system
+    modifier every focusable element gets) is a behaviour switch, not a painting setting."""
+    rec = record(report, "sgs/toggle-paint", "enableOpen")
+    assert (rec["category"], rec["basis"]) == ("not", "role:boolean-visibility")

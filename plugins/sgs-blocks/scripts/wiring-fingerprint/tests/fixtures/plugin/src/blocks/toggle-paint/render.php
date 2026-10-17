@@ -20,4 +20,9 @@ if ( ! empty( $attributes['showCaption'] ) ) {
 	$label_colour = sgs_colour_value( $attributes['labelColour'] ?? '' );
 	$css[] = '.' . $uid . ' .sgs-toggle-paint__label{color:' . $label_colour . ';}';
 }
+// A behaviour switch: it only decides whether a button exists, and the button carries the
+// shared focus-system modifier (a rule every focusable element gets, not this switch's paint).
+if ( ! empty( $attributes['enableOpen'] ) ) {
+	echo '<button class="sgs-toggle-paint__open sgs-focus--inset" type="button">Open</button>';
+}
 echo '<style>' . implode( '', $css ) . '</style>';

@@ -7,6 +7,7 @@
   "showBox": { "type": "boolean", "default": false },
   "smartContrast": { "type": "boolean", "default": false },
   "showCaption": { "type": "boolean", "default": false },
+  "enableOpen": { "type": "boolean", "default": true },
   "itemColour": { "type": "string" },
   "labelColour": { "type": "string" }
  }

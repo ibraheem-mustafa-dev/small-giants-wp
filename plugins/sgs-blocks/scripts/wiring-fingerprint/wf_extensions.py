@@ -8,7 +8,7 @@ the control may live in any extension file.
 """
 from __future__ import annotations
 
-from wf_css import CssIndex, data_consumed
+from wf_css import CssIndex, data_consumed, own_modifier
 from wf_editor import EditorModel
 from wf_frontend import FrontEnd
 from wf_inputs import Inputs
@@ -35,7 +35,7 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
             ch = fe.flow_texts(fe.hook_texts, attr, lambda t, a=attr: list(t.literals.get(a, ())))
             row = {"attr_name": attr, "role": spec.get("role"), "css_property": spec.get("css_property")}
             signals = {
-                "class_rule": any(css.has_class(c) for c in ch.classes if "--" in c),
+                "class_rule": any(css.has_class(c) for c in ch.classes if own_modifier(c)),
                 "cp_reader": any(css.cp_read(c) for c in ch.cps),
                 "decl_channel": ch.decl or ch.gate_decl,
                 # State utility modifiers the framework styles (`sgs-on-dark`, `sgs-has-hover-overlay`).

@@ -25,6 +25,17 @@ DECL_PROP_RE = re.compile(r"(?:^|;)\s*([a-z-]+)\s*:")
 EDITOR_SHEET_RE = re.compile(r"(^|/)editor[^/]*\.s?css$")
 # Used only when package.json exists but its postbuild cannot be read (a loud warning names why).
 FALLBACK_INJECTOR_GLOBS = ("scripts/shadow-lift/*.js", "scripts/shadow-fallback/*.js", "scripts/hover-guard/*.js")
+# Modifier classes the framework's shared systems put on every element of a kind (the focus
+# ring's `sgs-focus--inset`, `sgs-focus--duotone`). They are not the setting's own modifier, so
+# a setting that merely guards the element carrying one has not been shown to paint.
+SHARED_SYSTEM_MODIFIER_PREFIXES = ("sgs-focus--",)
+
+
+def own_modifier(token: str) -> bool:
+    """A BEM modifier class a setting can own: not one a shared system (focus) applies everywhere."""
+    return "--" in token and not token.startswith(SHARED_SYSTEM_MODIFIER_PREFIXES)
+
+
 POSTBUILD_NODE_RE = re.compile(r"\bnode\s+(\S+\.js)((?:\s+--?[\w-]+)*)")
 
 
