@@ -1,0 +1,140 @@
+/*
+ * Keyboard focus: the one focus system (Spec 32 §14.5, FR-32-22).
+ * The core is the outline (it survives forced colours); the inner hairline and the bloom are box-shadow layers.
+ * Every arm carries :not(#wpadminbar *, ...), which gives the list (1,1,0) weight so it owns outline, outline-offset
+ * and box-shadow on a focused element. Blocks change the look ONLY through the --sgs-focus-* custom properties below
+ * (the override contract); a bespoke outline or box-shadow on a :focus* selector fails check-focus-system.js.
+ * G1 (accent) and G2 (duotone) are token values; G3 (signature) is the .sgs-focus--signature class.
+ * A host with its own border sets --sgs-focus-host-border to that border's width, so the G3 band sits outside the ring.
+ */
+@property --sgs-focus-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes sgs-focus-spin { to { --sgs-focus-angle: 360deg; } }
+
+/* 1. Tokens: the client's snapshot (settings.custom.focus -> --wp--custom--focus--*), framework defaults from the palette. */
+:root,
+.sgs-on-light {
+	--sgs-focus-width: var(--wp--custom--focus--width, 2px);
+	--sgs-focus-inner: var(--wp--custom--focus--inner, var(--wp--preset--color--surface, #fff));
+	--sgs-focus-ink: var(--wp--custom--focus--ink, var(--wp--preset--color--text, #0b1020));
+	--sgs-focus-ring: var(--wp--custom--focus--ring, var(--wp--preset--color--accent, var(--sgs-focus-ink)));
+	--sgs-focus-near: var(--wp--custom--focus--near, var(--sgs-focus-ring));
+	--sgs-focus-far: var(--wp--custom--focus--far, var(--sgs-focus-ring));
+	--sgs-focus-sig-a: var(--wp--custom--focus--signature-a, var(--wp--preset--color--primary));
+	--sgs-focus-sig-b: var(--wp--custom--focus--signature-b, var(--wp--preset--color--accent));
+	--sgs-focus-sig-c: var(--wp--custom--focus--signature-c, var(--wp--preset--color--accent-light));
+}
+.sgs-on-dark {
+	--sgs-focus-ring: var(--wp--custom--focus--ring-on-dark, var(--wp--preset--color--accent, var(--sgs-focus-inner)));
+	--sgs-focus-near: var(--wp--custom--focus--near-on-dark, var(--sgs-focus-ring));
+	--sgs-focus-far: var(--wp--custom--focus--far-on-dark, var(--sgs-focus-ring));
+}
+/* G2 wherever the ground is a photo or video, or an element asks for it. Later than .sgs-on-dark on purpose. */
+.sgs-container--has-bg-image,
+.sgs-container--has-bg-video,
+.sgs-focus--duotone {
+	--sgs-focus-ring: var(--sgs-focus-ink);
+	--sgs-focus-near: var(--sgs-focus-inner);
+	--sgs-focus-far: var(--sgs-focus-ink);
+}
+/* Inside a clipping or full-bleed container: the ring sits on the element's edge, the hairline inside it. */
+.sgs-focus--inset {
+	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
+	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2) var(--sgs-focus-inner);
+}
+
+/* 2. The indicator: one declaration set, four arms (element, adjacent proxy, scoped proxy, editor preview). */
+:focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .components-button, [class*="block-editor-"]), [tabindex="-1"], .sgs-focus-source, input[type="range"]),
+.sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
+.sgs-focus-scope:has(.sgs-focus-source:focus-visible) .sgs-focus-proxy:not(#wpadminbar *),
+.sgs-focus-preview:not(#wpadminbar *) {
+	outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
+	outline-offset: var(--sgs-focus-offset, var(--sgs-focus-width));
+	box-shadow:
+		var(--sgs-focus-halo,
+			0 0 0 var(--sgs-focus-offset, var(--sgs-focus-width)) var(--sgs-focus-inner),
+			0 0 calc(var(--sgs-focus-width) * 6) calc(var(--sgs-focus-width) * 2) color-mix(in srgb, var(--sgs-focus-near) 55%, transparent),
+			0 0 calc(var(--sgs-focus-width) * 15) calc(var(--sgs-focus-width) * 5) color-mix(in srgb, var(--sgs-focus-far) 30%, transparent)),
+		var(--sgs-focus-under, 0 0 #0000);
+}
+/* Sliders: the thumb carries the ring (one rule per engine; an unknown pseudo-element drops the whole rule). */
+input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-webkit-slider-thumb {
+	outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
+	outline-offset: var(--sgs-focus-width);
+	box-shadow: 0 0 0 var(--sgs-focus-width) var(--sgs-focus-inner);
+}
+input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-moz-range-thumb {
+	outline: var(--sgs-focus-width) solid var(--sgs-focus-ring);
+	outline-offset: var(--sgs-focus-width);
+	box-shadow: 0 0 0 var(--sgs-focus-width) var(--sgs-focus-inner);
+}
+
+/* The slider itself draws no ring, or the browser's default ring would wrap the whole track beside the thumb's. */
+input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *) {
+	outline-style: none;
+}
+
+/* Browsers without color-mix(): the core and the hairline, no bloom. */
+@supports not (color: color-mix(in srgb, red 50%, transparent)) {
+	:root, .sgs-on-light, .sgs-on-dark { --sgs-focus-near: transparent; --sgs-focus-far: transparent; }
+	.sgs-focus--signature::before { display: none; }
+}
+
+/* 3. G3 signature: a G2 core plus a rotating conic border in the client's own colours (opt-in per button). */
+.sgs-focus--signature { position: relative; }
+.sgs-focus--signature:focus-visible:not(#wpadminbar *) {
+	--sgs-focus-ring: var(--sgs-focus-ink);
+	--sgs-focus-near: var(--sgs-focus-sig-b);
+	--sgs-focus-far: var(--sgs-focus-sig-a);
+}
+@supports (mask-composite: exclude) {
+	/* Anchored to the host's border box: the band runs from 2x to 3x the width outside it, beyond the ring. */
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before {
+		content: "";
+		position: absolute;
+		inset: calc(var(--sgs-focus-width) * -3 - var(--sgs-focus-host-border, 0px));
+		padding: var(--sgs-focus-width);
+		border-radius: inherit;
+		background: conic-gradient(from var(--sgs-focus-angle), var(--sgs-focus-sig-a), var(--sgs-focus-sig-b), var(--sgs-focus-sig-c), var(--sgs-focus-sig-a));
+		mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+		mask-composite: exclude;
+		pointer-events: none;
+		animation: sgs-focus-spin 3s linear infinite;
+	}
+}
+
+/* 4. Preferences. */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before { animation: none; }
+}
+@media (prefers-contrast: more) {
+	:root, .sgs-on-light, .sgs-on-dark, .sgs-container--has-bg-image, .sgs-container--has-bg-video, .sgs-focus--duotone {
+		--sgs-focus-width: 3px;
+		--sgs-focus-ring: var(--sgs-focus-ink);
+		--sgs-focus-near: transparent;
+		--sgs-focus-far: transparent;
+	}
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *) { --sgs-focus-near: transparent; --sgs-focus-far: transparent; }
+	.sgs-focus--signature:focus-visible:not(#wpadminbar *)::before { display: none; }
+}
+/* Forced colours: every arm repeated with its own selector, so equal weight and later source order paint a solid
+   Highlight core and drop the shadows. */
+@media (forced-colors: active) {
+	:focus-visible:not(#wpadminbar *, .editor-styles-wrapper :is([contenteditable], .block-editor-block-list__block, .components-button, [class*="block-editor-"]), [tabindex="-1"], .sgs-focus-source, input[type="range"]),
+	.sgs-focus-source:focus-visible + .sgs-focus-proxy:not(#wpadminbar *),
+	.sgs-focus-scope:has(.sgs-focus-source:focus-visible) .sgs-focus-proxy:not(#wpadminbar *),
+	.sgs-focus-preview:not(#wpadminbar *) {
+		outline: var(--sgs-focus-width) solid Highlight;
+		box-shadow: none;
+	}
+	input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-webkit-slider-thumb {
+		outline: var(--sgs-focus-width) solid Highlight;
+		outline-offset: var(--sgs-focus-width);
+		box-shadow: none;
+	}
+	input[type="range"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-moz-range-thumb {
+		outline: var(--sgs-focus-width) solid Highlight;
+		outline-offset: var(--sgs-focus-width);
+		box-shadow: none;
+	}
+	.sgs-focus--signature::before { display: none; }
+}

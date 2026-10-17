@@ -9,8 +9,11 @@
  *     `border-radius: inherit` on the signature `::before`, which paints the G3 band and never the button);
  *   - has the forced-colours, reduced-motion and contrast-more blocks;
  *   - repeats EVERY indicator arm (element, adjacent proxy, scoped proxy, preview, both thumb pseudo-elements) inside
- *     `@media (forced-colors: active)` with the identical selector, so `outline-color: Highlight` and
- *     `box-shadow: none` win by source order at equal specificity on every stop;
+ *     `@media (forced-colors: active)` with the identical selector, so `outline: <width> solid Highlight` and
+ *     `box-shadow: none` win by source order at equal specificity on every stop (the shorthand, not `outline-color`,
+ *     so the style is pinned and rule-reading probes see it);
+ *   - turns the range input's own outline off (the thumb carries the ring; the browser's default ring would wrap the
+ *     whole track as a second ring);
  *   - anchors the signature `::before` outside the host's border box through `--sgs-focus-host-border`, so the G3 band
  *     never lands on the outline ring of a bordered button;
  * and that no other theme stylesheet holds an indicator, apart from the files a later plan task owns (PENDING; an
@@ -130,13 +133,25 @@ const CHECKS = {
 		} );
 		for ( const arm of arms ) {
 			for ( const sel of arm ) {
-				const hit = forced.find( ( f ) => f.selectors.includes( sel ) && 'Highlight' === f.decls[ 'outline-color' ] && 'none' === f.decls[ 'box-shadow' ] );
+				const hit = forced.find( ( f ) => f.selectors.includes( sel ) && /^var\(--sgs-focus-width\) solid Highlight$/.test( norm( f.decls.outline || '' ) ) && 'none' === f.decls[ 'box-shadow' ] );
 				if ( ! hit ) {
-					problems.push( `forced colours does not repeat the arm with outline-color: Highlight and box-shadow: none: ${ sel }` );
+					problems.push( `forced colours does not repeat the arm with outline: var(--sgs-focus-width) solid Highlight and box-shadow: none: ${ sel }` );
 				}
 			}
 		}
 		return problems;
+	},
+	rangeTrackDrawsNoSecondRing( root ) {
+		let found = false;
+		root.walkRules( ( rule ) => {
+			const track = rule.selectors.some( ( sel ) => /input\[type="range"\]/.test( sel ) && /:focus-visible/.test( sel ) && ! /-thumb/.test( sel ) );
+			if ( track && ! inForced( rule ) && ! inSupports( rule ) ) {
+				rule.walkDecls( 'outline-style', ( d ) => {
+					found = found || 'none' === d.value.trim();
+				} );
+			}
+		} );
+		return found ? [] : [ 'the range input keeps the browser default ring beside the thumb ring' ];
 	},
 	signatureClearsHostBorder( root ) {
 		let found = false;
@@ -187,6 +202,7 @@ describe( 'focus.css, the one focus system', () => {
 			'\t.sgs-focus--signature::before { display: none; }',
 			'}',
 		].join( '\n' ) ),
+		rangeTrackDrawsNoSecondRing: ( text ) => text.replace( /outline-style: none;/, 'outline-style: auto;' ),
 		signatureClearsHostBorder: ( text ) => text.replace( /inset: calc\([^;]*--sgs-focus-host-border[^;]*\);/, 'inset: calc(var(--sgs-focus-width) * -3);' ),
 	};
 

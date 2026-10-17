@@ -131,6 +131,8 @@ function setup(): void {
 
 	add_editor_style( 'assets/css/core-blocks-critical.css' );
 	add_editor_style( 'assets/css/core-blocks.css' );
+	// The focus system, so the canvas shows the same keyboard focus look (its arms exclude editing chrome).
+	add_editor_style( 'assets/css/focus.css' );
 	// The responsive half of the type scale (D1007). Loaded into the editor canvas as
 	// well as the front end, or an operator resizing the canvas would see desktop
 	// heading sizes at every width while the published page shrank them.
@@ -423,6 +425,15 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/css/core-blocks.css' ),
 		array( 'sgs-core-blocks-critical' ),
 		asset_version( 'assets/css/core-blocks.css', $theme_version )
+	);
+
+	// The one keyboard focus system (Spec 32 §14.5): loaded synchronously, never deferred, so the
+	// indicator exists before the first Tab. The only reader of settings.custom.focus.
+	wp_enqueue_style(
+		'sgs-focus',
+		get_theme_file_uri( 'assets/css/focus.css' ),
+		array( 'sgs-core-blocks-critical' ),
+		asset_version( 'assets/css/focus.css', $theme_version )
 	);
 
 	wp_enqueue_style(

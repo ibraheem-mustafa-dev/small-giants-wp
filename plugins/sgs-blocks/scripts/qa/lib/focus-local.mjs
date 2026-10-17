@@ -1,8 +1,9 @@
 /**
  * `--local` mode of probe-focus-system.mjs: a generated HTML fixture plus the focus CSS file, tabbed through in each
- * engine. Three grounds (light, `.sgs-on-dark`, `.sgs-container--has-bg-image`), eight controls on each: a filled
+ * engine. Three grounds (light, `.sgs-on-dark`, `.sgs-container--has-bg-image`), nine controls on each: a filled
  * button, an outline button, a text link, a text input, a range, a proxied radio (`sgs-focus-source` with an adjacent
- * `sgs-focus-proxy`), an inset tab (`sgs-focus--inset` in a clipping box) and a signature button.
+ * `sgs-focus-proxy`), an inset tab (`sgs-focus--inset` in a clipping box), a borderless signature button and a
+ * signature button with a 2px border that declares it through `--sgs-focus-host-border`.
  *
  * @package SGS\Blocks
  */
@@ -11,7 +12,7 @@ import fs from 'node:fs';
 import { summarise } from './focus-probe-lib.mjs';
 import { tabThrough } from './focus-measure.mjs';
 
-export const CONTROLS_PER_GROUND = 8;
+export const CONTROLS_PER_GROUND = 9;
 export const GROUNDS = [
 	{ key: 'light', cls: 'sgs-on-light', css: 'background:#ffffff;color:#0b1020' },
 	{ key: 'dark', cls: 'sgs-on-dark', css: 'background:#101828;color:#ffffff' },
@@ -30,6 +31,7 @@ export function fixtureHtml( focusCss ) {
 	<label class="pick"><input type="radio" class="sgs-focus-source" name="pick-${ g.key }" aria-label="Radio ${ g.key }"><span class="sgs-focus-proxy pill">Pill ${ g.key }</span></label>
 	<div class="clipbox"><button type="button" class="b b-fill sgs-focus--inset">Inset tab ${ g.key }</button></div>
 	<button type="button" class="b b-fill sgs-focus--signature">Signature ${ g.key }</button>
+	<button type="button" class="b b-out b-host-border sgs-focus--signature">Bordered signature ${ g.key }</button>
 </section>`;
 	return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -50,6 +52,7 @@ body{margin:0;font:16px/1.4 system-ui,sans-serif}
 .pill{display:inline-block;padding:6px 16px;border:2px solid currentColor;border-radius:999px}
 .clipbox{overflow:hidden;display:inline-block;line-height:0}
 .clipbox .b{border-radius:0}
+.b-host-border{--sgs-focus-host-border:2px}
 </style>
 <style id="focus-under-test">${ focusCss }</style>
 </head><body>${ GROUNDS.map( ground ).join( '' ) }</body></html>`;
@@ -88,11 +91,12 @@ export async function runLocalEngine( browser, engine, cssText, opts, scratch ) 
 		} );
 		await context.close();
 		const summary = summarise( run.stops, mode );
+		if ( run.capHit ) summary.fails.push( `STOP CAP HIT at ${ width }px: ${ opts.maxStops } stops measured and more focusable elements follow; raise --max-stops` );
 		const expected = GROUNDS.length * CONTROLS_PER_GROUND;
 		if ( run.stops.length < expected ) {
 			summary.fails.push( `only ${ run.stops.length } of ${ expected } fixture controls were reached by Tab (${ run.ended })` );
 		}
-		results.push( { width, stops: run.stops, ended: run.ended, summary } );
+		results.push( { width, stops: run.stops, ended: run.ended, capHit: run.capHit, summary } );
 	}
 	return results;
 }
