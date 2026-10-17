@@ -8,7 +8,7 @@ scanner, so no PHP binary is needed).
     control (RangeControl, UnitControl, NumberControl, TextControl, SelectControl, ToggleGroupControl,
     CustomSelectControl, ColorPalette, MediaUpload and their sibling value controls). The layer is
       - every file under src/blocks/extensions/motion/, and
-      - any other JS file under src/ that reads or writes an `sgsMotion` path (this catches an effect's own control
+      - any other JS file under src/ that writes an `sgsMotion` value (this catches an effect's own control
         file wherever it sits),
     and the exempt implementation layer is every file under src/components/motion/ (the atoms). A raw control is an
     import from an `@wordpress/*` module (or `wp.components` / `wp.blockEditor`) of a banned name; a local atom that
@@ -67,6 +67,9 @@ REGEX_METHOD = re.compile(r"\.\s*(?:test|match|matchAll|replace|replaceAll)\s*\(
 CAST = re.compile(r"\(\s*(?:int|integer|float|double)\s*\)")
 ASSIGN = re.compile(r"(?<![=!<>+\-*/.])=(?![=>])")
 SGS_MOTION = re.compile(r"\bsgsMotion\b")
+# An effect's own control file writes an sgsMotion value (an object key or an assignment); a block editor that only
+# reads it to find a layer (trust-bar, brand-strip) is not in the motion panel layer.
+SGS_MOTION_WRITE = re.compile(r"\bsgsMotion\s*(?::(?!:)|=(?![=>]))")
 
 
 def is_field_type_file(rel: str) -> bool:
@@ -184,7 +187,7 @@ def file_findings(rel: str, text: str, lang: str, allow: set[str]) -> list[str]:
     code, skel = scan.strip(text, lang)
     touches = bool(SGS_MOTION.search(code))
     findings: list[str] = []
-    if lang == "js" and not rel.startswith(ATOM_DIR) and (rel.startswith(PANEL_DIR) or touches) and rel not in allow:
+    if lang == "js" and not rel.startswith(ATOM_DIR) and (rel.startswith(PANEL_DIR) or SGS_MOTION_WRITE.search(code)) and rel not in allow:
         for at, name in raw_controls(code, skel):
             findings.append(f"{rel}:{scan.line_of(text, at)}: raw control {name} in the motion panel layer; "
                             "use the motion atom (src/components/motion/)")

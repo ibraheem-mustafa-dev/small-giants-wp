@@ -3,7 +3,7 @@
 
 Runs tests/playwright/motion-entrance-cascade.check.mjs (Playwright Chromium, static pages that load the real motion,
 trigger, media-element, wave-gradient, container and nav-drawer-menu stylesheets in both orders). It proves an entrance
-on an element that also carries a looping animation (the media atom, the wave-gradient drift, the container ken burns)
+on an element that also carries a looping animation (the media atom svg presentation, the wave-gradient drift)
 plays once at its own duration and direction, and that the loop keeps running underneath and after it.
 
   --check      run the browser check; exit 0 only when every assertion passes

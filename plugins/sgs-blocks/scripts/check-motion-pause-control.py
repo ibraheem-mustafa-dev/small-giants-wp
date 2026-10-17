@@ -81,10 +81,7 @@ BLOCKS = PLUGIN / "src" / "blocks"
 EXEMPT: dict[tuple[str, str], tuple[str, str]] = {
     ("post-grid", "css-loop"): ("loading", "the .sgs-post-grid skeleton shimmer runs only while posts load"),
     ("product-search", "css-loop"): ("loading", "the results skeleton shimmer runs only while results load"),
-    ("container", "css-loop"): ("deferred", "Ken Burns background zoom and background SVG pulse/float/wave loops"),
-    ("hero", "css-loop"): ("deferred", "Ken Burns background and split-media zoom"),
     ("hero", "video-autoplay"): ("deferred", "muted looping background video, aria-hidden"),
-    ("media", "css-loop"): ("deferred", "SVG pulse/float/wave loops"),
     ("media", "video-autoplay"): ("deferred", "autoplaying video; native controls when the block shows them"),
     ("nav-drawer", "css-loop"): ("deferred", "decorative drift on .sgs-drift shapes in the drawer"),
 }

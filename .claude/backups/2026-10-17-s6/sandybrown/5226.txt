@@ -1,0 +1,33 @@
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-b-first-wrap"} -->
+<!-- wp:sgs/heading {"content":"Keyframes and tilt page","className":"m29-b-first"} /-->
+
+<!-- wp:sgs/text {"text":"First screen filler for the keyframes page."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"700px","right":"24px","bottom":"700px","left":"24px"},"tablet":{"top":"700px","right":"24px","bottom":"700px","left":"24px"},"mobile":{"top":"700px","right":"24px","bottom":"700px","left":"24px"}},"className":"m29-spacer"} -->
+<!-- wp:sgs/text {"text":"Scroll space so the next section starts below the first screen."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-kf-wrap"} -->
+<!-- wp:sgs/heading {"content":"Three keyframes with a stored delay","sgsMotion":{"v":1,"elements":{"root":{"entrance":{"base":{"trigger":"scroll","values":{"keyframes":[{"offset":0,"opacity":0,"translateY":40},{"offset":50,"opacity":0.6,"translateY":10},{"offset":100,"opacity":1,"translateY":0}],"duration":2000,"delay":500,"easing":"ease-out"}}}}}},"className":"m29-kf"} /-->
+
+<!-- wp:sgs/heading {"content":"Sibling without keyframes","className":"m29-kf-sibling"} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-both-wrap"} -->
+<!-- wp:sgs/heading {"content":"Entrance first, hover lift on the same heading","sgsMotion":{"v":1,"elements":{"root":{"hover":{"state":{"source":"self","values":{"translateY":-6,"duration":"token:duration.fast","easing":"ease-out"}}},"entrance":{"base":{"trigger":"scroll","values":{"from":{"opacity":0,"translateY":24},"duration":400,"easing":"ease-out"}}}}}},"className":"m29-both"} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-tilt-wrap"} -->
+<!-- wp:sgs/info-box {"sgsHoverTilt3D":true,"heading":"Tilt card","description":"This card uses the legacy 3D tilt.","className":"m29-tilt"} -->
+<!-- wp:sgs/icon {"iconSize":{"desktop":"32px"},"shape":"circle","showBackground":true,"backgroundColour":"accent-light","className":"sgs-info-box__icon"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More","inheritStyle":"primary"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/container -->

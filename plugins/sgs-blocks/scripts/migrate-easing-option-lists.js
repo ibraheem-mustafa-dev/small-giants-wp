@@ -32,9 +32,8 @@ const MASTER = 'src/components/motion/easing-master-list.js';
 const NAME_RE = /(EASE|EASING)/;
 
 const NAV_BLOCK_ENUMS = [
-	[ 'nav-bar-menu', [ 'burgerMorphEasing', 'submenuCaretTurnEasing', 'submenuAnimationEasing', 'itemMotionEasing' ] ],
-	[ 'nav-drawer', [ 'entryEasing' ] ],
-	[ 'nav-drawer-menu', [ 'itemMotionEasing', 'submenuCaretTurnEasing', 'submenuAnimationEasing' ] ],
+	[ 'nav-bar-menu', [ 'submenuCaretTurnEasing', 'itemMotionEasing' ] ],
+		[ 'nav-drawer-menu', [ 'itemMotionEasing', 'submenuCaretTurnEasing', 'submenuAnimationEasing' ] ],
 	[ 'icon-list', [ 'itemMotionEasing' ] ],
 	[ 'site-header', [ 'inkEasing' ] ],
 ];
@@ -48,7 +47,6 @@ const CONSUMERS = [
 	[ 'src/blocks/info-box/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/team-member/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/gallery/components/gallery-options.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],
-	[ 'src/blocks/post-grid/components/constants.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],
 	[ 'src/blocks/heading/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],
 	[ 'src/blocks/text/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],
 	[ 'src/blocks/decorative-image/edit.js', 'PATH_DRAW_EASING_OPTIONS', 'PATH_DRAW_EASING_OPTIONS' ],

@@ -15,7 +15,12 @@ const { INCLUDE, EXCLUDE, WIDTH_OK, WIDE_EXT_RE, RETIRED_TOKEN_RE } = require( '
 
 function gitFiles( root ) {
 	const out = execFileSync( 'git', [ 'ls-files', '-z' ], { cwd: root, maxBuffer: 256 * 1024 * 1024 } );
-	return out.toString( 'utf8' ).split( '\0' ).filter( Boolean );
+	return out
+		.toString( 'utf8' )
+		.split( '\0' )
+		.filter( Boolean )
+		// A tracked file deleted in the working tree has nothing left to scan.
+		.filter( ( rel ) => fs.existsSync( path.join( root, rel ) ) );
 }
 
 function kindOf( rel ) {

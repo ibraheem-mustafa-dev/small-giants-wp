@@ -1,0 +1,53 @@
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-first"} -->
+<!-- wp:sgs/heading {"content":"Plain sentences keep a first screen readable","sgsMotion":{"v":1,"elements":{"root":{"entrance":{"base":{"trigger":"load","values":{"from":{"opacity":0,"translateY":24},"duration":600}}}}}},"className":"m29-load-first"} /-->
+
+<!-- wp:sgs/text {"text":"The first section holds a heading with a page-load entrance."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"700px","right":"24px","bottom":"700px","left":"24px"},"tablet":{"top":"700px","right":"24px","bottom":"700px","left":"24px"},"mobile":{"top":"700px","right":"24px","bottom":"700px","left":"24px"}},"className":"m29-spacer"} -->
+<!-- wp:sgs/text {"text":"Scroll space so the next section starts below the first screen."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-second"} -->
+<!-- wp:sgs/heading {"content":"A heading with its own page-load entrance","sgsMotion":{"v":1,"elements":{"root":{"entrance":{"base":{"trigger":"load","values":{"from":{"opacity":0,"translateY":24},"duration":600}}}}}},"className":"m29-load-later"} /-->
+
+<!-- wp:sgs/text {"text":"This section is below the first screen."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-cards"} -->
+<!-- wp:sgs/info-box {"sgsHoverImageZoom":false,"sgsHoverScalePreset":"none","sgsHoverShadow":"none","shadowLiftOnHover":false,"heading":"Hover card","description":"This card lifts and scales on hover.","effectHover":"none","backgroundColourHover":"accent","sgsMotion":{"v":1,"elements":{"root":{"hover":{"state":{"source":"root","values":{"translateY":-6,"scale":1.04,"duration":"token:duration.fast","delay":100,"easing":"ease-out"}}}}}},"className":"m29-hover-card"} -->
+<!-- wp:sgs/icon {"iconSize":{"desktop":"32px"},"shape":"circle","showBackground":true,"backgroundColour":"accent-light","className":"sgs-info-box__icon"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+
+<!-- wp:sgs/info-box {"sgsHoverImageZoom":false,"sgsHoverScalePreset":"none","sgsHoverShadow":"none","shadowLiftOnHover":false,"heading":"Plain card","description":"This card has no motion and is the control.","effectHover":"none","className":"m29-plain-card"} -->
+<!-- wp:sgs/icon {"iconSize":{"desktop":"32px"},"shape":"circle","showBackground":true,"backgroundColour":"accent-light","className":"sgs-info-box__icon"} /-->
+
+<!-- wp:sgs/heading {"content":"Feature heading","level":"h3"} /-->
+
+<!-- wp:sgs/text {"text":"Describe the feature or benefit here."} /-->
+
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"label":"Learn More"} /-->
+<!-- /wp:sgs/multi-button -->
+<!-- /wp:sgs/info-box -->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"700px","right":"24px","bottom":"700px","left":"24px"},"tablet":{"top":"700px","right":"24px","bottom":"700px","left":"24px"},"mobile":{"top":"700px","right":"24px","bottom":"700px","left":"24px"}},"className":"m29-spacer"} -->
+<!-- wp:sgs/text {"text":"Scroll space so the next section starts below the first screen."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"sgsMotion":{"v":1,"elements":{"inner":{"entrance":{"base":{"trigger":"scroll","values":{"from":{"opacity":0,"translateY":"token:distance.sm"},"duration":400,"delay":200,"easing":"ease-out"}}}}}},"className":"m29-fade-part"} -->
+<!-- wp:sgs/text {"text":"The container part animates; the sibling text does not."} /-->
+<!-- /wp:sgs/container -->
+
+<!-- wp:sgs/container {"layout":"stack","padding":{"desktop":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"tablet":{"top":"24px","right":"24px","bottom":"24px","left":"24px"},"mobile":{"top":"24px","right":"24px","bottom":"24px","left":"24px"}},"className":"m29-fade-sibling-wrap"} -->
+<!-- wp:sgs/heading {"content":"A sibling section with no motion","className":"m29-fade-sibling"} /-->
+<!-- /wp:sgs/container -->

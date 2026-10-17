@@ -135,10 +135,9 @@
  *                                     sgs_icon_accessible_name,
  *                                     sgs_icon_is_editor_render (sgs/icon's
  *                                     length allowlist, link name, editor test)
- *   helpers-icon-motion.php         — sgs_icon_motion_decls,
- *                                     sgs_icon_shadow_vars (sgs/icon and
- *                                     sgs/social-icons hover move, motion and
- *                                     shadow custom properties)
+ *   helpers-icon-shadow.php         — sgs_icon_shadow_vars (sgs/icon and
+ *                                     sgs/social-icons shadow custom
+ *                                     properties)
  *   helpers-reviews-inline.php      — sgs_reviews_inline_normalise,
  *                                     sgs_reviews_inline_data (written reviews
  *                                     shaped like the Places API's, so
@@ -166,7 +165,7 @@ require_once __DIR__ . '/helpers-surface-tone.php';
 require_once __DIR__ . '/helpers-scrim.php';
 require_once __DIR__ . '/helpers-motion-easing.php';
 require_once __DIR__ . '/helpers-state-motion-model.php';
-require_once __DIR__ . '/helpers-nav-drawer-motion.php';
+require_once __DIR__ . '/helpers-nav-drawer-motion-model.php';
 require_once __DIR__ . '/helpers-item-effects.php';
 require_once __DIR__ . '/helpers-media.php';
 require_once __DIR__ . '/helpers-tier-media.php';
@@ -199,7 +198,7 @@ require_once __DIR__ . '/helpers-reviews-inline.php';
 require_once __DIR__ . '/helpers-site-info-binding.php';
 require_once __DIR__ . '/helpers-site-info-items.php';
 require_once __DIR__ . '/helpers-icon.php';
-require_once __DIR__ . '/helpers-icon-motion.php';
+require_once __DIR__ . '/helpers-icon-shadow.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';
@@ -218,7 +217,6 @@ require_once __DIR__ . '/media/atoms/focal-point.php';
 require_once __DIR__ . '/media/atoms/box-shape.php';
 require_once __DIR__ . '/media/atoms/overlay.php';
 require_once __DIR__ . '/media/atoms/svg-presentation.php';
-require_once __DIR__ . '/media/atoms/motion.php';
 require_once __DIR__ . '/media/atoms/opacity.php';
 require_once __DIR__ . '/media/atoms/shadow.php';
 require_once __DIR__ . '/media/atoms/media-padding.php';

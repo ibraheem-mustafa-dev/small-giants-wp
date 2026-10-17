@@ -32,10 +32,14 @@ const SCAN_TRANSFORM_STYLES = ( root ) =>
 		.filter( ( n ) => /(^|;|\s)(transform|translate|rotate|scale|opacity)\s*:/i.test( n.getAttribute( 'style' ) || '' ) )
 		.map( ( n ) => `${ n.tagName.toLowerCase() }.${ n.className }` );
 
+/** The element a Follow pointer layer drives (`src/shared/effects/fx-follow-pointer.js`). */
+const TILT = '[data-sgs-fx~="follow-pointer"]';
+
 /** The tilt element's `--sgs-tilt-x` as a number of degrees (NaN when absent); the element is the selector match or the tilt descendant. */
 const TILT_ANGLE = ( sel ) => {
+	const tilt = '[data-sgs-fx~="follow-pointer"]';
 	const root = document.querySelector( sel );
-	const el = root && ( root.matches( '.sgs-has-tilt-3d' ) ? root : root.querySelector( '.sgs-has-tilt-3d' ) );
+	const el = root && ( root.matches( tilt ) ? root : root.querySelector( tilt ) );
 	return el ? parseFloat( getComputedStyle( el ).getPropertyValue( '--sgs-tilt-x' ) ) : NaN;
 };
 
@@ -210,7 +214,7 @@ export async function reducedMotionChecks( ctx ) {
 	}
 }
 
-/** Tilt (legacy `.sgs-has-tilt-3d`) writes no inline transform; integration: no motion element carries a style attribute. */
+/** Tilt (a Follow pointer layer) writes only its custom properties, never an inline transform; integration: no motion element carries a style attribute. */
 export async function tiltAndInlineChecks( ctx ) {
 	const { rep, markers } = ctx;
 	if ( markers[ '.m29-tilt' ] ) {
@@ -226,9 +230,9 @@ export async function tiltAndInlineChecks( ctx ) {
 			await page.mouse.move( box.x + box.width * 0.75, box.y + box.height * 0.75, { steps: 6 } );
 			await page.waitForTimeout( 300 );
 			const angleMoved = await page.evaluate( TILT_ANGLE, sel );
-			const tiltClass = await page.evaluate( ( s ) => !! ( document.querySelector( s ).matches( '.sgs-has-tilt-3d' ) || document.querySelector( `${ s } .sgs-has-tilt-3d` ) ), sel );
+			const tiltClass = await page.evaluate( ( [ s, t ] ) => !! ( document.querySelector( s ).matches( t ) || document.querySelector( `${ s } ${ t }` ) ), [ sel, TILT ] );
 			const bad = await page.$eval( sel, SCAN_TRANSFORM_STYLES );
-			rep.check( 'tilt-no-inline-transform', { selector: sel, property: 'style attribute', measured: { tiltClass, offenders: bad }, expected: 'tilt class present, --sgs-tilt-x a non-zero angle after the pointer move (tilt-3d.js ran), no style attribute writes a transform', pass: tiltClass && Number.isFinite( angleMoved ) && Math.abs( angleMoved ) > 0.01 && bad.length === 0 } );
+			rep.check( 'tilt-no-inline-transform', { selector: sel, property: 'style attribute', measured: { tiltClass, offenders: bad }, expected: 'Follow pointer layer present, --sgs-tilt-x a non-zero angle after the pointer move (fx-follow-pointer.js ran), no style attribute writes a transform', pass: tiltClass && Number.isFinite( angleMoved ) && Math.abs( angleMoved ) > 0.01 && bad.length === 0 } );
 			rep.control( 'tilt-no-inline-transform/ran', { selector: sel, property: '--sgs-tilt-x (before any pointer move)', measured: { atRest: angleAtRest, afterMove: angleMoved }, expected: 'empty or 0 before the pointer moves, so the at-rest reading alone shows the angle comes from the pointer, not from the page', red: ! Number.isFinite( angleAtRest ) || Math.abs( angleAtRest ) < 0.01 } );
 			const planted = await page.$eval( sel, ( root ) => { const d = document.createElement( 'div' ); d.setAttribute( 'style', 'transform: rotate(2deg)' ); root.appendChild( d ); return d.className; } );
 			const caught = await page.$eval( sel, SCAN_TRANSFORM_STYLES );

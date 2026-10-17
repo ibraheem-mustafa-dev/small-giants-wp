@@ -2,7 +2,7 @@
 
 Generated 2026-10-17 by `python plugins/sgs-blocks/scripts/migrate-motion/migrate_motion.py --consumers --write-report`. Read-only census for Spec 38A unit M6.6C: every file that still names a path or an old attribute that M6.6-G0 to G5 delete, assigned to the group that fixes it.
 
-Needles: 285 (paths from `consumer-groups.json` plus the old attribute names in `migrate_motion.py::CATALOGUE`). A hit is one needle on one line of one file. Excluded: `.claude/specs/archive/`, `.claude/reports/`, `.claude/archive/`, `.claude/plans/archive/`, the detector folder, `plugins/sgs-blocks/build/`, `node_modules`, `vendor`, `.phpunit.cache`.
+Needles: 295 (paths from `consumer-groups.json` plus the old attribute names in `migrate_motion.py::CATALOGUE`). A hit is one needle on one line of one file. Excluded: `.claude/specs/archive/`, `.claude/reports/`, `.claude/archive/`, `.claude/plans/archive/`, the detector folder, `plugins/sgs-blocks/build/`, `node_modules`, `vendor`, `.phpunit.cache`.
 
 Groups G0 to G5 are the M6.6 removal groups. `M6.7-docs` is the M6.7 doc sweep (plan R11). `keep` is a hit no removal group edits on purpose: the sweep tool and its tests read the old names to translate stored content, and dated backups, scratch output, memory snapshots, verification records and plugin reports are history.
 
@@ -10,20 +10,20 @@ Groups G0 to G5 are the M6.6 removal groups. `M6.7-docs` is the M6.7 doc sweep (
 
 | Group | Hits | Files |
 |---|---|---|
-| G0 | 8801 | 312 |
-| G1 | 445 | 33 |
-| G2 | 112 | 14 |
-| G3 | 111 | 16 |
+| G0 | 8827 | 316 |
+| G1 | 356 | 30 |
+| G2 | 12 | 3 |
+| G3 | 19 | 6 |
 | G4 | 738 | 91 |
 | G5 | 382 | 28 |
-| M6.7-docs | 491 | 29 |
-| keep | 2228 | 94 |
+| M6.7-docs | 511 | 29 |
+| keep | 2245 | 96 |
 
-Hits dropped on purpose and counted: 27 self-references (a file naming its own path), 540 attribute hits inside a block outside that attribute's catalogued scope, and 863 scoped-attribute hits outside any block folder that are not a quoted name (prose, not a key).
+Hits dropped on purpose and counted: 27 self-references (a file naming its own path), 538 attribute hits inside a block outside that attribute's catalogued scope, and 860 scoped-attribute hits outside any block folder that are not a quoted name (prose, not a key).
 
 ## Unit map evidence against this census
 
-- Scripts naming G0 files: the unit map found 22, this census finds 32. The unit map counted the wired gates and generators; this census also matches the extensionless and `src/`-relative forms and counts the inspector-scan fixtures, surveys, seeders and motion probes that name the same files.
+- Scripts naming G0 files: the unit map found 22, this census finds 34. The unit map counted the wired gates and generators; this census also matches the extensionless and `src/`-relative forms and counts the inspector-scan fixtures, surveys, seeders and motion probes that name the same files.
 - Theme patterns carrying `fx*` attributes: the unit map found 5, this census finds 5. Same set.
 - `sites/*/build` trees: the unit map found 12, this census finds 2 tree(s) with a hit. Only four `sites/*/build` folders exist, so twelve cannot be reproduced from `build`; the unit map may have counted `sites/*` project folders.
 - Live specs citing deleted code: the unit map found 5 plus `dev-setup.md`, this census finds 12 spec(s) and `dev-setup.md` with hits. Plan R11 names six specs (02, 35A, 36, 37, 38, 48); the rest only mention an old attribute name or path in prose or a table.
@@ -32,20 +32,28 @@ Hits dropped on purpose and counted: 27 self-references (a file naming its own p
 
 Block folders with old-attribute hits that no group names in its FILES list (their hits were given a group by family, see the judgement section): `before-after`, `button`, `icon`, `image-sequence`, `process-steps`, `social-icons`, `testimonial-slider`, `trustpilot-reviews`.
 
-Cross-group dependencies (a file one group edits that names a path another group deletes, so the deleting group must wait for the editing group): G1 file names a G0 path; G2 file names a G0 path; G4 file names a G0 path; G5 file names a G0 path; G5 file names a G1 path.
+Cross-group dependencies (a file one group edits that names a path another group deletes, so the deleting group must wait for the editing group): G0 file names a G1 path; G1 file names a G0 path; G2 file names a G0 path; G4 file names a G0 path; G5 file names a G0 path; G5 file names a G1 path.
 
 ## sites/*/build: tracked or untracked
 
-The build trees are partly tracked: 177 file(s) are tracked and were searched with `git grep`. The rest are untracked, so 894 text file(s) were read directly (skipped and counted: 362 over 1 MB, 248 with a non-text extension, 0 cache folders).
+The build trees are partly tracked: 182 file(s) are tracked and were searched with `git grep`. The rest are untracked, so 890 text file(s) were read directly (skipped and counted: 361 over 1 MB, 248 with a non-text extension, 0 cache folders).
 
 ## Paths named by the unit map that are not on disk
 
+- `plugins/sgs-blocks/includes/media/atoms/motion.php`
+- `plugins/sgs-blocks/src/components/media/atoms/motion.js`
+- `plugins/sgs-blocks/src/components/media/controls/MediaMotionControls.js`
+- `plugins/sgs-blocks/includes/container-bg-hover-zoom.php`
+- `plugins/sgs-blocks/assets/css/media-atoms/motion.css`
+- `plugins/sgs-blocks/src/components/media/atoms/motion.control.js`
+- `plugins/sgs-blocks/includes/helpers-trust-bar-marquee.php`
+- `plugins/sgs-blocks/src/blocks/trust-bar/marquee-mode.js`
 - `plugins/sgs-blocks/tests/php/TrustBarMarqueeTest.php`
 - `plugins/sgs-blocks/tests/js/trust-bar-view.test.js`
 
-## G0: 8801 hit(s) in 312 file(s)
+## G0: 8827 hit(s) in 316 file(s)
 
-- `plugins/sgs-blocks/assets/css/extensions.css`: 10 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgKenBurns`, `bgParallax`, `includes/animation-attributes.php`, `includes/hover-effects`, `ripple.js`, `sgsHoverIndent`, `src/blocks/extensions/parallax.js`
+- `plugins/sgs-blocks/assets/css/extensions.css`: 11 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgKenBurns`, `bgParallax`, `includes/animation-attributes.php`, `includes/container-bg-hover-zoom.php`, `includes/hover-effects`, `ripple.js`, `sgsHoverIndent`, `src/blocks/extensions/parallax.js`
 - `plugins/sgs-blocks/assets/css/fx-cursor-field.css`: 1 hit(s) at line 26, needles: `src/blocks/extensions/fx.js`
 - `plugins/sgs-blocks/assets/css/fx-grid-dots.css`: 1 hit(s) at line 54, needles: `^fx[A-Z0-9]`
 - `plugins/sgs-blocks/assets/css/fx-motion-path.css`: 3 hit(s) at lines 207, 208, 214, needles: `fx-attributes.php`, `fx.js`
@@ -59,7 +67,6 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/includes/class-sgs-colour-audit-cli-commands.php`: 2 hit(s) at lines 100, 133, needles: `shadowHoverColour`
 - `plugins/sgs-blocks/includes/class-sgs-motion-diagnostics.php`: 3 hit(s) at lines 46, 60, 140, needles: `fx.js`
 - `plugins/sgs-blocks/includes/class-sgs-motion-registry.php`: 3 hit(s) at lines 1190, 1190, 1191, needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`, `src/blocks/extensions/fx.js`
-- `plugins/sgs-blocks/includes/container-bg-hover-zoom.php`: 5 hit(s) at lines 15, 16, 17, 18, 19, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
 - `plugins/sgs-blocks/includes/extension-attributes.generated.php`: 120 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax`, `sgsAnimationStart`, `sgsAnimationTrigger` and 18 more
 - `plugins/sgs-blocks/includes/fx-attributes.php`: 263 hit(s), needles: `^fx[A-Z0-9]`, `animation-attributes.php`, `fx-presets.json`, `fx.js`, `src/blocks/extensions/fx.js`
 - `plugins/sgs-blocks/includes/fx-cursor-field.php`: 2 hit(s) at lines 35, 296, needles: `fx-attributes.php`
@@ -90,7 +97,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/scripts/audit-post-content-blocks.py`: 1 hit(s) at line 96, needles: `^fx[A-Z0-9]`
 - `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`: 13 hit(s), needles: `^fx[A-Z0-9]`, `bgKenBurns`, `bgParallax`, `imageZoomHover`
 - `plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json`: 118 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgParallax`, `bgZoomStart`, `burgerMorphDuration`, `burgerMorphEasing`, `childIconScaleHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `curtainColour`, `entryDuration`, `entryEasing` and 24 more
-- `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py`: 2 hit(s) at lines 3465, 3596, needles: `AnimationControl`, `bgKenBurns`
+- `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py`: 2 hit(s) at lines 3464, 3595, needles: `AnimationControl`, `bgKenBurns`
 - `plugins/sgs-blocks/scripts/check-dead-controls.js`: 33 hit(s), needles: `^fx[A-Z0-9]`, `animation.js`, `fx.js`, `includes/animation-stagger.php`, `includes/fx-attributes.php`, `sgsAnimation`, `transitionDuration`, `transitionEasing`
 - `plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py`: 7 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`, `includes/fx-attributes.php`
 - `plugins/sgs-blocks/scripts/check-duplicate-controls.js`: 56 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScrollPauseOnHover`, `effectHover`, `imageZoomHover`, `pauseOnHover`, `scaleHover`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverShadow`, `shadowHoverColour` and 4 more
@@ -121,6 +128,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/scripts/db-consistency/check_motion_fx_reseed.py`: 2 hit(s) at lines 190, 223, needles: `^fx[A-Z0-9]`, `fx.js`
 - `plugins/sgs-blocks/scripts/dbschema/seed-motion-shape-signatures.py`: 10 hit(s), needles: `plugins/sgs-blocks/src/components/AnimationControl.js`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
 - `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`: 6 hit(s), needles: `^fx[A-Z0-9]`, `fx-attributes.php`, `includes/fx-attributes.php`
+- `plugins/sgs-blocks/scripts/deploy_qa_tier.py`: 1 hit(s) at line 364, needles: `plugins/sgs-blocks/includes/fx-attributes.php`
 - `plugins/sgs-blocks/scripts/duplicate-controls-baseline.json`: 17 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `effectHover`, `imageZoomHover`, `scaleHover`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverShadow`, `shadowHoverColour`
 - `plugins/sgs-blocks/scripts/editor-render-parity-baseline.json`: 24 hit(s), needles: `bgLottie`, `bgLottieLoop`, `bgZoomStart`, `pauseOnHover`, `staggerDelay`
 - `plugins/sgs-blocks/scripts/editor-render-parity/lib-ceiling.js`: 1 hit(s) at line 193, needles: `fx.js`
@@ -129,6 +137,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/scripts/element-manifest-baseline.json`: 1 hit(s) at line 10, needles: `shadowHoverColour`
 - `plugins/sgs-blocks/scripts/fanout-shadow-lift-attr.py`: 2 hit(s) at lines 3, 55, needles: `shadowLiftOnHover`
 - `plugins/sgs-blocks/scripts/feature-parity-exceptions.json`: 1 hit(s) at line 328, needles: `bgParallax`
+- `plugins/sgs-blocks/scripts/focus-system/config.js`: 2 hit(s) at lines 121, 122, needles: `plugins/sgs-blocks/includes/hover-effects`, `plugins/sgs-blocks/src/blocks/extensions/hover-effects`
 - `plugins/sgs-blocks/scripts/fx_drift/runtime_reads.py`: 21 hit(s), needles: `^fx[A-Z0-9]`, `fx-attributes.php`, `includes/fx-attributes.php`
 - `plugins/sgs-blocks/scripts/generate-extension-attributes.js`: 1 hit(s) at line 54, needles: `^fx[A-Z0-9]`
 - `plugins/sgs-blocks/scripts/generate-fx-effects-php.py`: 4 hit(s) at lines 217, 224, 232, 245, needles: `^fx[A-Z0-9]`, `fx.js`
@@ -158,6 +167,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/scripts/migrate-fx-list-match.py`: 1 hit(s) at line 15, needles: `includes/fx-attributes.php`
 - `plugins/sgs-blocks/scripts/migrate-motion-support.py`: 3 hit(s) at lines 11, 48, 269, needles: `sgsAnimation`
 - `plugins/sgs-blocks/scripts/migrations/2026-08-13-role-remediation-part2-overrides.py`: 5 hit(s) at lines 10, 31, 33, 149, 169, needles: `bgKenBurns`, `revealStagger`, `svgAnimationSource`
+- `plugins/sgs-blocks/scripts/motion-qa/full-tier-paths.json`: 1 hit(s) at line 21, needles: `plugins/sgs-blocks/includes/fx-attributes.php`
 - `plugins/sgs-blocks/scripts/motion-qa/probe-motion-drawer-close-together.mjs`: 1 hit(s) at line 2, needles: `itemStaggerOnClose`
 - `plugins/sgs-blocks/scripts/motion-qa/probe-motion-model-hover.mjs`: 1 hit(s) at line 231, needles: `tilt-3d.js`
 - `plugins/sgs-blocks/scripts/motion-qa/probe-motion-model.mjs`: 2 hit(s) at lines 57, 127, needles: `^fx[A-Z0-9]`
@@ -208,10 +218,10 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/before-after/edit.js`: 3 hit(s) at lines 473, 666, 668, needles: `^fx[A-Z0-9]`
 - `plugins/sgs-blocks/src/blocks/before-after/render.php`: 2 hit(s) at lines 22, 103, needles: `^fx[A-Z0-9]`
 - `plugins/sgs-blocks/src/blocks/before-after/view.js`: 3 hit(s) at lines 20, 106, 411, needles: `^fx[A-Z0-9]`
-- `plugins/sgs-blocks/src/blocks/button/block.json`: 3 hit(s) at lines 120, 394, 414, needles: `liftHover`, `scaleHoverTarget`
+- `plugins/sgs-blocks/src/blocks/button/block.json`: 3 hit(s) at lines 120, 395, 415, needles: `liftHover`, `scaleHoverTarget`
 - `plugins/sgs-blocks/src/blocks/button/edit.js`: 10 hit(s), needles: `MotionEasingControl`, `liftHover`, `scaleHoverTarget`
-- `plugins/sgs-blocks/src/blocks/button/render.php`: 2 hit(s) at lines 335, 347, needles: `liftHover`, `scaleHoverTarget`
-- `plugins/sgs-blocks/src/blocks/button/style.css`: 1 hit(s) at line 281, needles: `scaleHoverTarget`
+- `plugins/sgs-blocks/src/blocks/button/render.php`: 2 hit(s) at lines 341, 353, needles: `liftHover`, `scaleHoverTarget`
+- `plugins/sgs-blocks/src/blocks/button/style.css`: 1 hit(s) at line 262, needles: `scaleHoverTarget`
 - `plugins/sgs-blocks/src/blocks/extensions/animation.js`: 67 hit(s), needles: `AnimationControl`, `EntranceStaggerControls`, `components/EntranceStaggerControls`, `fx.js`, `sgsAnimation`, `sgsAnimationDelay`, `sgsAnimationDistance`, `sgsAnimationDuration`, `sgsAnimationEasing`, `sgsAnimationStagger`, `sgsAnimationStaggerChildren`, `sgsAnimationStaggerMax` and 2 more
 - `plugins/sgs-blocks/src/blocks/extensions/child-sizing.js`: 1 hit(s) at line 153, needles: `fx.js`
 - `plugins/sgs-blocks/src/blocks/extensions/cpt-default-panel.js`: 1 hit(s) at line 26, needles: `animation.js`
@@ -224,7 +234,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/extensions/hover-effects/panels/BlockLinkPanel.js`: 1 hit(s) at line 102, needles: `includes/hover-effects`
 - `plugins/sgs-blocks/src/blocks/extensions/hover-effects/panels/ClickPanel.js`: 13 hit(s), needles: `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration`
 - `plugins/sgs-blocks/src/blocks/extensions/hover-effects/panels/HoverPanel.js`: 79 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `components/MotionEasingControl`, `sgsHoverBorderAccent`, `sgsHoverDuration`, `sgsHoverDurationMs`, `sgsHoverEasing`, `sgsHoverEasingCustom`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverIndent`, `sgsHoverLift`, `sgsHoverOpacity` and 3 more
-- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/resolve.js`: 4 hit(s) at lines 13, 38, 43, 64, needles: `includes/hover-effects`, `sgsHoverShadow`
+- `plugins/sgs-blocks/src/blocks/extensions/hover-effects/resolve.js`: 4 hit(s) at lines 13, 38, 43, 63, needles: `includes/hover-effects`, `sgsHoverShadow`
 - `plugins/sgs-blocks/src/blocks/extensions/index.js`: 3 hit(s) at lines 70, 74, 75, needles: `fx-panel.scss`, `fx.js`
 - `plugins/sgs-blocks/src/blocks/extensions/motion/effect-helpers/hue.js`: 1 hit(s) at line 2, needles: `fx.js`
 - `plugins/sgs-blocks/src/blocks/extensions/motion/effect-helpers/thumbnails.js`: 1 hit(s) at line 4, needles: `fx.js`
@@ -241,7 +251,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/process-steps/block.json`: 8 hit(s), needles: `effectHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
 - `plugins/sgs-blocks/src/blocks/process-steps/edit.js`: 4 hit(s) at lines 147, 260, 732, 735, needles: `effectHover`
 - `plugins/sgs-blocks/src/blocks/process-steps/render.php`: 2 hit(s) at lines 108, 169, needles: `effectHover`
-- `plugins/sgs-blocks/src/blocks/testimonial-slider/block.json`: 1 hit(s) at line 206, needles: `effectHover`
+- `plugins/sgs-blocks/src/blocks/testimonial-slider/block.json`: 1 hit(s) at line 210, needles: `effectHover`
 - `plugins/sgs-blocks/src/blocks/testimonial-slider/edit.js`: 3 hit(s) at lines 83, 461, 464, needles: `effectHover`
 - `plugins/sgs-blocks/src/blocks/testimonial-slider/render.php`: 1 hit(s) at line 61, needles: `effectHover`
 - `plugins/sgs-blocks/src/blocks/trustpilot-reviews/block.json`: 6 hit(s), needles: `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
@@ -275,6 +285,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/tests/fixtures/motion/pages/motion-stacks.json`: 3 hit(s) at lines 149, 193, 298, needles: `effectHover`
 - `plugins/sgs-blocks/tests/js/__mocks__/@wordpress/known-exports.json`: 1 hit(s) at line 3, needles: `fx.js`
 - `plugins/sgs-blocks/tests/js/button-form-motion.test.js`: 1 hit(s) at line 34, needles: `sgsHoverShadow`
+- `plugins/sgs-blocks/tests/js/focus-ring-retired.test.js`: 7 hit(s), needles: `includes/hover-effects`, `src/blocks/extensions/hover-effects`
 - `plugins/sgs-blocks/tests/js/fx-ambient-float.test.js`: 4 hit(s) at lines 78, 79, 186, 193, needles: `^fx[A-Z0-9]`
 - `plugins/sgs-blocks/tests/js/fx-ken-burns.test.js`: 4 hit(s) at lines 78, 79, 326, 335, needles: `^fx[A-Z0-9]`
 - `plugins/sgs-blocks/tests/js/fx-svg-loop.test.js`: 4 hit(s) at lines 78, 79, 234, 243, needles: `^fx[A-Z0-9]`
@@ -283,6 +294,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/tests/js/motion-panels-mount.test.js`: 2 hit(s) at lines 153, 154, needles: `animation.js`, `fx.js`
 - `plugins/sgs-blocks/tests/js/parallax.test.js`: 2 hit(s) at lines 2, 5, needles: `assets/js/parallax.js`
 - `plugins/sgs-blocks/tests/js/tilt-3d.test.js`: 1 hit(s) at line 5, needles: `assets/js/tilt-3d.js`
+- `plugins/sgs-blocks/tests/php/FocusGroundClassTest.php`: 1 hit(s) at line 93, needles: `includes/hover-effects`
 - `plugins/sgs-blocks/tests/php/MotionRendererChannelsTest.php`: 3 hit(s) at lines 152, 154, 156, needles: `includes/animation-attributes.php`, `sgsAnimation`
 - `plugins/sgs-blocks/tests/php/ReviewsEmptyRenderTest.php`: 1 hit(s) at line 10, needles: `includes/hover-effects`
 - `plugins/sgs-blocks/tests/php/run-button-form-motion-standalone.php`: 3 hit(s) at lines 209, 215, 324, needles: `liftHover`, `sgsHoverShadow`
@@ -336,21 +348,21 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-09T08-46-22/solve-report.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `entryEasing`, `itemStaggerAxis`, `sgsHoverLift`, `transitionDuration`
 - `sites/eye-care-ward-end/build/qa/solve/shop/2026-10-09T10-11-46/solve-report.md`: 4 hit(s) at lines 2607, 2608, 2636, 2637, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
 - `sites/eye-care-ward-end/build/qa/sweep/2026-10-09/sweep.json`: 6 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
-- `sites/eye-care-ward-end/build/qa/triage/about.json`: 5 hit(s) at lines 35, 43, 49, 62, 70, needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/about.json`: 6 hit(s), needles: `includes/container-bg-hover-zoom.php`, `transitionDuration`
 - `sites/eye-care-ward-end/build/qa/triage/contact-form.json`: 2 hit(s) at lines 6914, 6923, needles: `sgsClickRippleColour`
-- `sites/eye-care-ward-end/build/qa/triage/contact.json`: 4 hit(s) at lines 360, 369, 601, 610, needles: `sgsClickRippleColour`
+- `sites/eye-care-ward-end/build/qa/triage/contact.json`: 5 hit(s) at lines 160, 360, 369, 601, 610, needles: `includes/container-bg-hover-zoom.php`, `sgsClickRippleColour`
 - `sites/eye-care-ward-end/build/qa/triage/footer.json`: 10 hit(s), needles: `sgsClickRippleColour`
 - `sites/eye-care-ward-end/build/qa/triage/header.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `sgsClickRippleColour`
-- `sites/eye-care-ward-end/build/qa/triage/home.json`: 109 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `fadeWidth`, `liftHover` and 8 more
-- `sites/eye-care-ward-end/build/qa/triage/lens.json`: 6 hit(s), needles: `sgsClickRippleColour`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/home.json`: 113 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `fadeWidth`, `includes/container-bg-hover-zoom.php` and 9 more
+- `sites/eye-care-ward-end/build/qa/triage/lens.json`: 7 hit(s), needles: `includes/container-bg-hover-zoom.php`, `sgsClickRippleColour`, `transitionDuration`
 - `sites/eye-care-ward-end/build/qa/triage/lenses.json`: 4 hit(s) at lines 58, 68, 99, 109, needles: `sgsHoverLift`, `sgsHoverOpacity`
-- `sites/eye-care-ward-end/build/qa/triage/mega-brands.json`: 12 hit(s), needles: `sgsClickRippleColour`, `transitionDuration`
-- `sites/eye-care-ward-end/build/qa/triage/mega-help.json`: 20 hit(s), needles: `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/mega-brands.json`: 13 hit(s), needles: `includes/container-bg-hover-zoom.php`, `sgsClickRippleColour`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/mega-help.json`: 22 hit(s), needles: `includes/container-bg-hover-zoom.php`, `transitionDuration`
 - `sites/eye-care-ward-end/build/qa/triage/mega-lenses.json`: 16 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
-- `sites/eye-care-ward-end/build/qa/triage/mega-sunglasses.json`: 20 hit(s), needles: `transitionDuration`
-- `sites/eye-care-ward-end/build/qa/triage/mobile-menu.json`: 78 hit(s), needles: `curtainColour`, `entryDuration`, `entryEasing`, `exitDuration`, `itemStaggerAxis`, `liftHover`, `opacityHover`, `scaleHover`, `scaleHoverTarget`, `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsClickRippleColour` and 3 more
+- `sites/eye-care-ward-end/build/qa/triage/mega-sunglasses.json`: 22 hit(s), needles: `includes/container-bg-hover-zoom.php`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/mobile-menu.json`: 82 hit(s), needles: `curtainColour`, `entryDuration`, `entryEasing`, `exitDuration`, `includes/container-bg-hover-zoom.php`, `itemStaggerAxis`, `liftHover`, `opacityHover`, `scaleHover`, `scaleHoverTarget`, `sgsAnimationDelay`, `sgsAnimationDuration` and 4 more
 - `sites/eye-care-ward-end/build/qa/triage/product.json`: 51 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsClickRippleColour`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverGrayscale`, `sgsHoverImageZoom`, `sgsHoverLift`, `sgsHoverOpacity`, `sgsHoverShadow`, `sgsHoverShadowCustom`
-- `sites/eye-care-ward-end/build/qa/triage/shop.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsClickRippleColour`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverIndent`, `transitionDuration`
+- `sites/eye-care-ward-end/build/qa/triage/shop.json`: 24 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `includes/container-bg-hover-zoom.php`, `sgsClickRippleColour`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverIndent`, `transitionDuration`
 - `sites/eye-care-ward-end/build/single-product.tree.json`: 2 hit(s) at lines 165, 270, needles: `photoEntrance`, `transitionDuration`
 - `theme/sgs-theme/patterns/cta-banner.php`: 1 hit(s) at line 17, needles: `^fx[A-Z0-9]`
 - `theme/sgs-theme/patterns/hero-centred.php`: 1 hit(s) at line 13, needles: `^fx[A-Z0-9]`
@@ -358,21 +370,18 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `theme/sgs-theme/patterns/services-grid.php`: 1 hit(s) at line 18, needles: `^fx[A-Z0-9]`
 - `theme/sgs-theme/patterns/stats-counter.php`: 1 hit(s) at line 12, needles: `^fx[A-Z0-9]`
 
-## G1: 445 hit(s) in 33 file(s)
+## G1: 356 hit(s) in 30 file(s)
 
-- `plugins/sgs-blocks/assets/css/media-atoms/motion.css`: 3 hit(s) at lines 3, 3, 19, needles: `motion.js`, `motion.php`
 - `plugins/sgs-blocks/assets/css/media-element.css`: 3 hit(s) at lines 691, 691, 707, needles: `motion.js`, `motion.php`
-- `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`: 40 hit(s), needles: `SurfaceTreatmentPanel.js`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `animationStyle`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `includes/fx-attributes.php` and 1 more
-- `plugins/sgs-blocks/includes/media/atoms/motion.php`: 8 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`, `src/components/media/atoms/motion.js`
 - `plugins/sgs-blocks/includes/render-helpers.php`: 1 hit(s) at line 221, needles: `motion.php`
+- `plugins/sgs-blocks/scripts/deploy_qa_tier.py`: 1 hit(s) at line 364, needles: `plugins/sgs-blocks/includes/container-bg-hover-zoom.php`
+- `plugins/sgs-blocks/scripts/motion-qa/full-tier-paths.json`: 1 hit(s) at line 20, needles: `plugins/sgs-blocks/includes/container-bg-hover-zoom.php`
 - `plugins/sgs-blocks/src/blocks/container/block.json`: 28 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `sgsAnimation`
 - `plugins/sgs-blocks/src/blocks/container/components/BackgroundPanel.js`: 54 hit(s), needles: `MotionEasingControl`, `SurfaceTreatmentPanel`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed` and 3 more
 - `plugins/sgs-blocks/src/blocks/container/edit.js`: 12 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
 - `plugins/sgs-blocks/src/blocks/container/grid-item-preview.js`: 1 hit(s) at line 124, needles: `sgsHoverShadow`
 - `plugins/sgs-blocks/src/blocks/hero/block.json`: 38 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `sgsAnimation`, `splitMediaAnimationDuration` and 2 more
 - `plugins/sgs-blocks/src/blocks/hero/edit.js`: 37 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgZoomStart`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
-- `plugins/sgs-blocks/src/blocks/hero/render.php`: 20 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgKenBurnsMode`, `bgParallax`, `bgZoomStart`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
-- `plugins/sgs-blocks/src/blocks/hero/style.css`: 6 hit(s), needles: `assets/js/parallax.js`, `bgKenBurns`, `bgParallax`
 - `plugins/sgs-blocks/src/blocks/multi-button/block.json`: 19 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
 - `plugins/sgs-blocks/src/blocks/multi-button/edit.js`: 11 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
 - `plugins/sgs-blocks/src/blocks/physics-canvas/block.json`: 12 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
@@ -383,68 +392,47 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/site-header/edit.js`: 16 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
 - `plugins/sgs-blocks/src/blocks/site-header/section-ink-panel.js`: 2 hit(s) at lines 16, 175, needles: `MotionEasingControl`
 - `plugins/sgs-blocks/src/components/MediaElementControls.js`: 6 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/components/MediaElementPanel.js`: 1 hit(s) at line 54, needles: `motion.control.js`
 - `plugins/sgs-blocks/src/components/media/HeroSplitMediaPanelLayout.js`: 2 hit(s) at lines 5, 5, needles: `bgKenBurns`, `bgParallax`
-- `plugins/sgs-blocks/src/components/media/atoms/motion.control.js`: 5 hit(s) at lines 4, 6, 16, 17, 34, needles: `MediaMotionControls`, `MediaMotionControls.js`, `motion.js`
-- `plugins/sgs-blocks/src/components/media/atoms/motion.js`: 9 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `includes/media/atoms/motion.php`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
+- `plugins/sgs-blocks/src/components/media/atoms/motion.control.js`: 2 hit(s) at lines 16, 34, needles: `MediaMotionControls`, `MediaMotionControls.js`
 - `plugins/sgs-blocks/src/components/media/atoms/opacity.js`: 1 hit(s) at line 70, needles: `motion.php`
 - `plugins/sgs-blocks/src/components/media/atoms/registry.js`: 6 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
 - `plugins/sgs-blocks/src/components/media/atoms/svg-presentation.js`: 2 hit(s) at lines 7, 7, needles: `bgSvgAnimation`, `bgSvgAnimationSpeed`
 - `plugins/sgs-blocks/src/components/media/canvasStyle.js`: 1 hit(s) at line 65, needles: `motion.js`
-- `plugins/sgs-blocks/src/components/media/controls/MediaMotionControls.js`: 6 hit(s), needles: `bgAnimationDuration`, `bgKenBurns`, `bgParallax`, `splitMediaAnimationDuration`, `splitMediaKenBurns`, `splitMediaParallax`
 - `plugins/sgs-blocks/src/shared/effects/fx-svg-loop.js`: 2 hit(s) at lines 19, 19, needles: `bgSvgAnimation`, `svgAnimation`
-- `plugins/sgs-blocks/src/utils/background-preview.js`: 26 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `components/MotionEasingControl`
+- `plugins/sgs-blocks/src/utils/background-preview.js`: 27 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `components/MotionEasingControl`, `includes/container-bg-hover-zoom.php`
+- `scripts/computed-route/tests/triage.test.mjs`: 2 hit(s) at lines 396, 397, needles: `includes/container-bg-hover-zoom.php`, `plugins/sgs-blocks/includes/container-bg-hover-zoom.php`
 
-## G2: 112 hit(s) in 14 file(s)
+## G2: 12 hit(s) in 3 file(s)
 
-- `plugins/sgs-blocks/includes/fx-path-routes.php`: 1 hit(s) at line 38, needles: `svgAnimationSource`
-- `plugins/sgs-blocks/includes/fx-shape-routes.php`: 1 hit(s) at line 67, needles: `svgAnimationSource`
-- `plugins/sgs-blocks/src/blocks/media/block.json`: 5 hit(s) at lines 166, 176, 201, 204, 214, needles: `lottieId`, `lottieSpeed`, `lottieTrigger`, `svgAnimation`, `svgAnimationSpeed`
-- `plugins/sgs-blocks/src/blocks/media/components/LottieCanvas.js`: 2 hit(s) at lines 7, 12, needles: `lottieId`
-- `plugins/sgs-blocks/src/blocks/media/components/SvgCanvas.js`: 5 hit(s) at lines 7, 7, 34, 35, 36, needles: `svgAnimation`, `svgAnimationSpeed`
-- `plugins/sgs-blocks/src/blocks/media/edit.js`: 6 hit(s), needles: `lottieId`, `svgAnimation`, `svgAnimationSpeed`
-- `plugins/sgs-blocks/src/blocks/media/render.php`: 5 hit(s) at lines 100, 1070, 1074, 1177, 1254, needles: `lottieId`, `sgsHoverImageZoom`, `svgAnimation`, `svgAnimationSpeed`
-- `plugins/sgs-blocks/src/blocks/responsive-logo/block.json`: 16 hit(s), needles: `animationStyle`, `animationSubstrate`, `fx.js`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
-- `plugins/sgs-blocks/src/blocks/responsive-logo/edit.js`: 29 hit(s), needles: `animationStyle`, `animationSubstrate`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
-- `plugins/sgs-blocks/src/blocks/responsive-logo/render.php`: 21 hit(s), needles: `animationStyle`, `animationSubstrate`, `includes/hover-effects`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
-- `plugins/sgs-blocks/src/shared/effects/gsap/fx-draw.js`: 1 hit(s) at line 9, needles: `animationStyle`
-- `plugins/sgs-blocks/src/vendor-modules/gsap-drawsvg.js`: 1 hit(s) at line 9, needles: `animationStyle`
-- `plugins/sgs-blocks/tests/php/ResponsiveLogoTest.php`: 9 hit(s), needles: `animationStyle`, `svgAnimationSource`
-- `plugins/sgs-blocks/tests/php/run-lottie-standalone.php`: 10 hit(s), needles: `lottieSpeed`, `lottieTrigger`
+- `plugins/sgs-blocks/src/blocks/responsive-logo/block.json`: 3 hit(s) at lines 88, 88, 171, needles: `animationStyle`, `animationSubstrate`, `svgAnimationSource`
+- `plugins/sgs-blocks/src/blocks/responsive-logo/render.php`: 2 hit(s) at lines 206, 228, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/tests/php/ResponsiveLogoTest.php`: 7 hit(s), needles: `animationStyle`, `animationSubstrate`, `lottieId`, `lottieLoop`, `lottieSpeed`, `lottieTrigger`, `svgAnimationSource`
 
-## G3: 111 hit(s) in 16 file(s)
+## G3: 19 hit(s) in 6 file(s)
 
-- `plugins/sgs-blocks/includes/helpers-trust-bar-marquee.php`: 2 hit(s) at lines 3, 19, needles: `autoScrollBelow`
-- `plugins/sgs-blocks/src/blocks/brand-strip/block.json`: 14 hit(s), needles: `effectHover`, `fadeEdges`, `fadeWidth`, `pauseButton`, `pauseOnHover`, `scrollDirection`, `scrollDuration`, `scrollSpeed`, `scrolling`
-- `plugins/sgs-blocks/src/blocks/brand-strip/edit.js`: 11 hit(s), needles: `effectHover`, `scrolling`
-- `plugins/sgs-blocks/src/blocks/brand-strip/editor.css`: 1 hit(s) at line 3, needles: `scrolling`
-- `plugins/sgs-blocks/src/blocks/brand-strip/render.php`: 7 hit(s), needles: `effectHover`, `scrolling`
+- `plugins/sgs-blocks/src/blocks/brand-strip/block.json`: 1 hit(s) at line 253, needles: `scrolling`
+- `plugins/sgs-blocks/src/blocks/brand-strip/edit.js`: 2 hit(s) at lines 218, 482, needles: `scrolling`
+- `plugins/sgs-blocks/src/blocks/brand-strip/render.php`: 7 hit(s), needles: `scrolling`
 - `plugins/sgs-blocks/src/blocks/brand-strip/style.css`: 2 hit(s) at lines 95, 100, needles: `scrolling`
-- `plugins/sgs-blocks/src/blocks/trust-bar/block.json`: 22 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScroll`, `autoScrollBelow`, `autoScrollDuration`, `autoScrollPauseButton`, `autoScrollPauseOnHover`, `autoScrollSpeed`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgLottieLoop`, `bgParallax` and 2 more
-- `plugins/sgs-blocks/src/blocks/trust-bar/edit-panels.js`: 3 hit(s) at lines 12, 172, 174, needles: `autoScrollBelow`
-- `plugins/sgs-blocks/src/blocks/trust-bar/edit.js`: 20 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScroll`, `autoScrollBelow`, `bgAnimationDuration`, `bgKenBurns`, `bgLottie`, `bgParallax`, `bgSvgAnimation`, `bgSvgAnimationSpeed`
-- `plugins/sgs-blocks/src/blocks/trust-bar/marquee-mode.js`: 3 hit(s) at lines 12, 18, 30, needles: `autoScroll`, `autoScrollBelow`
-- `plugins/sgs-blocks/src/blocks/trust-bar/overflow-drop.js`: 3 hit(s) at lines 17, 17, 30, needles: `autoScrollBelow`, `marquee-mode.js`
-- `plugins/sgs-blocks/src/blocks/trust-bar/render.php`: 6 hit(s), needles: `autoScroll`, `autoScrollBelow`, `includes/helpers-trust-bar-marquee.php`
-- `plugins/sgs-blocks/tests/php/MotionPauseRenderTest.php`: 10 hit(s), needles: `autoScroll`, `autoScrollPauseButton`, `pauseButton`, `scrolling`
-- `plugins/sgs-blocks/tests/php/TrustBarRenderTest.php`: 2 hit(s) at lines 109, 110, needles: `autoScrollBelow`, `autoScrollDuration`
-- `plugins/sgs-blocks/tests/php/TrustBarRenderTrait.php`: 3 hit(s) at lines 76, 77, 78, needles: `autoScroll`, `autoScrollPauseOnHover`, `autoScrollSpeed`
-- `plugins/sgs-blocks/tests/php/TrustBarSafetyTest.php`: 2 hit(s) at lines 29, 217, needles: `autoScrollDuration`, `includes/helpers-trust-bar-marquee.php`
+- `plugins/sgs-blocks/src/blocks/trust-bar/block.json`: 1 hit(s) at line 1000, needles: `autoScroll`
+- `plugins/sgs-blocks/tests/php/MotionPauseRenderTest.php`: 6 hit(s), needles: `pauseButton`
 
 ## G4: 738 hit(s) in 91 file(s)
 
-- `plugins/sgs-blocks/includes/extension-attributes.generated.php`: 1 hit(s) at line 166, needles: `sgsStaggerDelay`
+- `plugins/sgs-blocks/includes/extension-attributes.generated.php`: 1 hit(s) at line 165, needles: `sgsStaggerDelay`
 - `plugins/sgs-blocks/includes/helpers-colour-variants.php`: 1 hit(s) at line 661, needles: `shadowLiftOnHover`
 - `plugins/sgs-blocks/includes/helpers-grid-item.php`: 1 hit(s) at line 176, needles: `shadowLiftOnHover`
 - `plugins/sgs-blocks/includes/helpers-icon-motion.php`: 1 hit(s) at line 86, needles: `shadowLiftOnHover`
 - `plugins/sgs-blocks/includes/helpers-motion-easing.php`: 1 hit(s) at line 6, needles: `burgerMorphEasing`
-- `plugins/sgs-blocks/includes/helpers-shadow-hover.php`: 3 hit(s) at lines 170, 204, 265, needles: `shadowLiftOnHover`
+- `plugins/sgs-blocks/includes/helpers-shadow-hover.php`: 3 hit(s) at lines 170, 204, 289, needles: `shadowLiftOnHover`
 - `plugins/sgs-blocks/includes/helpers-state-motion-model.php`: 5 hit(s) at lines 9, 15, 62, 85, 123, needles: `burgerMorphDuration`, `countPopAnimation`
 - `plugins/sgs-blocks/includes/helpers-tokens.php`: 2 hit(s) at lines 1466, 1477, needles: `transitionDuration`, `transitionEasing`
 - `plugins/sgs-blocks/includes/media/atoms/shadow.php`: 1 hit(s) at line 67, needles: `shadowLiftOnHover`
-- `plugins/sgs-blocks/src/blocks/buybox/block.json`: 1 hit(s) at line 868, needles: `photoEntrance`
+- `plugins/sgs-blocks/src/blocks/buybox/block.json`: 1 hit(s) at line 872, needles: `photoEntrance`
 - `plugins/sgs-blocks/src/blocks/buybox/inspector-extra.js`: 3 hit(s) at lines 32, 65, 71, needles: `photoEntrance`
 - `plugins/sgs-blocks/src/blocks/buybox/render.php`: 1 hit(s) at line 660, needles: `photoEntrance`
-- `plugins/sgs-blocks/src/blocks/buybox/style.css`: 1 hit(s) at line 791, needles: `photoEntrance`
+- `plugins/sgs-blocks/src/blocks/buybox/style.css`: 1 hit(s) at line 774, needles: `photoEntrance`
 - `plugins/sgs-blocks/src/blocks/card-grid/block.json`: 22 hit(s), needles: `assets/js/animation-entrance-timing.js`, `bgParallax`, `effectHover`, `imageZoomHover`, `includes/animation-stagger.php`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `staggerDelay`
 - `plugins/sgs-blocks/src/blocks/card-grid/components/CardGridCanvas.js`: 2 hit(s) at lines 14, 137, needles: `effectHover`
 - `plugins/sgs-blocks/src/blocks/card-grid/components/CardGridHoverEffectsPanel.js`: 12 hit(s), needles: `imageZoomHover`, `staggerDelay`
@@ -453,11 +441,11 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/card-grid/render.php`: 4 hit(s) at lines 81, 110, 376, 377, needles: `effectHover`, `imageZoomHover`, `includes/animation-stagger.php`, `staggerDelay`
 - `plugins/sgs-blocks/src/blocks/cart/PanelDesignControls.js`: 2 hit(s) at lines 4, 171, needles: `MotionEasingControl`
 - `plugins/sgs-blocks/src/blocks/cart/TriggerSettingsControls.js`: 4 hit(s) at lines 24, 36, 103, 109, needles: `countPopAnimation`
-- `plugins/sgs-blocks/src/blocks/cart/block.json`: 2 hit(s) at lines 847, 1266, needles: `MotionEasingControl`, `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/cart/block.json`: 2 hit(s) at lines 873, 1292, needles: `MotionEasingControl`, `countPopAnimation`
 - `plugins/sgs-blocks/src/blocks/cart/count-pop.js`: 1 hit(s) at line 5, needles: `countPopAnimation`
 - `plugins/sgs-blocks/src/blocks/cart/edit.js`: 2 hit(s) at lines 73, 156, needles: `countPopAnimation`
 - `plugins/sgs-blocks/src/blocks/cart/render.php`: 1 hit(s) at line 86, needles: `countPopAnimation`
-- `plugins/sgs-blocks/src/blocks/cart/style.css`: 1 hit(s) at line 190, needles: `countPopAnimation`
+- `plugins/sgs-blocks/src/blocks/cart/style.css`: 1 hit(s) at line 170, needles: `countPopAnimation`
 - `plugins/sgs-blocks/src/blocks/decorative-image/block.json`: 4 hit(s) at lines 45, 49, 49, 124, needles: `parallaxStrength`, `sgsAnimation`
 - `plugins/sgs-blocks/src/blocks/decorative-image/edit.js`: 3 hit(s) at lines 41, 339, 340, needles: `parallaxStrength`
 - `plugins/sgs-blocks/src/blocks/decorative-image/render.php`: 5 hit(s) at lines 89, 410, 411, 413, 416, needles: `^fx[A-Z0-9]`, `includes/fx-attributes.php`, `parallaxStrength`
@@ -481,7 +469,7 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/post-grid/components/HoverEffectsPanel.js`: 2 hit(s) at lines 12, 22, needles: `imageZoomHover`
 - `plugins/sgs-blocks/src/blocks/post-grid/render.php`: 1 hit(s) at line 149, needles: `imageZoomHover`
 - `plugins/sgs-blocks/src/blocks/pricing-table/block.json`: 10 hit(s), needles: `bgParallax`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
-- `plugins/sgs-blocks/src/blocks/product-card/render.php`: 1 hit(s) at line 1036, needles: `includes/hover-effects`
+- `plugins/sgs-blocks/src/blocks/product-card/render.php`: 1 hit(s) at line 1038, needles: `includes/hover-effects`
 - `plugins/sgs-blocks/src/blocks/site-footer-row/block.json`: 29 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`, `fxFooterStagger`
 - `plugins/sgs-blocks/src/blocks/site-footer-row/edit.js`: 69 hit(s), needles: `CursorFieldRowControls`, `FlowingGradientRowControls`, `GridDotFieldRowControls`, `ParticleTrailRowControls`, `^fx[A-Z0-9]`, `components/CursorFieldRowControls`, `components/FlowingGradientRowControls`, `components/GridDotFieldRowControls`, `components/ParticleTrailRowControls`, `fx.js`, `fxFooterStagger`
 - `plugins/sgs-blocks/src/blocks/site-footer-row/render.php`: 33 hit(s), needles: `^fx[A-Z0-9]`, `fx.js`, `fxFooterStagger`, `includes/fx-attributes.php`
@@ -491,13 +479,13 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/social-icons/block.json`: 14 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `childIconTransitionEasingCustom`
 - `plugins/sgs-blocks/src/blocks/social-icons/group-motion.js`: 12 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `childIconTransitionEasingCustom`
 - `plugins/sgs-blocks/src/blocks/social-icons/render.php`: 9 hit(s), needles: `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover`, `childIconTransitionDuration`, `childIconTransitionEasing`, `childIconTransitionEasingCustom`
-- `plugins/sgs-blocks/src/blocks/team-member/block.json`: 5 hit(s) at lines 116, 364, 380, 384, 388, needles: `imageZoomHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
+- `plugins/sgs-blocks/src/blocks/team-member/block.json`: 5 hit(s) at lines 115, 367, 383, 387, 391, needles: `imageZoomHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`
 - `plugins/sgs-blocks/src/blocks/team-member/edit.js`: 6 hit(s), needles: `imageZoomHover`
 - `plugins/sgs-blocks/src/blocks/team-member/render.php`: 2 hit(s) at lines 130, 784, needles: `imageZoomHover`, `includes/hover-effects`
 - `plugins/sgs-blocks/src/blocks/testimonial/block.json`: 16 hit(s), needles: `bgParallax`, `effectHover`, `sgsAnimation`, `sgsAnimationDuration`, `sgsAnimationEasing`, `shadowHoverColour`, `staggerDelay`
 - `plugins/sgs-blocks/src/blocks/testimonial/edit.js`: 14 hit(s), needles: `effectHover`, `shadowHoverColour`, `staggerDelay`
 - `plugins/sgs-blocks/src/blocks/testimonial/render.php`: 4 hit(s) at lines 173, 178, 179, 633, needles: `effectHover`, `shadowHoverColour`, `staggerDelay`
-- `plugins/sgs-blocks/src/blocks/timeline/block.json`: 3 hit(s) at lines 409, 413, 421, needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
+- `plugins/sgs-blocks/src/blocks/timeline/block.json`: 3 hit(s) at lines 411, 415, 423, needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
 - `plugins/sgs-blocks/src/blocks/timeline/edit.js`: 13 hit(s), needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
 - `plugins/sgs-blocks/src/blocks/timeline/render.php`: 5 hit(s) at lines 6, 127, 128, 154, 814, needles: `revealOnScroll`, `revealStagger`, `revealTrigger`
 - `plugins/sgs-blocks/src/blocks/timeline/style.scss`: 1 hit(s) at line 1723, needles: `revealTrigger`
@@ -540,11 +528,11 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`: 25 hit(s), needles: `MotionEasingControl`, `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration` and 2 more
 - `plugins/sgs-blocks/src/blocks/nav-bar-menu/edit.js`: 8 hit(s), needles: `MotionEasingControl`, `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`
 - `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`: 14 hit(s), needles: `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuAnimationEasingCustom`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDistance`, `submenuItemStaggerDuration`, `submenuItemStaggerMax` and 1 more
-- `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css`: 4 hit(s) at lines 331, 331, 492, 678, needles: `burgerMorphDuration`, `burgerMorphEasing`, `submenuAnimation`, `submenuItemStaggerScope`
+- `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css`: 4 hit(s) at lines 326, 326, 484, 670, needles: `burgerMorphDuration`, `burgerMorphEasing`, `submenuAnimation`, `submenuItemStaggerScope`
 - `plugins/sgs-blocks/src/blocks/nav-drawer-menu/ExpanderCaretControls.js`: 2 hit(s) at lines 3, 111, needles: `MotionEasingControl`
 - `plugins/sgs-blocks/src/blocks/nav-drawer-menu/SectionMotionPanel.js`: 3 hit(s) at lines 5, 17, 90, needles: `MotionEasingControl`, `PanelMotionPanel`
 - `plugins/sgs-blocks/src/blocks/nav-drawer-menu/edit.js`: 2 hit(s) at lines 69, 748, needles: `SectionMotionPanel`
-- `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css`: 1 hit(s) at line 630, needles: `motion.php`
+- `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css`: 1 hit(s) at line 615, needles: `motion.php`
 - `plugins/sgs-blocks/src/blocks/nav-drawer/ItemEntranceControls.js`: 9 hit(s), needles: `MotionPanel.js`, `includes/helpers-nav-drawer-stagger-shape.php`, `itemStaggerAxis`, `itemStaggerReveal`
 - `plugins/sgs-blocks/src/blocks/nav-drawer/MotionPanel.js`: 41 hit(s), needles: `ItemEntranceControls`, `MotionEasingControl`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerDistance`, `itemStaggerDuration`, `itemStaggerMax` and 2 more
 - `plugins/sgs-blocks/src/blocks/nav-drawer/block.json`: 22 hit(s), needles: `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryEasingCustom`, `entryFade`, `exitDuration`, `includes/helpers-nav-drawer-stagger-shape.php`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance`, `itemStaggerDuration` and 4 more
@@ -555,22 +543,22 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `plugins/sgs-blocks/tests/php/run-motion-nav-bar-panels-standalone.php`: 1 hit(s) at line 135, needles: `submenuItemStagger`
 - `plugins/sgs-blocks/tests/php/run-u5-motion-standalone.php`: 27 hit(s), needles: `MotionPanel`, `MotionPanel.js`, `PanelMotionPanel`, `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerDistance`, `itemStaggerMax` and 4 more
 
-## M6.7-docs: 491 hit(s) in 29 file(s)
+## M6.7-docs: 511 hit(s) in 29 file(s)
 
-- `.claude/LEDGER.md`: 2 hit(s) at lines 67, 109, needles: `autoScroll`, `splitMediaParallax`
-- `.claude/catalogues/helpers.md`: 14 hit(s), needles: `AnimationControl.js`, `CursorFieldRowControls.js`, `EntranceStaggerControls.js`, `FlowingGradientRowControls.js`, `GridDotFieldRowControls.js`, `MotionEasingControl.js`, `ParticleTrailRowControls.js`, `SurfaceTreatmentPanel.js`, `autoScrollBelow`, `entryAnimation`, `includes/helpers-nav-drawer-stagger-shape.php`, `includes/helpers-trust-bar-marquee.php` and 2 more
-- `.claude/catalogues/tooling.md`: 4 hit(s) at lines 144, 1334, 1552, 1806, needles: `itemStaggerOnClose`, `sgsAnimationStart`, `shadowLiftOnHover`
+- `.claude/catalogues/helpers.md`: 15 hit(s), needles: `AnimationControl.js`, `CursorFieldRowControls.js`, `EntranceStaggerControls.js`, `FlowingGradientRowControls.js`, `GridDotFieldRowControls.js`, `MotionEasingControl.js`, `ParticleTrailRowControls.js`, `SurfaceTreatmentPanel.js`, `autoScrollBelow`, `entryAnimation`, `includes/helpers-nav-drawer-stagger-shape.php`, `includes/helpers-trust-bar-marquee.php` and 3 more
+- `.claude/catalogues/tooling.md`: 4 hit(s) at lines 144, 1362, 1593, 1862, needles: `itemStaggerOnClose`, `sgsAnimationStart`, `shadowLiftOnHover`
 - `.claude/dev-setup.md`: 1 hit(s) at line 156, needles: `fx.js`
+- `.claude/gap-analysis/reports/2026-10-12-motion-system-research.md`: 13 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation-stagger.php`, `sgsHoverDuration`, `sgsHoverEasing`, `sgsHoverShadow`, `shadowLiftOnHover`
+- `.claude/gap-analysis/reports/2026-10-12-spec38a-motion-build-plan.md`: 8 hit(s), needles: `animation-entrance-timing.js`, `animation.js`, `fx.js`, `sgsAnimation`, `sgsAnimationStart`
 - `.claude/plans/2026-10-01-header-nav-thread-plan.md`: 1 hit(s) at line 60, needles: `scaleHover`
 - `.claude/plans/2026-10-02-eye-care-fix-register.md`: 9 hit(s), needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgAnimationDuration`, `bgKenBurnsMode`, `bgParallax`, `bgZoomStart`, `includes/hover-effects`, `photoEntrance`, `staggerInsideGroups`, `transitionDuration`
 - `.claude/plans/2026-10-02-eye-care-plan.md`: 2 hit(s) at lines 36, 104, needles: `staggerInsideGroups`, `transitionDuration`
-- `.claude/plans/2026-10-04-spec47-full-coverage.md`: 5 hit(s) at lines 32, 32, 75, 238, 240, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `bgKenBurnsMode`, `bgZoomStart`, `childIconTransitionDuration`, `sgsAnimationStart`
+- `.claude/plans/2026-10-05-eye-care-functionality-backlog.md`: 2 hit(s) at lines 100, 100, needles: `imageZoomHover`, `scaleHover`
 - `.claude/plans/2026-10-11-spec48-indus-build.md`: 1 hit(s) at line 78, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`
 - `.claude/plans/2026-10-12-clone-coverage-foundation.md`: 3 hit(s) at lines 25, 25, 25, needles: `sgsHoverShadow`, `shadowHoverColour`, `shadowLiftOnHover`
-- `.claude/plans/2026-10-12-spec38a-motion-build.md`: 47 hit(s), needles: `AnimationControl.js`, `EntranceStaggerControls.js`, `MotionEasingControl.js`, `^fx[A-Z0-9]`, `animation.js`, `assets/js/animation-entrance-timing.js`, `assets/js/parallax.js`, `assets/js/tilt-3d.js`, `components/media/atoms/motion`, `fx-presets.json`, `fx.js`, `imageZoomHover` and 16 more
-- `.claude/plans/2026-10-13-indus-review-block-builds.md`: 2 hit(s) at lines 31, 42, needles: `FlowingGradientRowControls`
+- `.claude/plans/2026-10-12-spec38a-motion-build.md`: 51 hit(s), needles: `AnimationControl.js`, `EntranceStaggerControls.js`, `MotionEasingControl.js`, `^fx[A-Z0-9]`, `animation.js`, `assets/css/media-atoms/motion.css`, `assets/js/animation-entrance-timing.js`, `assets/js/parallax.js`, `assets/js/tilt-3d.js`, `components/media/atoms/motion`, `fx-presets.json`, `fx.js` and 19 more
 - `.claude/specs/00-naming-conventions.md`: 2 hit(s) at lines 99, 106, needles: `scaleHover`
-- `.claude/specs/02-SGS-BLOCKS.md`: 68 hit(s), needles: `AnimationControl.js`, `MotionEasingControl`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation.js`, `assets/js/animation-entrance-timing.js`, `assets/js/parallax.js`, `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover` and 43 more
+- `.claude/specs/02-SGS-BLOCKS.md`: 69 hit(s), needles: `AnimationControl.js`, `MotionEasingControl`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `animation.js`, `assets/js/animation-entrance-timing.js`, `assets/js/parallax.js`, `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconPaintDuration`, `childIconRotateHover`, `childIconScaleHover`, `childIconShadowLiftOnHover` and 44 more
 - `.claude/specs/11-SGS-BUTTON-ARCHITECTURE.md`: 1 hit(s) at line 43, needles: `liftHover`
 - `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`: 2 hit(s) at lines 320, 320, needles: `animation-attributes.php`, `parallax.php`
 - `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`: 3 hit(s) at lines 409, 512, 568, needles: `AnimationControl`, `MotionEasingControl`, `shadowLiftOnHover`
@@ -578,16 +566,16 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`: 42 hit(s), needles: `animationSubstrate`, `burgerMorphDuration`, `burgerMorphEasing`, `curtainColour`, `entryAnimation`, `entryDuration`, `entryEasing`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerAxis`, `itemStaggerDistance` and 21 more
 - `.claude/specs/37-HEADER-FOOTER-BUILDER.md`: 4 hit(s) at lines 449, 449, 449, 449, needles: `^fx[A-Z0-9]`, `fxFooterStagger`, `plugins/sgs-blocks/includes/animation-attributes.php`, `sgsAnimation`
 - `.claude/specs/38-SGS-MOTION-SYSTEM.md`: 50 hit(s), needles: `^fx[A-Z0-9]`, `animation.js`, `animationStyle`, `assets/js/animation-entrance-timing.js`, `fx-attributes.php`, `fx.js`, `plugins/sgs-blocks/includes/animation-attributes.php`, `plugins/sgs-blocks/src/blocks/extensions/fx.js`, `plugins/sgs-blocks/src/components/MotionEasingControl.js`, `sgsAnimation`, `src/blocks/extensions/fx.js`, `svgAnimationSource` and 1 more
-- `.claude/specs/38A-SGS-MOTION-MODEL.md`: 203 hit(s), needles: `AnimationControl.js`, `EntranceStaggerControls.js`, `MotionEasingControl.js`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `animation-entrance-timing.js`, `animation-stagger.php`, `animationStyle`, `animationSubstrate`, `assets/js/parallax.js`, `assets/js/ripple.js`, `assets/js/tilt-3d.js` and 124 more
-- `.claude/specs/48-CLONING-SYSTEM.md`: 5 hit(s) at lines 175, 276, 289, 1453, 1453, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScroll`, `fadeEdges`, `sgsAnimation`, `src/blocks/extensions/animation.js`
+- `.claude/specs/38A-SGS-MOTION-MODEL.md`: 202 hit(s), needles: `AnimationControl.js`, `EntranceStaggerControls.js`, `MotionEasingControl.js`, `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `^fx[A-Z0-9]`, `animation-entrance-timing.js`, `animation-stagger.php`, `animationStyle`, `animationSubstrate`, `assets/js/parallax.js`, `assets/js/ripple.js`, `assets/js/tilt-3d.js` and 123 more
+- `.claude/specs/48-CLONING-SYSTEM.md`: 5 hit(s) at lines 175, 276, 289, 1474, 1474, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `autoScroll`, `fadeEdges`, `sgsAnimation`, `src/blocks/extensions/animation.js`
 - `.claude/specs/common-wp-styling-errors.md`: 2 hit(s) at lines 26, 42, needles: `sgsAnimation`, `transitionDuration`
 - `plugins/sgs-blocks/CLAUDE.md`: 2 hit(s) at lines 67, 70, needles: `AnimationControl`, `animation.js`
 - `plugins/sgs-blocks/scripts/nav-qa/README.md`: 2 hit(s) at lines 401, 401, needles: `^fx[A-Z0-9]`, `fxFooterStagger`
 - `plugins/sgs-blocks/tests/fixtures/motion/pages/README.md`: 1 hit(s) at line 6, needles: `sgsHoverTilt3D`
 - `plugins/sgs-blocks/tests/fixtures/motion/rotate-council/rotate.md`: 3 hit(s) at lines 88, 95, 95, needles: `assets/js/tilt-3d.js`, `src/blocks/extensions/hover-effects`
-- `scripts/computed-route/README.md`: 4 hit(s) at lines 152, 192, 587, 883, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `sgsAnimationStart`
+- `scripts/computed-route/README.md`: 5 hit(s) at lines 152, 192, 587, 883, 883, needles: `^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)`, `container-bg-hover-zoom.php`, `sgsAnimationStart`
 
-## keep: 2228 hit(s) in 94 file(s)
+## keep: 2245 hit(s) in 96 file(s)
 
 - `.claude/backups/2026-07-15-track-b/REGISTER.md`: 1 hit(s) at line 72, needles: `sgsClickEffect`
 - `.claude/backups/2026-07-15-track-b/current-state/palestine-lives/13.txt`: 7 hit(s), needles: `scrolling`, `sgsAnimationDelay`
@@ -629,6 +617,8 @@ The build trees are partly tracked: 177 file(s) are tracked and were searched wi
 - `.claude/backups/2026-08-29-button-rename/2742.txt`: 6 hit(s), needles: `effectHover`
 - `.claude/backups/2026-08-29-button-rename/2849.txt`: 7 hit(s), needles: `effectHover`
 - `.claude/backups/2026-08-29-button-rename/2884.txt`: 7 hit(s), needles: `effectHover`
+- `.claude/backups/2026-10-17-s6/sandybrown/3777.txt`: 10 hit(s), needles: `burgerMorphDuration`, `burgerMorphEasing`, `burgerMorphEasingCustom`, `submenuAnimation`, `submenuAnimationDuration`, `submenuAnimationEasing`, `submenuExitDuration`, `submenuItemStagger`, `submenuItemStaggerDuration`, `submenuItemStaggerMax`
+- `.claude/backups/2026-10-17-s6/sandybrown/3778.txt`: 7 hit(s), needles: `entryAnimation`, `entryDuration`, `entryEasing`, `entryFade`, `exitDuration`, `itemStagger`, `itemStaggerMax`
 - `.claude/backups/page-13-content-2026-07-17-brandstrip.html`: 1 hit(s) at line 1, needles: `sgsAnimationDelay`
 - `.claude/backups/page-13-content-2026-07-18-preMigration.html`: 9 hit(s), needles: `effectHover`, `scrollSpeed`, `scrolling`, `sgsAnimationDelay`
 - `.claude/memory/consolidated-2026-04-29/2026-02-21-master-feature-audit.md`: 6 hit(s), needles: `animation.js`
@@ -695,19 +685,19 @@ These rules assign a class of hit on a reading the unit map does not state: the 
 - `plugins/sgs-blocks/includes/motion/migrate/**` goes to keep (756 hit(s)): the sweep tool (Spec 38A section 13, M6.1 to M6.4) reads the old attribute names to translate stored content, so no removal group edits it
 - `plugins/sgs-blocks/tests/php/run-motion-map-*-standalone.php` goes to keep (981 hit(s)): these tests feed old attributes to the migration mappers on purpose
 - `plugins/sgs-blocks/tests/php/run-motion-migrate-standalone.php` goes to keep (16 hit(s)): this test feeds old attributes to the sweep tool on purpose
-- `.claude/backups/**` goes to keep (353 hit(s)): dated backups of stored content are history, not live code or docs
+- `.claude/backups/**` goes to keep (370 hit(s)): dated backups of stored content are history, not live code or docs
 - `.claude/scratch/**` goes to keep (89 hit(s)): retired scratch output is history, not live code or docs
 - `.claude/memory/**` goes to keep (13 hit(s)): dated memory snapshots are history, not live docs
 - `.claude/verify/**` goes to keep (12 hit(s)): dated verification records are history, not live docs
 - `plugins/sgs-blocks/reports/**` goes to keep (8 hit(s)): dated plugin reports and census outputs are history, not live code
-- `.claude/**` goes to M6.7-docs (303 hit(s)): a live spec, plan, rule, catalogue or ledger that cites deleted code is a doc consumer; the plan names only Specs 36, 37, 38, 48, 02, 35A and dev-setup, M6.7 is the doc sweep
-- `**/*.md` goes to M6.7-docs (12 hit(s)): a README or CLAUDE.md that cites deleted code is a doc consumer for the M6.7 doc sweep
+- `.claude/**` goes to M6.7-docs (321 hit(s)): a live spec, plan, rule, catalogue or ledger that cites deleted code is a doc consumer; the plan names only Specs 36, 37, 38, 48, 02, 35A and dev-setup, M6.7 is the doc sweep
+- `**/*.md` goes to M6.7-docs (13 hit(s)): a README or CLAUDE.md that cites deleted code is a doc consumer for the M6.7 doc sweep
 - `plugins/sgs-blocks/scripts/** attribute` goes to G0 (5727 hit(s)): gates, goldens, baselines and tooling that list old attribute names are shared infrastructure, the same class the unit map gives G0 for scripts naming G0 files
 - `plugins/sgs-blocks/* attribute` goes to G0 (3 hit(s)): the plugin build and bootstrap files (webpack config, package files) are shared infrastructure
 - `scripts/** attribute` goes to G0 (42 hit(s)): the cloning pipeline and parity tooling that name old attributes are fixed by the G0 cloning-writer change
-- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute ['entrance', 'hover', 'tilt', 'ripple', 'parallax', 'fx']` goes to G0 (355 hit(s)): the flat fx, entrance, hover, tilt, ripple and parallax attributes are unregistered with their G0 extensions (FR-38A-22, FR-38A-43), so a block named in no group list takes the same group
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute ['entrance', 'hover', 'tilt', 'ripple', 'parallax', 'fx']` goes to G0 (350 hit(s)): the flat fx, entrance, hover, tilt, ripple and parallax attributes are unregistered with their G0 extensions (FR-38A-22, FR-38A-43), so a block named in no group list takes the same group
 - `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute looping-media` goes to G1 (4 hit(s)): the looping background and media attributes are G1 (background and split-media blocks)
-- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute lottie-logo` goes to G2 (23 hit(s)): the logo and media Lottie attributes are G2 (media and logo)
-- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute marquee` goes to G3 (15 hit(s)): the marquee attributes are G3 (marquees)
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute lottie-logo` goes to G2 (7 hit(s)): the logo and media Lottie attributes are G2 (media and logo)
+- `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute marquee` goes to G3 (6 hit(s)): the marquee attributes are G3 (marquees)
 - `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute ['block-reveals', 'icon', 'state']` goes to G4 (219 hit(s)): per-block reveal, icon hover and state-change attributes are G4 (per-block reveals and state); icon and social-icons are named in no group list
 - `plugins/sgs-blocks/{src,includes,assets,tests}/** attribute ['nav-drawer', 'nav-bar']` goes to G5 (60 hit(s)): the drawer and submenu attributes are G5 (nav)
