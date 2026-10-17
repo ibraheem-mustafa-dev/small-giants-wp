@@ -20,6 +20,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "b_equal_sides": {
@@ -48,6 +54,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "c_unequal_dashed_raw": {
@@ -76,6 +88,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "d_style_none": {
@@ -103,6 +121,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "e_widths_no_colour": {
@@ -130,6 +154,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "f_colour_no_widths": {
@@ -156,6 +186,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "g_gradient": {
@@ -199,6 +235,12 @@
             "padding:3px",
             "pointer-events:none",
             "position:absolute"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "j_radius_uniform": {
@@ -225,6 +267,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ]
     },
     "k_radius_tiers": {
@@ -254,6 +302,12 @@
             "pointer-events:none",
             "position:absolute",
             "z-index:-1"
+        ],
+        " || :where(.sgs-container-UID)": [
+            "box-sizing:border-box",
+            "width:-moz-available",
+            "width:-webkit-fill-available",
+            "width:stretch"
         ],
         "@media(max-width:1023px) || .sgs-gallery-UID.wp-block-sgs-gallery": [
             "border-top-left-radius:6px"
