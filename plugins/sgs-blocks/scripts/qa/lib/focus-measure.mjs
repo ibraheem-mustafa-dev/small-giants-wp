@@ -287,7 +287,9 @@ function clipFor( rect, viewport ) {
  * Runs in the page: for each sample point, whether the topmost element there is the focused target, one of its ancestors
  * (the page ground) or one of its descendants. A point where another element sits on top is a neighbour's box (its fill
  * would be read as the ground, or it would paint over the ring) and is not usable. Returns, per point, null when usable
- * or { blocked, neighbour } naming the element in the way; a point outside the viewport is `off-screen`.
+ * or { blocked, neighbour } naming the element in the way; a point outside the viewport is `off-screen`, and one outside
+ * the padding box of an ancestor that clips (a horizontal product scroller cutting a card off) is `clipped`: nothing the
+ * target paints can show there, so the pixel there is the page beyond the clip, not the ring.
  */
 function hitTestPoints( points ) {
 	const { target, el } = window.__fp;
@@ -298,8 +300,22 @@ function hitTestPoints( points ) {
 	// A focus source measured on its proxy is visually hidden and paints nothing (the before-after range lies over the
 	// whole stage, handle included), so the hit test looks through it to what paints at the point.
 	const seeThrough = el !== target ? el : null;
+	const clipBoxes = [];
+	for ( let a = target.parentElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement ) {
+		const cs = getComputedStyle( a );
+		const contained = /paint|content|strict/.test( cs.contain ) || cs.clipPath !== 'none';
+		const cx = contained || cs.overflowX !== 'visible';
+		const cy = contained || cs.overflowY !== 'visible';
+		if ( ! cx && ! cy ) continue;
+		const ar = a.getBoundingClientRect();
+		const l = ar.left + a.clientLeft;
+		const t = ar.top + a.clientTop;
+		clipBoxes.push( { l: cx ? l : -Infinity, r: cx ? l + a.clientWidth : Infinity, t: cy ? t : -Infinity, b: cy ? t + a.clientHeight : Infinity, name: describe( a ) } );
+	}
 	return points.map( ( [ x, y ] ) => {
 		if ( x < 0 || y < 0 || x >= vw || y >= vh ) return { blocked: 'off-screen', neighbour: false };
+		const cut = clipBoxes.find( ( c ) => x < c.l || x >= c.r || y < c.t || y >= c.b );
+		if ( cut ) return { blocked: `clipped by ${ cut.name }`, neighbour: false };
 		const top = document.elementsFromPoint( x, y ).find( ( n ) => n !== seeThrough );
 		if ( ! top || top === target || top.contains( target ) || target.contains( top ) ) return null;
 		return { blocked: describe( top ), neighbour: top.matches( focusable ) || Boolean( top.closest( focusable ) ) };
