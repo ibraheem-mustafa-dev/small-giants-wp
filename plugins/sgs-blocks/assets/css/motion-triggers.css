@@ -9,6 +9,11 @@
  *   data-sgs-me="open <channels>"      a part a disclosure opens (renderer)
  *   data-sgs-me="state <channels>"     a part that plays on a named block state (renderer)
  *   --sgs-me-close-to-<x>              the close to-values (renderer, per device; each falls back to the from-value)
+ *   --sgs-me-to-bg, --sgs-me-to-fg, --sgs-me-to-bd
+ *                                      the colour to-values (renderer, once for every device): the background, text and
+ *                                      border colour an open or state entrance changes to. The renderer's per-instance
+ *                                      rules read them into background-color, color and border-color while the state is
+ *                                      on (Sgs_Motion_Trigger_Open_State); the colour changes at once.
  *   --sgs-me-close-dur, --sgs-me-close-delay, --sgs-me-close-ease
  *                                      the close timing (renderer, per device; the close delay is per item)
  *   --sgs-me-loop-close-delay          a loop item's close delay, inheriting, for the entrances inside the item
@@ -45,6 +50,9 @@
 @property --sgs-me-close-to-clip-r { syntax: '*'; inherits: false; }
 @property --sgs-me-close-to-clip-b { syntax: '*'; inherits: false; }
 @property --sgs-me-close-to-clip-l { syntax: '*'; inherits: false; }
+@property --sgs-me-to-bg { syntax: '*'; inherits: false; }
+@property --sgs-me-to-fg { syntax: '*'; inherits: false; }
+@property --sgs-me-to-bd { syntax: '*'; inherits: false; }
 @property --sgs-me-close-dur { syntax: '*'; inherits: false; }
 @property --sgs-me-close-delay { syntax: '*'; inherits: false; }
 @property --sgs-me-close-ease { syntax: '*'; inherits: false; }
@@ -169,7 +177,9 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	/* The name lists: the opening list reuses motion.css's per-channel entrance names; the close list is its twin. */
+	/* The name lists: the opening list reuses motion.css's per-channel entrance names; the close list is its twin. An `open`
+	   entrance plays it when its host closes; a `state` entrance with stored close values plays it under `<name>-out`
+	   (the per-instance rule `Sgs_Motion_Trigger_Open_State` prints). */
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"]) {
 		--sgs-mt-c-translate: none;
 		--sgs-mt-c-rotate: none;
@@ -182,13 +192,13 @@
 		--sgs-mt-out: var(--sgs-base-animation-name, none), var(--sgs-mt-c-translate), var(--sgs-mt-c-rotate), var(--sgs-mt-c-transform), var(--sgs-mt-c-scale), var(--sgs-mt-c-opacity), var(--sgs-mt-c-filter), var(--sgs-mt-c-clip-path);
 		--sgs-me-a-fill: both;
 	}
-	[data-sgs-me~="open"][data-sgs-me~="translate"] { --sgs-mt-c-translate: sgs-me-close-translate; }
-	[data-sgs-me~="open"][data-sgs-me~="rotate"] { --sgs-mt-c-rotate: sgs-me-close-rotate; }
-	[data-sgs-me~="open"][data-sgs-me~="transform"] { --sgs-mt-c-transform: sgs-me-close-transform; }
-	[data-sgs-me~="open"][data-sgs-me~="scale"] { --sgs-mt-c-scale: sgs-me-close-scale; }
-	[data-sgs-me~="open"][data-sgs-me~="opacity"] { --sgs-mt-c-opacity: sgs-me-close-opacity; }
-	[data-sgs-me~="open"][data-sgs-me~="filter"] { --sgs-mt-c-filter: sgs-me-close-filter; }
-	[data-sgs-me~="open"][data-sgs-me~="clip-path"] { --sgs-mt-c-clip-path: sgs-me-close-clip-path; }
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="translate"] { --sgs-mt-c-translate: sgs-me-close-translate; }
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="rotate"] { --sgs-mt-c-rotate: sgs-me-close-rotate; }
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="transform"] { --sgs-mt-c-transform: sgs-me-close-transform; }
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="scale"] { --sgs-mt-c-scale: sgs-me-close-scale; }
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="opacity"] { --sgs-mt-c-opacity: sgs-me-close-opacity; }
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="filter"] { --sgs-mt-c-filter: sgs-me-close-filter; }
+	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="clip-path"] { --sgs-mt-c-clip-path: sgs-me-close-clip-path; }
 
 	/* A step change backwards: the state entrance's translate plays mirrored (on the host or inside it). */
 	[data-sgs-me~="state"][data-sgs-me~="translate"]:not([data-sgs-me-keyframes]):is([data-sgs-dir="back"], [data-sgs-dir="back"] *) {
