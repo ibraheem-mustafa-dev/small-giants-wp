@@ -182,7 +182,13 @@ export function coverageMissing( { skeletonRows = [], census = { rows: [] }, cov
 		s.count++;
 		seen.set( id, s );
 	};
-	skeletonRows.filter( ( r ) => r.tag && ! [ 'remove', 'absorbed' ].includes( r.action ) ).forEach( ( r ) => note( `html:${ String( r.tag ).toLowerCase() }`, r.draftId || draftIdOfKey( r.key ) || r.key ) );
+	// A hyphenated tag the map does not hold is a custom element the draft defines: one capability, as the usage read
+	// counts it (lib/intake-usage.mjs::elementUsage), never the component's own name.
+	const tagId = ( tag ) => {
+		const id = `html:${ String( tag ).toLowerCase() }`;
+		return id.includes( '-' ) && ! coverage.entries?.[ id ] ? 'html:custom-element' : id;
+	};
+	skeletonRows.filter( ( r ) => r.tag && ! [ 'remove', 'absorbed' ].includes( r.action ) ).forEach( ( r ) => note( tagId( r.tag ), r.draftId || draftIdOfKey( r.key ) || r.key ) );
 	census.rows.forEach( ( r ) => note( `construct:${ r.kind }`, r.draftId || r.id ) );
 	for ( const [ id, u ] of usage || [] ) {
 		if ( ! seen.has( id ) ) {

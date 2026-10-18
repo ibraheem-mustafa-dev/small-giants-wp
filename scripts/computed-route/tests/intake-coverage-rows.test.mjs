@@ -23,7 +23,7 @@ const CENSUS = { rows: [ { id: 'timer@Home:7', kind: 'timer', draftId: 'Home:7' 
 
 test( 'POSITIVE: one row per uncovered capability with its count; covered and removed elements raise nothing', () => {
 	const rows = coverageMissing( { skeletonRows: SKELETON, census: CENSUS, coverage: COVERAGE } );
-	assert.deepEqual( rows.map( ( r ) => [ r.construct, r.count, r.draftId ] ), [ [ 'html:video', 2, 'Home:2' ], [ 'html:canvas', 1, 'Home:4' ], [ 'html:sgs-widget', 1, 'Home:6' ], [ 'construct:timer', 1, 'Home:7' ] ] );
+	assert.deepEqual( rows.map( ( r ) => [ r.construct, r.count, r.draftId ] ), [ [ 'html:video', 2, 'Home:2' ], [ 'html:canvas', 1, 'Home:4' ], [ 'html:custom-element', 1, 'Home:6' ], [ 'construct:timer', 1, 'Home:7' ] ] );
 	assert.match( rows[ 0 ].why, /no clone path yet \(has nothing; wave media\)/ );
 	assert.match( rows[ 1 ].why, /excluded from cloning \(Bean, 2026-10-17: drawn by script\)/ );
 	assert.match( rows[ 2 ].why, /not in the clone coverage map/ );
@@ -35,6 +35,14 @@ test( 'MUST FAIL: an uncovered element the draft uses is never dropped silently'
 	const covered = { ...COVERAGE, entries: { ...COVERAGE.entries, 'html:video': COVERAGE.entries[ 'html:div' ] } };
 	assert.ok( ! coverageMissing( { skeletonRows: SKELETON, census: CENSUS, coverage: covered } ).some( ( r ) => 'html:video' === r.construct ) );
 	assert.ok( coverageMissing( { skeletonRows: SKELETON, census: CENSUS, coverage: COVERAGE } ).some( ( r ) => 'html:video' === r.construct ) );
+} );
+
+test( 'MUST FAIL: every custom element on a skeleton row is the one custom-element capability with its wave, never its own name; a hyphenated tag the map holds stays itself', () => {
+	const coverage = { ...COVERAGE, entries: { ...COVERAGE.entries, 'html:custom-element': { recognise: null, write: null, check: null, wave: 'draft reading' }, 'html:font-face': { recognise: null, write: null, check: null, wave: 'content, media and icons' } } };
+	const skeleton = [ { key: 'Home/8#0', draftId: 'Home:8', tag: 'image-slot' }, { key: 'Home/9#0', draftId: 'Home:9', tag: 'acme-logo' }, { key: 'Home/10#0', draftId: 'Home:10', tag: 'font-face' } ];
+	const rows = coverageMissing( { skeletonRows: skeleton, census: { rows: [] }, coverage } );
+	assert.deepEqual( rows.map( ( r ) => [ r.construct, r.count, r.wave ] ), [ [ 'html:custom-element', 2, 'draft reading' ], [ 'html:font-face', 1, 'content, media and icons' ] ] );
+	assert.ok( ! rows.some( ( r ) => /image-slot|acme-logo/.test( r.construct ) ) );
 } );
 
 test( 'the proposal adds rule 3 only when a coverage map is passed', () => {

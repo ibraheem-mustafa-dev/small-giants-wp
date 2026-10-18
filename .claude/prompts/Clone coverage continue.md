@@ -18,9 +18,9 @@ DONE (with commits, all on `main`)
 - Phase 2, Spec 48 in both directions: `e0650c9` (QC'd by an independent agent, approved by Bean); plan ticked in `b889a13`.
 
 CURRENT STATE
-- Bean started an Indus intake re-run on this PC on 2026-10-18: `node scripts/computed-route/intake.mjs indus-foods --record` on `main` at `3dc0ff8`. Every stage through "defects pass A: 3 visits, 66 defects and 46 incomplete left for pass B" finished. Then the window went quiet: pass B (`scripts/computed-route/lib/intake-run-defects.mjs`) logs nothing until it ends, and it forces the 46 leftover candidates on every route at three widths.
-- Nothing is written until the whole run ends. Before it started, Bean's previous `review.md` was copied to `sites/indus-foods/build/intake/review.before-rerun-<stamp>.md` (never commit that copy). Marks carry over from `intake.json` only, so any marks Bean typed into `review.md` without running `--apply-review` live only in that copy.
-- The committed `sites/indus-foods/build/intake/intake.json` and `review.md` are still the 12 October run.
+- The Indus intake re-run finished on Bean's PC on 2026-10-18 (98 minutes; draft-defects pass B alone took 78 minutes and prints nothing until it ends) and is committed (`71ae521`), with `--rerun-skeletons` applied. `node scripts/computed-route/check-approved.mjs indus-foods` reproduces all 93 of Bean's recorded decisions (exit 0). The old intake held no saved marks (his decisions live in `approved-decisions.json` and the standing rules), so "carried marks 0" was correct.
+- review.md: 1,336 rows, 813 to read and 523 that Accept all covers. 184 of them are seen-but-unsupported rows: draft reading 67, content, media and icons 33, shop, forms and data 28, motion writer (4.0) 20, modes and values with no CSS property 12, behaviour recognisers 10, states 8, excluded 3, site and surfaces 1, and 2 not in the map (`html:image-slot`, `html:indus-logo`). Those 2 came from intake's skeleton path, which named a draft's custom elements by their own tag; fixed in the commit that wrote this note (`lib/intake-missing.mjs::coverageMissing` now counts them as `html:custom-element`, wave draft reading). The committed review still shows them until the next full intake run; Bean can mark both `gap:draft reading` by hand rather than re-run.
+- The running page used 8 capabilities the file read missed (each still raised as a row): `input-type:email`, `input-type:tel` and `input-type:text` on Indus element 560 (the enquiry form's inputs), `svg:filter`, `svg:feGaussianBlur`, `svg:feMerge` and `svg:feMergeNode` on element 321 (an SVG filter the draft's script builds), and `css-function:max` in an inline style the running page set. They are draft-reading wave work (FR-48-85): the file read should find inputs whose type is set in code and SVG elements built in code.
 - The Indus clone is paused at Bean's intake review (`.claude/plans/2026-10-11-spec48-indus-build.md` step 15) until step 4.0 lands.
 
 READ FIRST
@@ -37,18 +37,7 @@ TASKS, IN ORDER
    - `node capabilities.mjs --check`. S7 reseeded the DB; if it reports out of date, run `--write`, then `--gate`, and remove any orphan coverage entry the gate names. Never change an `excluded` entry without Bean's ruling.
    - `node capabilities.mjs --gate` must exit 0.
    - Done when both pass.
-1. Finish and check the Indus intake re-run (inline; 15 min of work, up to 2 hours of machine time).
-   - Ask Bean whether the PowerShell window is still open and what its last line says.
-   - If pass B is still running: check that node and Chrome are using CPU (`Get-Process node, chrome | Sort-Object CPU -Descending | Select-Object -First 5`), and allow up to about 90 minutes after the pass A line.
-   - If it is hung (no CPU for several minutes, or past 90 minutes): Ctrl+C, then re-run `node scripts/computed-route/intake.mjs indus-foods`. Leave out `--record`, since the replay file was recorded in the first two minutes; if it says the replay is missing, add `--record` back.
-   - When it ends, it prints `indus-foods: wrote … review.md (N rows)`. Then check:
-     - Count the rows: `(Select-String -Path sites\indus-foods\build\intake\review.md -Pattern "gap:").Count`, expected about 170.
-     - Every `missing:coverage:*` row proposes `gap:<wave>`, or `difference` for an excluded capability, and none names an ID outside the coverage map.
-     - Bean's earlier marks were carried (`intake.prev.json` sits beside it).
-     - The waves match those in `capabilities.mjs --gaps`.
-   - Then run `node scripts/computed-route/intake.mjs --rerun-skeletons indus-foods` (standing rules) and `node scripts/computed-route/check-approved.mjs indus-foods` (must exit 0).
-   - Commit `sites/indus-foods/build/intake/intake.json`, `review.md`, `finalise-request.json` (if changed) and `sites/indus-foods/build/page-map.json` by explicit pathspec, never the backup copy.
-   - Done when the regenerated review is committed and the counts are reported to Bean in a short table by wave.
+1. Done 2026-10-18 (see CURRENT STATE).
 2. Step 4.0, the motion cloning writer (Spec 48 FR-48-78, Spec 38A FR-38A-33). Plan mode first; get Bean's approval.
    - Today `scripts/computed-route/lib/fill-entrance.mjs::sampleEntrances` measures entrances, and `::entranceWrites` still writes through the resolver. The flat animation settings it targeted were removed in Spec 38A S6, so every entrance comes out unmapped.
    - The writer writes per-element `sgsMotion` (entrance, hover, effect) through `scripts/computed-route/lib/motion-validate.mjs`, with motion fields read from the framework DB as Spec 38A decision 3 settles it, and token references where a value equals the client's token.
