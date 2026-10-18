@@ -135,17 +135,6 @@ jest.mock( '@wordpress/blocks', () => ( {
 	getBlockType: ( name ) => global.__types?.[ name ],
 } ) );
 
-// The colour picker of the colour to-values: a stand-in input that exposes its label and passes its value on.
-jest.mock( '../../src/components/DesignTokenPicker', () => ( {
-	__esModule: true,
-	default: ( { label, value, onChange } ) =>
-		require( 'react' ).createElement( 'input', {
-			'aria-label': label,
-			value,
-			onChange: ( e ) => onChange( e.target.value ),
-		} ),
-} ) );
-
 jest.mock( '../../src/blocks/extensions/motion/canvas/use-canvas-motion', () => ( {
 	replay: jest.fn( () => Promise.resolve( { played: true } ) ),
 	canReplay: jest.fn( () => true ),

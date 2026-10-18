@@ -1,7 +1,7 @@
 /**
  * The Fine-tune fields of the entrance layer (Spec 38A §5, §5.2): from and to values through the property-row atom
  * (opacity, move, scale, rotate including X and Y, blur, clip), extra keyframes, duration, delay and easing, the start
- * line (scroll only), close values and close delay (Panel opens and State), colour to-values (Panel opens and State) and per-device values. Desktop edits `values`;
+ * line (scroll only), close values and close delay (Panel opens only) and per-device values. Desktop edits `values`;
  * the editor's device toggle chooses whether Tablet or Mobile overrides are edited instead (a blank override inherits
  * the tier above). Every field shows the Customised tag and Reset against the preset that stamped it.
  *
@@ -24,7 +24,6 @@ import { stampedValue, valueAtPath } from '../layers/stamp';
 import SchemaFields, { AllDevicesNote, labelFor } from './SchemaFields';
 import EntranceKeyframes from './EntranceKeyframes';
 import {
-	COLOUR_KEYS,
 	MOVE_KEYS,
 	MOVE_LABELS,
 	moveDefaults,
@@ -230,31 +229,12 @@ function PerDeviceField( { fieldKey, label, layer, editor, children } ) {
 	);
 }
 
-// The colours an open or state entrance changes to (Desktop only: the schema stores a colour once).
-function ColourFields( { layer, editor } ) {
-	return (
-		<div className="sgs-motion-entrance__colours">
-			<h4 className="sgs-motion-fields__heading">
-				{ __( 'Colours to change to', 'sgs-blocks' ) }
-			</h4>
-			<SchemaFields
-				defName="EntranceTo"
-				prefix="values.to"
-				keys={ COLOUR_KEYS }
-				layer={ layer }
-				onEdit={ editor.edit }
-				label={ __( 'Colour values', 'sgs-blocks' ) }
-			/>
-		</div>
-	);
-}
-
 function CloseFields( { layer, tier, editor } ) {
 	const desktop = tier === 'desktop';
 	return (
 		<div className="sgs-motion-entrance__close">
 			<h4 className="sgs-motion-fields__heading">
-				{ __( 'When it closes', 'sgs-blocks' ) }
+				{ __( 'When the panel closes', 'sgs-blocks' ) }
 			</h4>
 			<SchemaFields
 				defName={ desktop ? 'EntranceClose' : 'EntranceCloseDevice' }
@@ -371,11 +351,7 @@ export default function EntranceFineTune( { layer, tier, editor } ) {
 					) }
 				</>
 			) }
-			{ ( layer.trigger === 'open' || layer.trigger === 'state' ) &&
-				tier === 'desktop' && (
-					<ColourFields layer={ layer } editor={ editor } />
-				) }
-			{ ( layer.trigger === 'open' || layer.trigger === 'state' ) && (
+			{ layer.trigger === 'open' && (
 				<CloseFields layer={ layer } tier={ tier } editor={ editor } />
 			) }
 		</div>

@@ -23,14 +23,6 @@
  * API:
  *
  *   setMotionState( el, name, on = true )  add or remove one token. `open` and `close` follow the pairing above.
- *   leaveMotionState( el, name )          remove a named state that was on and set `<name>-out` in its place, so the
- *                                          state entrance plays its stored close values (a chevron turns back instead of
- *                                          snapping). Setting the state again removes `<name>-out`. A state that was
- *                                          not on adds nothing.
- *   restMotionState( el, name )            set a named state at first paint WITHOUT its entrance animation: the token
- *                                          and `<name>-rest`, which the renderer's rule reads to keep only the held
- *                                          values (an accordion item that starts open shows its icon already turned).
- *                                          The next change to the state removes `-rest`.
  *   pulseMotionState( el, name )           set a per-event state and RESTART its animation even when the token is
  *                                          already present (a second failed submit replays the shake; `aria-invalid`
  *                                          persists, so a rule keyed on it would not replay). The token stays set.
@@ -53,9 +45,6 @@
 export const STATE_ATTRIBUTE = 'data-sgs-motion-state';
 export const OPEN = 'open';
 export const CLOSE = 'close';
-
-export const OUT_SUFFIX = '-out';
-export const REST_SUFFIX = '-rest';
 
 const NAME_PATTERN = /^[a-z][a-z0-9-]{0,63}$/;
 const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
@@ -179,63 +168,8 @@ export function setMotionState( el, name, on = true ) {
 		setMotionState( el, OPEN, ! on );
 		return;
 	}
-	if ( on && list.includes( name ) ) {
-		// Already on (a browser's start-up `toggle` for an item that began open): the held `-rest` survives.
-		return;
-	}
-	const rest = list.filter(
-		( t ) => name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
-	);
+	const rest = list.filter( ( t ) => name !== t );
 	write( el, on ? rest.concat( name ) : rest );
-}
-
-/**
- * Whether a name is a plain named state (not the open and close pair).
- *
- * @param {*} el   Candidate host.
- * @param {*} name Candidate name.
- * @return {boolean} True for a usable named state.
- */
-function namedState( el, name ) {
-	return usable( el, name ) && OPEN !== name && CLOSE !== name;
-}
-
-/**
- * Leave a named state so its stored close values play.
- *
- * @param {Element} el   State host.
- * @param {string}  name Declared state name.
- * @return {void}
- */
-export function leaveMotionState( el, name ) {
-	if ( ! namedState( el, name ) ) {
-		return;
-	}
-	watchReducedMotion();
-	const list = tokens( el );
-	const wasOn = list.includes( name );
-	const rest = list.filter(
-		( t ) => name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
-	);
-	write( el, wasOn ? rest.concat( name + OUT_SUFFIX ) : list );
-}
-
-/**
- * Set a named state at first paint with no entrance animation.
- *
- * @param {Element} el   State host.
- * @param {string}  name Declared state name.
- * @return {void}
- */
-export function restMotionState( el, name ) {
-	if ( ! namedState( el, name ) ) {
-		return;
-	}
-	watchReducedMotion();
-	const rest = tokens( el ).filter(
-		( t ) => name !== t && name + OUT_SUFFIX !== t && name + REST_SUFFIX !== t
-	);
-	write( el, rest.concat( name, name + REST_SUFFIX ) );
 }
 
 /**

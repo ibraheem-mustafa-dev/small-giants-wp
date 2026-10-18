@@ -106,33 +106,6 @@ export function setState( host, name, on = true ) {
 }
 
 /**
- * Leave a lasting state so the entrance's stored close values play (the state's `close`); a state with none behaves as
- * `setState( host, name, false )` does.
- *
- * @param {Element} host State host.
- * @param {string}  name State name.
- * @return {Promise<boolean>} True when published.
- */
-export function leaveState( host, name ) {
-	return withMotionState( host, ( mod ) =>
-		mod.leaveMotionState( host, name )
-	);
-}
-
-/**
- * Set a lasting state that is already true at first paint, with no entrance animation (the held values show at once).
- *
- * @param {Element} host State host.
- * @param {string}  name State name.
- * @return {Promise<boolean>} True when published.
- */
-export function restState( host, name ) {
-	return withMotionState( host, ( mod ) =>
-		mod.restMotionState( host, name )
-	);
-}
-
-/**
  * Publish a step change: the direction first, then the `step-changed` pulse, so the replay reads the new direction.
  *
  * @param {Element} host      State host.

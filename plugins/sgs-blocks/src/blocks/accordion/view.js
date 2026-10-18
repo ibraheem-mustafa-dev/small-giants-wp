@@ -21,9 +21,7 @@
  */
 
 import {
-	leaveState,
 	preloadMotionState,
-	restState,
 	setState,
 } from '../../shared/motion-state-publish';
 
@@ -46,26 +44,10 @@ function syncAriaExpanded( details ) {
 /**
  * Publish the item's `expanded` motion state from its real open state.
  *
- * At start-up an open item holds the state at rest (no entrance animation on first paint); afterwards opening plays the
- * entrance and closing plays its stored close values.
- *
  * @param {HTMLDetailsElement} details Accordion item.
- * @param {boolean}            initial True for the start-up call.
  */
-function publishExpanded( details, initial = false ) {
-	if ( details.open ) {
-		if ( initial ) {
-			restState( details, 'expanded' );
-		} else {
-			setState( details, 'expanded', true );
-		}
-		return;
-	}
-	if ( initial ) {
-		setState( details, 'expanded', false );
-	} else {
-		leaveState( details, 'expanded' );
-	}
+function publishExpanded( details ) {
+	setState( details, 'expanded', details.open );
 }
 
 /**
@@ -80,7 +62,7 @@ function initNativeItems( accordion, items, allowMultiple ) {
 	items.forEach( ( details ) => {
 		syncAriaExpanded( details );
 		preloadMotionState( details );
-		publishExpanded( details, true );
+		publishExpanded( details );
 		details.addEventListener( 'toggle', () => {
 			syncAriaExpanded( details );
 			publishExpanded( details );
@@ -144,7 +126,7 @@ function initAccordions() {
 			// item above is opened here, after the server wrote aria-expanded).
 			summary.setAttribute( 'aria-expanded', details.open ? 'true' : 'false' );
 			preloadMotionState( details );
-			publishExpanded( details, true );
+			publishExpanded( details );
 
 			// Wrap content for animation measurement.
 			let wrapper = content.querySelector(
@@ -272,7 +254,7 @@ function closeItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );
 
 	// The item is logically closed now: the state and aria-expanded follow at once.
-	leaveState( details, 'expanded' );
+	setState( details, 'expanded', false );
 	const summary = details.querySelector( 'summary' );
 	if ( summary ) {
 		summary.setAttribute( 'aria-expanded', 'false' );

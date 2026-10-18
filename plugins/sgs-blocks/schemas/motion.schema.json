@@ -3299,36 +3299,6 @@
 						"state": "in-view",
 						"perDevice": true
 					}
-				},
-				"backgroundColour": {
-					"$ref": "#/$defs/colourReference",
-					"description": "The background colour the element changes to (a palette slug or a one-off hex). Written as the scoped custom property --sgs-me-to-bg; the same colour on every device.",
-					"x-sgs-field": {
-						"fieldType": "colourReference",
-						"cssProperty": "--sgs-me-bg",
-						"state": "in-view",
-						"perDevice": false
-					}
-				},
-				"textColour": {
-					"$ref": "#/$defs/colourReference",
-					"description": "The text colour the element changes to (a palette slug or a one-off hex). Written as the scoped custom property --sgs-me-to-fg; the same colour on every device.",
-					"x-sgs-field": {
-						"fieldType": "colourReference",
-						"cssProperty": "--sgs-me-fg",
-						"state": "in-view",
-						"perDevice": false
-					}
-				},
-				"borderColour": {
-					"$ref": "#/$defs/colourReference",
-					"description": "The border colour the element changes to (a palette slug or a one-off hex). Written as the scoped custom property --sgs-me-to-bd; the same colour on every device.",
-					"x-sgs-field": {
-						"fieldType": "colourReference",
-						"cssProperty": "--sgs-me-bd",
-						"state": "in-view",
-						"perDevice": false
-					}
 				}
 			},
 			"additionalProperties": false
@@ -3669,7 +3639,7 @@
 			"type": "object",
 			"x-sgs-kind": "values",
 			"x-sgs-panel": "entrance",
-			"description": "Close values for the `open` and `state` triggers: an open entrance plays them when its panel closes, a state entrance when the block leaves its named state.",
+			"description": "Close values for the `open` trigger only.",
 			"properties": {
 				"to": {
 					"$ref": "#/$defs/EntranceCloseTo"
@@ -10069,8 +10039,7 @@
 							"trigger": {
 								"$ref": "#/$defs/choice",
 								"enum": [
-									"open",
-									"state"
+									"open"
 								]
 							}
 						}

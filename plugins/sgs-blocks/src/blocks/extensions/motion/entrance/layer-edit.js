@@ -124,7 +124,7 @@ export function withKeyframeList( layer, base, list, moved ) {
 
 /**
  * The layer after its trigger changes: `state` keeps a state name (the first declared one when none is set), and close
- * values, which only a Panel opens or State entrance stores, go when the trigger is anything else.
+ * values, which only a Panel opens entrance stores, go when the trigger is anything else.
  *
  * @param {Object}   layer   The layer.
  * @param {string}   trigger The chosen trigger.
@@ -138,7 +138,7 @@ export function withTrigger( layer, trigger, states = [] ) {
 	} else if ( ! next.state && states.length ) {
 		next.state = states[ 0 ];
 	}
-	if ( trigger !== 'open' && trigger !== 'state' ) {
+	if ( trigger !== 'open' ) {
 		delete next.close;
 		if ( isPlain( next.devices ) ) {
 			next.devices = Object.fromEntries(
