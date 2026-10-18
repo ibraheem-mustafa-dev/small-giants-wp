@@ -4,7 +4,12 @@
   "attributes": {
    "layout": "stack",
    "tagName": "section",
-   "className": "m43-intro"
+   "className": "m43-intro",
+   "minHeight": {
+    "desktop": "1100px",
+    "tablet": "1100px",
+    "mobile": "1100px"
+   }
   },
   "innerBlocks": [
    {
