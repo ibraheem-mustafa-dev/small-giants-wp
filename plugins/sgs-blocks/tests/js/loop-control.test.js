@@ -403,25 +403,20 @@ describe( 'pause on touch', () => {
 } );
 
 describe( 'touch pause modes', () => {
-	test( 'hold pauses after the delay and resumes on release; touchPause wins over pauseOnTouch', () => {
-		jest.useFakeTimers();
+	test( 'tap pauses and the next tap resumes; touchPause wins over pauseOnTouch', () => {
 		const [ root ] = build();
 		const el = floatIn( root );
 		loopControl.registerLoop( el, {
-			touchPause: 'hold',
-			pauseOnTouch: true,
+			touchPause: 'tap',
+			pauseOnTouch: false,
 		} );
 		pointerOn( root, 'pointerdown', 'touch' );
-		expect( el.hasAttribute( PAUSED ) ).toBe( false );
-		jest.advanceTimersByTime( 400 );
 		expect( el.hasAttribute( PAUSED ) ).toBe( true );
-		pointerOn( root, 'pointerup', 'touch' );
+		pointerOn( root, 'pointerdown', 'touch' );
 		expect( el.hasAttribute( PAUSED ) ).toBe( false );
-		jest.useRealTimers();
 	} );
 
-	test( 'NEGATIVE CONTROL: touchPause off beats pauseOnTouch, and a quick tap never pauses in hold mode', () => {
-		jest.useFakeTimers();
+	test( 'NEGATIVE CONTROL: touchPause off beats pauseOnTouch, and a mouse press never pauses in tap mode', () => {
 		const [ root ] = build();
 		const el = floatIn( root );
 		loopControl.registerLoop( el, {
@@ -431,13 +426,10 @@ describe( 'touch pause modes', () => {
 		pointerOn( root, 'pointerdown', 'touch' );
 		expect( el.hasAttribute( PAUSED ) ).toBe( false );
 		const [ other ] = build();
-		const held = floatIn( other );
-		loopControl.registerLoop( held, { touchPause: 'hold' } );
-		pointerOn( other, 'pointerdown', 'touch' );
-		pointerOn( other, 'pointerup', 'touch' );
-		jest.advanceTimersByTime( 400 );
-		expect( held.hasAttribute( PAUSED ) ).toBe( false );
-		jest.useRealTimers();
+		const tapped = floatIn( other );
+		loopControl.registerLoop( tapped, { touchPause: 'tap' } );
+		pointerOn( other, 'pointerdown', 'mouse' );
+		expect( tapped.hasAttribute( PAUSED ) ).toBe( false );
 	} );
 } );
 

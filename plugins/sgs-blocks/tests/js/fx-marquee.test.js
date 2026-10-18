@@ -490,13 +490,11 @@ describe( 'marquee touch pause', () => {
 		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
 	} );
 
-	test( 'hold is the default when the attribute is absent: a plain tap pauses nothing', async () => {
+	test( 'tap is the default when the attribute is absent', async () => {
 		const { root } = mount();
 		await boot();
 		pointer( root, 'pointerdown', 'touch' );
-		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-		pointer( root, 'pointerup', 'touch' );
-		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+		live().forEach( ( a ) => expect( a.playState ).toBe( 'paused' ) );
 	} );
 
 	test( 'NEGATIVE CONTROL: a mouse press never pauses, and with touch pause off a tap does nothing', async () => {
@@ -513,53 +511,6 @@ describe( 'marquee touch pause', () => {
 		await boot();
 		pointer( second.root, 'pointerdown', 'touch' );
 		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-	} );
-
-	describe( 'hold', () => {
-		beforeEach( () => jest.useFakeTimers() );
-		afterEach( () => jest.useRealTimers() );
-
-		test( 'pauses once held and resumes on release', async () => {
-			const { root } = mount( {
-				attrs: 'data-sgs-fx-marquee-touch-pause="hold"',
-			} );
-			await boot();
-			pointer( root, 'pointerdown', 'touch' );
-			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-			jest.advanceTimersByTime( 400 );
-			live().forEach( ( a ) => expect( a.playState ).toBe( 'paused' ) );
-			pointer( root, 'pointerup', 'touch' );
-			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-		} );
-
-		test( 'resumes when the gesture is cancelled', async () => {
-			const { root } = mount( {
-				attrs: 'data-sgs-fx-marquee-touch-pause="hold"',
-			} );
-			await boot();
-			pointer( root, 'pointerdown', 'touch' );
-			jest.advanceTimersByTime( 400 );
-			pointer( root, 'pointercancel', 'touch' );
-			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-		} );
-
-		test( 'NEGATIVE CONTROL: a quick tap, a cancelled scroll gesture and a mouse press never pause', async () => {
-			const { root } = mount( {
-				attrs: 'data-sgs-fx-marquee-touch-pause="hold"',
-			} );
-			await boot();
-			pointer( root, 'pointerdown', 'touch' );
-			pointer( root, 'pointerup', 'touch' );
-			jest.advanceTimersByTime( 400 );
-			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-			pointer( root, 'pointerdown', 'touch' );
-			pointer( root, 'pointercancel', 'touch' );
-			jest.advanceTimersByTime( 400 );
-			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-			pointer( root, 'pointerdown', 'mouse' );
-			jest.advanceTimersByTime( 400 );
-			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
-		} );
 	} );
 } );
 

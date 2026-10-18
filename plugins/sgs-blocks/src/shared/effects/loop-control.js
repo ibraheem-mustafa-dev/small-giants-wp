@@ -35,9 +35,8 @@
  *                   rate) and leaving (with 1). Default: hover does nothing.
  *   onRateChange    called with the playback rate the loop should run at.
  *   pauseOnTouch    a touch tap on the block root pauses the loop, and the next tap resumes it. Default false.
- *   touchPause      what a touch on the block root does: `off`, `tap` (as `pauseOnTouch`) or `hold` (the loop is paused
- *                   while a finger rests on the root for HOLD_DELAY_MS and resumes on release or cancel; a tap, a
- *                   swipe or a scroll gesture never pauses it). When set it wins over `pauseOnTouch`.
+ *   touchPause      what a touch on the block root does: `off` or `tap` (as `pauseOnTouch`). When set it wins over
+ *                   `pauseOnTouch`.
  *   observe         the element whose visibility decides the off-screen pause. Default the loop element itself. A
  *                   marquee passes its block root: each copy slides past the root's clipped edge in turn, and a copy
  *                   observed on its own would pause there while the others ran, so the copies fell out of step.
@@ -59,8 +58,6 @@ export { parseTime, parseLength, readLoopTiming } from './loop-timing';
 const ROOT_SELECTOR = '[class*="wp-block-sgs-"]';
 const PAUSED_ATTR = 'data-sgs-loop-paused';
 const DEFAULT_LABEL = 'Pause animation';
-const HOLD_DELAY_MS = 350;
-const HOLD_MOVE_PX = 10;
 export const BREAKPOINTS = [ '(max-width: 1023px)', '(max-width: 767px)' ];
 
 /** The root's shared state, kept for the life of the page so a root registered again reuses its listeners. */
@@ -233,20 +230,9 @@ export function registerLoop( el, options = {} ) {
 			loop.apply();
 		} );
 	}
-	const touchMode = [ 'off', 'tap', 'hold' ].includes( options.touchPause )
+	const touchMode = [ 'off', 'tap' ].includes( options.touchPause )
 		? options.touchPause
 		: ( options.pauseOnTouch === true && 'tap' ) || 'off';
-	let holdTimer = null;
-	let holdFrom = null;
-	const release = () => {
-		clearTimeout( holdTimer );
-		holdTimer = null;
-		holdFrom = null;
-		if ( loop.tapped ) {
-			loop.tapped = false;
-			loop.apply();
-		}
-	};
 	if ( touchMode === 'tap' ) {
 		listen( 'pointerdown', ( event ) => {
 			if ( event.pointerType === 'touch' ) {
@@ -254,38 +240,6 @@ export function registerLoop( el, options = {} ) {
 				loop.apply();
 			}
 		} );
-	} else if ( touchMode === 'hold' ) {
-		listen( 'pointerdown', ( event ) => {
-			if ( event.pointerType !== 'touch' ) {
-				return;
-			}
-			release();
-			holdFrom = { x: event.clientX, y: event.clientY };
-			holdTimer = setTimeout( () => {
-				holdTimer = null;
-				loop.tapped = true;
-				loop.apply();
-			}, HOLD_DELAY_MS );
-		} );
-		listen( 'pointermove', ( event ) => {
-			if (
-				holdTimer !== null &&
-				holdFrom &&
-				Math.hypot(
-					event.clientX - holdFrom.x,
-					event.clientY - holdFrom.y
-				) > HOLD_MOVE_PX
-			) {
-				release();
-			}
-		} );
-		[ 'pointerup', 'pointercancel' ].forEach( ( type ) =>
-			listen( type, ( event ) => {
-				if ( event.pointerType === 'touch' ) {
-					release();
-				}
-			} )
-		);
 	}
 
 	if ( options.pauseControl === true ) {
@@ -334,7 +288,6 @@ export function registerLoop( el, options = {} ) {
 				}
 			}
 			group.loops.delete( loop );
-			clearTimeout( holdTimer );
 			listeners.forEach( ( [ type, handler ] ) =>
 				root.removeEventListener( type, handler )
 			);

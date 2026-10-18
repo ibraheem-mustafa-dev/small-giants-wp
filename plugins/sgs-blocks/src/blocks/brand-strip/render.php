@@ -782,6 +782,28 @@ if ( ! empty( $logos ) ) {
 // ── Border rules: the gradient ring and the explicit `none` override. ──
 $scoped_css = array_merge( $scoped_css, $border['rules'] );
 
+// --- Optional title, printed before the track inside the root. An empty or
+// tag-only value (an empty <br> saved by an editor) renders nothing and emits
+// no CSS. The title stays outside .sgs-brand-strip__track, the marquee lane the
+// shared runtime clones, and the root width the tile-size sum reads is unchanged.
+$bs_title_html  = '';
+$bs_title_value = (string) ( $attributes['title'] ?? '' );
+if ( '' !== trim( wp_strip_all_tags( $bs_title_value ) ) ) {
+	$bs_title_html = '<p class="sgs-brand-strip__title">' . wp_kses_post( $bs_title_value ) . '</p>';
+	$bs_title_sel  = "{$root_sel} .sgs-brand-strip__title";
+	$scoped_css[]  = sgs_text_states_css(
+		$bs_title_sel,
+		$attributes,
+		array(
+			'base'           => 'titleColour',
+			'hover'          => 'titleColourHover',
+			'gradient'       => 'titleColourGradient',
+			'hover_gradient' => 'titleColourHoverGradient',
+		)
+	);
+	$scoped_css[]  = sgs_typography_css_rule( $attributes, 'title', $bs_title_sel );
+}
+
 // $scoped_css is pre-sanitised (sgs_css_length_value() / wp_style_engine_get_styles),
 // so no un-sanitised value survives here. Single set inside track; the shared
 // marquee runtime clones it as needed for the loop.
@@ -794,7 +816,8 @@ if ( $scoped_css ) :
 endif;
 
 printf(
-	'<div %1$s><div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set" data-sgs-marquee-set>%2$s</div></div></div>',
+	'<div %1$s>%3$s<div class="sgs-brand-strip__track"><div class="sgs-brand-strip__set" data-sgs-marquee-set>%2$s</div></div></div>',
 	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	$logos_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
+	$logos_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from sgs_render_media(), which escapes its own output.
+	$bs_title_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses_post() on the title text.
 );

@@ -364,7 +364,8 @@
         ]
        }
       }
-     }
+     },
+     "title": "Brands we stock"
     }
    }
   ]
@@ -675,7 +676,7 @@
            "hoverRate": 0,
            "edgeFade": true,
            "edgeFadeWidth": 6,
-           "touchPause": "hold",
+           "touchPause": "tap",
            "pauseControl": true
           }
          }

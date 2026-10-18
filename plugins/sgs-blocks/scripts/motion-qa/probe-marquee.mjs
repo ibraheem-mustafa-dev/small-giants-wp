@@ -8,16 +8,14 @@
  *                        position) against the stored speed: 45, 60, 40 and 70 px/s strips and a 50 px/s pause-control bar (all within 2%)
  *   marquee-hover        a mouse over the block runs the 45px/s strip at 0.15x (within 5%) and holds the others still
  *   marquee-touch        tap: a touch tap holds the row still and a second tap lets it run
- *   marquee-touch-hold   hold: a touch press held 600ms holds the row still and releasing lets it run; a quick tap never pauses
  *   marquee-fade         the 45px/s strip paints a mask on its lane (never on the block root) that fades its ends over 5%
  *   marquee-pause-default a marquee that does not store pauseControl has no pause button
  *   marquee-pause        the one pause-control bar has a pause button; pressing it holds the row still, pressing again lets it run
  *   marquee-pause-visible the button sits inside the block's visible box and focusing it does not scroll the row (a
  *                        click would scroll a clipped button into view, so the press alone cannot show this)
  *   marquee-pause-corner the button sits in the block root's bottom-right corner (bottom and right edges within 2px)
- *   marquee-touch-real   real touch input (Chromium with hasTouch and isMobile, 390x844, Input.dispatchTouchEvent): a held
- *                        press holds the row still and lifting runs it within 500ms; a quick tap never pauses in hold mode;
- *                        in tap mode one tap pauses and a second resumes (UNANSWERED outside Chromium)
+ *   marquee-touch-real   real touch input (Chromium with hasTouch and isMobile, 390x844, Input.dispatchTouchEvent): in tap
+ *                        mode one tap pauses and a second resumes (UNANSWERED outside Chromium)
  *   marquee-pause-unmasked the button computes mask-image none and no ancestor of it carries a mask
  *   marquee-reduced      under prefers-reduced-motion: reduce nothing is cloned or moves
  *
@@ -27,10 +25,10 @@
  *   - rate: every strip's reading is judged against a speed 25% off its stored one, and a row whose copies have `translate: none !important` forced
  *     must fail the rate check.
  *   - hover: the rate before the pointer arrives must not pass as the hover rate.
- *   - touch / pause: the held-still judge on the running row must fail; a quick tap in hold mode must not pause.
+ *   - touch / pause: the held-still judge on the running row must fail.
  *   - pause-corner: the same button planted at the root's vertical middle must be rejected.
- *   - touch-real: each reading is also judged against the opposite expectation (held judged as running, released and quick-tap
- *     readings judged as held still) and must be rejected.
+ *   - touch-real: each reading is also judged against the opposite expectation (paused judged as running, resumed judged as
+ *     held still) and must be rejected.
  *   - pause-unmasked: the same ancestor walk started from a child of the lane must find the lane's mask.
  *   - fade: the control trust bar must have no mask, and a fade width planted as 12 (applied by a breakpoint
  *     crossing, which makes the runtime re-read its settings) must fail the check.
@@ -69,7 +67,7 @@ export const DRAFTS = {
 	'.m515-tap': { speed: 60, hoverRate: 0, touch: 'tap', below: 1023 },
 	'.m515-brands': { speed: 40, hoverRate: 0, below: Infinity },
 	'.m515-ticker': { speed: 70, hoverRate: 0, below: 767 },
-	'.m515-pause': { speed: 50, hoverRate: 0, touch: 'hold', fade: 6, pause: true, below: Infinity },
+	'.m515-pause': { speed: 50, hoverRate: 0, touch: 'tap', fade: 6, pause: true, below: Infinity },
 	'.m515-pause-brands': { speed: 50, hoverRate: 0, fade: 6, pause: true, below: Infinity },
 };
 const CONTROL = '.m515-control';
@@ -385,21 +383,6 @@ async function liveChecks( ctx ) {
 			rep.check( 'marquee-touch', { selector: sel, property: 'speed after one touch tap, then after a second', measured: { held: held.speed, again: again.speed }, expected: 'still, then running', pass: judgeStill( held.speed ) && again.speed > 0.5 } );
 			rep.control( 'marquee-touch', { selector: sel, property: 'the held-still judge on the running row', measured: again.speed, expected: 'rejected', red: ! judgeStill( again.speed ) } );
 		}
-		if ( 'hold' === draft.touch ) {
-			await press( 'pointerdown' );
-			await page.waitForTimeout( 600 );
-			const held = await measure( page, sel, 1000 );
-			await press( 'pointerup' );
-			await page.waitForTimeout( 200 );
-			const released = await measure( page, sel, 1000 );
-			rep.check( 'marquee-touch-hold', { selector: sel, property: 'speed while a touch press is held 600ms, then after release', measured: { held: held.speed, released: released.speed }, expected: 'still, then running', pass: judgeStill( held.speed ) && released.speed > 0.5 } );
-			rep.control( 'marquee-touch-hold', { selector: sel, property: 'the held-still judge on the released row', measured: released.speed, expected: 'rejected', red: ! judgeStill( released.speed ) } );
-			await press( 'pointerdown' );
-			await press( 'pointerup' );
-			await page.waitForTimeout( 600 );
-			const quick = await measure( page, sel, 1000 );
-			rep.check( 'marquee-touch-hold', { selector: sel, property: 'speed after a quick tap (down and up at once)', measured: { quick: quick.speed }, expected: 'running (a tap never pauses in hold mode)', pass: quick.speed > 0.5 } );
-		}
 
 		const button = pauseButton( page, sel );
 		const present = ( await button.count() ) > 0;
@@ -608,29 +591,9 @@ async function realTouchChecks( ctx ) {
 		};
 		const running = ( speed ) => speed > 0.5;
 
-		// Hold mode: a press held 700ms holds the row still; lifting lets it run within 500ms.
-		let at = await centre( '.m515-pause' );
-		await send( 'touchStart', at.x, at.y );
-		await page.waitForTimeout( 700 );
-		const held = await measure( page, '.m515-pause', 600 );
-		await send( 'touchEnd' );
-		const released = await measure( page, '.m515-pause', 500 );
-		rep.check( id, { selector: '.m515-pause', property: 'speed while a real touch is held 700ms, then in the 500ms after lifting', measured: { held: held.speed, released: released.speed }, expected: 'still, then running', pass: judgeStill( held.speed ) && running( released.speed ) } );
-		rep.control( id, { selector: '.m515-pause', property: 'the held reading judged as a running row, and the released reading judged as held still', measured: { held: held.speed, released: released.speed }, expected: 'both rejected', red: ! running( held.speed ) && ! judgeStill( released.speed ) } );
-
-		// Hold mode: a quick tap never pauses, even when the browser emulates mouse events afterwards.
-		at = await centre( '.m515-pause' );
-		await send( 'touchStart', at.x, at.y );
-		await page.waitForTimeout( 40 );
-		await send( 'touchEnd' );
-		await page.waitForTimeout( 600 );
-		const quick = await measure( page, '.m515-pause', 800 );
-		rep.check( id, { selector: '.m515-pause', property: 'speed 600ms after a real quick tap (start and end within 40ms)', measured: { quick: quick.speed }, expected: 'running (a tap never pauses in hold mode)', pass: running( quick.speed ) } );
-		rep.control( id, { selector: '.m515-pause', property: 'the quick-tap reading judged as held still', measured: quick.speed, expected: 'rejected', red: ! judgeStill( quick.speed ) } );
-
 		// Tap mode: one tap pauses, a second resumes.
 		if ( shouldRun( DRAFTS[ '.m515-tap' ], 390 ) ) {
-			at = await centre( '.m515-tap' );
+			const at = await centre( '.m515-tap' );
 			const tap = async () => {
 				await send( 'touchStart', at.x, at.y );
 				await page.waitForTimeout( 60 );

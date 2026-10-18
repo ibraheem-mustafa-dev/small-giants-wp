@@ -13,7 +13,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl, SpacingControl, MediaGalleryPicker } from '../../components';
+import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl, SpacingControl, MediaGalleryPicker, textRow } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { generateItemKey, withStableItemKeys } from '../../utils';
@@ -461,6 +461,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								},
 						],
 					},
+					textRow( {
+						key: 'title-colour',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'titleColour',
+							hover: 'titleColourHover',
+							gradient: 'titleColourGradient',
+							hoverGradient: 'titleColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					...( 'logos' !== ( brandDisplay || 'logos' )
 						? [
 								{
@@ -827,6 +839,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Title', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Title text', 'sgs-blocks' ) }
+						help={ __( 'Printed above the strip. Leave empty to show no title.', 'sgs-blocks' ) }
+						value={ attributes.title || '' }
+						onChange={ ( val ) => setAttributes( { title: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextColumns showWritingMode
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
+						showDecoration
+						showTransform
+						showLetterSpacing
 					/>
 				</PanelBody>
 

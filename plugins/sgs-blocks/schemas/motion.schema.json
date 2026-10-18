@@ -8694,11 +8694,10 @@
 				},
 				"touchPause": {
 					"$ref": "#/$defs/choice",
-					"description": "What a touch does: off (nothing), tap (a tap pauses, the next tap resumes) or hold (pressed pauses, released resumes; the default when nothing is stored).",
+					"description": "What a touch does: off (nothing) or tap (a tap pauses, the next tap resumes; the default when nothing is stored).",
 					"enum": [
 						"off",
-						"tap",
-						"hold"
+						"tap"
 					],
 					"x-sgs-field": {
 						"fieldType": "choice",

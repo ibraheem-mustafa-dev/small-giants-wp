@@ -62,6 +62,27 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
+/* ===== Optional title — a full-width block above the strip, outside the marquee lane =====
+ * It sits in the root before the track, so the root width (the query container `100cqw` reads) is unchanged. The root's
+ * CLS reserve (min-height above) moves onto the track while a title is present, so the reserve covers the logos only. */
+.sgs-brand-strip__title {
+	margin: 0 0 var(--wp--preset--spacing--30);
+}
+
+:where(.sgs-brand-strip__title) {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	color: var(--wp--preset--color--text-muted, #555);
+}
+
+.sgs-brand-strip:has(> .sgs-brand-strip__title) {
+	min-height: 0;
+}
+
+.sgs-brand-strip__title ~ .sgs-brand-strip__track {
+	min-height: var(--sgs-tile-cap);
+}
+
 /* ===== Track — flex container for sets ===== */
 .sgs-brand-strip__track {
 	display: flex;
