@@ -183,6 +183,7 @@ function stateRule( base, selector, keyframes ) {
 			desktop: {
 				'--sgs-me-a-dur': 'var(--sgs-mt-rest,0ms)',
 				'--sgs-me-a-delay': 'var(--sgs-mt-rest,0ms)',
+				...( Object.keys( paint( base ) ).length > 0 ? { '--sgs-mt-paint-dur': 'var(--sgs-mt-rest,0ms)' } : {} ),
 			},
 			tablet: {},
 			mobile: {},

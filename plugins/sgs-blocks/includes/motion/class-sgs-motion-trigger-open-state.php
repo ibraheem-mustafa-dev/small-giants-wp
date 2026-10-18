@@ -409,13 +409,19 @@ final class Sgs_Motion_Trigger_Open_State {
 			);
 		}
 		$rest_host = '[' . self::STATE_ATTR . '~="' . $state . self::REST_SUFFIX . '"]';
+		$rest      = array(
+			'--sgs-me-a-dur'   => 'var(--sgs-mt-rest,0ms)',
+			'--sgs-me-a-delay' => 'var(--sgs-mt-rest,0ms)',
+		);
+		if ( array() !== self::paint( $base ) ) {
+			// The colour entries of the transition list take the after-change duration, so a state set at first paint
+			// changes the colours at once.
+			$rest['--sgs-mt-paint-dur'] = 'var(--sgs-mt-rest,0ms)';
+		}
 		return $css . Sgs_Motion_Emitter::rules(
 			$selector . ':is(' . $rest_host . ',' . $rest_host . ' *)',
 			array(
-				'desktop' => array(
-					'--sgs-me-a-dur'   => 'var(--sgs-mt-rest,0ms)',
-					'--sgs-me-a-delay' => 'var(--sgs-mt-rest,0ms)',
-				),
+				'desktop' => $rest,
 				'tablet'  => array(),
 				'mobile'  => array(),
 			)

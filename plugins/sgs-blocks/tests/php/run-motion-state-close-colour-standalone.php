@@ -131,6 +131,13 @@ $state_rule_at = strpos( $css, '--sgs-mt-on:1;animation-name:var(--sgs-mt-in,non
 $rest_rule_at  = strpos( $css, $rest_host );
 $check( false !== $state_rule_at && false !== $rest_rule_at && $rest_rule_at > $state_rule_at, 'rest: the rest rule comes after the state rule, so it wins at equal specificity' );
 
+// 2a. A rest state with colour to-values also makes the colour entries instant (the transition takes the after-change
+// duration); without colours the rest rule is unchanged.
+list( $html, $css ) = $render( array_replace_recursive( $turn, array( 'values' => array( 'to' => array( 'backgroundColour' => 'primary' ) ) ) ) );
+$rest_host = '[data-sgs-motion-state~="expanded-rest"]';
+$check( $has( $css, ':is(' . $rest_host . ',' . $rest_host . ' *){--sgs-me-a-dur:var(--sgs-mt-rest,0ms);--sgs-me-a-delay:var(--sgs-mt-rest,0ms);--sgs-mt-paint-dur:var(--sgs-mt-rest,0ms);}' ), 'rest: with colours the rest rule carries a zero paint duration: ' . $css );
+list( $html, $css ) = $render( $turn );
+$check( ! $has( $css, '--sgs-mt-paint-dur' ), 'rest: without colours the rest rule carries no paint duration' );
 // 2b. A multi-keyframe state entrance (the WAAPI player) prints no rest or out rule: the player owns its animation.
 list( $html, $css ) = $render(
 	array(
