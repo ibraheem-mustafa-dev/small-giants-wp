@@ -243,7 +243,7 @@ final class Sgs_Motion_Emitter {
 		$timing      = array(
 			'transition-duration'        => self::token_or( 'token:duration.fast', '200ms' ),
 			'transition-delay'           => '0ms',
-			'transition-timing-function' => self::token_or( 'token:easing.ease-out', 'ease-out' ),
+			'transition-timing-function' => self::token_or( 'token:easing.emphasised', 'ease-out' ),
 		);
 		$follows     = Sgs_Motion_Rotation::follows( $tiers['desktop'] );
 		$follow      = Sgs_Motion_Rotation::follow_defaults();
@@ -359,7 +359,7 @@ final class Sgs_Motion_Emitter {
 			$ease_key = self::better_timing_key( $ease_key, $key, 'easing' === $field['type'], 'Easing' );
 		}
 		$duration = self::token_or( 'token:duration.medium', '300ms' );
-		$easing   = self::token_or( 'token:easing.ease-out', 'ease-out' );
+		$easing   = self::token_or( 'token:easing.emphasised', 'ease-out' );
 		$tiers    = self::tier_values( $layer );
 		if ( null !== $ease_key && isset( $tiers['desktop'][ $ease_key ] ) ) {
 			$easing = self::value_css( $def, $ease_key, $tiers['desktop'][ $ease_key ] ) ?? $easing;

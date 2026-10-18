@@ -553,11 +553,11 @@
       },
       "transition": {
         "fast": "200ms cubic-bezier(0.25, 0.1, 0.25, 1)",
-        "medium": "300ms cubic-bezier(0.25, 0.1, 0.25, 1)",
-        "slow": "420ms cubic-bezier(0.25, 0.1, 0.25, 1)"
+        "medium": "300ms cubic-bezier(0.25, 0.1, 0.25, 1)"
       },
       "duration": {
         "instant": "60ms",
+        "quick": "150ms",
         "fast": "200ms",
         "medium": "300ms",
         "slow": "420ms",
@@ -565,8 +565,11 @@
       },
       "easing": {
         "default": "cubic-bezier(0.25, 0.1, 0.25, 1)",
-        "ease-out": "cubic-bezier(0.2, 0.7, 0.2, 1)",
-        "ease-in": "cubic-bezier(0.4, 0, 1, 1)",
+        "ease": "ease",
+        "ease-in": "ease-in",
+        "ease-out": "ease-out",
+        "ease-in-out": "ease-in-out",
+        "emphasised": "cubic-bezier(0.2, 0.7, 0.2, 1)",
         "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
         "linear": "linear",
         "spring-gentle": "linear(0, 0.065, 0.215, 0.397, 0.574, 0.729, 0.851, 0.94, 0.999, 1.034, 1.05, 1.053, 1.049, 1.04, 1.03, 1.021, 1.013, 1.007, 1.003, 1, 0.998, 0.997, 0.997, 0.997, 1)",
@@ -596,7 +599,8 @@
         "sm": "3px",
         "md": "10px",
         "lg": "18px",
-        "xl": "32px"
+        "xl": "32px",
+        "2xl": "48px"
       }
     },
     "appearanceTools": true,

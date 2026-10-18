@@ -7,7 +7,7 @@
 // The `x-sgs-unit` values that are CSS dimension units; any other unit (`x` on scale) prints a bare number.
 export const CSS_DIMENSION_UNITS = Object.freeze( [ 'ms', 'px', 'deg', '%' ] );
 
-const TOKEN_RE = /^(-?)token:([a-z][a-z0-9-]*)\.([a-z][a-z0-9-]*)$/;
+const TOKEN_RE = /^(-?)token:([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)$/;
 const HEX_RE = /^#[0-9a-fA-F]+$/;
 
 /**
@@ -57,7 +57,9 @@ export function tokenCss( ref, tokens ) {
 	) {
 		return null;
 	}
-	const css = `var(--wp--custom--${ match[ 2 ] }--${ match[ 3 ] })`;
+	// WordPress prints a digit-then-letter key such as `2xl` as `2-xl` (`_wp_to_kebab_case`).
+	const key = match[ 3 ].replace( /(?<=[0-9])(?=[a-z])/g, '-' );
+	const css = `var(--wp--custom--${ match[ 2 ] }--${ key })`;
 	return match[ 1 ] === '-' ? `calc(-1 * ${ css })` : css;
 }
 

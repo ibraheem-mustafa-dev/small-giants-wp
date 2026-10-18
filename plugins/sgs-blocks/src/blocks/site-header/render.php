@@ -483,7 +483,7 @@ if ( $sh_shrink_any_tier ) {
 	$sh_shrink_fallback_css = sgs_emit_tier_rules(
 		$root_sel,
 		$sh_shrink,
-		'padding-block:' . $sh_shrink_pad_rest . ';transition:padding-block 200ms ease' . $sh_shadow_tx_append . ';',
+		'padding-block:' . $sh_shrink_pad_rest . ';transition:padding-block 200ms var(--wp--custom--easing--ease, ease) /* sgs-motion: exact */' . $sh_shadow_tx_append . ';',
 		$sh_shadow_tx_off,
 		'off'
 	);
@@ -532,7 +532,7 @@ if ( $sh_hide_any_tier ) {
 	$css .= sgs_emit_tier_rules(
 		$root_sel,
 		$sh_hide,
-		'transition:transform 200ms ease' . $sh_shadow_tx_append . ';will-change:transform;',
+		'transition:transform 200ms var(--wp--custom--easing--ease, ease) /* sgs-motion: exact */' . $sh_shadow_tx_append . ';will-change:transform;',
 		$sh_shadow_tx_off,
 		'off'
 	);

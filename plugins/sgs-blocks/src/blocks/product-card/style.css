@@ -256,7 +256,7 @@
 	/* Reads the site's button-preset timing, like every other button surface.
 	   `all 0.15s` was a hardcode the site setting could never reach; the
 	   0.15s stays as the fallback, so an unset token is unchanged. */
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, translate var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease), color var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease), translate var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease), box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease);
 	box-sizing: border-box;
 }
 
@@ -327,7 +327,7 @@
 	flex-shrink: 0;
 	width: 18px;
 	height: 18px;
-	transition: transform 0.2s ease;
+	transition: transform 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .product-card .product-card__add-to-cart:hover .product-card__cart-icon {
@@ -702,7 +702,7 @@
 .product-card:not( .product-card--live ) {
 	outline: 2px solid transparent;
 	outline-offset: -2px;
-	transition: outline-color 0.2s ease;
+	transition: outline-color 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .product-card:not( .product-card--live ):hover,
@@ -861,7 +861,7 @@
 	cursor: pointer;
 	background: none;
 	overflow: hidden;
-	transition: border-color 0.15s ease;
+	transition: border-color var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
 	flex-shrink: 0;
 }
 
@@ -966,7 +966,7 @@
 	border-left: 3px solid transparent;
 	background: transparent;
 	border-radius: 0 4px 4px 0;
-	transition: background 0.15s ease, border-color 0.15s ease;
+	transition: background var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
 }
 
 /* ≥480px: pack label left, per-unit price pushed right, saving follows inline. */
@@ -1671,7 +1671,7 @@
 /* Colour-dot hover growth (swatchHoverGrow → --sgs-pc-swatch-hover-scale). */
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-product-card__swatch {
-		transition: transform 0.2s ease;
+		transition: transform 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 	}
 
 	.sgs-product-card__swatch:hover {
@@ -1788,7 +1788,7 @@
 	background: color-mix( in srgb, var( --wp--preset--color--surface-alt, #ffffff ) 92%, transparent );
 	color: var( --wp--preset--color--text, #141414 );
 	cursor: pointer;
-	transition: background-color 0.2s ease, transform 0.2s ease;
+	transition: background-color 0.2s var(--wp--custom--easing--ease, ease), transform 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-product-card__wishlist::after {

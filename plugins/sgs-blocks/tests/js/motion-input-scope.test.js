@@ -38,6 +38,10 @@ const INPUT =
 // Inputs a script reads from the computed style rather than a sheet through var(): the reveal start line
 // (`assets/js/motion-reveal.js`).
 const SCRIPT_READS = [ '--sgs-me-start' ];
+// Inputs the renderer's per-instance rules read (`Sgs_Motion_Trigger_Open_State` and its canvas twin, which paint the
+// colour to-values into background-color, color and border-color while a state is on): a sheet cannot read them because
+// the rule is keyed to a state name only the instance knows. They are still registered in the sheet.
+const INSTANCE_RULE_READS = [ '--sgs-me-to-bg', '--sgs-me-to-fg', '--sgs-me-to-bd' ];
 const CARRIERS = {
 	'--sgs-me-loop-delay': [ '--sgs-me-a-delay', 'var(--sgs-me-delay, var(--sgs-me-loop-delay, 0ms))' ],
 	'--sgs-me-loop-close-delay': [
@@ -123,7 +127,7 @@ function scopeErrors( sheets ) {
 		}
 	}
 	for ( const prop of emittedInputs() ) {
-		if ( ! read.has( prop ) || ! registered[ prop ] ) {
+		if ( ! ( read.has( prop ) || INSTANCE_RULE_READS.includes( prop ) ) || ! registered[ prop ] ) {
 			errors.push( `the renderer writes ${ prop }, which the sheets do not read and register` );
 		}
 	}

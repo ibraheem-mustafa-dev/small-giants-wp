@@ -447,7 +447,7 @@
 	justify-content: center;
 	padding:         20px;
 	/* Backdrop fade: medium duration */
-	transition: opacity var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) );
+	transition: opacity var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--emphasised, cubic-bezier(0.16, 1, 0.3, 1) );
 }
 
 /* ::backdrop: transparent too (U-2 Addendum A) — the scrim div paints under
@@ -563,8 +563,8 @@
 	opacity: 0;
 	transform: scale( 0.9 );
 	transition:
-		opacity   var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) ),
-		transform var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) );
+		opacity   var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--emphasised, cubic-bezier(0.16, 1, 0.3, 1) ),
+		transform var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--emphasised, cubic-bezier(0.16, 1, 0.3, 1) );
 }
 
 .sgs-gallery__lightbox--open .sgs-gallery__lightbox-img {

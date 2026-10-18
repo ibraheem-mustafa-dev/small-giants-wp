@@ -192,7 +192,7 @@ if ( 'pill' === $trigger_style ) {
 		if ( '' === $pill_bg_paint ) {
 			$scoped_css[] = $pill_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;}';
 		}
-		$scoped_css[] = $pill_sel . '::after{transition:background-color .25s ease;}';
+		$scoped_css[] = $pill_sel . '::after{transition:background-color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
 		$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_bg_hover_paint, ':focus-visible', '::after' );
 	}
 	$pill_text_hover = sgs_resolve_text_colour_or_gradient(
@@ -202,7 +202,7 @@ if ( 'pill' === $trigger_style ) {
 	if ( '' !== $pill_text_hover ) {
 		$pill_text_hover_decl = sgs_text_colour_decl( $pill_text_hover );
 		if ( '' !== $pill_text_hover_decl ) {
-			$scoped_css[] = $pill_label_sel . '{transition:color .25s ease;}';
+			$scoped_css[] = $pill_label_sel . '{transition:color var(--wp--custom--duration--fast, .25s) var(--wp--custom--easing--ease, ease);}';
 			$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_text_hover_decl, ':focus-visible', ' .sgs-cart__pill-label' );
 		}
 	}

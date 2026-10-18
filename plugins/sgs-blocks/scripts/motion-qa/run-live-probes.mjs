@@ -105,6 +105,54 @@ const REAL_PROBES = [
 		args: [ '--engine', 'chromium', '--engine', 'firefox', '--width', '1440' ],
 	},
 	{
+		file: 'probe-motion-loop-delays.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-26 server-written loop delays on a core query loop (fixture page 5436): per-item delays at 1440/768/375, one rule per item, no style attribute, no nth-child ladder',
+		args: [ '--page', '5436', '--item-selector', '.m43-query [data-sgs-loop-i]', '--expect', '0,80,160,0,80,160', '--expect-tablet', '0,80,160,0,80,160', '--expect-mobile', '0,80,160,0,80,160' ],
+	},
+	{
+		file: 'probe-motion-loop-delays.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-26 server-written loop delays on a WooCommerce product collection (fixture page 5436): the same judges on .m43-products',
+		args: [ '--page', '5436', '--item-selector', '.m43-products [data-sgs-loop-i]', '--expect', '0,80,160,0,80,160', '--expect-tablet', '0,80,160,0,80,160', '--expect-mobile', '0,80,160,0,80,160' ],
+	},
+	{
+		file: 'probe-motion-form-states.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-53 form and choice-flow states on fixture page 5451: invalid shake per submit, step-changed slide forward and back, none under reduced motion',
+		args: [ '--form-url', '/?p=5451', '--flow-url', '/?p=5451', '--width', '1440', '--width', '375' ],
+	},
+	{
+		file: 'probe-close-clip-edge-live.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-8 one-edge close on fixture page 5344: a bottom wipe against an all-edges control',
+		args: [ '--page', '5344' ],
+	},
+	{
+		file: 'probe-layer-off-per-effect.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-23 per-effect off on fixture page 5346: split-reveal off on mobile and on tablet alone, draggable and the control unaffected',
+		args: [ '--page', '5346' ],
+	},
+	{
+		file: 'probe-vanilla-off-per-tier.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-23 vanilla ripple and sheen off per tier on fixture page 5358, read at 375/768/1440 and across a resize',
+		args: [ '--page', '5358' ],
+	},
+	{
+		file: 'probe-motion-per-device.mjs',
+		tiers: [ 'full' ],
+		what: 'Spec 38A M3.9 per-device entrance distances, custom easings, part isolation, tilted cards and the polaroid frame on fixture page 5244',
+		args: [ '--page', '5244' ],
+	},
+	{
+		file: 'probe-motion-a11y.mjs',
+		tiers: [ 'full' ],
+		what: 'Spec 38A M3.10 motion accessibility on fixture page 5287: reduced motion, pause controls, hover captions, axe scoped to the fixture',
+		args: [ '--page', '5287', '--axe-scope', 'fixture' ],
+	},
+	{
 		file: 'probe-looping-media.mjs',
 		tiers: [ 'full' ],
 		// Runs alone in parallel mode: draw-load is a wall-clock span judged within 8% (header), so CPU contention would distort it.

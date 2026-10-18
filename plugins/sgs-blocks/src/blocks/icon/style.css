@@ -80,10 +80,10 @@
 	border-color: var(--sgs-icon-border-colour, var(--sgs-si-border-colour, var(--sgs-icon-brand-border, var(--wp--preset--color--primary))));
 	transform: rotate(var(--sgs-icon-rotate, 0deg));
 	transition:
-		color var(--wp--custom--duration--fast, 150ms) ease,
-		background-color var(--wp--custom--duration--fast, 150ms) ease,
-		border-color var(--wp--custom--duration--fast, 150ms) ease,
-		box-shadow var(--wp--custom--duration--fast, 150ms) ease;
+		color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--ease, ease),
+		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--ease, ease),
+		border-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--ease, ease),
+		box-shadow var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--ease, ease);
 }
 
 /* The shape's shadow: the icon's own (--sgs-icon-shadow), else its row's, else none. Outline shapes paint no box, so

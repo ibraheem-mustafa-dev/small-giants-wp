@@ -60,7 +60,7 @@
 	color: var( --wp--preset--color--text-inverse, #fff );
 	background: var( --sgs-audio-accent, #c9821f );
 	background-image: var( --sgs-audio-accent-gradient, none );
-	transition: transform 0.12s ease;
+	transition: transform 0.12s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 .sgs-audio__play:hover {
 	transform: scale( 1.05 );
@@ -198,7 +198,7 @@
 	 * this rule consumes it, falling back to the original static idle
 	 * background when the var is unset (quiet / not-yet-reactive). */
 	background: var( --sgs-viz-bg, color-mix( in srgb, currentColor 6%, transparent ) );
-	transition: background 0.06s linear;
+	transition: background var(--wp--custom--duration--instant, 0.06s) var(--wp--custom--easing--linear, linear);
 }
 .sgs-audio--gradient-pulse .sgs-audio__transport {
 	color: var( --wp--preset--color--text-inverse, #fff );
@@ -253,7 +253,7 @@
 	background: currentColor;
 	transform: scaleY( var( --sgs-bar-scale, 0.15 ) );
 	transform-origin: bottom;
-	transition: transform 0.08s linear;
+	transition: transform 0.08s var(--wp--custom--easing--linear, linear); /* sgs-motion: exact */
 }
 
 /* Visually hidden by default (icon-only) — toggleLabel stays the accessible

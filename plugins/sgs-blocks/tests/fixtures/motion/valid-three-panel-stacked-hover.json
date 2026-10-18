@@ -19,7 +19,7 @@
 							"translateY": "-token:distance.sm",
 							"scale": 1.04,
 							"duration": "token:duration.fast",
-							"easing": "token:easing.ease-out",
+							"easing": "token:easing.emphasised",
 							"restRotateX": 4,
 							"rotateY": 6,
 							"perspective": 1000,
@@ -135,7 +135,7 @@
 						"values": {
 							"colour": "base",
 							"duration": 650,
-							"easing": "token:easing.ease-out",
+							"easing": "token:easing.emphasised",
 							"sizeFactor": 2.2,
 							"peakOpacity": 0.35
 						}

@@ -117,6 +117,16 @@
 			"usedBy": "state flips",
 			"cssVar": "--wp--custom--duration--instant"
 		},
+		"duration.quick": {
+			"band": {
+				"kind": "time",
+				"unit": "ms",
+				"min": 101,
+				"max": 199
+			},
+			"usedBy": "quick state changes",
+			"cssVar": "--wp--custom--duration--quick"
+		},
 		"duration.fast": {
 			"band": {
 				"kind": "time",
@@ -162,7 +172,27 @@
 			"usedBy": "the plain transition curve",
 			"cssVar": "--wp--custom--easing--default"
 		},
+		"easing.ease": {
+			"band": null,
+			"usedBy": "the CSS ease keyword",
+			"cssVar": "--wp--custom--easing--ease"
+		},
+		"easing.ease-in": {
+			"band": null,
+			"usedBy": "the CSS ease-in keyword, exit curves",
+			"cssVar": "--wp--custom--easing--ease-in"
+		},
 		"easing.ease-out": {
+			"band": null,
+			"usedBy": "the CSS ease-out keyword",
+			"cssVar": "--wp--custom--easing--ease-out"
+		},
+		"easing.ease-in-out": {
+			"band": null,
+			"usedBy": "the CSS ease-in-out keyword",
+			"cssVar": "--wp--custom--easing--ease-in-out"
+		},
+		"easing.emphasised": {
 			"band": {
 				"kind": "cubic-bezier",
 				"x1Max": 0.35,
@@ -170,12 +200,7 @@
 				"y2Equals": 1
 			},
 			"usedBy": "default motion curve",
-			"cssVar": "--wp--custom--easing--ease-out"
-		},
-		"easing.ease-in": {
-			"band": null,
-			"usedBy": "exit curves",
-			"cssVar": "--wp--custom--easing--ease-in"
+			"cssVar": "--wp--custom--easing--emphasised"
 		},
 		"easing.spring": {
 			"band": null,
@@ -221,15 +246,6 @@
 			},
 			"usedBy": "existing consumers",
 			"cssVar": "--wp--custom--transition--medium"
-		},
-		"transition.slow": {
-			"band": {
-				"kind": "transition-pair",
-				"duration": "duration.slow",
-				"easing": "easing.default"
-			},
-			"usedBy": "existing consumers",
-			"cssVar": "--wp--custom--transition--slow"
 		},
 		"entrance.distance": {
 			"band": {
@@ -310,6 +326,16 @@
 			},
 			"usedBy": "large entrance travel",
 			"cssVar": "--wp--custom--distance--xl"
+		},
+		"distance.2xl": {
+			"band": {
+				"kind": "length",
+				"unit": "px",
+				"min": 33,
+				"max": 64
+			},
+			"usedBy": "Bold entrance travel",
+			"cssVar": "--wp--custom--distance--2-xl"
 		}
 	},
 	"x-sgs-effects": {
@@ -2031,20 +2057,23 @@
 			"type": "string",
 			"enum": [
 				"token:duration.instant",
+				"token:duration.quick",
 				"token:duration.fast",
 				"token:duration.medium",
 				"token:duration.slow",
 				"token:duration.extra-slow",
 				"token:easing.default",
-				"token:easing.ease-out",
+				"token:easing.ease",
 				"token:easing.ease-in",
+				"token:easing.ease-out",
+				"token:easing.ease-in-out",
+				"token:easing.emphasised",
 				"token:easing.spring",
 				"token:easing.linear",
 				"token:easing.spring-gentle",
 				"token:easing.spring-bouncy",
 				"token:transition.fast",
 				"token:transition.medium",
-				"token:transition.slow",
 				"token:entrance.distance",
 				"token:entrance.duration",
 				"token:entrance.easing",
@@ -2052,7 +2081,8 @@
 				"token:distance.sm",
 				"token:distance.md",
 				"token:distance.lg",
-				"token:distance.xl"
+				"token:distance.xl",
+				"token:distance.2xl"
 			],
 			"description": "A theme motion token, `token:<family>.<key>`, resolved to `var(--wp--custom--<family>--<key>)`.",
 			"x-sgs-kind": "fieldType"
@@ -2133,7 +2163,7 @@
 							"$ref": "#/$defs/tokenReference"
 						}
 					],
-					"pattern": "^token:(?:distance\\.[a-z-]+|entrance\\.distance)$"
+					"pattern": "^token:(?:distance\\.[a-z0-9-]+|entrance\\.distance)$"
 				},
 				{
 					"type": "string",
@@ -2143,7 +2173,8 @@
 						"-token:distance.sm",
 						"-token:distance.md",
 						"-token:distance.lg",
-						"-token:distance.xl"
+						"-token:distance.xl",
+						"-token:distance.2xl"
 					],
 					"description": "A negated distance token (a lift), resolved to calc(-1 * var(...))."
 				}

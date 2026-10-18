@@ -36,7 +36,7 @@
 		opacity: 0.15;
 		transform: scaleX(0);
 		transform-origin: left center;
-		transition: transform 0.3s ease;
+		transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 		z-index: -1;
 	}
 
@@ -79,7 +79,7 @@
 		background-color: currentColor;
 		transform: scaleX(0);
 		transform-origin: bottom right;
-		transition: transform 0.3s ease;
+		transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	}
 
 	.wp-block-navigation-item__content:hover::after,
@@ -96,7 +96,7 @@
 		position: relative;
 		overflow: hidden;
 		z-index: 1;
-		transition: color 0.3s ease;
+		transition: color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	}
 
 	.wp-block-button__link::before,
@@ -111,7 +111,7 @@
 		z-index: -1;
 		transform: scaleX(0);
 		transform-origin: left;
-		transition: transform 0.3s ease;
+		transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	}
 
 	.wp-block-button__link:hover::before,
@@ -132,7 +132,7 @@
 	.sgs-cta-button i,
 	.wp-block-button__link .sgs-icon,
 	.sgs-cta-button .sgs-icon {
-		transition: transform 0.3s ease;
+		transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	}
 
 	.wp-block-button__link:hover svg,
@@ -405,7 +405,7 @@ a.sgs-field-fallback:visited {
 	text-transform: none;
 	white-space: nowrap;
 	cursor: pointer;
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease);
 }
 
 a.sgs-field-fallback:focus {

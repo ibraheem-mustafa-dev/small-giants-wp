@@ -36,7 +36,7 @@ describe( 'the two §5.1 presets', () => {
 			label: 'Grayscale to colour',
 			trigger: 'hover',
 			target: 'part',
-			values: { restGrayscale: 1, grayscale: 0, duration: 'token:duration.medium', easing: 'token:easing.ease-out' },
+			values: { restGrayscale: 1, grayscale: 0, duration: 'token:duration.medium', easing: 'token:easing.emphasised' },
 		} );
 	} );
 	it( 'Border accent draws a 3px accent-colour line on the fast duration', () => {
@@ -47,7 +47,7 @@ describe( 'the two §5.1 presets', () => {
 			label: 'Border accent',
 			trigger: 'hover',
 			target: 'part',
-			values: { accentWidth: 3, accentColour: 'accent', duration: 'token:duration.fast', easing: 'token:easing.ease-out' },
+			values: { accentWidth: 3, accentColour: 'accent', duration: 'token:duration.fast', easing: 'token:easing.emphasised' },
 		} );
 	} );
 } );

@@ -176,7 +176,7 @@
 	border-radius: inherit;
 	opacity: 0;
 	transform: translateY(8px);
-	transition: opacity 0.3s ease, transform 0.3s ease;
+	transition: opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	overflow: hidden;
 }
 
@@ -185,7 +185,7 @@
 	color: var(--wp--preset--color--text-inverse, #ffffff);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	transform: translateY(20px);
-	transition: transform 0.3s ease;
+	transition: transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 /* The overlay bio's default line height, at zero specificity so the bio typography settings win. */

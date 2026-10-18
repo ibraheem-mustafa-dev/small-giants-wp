@@ -65,10 +65,10 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked="true"]) .sgs-motion-thumb--hover:not(.sgs-motion-thumb--still) .sgs-motion-thumb__box {
-		animation: sgs-thumb-hover 2.4s ease-in-out infinite;
+		animation: sgs-thumb-hover 2.4s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 	}
 	.sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked="true"]) .sgs-motion-thumb--entrance:not(.sgs-motion-thumb--still) .sgs-motion-thumb__box {
-		animation: sgs-thumb-entrance 2.4s ease-out infinite;
+		animation: sgs-thumb-entrance 2.4s var(--wp--custom--easing--ease-out, ease-out) infinite;
 	}
 	.sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked="true"]) .sgs-motion-thumb--entrance.sgs-motion-thumb--fade-out .sgs-motion-thumb__box {
 		animation-name: sgs-thumb-leave;

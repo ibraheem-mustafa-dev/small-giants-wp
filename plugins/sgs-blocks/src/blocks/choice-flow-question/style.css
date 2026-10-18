@@ -350,7 +350,7 @@
 	padding: 16px 18px 18px;
 	border-radius: 0;
 	background-color: var( --wp--preset--color--surface-alt, #fff );
-	transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.3s ease;
+	transition: border-color var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--ease, ease), box-shadow var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media {
@@ -532,7 +532,7 @@
 	color: var( --sgs-choice-flow-toggle, var( --wp--preset--color--text, #1a202c ) );
 	font-size: 14px;
 	font-weight: 400;
-	transition: background-color 0.2s ease, color 0.2s ease;
+	transition: background-color 0.2s var(--wp--custom--easing--ease, ease), color 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 /* The shared partial's dark fill on hover and focus, restated at this
@@ -562,12 +562,12 @@
 	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
 	font-size: 13.5px;
 	text-wrap: pretty;
-	animation: sgs-choice-flow-question-fade 0.25s ease both;
+	animation: sgs-choice-flow-question-fade var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--ease, ease) both;
 }
 
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button {
-		transition: border-color 0.25s ease;
+		transition: border-color var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--ease, ease);
 	}
 
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button:hover {

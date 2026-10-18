@@ -807,7 +807,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 	background-image: var( --sgs-media-overlay-gradient, none );
 	opacity: var( --sgs-media-overlay-opacity, 1 );
 	mix-blend-mode: var( --sgs-media-overlay-blend, normal );
-	transition: background-color 0.3s ease, opacity 0.3s ease;
+	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-media-box:hover::after,
@@ -863,8 +863,8 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 	 * leaves every other property's transition alone, for any current or
 	 * future `.sgs-media-el` consumer, not just hero. */
 	transition-property: box-shadow;
-	transition-duration: 0.3s;
-	transition-timing-function: ease;
+	transition-duration: var(--wp--custom--duration--medium, 0.3s);
+	transition-timing-function: var(--wp--custom--easing--ease, ease);
 }
 
 /* Pointer hover is touch-guarded (the two layers of includes/helpers-hover-state.php), so a tap

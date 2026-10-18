@@ -90,7 +90,7 @@ describe( 'the Hover state choice', () => {
 			preset: 'hover-lift',
 			values: {
 				duration: 'token:duration.fast',
-				easing: 'token:easing.ease-out',
+				easing: 'token:easing.emphasised',
 				translateY: '-token:distance.sm',
 			},
 		} );

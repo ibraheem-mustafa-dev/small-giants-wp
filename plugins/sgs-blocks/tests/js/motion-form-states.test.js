@@ -328,7 +328,7 @@ describe( 'overlap: the old step animations survive for blocks off the model', (
 		const start = formCss.indexOf( sel + ' {' );
 		expect( start ).toBeGreaterThan( -1 );
 		expect( formCss.slice( start, formCss.indexOf( '}', start ) ) ).toContain(
-			'animation: sgs-step-enter 0.2s ease forwards;'
+			'animation: sgs-step-enter 0.2s var(--wp--custom--easing--ease, ease) forwards;'
 		);
 	} );
 
@@ -382,11 +382,11 @@ describe( 'overlap: the old step animations survive for blocks off the model', (
 			return start < 0 ? '' : flowCss.slice( start, flowCss.indexOf( '}', start ) );
 		};
 		expect( rule( '.sgs-choice-flow' + gate + ' .sgs-form-step' ) ).toContain(
-			'transition: opacity 220ms ease-out, transform 220ms ease-out;'
+			'transition: opacity 220ms var(--wp--custom--easing--ease-out, ease-out), transform 220ms var(--wp--custom--easing--ease-out, ease-out);'
 		);
 		expect( rule( '.sgs-choice-flow' + gate + ' .sgs-form-step.is-entering' ) ).toContain( 'translateY(8px)' );
 		expect( rule( '.sgs-choice-flow--layout-showcase' + gate + ' .sgs-form-step' ) ).toContain(
-			'transition: opacity 0.4s ease, transform 0.4s ease;'
+			'transition: opacity 0.4s var(--wp--custom--easing--ease, ease), transform 0.4s var(--wp--custom--easing--ease, ease);'
 		);
 		expect( rule( '.sgs-choice-flow--layout-showcase' + gate + ' .sgs-form-step.is-entering' ) ).toContain( 'translateY(18px)' );
 	} );

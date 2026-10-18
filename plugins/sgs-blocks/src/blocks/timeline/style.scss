@@ -274,7 +274,7 @@
 	// already scaled down and fading — 21 live sparks measured in the DOM and
 	// none legible on screen. `ease-out` keeps them large and opaque through
 	// the readable part of the flight.
-	animation: sgs-timeline-spark var(--sgs-timeline-spark-life, 520ms) ease-out
+	animation: sgs-timeline-spark var(--sgs-timeline-spark-life, 520ms) var(--wp--custom--easing--ease-out, ease-out)
 		forwards;
 }
 
@@ -319,7 +319,7 @@
 	border-radius: 50%;
 	border: 2px solid var(--sgs-timeline-fill-colour);
 	pointer-events: none;
-	animation: sgs-timeline-node-pulse 620ms ease-out forwards;
+	animation: sgs-timeline-node-pulse 620ms var(--wp--custom--easing--ease-out, ease-out) forwards; /* sgs-motion: exact */
 }
 
 @keyframes sgs-timeline-node-pulse {
@@ -914,7 +914,7 @@
 // ring under `.is-lit` and a blanket transition would fight it.
 .sgs-timeline__node::before,
 .sgs-timeline__node-icon {
-	transition: background-color 320ms ease-out;
+	transition: background-color 320ms var(--wp--custom--easing--ease-out, ease-out); /* sgs-motion: exact */
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -55,7 +55,7 @@
 	justify-content: center;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	margin-bottom: var(--wp--preset--spacing--30);
-	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transition: transform var(--wp--custom--duration--medium, 0.3s) cubic-bezier(0.16, 1, 0.3, 1); /* sgs-motion: exact */
 }
 
 /* Icon lifts on card hover — applies to every info-box instance */
@@ -244,7 +244,7 @@
 	font-size: 2.5rem; /* Matches icon--medium visual weight */
 	margin-bottom: var(--wp--preset--spacing--30);
 	/* No box shadow -- emoji renders without a rectangular container */
-	transition: transform var(--sgs-hover-duration, 0.3s) ease;
+	transition: transform var(--sgs-hover-duration, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 /* Emoji scales on card hover, matching the existing icon lift behaviour */

@@ -170,7 +170,7 @@
 	background: var(--sgs-buybox-cta-bg, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #1e1e1e)));
 	color: var(--sgs-buybox-cta-colour, var(--wp--preset--color--text, #fff));
 	cursor: pointer;
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 200ms) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 200ms) ease, color var(--wp--custom--button-presets--default--hover-transition, 200ms) ease, transform var(--wp--custom--button-presets--default--hover-transition, 200ms) ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease), color var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--button-presets--default--hover-transition, 200ms) var(--wp--custom--easing--ease, ease);
 }
 
 /* Hover: the style presets below own the colour change; the site-wide button lift
@@ -270,7 +270,7 @@
    back to 2px over 0.18s only when the site sets none. Reduced-motion is honoured
    by the existing .buybox__add-to-cart media query below (transition: none). */
 .sgs-buybox .buybox__add-to-cart--hover-lift {
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-buybox .buybox__add-to-cart--hover-lift:hover:not([disabled]) {
@@ -438,7 +438,7 @@
 	border-left: 3px solid transparent;
 	background: transparent;
 	border-radius: 0 4px 4px 0;
-	transition: background 0.15s ease, border-color 0.15s ease;
+	transition: background var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
 }
 
 @media (min-width: 480px) {
@@ -762,7 +762,7 @@
 	   layer (block.json supports.sgs.mediaElements + assets/css/media-atoms/
 	   object-fit.css's .sgs-media-el rule, cover fallback preserved there). */
 	/* Crossfade on variation swap (driven by data-wp-bind--src in the store). */
-	transition: opacity 0.2s ease;
+	transition: opacity 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -831,7 +831,7 @@
 	overflow: hidden;
 	scroll-snap-align: start;
 	/* Colour is not the sole indicator — scale + border both change on selection. */
-	transition: transform 0.15s ease, border-color 0.15s ease;
+	transition: transform var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-buybox .product-card__thumb img {
@@ -1113,7 +1113,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-buybox-guided__group {
-		animation: sgs-buybox-guided-fade-in 0.2s ease-out;
+		animation: sgs-buybox-guided-fade-in 0.2s var(--wp--custom--easing--ease-out, ease-out); /* sgs-motion: exact */
 	}
 }
 

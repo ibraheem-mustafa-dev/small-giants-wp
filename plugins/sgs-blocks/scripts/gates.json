@@ -1690,5 +1690,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 190
+  },
+  {
+    "id": "check-motion-literals",
+    "cmd": "python scripts/check-motion-literals.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2450,
+    "order": 191
+  },
+  {
+    "id": "check-motion-literals-selftest",
+    "cmd": "python scripts/check-motion-literals.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 634,
+    "order": 192
   }
 ]

@@ -59,7 +59,7 @@ export function emitFocus( layer, selector ) {
 		'transition-duration': tokenOr( 'token:duration.fast', '200ms' ),
 		'transition-delay': '0ms',
 		'transition-timing-function': tokenOr(
-			'token:easing.ease-out',
+			'token:easing.emphasised',
 			'ease-out'
 		),
 	};

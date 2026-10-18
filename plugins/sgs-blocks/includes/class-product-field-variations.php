@@ -287,7 +287,7 @@ final class Product_Field_Variations {
 			sgs_collect_css(
 				'.sgs-bound[data-sgs-bound-empty]{display:none!important}'
 				. '@media (prefers-reduced-motion:no-preference){'
-				. '.sgs-bound[data-sgs-bound-changed]{animation:sgs-bound-in var(--wp--custom--duration--medium,300ms) var(--wp--custom--easing--ease-out,ease-out)}'
+				. '.sgs-bound[data-sgs-bound-changed]{animation:sgs-bound-in var(--wp--custom--duration--medium,300ms) var(--wp--custom--easing--emphasised,ease-out)}'
 				. '@keyframes sgs-bound-in{from{opacity:0}to{opacity:1}}}'
 			);
 		}

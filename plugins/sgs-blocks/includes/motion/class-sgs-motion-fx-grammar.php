@@ -144,7 +144,7 @@ final class Sgs_Motion_Fx_Grammar {
 		if ( ! Sgs_Motion_Field_Css::looks_like_token( $value ) ) {
 			return $value;
 		}
-		if ( 1 !== preg_match( '/^(-?)token:([a-z][a-z0-9-]*)\.([a-z][a-z0-9-]*)$/D', (string) $value, $m ) || ! function_exists( 'sgs_global_custom_setting' ) ) {
+		if ( 1 !== preg_match( '/^(-?)token:([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)$/D', (string) $value, $m ) || ! function_exists( 'sgs_global_custom_setting' ) ) {
 			return null;
 		}
 		$family = \sgs_global_custom_setting( $m[2] );

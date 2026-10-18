@@ -170,7 +170,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 					. 'bottom:calc(-1 * ' . $sweep_edge . ');height:' . $sweep_edge . ';'
 					. 'background-image:' . $sweep['gradient'] . ';'
 					. 'background-size:' . $sweep['background_size'] . ';background-position:' . $sweep['rest_position'] . ';background-repeat:no-repeat;'
-					. 'transition:background-position 300ms ease;pointer-events:none;}';
+					. 'transition:background-position var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);pointer-events:none;}';
 				$css .= sgs_hover_state_rules( $link_sel, 'background-position:' . $sweep['hover_position'], ':focus-visible', '::after' );
 				// MANDATORY companion: keep both end states, drop only the travel.
 				$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';

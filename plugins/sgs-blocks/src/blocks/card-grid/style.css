@@ -468,7 +468,7 @@
 	background: transparent;
 	color: inherit;
 	cursor: pointer;
-	transition: background-color 150ms ease, color 150ms ease;
+	transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-card-grid__page-btn:hover,

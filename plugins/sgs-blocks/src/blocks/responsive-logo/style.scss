@@ -51,7 +51,7 @@
 		// The fade sits on the link's children, never on the link: opacity on the <a> would blend its own focus outline
 		// into the ground and drop the ring below 3:1 (focus system, WCAG 1.4.11).
 		> * {
-			transition: opacity 150ms ease;
+			transition: opacity var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 		}
 
 		// --sgs-logo-hover-opacity is emitted by render.php from the block's

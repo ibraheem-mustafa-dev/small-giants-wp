@@ -152,7 +152,7 @@ if ( ! function_exists( 'sgs_header_scroll_fade_css' ) ) {
 
 			$css .= $media_by_tier[ $tier ] . '{'
 				. $root_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;'
-				. $after_bg . 'opacity:1;transition:opacity 300ms ease;}'
+				. $after_bg . 'opacity:1;transition:opacity var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);}'
 				. $root_sel . '.is-header-scrolled::after{opacity:0;}'
 				. '}';
 		}

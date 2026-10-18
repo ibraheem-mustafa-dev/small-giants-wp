@@ -184,10 +184,11 @@ ok( 'ease' === easing_of( array() ), "easing: unset attribute resolves to the li
 ok( 'ease' === easing_of( array( 'easing' => 'ease' ) ), "easing: 'ease' resolves to the literal keyword" );
 ok( 'linear' === easing_of( array( 'easing' => 'linear' ) ), "easing: 'linear' resolves to the literal keyword" );
 ok( 'cubic-bezier(0.165, 0.84, 0.44, 1)' === easing_of( array( 'easing' => 'quart-out' ) ), "easing: 'quart-out' resolves to dogstudio's literal curve, not a theme token" );
-foreach ( array( 'default', 'ease-out', 'ease-in', 'spring' ) as $token ) {
+// The stored name `ease-out` is the theme's emphasised curve; the others resolve to the token of the same name.
+foreach ( array( 'default' => 'default', 'ease-out' => 'emphasised', 'ease-in' => 'ease-in', 'spring' => 'spring' ) as $stored => $token ) {
 	ok(
-		'var(--wp--custom--easing--' . $token . ')' === easing_of( array( 'easing' => $token ) ),
-		"easing: '$token' resolves to the matching theme motion token"
+		'var(--wp--custom--easing--' . $token . ')' === easing_of( array( 'easing' => $stored ) ),
+		"easing: '$stored' resolves to the matching theme motion token"
 	);
 }
 ok( 'ease' === easing_of( array( 'easing' => 'not-a-real-option' ) ), 'easing: an out-of-list stored value falls back to ease' );

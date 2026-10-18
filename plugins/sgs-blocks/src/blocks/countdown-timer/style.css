@@ -115,13 +115,13 @@
 
 	.sgs-countdown--digit-flip .sgs-countdown__number {
 		display: inline-block;
-		transition: transform 0.15s ease-in;
+		transition: transform var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease-in, ease-in);
 		transform-origin: center bottom;
 		backface-visibility: hidden;
 	}
 
 	.sgs-countdown--digit-flip .sgs-countdown__number--flipping {
-		animation: sgs-flip-digit 0.3s ease-in-out;
+		animation: sgs-flip-digit var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease-in-out, ease-in-out);
 	}
 }
 

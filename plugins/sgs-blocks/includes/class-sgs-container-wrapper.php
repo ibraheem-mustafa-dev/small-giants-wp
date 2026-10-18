@@ -2398,7 +2398,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// box is hovered, not the composite root, so it stays its own selector.
 			if ( $hover_spill_scale && $uid ) {
 				$responsive_css .= '.' . $uid . ':has(.sgs-media-box){overflow-x:clip;overflow-y:visible;position:relative;z-index:2;}';
-				$responsive_css .= '.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}';
+				$responsive_css .= '.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s; /* sgs-motion: exact */transition-timing-function:var(--wp--custom--easing--ease-in-out, ease-in-out);}';
 				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}';
 			}
 

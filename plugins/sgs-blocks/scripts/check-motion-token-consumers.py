@@ -181,7 +181,7 @@ def check_present(tokens: dict[str, dict], custom: dict) -> list[str]:
     for key, entry in tokens.items():
         if theme_value(custom, key) is None:
             errors.append(f"present: theme.json settings.custom.{key} is missing")
-        expected = "--wp--custom--" + key.replace(".", "--")
+        expected = "--wp--custom--" + re.sub(r"(?<=[0-9])(?=[a-z])", "-", key).replace(".", "--")
         if entry.get("cssVar") != expected:
             errors.append(f"present: schema cssVar for {key} is {entry.get('cssVar')!r}, expected {expected!r}")
     return errors

@@ -244,7 +244,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-cart__panel--flyout:not([hidden]) {
-		animation: sgs-cart-flyout-in 0.15s ease-out;
+		animation: sgs-cart-flyout-in var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease-out, ease-out);
 	}
 }
 
@@ -286,11 +286,11 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-cart__panel--drawer[open] {
-		animation: sgs-cart-drawer-in 0.25s ease-out;
+		animation: sgs-cart-drawer-in var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--ease-out, ease-out);
 	}
 
 	.sgs-cart__panel--drawer.is-closing {
-		animation: sgs-cart-drawer-out 0.2s ease-in;
+		animation: sgs-cart-drawer-out 0.2s var(--wp--custom--easing--ease-in, ease-in); /* sgs-motion: exact */
 	}
 }
 
@@ -745,7 +745,7 @@
 }
 
 :where(.sgs-cart__panel) .sgs-cart__panel-checkout {
-	transition: background-color 0.2s ease, color 0.2s ease;
+	transition: background-color 0.2s var(--wp--custom--easing--ease, ease), color 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 /* Optional note under Checkout (panelInstalmentsNote), filled by panel-extras.js. */

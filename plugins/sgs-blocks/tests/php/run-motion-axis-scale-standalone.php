@@ -142,7 +142,7 @@ const GOLDEN = <<<'JSON'
 		}
 	},
 	"hover": {
-		"css": ".sgs-m-test{--sgs-mh-to-s:1.05;--sgs-mh-to-ty:-4px;transition:--sgs-mh-s 200ms var(--wp--custom--easing--ease-out) 0ms, --sgs-mh-ty 200ms var(--wp--custom--easing--ease-out) 0ms, color 200ms var(--wp--custom--easing--ease-out) 0ms, background-color 200ms var(--wp--custom--easing--ease-out) 0ms, border-color 200ms var(--wp--custom--easing--ease-out) 0ms, box-shadow 200ms var(--wp--custom--easing--ease-out) 0ms;}@media (max-width:767px){.sgs-m-test{--sgs-mh-to-s:1.02;}}",
+		"css": ".sgs-m-test{--sgs-mh-to-s:1.05;--sgs-mh-to-ty:-4px;transition:--sgs-mh-s 200ms var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-ty 200ms var(--wp--custom--easing--emphasised) 0ms, color 200ms var(--wp--custom--easing--emphasised) 0ms, background-color 200ms var(--wp--custom--easing--emphasised) 0ms, border-color 200ms var(--wp--custom--easing--emphasised) 0ms, box-shadow 200ms var(--wp--custom--easing--emphasised) 0ms;}@media (max-width:767px){.sgs-m-test{--sgs-mh-to-s:1.02;}}",
 		"attrs": {
 			"data-sgs-mh": "self",
 			"data-sgs-mc": "translate scale"

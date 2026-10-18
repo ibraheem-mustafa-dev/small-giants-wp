@@ -889,8 +889,8 @@ class SGS_Motion_Registry {
 		\wp_add_inline_style(
 			'sgs-view-transitions',
 			\sprintf(
-				'::view-transition-old(root){animation:%1$dms cubic-bezier(0.4,0,0.2,1) both sgs-vt-%2$s-out}'
-					. '::view-transition-new(root){animation:%1$dms cubic-bezier(0.4,0,0.2,1) both sgs-vt-%2$s-in}',
+				'::view-transition-old(root){animation:%1$dms var(--wp--custom--easing--default, cubic-bezier(0.4,0,0.2,1)) both sgs-vt-%2$s-out}'
+					. '::view-transition-new(root){animation:%1$dms var(--wp--custom--easing--default, cubic-bezier(0.4,0,0.2,1)) both sgs-vt-%2$s-in}',
 				$duration,
 				$style
 			)

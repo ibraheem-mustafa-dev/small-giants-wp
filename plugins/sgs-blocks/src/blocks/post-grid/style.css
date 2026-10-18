@@ -561,7 +561,7 @@
 	background: transparent;
 	color: inherit;
 	cursor: pointer;
-	transition: background-color 200ms ease, color 200ms ease;
+	transition: background-color 200ms var(--wp--custom--easing--ease, ease), color 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-post-grid__filter:hover,
@@ -616,7 +616,7 @@
 	background: transparent;
 	color: inherit;
 	cursor: pointer;
-	transition: background-color 150ms ease, color 150ms ease;
+	transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-post-grid__page-btn:hover,
@@ -666,7 +666,7 @@
 	background: transparent;
 	color: inherit;
 	cursor: pointer;
-	transition: background-color 200ms ease, color 200ms ease;
+	transition: background-color 200ms var(--wp--custom--easing--ease, ease), color 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-post-grid__load-more:hover,
@@ -703,7 +703,7 @@
 	box-shadow: 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
 	cursor: pointer;
 	color: var( --wp--preset--color--text, #1e1e1e );
-	transition: background-color 150ms ease, box-shadow 150ms ease;
+	transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), box-shadow var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-post-grid__carousel-prev {
@@ -726,7 +726,7 @@
 	border-radius: 50%;
 	box-shadow: 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 12%, transparent);
 	color: var( --wp--preset--color--text, #1e1e1e );
-	transition: background-color 150ms ease, box-shadow 150ms ease;
+	transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), box-shadow var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-post-grid__carousel-prev:hover,
@@ -766,7 +766,7 @@
 	border: none;
 	background: var( --wp--preset--color--border, #ccc );
 	cursor: pointer;
-	transition: background-color 150ms ease, transform 150ms ease;
+	transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 }
 
 /* Ensure 44×44 touch target for dots by using pseudo-element */

@@ -330,7 +330,7 @@
 	   only when the progressColour or progressColourGradient attribute is set. */
 	background-color: var(--sgs-choice-flow-progress-colour, var(--wp--preset--color--primary, #1F7A7A));
 	background-image: var(--sgs-choice-flow-progress-colour-gradient, none);
-	transition: width var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease-out, ease-out);
+	transition: width var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--emphasised, ease-out);
 }
 
 /* ===== Root chrome: optional header =====
@@ -557,7 +557,7 @@
 	font-size: 12px;
 	font-weight: 700;
 	white-space: nowrap;
-	transition: left var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease-out, ease-out);
+	transition: left var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--emphasised, ease-out);
 }
 
 /* ===== Step transition =====
@@ -576,7 +576,7 @@
 .sgs-choice-flow:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step {
 	opacity: 1;
 	transform: translateY(0);
-	transition: opacity 220ms ease-out, transform 220ms ease-out;
+	transition: opacity 220ms var(--wp--custom--easing--ease-out, ease-out), transform 220ms var(--wp--custom--easing--ease-out, ease-out); /* sgs-motion: exact */
 }
 
 .sgs-choice-flow:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step.is-entering {
@@ -1449,7 +1449,7 @@
 /* A step rises in over 0.4s (compact keeps its own 220ms; reduced motion
    is handled globally above for `.sgs-form-step`). */
 .sgs-choice-flow--layout-showcase:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step {
-	transition: opacity 0.4s ease, transform 0.4s ease;
+	transition: opacity 0.4s var(--wp--custom--easing--ease, ease), transform 0.4s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-choice-flow--layout-showcase:where(:not([data-sgs-me~="state"]):not(:has([data-sgs-me~="state"]))) .sgs-form-step.is-entering {

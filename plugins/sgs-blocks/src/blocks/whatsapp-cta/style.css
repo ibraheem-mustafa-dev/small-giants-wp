@@ -8,7 +8,7 @@
 	text-decoration: none;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	transition-property: all;
-	transition-timing-function: ease;
+	transition-timing-function: var(--wp--custom--easing--ease, ease);
 	/* The site-wide button hover timing (buttonPresets.default.hover-transition). */
 	transition-duration: var(--wp--custom--button-presets--default--hover-transition, 0.3s);
 	cursor: pointer;
@@ -115,7 +115,7 @@
 	 * from the tab order and hit-testing, so a hidden floating button (below
 	 * its "show after scrolling" threshold) is never keyboard-focusable. */
 	visibility: hidden;
-	transition: opacity 0.3s ease, transform 0.3s ease;
+	transition: opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-whatsapp-cta--floating.sgs-whatsapp-cta--visible {
@@ -138,7 +138,7 @@
 	 * 0.3s delay), so the bubble is still visibly animating out rather than
 	 * vanishing on the spot; switching back to visible is instant (no
 	 * delay), matching the base --floating rule's own show/hide precedent. */
-	transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+	transition: opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), visibility 0s var(--wp--custom--easing--linear, linear) 0.3s; /* sgs-motion: exact */
 }
 
 .sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn {

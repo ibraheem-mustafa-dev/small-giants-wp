@@ -78,7 +78,7 @@ if ( ! function_exists( 'sgs_link_underline_css' ) ) {
 		$css  = '' === $paint ? '' : $link . '{text-decoration:none;}';
 		$css .= $line . '{' . ( '' === $paint ? 'text-decoration:none;' : '' ) . 'background-image:linear-gradient(currentColor,currentColor);'
 			. 'background-repeat:no-repeat;background-origin:content-box;background-position:0 100%;background-size:0 ' . $size . ';'
-			. 'transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;}';
+			. 'transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) var(--wp--custom--easing--ease-out, ease-out);}';
 		$css .= $line . ':dir(rtl){background-position:100% 100%;}';
 		$css .= sgs_hover_state_rules( $link, 'background-size:100% ' . $size, ':focus-visible', $paint );
 		$css .= '@media (prefers-reduced-motion: reduce){' . $line . '{transition:none;}}';

@@ -69,7 +69,7 @@ function toNumber( value ) {
 export function resolveDistance( value ) {
 	const token =
 		'string' === typeof value
-			? /^(-?)token:([a-z][a-z0-9-]*)\.([a-z][a-z0-9-]*)$/.exec(
+			? /^(-?)token:([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)$/.exec(
 					value.trim()
 			  )
 			: null;
@@ -77,9 +77,11 @@ export function resolveDistance( value ) {
 		return null;
 	}
 	const root = document.documentElement;
+	// WordPress prints a digit-then-letter key such as `2xl` as `2-xl` (`_wp_to_kebab_case`).
+	const key = token[ 3 ].replace( /(?<=[0-9])(?=[a-z])/g, '-' );
 	const styles = window.getComputedStyle( root );
 	const raw = styles
-		.getPropertyValue( `--wp--custom--${ token[ 2 ] }--${ token[ 3 ] }` )
+		.getPropertyValue( `--wp--custom--${ token[ 2 ] }--${ key }` )
 		.trim();
 	const length = /^(-?(?:\d+(?:\.\d+)?|\.\d+))(px|rem|em)$/.exec( raw );
 	if ( ! length ) {

@@ -266,7 +266,7 @@
 /* Entrance animation — fade in and slide up when a step becomes active. A form with a
    `state` entrance plays its `step-changed` motion instead (view.js adds no class). */
 .sgs-form-step--entering:where(:not([data-sgs-me~="state"])) {
-	animation: sgs-step-enter 0.2s ease forwards;
+	animation: sgs-step-enter 0.2s var(--wp--custom--easing--ease, ease) forwards; /* sgs-motion: exact */
 }
 
 @keyframes sgs-step-enter {
@@ -1202,7 +1202,7 @@ select.sgs-form-field__input {
 	margin: 0;
 	color: var(--wp--preset--color--text-muted, #555);
 	pointer-events: none;
-	transition: all var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--ease-out, ease-out);
+	transition: all var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--emphasised, ease-out);
 }
 
 .sgs-form-field--textarea .sgs-form-field__label {

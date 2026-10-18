@@ -13,13 +13,13 @@
 	   sgs/button, sgs/buybox, sgs/option-picker and
 	   sgs/whatsapp-cta read, so a colour hover takes the site's timing rather
 	   than snapping. The reduced-motion block below zeroes it. Not a theme.json element default, so no silent override. */
-	transition: color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-image var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+	transition: color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), background-image var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease);
 }
 
 /* The ::after background layer (emitted by render.php only when a background is
    set) keeps its own timing in step with the root's, from the same token. */
 .wp-block-sgs-heading::after {
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-image var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), background-image var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease);
 }
 
 /* NO default colour here, deliberately (D343 — same reasoning as the D338

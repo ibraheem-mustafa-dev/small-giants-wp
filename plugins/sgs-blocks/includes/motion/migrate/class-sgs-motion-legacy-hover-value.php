@@ -312,7 +312,7 @@ final class Sgs_Motion_Legacy_Hover_Value {
 			return '';
 		}
 		if ( in_array( $value, array( 'default', 'ease-out', 'ease-in', 'spring' ), true ) ) {
-			return 'token:easing.' . $value;
+			return 'token:easing.' . ( 'ease-out' === $value ? 'emphasised' : $value );
 		}
 		if ( 'custom' === $value ) {
 			return self::custom_curve( $custom );

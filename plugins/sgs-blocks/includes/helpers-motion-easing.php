@@ -46,9 +46,10 @@ if ( ! function_exists( 'sgs_motion_easing_css' ) ) {
 	 * @return string A CSS `<easing-function>` value. Never empty.
 	 */
 	function sgs_motion_easing_css( string $value, string $custom = '', string $fallback = 'ease' ): string {
-		$tokens = array( 'default', 'ease-out', 'ease-in', 'spring' );
-		if ( in_array( $value, $tokens, true ) ) {
-			return 'var(--wp--custom--easing--' . $value . ')';
+		// The stored name `ease-out` is the theme's emphasised curve (the CSS keyword is `ease-out-css`).
+		$tokens = array( 'default' => 'default', 'ease-out' => 'emphasised', 'ease-in' => 'ease-in', 'spring' => 'spring' );
+		if ( isset( $tokens[ $value ] ) ) {
+			return 'var(--wp--custom--easing--' . $tokens[ $value ] . ')';
 		}
 		$literals = array(
 			'ease'         => 'ease',

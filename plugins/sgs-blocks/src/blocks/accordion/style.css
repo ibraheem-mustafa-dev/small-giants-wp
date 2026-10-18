@@ -181,7 +181,7 @@
 }
 
 .sgs-accordion-item__content.is-animating {
-	transition: height 0.3s ease;
+	transition: height var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-accordion-item__content > :first-child {

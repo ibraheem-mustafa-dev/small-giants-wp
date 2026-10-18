@@ -276,7 +276,7 @@
 	align-items: center;
 	justify-content: center;
 	box-shadow: 0 2px 8px color-mix(in srgb, var(--wp--custom--shadow-colour) 25%, transparent);
-	transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+	transition: transform 200ms var(--wp--custom--easing--ease-out, ease-out), box-shadow 200ms var(--wp--custom--easing--ease-out, ease-out); /* sgs-motion: exact */
 }
 
 .wp-block-sgs-before-after[data-orientation="vertical"] .wp-block-sgs-before-after__handle {
@@ -451,7 +451,7 @@
 	background-color: rgba( 0, 0, 0, 0.6 );
 	color: #fff;
 	cursor: pointer;
-	transition: transform 200ms ease-out, background-color 200ms ease-out;
+	transition: transform 200ms var(--wp--custom--easing--ease-out, ease-out), background-color 200ms var(--wp--custom--easing--ease-out, ease-out); /* sgs-motion: exact */
 }
 
 .wp-block-sgs-before-after__video-toggle:hover {

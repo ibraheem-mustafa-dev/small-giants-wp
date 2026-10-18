@@ -109,7 +109,7 @@
    `::after` faded via opacity, not a box-shadow transition. --------------- */
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group {
 	position: relative;
-	transition: transform 0.2s ease;
+	transition: transform 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 	/* groupTransitionDuration editor-canvas mirror (render.php emits the real
 	   rule on the frontend); unset keeps the 0.2s above. The reduced-motion
 	   rule further down still switches the transition off. */
@@ -122,7 +122,7 @@
 	border-radius: inherit;
 	box-shadow: 0 20px 40px -12px color-mix(in srgb, var(--wp--custom--shadow-colour) 28%, transparent);
 	opacity: 0;
-	transition: opacity 0.3s ease;
+	transition: opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	pointer-events: none;
 }
 .wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover,

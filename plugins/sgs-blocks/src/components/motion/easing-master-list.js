@@ -69,7 +69,7 @@ export const MOTION_EASING_OPTIONS = [
 		values: {
 			nav: 'ease-out',
 			theme: 'ease-out',
-			schema: 'token:easing.ease-out',
+			schema: 'token:easing.emphasised',
 		},
 	},
 	{

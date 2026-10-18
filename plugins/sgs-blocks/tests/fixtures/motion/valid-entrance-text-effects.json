@@ -31,7 +31,7 @@
 							],
 							"duration": 600,
 							"delay": 100,
-							"easing": "token:easing.ease-out"
+							"easing": "token:easing.emphasised"
 						}
 					},
 					"text": [
@@ -52,7 +52,7 @@
 								"unit": "words",
 								"mask": true,
 								"duration": 600,
-								"easing": "token:easing.ease-out"
+								"easing": "token:easing.emphasised"
 							}
 						}
 					]
@@ -92,7 +92,7 @@
 							},
 							"duration": "token:duration.slow",
 							"delay": 0,
-							"easing": "token:easing.ease-out"
+							"easing": "token:easing.emphasised"
 						},
 						"close": {
 							"to": {

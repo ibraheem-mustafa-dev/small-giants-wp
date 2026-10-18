@@ -728,7 +728,7 @@
 	            color            var(--wp--custom--transition--fast, 0.15s ease),
 	            border-color     var(--wp--custom--transition--fast, 0.15s ease),
 	            box-shadow       var(--wp--custom--transition--fast, 0.15s ease),
-	            transform        var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease;
+	            transform        var(--wp--custom--button-presets--default--hover-transition, 0.15s) var(--wp--custom--easing--ease, ease);
 }
 
 @media (prefers-reduced-motion: reduce) {

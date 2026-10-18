@@ -2615,7 +2615,7 @@
                     "values": {
                       "translateY": "-token:distance.sm",
                       "duration": "token:duration.fast",
-                      "easing": "token:easing.ease-out"
+                      "easing": "token:easing.emphasised"
                     }
                   }
                 }

@@ -585,8 +585,8 @@
 
 .sgs-motion-layer[data-sgs-layer="cursor-field-ring"][data-sgs-ring-live] {
 	transition:
-		--sgs-ring-x var(--sgs-cursor-field-ring-lag, 400ms) ease-out,
-		--sgs-ring-y var(--sgs-cursor-field-ring-lag, 400ms) ease-out,
+		--sgs-ring-x var(--sgs-cursor-field-ring-lag, 400ms) var(--wp--custom--easing--ease-out, ease-out),
+		--sgs-ring-y var(--sgs-cursor-field-ring-lag, 400ms) var(--wp--custom--easing--ease-out, ease-out),
 		--sgs-ring-s var(--sgs-cursor-field-ring-lag, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1));
 }
 

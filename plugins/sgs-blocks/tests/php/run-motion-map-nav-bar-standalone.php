@@ -249,7 +249,7 @@ namespace SGS\Blocks\Motion {
 	ok( -12 === ( $fall['values']['from']['translateY'] ?? null ), 'a negative distance falls from above' );
 	$slide_p = $mapper->map( 'sgs/nav-bar-menu', array( 'submenuAnimation' => 'slide-down', 'submenuAnimationEasing' => 'ease-out' ) );
 	$slide   = base_of( $slide_p, 'panel' );
-	ok( array( 'opacity' => 0, 'translateY' => -8 ) === ( $slide['values']['from'] ?? null ) && 'token:easing.ease-out' === ( $slide['values']['easing'] ?? null ) && ! isset( $slide_p['motion']['stagger'] ) && patches_valid( array( $slide_p ) ), 'slide-down fades and drops 8px; a token easing name stays a token; no step stores no stagger' );
+	ok( array( 'opacity' => 0, 'translateY' => -8 ) === ( $slide['values']['from'] ?? null ) && 'token:easing.emphasised' === ( $slide['values']['easing'] ?? null ) && ! isset( $slide_p['motion']['stagger'] ) && patches_valid( array( $slide_p ) ), 'slide-down fades and drops 8px; a token easing name stays a token; no step stores no stagger' );
 
 	// 3. Values with no exact destination leave the whole bar unmapped.
 	foreach ( array(

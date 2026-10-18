@@ -20,7 +20,7 @@ final class Sgs_Motion_Field_Css {
 	/** The `x-sgs-unit` values that are CSS dimension units; any other unit (`x` on scale) prints a bare number. */
 	const CSS_DIMENSION_UNITS = array( 'ms', 'px', 'deg', '%' );
 
-	const TOKEN_RE = '/^(-?)token:([a-z][a-z0-9-]*)\.([a-z][a-z0-9-]*)$/D';
+	const TOKEN_RE = '/^(-?)token:([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)$/D';
 
 	/**
 	 * Print a number for CSS: rounded half up (as JavaScript's `Math.round`) to four decimal places, no exponent, no
@@ -67,7 +67,8 @@ final class Sgs_Motion_Field_Css {
 		if ( ! in_array( 'token:' . $m[2] . '.' . $m[3], $tokens, true ) ) {
 			return null;
 		}
-		$css = 'var(--wp--custom--' . $m[2] . '--' . $m[3] . ')';
+		// WordPress prints a digit-then-letter key such as `2xl` as `2-xl` (`_wp_to_kebab_case`).
+		$css = 'var(--wp--custom--' . $m[2] . '--' . preg_replace( '/(?<=[0-9])(?=[a-z])/', '-', $m[3] ) . ')';
 		return '-' === $m[1] ? 'calc(-1 * ' . $css . ')' : $css;
 	}
 

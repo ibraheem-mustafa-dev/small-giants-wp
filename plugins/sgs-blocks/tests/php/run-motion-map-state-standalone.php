@@ -242,21 +242,22 @@ namespace SGS\Blocks\Motion {
 
 	// 3. Accordion.
 	$turn = $mapper->map( 'sgs/accordion', array( 'iconRotation' => 45 ) );
-	ok( array( 'trigger' => 'state', 'state' => 'expanded', 'values' => array( 'to' => array( 'rotate' => 45 ), 'duration' => 'token:duration.medium', 'easing' => 'token:easing.default' ) ) === base_of( $turn, 'turning-icon' ) && array( 'iconRotation' ) === $turn['consumed'] && patches_valid( array( $turn ) ), 'iconRotation 45: an expanded layer turning the icon 45 degrees over the medium duration and default easing tokens', json_encode( base_of( $turn, 'turning-icon' ) ) );
+	ok( array( 'trigger' => 'state', 'state' => 'expanded', 'values' => array( 'to' => array( 'rotate' => 45 ), 'duration' => 'token:duration.medium', 'easing' => 'token:easing.default' ), 'close' => array( 'closeDuration' => 'token:duration.medium', 'closeEasing' => 'token:easing.default' ) ) === base_of( $turn, 'turning-icon' ) && array( 'iconRotation' ) === $turn['consumed'] && patches_valid( array( $turn ) ), 'iconRotation 45: an expanded layer turning the icon 45 degrees over the medium duration and default easing tokens, with the same tokens as its close values', json_encode( base_of( $turn, 'turning-icon' ) ) );
 	$half = base_of( $mapper->map( 'sgs/accordion', array( 'iconRotation' => 90.5 ) ), 'turning-icon' );
 	ok( 90.5 === ( $half['values']['to']['rotate'] ?? null ), 'a fractional angle is kept' );
 	$zero = $mapper->map( 'sgs/accordion', array( 'iconRotation' => 0 ) );
 	ok( array() === $zero['motion'] && array( 'iconRotation' ) === $zero['consumed'], 'iconRotation 0 (cross-fade) has no layer and is consumed' );
 	$over = $mapper->map( 'sgs/accordion', array( 'iconRotation' => 720 ) );
 	ok( 360 === ( base_of( $over, 'turning-icon' )['values']['to']['rotate'] ?? null ) && false !== strpos( reasons( $over ), 'clamped' ), 'an angle over 360 is stored as rendered (360) and reported', reasons( $over ) );
-	// 3b. The old turn was a rotate transition on [open] (back smoothly on close; an item open at first paint shows it
-	// turned with no animation). The `state` entrance plays on add only, snaps back on clear and plays on load for an
-	// item open at start-up, so every mapped accordion reports both differences.
+	// 3b. The old turn was a rotate transition on [open]: back smoothly on close, and an item open at first paint showed it
+	// turned with no animation. The layer now stores close values (the icon turns back over the same duration and easing)
+	// and the block's script holds an item that starts open at rest, so neither old difference remains and none is reported.
 	foreach ( array( 'iconRotation 45' => $turn, 'iconRotation 720 (clamped)' => $over ) as $label => $mapped ) {
 		$why = reasons( $mapped );
-		ok( false !== strpos( $why, 'snaps back' ) && false !== strpos( $why, 'open at load' ) && false !== strpos( $why, 'iconRotation' ), "$label: the close snap and the play-at-load differences are reported", $why );
+		ok( false === strpos( $why, 'snaps back' ) && false === strpos( $why, 'open at load' ), "$label: no snap-back or play-at-load difference is reported", $why );
+		ok( array( 'closeDuration' => 'token:duration.medium', 'closeEasing' => 'token:easing.default' ) === ( base_of( $mapped, 'turning-icon' )['close'] ?? null ), "$label: the layer stores the close values", json_encode( base_of( $mapped, 'turning-icon' ) ) );
 	}
-	ok( false === strpos( reasons( $zero ), 'snaps back' ), 'control: iconRotation 0 maps no layer and reports no turn difference' );
+	ok( array() === ( $zero['motion'] ?? array() ), 'control: iconRotation 0 maps no layer and so stores no close values' );
 	$word = $mapper->map( 'sgs/accordion', array( 'iconRotation' => 'quarter' ) );
 	ok( array() === $word['motion'] && array() === $word['consumed'] && false !== strpos( reasons( $word ), 'not a number' ), 'a non-number is reported and kept', reasons( $word ) );
 

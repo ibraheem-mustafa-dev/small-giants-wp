@@ -3,7 +3,7 @@
  * fallback: a stored ease neither GSAP nor `resolveEase` understands plays linear instead of throwing on every render.
  *
  * For the pin, GSAP is a recording double whose `parseEase` returns undefined for a name it does not know (as the real
- * one does for `cubic-bezier(0, 0, 0.58, 1)`, `token:easing.ease-out` with no token on the page, and `bogus`);
+ * one does for `cubic-bezier(0, 0, 0.58, 1)`, `token:easing.emphasised` with no token on the page, and `bogus`);
  * `@sgs/motion-provider` is the real provider with the matchMedia wrapper and the boot call replaced.
  */
 
@@ -400,7 +400,7 @@ describe( 'the pin ease', () => {
 		expect( ease( 0.5 ) ).toBeGreaterThan( 0.6 );
 	} );
 
-	it.each( [ 'token:easing.ease-out', 'bogus' ] )(
+	it.each( [ 'token:easing.emphasised', 'bogus' ] )(
 		'an ease GSAP cannot parse (%s) falls back to linear instead of throwing',
 		( stored ) => {
 			const ease = pinned( stored );

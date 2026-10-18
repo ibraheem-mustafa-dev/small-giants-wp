@@ -288,7 +288,7 @@
 	cursor: pointer;
 	color: inherit; /* Inherits the drawer's computed foreground unless
 	                   toggleCloseColour overrides it (scoped rule). */
-	transition: opacity 0.15s ease;
+	transition: opacity var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-nav-drawer__close:hover {

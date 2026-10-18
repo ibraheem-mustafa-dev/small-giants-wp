@@ -221,7 +221,7 @@ describe( 'a re-stamp (stamp.js)', () => {
 		expect( plan.layer ).toMatchObject( {
 			preset: 'hover-image-zoom',
 			intensity: 'bold',
-			values: { scale: 1.1, duration: 'token:duration.medium', easing: 'token:easing.ease-out' },
+			values: { scale: 1.1, duration: 'token:duration.medium', easing: 'token:easing.emphasised' },
 		} );
 		expect( S.presetBySlug( plan.layer.preset ).label ).toBe( 'Image zoom' );
 		expect( S.layerProblem( plan.layer, 'HoverState' ) ).toBeNull();

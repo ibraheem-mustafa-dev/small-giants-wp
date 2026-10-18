@@ -70,7 +70,7 @@
 	/* Hidden until a first draw succeeds. Revealing it before that would
 	   flash a blank canvas over a perfectly good CSS gradient. */
 	opacity: 0;
-	transition: opacity 400ms ease-out;
+	transition: opacity 400ms var(--wp--custom--easing--ease-out, ease-out); /* sgs-motion: exact */
 	pointer-events: none;
 }
 
@@ -248,7 +248,7 @@
 		var( --sgs-wave-base ) 100%
 	);
 	background-size: 190% 100%;
-	animation: sgs-wave-pastel-base 26s ease-in-out infinite;
+	animation: sgs-wave-pastel-base 26s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 	/* The same drift as the host's base animation (motion.css), so an entrance on the host plays over it and the
 	   drift runs on underneath and after it. */
 	--sgs-base-animation-name: sgs-wave-pastel-base;
@@ -271,7 +271,7 @@
 	filter: blur( 40px );
 	opacity: 0.78;
 	mix-blend-mode: screen;
-	animation: sgs-wave-pastel-layer-a 19s ease-in-out infinite;
+	animation: sgs-wave-pastel-layer-a 19s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 }
 
 [data-sgs-fx~="wave-gradient"].sgs-wave-gradient--pastel::after {
@@ -284,7 +284,7 @@
 	filter: blur( 46px );
 	opacity: 0.6;
 	mix-blend-mode: screen;
-	animation: sgs-wave-pastel-layer-b 24s ease-in-out infinite;
+	animation: sgs-wave-pastel-layer-b 24s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 	animation-delay: -6s;
 }
 
@@ -311,7 +311,7 @@
 	);
 	filter: blur( 44px );
 	opacity: 0.78;
-	animation: sgs-wave-horizon-layer-a 17s ease-in-out infinite;
+	animation: sgs-wave-horizon-layer-a 17s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 }
 
 [data-sgs-fx~="wave-gradient"].sgs-wave-gradient--horizon::after {
@@ -326,7 +326,7 @@
 	);
 	filter: blur( 44px );
 	opacity: 0.6;
-	animation: sgs-wave-horizon-layer-b 23s ease-in-out infinite;
+	animation: sgs-wave-horizon-layer-b 23s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 	animation-delay: -8s;
 }
 
@@ -358,7 +358,7 @@
 	filter: blur( 19px );
 	opacity: 0.7;
 	transform-origin: center;
-	animation: sgs-wave-ribbon-layer-a 20s ease-in-out infinite;
+	animation: sgs-wave-ribbon-layer-a 20s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 }
 
 [data-sgs-fx~="wave-gradient"].sgs-wave-gradient--ribbon::after {
@@ -378,7 +378,7 @@
 	filter: blur( 15px );
 	opacity: 0.5;
 	transform-origin: center;
-	animation: sgs-wave-ribbon-layer-a 20s ease-in-out infinite;
+	animation: sgs-wave-ribbon-layer-a 20s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 	animation-delay: -9s;
 }
 
@@ -403,7 +403,7 @@
 	filter: blur( 52px );
 	opacity: 0.74;
 	mix-blend-mode: screen;
-	animation: sgs-wave-veil-layer-a 22s ease-in-out infinite;
+	animation: sgs-wave-veil-layer-a 22s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 }
 
 [data-sgs-fx~="wave-gradient"].sgs-wave-gradient--veil::after {
@@ -417,7 +417,7 @@
 	filter: blur( 52px );
 	opacity: 0.62;
 	mix-blend-mode: screen;
-	animation: sgs-wave-veil-layer-b 28s ease-in-out infinite;
+	animation: sgs-wave-veil-layer-b 28s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 	animation-delay: -11s;
 }
 

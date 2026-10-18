@@ -73,7 +73,7 @@ ok( 'string' === ( $scrim_json['attributes']['scrimFadeEasing']['type'] ?? '' ),
 ok( 'ease-out' === sgs_motion_easing_css( 'ease-out-css' ), 'ease-out-css resolves to the CSS keyword' );
 ok( 'cubic-bezier(0.16, 0.84, 0.32, 1)' === sgs_motion_easing_css( 'drafts' ), 'drafts resolves to the drafts curve (halcyon, the wholesale-food client)' );
 ok( 'cubic-bezier(0.4, 0, 0.2, 1)' === sgs_motion_easing_css( 'standard' ), 'standard resolves to butcherbox\'s measured curve' );
-ok( 'var(--wp--custom--easing--ease-out)' === sgs_motion_easing_css( 'ease-out' ), 'ease-out is the expo-out theme token' );
+ok( 'var(--wp--custom--easing--emphasised)' === sgs_motion_easing_css( 'ease-out' ), 'ease-out is the expo-out theme token' );
 ok( 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' === sgs_motion_easing_css( 'custom', 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' ), 'a valid custom curve passes through' );
 ok( 'ease-out' === sgs_motion_easing_css( 'custom', 'red;}body{x', 'ease-out' ), 'a hostile custom curve falls back' );
 ok( 'ease-out' === sgs_motion_easing_css( 'nope', '', 'ease-out' ), 'an unknown name falls back' );
@@ -101,8 +101,8 @@ $layer = static function ( array $values, array $close = array(), string $trigge
 };
 $t_away = sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 300, 'easing' => 'ease-out' ), array( 'closeDuration' => 200 ) ) );
 ok( 300 === $t_away['enter_ms'] && 200 === $t_away['exit_ms'] && 'ease-out' === $t_away['easing'] && array() === $t_away['data'], 'a 300ms open, 200ms close panel times the scrim 300/200 with its easing' );
-$t_same = sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 900, 'easing' => 'token:easing.ease-out' ) ) );
-ok( 900 === $t_same['exit_ms'] && 'var(--wp--custom--easing--ease-out)' === $t_same['easing'] && array_key_exists( 'sgs-nd-focus-after-entry', $t_same['data'] ), 'no close duration follows the open; a token easing resolves; over 500ms defers focus' );
+$t_same = sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 900, 'easing' => 'token:easing.emphasised' ) ) );
+ok( 900 === $t_same['exit_ms'] && 'var(--wp--custom--easing--emphasised)' === $t_same['easing'] && array_key_exists( 'sgs-nd-focus-after-entry', $t_same['data'] ), 'no close duration follows the open; a token easing resolves; over 500ms defers focus' );
 ok( null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 'token:duration.slow' ) ) )['enter_ms'] && null === sgs_nav_drawer_motion_timing( $layer( array( 'duration' => 900 ), array(), 'scroll' ) )['enter_ms'], 'a token duration, or a root entrance on another trigger, gives no timing' );
 
 // The panel's transform origin is anchor geometry, so a drawer grows from its anchor's edge.

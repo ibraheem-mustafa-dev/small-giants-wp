@@ -72,7 +72,7 @@
 	transform: translateX(var(--sgs-nav-indicator-x, 0));
 	transition: transform 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
 		width 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
-		opacity 0.25s cubic-bezier(0.16, 0.84, 0.32, 1);
+		opacity var(--wp--custom--duration--fast, 0.25s) cubic-bezier(0.16, 0.84, 0.32, 1); /* sgs-motion: exact */
 	width: var(--sgs-nav-indicator-w, 0px);
 	z-index: 0;
 }

@@ -98,7 +98,7 @@ final class Sgs_Motion_Focus_State {
 		$timing = array(
 			'transition-duration'        => Sgs_Motion_Field_Types::resolve_token( 'token:duration.fast' ) ?? '200ms',
 			'transition-delay'           => '0ms',
-			'transition-timing-function' => Sgs_Motion_Field_Types::resolve_token( 'token:easing.ease-out' ) ?? 'ease-out',
+			'transition-timing-function' => Sgs_Motion_Field_Types::resolve_token( 'token:easing.emphasised' ) ?? 'ease-out',
 		);
 		$base   = array_fill_keys( Sgs_Motion_Emitter::TIERS, array() );
 		$focus  = array_fill_keys( Sgs_Motion_Emitter::TIERS, array() );

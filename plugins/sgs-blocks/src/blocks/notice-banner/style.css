@@ -173,7 +173,7 @@
 	color: inherit;
 	opacity: 0.7;
 	border-radius: 4px;
-	transition: opacity 0.15s ease;
+	transition: opacity var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
 }
 
 :where(.sgs-notice-banner__close) {
@@ -228,11 +228,11 @@
  * (design §3.3: opacity for fade, translate for the slides), 300ms, applied
  * only to the message swapping in/out. */
 .sgs-notice-banner--transition-fade.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
-	transition: opacity 0.3s ease;
+	transition: opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-notice-banner--transition-slide-up.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
-	transition: opacity 0.3s ease, translate 0.3s ease;
+	transition: opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), translate var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	translate: 0 8px;
 }
 
@@ -241,7 +241,7 @@
 }
 
 .sgs-notice-banner--transition-slide-left.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message {
-	transition: opacity 0.3s ease, translate 0.3s ease;
+	transition: opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), translate var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 	translate: 12px 0;
 }
 
@@ -278,7 +278,7 @@
 	color: inherit;
 	opacity: 0.8;
 	border-radius: 4px;
-	transition: opacity 0.15s ease;
+	transition: opacity var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-notice-banner__pause:hover,

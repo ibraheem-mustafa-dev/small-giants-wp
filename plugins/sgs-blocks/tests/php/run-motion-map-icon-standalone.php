@@ -214,8 +214,8 @@ namespace SGS\Blocks\Motion {
 		)
 	);
 	$shape = state( $main['motion'], 'shape' );
-	ok( 'root' === ( $shape['source'] ?? '' ) && array( 'scale' => 1.2, 'translateY' => -6, 'rotate' => 15, 'duration' => 200, 'easing' => 'token:easing.ease-out' ) === ( $shape['values'] ?? null ), 'scale, offsetYHover, rotate, the movement duration and a named easing are the shape state, sourced from the root', js( $shape ) );
-	ok( array( 'opacity' => 0.8, 'duration' => 200, 'easing' => 'token:easing.ease-out' ) === ( state( $main['motion'], 'root' )['values'] ?? null ), 'opacityHover is the root state, with the same timing' );
+	ok( 'root' === ( $shape['source'] ?? '' ) && array( 'scale' => 1.2, 'translateY' => -6, 'rotate' => 15, 'duration' => 200, 'easing' => 'token:easing.emphasised' ) === ( $shape['values'] ?? null ), 'scale, offsetYHover, rotate, the movement duration and a named easing are the shape state, sourced from the root', js( $shape ) );
+	ok( array( 'opacity' => 0.8, 'duration' => 200, 'easing' => 'token:easing.emphasised' ) === ( state( $main['motion'], 'root' )['values'] ?? null ), 'opacityHover is the root state, with the same timing' );
 	ok( array( 'paintDuration' ) === reported_attrs( $main ) && false !== strpos( $main['reported'][0]['reason'], 'paint and movement timings differ' ) && ! in_array( 'paintDuration', $main['consumed'], true ), 'a paintDuration that differs from transitionDuration is reported and stays' );
 	ok( sorted( array( 'offsetYHover', 'scaleHover', 'iconRotateHover', 'opacityHover', 'transitionDuration', 'transitionEasing', 'shadowLiftOnHover' ) ) === sorted( $main['consumed'] ), 'every other attribute is consumed', js( $main['consumed'] ) );
 	ok( valid( $main['motion'] ), 'the fragment is schema-valid' );

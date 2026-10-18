@@ -53,7 +53,7 @@
 	padding: var(--sgs-pricing-padding);
 	border-radius: var(--sgs-pricing-border-radius);
 	background-color: var(--wp--preset--color--surface, #fff);
-	transition: box-shadow 0.3s ease;
+	transition: box-shadow var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 /* Style variants */
@@ -214,7 +214,7 @@
 	   alignment — same rationale as sgs/button's inline-flex centring. */
 	text-decoration: none;
 	cursor: pointer;
-	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 /* Default font-weight and text-align — :where() (specificity 0) so client-set
@@ -408,7 +408,7 @@
 	color: var(--wp--preset--color--text-muted, #555);
 	cursor: pointer;
 	border-radius: 999px;
-	transition: color 0.2s ease;
+	transition: color 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 	user-select: none;
 }
 
@@ -456,7 +456,7 @@
 	color: inherit;
 	background-color: transparent;
 	font-weight: 600;
-	transition: background-color 0.2s ease, color 0.2s ease;
+	transition: background-color 0.2s var(--wp--custom--easing--ease, ease), color 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 /* Active button: filled */

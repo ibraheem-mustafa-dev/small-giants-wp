@@ -75,7 +75,7 @@
 	   writes the hover shadow through
 	   sgs_shadow_decls(); a list that omits it leaves that effect
 	   snapping while the rest ease. */
-	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, translate var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), translate var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) var(--wp--custom--easing--ease, ease);
 	-webkit-appearance: none;
 	appearance: none;
 

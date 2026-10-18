@@ -95,7 +95,7 @@ final class Sgs_Motion_Map_Hover implements Sgs_Motion_Mapper_Interface {
 	const LIFT_PRESET = array(
 		'translateY' => '-token:distance.sm',
 		'duration'   => 'token:duration.fast',
-		'easing'     => 'token:easing.ease-out',
+		'easing'     => 'token:easing.emphasised',
 	);
 
 	/** Parts that carry a block's image, in order of preference. */

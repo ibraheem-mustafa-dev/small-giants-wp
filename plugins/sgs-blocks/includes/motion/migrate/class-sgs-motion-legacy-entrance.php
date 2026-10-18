@@ -273,7 +273,7 @@ final class Sgs_Motion_Legacy_Entrance {
 			return null;
 		}
 		if ( in_array( $raw, self::EASING_NAMES, true ) ) {
-			return 'token:easing.' . $raw;
+			return 'token:easing.' . ( 'ease-out' === $raw ? 'emphasised' : $raw );
 		}
 		if ( null !== Sgs_Motion_Field_Types::sanitise( 'easing', $raw ) ) {
 			return $raw;

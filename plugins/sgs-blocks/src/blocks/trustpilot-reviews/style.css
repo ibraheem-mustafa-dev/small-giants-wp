@@ -41,7 +41,7 @@
 	border-radius: 999px;
 	box-shadow: 0 1px 3px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent), 0 0 0 1px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent);
 	color: #1A1A1A;
-	transition: transform 220ms ease, box-shadow 220ms ease;
+	transition: transform 220ms var(--wp--custom--easing--ease, ease), box-shadow 220ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-trustpilot-reviews__header:hover {
@@ -225,7 +225,7 @@
 	flex-direction: column;
 	gap: 0.5rem;
 	border: 2px solid transparent;
-	transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+	transition: transform 240ms var(--wp--custom--easing--ease, ease), border-color 240ms var(--wp--custom--easing--ease, ease), box-shadow 240ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 	/* Cards size to their own content -- short reviews stay short,
 	   long reviews extend naturally. The track aligns to flex-start
 	   so cards do not stretch to match the tallest sibling. */
@@ -346,7 +346,7 @@
 	align-items: center;
 	justify-content: center;
 	z-index: 2;
-	transition: background-color 200ms ease, border-color 200ms ease;
+	transition: background-color 200ms var(--wp--custom--easing--ease, ease), border-color 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-trustpilot-reviews__arrow:hover,
@@ -387,7 +387,7 @@
 	background: var(--sgs-tp-card-border);
 	cursor: pointer;
 	padding: 0;
-	transition: background-color 200ms ease, transform 200ms ease;
+	transition: background-color 200ms var(--wp--custom--easing--ease, ease), transform 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-trustpilot-reviews__dot:hover {
@@ -412,7 +412,7 @@
 	border-radius: 50%;
 	background: var(--sgs-tp-card-bg);
 	color: inherit;
-	transition: background-color 200ms ease, border-color 200ms ease;
+	transition: background-color 200ms var(--wp--custom--easing--ease, ease), border-color 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-trustpilot-reviews__pause:hover,

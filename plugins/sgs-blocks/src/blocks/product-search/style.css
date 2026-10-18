@@ -106,7 +106,7 @@
 	color: inherit;
 	cursor: pointer;
 	border-left: 3px solid transparent;
-	animation: sgs-ps-result-fade-in 180ms ease-out backwards;
+	animation: sgs-ps-result-fade-in 180ms var(--wp--custom--easing--ease-out, ease-out) backwards; /* sgs-motion: exact */
 	animation-delay: calc( var( --sgs-ps-stagger-index, 0 ) * 30ms );
 }
 
@@ -236,7 +236,7 @@
 
 .sgs-product-search__skeleton::before,
 .sgs-product-search__skeleton::after {
-	animation: sgs-ps-skeleton-shimmer 1.1s ease-in-out infinite;
+	animation: sgs-ps-skeleton-shimmer 1.1s var(--wp--custom--easing--ease-in-out, ease-in-out) infinite;
 }
 
 @keyframes sgs-ps-skeleton-shimmer {
@@ -498,9 +498,9 @@
 }
 
 .sgs-product-search__dialog--cmdk[open] {
-	animation: sgs-ps-cmdk-fade-in 150ms ease-out;
+	animation: sgs-ps-cmdk-fade-in var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease-out, ease-out);
 }
 
 .sgs-product-search__dialog--cmdk.is-closing {
-	animation: sgs-ps-cmdk-fade-out 150ms ease-in;
+	animation: sgs-ps-cmdk-fade-out var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease-in, ease-in);
 }

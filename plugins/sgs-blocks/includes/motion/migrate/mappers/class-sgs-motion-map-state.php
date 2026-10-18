@@ -18,11 +18,12 @@
  *   rendered as `ease` and maps to `ease` (reported). With `burgerMorph` set to `none` the timing played nothing: the
  *   three attributes are consumed and reported as inert, with no layer.
  * - `sgs/accordion` `iconRotation` (degrees, 0 to 360) to a layer on the `turning-icon` part: trigger `state`, state
- *   `expanded`, a `to` rotation of that angle over the medium duration and default easing tokens the old transition read.
- *   `0` (cross-fade, the default) has no layer and is consumed. Two differences are reported on every mapped accordion:
- *   the old turn was a `rotate` transition on `[open]`, so it turned back smoothly on close and an item open at first
- *   paint showed it turned with no animation; the `state` entrance plays only when `expanded` is added, snaps back when
- *   it is cleared, and plays at load for an item open at start-up.
+ *   `expanded`, a `to` rotation of that angle over the medium duration and default easing tokens the old transition read,
+ *   and `close` values with the same duration and easing tokens (the icon turns back to rest over the time it turned).
+ *   `0` (cross-fade, the default) has no layer and is consumed. The old turn was a `rotate` transition on `[open]`: it
+ *   turned back smoothly on close and an item open at first paint showed it turned with no animation. The layer's close
+ *   values and the accordion script (`leaveState` on close, `restState` for an item that starts open) reproduce both, so
+ *   nothing is reported.
  *
  * A value with no exact destination is reported and its attributes stay, so the block keeps its old behaviour.
  *
@@ -224,8 +225,11 @@ final class Sgs_Motion_Map_State implements Sgs_Motion_Mapper_Interface {
 				'duration' => 'token:duration.medium',
 				'easing'   => 'token:easing.default',
 			),
+			'close'   => array(
+				'closeDuration' => 'token:duration.medium',
+				'closeEasing'   => 'token:easing.default',
+			),
 		);
-		$reported[] = self::row( 'iconRotation', $attrs['iconRotation'], 'changed: the old turn was a rotate transition on [open]; the expanded entrance plays when the state is added only, so on close the icon snaps back instead of turning back, and an item open at load now plays the turn at load where it used to show it already turned (until the state model gains close values)', true );
 		return self::result( self::fragment( 'turning-icon', $layer ), array( 'iconRotation' ), $reported );
 	}
 

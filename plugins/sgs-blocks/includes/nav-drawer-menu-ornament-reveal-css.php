@@ -106,7 +106,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_ornament_stroke_draw_css' ) ) {
 		 * 'max-width:1023px'/'max-width:767px' for tablet/mobile).
 		 */
 		$on = static function ( string $width_cond ) use ( $scope, $glyph_shapes, $link, $stagger ): string {
-			$css = $scope . $glyph_shapes . '{stroke-dasharray:64;stroke-dashoffset:64;transition:stroke-dashoffset 500ms ease;}'
+			$css = $scope . $glyph_shapes . '{stroke-dasharray:64;stroke-dashoffset:64;transition:stroke-dashoffset 500ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */}'
 				. sgs_hover_state_rules( $link, 'stroke-dashoffset:0;', ':focus-visible', $glyph_shapes )
 				. $stagger;
 			return '' === $width_cond ? $css : '@media ' . $width_cond . '{' . $css . '}';

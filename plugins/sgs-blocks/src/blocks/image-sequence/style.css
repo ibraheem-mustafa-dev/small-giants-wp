@@ -46,7 +46,7 @@
 
 .sgs-image-sequence__canvas {
 	opacity: 0;
-	transition: opacity var( --wp--custom--duration--medium, 300ms ) ease;
+	transition: opacity var( --wp--custom--duration--medium, 300ms ) var(--wp--custom--easing--ease, ease);
 }
 
 /* Reveal the canvas only once JS has confirmed it can paint a real frame —

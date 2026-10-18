@@ -262,7 +262,7 @@
 									},
 									"duration": 600,
 									"delay": 100,
-									"easing": "token:easing.ease-out",
+									"easing": "token:easing.emphasised",
 									"start": 10
 								},
 								"devices": {
@@ -772,7 +772,7 @@
 								},
 								"devices": {
 									"mobile": {
-										"easing": "token:easing.ease-out"
+										"easing": "token:easing.emphasised"
 									},
 									"tablet": {
 										"easing": "cubic-bezier(0.1,0.2,0.3,1)"
@@ -2489,6 +2489,121 @@
 			"attributes": {
 				"shadow": "md"
 			}
+		},
+		{
+			"name": "state close values: the out rule and the rest rule",
+			"block": "sgs/accordion",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"turning-icon": {
+						"entrance": {
+							"base": {
+								"trigger": "state",
+								"state": "expanded",
+								"values": {
+									"to": {
+										"rotate": 180
+									},
+									"duration": "token:duration.medium",
+									"easing": "token:easing.default"
+								},
+								"close": {
+									"closeDuration": "token:duration.medium",
+									"closeEasing": "token:easing.default",
+									"closeDelay": 40,
+									"to": {
+										"rotate": 90
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "state with no close: the rest rule only",
+			"block": "sgs/accordion",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"turning-icon": {
+						"entrance": {
+							"base": {
+								"trigger": "state",
+								"state": "expanded",
+								"values": {
+									"to": {
+										"rotate": 180
+									},
+									"duration": "token:duration.medium",
+									"easing": "token:easing.default"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "state colour to-values",
+			"block": "sgs/accordion",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"turning-icon": {
+						"entrance": {
+							"base": {
+								"trigger": "state",
+								"state": "expanded",
+								"values": {
+									"to": {
+										"rotate": 180,
+										"backgroundColour": "primary",
+										"textColour": "#112233",
+										"borderColour": "accent-dark"
+									},
+									"duration": "token:duration.medium",
+									"easing": "token:easing.default"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
+			"name": "close on a scroll entrance is refused",
+			"block": "sgs/accordion",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"turning-icon": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0
+									}
+								},
+								"close": {
+									"closeDuration": 300
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
 		}
 	]
 }

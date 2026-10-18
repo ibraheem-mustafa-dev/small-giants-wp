@@ -407,7 +407,7 @@ namespace SGS\Blocks\Motion {
 
 	$r = $map( array( 'sgsAnimation' => 'fade-left', 'sgsAnimationDelay' => '300', 'sgsAnimationDuration' => 'slow', 'sgsAnimationEasing' => 'ease-out', 'sgsAnimationDistance' => '50', 'sgsAnimationTrigger' => '20' ) );
 	$v = base_of( $r['motion'] )['values'] ?? array();
-	ok( 300 === $v['delay'] && 'token:duration.slow' === $v['duration'] && 'token:easing.ease-out' === $v['easing'] && 50 === $v['from']['translateX'] && 20 === $v['start'] && 'scroll' === base_of( $r['motion'] )['trigger'], 'delay, duration token, easing token, distance and start line land on values; trigger scroll', json_encode( $v ) );
+	ok( 300 === $v['delay'] && 'token:duration.slow' === $v['duration'] && 'token:easing.emphasised' === $v['easing'] && 50 === $v['from']['translateX'] && 20 === $v['start'] && 'scroll' === base_of( $r['motion'] )['trigger'], 'delay, duration token, easing token, distance and start line land on values; trigger scroll', json_encode( $v ) );
 	ok( 6 === count( $r['consumed'] ) && array() === $r['reported'], 'all six attributes given are consumed, nothing reported' );
 
 	$r = $map( array( 'sgsAnimation' => 'scale-in', 'sgsAnimationStart' => 'load', 'sgsAnimationTrigger' => '30' ) );
@@ -423,7 +423,7 @@ namespace SGS\Blocks\Motion {
 	foreach ( array( 'default', 'ease-out', 'ease-in', 'spring', 'linear' ) as $e ) {
 		$names[] = base_of( $map( array( 'sgsAnimation' => 'fade-in', 'sgsAnimationEasing' => $e ) )['motion'] )['values']['easing'] ?? '';
 	}
-	ok( array( 'token:easing.default', 'token:easing.ease-out', 'token:easing.ease-in', 'token:easing.spring', 'token:easing.linear' ) === $names, 'the five easing names become easing tokens' );
+	ok( array( 'token:easing.default', 'token:easing.emphasised', 'token:easing.ease-in', 'token:easing.spring', 'token:easing.linear' ) === $names, 'the five easing names become easing tokens' );
 	$r = $map( array( 'sgsAnimation' => 'fade-in', 'sgsAnimationDuration' => '1200', 'sgsAnimationEasing' => 'cubic-bezier(0.4, 0, 0.2, 1)' ) );
 	ok( 1200 === base_of( $r['motion'] )['values']['duration'] && 'cubic-bezier(0.4, 0, 0.2, 1)' === base_of( $r['motion'] )['values']['easing'], 'a custom millisecond duration and a raw cubic-bezier are stored as they were' );
 	$r = $map( array( 'sgsAnimation' => 'fade-in', 'sgsAnimationDuration' => '9000' ) );

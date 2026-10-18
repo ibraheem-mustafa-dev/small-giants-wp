@@ -220,7 +220,7 @@ if ( ! function_exists( 'sgs_nav_shared_text_sweep_css' ) ) {
 			. 'background-image:' . $grad . ';'
 			. 'background-size:200% 100%;background-position:100% 0;background-repeat:no-repeat;'
 			. '-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;'
-			. 'transition:background-position 300ms ease;}';
+			. 'transition:background-position var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);}';
 		// Keep both end states, drop only the travel.
 		$base .= '@media (prefers-reduced-motion:reduce){' . $selector . '{transition:none;}}';
 		// A supporting browser in a special mode — distinct from the @supports

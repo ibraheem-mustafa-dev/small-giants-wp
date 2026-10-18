@@ -73,7 +73,7 @@
 	align-items: center;
 	justify-content: center;
 	opacity:    0;
-	transition: opacity 150ms ease;
+	transition: opacity var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-gallery-editor__thumb:hover .sgs-gallery-editor__thumb-remove,

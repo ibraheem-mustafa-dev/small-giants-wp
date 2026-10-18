@@ -175,7 +175,7 @@
 	padding: 0.625rem 1.125rem;
 	min-height: 36px;
 	font-weight: 600;
-	transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
+	transition: background-color 200ms var(--wp--custom--easing--ease, ease), border-color 200ms var(--wp--custom--easing--ease, ease), transform 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 .sgs-trust-bar--text-only .sgs-trust-bar__badge:hover {

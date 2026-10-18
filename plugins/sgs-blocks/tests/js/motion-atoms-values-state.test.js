@@ -255,7 +255,7 @@ describe( 'a planted atom that writes a raw schema-invalid string fails the sche
 describe( 'the master easing list and its views', () => {
 	it( 'every schema value in the master list is a valid easing, and the CSS comes from the field type', () => {
 		SCHEMA_EASING_OPTIONS.forEach( ( option ) => expect( validateField( 'easing', option.value ).ok ).toBe( true ) );
-		expect( easingCssFor( 'nav', 'ease-out' ) ).toBe( 'var(--wp--custom--easing--ease-out)' );
+		expect( easingCssFor( 'nav', 'ease-out' ) ).toBe( 'var(--wp--custom--easing--emphasised)' );
 		expect( easingCssFor( 'nav', 'ease-out-css' ) ).toBe( 'ease-out' );
 		expect( easingCssFor( 'nav', 'drafts' ) ).toBe( 'cubic-bezier(0.16, 0.84, 0.32, 1)' );
 		expect( easingCssFor( 'nav', 'custom' ) ).toBeNull();

@@ -52,7 +52,7 @@
 	transform: translateX(var(--sgs-nav-indicator-x, 0));
 	transition: transform 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
 		width 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
-		opacity 0.25s cubic-bezier(0.16, 0.84, 0.32, 1);
+		opacity var(--wp--custom--duration--fast, 0.25s) cubic-bezier(0.16, 0.84, 0.32, 1); /* sgs-motion: exact */
 	width: var(--sgs-nav-indicator-w, 0px);
 	z-index: 0;
 }
@@ -348,20 +348,20 @@
 @media (prefers-reduced-motion: no-preference) {
 	@media (hover: hover) and (pointer: fine) {
 		:where(:root:not(.sgs-touch-input)) .sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
-			animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) linear calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
+			animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) var(--wp--custom--easing--linear, linear) calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
 		}
 
 		:where(:root:not(.sgs-touch-input)) .sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
-			animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) linear;
+			animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) var(--wp--custom--easing--linear, linear);
 		}
 	}
 
 	.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-frame {
-		animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) linear calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
+		animation: var(--sgs-ndm-frame-flash, sgs-ndm-frame-flash) var(--sgs-ndm-frame-ms, 60ms) var(--wp--custom--easing--linear, linear) calc(var(--sgs-ndm-frame-i, 0) * var(--sgs-ndm-frame-ms, 60ms));
 	}
 
 	.sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament--frames .sgs-nav-drawer-menu__ornament-glyph {
-		animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) linear;
+		animation: var(--sgs-ndm-frame-hide, sgs-ndm-frame-hide) calc(var(--sgs-ndm-frame-n, 1) * var(--sgs-ndm-frame-ms, 60ms)) var(--wp--custom--easing--linear, linear);
 	}
 }
 
@@ -502,7 +502,7 @@
 }
 
 .sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item {
-	transition: transform var(--wp--custom--transition--medium, 250ms) ease;
+	transition: transform var(--wp--custom--transition--medium, 250ms) var(--wp--custom--easing--ease, ease);
 }
 
 /*
@@ -562,7 +562,7 @@
 	overflow-y: auto;
 	position: absolute;
 	transform: translateX(100%);
-	transition: transform var(--wp--custom--transition--medium, 250ms) ease;
+	transition: transform var(--wp--custom--transition--medium, 250ms) var(--wp--custom--easing--ease, ease);
 	z-index: 2;
 }
 

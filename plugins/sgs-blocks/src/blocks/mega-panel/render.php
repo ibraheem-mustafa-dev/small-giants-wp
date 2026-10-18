@@ -553,11 +553,11 @@ if ( '' !== $group_border_resting_gradient ) {
 // lift shadow is a same-box `::after` whose OPACITY fades in, not a
 // box-shadow transition. `border-color` changes with NO transition (an
 // instant colour swap, not part of the animated property set). ------------
-$css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s ease;}';
+$css .= $style_crd . $rel_group . '{position:relative;transition:transform .2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */}';
 // The hover glow is the floating panel's; the drawer copy has no shell, so no glow.
 if ( ! $sgs_mm_in_drawer ) {
 	// sgs-shadow-fallback: decorative ::after glow, not the panel edge
-	$css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity .3s ease;pointer-events:none;}';
+	$css .= $style_crd . $rel_group . '::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 20px 40px -12px rgba(0,0,0,.28);opacity:0;transition:opacity var(--wp--custom--duration--medium, .3s) var(--wp--custom--easing--ease, ease);pointer-events:none;}';
 	$css .= sgs_hover_state_rules( $style_crd . $rel_group, 'opacity:1', ':focus-within', '::after' );
 }
 // panelCardLift (M-21) replaces the previously-hardcoded `translateY(-3px)`.

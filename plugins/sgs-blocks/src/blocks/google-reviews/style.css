@@ -381,7 +381,7 @@ a.sgs-google-reviews__maps-link {
 	flex-direction: column;
 	box-sizing: border-box;
 	min-width: 0;
-	transition: box-shadow 200ms ease, transform 200ms ease;
+	transition: box-shadow 200ms var(--wp--custom--easing--ease, ease), transform 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
 /* The card box is attributes' (`cardPadding`, `cardBorder*`, `cardBackground`, `cardGap`). */
@@ -680,7 +680,7 @@ a.sgs-google-reviews__author:hover {
 @media ( prefers-reduced-motion: no-preference ) {
 	.sgs-google-reviews__write-review,
 	.sgs-google-reviews__see-all {
-		transition: background-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, border-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, box-shadow var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, transform var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease;
+		transition: background-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) var(--wp--custom--easing--ease, ease), border-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) var(--wp--custom--easing--ease, ease), box-shadow var( --wp--custom--button-presets--default--hover-transition, 150ms ) var(--wp--custom--easing--ease, ease), transform var( --wp--custom--button-presets--default--hover-transition, 150ms ) var(--wp--custom--easing--ease, ease);
 	}
 }
 
@@ -780,7 +780,7 @@ a.sgs-google-reviews__author:hover {
 @media ( prefers-reduced-motion: no-preference ) {
 	.sgs-google-reviews__arrow,
 	.sgs-google-reviews__pause {
-		transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+		transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 	}
 }
 
@@ -809,7 +809,7 @@ a.sgs-google-reviews__author:hover {
 
 @media ( prefers-reduced-motion: no-preference ) {
 	:where( .sgs-google-reviews__arrow, .sgs-google-reviews__pause ) {
-		transition: background-color 150ms ease, border-color 150ms ease;
+		transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 	}
 }
 
@@ -843,7 +843,7 @@ a.sgs-google-reviews__author:hover {
 
 @media ( prefers-reduced-motion: no-preference ) {
 	.sgs-google-reviews__dot::before {
-		transition: background-color 150ms ease, transform 150ms ease;
+		transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 	}
 }
 
