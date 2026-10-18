@@ -10,7 +10,7 @@
 		"note_on_layout_merge": "The `flow` cluster (grid/flex arrangement) was merged INTO `layout` on 2026-07-20, reversing an earlier same-day split. Rationale (Bean): arrangement properties do control the layout of the items in a block, and the ELEMENT axis — not a second cluster — is what disambiguates 'size this box' from 'arrange these children'. role='layout' on a GRID element means arrangement; the same role on a tile/box element means sizing. One mechanism, not two. Element is the PRIMARY mapping axis (block_attributes.canonical_slot); cluster/role is SECONDARY."
 	},
 	"states": {
-		"_note": "Spec 35 FR-35-5 — the STATES axis. A state is a COMPONENT concept (hover/focus/selected/pressed/disabled); its CSS realisation is declared ONCE here, centrally, so no block re-derives it. States are DECLARED on a manifest element (never parsed from attribute names — see FR-35-5 'Why states are DECLARED, never parsed from names': tabActiveTextColour renders as [aria-selected=\"true\"], NOT CSS :active, and pauseOnHover/effectHover/imageZoomHover/grayscaleHover contain 'Hover' but are booleans/preset selectors, not state-variant style properties).",
+		"_note": "Spec 35 FR-35-5 — the STATES axis. A state is a COMPONENT concept (hover/focus/selected/pressed/disabled); its CSS realisation is declared ONCE here, centrally, so no block re-derives it. States are DECLARED on a manifest element (never parsed from attribute names — see FR-35-5 'Why states are DECLARED, never parsed from names': tabActiveTextColour renders as [aria-selected=\"true\"], NOT CSS :active, and grayscaleHover contains 'Hover' but is a boolean, not state-variant style properties).",
 		"order": [
 			"hover",
 			"focus",
@@ -790,75 +790,22 @@
 			]
 		},
 		"animation": {
-			"label": "Animation",
-			"owningComponent": "ToggleGroupControl (preset picker) + RangeControl (ms unit) + ToggleGroupControl (easing presets)",
+			"label": "Motion",
+			"owningComponent": "sgsMotion panels (Hover, Entrance, Effects)",
 			"members": [
 				{
-					"key": "anim:preset",
-					"label": "Animation preset",
+					"key": "anim:sgs-motion",
+					"label": "sgsMotion",
 					"suffixes": [
-						"Animation"
+						"Motion"
 					]
 				},
 				{
 					"key": "anim:duration",
-					"label": "Animation duration",
+					"label": "Block-owned timer duration",
 					"suffixes": [
-						"AnimationDuration",
+						"FrameDuration",
 						"DurationMs"
-					]
-				},
-				{
-					"key": "anim:easing",
-					"label": "Animation easing",
-					"suffixes": [
-						"AnimationEasing",
-						"Easing"
-					]
-				},
-				{
-					"key": "anim:stagger",
-					"label": "Stagger delay",
-					"suffixes": [
-						"StaggerDelay",
-						"Stagger"
-					]
-				},
-				{
-					"key": "anim:parallax",
-					"label": "Parallax",
-					"suffixes": [
-						"Parallax",
-						"ParallaxStrength"
-					]
-				},
-				{
-					"key": "anim:trigger",
-					"label": "Scroll trigger",
-					"suffixes": [
-						"OnScroll",
-						"TriggerOffset"
-					]
-				},
-				{
-					"key": "anim:ken-burns",
-					"label": "Ken Burns",
-					"suffixes": [
-						"BgKenBurns"
-					],
-					"appliesToLayers": [
-						"OUTER"
-					]
-				},
-				{
-					"key": "anim:svg-animation",
-					"label": "SVG animation",
-					"suffixes": [
-						"BgSvgAnimation",
-						"BgSvgAnimationSpeed"
-					],
-					"appliesToLayers": [
-						"OUTER"
 					]
 				}
 			]

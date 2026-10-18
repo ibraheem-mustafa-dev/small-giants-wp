@@ -804,7 +804,7 @@ function declaredStateVocabulary() {
  *
  * ⚠ The key is read from the row's DECLARED state, never inferred from the
  * attribute name — golden-controls.json's own `states.derivation.why` warns
- * that `pauseOnHover`/`grayscaleHover` contain "Hover" and are booleans, and
+ * that `grayscaleHover` contains "Hover" and are booleans, and
  * that `tabActiveTextColour` renders as `[aria-selected="true"]`, not `:active`.
  * A name-based proxy was tried first and was wrong in BOTH directions: it
  * missed `tabs.panelBorderColour` (no "Hover" in the name) and would have

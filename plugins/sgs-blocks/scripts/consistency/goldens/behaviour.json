@@ -6,9 +6,7 @@
   "sessionCorrections": [
    "The script every 'REACH' figure in golden-controls.json's other 13 rows cites (survey-control-reach.py) does not exist in this repository — verified via git log --all (zero history) and confirmed by two sibling scripts' own docblocks describing it as real. Root cause (per Bean): it was a genuine duplicate of the C1 track's own reach mechanism and was deliberately deleted after C1 merged to main. This session's rows therefore do NOT cite that script; adoption evidence here comes from survey-control-mounts.py (real, committed) plus direct source reads plus live-editor screenshots.",
    "The 'state' type in the pre-existing golden-controls.json temp row covered ONLY the colour-hover mechanism (SgsColourPanel -> DesignTokenPicker). A second, entirely separate universal mechanism exists (hover-effects.js: scale/shadow/zoom/grayscale/focus-ring/click-ripple) and is encoded here as a second named mechanism under the same type.",
-   "Animation is not one control type wearing different labels — it is FOUR distinct, independently-wired mechanisms confirmed live in the editor (Animation / Scroll & effects / Element parallax / a block's own bespoke Background-panel toggles), two of which use the exact same UI shape (a SelectControl dropdown) while driving completely different runtimes (Tier V CSS vs Tier G GSAP). Do not collapse these on UI-shape resemblance alone.",
-   "A genuine bug was found, PROVEN, and FIXED this session: the universal parallax.js extension's 'Background parallax' toggle mounted inside `InspectorControls group=\"color\"` (WordPress's native Colour-panel slot), which only renders when a block declares `supports.color` with at least one sub-flag true. sgs/hero declares NO supports.color at all; sgs/container declares `supports.color: false`. On both, the toggle was DEAD UI — proven by reading the code, not asserted. Bean's fix decision: retire the background half of parallax.js entirely rather than relocate it, since BackgroundPanel already provides a working, reachable bgKenBurns/bgParallax pair. Shipped 2026-08-19 (see decisions.md).",
-   "A second self-correction, caught only because the fix above required re-checking: this file's FIRST pass on the animation type wrongly claimed 5 blocks 'each hand-roll their own Ken-burns/Parallax pair with ZERO shared component' — that was inferred from seeing the same attribute names in each block's live editor, never verified against the actual source. Grepping which files import BackgroundPanel shows it is ONE shared component, mounted by 8 blocks. The bannedLookalikes finding built on the wrong inference has been removed. Lesson: live-editor confirmation proves a control EXISTS and its SHAPE — it does not prove whether the code behind it is shared or duplicated; that needs a source-level check every time, even under time pressure.",
+   "Motion is one control type with one mechanism: the sgsMotion attribute edited in the Hover, Entrance and Effects panels (Spec 38A section 5). The panels are injected by the motion extension's BlockEdit filter, not mounted from any block's edit.js, so the survey's one-hop reach scan cannot see them and no component identifier is declared.",
    "Per Bean's LinkPopoverField-wrapper ruling (see principle_native_controls above): built `FocalPositionField` (src/components/FocalPositionField.js) and routed both existing raw FocalPointPicker mounts (the universal image-controls.js extension and hero's split-media object-position control) through it. The two mounts had two DIFFERENT storage shapes for the same concept (raw {x,y} floats vs a CSS object-position string) — the wrapper owns both via a `format` prop rather than forcing a storage-shape migration on either consumer's PHP side. Shipped 2026-08-19; trust-bar's unrelated 'Pending' control was also removed this session per an explicit ad hoc Bean request (see decisions.md)."
   ]
  },
@@ -218,61 +216,31 @@
    }
   },
   "animation": {
-   "specRef": "No Part O section exists for this type. Spec 35's only reference is the animation extension's own docblock plus cross-cutting note about the D5xx denylist. Genuinely new work this session.",
-   "decision": "FOUR mechanisms, verified live in the editor 2026-08-19, not two as first read from code alone. Two of the four share an identical UI shape (a bare SelectControl dropdown) while driving unrelated runtimes underneath — do not collapse on UI-shape resemblance.",
+   "specRef": "Spec 38A section 5 (the three panels) and section 6 (data model); Spec 35 Part C Motion/animation.",
+   "decision": "ONE mechanism. Every block that declares the motion support stores hover, entrance and effect motion in the sgsMotion attribute and edits it in the Hover, Entrance and Effects panels of src/blocks/extensions/motion. A block-private animation, hover-motion, parallax or Ken Burns attribute is a violation.",
    "canonical": {
-    "scrollTriggerReveal": {
-     "shape": "AnimationControl, mounted only via the universal extension",
-     "path": "src/components/AnimationControl.js -> src/blocks/extensions/animation.js",
-     "mechanism": "Tier V (plain CSS) one-shot reveal-on-scroll — fade/slide-in, 15-17 presets, zero extra JS/CSS cost unless a preset is actually chosen",
+    "sgsMotionPanels": {
+     "shape": "the Hover, Entrance and Effects panels, one Target row per declared part, a primary choice and a Fine-tune disclosure per layer",
+     "path": "src/blocks/extensions/motion/MotionPanels.js",
+     "mechanism": "the sgsMotion attribute, emitted as scoped custom properties and CSS animations by the motion runtime, gated by prefers-reduced-motion",
      "verifiedLive": true,
-     "adoption": "0 direct JSX mounts (correct — extension-injected). Applies to every sgs/* block + core/group/columns/cover/image, minus hideExtensions opt-outs.",
-     "noComponentIdentifier2026_08_20": "Although AnimationControl itself resolves as a real component (resolveComponentFiles() -> true), it is mounted ONLY from inside animation.js's global BlockEdit filter — never imported or JSX-mounted by any block's own edit.js (grepped: zero matches across src/blocks/*/edit.js). The survey's canonical-reach scan starts from each block's edit.js and only follows ONE further hop through components that edit.js mounts directly, so it structurally cannot see a filter-injected panel with no per-block mount point at all. Declaring `component: \"AnimationControl\"` here would not produce a partial/noisy signal — it would read MISSING/VIOLATION on all or nearly all 83 blocks despite the control genuinely being live and reachable in the editor for every eligible block, which is the same false-signal failure mode as an over-eager 80/83-conformant identifier, just inverted (near-universal false failure instead of false pass). Left undeclared; this is the AXIS-GAP case flagged below, not a fabricated identifier."
-    },
-    "gsapScrollEffects": {
-     "shape": "the 'Scroll & effects' panel, Tier G",
-     "path": "src/blocks/extensions/fx.js",
-     "mechanism": "GSAP-powered continuous scroll-scrubbed motion (easing curves, trigger-start position, scrub distance) — genuinely heavier, budget-gated (a KB-cost notice appears in the panel)",
-     "verifiedLive": true,
-     "note": "Looks like the same kind of dropdown as scrollTriggerReveal above but is architecturally unrelated — confirmed by reading fxOptions' actual values (GSAP easing names like power2.inOut, elastic.out) against AnimationControl's plain preset list.",
-     "noComponentIdentifier2026_08_20": "Same extension-injection shape as scrollTriggerReveal (grepped: zero fx.js/FxPanel/ScrollEffects JSX mounts across src/blocks/*/edit.js) and no exported named component in fx.js for the panel itself. Left undeclared for the same reason — a name here would produce a false near-universal MISSING, not a real signal."
-    },
-    "elementParallaxToggle": {
-     "shape": "parallax.js's Element-parallax toggle",
-     "path": "src/blocks/extensions/parallax.js",
-     "mechanism": "writes the sgsParallax enum ('none'|'element'), universal on any block supporting className, opt-out via supports.sgs.hideExtensions",
-     "verifiedLive": true,
-     "correction2026_08_19": "This row originally also named a 'Background parallax' half of this same toggle pair and flagged it as a CONFIRMED BUG (mounted inside WordPress's native Colour-panel slot — InspectorControls group=\"color\" — which never renders on a block that has migrated off native colour supports; sgs/hero declares no supports.color at all, sgs/container sets supports.color:false, so the toggle was dead UI). That diagnosis was correct, but the fix decided with Bean was to REMOVE the background half entirely rather than relocate it, because BackgroundPanel (see blockOwnBackgroundMotion below) already does this job correctly and reaches every block that needs it. parallax.js now offers element-parallax only. Retirement completed end-to-end 2026-08-19, not just the editor UI: includes/parallax.php's 'background' branch, extensions.css's .sgs-parallax-background rules (fixed-attachment + scroll-driven-animation variants), and assets/js/parallax.js's legacy-browser 'background' fallback branch are all removed. Only 'element' is a live sgsParallax value anywhere in the stack now.",
-     "noComponentIdentifier2026_08_20": "Same extension-injection shape again — the toggle is painted by parallax.js's own BlockEdit filter, not mounted from any block's edit.js (the 5 files matching a plain 'parallax' grep in src/blocks/*/edit.js reference the sgsParallax attribute/opt-outs in prose or supports declarations, not a JSX-mounted component). Left undeclared."
-    },
-    "blockOwnBackgroundMotion": {
-     "component": "BackgroundPanel",
-     "shape": "a SHARED component, not per-block hand-rolled",
-     "componentResolutionNote2026_08_20": "Verified via resolveComponentFiles() -> true, and confirmed as a real one-hop reach: 7 blocks (container, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) import BackgroundPanel directly in their own edit.js. This is the one animation sub-mechanism the canonical/reach axis can actually measure.",
-     "path": "src/blocks/container/components/BackgroundPanel.js",
-     "mechanism": "one Ken-burns/Parallax mutually-exclusive toggle pair (bgKenBurns/bgParallax), scoped to whichever background image/video is active",
-     "verifiedLive": true,
-     "correction2026_08_19": "The FIRST pass of this row wrongly claimed 4 blocks (hero, container, trust-bar, site-header) each independently hand-roll this pair with 'ZERO shared component' — that was never verified, only inferred from seeing the same attribute names appear in each block's live editor. Grepping which files actually IMPORT BackgroundPanel shows 7 blocks (container, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) all mount the ONE shared component — this is already the correct, working, reachable implementation, not a duplication finding. The bannedLookalikes entry this correction replaces was itself wrong and has been removed.",
-     "independentlySufficient": false,
-     "independentlySufficientWhy": "MEASURED 2026-08-20: declaring this alone scored 24 blocks CONFORMANT for `animation`. BackgroundPanel is ONE of this row's FOUR declared mechanisms (background motion) — the other three are extension-injected and structurally invisible to a one-hop reach scan. A block with a background Ken-Burns/parallax pair and no scroll-trigger animation at all would read 'conformant on animation', which is a false pass. Measurable, but not independently sufficient. Closing this properly needs PER-MECHANISM axes, not one OR'd verdict per type — recorded as the named gap."
+     "adoption": "0 direct JSX mounts (correct: extension-injected). Applies to every block that declares the motion support.",
+     "noComponentIdentifier": "The panels are mounted by the motion extension's own BlockEdit filter, never imported by a block's edit.js. The survey's canonical-reach scan starts from each block's edit.js and follows one hop, so it cannot see them; declaring a component here would read MISSING on nearly every block. Left undeclared."
     }
    },
    "bannedLookalikes": {
-    "_note": "No live violations found for this type after the correction above — BackgroundPanel is already the single shared implementation for background motion, reached by all 8 eligible blocks.",
+    "_note": "A block-private motion attribute or a hand-rolled motion panel duplicates the sgsMotion panels.",
     "jsxComponents": [],
     "patterns": []
    },
    "nativeUi": {
-    "_note": "No core supports.* flag maps to scroll animation/parallax — not applicable."
+    "_note": "No core supports.* flag maps to motion; not applicable."
    },
    "qualifiesWhen": {
-    "scrollTriggerReveal": "a block in the extension's shouldHaveAnimation() allow-list without a hideExtensions:[\"animation\"] opt-out",
-    "gsapScrollEffects": "same allow-list surface as scrollTriggerReveal (Tier G is layered on the same eligible-block set)",
-    "elementParallaxToggle": "any block supporting className, minus hideExtensions opt-outs (not scoped to background — this is whole-block drift, works with or without a background image)",
-    "blockOwnBackgroundMotion": "a block importing BackgroundPanel and rendering a background image/video element or a split-media element (the same surface the media row's paintsOwnSurface evidence establishes)"
+    "sgsMotionPanels": "a block that declares the motion support in block.json"
    },
    "scope": {
-    "eligible": "no dedicated roster.json surface — scrollTriggerReveal/gsapScrollEffects apply near-universally via opt-out; elementParallaxToggle applies near-universally too; blockOwnBackgroundMotion scopes to the 7 blocks importing BackgroundPanel (container, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar)"
+    "eligible": "every block that declares the motion support; the framework DB lists them"
    }
   },
   "angle-position": {

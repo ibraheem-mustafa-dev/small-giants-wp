@@ -1,7 +1,7 @@
 {
   "_meta": {
     "doc_type": "data",
-    "title": "Spec 35 optimal-control registry — behaviour-family slice (11 rows)",
+    "title": "Spec 35 optimal-control registry - behaviour-family slice (11 rows)",
     "created": "2026-07-19",
     "spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Parts A/C/E) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Parts H/I)",
     "contract": ".claude/plans/spec-35-setting-registry-design.md",
@@ -46,44 +46,47 @@
     {
       "setting_key": "behaviour:scroll-reveal-animation",
       "category": "behaviour-family",
-      "label": "Scroll-triggered / entrance animation",
+      "label": "Entrance, reveal and looping effects",
       "optimal_control": {
-        "component": "BUILD: ScrollRevealControls (extends the existing AnimationControl/AnimationPanel — src/components/AnimationControl.js + universal-extensions/AnimationPanel.js — to cover parallax/Ken-Burns/SVG-draw/stagger, which today live OUTSIDE it as bespoke per-block attrs)",
+        "component": "EXISTS: the Entrance and Effects panels of the sgsMotion attribute (src/blocks/extensions/motion), one Target row per declared part, a primary choice per panel and a Fine-tune disclosure per layer (Spec 38A section 5).",
         "props": {
-          "style": "ToggleGroupControl or ComboboxControl (>10 options)",
-          "delay/duration/stagger": "RangeControl ms, withInputField+allowReset",
-          "trigger": "ToggleControl (reveal-on-scroll / autoplay-on-load)"
+          "entrance": "ToggleGroupControl or ComboboxControl (preset list, >10 options)",
+          "timing": "RangeControl ms, withInputField+allowReset (duration, delay, start line)",
+          "trigger": "ToggleGroupControl (page load / scroll into view / panel opens / state)",
+          "effects": "one layer per effect (parallax, Ken Burns, SVG draw, marquee), each with the control set its fx_effects row declares"
         },
-        "preset_layer": "animation-style presets (fade/slide/zoom/draw/Ken-Burns) seed a real ms-level delay/duration/stagger box underneath — never presets alone",
-        "units": "ms (duration/delay/offset/stagger) — RangeControl with real min/max/step + input field, not unitless slider only",
-        "responsive_device_tier": false,
+        "preset_layer": "a preset (fade up, slide, scale-in, reveal-up) stamps real from/to values, duration, delay and easing into the layer; Fine-tune edits the stamped values and tags each as Customised",
+        "units": "ms for duration, delay and stagger step; px for distances; RangeControl with real min/max/step and an input field",
+        "responsive_device_tier": true,
         "multi_value": "none",
-        "dropdown_completeness": "ToggleGroupControl for animationStyle/scrollDirection/svgAnimation (short sets); Custom path n/a — closed enum by design (CSS keyframe names)",
+        "dropdown_completeness": "preset pickers list every registry row valid for the block and target; easing is a picker plus a custom curve",
         "alpha_clearable": "n/a",
-        "reset_disclosure": "allowReset + resetFallbackValue on every Range; ToolsPanel disclosure once >6 controls (parallax/Ken-Burns/SVG/stagger together comfortably exceeds this on trust-bar/hero/container)"
+        "reset_disclosure": "every Fine-tune field that differs from the stamped preset carries a Customised tag and its own Reset; the panel Reset restores the stamped values"
       },
       "control_set": [
         {
-          "member_label": "Reduced motion (MANDATORY GATE)",
-          "component": "informational Notice + automatic prefers-reduced-motion CSS gate (not a client-facing override — animation must self-disable, per WCAG 2.3.3)",
+          "member_label": "Reduced motion (automatic gate)",
+          "component": "informational note plus the automatic prefers-reduced-motion gate in the motion runtime (not a client-facing override; animation self-disables per WCAG 2.3.3)",
           "dimensions_applied": [
-            "Part C/E5 mandatory gate — NOT currently a registry attr; this is a GAP, see divergence"
+            "Part C/E5 mandatory gate - applied by the runtime, no client control"
           ]
         },
         {
-          "member_label": "Animation style (fade/slide/zoom/reveal/draw/Ken-Burns/parallax)",
-          "component": "ToggleGroupControl",
+          "member_label": "Entrance preset",
+          "component": "ToggleGroupControl or ComboboxControl",
           "dimensions_applied": [
             "dimension 5 dropdown completeness"
           ]
         },
         {
-          "member_label": "Trigger (reveal-on-scroll / caption-reveal / path-draw-on-scroll / scroll-spy / smooth-scroll)",
-          "component": "ToggleControl",
-          "dimensions_applied": []
+          "member_label": "Trigger (page load / scroll into view / panel opens / state)",
+          "component": "ToggleGroupControl",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
         },
         {
-          "member_label": "Stagger delay / reveal stagger / path-draw duration / trigger offset / scroll offset",
+          "member_label": "Duration / delay / start line / stagger step",
           "component": "RangeControl (ms, withInputField, allowReset)",
           "dimensions_applied": [
             "dimension 2 units (ms)",
@@ -91,33 +94,26 @@
           ]
         },
         {
-          "member_label": "Background motion (Ken Burns / parallax + strength / flip-X)",
-          "component": "ToggleControl + RangeControl (strength)",
+          "member_label": "Effects layers (parallax, Ken Burns, SVG draw, marquee)",
+          "component": "Effects panel layer list with Add effect",
           "dimensions_applied": [
             "dimension 2 units"
           ]
         },
         {
-          "member_label": "SVG animation (type/source/speed)",
-          "component": "ToggleGroupControl + RangeControl",
-          "dimensions_applied": [
-            "dimension 5"
-          ]
-        },
-        {
-          "member_label": "Scroll direction",
-          "component": "ToggleGroupControl (up/down)",
+          "member_label": "Text effects (split reveal, scramble)",
+          "component": "Entrance panel text-effect layer list",
           "dimensions_applied": [
             "dimension 5"
           ]
         }
       ],
-      "shared_component": "BUILD: ScrollRevealControls (grows AnimationControl)",
-      "spec_ref": "Spec 35 Part C Motion/animation ('entrance P · scroll-triggered P · parallax P · prefers-reduced-motion gating on ALL animation T'), Part E5, Spec 35A Part I ('Reduced-motion gate — verify on animation ext')",
-      "current_state": "A universal AnimationPanel/AnimationControl already exists (sgsAnimation/sgsAnimationDelay/sgsAnimationDuration/sgsAnimationEasing, wired globally to nearly all sgs/* blocks via editor.BlockEdit filter) but it is a NARROWER shape — plain entrance fade/slide only. The scroll-reveal-animation family's attrs (bgKenBurns, bgParallax+parallaxStrength, bgSvgAnimation+Speed, svgAnimation+Source+Speed, revealOnScroll+revealStagger, staggerDelay, captionReveal, fadeOnScroll, flipX, pathDrawOnScroll+DurationMs+TriggerOffset, scrollDirection/Offset/Spy, smoothScroll, animationStyle) are ALL block-private, not routed through the universal AnimationControl at all — every block (container, hero, trust-bar, decorative-image, gallery, timeline, table-of-contents, media, card-grid, post-grid, team-member, testimonial, google-reviews, trustpilot-reviews, responsive-logo, brand-strip) reinvents its own subset with its own naming.",
-      "divergence": "22 scroll/motion attrs are all block-private and bypass the existing universal AnimationControl, each block reinventing its own subset under its own names; and a per-block prefers-reduced-motion gate must be confirmed applied framework-wide (WCAG 2.3.3) before any consolidation.",
-      "divergence_severity": "high",
-      "notes": "MANDATORY: no member attr in setting-reclassification.json currently represents a per-block prefers-reduced-motion override — verify (per Spec 35A Part I 'ensure every animation is gated') whether the CSS gate is applied automatically at the framework/animation.js level (cause-agnostic, no client control needed) rather than exposing a toggle; if it is NOT applied framework-wide today, that is the #1 gap to close before any other scroll-reveal work, ahead of consolidating the 22 attrs. Do not add a client-facing 'disable animation' toggle as a substitute for the automatic CSS media-query gate — WCAG 2.3.3 requires it to fire without the client knowing to ask."
+      "shared_component": "sgsMotion panels (Entrance, Effects)",
+      "spec_ref": "Spec 38A section 5 (the three panels) and section 12 (reduced motion); Spec 35 Part C Motion/animation, Part E5; Spec 35A Part I ('Reduced-motion gate')",
+      "current_state": "One attribute, sgsMotion, edited in the Entrance and Effects panels, is declared by every block that carries the motion support. Entrance values live in sgsMotion.entrance, looping and scroll effects in sgsMotion.effects, each layer addressed to a block root or a declared part. No block declares a private entrance, parallax, Ken Burns or SVG-animation attribute.",
+      "divergence": "none: every block reaches entrance and effect motion through the same panels.",
+      "divergence_severity": "none",
+      "notes": "The prefers-reduced-motion gate is applied by the motion runtime to every layer, so no client-facing 'disable animation' toggle exists or is wanted; WCAG 2.3.3 requires the gate to fire without the visitor or client asking."
     },
     {
       "setting_key": "behaviour:slider-carousel",
@@ -131,10 +127,10 @@
           "autoplay": "ToggleControl",
           "autoplaySpeed": "RangeControl (ms, withInputField, allowReset, reduced-motion-aware — pause autoplay entirely under prefers-reduced-motion)",
           "slidesVisible": "RangeControl inside ResponsiveControl (device-tier: how many slides show per breakpoint)",
-          "pauseOnHover": "ToggleControl"
+          "hover rate / pause on touch": "ToggleControl and RangeControl on the shared marquee effect (Spec 38A FR-38A-44) for the continuous-marquee variant"
         },
         "preset_layer": null,
-        "units": "ms for speed controls (autoplaySpeed/autoScrollSpeed/carouselSpeed/scrollSpeed all converge to the same ms RangeControl)",
+        "units": "ms for speed controls (autoplaySpeed and carouselSpeed converge to the same ms RangeControl); the marquee effect's speed is px/s",
         "responsive_device_tier": true,
         "multi_value": "none",
         "dropdown_completeness": "n/a (all boolean/range) except scrollSpeed which today is enum-select — should convert to the same ms RangeControl as autoplaySpeed for consistency, not a separate slow/medium/fast enum",
@@ -185,11 +181,11 @@
         }
       ],
       "shared_component": "BUILD: CarouselControls",
-      "spec_ref": "Spec 35 Part C Motion (parallax/scroll P), Spec 35A Part I ('Reduced-motion gate — verify on animation ext' extends to autoplay), Spec 35A Part H (bounded numeric -> RangeControl, segmented choice -> ToggleGroupControl)",
-      "current_state": "18 attrs across 9 blocks, and this is THE clearest name-divergence case in the whole registry: the SAME 4 concepts (show-arrows / show-dots / autoplay-on-off / autoplay-speed) are reimplemented under 4 different naming schemes per block — 'showArrows'/'showDots' (google-reviews, testimonial-slider, trustpilot-reviews) vs 'carouselShowArrows'/'carouselShowDots' (gallery, post-grid) vs no direct equivalent on brand-strip/trust-bar (which use 'scrolling'/'autoScroll' + 'pauseOnHover'/'autoScrollPauseOnHover' + 'scrollSpeed'/'autoScrollSpeed' for a continuous-marquee variant rather than paged slides). 'autoplaySpeed' (google-reviews/testimonial-slider/trustpilot-reviews, number) vs 'carouselSpeed' (gallery/post-grid, number) vs 'autoScrollSpeed' (trust-bar, enum-select) vs 'scrollSpeed' (brand-strip, enum-select) are the SAME ms-duration concept under 4 names and 2 different control types (number vs enum).",
+      "spec_ref": "Spec 35 Part C Motion, Spec 35A Part I ('Reduced-motion gate' extends to autoplay), Spec 35A Part H (bounded numeric -> RangeControl, segmented choice -> ToggleGroupControl)",
+      "current_state": "Paged carousels (google-reviews, testimonial-slider, trustpilot-reviews, gallery, post-grid) carry show-arrows, show-dots, autoplay on/off and autoplay speed under per-block names ('showArrows'/'showDots' vs 'carouselShowArrows'/'carouselShowDots'; 'autoplaySpeed' vs 'carouselSpeed'), the clearest name-divergence case in the registry. The continuous-marquee variant (brand-strip, trust-bar) is the shared marquee effect of the sgsMotion Effects panel (Spec 38A FR-38A-44), with its own speed, direction, hover rate and pause-on-touch controls.",
       "divergence": "The same 4 concepts (arrows/dots/autoplay/speed) are reimplemented under 4 naming schemes and 2 control types (number vs enum) across 9 blocks; should converge on one CarouselControls component with a paged|marquee variant prop.",
       "divergence_severity": "high",
-      "notes": "Two sub-variants exist and both should map onto CarouselControls: (1) PAGED carousel (testimonial-slider, google-reviews, trustpilot-reviews, gallery, post-grid) — arrows/dots/autoplay/slidesVisible all apply. (2) CONTINUOUS-MARQUEE ticker (brand-strip, trust-bar, icon-list, nav-menu) — no dots/slidesVisible (it scrolls continuously), but shares autoplay-speed/pause-on-hover/direction. Component should expose a `variant: 'paged' | 'marquee'` prop that shows/hides the paged-only controls (dots, slidesVisible, arrows) rather than forcing marquee blocks to carry unused paged attrs. autoplaySpeed/carouselSpeed/autoScrollSpeed/scrollSpeed all converge to ONE ms attr the moment CarouselControls exists — the enum-select variants (scrollSpeed, autoScrollSpeed) should become the same RangeControl, not stay a separate slow/medium/fast picker."
+      "notes": "Two sub-variants: (1) PAGED carousel, where arrows, dots, autoplay and slidesVisible apply; (2) CONTINUOUS MARQUEE, which is the Effects-panel marquee layer and carries no dots or slidesVisible. CarouselControls exposes `variant: 'paged'` only; autoplaySpeed and carouselSpeed converge to ONE ms attr the moment it exists."
     },
     {
       "setting_key": "behaviour:media-playback",
@@ -525,78 +521,69 @@
       "category": "behaviour-family",
       "label": "Hover state visual effects",
       "optimal_control": {
-        "component": "StateToggleControl (EXISTS, src/components/StateToggleControl.js — the Normal/Hover segmented switch). Every *Hover attr must route through it: the control renders whichever underlying property control (colour/scale/shadow/decoration) the block already has, scoped to the selected state — never a second bespoke 'Hover Effects' panel duplicating the Normal panel.",
+        "component": "EXISTS: the Hover panel of the sgsMotion attribute (src/blocks/extensions/motion), one Target row per declared part; hover colour and shadow VALUES stay inline in the element's own colour and shadow controls, scoped by StateToggleControl (src/components/StateToggleControl.js, the Normal/Hover segmented switch).",
         "props": {
-          "swatches": "legend showing both Normal + Hover values stay visible in both states (discoverability)",
-          "children": "render-prop returning the SAME property controls used for Normal, just bound to the Hover-suffixed attr when state==='hover'"
+          "hover state": "one set of values the element moves to on hover (translate, scale, rotate, opacity, filter, ring, accent line) with duration, delay and easing",
+          "driven by": "ToggleGroupControl (this element / whole block hovered)",
+          "effects": "ordered hover effect layers (tilt, magnet, sheen), each with its own control set"
         },
-        "preset_layer": "effectHover (scale/shadow/zoom/grayscale/overlay/decoration) acts as a PRESET selector that seeds which fine-grained Hover control(s) appear beneath it — not a replacement for the fine controls",
-        "units": "scaleHover is a %/ratio RangeControl (e.g. 100-120), matching the existing sgsHoverScale pattern",
-        "responsive_device_tier": false,
+        "preset_layer": "the Hover state picker (Lift and the other presets) stamps real values into the hover state; Intensity (Subtle, Standard, Bold) re-stamps them; Fine-tune edits the stamped values",
+        "units": "scale is a ratio RangeControl, distances px, timings ms",
+        "responsive_device_tier": true,
         "multi_value": "none",
-        "dropdown_completeness": "ToggleGroupControl for effectHover/shadowHover/textDecorationHover (each a short closed set)",
-        "alpha_clearable": "n/a (colour hover states inherit alpha_clearable from whichever colour control they wrap, e.g. DesignTokenPicker)",
-        "reset_disclosure": "resetting Normal must not silently reset Hover and vice versa — each state's reset is independent, StateToggleControl keeps both value sets in memory regardless of which is on-screen"
+        "dropdown_completeness": "the preset picker lists every hover state valid for the target; easing is a picker plus a custom curve",
+        "alpha_clearable": "n/a (colour hover states inherit alpha_clearable from the colour control they wrap)",
+        "reset_disclosure": "resetting Normal must not silently reset Hover and vice versa; each state's reset is independent, and each Fine-tune field resets to its stamped preset value"
       },
       "control_set": [
         {
-          "member_label": "Effect type (which hover effect is active: scale/shadow/zoom/grayscale/overlay)",
+          "member_label": "Hover state (Lift and the other presets)",
+          "component": "ToggleGroupControl or ComboboxControl with live thumbnails",
+          "dimensions_applied": [
+            "dimension 5"
+          ]
+        },
+        {
+          "member_label": "Intensity (Subtle / Standard / Bold)",
           "component": "ToggleGroupControl",
           "dimensions_applied": [
             "dimension 5"
           ]
         },
         {
-          "member_label": "Scale amount",
-          "component": "RangeControl, scoped inside StateToggleControl's Hover state",
+          "member_label": "Hover state values (translate, scale, rotate, opacity, filter, ring, accent line)",
+          "component": "RangeControl set inside Fine-tune",
           "dimensions_applied": [
             "dimension 2",
             "dimension 7"
           ]
         },
         {
-          "member_label": "Shadow (hover)",
-          "component": "ShadowControl, scoped inside StateToggleControl's Hover state (shares the SAME builder as the block's resting-state shadow, not a separate Small/Medium/Large/Glow select)",
+          "member_label": "Hover colour and shadow",
+          "component": "colour control and ShadowControl scoped inside StateToggleControl's Hover state (the SAME builder as the resting state)",
           "dimensions_applied": [
             "dimension 1 preset+custom"
           ]
         },
         {
-          "member_label": "Grayscale on hover",
-          "component": "ToggleControl",
+          "member_label": "Hover effect layers (tilt, magnet, sheen)",
+          "component": "layer list with Add effect",
           "dimensions_applied": []
         },
         {
-          "member_label": "Image zoom on hover",
-          "component": "ToggleControl",
-          "dimensions_applied": []
-        },
-        {
-          "member_label": "Overlay on hover",
-          "component": "ToggleControl (+ DesignTokenPicker for overlay colour if the block supports one)",
-          "dimensions_applied": []
-        },
-        {
-          "member_label": "Text decoration on hover (underline/none)",
-          "component": "ToggleGroupControl",
-          "dimensions_applied": [
-            "dimension 5"
-          ]
-        },
-        {
-          "member_label": "Transition duration + easing",
-          "component": "SelectControl (short named presets: instant/fast/medium/slow + default/ease-out/ease-in/spring/linear)",
+          "member_label": "Duration, delay and easing",
+          "component": "RangeControl (ms) and easing picker with custom curve",
           "dimensions_applied": [
             "dimension 5"
           ]
         }
       ],
-      "shared_component": "StateToggleControl",
-      "spec_ref": "Spec 35A Part F ('duplicate hover panels / hover split from resting'), Spec 35A Part I ('Normal/Hover state — StateToggleControl EXISTS (2026-07-18) — roll out to stateful blocks'), Spec 35 checklist item 12",
-      "current_state": "7 behaviour-family attrs (effectHover/grayscaleHover/imageZoomHover/overlayHover/scaleHover/shadowHover/textDecorationHover) across 14 blocks — PLUS a SEPARATE, ALREADY-BUILT universal 'Hover Effects' panel (src/components/universal-extensions/HoverEffectsPanel.js, wired via src/blocks/extensions/hover-effects.js to every block) exposing sgsHoverBgColour/sgsHoverTextColour/sgsHoverBorderColour/sgsHoverScalePreset/sgsHoverScale/sgsHoverShadow/sgsHoverDuration/sgsHoverEasing/sgsHoverImageZoom. Neither system uses StateToggleControl (verified: HoverEffectsPanel.js imports DesignTokenPicker/SelectControl/RangeControl/ToggleControl directly, not StateToggleControl) — this is TWO parallel hover systems running simultaneously: the universal sgsHover* panel AND 14 blocks' own private *Hover attrs (scaleHover on 11 blocks alone).",
-      "divergence": "Two parallel hover systems run at once — the universal HoverEffectsPanel (sgsHover*) AND 14 blocks' private *Hover attrs — neither using StateToggleControl; migrate HoverEffectsPanel to StateToggleControl and retire the per-block duplicates.",
-      "divergence_severity": "high",
-      "notes": "This is the textbook Part F anti-pattern 'duplicate hover panels / hover split from resting', caught live rather than hypothetically: a block using BOTH the universal HoverEffectsPanel (sgsHoverScale) AND its own private scaleHover attr would show the client two different 'hover scale' controls with no indication they might conflict. Fix-shape: migrate HoverEffectsPanel itself to render through StateToggleControl (so Normal/Hover share one panel, one set of property controls), then retire the 14 blocks' private *Hover attrs onto the same StateToggleControl-scoped controls, deleting the duplicate universal-vs-per-block split entirely. This is the highest-severity consolidation in the behaviour-family slice by duplication count (2 systems x 14 blocks)."
+      "shared_component": "sgsMotion Hover panel + StateToggleControl",
+      "spec_ref": "Spec 38A section 5.1 (Hover), Spec 35A Part F ('duplicate hover panels / hover split from resting'), Spec 35A Part I ('Normal/Hover state'), Spec 35 checklist item 12",
+      "current_state": "The Hover panel of sgsMotion is the one hover motion surface on every block that carries the motion support. Hover colour, shadow and text-decoration values live in the element's own colour, shadow and typography controls scoped by StateToggleControl.",
+      "divergence": "none: no block carries a second hover motion system beside the Hover panel.",
+      "divergence_severity": "none",
+      "notes": "Hover is one panel. A control that sets the same hover property in two places is the Part F anti-pattern 'duplicate hover panels / hover split from resting' and is rejected at review."
     },
     {
       "setting_key": "behaviour:visibility-responsive",

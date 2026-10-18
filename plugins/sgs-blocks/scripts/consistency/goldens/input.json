@@ -166,7 +166,7 @@
         }
       },
       "predictVsMeasuredReconciliation_2026_08_19": {
-        "predicted": "71 (55 direct mounts + 16 credited to the 4 extension surfaces conditional-visibility.js/fx.js/hover-effects.js/parallax.js, per this row's own adoption figure)",
+        "predicted": "71 (55 direct mounts + 16 credited to the extension surfaces conditional-visibility.js/hover-effects.js, per this row's own adoption figure)",
         "measured": "66 CONFORMANT via the live census run against a temporary local merge — 5 below prediction",
         "rule": "Per this project's own standing discipline: a measured count BELOW an independent prediction is a detector bug until proven otherwise — not silently accepted as 'close enough'.",
         "rootCause": "PROVEN, not assumed. `conditional-visibility.js` mounts its ToggleControls via a GLOBAL `addFilter('editor.BlockEdit', ...)` with NO per-block gate at all (confirmed by reading the file — no `enabledExtensions`/`hideExtensions` check anywhere in it, unlike `hover`/`background`/`width` etc., which DO gate through `supports.sgs.enabledExtensions`). It therefore reaches all 83 blocks, including every one of the 17 blocks the census marked VIOLATION (spot-checked: sgs/tabs and sgs/process-steps both declare NO `enabledExtensions` at all in block.json, so they cannot be reaching it through the gated mechanism the census's shared resolver understands — they reach it through this ungated global HOC instead). The census's `resolveComponentFiles` reach model can see a block's own edit.js plus components it imports plus the gated extension surfaces, but has no way to attribute a universally-applied `editor.BlockEdit` filter back to an individual consuming block.",

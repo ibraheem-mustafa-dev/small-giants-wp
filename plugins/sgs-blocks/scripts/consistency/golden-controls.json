@@ -606,7 +606,7 @@
           "path": "src/components/MediaGalleryPicker.js",
           "adoption": "REACH 1 of 83 (measured 2026-08-19)"
         },
-        "nativeContract": "MediaUpload (the raw @wordpress/block-editor primitive MediaPicker wraps) — REACH 36 of 83 (10 direct + 26 via extension surfaces: fx.js, image-controls.js)"
+        "nativeContract": "MediaUpload (the raw @wordpress/block-editor primitive MediaPicker wraps) — REACH 36 of 83 (10 direct + 26 via extension surface: image-controls.js)"
       },
       "bannedLookalikes": {
         "_note": "Spec 35 §7.3.",
@@ -672,7 +672,7 @@
       "canonical": {
         "component": "ToggleControl",
         "use": "enable/disable — 160 of 163 controlled boolean rows per Spec 35 §8.1",
-        "adoption": "REACH 71 of 83 (measured 2026-08-19) — direct 55, +16 via extension surfaces (conditional-visibility.js, fx.js, hover-effects.js, parallax.js)",
+        "adoption": "REACH 71 of 83 (measured 2026-08-19) — direct 55, +16 via extension surfaces (conditional-visibility.js, hover-effects.js)",
         "alt1": {
           "component": "ToggleGroupControl",
           "when": "the states are NAMED ALTERNATIVES, not a plain on/off — e.g. overlayGradient -> 'Solid / Gradient' is CORRECT per Spec 35 §8.1, not a violation",
