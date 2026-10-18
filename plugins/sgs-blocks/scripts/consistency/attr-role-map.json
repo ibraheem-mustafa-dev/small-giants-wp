@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_from": "..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
+    "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
     "row_count": 8694,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
@@ -4136,7 +4136,7 @@
     "sgs/hero::splitMediaSvgContent": null,
     "sgs/hero::splitMediaSvgContentMobile": null,
     "sgs/hero::splitMediaSvgContentTablet": null,
-    "sgs/hero::splitMediaType": "select-from-enum",
+    "sgs/hero::splitMediaType": "scalar-media",
     "sgs/hero::splitMediaTypeMobile": "select-from-enum",
     "sgs/hero::splitMediaTypeTablet": "select-from-enum",
     "sgs/hero::splitMediaVideoId": "enum-class-probe",
