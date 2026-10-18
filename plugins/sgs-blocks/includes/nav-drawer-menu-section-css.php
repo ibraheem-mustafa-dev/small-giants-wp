@@ -109,7 +109,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_section_motion' ) ) {
 
 		$mode = (string) ( $attributes['submenuAnimation'] ?? 'none' );
 		$in   = sgs_flat_duration_ms( $attributes['submenuAnimationDuration'] ?? 180, 180 );
-		$ease = sgs_motion_easing_css( (string) ( $attributes['submenuAnimationEasing'] ?? 'ease-out-css' ), (string) ( $attributes['submenuAnimationEasingCustom'] ?? '' ), 'ease-out' );
+		$ease = sgs_motion_easing_css( (string) ( $attributes['submenuAnimationEasing'] ?? 'ease-out' ), (string) ( $attributes['submenuAnimationEasingCustom'] ?? '' ), 'ease-out' );
 		$vars = '';
 		if ( in_array( $mode, array( 'fade', 'fade-lift', 'height' ), true ) ) {
 			$out['classes'][] = 'sgs-nav-drawer-menu--acc-' . $mode;

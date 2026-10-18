@@ -173,7 +173,7 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 							label={ __( 'Slide-in speed curve', 'sgs-blocks' ) }
 							value={ attributes.panelSlideEasing }
 							custom={ attributes.panelSlideEasingCustom }
-							fallback="ease-out-css"
+							fallback="ease-out"
 							onChange={ ( value ) => setAttributes( { panelSlideEasing: value } ) }
 							onCustomChange={ ( value ) => setAttributes( { panelSlideEasingCustom: value } ) }
 						/>

@@ -184,8 +184,8 @@ ok( 'ease' === easing_of( array() ), "easing: unset attribute resolves to the li
 ok( 'ease' === easing_of( array( 'easing' => 'ease' ) ), "easing: 'ease' resolves to the literal keyword" );
 ok( 'linear' === easing_of( array( 'easing' => 'linear' ) ), "easing: 'linear' resolves to the literal keyword" );
 ok( 'cubic-bezier(0.165, 0.84, 0.44, 1)' === easing_of( array( 'easing' => 'quart-out' ) ), "easing: 'quart-out' resolves to dogstudio's literal curve, not a theme token" );
-// The stored name `ease-out` is the theme's emphasised curve; the others resolve to the token of the same name.
-foreach ( array( 'default' => 'default', 'ease-out' => 'emphasised', 'ease-in' => 'ease-in', 'spring' => 'spring' ) as $stored => $token ) {
+// A stored name resolves to the theme token of the same name; `ease-out` is the CSS keyword and carries it as the fallback.
+foreach ( array( 'default' => 'default', 'emphasised' => 'emphasised', 'ease-out' => 'ease-out, ease-out', 'ease-in' => 'ease-in', 'spring' => 'spring' ) as $stored => $token ) {
 	ok(
 		'var(--wp--custom--easing--' . $token . ')' === easing_of( array( 'easing' => $stored ) ),
 		"easing: '$stored' resolves to the matching theme motion token"
@@ -254,7 +254,7 @@ $expected_morph = array( 'line', 'none', 'x', 'x-rotate' );
 sort( $expected_morph );
 ok( $morph_enum === $expected_morph, 'burgerMorph enum matches the PHP allow-list (x, x-rotate, line, none)' );
 
-$expected_easing = array( 'ease', 'ease-out-css', 'ease-in-out', 'default', 'ease-out', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom' );
+$expected_easing = array( 'ease', 'ease-out', 'ease-in-out', 'default', 'emphasised', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom' );
 ok( sgs_motion_easing_values() === $expected_easing, 'the shared resolver lists the same twelve easing values in editor order' );
 
 // Every burgerMorph enum value is one the render-side allow-list also accepts.

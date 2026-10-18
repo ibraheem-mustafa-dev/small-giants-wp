@@ -1708,5 +1708,23 @@
     "added_commit": null,
     "budget_ms": 634,
     "order": 192
+  },
+  {
+    "id": "sweep-easing-vocabulary",
+    "cmd": "python scripts/migrate-motion/sweep-easing-vocabulary.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 193
+  },
+  {
+    "id": "sweep-easing-vocabulary-selftest",
+    "cmd": "python scripts/migrate-motion/sweep-easing-vocabulary.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 194
   }
 ]

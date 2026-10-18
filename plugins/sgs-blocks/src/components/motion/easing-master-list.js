@@ -40,7 +40,7 @@ export const MOTION_EASING_OPTIONS = [
 		id: 'css-ease-out',
 		label: __( 'Ease out', 'sgs-blocks' ),
 		labels: { schema: __( 'Ease out (CSS)', 'sgs-blocks' ) },
-		values: { nav: 'ease-out-css', css: 'ease-out', schema: 'ease-out' },
+		values: { nav: 'ease-out', css: 'ease-out', schema: 'ease-out' },
 	},
 	{
 		id: 'ease-in-out',
@@ -63,12 +63,11 @@ export const MOTION_EASING_OPTIONS = [
 		},
 	},
 	{
-		id: 'expo-out',
-		label: __( 'Expo out', 'sgs-blocks' ),
-		labels: { theme: __( 'Ease out', 'sgs-blocks' ) },
+		id: 'emphasised',
+		label: __( 'Emphasised', 'sgs-blocks' ),
 		values: {
-			nav: 'ease-out',
-			theme: 'ease-out',
+			nav: 'emphasised',
+			theme: 'emphasised',
 			schema: 'token:easing.emphasised',
 		},
 	},
@@ -89,6 +88,15 @@ export const MOTION_EASING_OPTIONS = [
 		id: 'soft-settle',
 		label: __( 'Soft settle', 'sgs-blocks' ),
 		values: { nav: 'drafts', schema: 'cubic-bezier(0.16, 0.84, 0.32, 1)' },
+	},
+	{
+		id: 'theme-ease-out',
+		label: __( 'Ease out', 'sgs-blocks' ),
+		labels: { schema: __( 'Ease out (theme)', 'sgs-blocks' ) },
+		values: {
+			theme: 'ease-out',
+			schema: 'token:easing.ease-out',
+		},
 	},
 	{
 		id: 'theme-ease-in',
@@ -248,9 +256,10 @@ export const CSS_EASING_OPTIONS_IN_OUT_FIRST = easingView( 'css', {
 // The animation control: the theme curves with plain-English hints, then the CSS default curve.
 export const ANIMATION_EASING_OPTIONS = [
 	...easingView( 'theme', {
-		order: [ 'default', 'ease-out', 'ease-in', 'spring', 'linear' ],
+		order: [ 'default', 'emphasised', 'ease-out', 'ease-in', 'spring', 'linear' ],
 		labels: {
-			'ease-out': __( 'Ease out (snappy)', 'sgs-blocks' ),
+			emphasised: __( 'Emphasised (snappy)', 'sgs-blocks' ),
+			'ease-out': __( 'Ease out', 'sgs-blocks' ),
 			'ease-in': __( 'Ease in (gentle)', 'sgs-blocks' ),
 			spring: __( 'Spring (bouncy)', 'sgs-blocks' ),
 			linear: __( 'Linear (constant)', 'sgs-blocks' ),

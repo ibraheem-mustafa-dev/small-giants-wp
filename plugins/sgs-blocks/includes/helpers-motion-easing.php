@@ -27,7 +27,7 @@ if ( ! function_exists( 'sgs_motion_easing_values' ) ) {
 	 * @return array<int,string>
 	 */
 	function sgs_motion_easing_values(): array {
-		return array( 'ease', 'ease-out-css', 'ease-in-out', 'default', 'ease-out', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom' );
+		return array( 'ease', 'ease-out', 'ease-in-out', 'default', 'emphasised', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom' );
 	}
 }
 
@@ -35,8 +35,8 @@ if ( ! function_exists( 'sgs_motion_easing_css' ) ) {
 	/**
 	 * Resolve a named easing (plus its custom curve) to a CSS easing function.
 	 *
-	 * `default`, `ease-out`, `ease-in` and `spring` are theme tokens
-	 * (`--wp--custom--easing--*`); the rest are literals. An unknown value, or
+	 * `default`, `emphasised`, `ease-out`, `ease-in` and `spring` are theme tokens
+	 * (`--wp--custom--easing--*`; the CSS-keyword ones carry the keyword as their fallback); the rest are literals. An unknown value, or
 	 * `custom` with an invalid curve, falls back to `$fallback`, never to a raw
 	 * string reaching CSS.
 	 *
@@ -46,14 +46,13 @@ if ( ! function_exists( 'sgs_motion_easing_css' ) ) {
 	 * @return string A CSS `<easing-function>` value. Never empty.
 	 */
 	function sgs_motion_easing_css( string $value, string $custom = '', string $fallback = 'ease' ): string {
-		// The stored name `ease-out` is the theme's emphasised curve (the CSS keyword is `ease-out-css`).
-		$tokens = array( 'default' => 'default', 'ease-out' => 'emphasised', 'ease-in' => 'ease-in', 'spring' => 'spring' );
+		// A stored name that is a CSS easing keyword means exactly that keyword; `emphasised` is the theme's house curve.
+		$tokens = array( 'default' => '', 'emphasised' => '', 'ease-out' => 'ease-out', 'ease-in' => '', 'spring' => '' );
 		if ( isset( $tokens[ $value ] ) ) {
-			return 'var(--wp--custom--easing--' . $tokens[ $value ] . ')';
+			return 'var(--wp--custom--easing--' . $value . ( '' === $tokens[ $value ] ? '' : ', ' . $tokens[ $value ] ) . ')';
 		}
 		$literals = array(
 			'ease'         => 'ease',
-			'ease-out-css' => 'ease-out',
 			'ease-in-out'  => 'ease-in-out',
 			'linear'       => 'linear',
 			'quart-out'    => 'cubic-bezier(0.165, 0.84, 0.44, 1)',

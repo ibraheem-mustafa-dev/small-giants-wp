@@ -84,7 +84,7 @@ export default function SectionMotionPanel( { attributes, setAttributes } ) {
 						label={ __( 'Speed curve', 'sgs-blocks' ) }
 						value={ submenuAnimationEasing }
 						custom={ submenuAnimationEasingCustom }
-						fallback="ease-out-css"
+						fallback="ease-out"
 						onChange={ ( value ) => setAttributes( { submenuAnimationEasing: value } ) }
 						onCustomChange={ ( value ) => setAttributes( { submenuAnimationEasingCustom: value } ) }
 					/>

@@ -70,10 +70,11 @@ ok( $m[1] === $values, 'the easing master list (easing-master-list.js) carries t
 $scrim_json = json_decode( read_file( 'src/blocks/nav-bar-menu/block.json' ), true );
 ok( 'string' === ( $scrim_json['attributes']['scrimFadeEasing']['type'] ?? '' ), 'the bar keeps its backdrop fade easing attribute' );
 
-ok( 'ease-out' === sgs_motion_easing_css( 'ease-out-css' ), 'ease-out-css resolves to the CSS keyword' );
+ok( 'var(--wp--custom--easing--ease-out, ease-out)' === sgs_motion_easing_css( 'ease-out' ), 'ease-out is the CSS keyword (token with the keyword as fallback)' );
+ok( 'ease-out' === sgs_motion_easing_css( 'ease-out-css', '', 'ease-out' ), 'the removed ease-out-css name falls back, never reaching CSS' );
 ok( 'cubic-bezier(0.16, 0.84, 0.32, 1)' === sgs_motion_easing_css( 'drafts' ), 'drafts resolves to the drafts curve (halcyon, the wholesale-food client)' );
 ok( 'cubic-bezier(0.4, 0, 0.2, 1)' === sgs_motion_easing_css( 'standard' ), 'standard resolves to butcherbox\'s measured curve' );
-ok( 'var(--wp--custom--easing--emphasised)' === sgs_motion_easing_css( 'ease-out' ), 'ease-out is the expo-out theme token' );
+ok( 'var(--wp--custom--easing--emphasised)' === sgs_motion_easing_css( 'emphasised' ), 'emphasised is the house-curve theme token' );
 ok( 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' === sgs_motion_easing_css( 'custom', 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' ), 'a valid custom curve passes through' );
 ok( 'ease-out' === sgs_motion_easing_css( 'custom', 'red;}body{x', 'ease-out' ), 'a hostile custom curve falls back' );
 ok( 'ease-out' === sgs_motion_easing_css( 'nope', '', 'ease-out' ), 'an unknown name falls back' );

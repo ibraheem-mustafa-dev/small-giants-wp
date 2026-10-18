@@ -255,15 +255,16 @@ describe( 'a planted atom that writes a raw schema-invalid string fails the sche
 describe( 'the master easing list and its views', () => {
 	it( 'every schema value in the master list is a valid easing, and the CSS comes from the field type', () => {
 		SCHEMA_EASING_OPTIONS.forEach( ( option ) => expect( validateField( 'easing', option.value ).ok ).toBe( true ) );
-		expect( easingCssFor( 'nav', 'ease-out' ) ).toBe( 'var(--wp--custom--easing--emphasised)' );
-		expect( easingCssFor( 'nav', 'ease-out-css' ) ).toBe( 'ease-out' );
+		expect( easingCssFor( 'nav', 'emphasised' ) ).toBe( 'var(--wp--custom--easing--emphasised)' );
+		expect( easingCssFor( 'nav', 'ease-out' ) ).toBe( 'ease-out' );
+		expect( easingCssFor( 'nav', 'ease-out-css' ) ).toBeNull();
 		expect( easingCssFor( 'nav', 'drafts' ) ).toBe( 'cubic-bezier(0.16, 0.84, 0.32, 1)' );
 		expect( easingCssFor( 'nav', 'custom' ) ).toBeNull();
 	} );
 
 	it( 'the nav view keeps the order and values the nav enums use, and motionEasingCss resolves them', () => {
 		expect( NAV_EASING_OPTIONS.map( ( o ) => o.value ) ).toEqual( [
-			'ease', 'ease-out-css', 'ease-in-out', 'default', 'ease-out', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom',
+			'ease', 'ease-out', 'ease-in-out', 'default', 'emphasised', 'quart-out', 'standard', 'drafts', 'ease-in', 'spring', 'linear', 'custom',
 		] );
 		expect( motionEasingCss( 'quart-out' ) ).toBe( 'cubic-bezier(0.165, 0.84, 0.44, 1)' );
 		expect( motionEasingCss( 'custom', ' cubic-bezier(0.25, 0.46, 0.45, 0.94) ' ) ).toBe( 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' );
@@ -274,7 +275,7 @@ describe( 'the master easing list and its views', () => {
 	it( 'derived views serve the other consumers: css keywords in a consumer order, theme tokens, GSAP names', () => {
 		expect( easingView( 'css' ).map( ( o ) => o.value ) ).toEqual( [ 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' ] );
 		expect( easingView( 'css', { order: [ 'ease-in-out', 'ease', 'ease-in', 'ease-out', 'linear' ] } ).map( ( o ) => o.value ) ).toEqual( [ 'ease-in-out', 'ease', 'ease-in', 'ease-out', 'linear' ] );
-		expect( easingView( 'theme' ).map( ( o ) => o.value ) ).toEqual( [ 'default', 'ease-out', 'ease-in', 'spring', 'linear', 'custom' ] );
+		expect( easingView( 'theme' ).map( ( o ) => o.value ) ).toEqual( [ 'default', 'emphasised', 'ease-out', 'ease-in', 'spring', 'linear', 'custom' ] );
 		expect( easingView( 'gsap' ).map( ( o ) => o.value ) ).toEqual( [ '', 'none', 'power1.out', 'power2.inOut', 'power3.out', 'back.out', 'bounce.out', 'elastic.out(1,0.5)' ] );
 		expect( new Set( MOTION_EASING_OPTIONS.map( ( e ) => e.id ) ).size ).toBe( MOTION_EASING_OPTIONS.length );
 	} );

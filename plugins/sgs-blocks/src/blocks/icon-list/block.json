@@ -500,10 +500,10 @@
 			"default": "ease",
 			"enum": [
 				"ease",
-				"ease-out-css",
+				"ease-out",
 				"ease-in-out",
 				"default",
-				"ease-out",
+				"emphasised",
 				"quart-out",
 				"standard",
 				"drafts",

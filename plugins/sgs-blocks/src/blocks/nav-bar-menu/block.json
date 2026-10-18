@@ -936,7 +936,7 @@
 		"submenuCaretTurnEasing": {
 			"type": "string",
 			"default": "",
-			"enum": [ "", "ease", "ease-out-css", "ease-in-out", "default", "ease-out", "quart-out", "standard", "drafts", "ease-in", "spring", "linear", "custom" ],
+			"enum": [ "", "ease", "ease-out", "ease-in-out", "default", "emphasised", "quart-out", "standard", "drafts", "ease-in", "spring", "linear", "custom" ],
 			"description": "I-B6 (U-18). Easing curve for the caret's turn, from the shared motion easing list. Empty falls back to 'ease' once a turn duration is set."
 		},
 		"submenuCaretTurnEasingCustom": {
@@ -1382,10 +1382,10 @@
 			"default": "ease",
 			"enum": [
 				"ease",
-				"ease-out-css",
+				"ease-out",
 				"ease-in-out",
 				"default",
-				"ease-out",
+				"emphasised",
 				"quart-out",
 				"standard",
 				"drafts",
