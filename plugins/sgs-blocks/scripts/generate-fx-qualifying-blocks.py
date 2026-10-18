@@ -404,6 +404,12 @@ EXACT_MATCH_BLOCKS: dict[str, frozenset[str]] = {
 # block's own `supports.sgs.fx.draggable: true` opt-in, on top of the 'track' provision.
 ROOT_SCROLL_EFFECTS: frozenset[str] = frozenset({"draggable"})
 
+# Requirements any block with a paintable box or an <img> meets. An effect that needs one of these is offered on a block
+# that already has the Effects panel for another reason (a structural requirement it meets, or `motionSurface`); it never
+# makes a block a host by itself. Measured: letting `surface` do so put cursor-field, grid-dots and the other
+# background fields on site-header-row, site-footer-row, nav-bar-menu, nav-drawer and form.
+EXTENDS_ONLY_REQUIREMENTS: frozenset[str] = frozenset({"surface", "image"})
+
 # NOTE on a mechanism that was tried here and REJECTED (2026-07-31, same
 # day): a `FORCED_PANEL_HOSTS: dict[str, frozenset[str]]` hardcoded
 # effect->block map briefly lived at this exact spot as a follow-up fix for
@@ -878,12 +884,12 @@ def _block_provisions(
     return provisions
 
 
-def _load_qualifying_effects() -> list[tuple[str, str, int]]:
-    """(effect, requires, creates_panel) triples for every fx_effects row with
-    a block-panel scope. Reads the DB — legitimate here because this is a
-    BUILD-time generator (same shape as generate-fx-effects-php.py), and the DB
-    is the only home for scope/requires/creates_panel (no block.json
-    equivalent — those columns describe the EFFECT, not any one block)."""
+def _load_qualifying_effects() -> list[tuple[str, str]]:
+    """(effect, requires) pairs for every fx_effects row with a block-panel
+    scope. Reads the DB — legitimate here because this is a BUILD-time
+    generator (same shape as generate-fx-effects-php.py), and the DB is the
+    only home for scope/requires (no block.json equivalent — those columns
+    describe the EFFECT, not any one block)."""
     if not DB_PATH.exists():
         print(f"[generate-fx-qualifying-blocks] DB not found: {DB_PATH}", file=sys.stderr)
         raise SystemExit(1)
@@ -898,22 +904,13 @@ def _load_qualifying_effects() -> list[tuple[str, str, int]]:
                 file=sys.stderr,
             )
             raise SystemExit(1)
-        # `creates_panel` was added by the FR-38-25 change. A DB that has not
-        # yet been reseeded has the table without the column, and SELECTing it
-        # would be a hard error at BUILD time — so read it only when present
-        # and default to 1, which is exactly the pre-FR-38-25 behaviour.
-        has_creates_panel = any(
-            row[1] == "creates_panel"
-            for row in con.execute("PRAGMA table_info(fx_effects)").fetchall()
-        )
-        column = "creates_panel" if has_creates_panel else "1"
         rows = con.execute(
-            f"SELECT effect, requires, {column} FROM fx_effects "
+            "SELECT effect, requires FROM fx_effects "
             "WHERE scope IN ('block', 'element') ORDER BY effect"
         ).fetchall()
     finally:
         con.close()
-    return [(effect, requires, int(creates)) for effect, requires, creates in rows]
+    return [(effect, requires) for effect, requires in rows]
 
 
 def compute_map() -> dict[str, list[str]]:
@@ -957,13 +954,15 @@ def compute_map() -> dict[str, list[str]]:
             block_slug, block_json, richtext_blocks, x_scroll_blocks, raster_image_blocks, marquee_blocks
         )
 
-        # PASS 1 — effects with a SPECIFIC target requirement. These are what
-        # decide whether a block gets the fx panel at all.
+        # PASS 1 — effects with a SPECIFIC structural requirement the block meets. These decide whether a block is a
+        # host of the Effects panel's block-level effects.
         specific = []
         # PASS 2 candidates — effects that require nothing in particular.
         permissive = []
+        # Effects that need a paintable box or an <img>: offered where the block is already a host.
+        extends_only = []
 
-        for effect, requires, creates_panel in qualifying_effects:
+        for effect, requires in qualifying_effects:
             if effect in EXACT_MATCH_BLOCKS:
                 if block_slug in EXACT_MATCH_BLOCKS[effect]:
                     specific.append(effect)
@@ -971,63 +970,21 @@ def compute_map() -> dict[str, list[str]]:
             if requires == "none":
                 permissive.append(effect)
             elif requires in provisions:
-                # THE THIRD CLASS (FR-38-25). An effect with a genuinely
-                # specific requirement that must still never CREATE a panel.
-                #
-                # `cursor-field` is the case: it is inert on a block with no
-                # paintable background (so it cannot be requires='none', which
-                # QA Gate A would fail as an inert control), but letting it
-                # create panels was MEASURED to add a brand-new fx panel to 11
-                # blocks — sgs/site-header, sgs/site-footer,
-                # sgs/form among them — each of which would then also inherit
-                # motion-path and scrub through `permissive`. That is the "13
-                # panels where none makes sense" failure, arriving by a new route.
-                #
-                # Landing it in `permissive` gets both halves right: it is
-                # offered wherever the panel already exists AND on nothing else.
-                if creates_panel:
-                    specific.append(effect)
-                else:
-                    permissive.append(effect)
+                (extends_only if requires in EXTENDS_ONLY_REQUIREMENTS else specific).append(effect)
 
-        # 'panel' — a BLOCK-OWNED opt-in (supports.sgs.fx.motionSurface, read
-        # in `_block_provisions()` alongside `draggable`/`pairedFilter`), NOT
-        # an effect name. It is deliberately kept OUT of `specific` (which is
-        # spread into `offered` below and would otherwise leak a fake "panel"
-        # entry into the generated roster as if it were a real effect) —
-        # instead it satisfies the panel-existence GATE on its own line,
-        # exactly like a real specific-requires match would, for a block that
-        # has no derivable structural provision at all but is still a
-        # legitimate host per its own declared fact.
+        # 'panel' — a block-owned opt-in (supports.sgs.fx.motionSurface, read in `_block_provisions()`), not an effect
+        # name. It makes the block a host without adding a fake entry to `specific`.
         panel_forced = "panel" in provisions
 
-        # A `requires='none'` effect adds NO BLOCK OF ITS OWN — it is offered
-        # wherever the panel already exists, and never creates the panel.
-        #
-        # WHY (this was got wrong once, so the reasoning is recorded):
-        # Spec 38 §2's last column is headed "Recommended → permitted" — a
-        # TRAJECTORY, not a requirement. `scrub`'s entry reads "Any block → any
-        # element WITH THE FX PANEL EXPOSED", and its authoritative Level column
-        # says `block/element`. Treating "any block" as a present-tense
-        # requirement put the panel on all 81 sgs/* blocks — nav menus, form
-        # fields, separators, icons — which is both the permitted CEILING read as
-        # the day-one default, and the "13 panels where none makes sense"
-        # containment failure this project treats as a defect in its own right.
-        #
-        # The qualifier "with the fx panel exposed" is the operative clause: the
-        # effect's availability is CONDITIONAL on the panel existing, so it
-        # cannot be the thing that justifies the panel.
-        #
-        # `panel_forced` (see above) is the ONE other thing allowed to satisfy
-        # this gate: a block-owned declaration (`supports.sgs.fx.
-        # motionSurface`), not a 'none'-requires effect and not a script-side
-        # per-block list. It still only WIDENS which blocks get a panel; it
-        # never widens which EFFECTS a block with no specific match receives
-        # (`offered` below is still `specific + permissive`, and `specific`
-        # contains real effect names only — `panel_forced` is a bool, not an
-        # entry in that list).
+        # A block is a HOST of the Effects panel's block-level effects when it meets a specific structural requirement
+        # (`specific`) or declares `motionSurface`. A host is offered every `requires='none'` effect (`permissive`) and
+        # every paint-requirement effect it meets (`extends_only`). A `requires='none'` effect never makes a block a
+        # host by itself: that put the effects on all 81 sgs/* blocks, nav menus, form fields and separators included.
+        # A paint requirement (`surface`, `image`) is met by nearly every block, so it never makes a block a host
+        # either (EXTENDS_ONLY_REQUIREMENTS). Every other requirement is a structural fact (a marquee track, a
+        # scroller, inline SVG, text, a section), and a block that has it gets the effect that needs it.
         if specific or panel_forced:
-            offered = sorted(specific + permissive)
+            offered = sorted(specific + permissive + extends_only)
 
             # NATIVE-CAPABILITY EXCLUSION (added 2026-07-31, Wave C).
             #
@@ -1083,8 +1040,45 @@ def _render_json(fx_map: dict[str, list[str]]) -> str:
     return json.dumps(fx_map, indent="\t", sort_keys=True) + "\n"
 
 
+def self_test() -> int:
+    """Assert the derived map against facts the tree itself states. Needs the DB.
+
+    Positive: every block whose render prints the marquee hook is offered `marquee`. Negative controls: a block that
+    prints no marquee hook is not offered it, and a paint-only block (a `surface` provision and nothing structural)
+    is not made a host by a `surface` effect."""
+    fx_map = compute_map()
+    failures = []
+    marquee_blocks = _marquee_track_blocks()
+    for name in sorted(marquee_blocks):
+        hidden = _load_block_jsons()[name].get("supports", {}).get("sgs", {}).get("hideExtensions") or []
+        if "fx" not in hidden and "marquee" not in fx_map.get(name, []):
+            failures.append(f"{name} prints the marquee hook but is not offered marquee")
+    if "sgs/brand-strip" not in marquee_blocks or "marquee" not in fx_map.get("sgs/brand-strip", []):
+        failures.append("sgs/brand-strip must be offered marquee")
+    for name, effects in fx_map.items():
+        if name not in marquee_blocks and "marquee" in effects:
+            failures.append(f"{name} has no marquee hook yet is offered marquee")
+    surface_only = [
+        n for n, j in _load_block_jsons().items()
+        if "surface" in _block_provisions(
+            n, j, _richtext_blocks(), _x_scroll_track_blocks(), _raster_image_blocks(), marquee_blocks
+        ) and n not in fx_map
+    ]
+    if not surface_only:
+        failures.append("negative control vacuous: no surface-providing block is left out of the map")
+    for name in surface_only:
+        if name in fx_map:
+            failures.append(f"{name} became a host from a paint requirement alone")
+    for failure in failures:
+        print(f"[generate-fx-qualifying-blocks] SELF-TEST FAIL: {failure}", file=sys.stderr)
+    if not failures:
+        print(f"[generate-fx-qualifying-blocks] self-test OK ({len(marquee_blocks)} marquee block(s), {len(surface_only)} paint-only block(s) left out)")
+    return 1 if failures else 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--self-test", action="store_true", help="Assert the derived map (marquee positive and negative controls).")
     parser.add_argument(
         "--check",
         action="store_true",
@@ -1096,6 +1090,8 @@ def main() -> int:
         ),
     )
     args = parser.parse_args()
+    if args.self_test:
+        return self_test()
 
     if not DB_PATH.exists():
         # Deliberately unversioned — see .claude/dev-setup.md "sgs-framework.db".

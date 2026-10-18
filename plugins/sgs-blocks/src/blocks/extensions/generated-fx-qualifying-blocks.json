@@ -53,6 +53,24 @@
 		"sheen",
 		"surface-treatment"
 	],
+	"sgs/brand-strip": [
+		"ambient-float",
+		"curtain",
+		"follow-pointer",
+		"glare",
+		"lottie",
+		"magnet",
+		"marquee",
+		"morph",
+		"motion-path",
+		"parallax",
+		"particles",
+		"ripple",
+		"scroll-progress",
+		"scrub",
+		"sheen",
+		"surface-treatment"
+	],
 	"sgs/button": [
 		"ambient-float",
 		"curtain",
