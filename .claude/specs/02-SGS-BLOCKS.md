@@ -134,12 +134,11 @@ sgs-blocks/
 │   │   ├── choice-flow-question/ # Multiple-choice question step (parent: sgs/form-step)
 │   │   ├── choice-flow-result/   # Recommendation terminal of a choice flow (parent: sgs/form-step)
 │   │   └── extensions/           # Not a block (no block.json): editor extensions applied to many blocks
-│   │       ├── animation.js          # Entrance animation extension (script animations)
+│   │       ├── motion/               # The sgsMotion support: Entrance, Hover and Effects panels (Spec 38A)
 │   │       ├── responsive-visibility.js  # Show/hide per breakpoint
-│   │       ├── hover-effects/        # Hover-effect controls (index, attributes, resolve, constants, panels/)
+│   │       ├── hover-effects/        # Block-link controls (index, attributes, panels/BlockLinkPanel.js)
 │   │       ├── image-controls.js     # Universal image controls (blocks declaring `supports.sgs.imageControls`)
-│   │       ├── custom-css.js         # Per-block custom CSS field
-│   │       └── fx.js                 # FX (effects) panel
+│   │       └── custom-css.js         # Per-block custom CSS field
 │   │
 │   ├── components/               # Shared React components for editor UI
 │   │   ├── TypographyControls.js # ★ MANDATORY — shared per-element typography UI. See Block Customisation Standard.
@@ -147,7 +146,6 @@ sgs-blocks/
 │   │   ├── ResponsiveOverride.js # Per-tier value override wrapper for tier-object attributes
 │   │   ├── DesignTokenPicker.js  # Colour picker that reads theme.json tokens
 │   │   ├── SpacingControl.js     # Spacing control: presets, a free number-plus-unit box, or both (`custom`)
-│   │   ├── AnimationControl.js   # Animation type/trigger selector
 │   │   ├── MediaPicker.js        # Image/video picker
 │   │   ├── media/                # Media-atom panel layouts (atoms/, controls/, canvasStyle.js)
 │   │   └── primitives/           # Re-exports of the WordPress ToolsPanel / ToolsPanelItem primitives
@@ -186,7 +184,7 @@ Full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUTTON-ARCHITECTURE.md). S
 - **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + alignment. Gap is provided by the shared `ContainerWrapperControls` gap control (raw-px free-input, `sgs_container_gap_value()`) — no separate per-block gap control.
 - **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes. **RECORDED EXCEPTION (Bean sign-off):** `sgs/product-card` is a BUILT-IN-ELEMENT card — its CTA (and every other commerce element) renders from the block's own typed attributes via the element-MIRROR pattern (the CTA mirrors `sgs/button`'s control set through shared helpers; auto-propagation: a new `sgs/button` capability is a gap candidate on the mirror), with ZERO InnerBlocks in typed mode. CTA model (approved): max 2 text buttons (1 primary + 1 secondary), behaviours add-to-basket / buy-now / learn-more, express-pay as a phase-2 gateway-rendered toggle.
 - **Preset binding.** `inheritStyle` (primary | secondary | outline | link | custom) selects the BEM variant class `.sgs-button--{preset}`, which consumes the per-client `settings.custom.buttonPresets` tokens (Spec 32 FR-32-2/5); the tokens come from `sites/<client>/theme-snapshot.json` or the Customiser panel (`plugins/sgs-blocks/includes/class-button-presets-customiser.php`). There is no Settings page and no `wp_options` bridge (Bean-approved, Decision 22).
-- **Button content and hover controls.** `sgs/button` owns `contentAlign` (tier: `flex-start` | `center` | `flex-end`; unset keeps the centred `justify-content`, which `textAlign` cannot move because the button is a flex row), `iconGap` (tier length: the gap between label and icon; unset adds none) and `liftHover` (px, 0 to 24, default 0: `translate: 0 -N px` on hover/focus, its own property so it never contends with `scaleHover`'s `transform`); with no explicit lift, the site's `buttonPresets.default` hover lift applies (Spec 32 Part C), and an explicit lift replaces it rather than stacking. `render.php` emits the first two on the button root and, when `scaleHoverTarget` is `face`, on `.sgs-button__face`. The universal `sgsHoverLift` extension is not used because enabling the `hover` extension would also mount its scale and shadow controls beside the button's own. The hover transition is `transitionDuration` (ms) and `transitionEasing`, a name from the shared motion list (`plugins/sgs-blocks/includes/helpers-motion-easing.php::sgs_motion_easing_css`, editor `MotionEasingControl`) or `custom` with a validated `transitionEasingCustom` curve.
+- **Button content and hover controls.** `sgs/button` owns `contentAlign` (tier: `flex-start` | `center` | `flex-end`; unset keeps the centred `justify-content`, which `textAlign` cannot move because the button is a flex row), `iconGap` (tier length: the gap between label and icon; unset adds none) and `textDecorationHover`. `render.php` emits the first two on the button root. Hover movement (lift, scale, opacity), the hover transition's duration and easing, and the other motion types come from the block's `sgsMotion` attribute, edited in the Hover, Entrance and Effects panels (Spec 38A); the easing is a token or a validated custom curve (`plugins/sgs-blocks/includes/helpers-motion-easing.php::sgs_motion_easing_css`, editor `src/components/motion/NamedEasing.js`). Colour, background, border and shadow hovers share the hover state's one transition list.
 - **Keyboard focus.** `sgs/button` owns `focusStyle` (`""` Default, `"duotone"` Contrast, `"signature"` Signature), the "Keyboard focus" toggle in the Effects panel; the default uses the site's focus look (Spec 32 §14.5). `plugins/sgs-blocks/includes/helpers-button-focus.php::sgs_button_focus_class` adds `sgs-focus--duotone` or `sgs-focus--signature` to the button, and Signature is refused when the button draws a gradient border or carries a motion effect that owns `::before`. It is the only block with a focus control; the universal hover panel has no focus-ring toggle.
 - **Existing CTA-rendering blocks** (sgs/hero etc.) use InnerBlocks composition. No deprecation path (pre-production policy; `.claude/rules/block-authoring.md`).
 - **Render-time sanitisation (XS-9.2):** `sgs/button` `render.php` uses a tightened `wp_kses` allowlist that **excludes `<a>`**: the wrapper anchor is emitted by the render path itself, so any nested `<a>` inside button content is a malformed input. The URL goes through `esc_url`. This prevents nested-anchor markup and javascript:/data: URI injection.
@@ -385,7 +383,7 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 
 **Render:** **Dynamic** (`render.php`); scrolling is the shared marquee effect layer.
 
-Scrolling behaviour: the strip moves through the shared marquee effect (Spec 38A FR-38A-44: `src/shared/effects/fx-marquee.js`, a `marquee` layer in the motion Effects panel), which clones the logo set marked `data-sgs-marquee-set` (each copy `aria-hidden` and `inert`) and loops it through `src/shared/effects/loop-control.js`; keyboard focus inside the strip always pauses it, hover rate and pause on touch come from the layer, and the pause button is the layer's option (default off, WCAG 2.2.2). `prefers-reduced-motion` keeps the strip static with every logo visible. `scrolling` still controls the separators; the old scroll speed, direction, fade and pause attributes stay registered only for the M6.5 migration sweep, so an unmigrated strip renders as a static row.
+Scrolling behaviour: the strip moves through the shared marquee effect (Spec 38A FR-38A-44: `src/shared/effects/fx-marquee.js`, a `marquee` layer in the motion Effects panel), which clones the logo set marked `data-sgs-marquee-set` (each copy `aria-hidden` and `inert`) and loops it through `src/shared/effects/loop-control.js`; keyboard focus inside the strip always pauses it, hover rate and pause on touch come from the layer, and the pause button is the layer's option (default off, WCAG 2.2.2). `prefers-reduced-motion` keeps the strip static with every logo visible. The `separators` setting draws the lines between brands.
 
 ---
 
@@ -812,50 +810,17 @@ Every block with layout/sizing attributes gets a responsive control panel in the
 
 Switching between views shows/hides the relevant attribute inputs. Generates CSS classes: `.sgs-desktop-*`, `.sgs-tablet-*`, `.sgs-mobile-*`.
 
-### Animation & Interactivity Extension
+### Motion and Interactivity Extension
 
-All SGS blocks receive animation and interaction controls via the block extension system (`addFilter`). Three categories of effects: **entrance animations** (scroll-triggered), **hover animations** (user interaction), and **scroll-linked effects** (continuous).
+All SGS blocks that declare `supports.sgs.motion` receive one object attribute, `sgsMotion`, registered by the support (`plugins/sgs-blocks/includes/motion/support-registration.php`) and edited in three inspector panels from `plugins/sgs-blocks/src/blocks/extensions/motion/`: **Entrance** (scroll, load, open and state reveals), **Hover** (a hover state plus hover effects, driven by the element, the whole block, a hover group or a repeated item) and **Effects** (loops, pointer effects, scroll-linked effects such as parallax and scroll progress, marquee and the rest). The renderer (`plugins/sgs-blocks/includes/motion/class-sgs-motion-renderer.php`) turns the stored value into scoped custom properties and classes, and the shared stylesheet `plugins/sgs-blocks/assets/css/motion.css` composes each transform, opacity and filter channel from every owner. The contract is Spec 38A: the data model in §6, the panels in §5, the runtime per motion type in §9 and the migration of stored legacy content in §13. Reduced motion and no-JS show content unanimated.
 
-#### Entrance Animations (script animations, Spec 38 §4.3a)
+#### Universal opt-in attributes
 
-Attributes are injected into all `sgs/*` blocks by `plugins/sgs-blocks/src/blocks/extensions/animation.js`; the server mirror is `plugins/sgs-blocks/includes/extension-attributes.generated.php`. Read the attribute list with `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT DISTINCT attr_name FROM block_attributes WHERE attr_name LIKE 'sgsAnimation%'"`. The contract (start point, distance, stagger and the per-block `supports.sgs.animationItems` selector) is Spec 38 §4.3a.
-
-**Implementation:** `assets/js/animation-observer.js` plays each entrance with `element.animate()`, so it never shares a block's own `transition`, `animation` or `transform`; `assets/js/animation-entrance-timing.js` resolves when it starts and its stagger, and `includes/animation-stagger.php` writes the timing attributes for dynamic blocks. A stagger adds position × step (position among the group's animated blocks, capped) to the block's own delay; with none set, blocks with no delay of their own that start together play 100ms apart. A render-blocking head flag (`plugins/sgs-blocks/includes/animation-attributes.php::print_entrance_pending_flag`) holds entrances until their start pose is placed. Reduced motion and no-JS show content unanimated. Full contract: Spec 38 §4.3a.
-
-#### Hover Animations (universal hover attributes)
-**Universal hover attributes** (registered by `src/blocks/extensions/hover-effects/attributes.js` only on blocks that list `"hover"` in `supports.sgs.enabledExtensions`; rendered by `includes/hover-effects/hover-effects.php` as classes plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaults`):
-- `sgsHoverScale` (fine %, 0 = off), `sgsHoverScalePreset` (1.02 / 1.05 / 1.1) and `sgsHoverLift` (px) — one transform
-- `sgsHoverShadow` — a shadow preset slug (never defaulted on a block that draws the automatic lift, `shadowLiftOnHover`)
-- `sgsHoverImageZoom`, `sgsHoverZoom` (%, 0 = 110%), `sgsHoverZoomDuration` (ms), `sgsHoverZoomStyle` (`''` zooms inside the image's frame, `spill` = the whole visible image grows past it) — the photo zoom, eased by `sgsHoverEasing`. One shared rule (`assets/css/extensions.css`, "Hover Image Zoom") keys on the media markers `.sgs-media-box` / `.sgs-media-el`, so it works on any block whose image is a media element (`sgs/media` opts in with `enabledExtensions:["hover"]` and `hoverExcludeControls:["shadow"]`, its shadow atom owning the image's hover shadow); hovering or focusing the frame triggers it, touch-guarded, off under reduced motion. card-grid, team-member, info-box and product-card keep their own card-hover zoom rules on the same `--sgs-hover-zoom` value. `supports.sgs.hoverExcludeControls` hides `imageZoom`, `grayscale` or `shadow` where a block has nothing for them to act on (sgs/container: its own picture is its background, zoomed from the Background panel)
-- **Background zoom on hover** (Background panel, every block rendering through `SGS_Container_Wrapper`): `bgHoverZoom`, `bgHoverZoomScale` (101-150 %, default 105), `bgHoverZoomDuration` (ms, default 600), `bgHoverZoomEasing` + `bgHoverZoomEasingCustom` (`MotionEasingControl` / `sgs_motion_easing_css()`). Hovering or focusing into the block scales its background image inside the block (`includes/container-bg-hover-zoom.php`); off while Ken Burns or parallax is on. The canvas twin is `backgroundPreview()`'s `sgs-ed-bg-hover-zoom`
-- `sgsHoverDuration` (a duration token), `sgsHoverDurationMs` (exact ms, overrides the token), `sgsHoverEasing` (a token, or `custom` with `sgsHoverEasingCustom`, validated by `sgs_motion_easing_css()`)
-- `sgsHoverOpacity` (0 to 1, 0 = off) — the hover fade, touch-guarded like the transform
-- `sgsHoverIndent` (a length; the block's inline-start padding grows by it on hover and focus-within, from each device's own resting padding: `plugins/sgs-blocks/includes/hover-effects/vars.php::build_hover_indent_base_css`) and `sgsHoverShadow` `custom` + `sgsHoverShadowCustom` (a box-shadow, sanitised by `sgs_shadow_value()`)
+Registered by `src/blocks/extensions/hover-effects/attributes.js` and `src/blocks/extensions/child-sizing.js` only on blocks that list the extension in `supports.sgs.enabledExtensions`:
 - `sgsChildSizing` / `sgsChildWidth` (opt-in `"childSizing"`) — how a block sizes as a child of a flex row, per device: `fit`, `fill` (takes the space the others leave) or `fixed` (with `sgsChildWidth`); `includes/child-sizing.php`
-- Block-own hover fades: `opacityHover` on `sgs/button`, `sgs/icon` (linked) and `sgs/responsive-logo` (0 = off)
-- `sgsHoverGrayscale`, `sgsHoverBorderAccent`, `sgsHoverTilt3D` **(BUILT)**, `sgsStaggerDelay`
 - `sgsBlockLink`, `sgsBlockLinkTarget`, `sgsBlockLinkLabel` (opt-in `"blockLink"`) — a stretched link. The extension lends the surface to the block's OWN first non-inert link to that URL (marked `sgs-block-link-source`, keeping its tab stop and its name) and demotes any further link to the same place; the injected overlay is inert when such a link exists and focusable with an aria-label when none does
 - `sgsBlockLinkAuto` (opt-in `"blockLinkAutoUrl"`) — for a block that knows its own destination, replaces the panel's URL field with a single toggle; render.php hands the URL over via `plugins/sgs-blocks/includes/helpers-stretched-link.php::sgs_stretched_link_handover`
 - `supports.sgs.blockLinkAlways` (flag, no attribute) — the whole-block link is PERMANENT, never optional: the panel renders no toggle, and render.php calls `plugins/sgs-blocks/includes/helpers-stretched-link.php::sgs_stretched_link_apply` directly rather than `sgs_stretched_link_handover` (which gates on `sgsBlockLinkAuto`). The URL field stays, because a block that resolves no destination of its own (a typed `sgs/product-card`) needs it; on a block that does resolve one, `sgs_stretched_link_apply` overwrites whatever is typed. `sgs/product-card` declares it in place of `blockLinkAutoUrl`, so it has no `sgsBlockLinkAuto` attribute.
-- `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration` — click ripple
-
-**Several blocks opt out of universal scale/shadow/image-zoom defaults** (breadcrumbs, container, countdown-timer, counter, form, form-step, all form-field-* blocks, hero, tabs, tab) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them. (Exact roster is DB-authoritative — query `/sgs-db`.)
-
-**Inner element hover effects (for specific blocks):**
-- Card Grid, Info Box, Card: already have per-block hover attributes
-- The extension adds block-level hover to ALL blocks for wrapper-level effects
-- Inner element effects (e.g., icon rotate on card hover) handled by individual block CSS
-
-#### Scroll-Linked Effects (continuous, viewport-aware)
-
-**Attributes (injected into all `sgs/*` blocks):**
-- `sgsParallax` — none | background | element (default: none)
-  - `background` — background image moves at different speed to scroll (CSS `background-attachment: fixed` with fallback)
-  - `element` — entire block translates on scroll (subtle vertical shift)
-- `sgsParallaxStrength` — number 0-100 (default: 30 — higher = more pronounced effect)
-
-**Implementation approach:**
-- `assets/js/parallax.js` writes `--sgs-plx-y` on every browser (rAF-throttled, updated on scroll and resize, off under reduced motion including a mid-session switch); `assets/css/extensions.css` moves `.sgs-parallax-element` by it with `translate` (Spec 38A FR-38A-21 and 47). Spec 38A M5.7 replaces this with the one parallax effect on the shared scroll driver.
 
 #### General Page Effects
 
@@ -1029,14 +994,13 @@ SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--s
 
 **Site Info link:** an icon whose `linkUrl` is bound to a Site Info key (`metadata.bindings.linkUrl`, source `sgs/site-info`) shows the Site Info link first and its own typed `linkUrl` as the fallback; it renders nothing for a visitor only when neither gives a link, and `linkSource: "custom"` makes the typed link win. The root carries `data-sgs-site-info-key` (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route's rule is Spec 48 FR-47-9. That binding stays the icon's own route; the shared link source on every other link field (`<urlAttr>Source`: a page, a Site Info link or back to top, `includes/helpers-link-source.php::sgs_resolve_link_source`, Spec 35) is offered on an unbound icon as `linkUrlSource`.
 
-**Draft-style hover, motion, shadow and brand ground (`sgs/icon`, with row defaults on `sgs/social-icons`):** every value reads own, then the wrapping row's, then the default, as `--sgs-icon-*` / `--sgs-si-*` custom properties (`includes/helpers-icon-motion.php`; editor twin `src/blocks/icon/icon-motion.js`, parity-tested by `tests/js/icon-motion-parity.test.js`).
+**Draft-style hover, motion, shadow and brand ground (`sgs/icon`, with row defaults on `sgs/social-icons`):** every value reads own, then the wrapping row's, then the default, as `--sgs-icon-*` / `--sgs-si-*` custom properties (`src/blocks/icon/render.php` and `src/blocks/icon/style.css`).
 
-- Hover transform is one list, scale then translate then rotate: `scaleHover`, `offsetXHover` / `offsetYHover` (px, -40 to 40) and `iconRotateHover` (deg, added to `iconRotate`); a translate is scaled with the shape. Reduced motion drops all of it.
-- Motion: `transitionDuration` (the transform, ms), `paintDuration` (shadow, colour and border, ms), `transitionEasing` (+ `transitionEasingCustom`, the shared motion easing names, `spring` included). 0 / empty = the theme's fast transition.
+- Hover movement (scale, translate, rotate), the durations and the easing come from the icon's `sgsMotion` Hover panel (Spec 38A); reduced motion drops all of it.
 - Shadow: `boxShadow` + `boxShadowColour`, `boxShadowHover` + `boxShadowColourHover`, `shadowLiftOnHover`, through the shared `ShadowControl` and `sgs_shadow_decls()` (a preset slug, or layers with the site colour, a palette slug or a hex, with an optional `N%`). Box shapes only; an own resting shadow pins its own hover so a row's hover shadow cannot replace it.
 - Colour mode `brand-glyph` ("Brand colour: logo only", also the `sgs/social-icons` row choice): only the logo takes the brand colour (Google's four-colour mark; the registry's `logoGradient`, Instagram's, through `sgs_icon_gradient_css()`), the shape keeps its own ground and border, and hover and focus-visible turn the border and a 1px ring the brand colour (outline shapes: the outline stroke), touch-guarded through `sgs_hover_state_rules()`. A client's own colour, hover colour or hover border wins. Official brand colours stay even below 3:1 on the ground (Bean, 2026-10-09).
 - Brand colours: the registry may carry `groundGradient` (Instagram's radial gradient), painted over the flat brand colour (the fallback) in colour mode Brand colours; a row or icon background of any kind replaces it. `brandHover` (`inherit` | `swap` | `hold`; row `childIconBrandHover`) chooses whether the ground and the logo trade colours on hover or hold.
-- Row defaults: `childIconScaleHover` (0 = each icon's own), `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconRotateHover`, `childIconTransitionDuration`, `childIconPaintDuration`, `childIconTransitionEasing(+Custom)`, `childIconBoxShadow(+Colour, +Hover, +ColourHover)`, `childIconShadowLiftOnHover`, `childIconBrandHover`.
+- Row defaults: `childIconBoxShadow(+Colour, +Hover, +ColourHover)`, `childIconShadowLiftOnHover`, `childIconBrandHover`.
 
 ### sgs/option-picker
 

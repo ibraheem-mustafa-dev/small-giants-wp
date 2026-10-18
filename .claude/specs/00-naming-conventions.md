@@ -96,14 +96,14 @@ The recognised aliases are the `aliases` of the `slots` row `label` (`python ~/.
 
 ### 3.5 Hover-state block attributes → `{base}Hover` SUFFIX (D309)
 
-**Rule:** A block attribute representing a `:hover` companion to a base attr uses the **`{base}Hover` suffix** (for example `backgroundColourHover`, `boxShadowHover`, `scaleHover`), appended to the base attr name. **Never a `hover` prefix** (`hoverBackgroundColour`, `hoverBoxShadow`, `hoverScale` are the anti-pattern) (D309).
+**Rule:** A block attribute representing a `:hover` companion to a base attr uses the **`{base}Hover` suffix** (for example `backgroundColourHover`, `boxShadowHover`, `borderColourHover`), appended to the base attr name. **Never a `hover` prefix** (`hoverBackgroundColour`, `hoverBoxShadow`, `hoverBorderColour` are the anti-pattern) (D309).
 
 **Why:** a state is a modifier appended to the base attr (the same grammar family as `--active` in §3.4), so a hover companion is derived from the base name by string match with no per-block branching.
 
 **Examples:**
 - `backgroundColour` (base) → `backgroundColourHover` (hover companion)
 - `boxShadow` (base) → `boxShadowHover` (hover companion)
-- `scale` (base) → `scaleHover` (hover companion)
+- `borderColour` (base) → `borderColourHover` (hover companion)
 
 **Anti-pattern:** `hoverBackgroundColour`, `hover_background_colour`, `bgColourOnHover` — prefix form, wrong separator, non-standard wording.
 

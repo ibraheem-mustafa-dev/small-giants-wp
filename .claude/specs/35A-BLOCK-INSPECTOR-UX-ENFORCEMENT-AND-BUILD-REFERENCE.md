@@ -382,7 +382,7 @@ A control-type contract answers *"which component, which props, which tab"*. It 
 Each carries the same eight-field discipline where it can, and states its enforcement honestly.
 
 #### CO-17. Reduced-motion gate on all animation *(WCAG 2.3.3 AA)*
-Every animation and transition is `prefers-reduced-motion`-gated, from day one, never bolted on. **Enforced by** `inspector-scan/rules/17-reduced-motion-gate.js` — **GATE mode**. ⚠ **This is a WCAG conformance requirement, not a preference.** It binds on §13's `AnimationControl`, on `extensions/animation.js`, and on `fx.js`. Losing it would silently drop a live accessibility gate.
+Every animation and transition is `prefers-reduced-motion`-gated, from day one, never bolted on. **Enforced by** `inspector-scan/rules/17-reduced-motion-gate.js` — **GATE mode**. ⚠ **This is a WCAG conformance requirement, not a preference.** It binds on the Entrance, Hover and Effects panels under `src/blocks/extensions/motion/`. Losing it would silently drop a live accessibility gate.
 
 #### CO-11. The 768/1024 device-tier lock
 Responsive props expose the locked 768/1024 tiers via `ResponsiveControl`; **no bespoke third breakpoint.** ⚠ These values exist only as per-file constants in `view.js` files — there is no shared constant, no schema, no gate. **The written rule is the sole thing holding the standard.** Binds with §12 field 3 and with the device-tier-vs-visual-breakpoint distinction (a design-driven `min-width:600px` is legitimate and must NOT be swept). **Enforced by** UNENFORCED.
@@ -482,12 +482,10 @@ The definitive tab assignment is **THE PLACEMENT RULE** in Spec 35 PART O: TIER 
 
 | File | Group | Verdict |
 |---|---|---|
-| `animation.js` | `styles` | correct — motion is Styles |
+| `motion/` (Entrance, Hover, Effects) | `styles` | correct — motion is Styles |
 | `hover-effects/` | `styles` (Hover + Click Effects); bare (Block Link) | Block Link bare is defensible |
 | `image-controls.js` | `styles` | correct — sizing/position is Styles |
 | `conditional-visibility.js` | bare | defensible (utility); owns the pinned "Visibility conditions" position |
-| `fx.js` | `styles` | correct |
-| `parallax.js` | `styles` | correct — background parallax and element parallax in one tab |
 | `custom-css.js` / `block-defaults.js` | `InspectorAdvancedControls` | correct |
 
 Check any change to an extension's `group` prop against every block, since it moves all of them.
@@ -517,4 +515,4 @@ Gallery is `sgs-content` with `styling: true`. It fails both, always.
 
 A capability-name rule (`capability IN ('array-content-lift','carousel','grid-layout','logo-strip') OR attr_type='array' AND role='content'`) was rejected: three of those four capabilities have no writer/reader, and the array-attr fallback leg misses `sgs/gallery` (its `mediaItems` carries no role) — the very block this section is about. The rule is instead `isCollectionKind(block) = block_capabilities row (slug,'collection') ← supports.sgs.collection` in the block's own block.json; it fires for Block Link specifically.
 
-The hardcoded slug denylist lives in `scripts/check-universal-fit.js` (the audit gate), not in `animation.js`, which holds only `CORE_ANIMATION_BLOCKS`, a small allow-list (the per-block opt-out is declarative `hideExtensions`). The R-31-1 concern stands against the gate's denylist, alongside the unreviewed allow-list.
+The hardcoded slug denylist lives in `scripts/check-universal-fit.js` (the audit gate), not in the motion extension (the per-block opt-out is declarative `hideExtensions`). The R-31-1 concern stands against the gate's denylist, alongside the unreviewed allow-list.
