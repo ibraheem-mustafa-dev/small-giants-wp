@@ -34,6 +34,7 @@ import { openSandbox } from './intake-sandbox.mjs';
 import { preparePage, gotoDraft, settleRest } from './intake-harness.mjs';
 import { CALL_KINDS, isCode, splitId, buildModel, positionOf, codeTarget, callAt, countAt } from './intake-census-map.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
+import { collectUsage, mergeRuntimeUsage } from './intake-usage.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
 
 // Every census kind the runtime pass decides `unreached` for (all registry kinds; `unknown` and `x-import` are not).
@@ -108,8 +109,9 @@ function decide( row, ev, ctx ) {
 
 // The runtime pass. `census` is a staticCensus result (rows and sources); `visits` the caller's page and route list.
 // Returns { sightings: [ { id?, kind, draftId, component, detail, source: 'runtime', visit, width } ], perVisit,
-// gaps: [ { construct, draftId, error } ], traceGaps: [ { id, error } ], runtimeOnly, kinds, wallMs, blocked } where
-// `blocked` holds every sandbox's aborted requests (lib/intake-sandbox.mjs::openSandbox rows), for the intake notices.
+// gaps: [ { construct, draftId, error } ], traceGaps: [ { id, error } ], runtimeOnly, kinds, wallMs, blocked, usage } where
+// `blocked` holds every sandbox's aborted requests (lib/intake-sandbox.mjs::openSandbox rows), for the intake notices,
+// and `usage` what every visit's page used (lib/intake-usage.mjs::collectUsage, merged): the check on the file read.
 export async function runtimeCensus( { folder, entry, harPath, visits = [ entry ], widths = [ 375, 768, 1440 ], census = null, timeout = 60000, harness = {} } ) {
 	const t0 = Date.now();
 	const base = census || await ( await import( './intake-census.mjs' ) ).staticCensus( { folder, entry, harPath, timeout } );
@@ -133,6 +135,7 @@ export async function runtimeCensus( { folder, entry, harPath, visits = [ entry 
 	const traceGap = new Map();
 	const runtimeOnly = new Map();
 	const blocked = [];
+	const usage = { css: new Set(), inline: new Set(), elements: new Map(), blockedSheets: 0, foreignSheets: 0, foreignElements: 0 };
 	const sight = ( r, visit, width ) => sightings.push( { ...( r.id ? { id: r.id } : {} ), kind: r.kind, draftId: r.draftId, component: r.component, detail: r.detail, source: 'runtime', visit, width } );
 	// One unit per width and page group, each in its own sandbox and harness run, run side by side (lib/intake-pool.mjs).
 	// A unit never touches the shared state: it records every change it would make, in order, as an operation, and the
@@ -201,6 +204,8 @@ export async function runtimeCensus( { folder, entry, harPath, visits = [ entry 
 				const settle = await settleRest( page, opts );
 				const settleMs = Date.now() - ts;
 				const raw = await page.evaluate( collect, { selectors: ctx.selectors, known: [ ...unitTrees.keys() ] } );
+				const used = await page.evaluate( collectUsage );
+				ops.push( () => mergeRuntimeUsage( usage, used, `${ v.label }@${ width }` ) );
 				Object.entries( raw.trees ).forEach( ( [ k, tree ] ) => unitTrees.set( k, tree ) );
 				ops.push( () => Object.entries( raw.trees ).forEach( ( [ k, tree ] ) => ctx.trees.has( k ) || ctx.trees.set( k, tree ) ) );
 				const cov = new Map();
@@ -308,5 +313,5 @@ export async function runtimeCensus( { folder, entry, harPath, visits = [ entry 
 	}
 	const traceGaps = [ ...traceGap ].filter( ( [ id ] ) => ! reached.has( id ) ).map( ( [ id, error ] ) => ( { id, error } ) ).sort( ( a, b ) => ( a.id < b.id ? -1 : a.id > b.id ? 1 : 0 ) );
 	traceGaps.forEach( ( g ) => gaps.push( { construct: 'runtime-trace', draftId: g.id, error: g.error } ) );
-	return { sightings, perVisit, gaps, traceGaps, runtimeOnly: [ ...runtimeOnly.values() ], kinds: TRACED_KINDS, wallMs: Date.now() - t0, blocked };
+	return { sightings, perVisit, gaps, traceGaps, runtimeOnly: [ ...runtimeOnly.values() ], kinds: TRACED_KINDS, wallMs: Date.now() - t0, blocked, usage: { css: [ ...usage.css ], inline: [ ...usage.inline ], elements: [ ...usage.elements.values() ], blockedSheets: usage.blockedSheets, foreignSheets: usage.foreignSheets, foreignElements: usage.foreignElements } };
 }

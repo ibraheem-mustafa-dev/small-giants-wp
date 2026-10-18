@@ -55,7 +55,7 @@ export function cutDraft( text ) {
 
 // In-page: the stamped template parsed in a <template>; one record per element in document order:
 // { n, parent (the nearest enclosing element's n, null at the top), tag, attrs: [[name, value]], texts: [string], inFor,
-// inHelmet, body?, css? } (css: the rules of a <style>,
+// inHelmet, svg? (an SVG element's own-case name: HTML parsing lower-cases `tag`), body?, css? } (css: the rules of a <style>,
 // parsed by the browser: { type: keyframes|font-face|import|style, name?, selector?, decls?, cssText? }; a style rule
 // is kept only when it sets a transition or animation property).
 // The runtime strips `name`, `component` and `style` from a dc-import (and `style` from an x-import) while compiling,
@@ -111,6 +111,9 @@ function readStamped( [ html, source ] ) {
 			if ( 1 === c.nodeType ) {
 				const tag = c.tagName.toLowerCase();
 				const rec = { n: c.getAttribute( 'data-dc-tpl' ), parent: ctx.rec?.n ?? null, tag, attrs: [ ...c.attributes ].filter( ( a ) => 'data-dc-tpl' !== a.name ).map( ( a ) => [ a.name, a.value ] ), texts: [], inFor: ctx.inFor, inHelmet: ctx.inHelmet };
+				if ( 'http://www.w3.org/2000/svg' === c.namespaceURI ) {
+					rec.svg = c.localName;
+				}
 				if ( restored.get( c )?.length ) {
 					rec.attrs.push( ...restored.get( c ) );
 					rec.restored = restored.get( c ).map( ( [ n ] ) => n );
@@ -233,8 +236,10 @@ function helmetScripts( folder, elements ) {
 const attr = ( e, name ) => e.attrs.find( ( [ a ] ) => a === name )?.[ 1 ] ?? null;
 // The holes of a string: the expression text of each {{ … }}.
 export const holes = ( s ) => [ ...s.matchAll( /\{\{([\s\S]+?)\}\}/g ) ].map( ( m ) => m[ 1 ].trim() );
-const decode = ( name ) => ( name.startsWith( CAMEL ) ? name.slice( CAMEL.length ).replace( /-([a-z])/g, ( _, c ) => c.toUpperCase() ) : name );
-const realTag = ( tag ) => ( tag.startsWith( 'sc-raw-' ) ? tag.slice( 7 ) : 'sc-helmet' === tag ? 'helmet' : tag );
+// The real attribute name of a stamped one (`sc-camel-view-box` → `viewBox`), and the real tag of a stamped element
+// (`sc-raw-table` → `table`): the runtime's own encodings.
+export const decode = ( name ) => ( name.startsWith( CAMEL ) ? name.slice( CAMEL.length ).replace( /-([a-z])/g, ( _, c ) => c.toUpperCase() ) : name );
+export const realTag = ( tag ) => ( tag.startsWith( 'sc-raw-' ) ? tag.slice( 7 ) : 'sc-helmet' === tag ? 'helmet' : tag );
 const isFontUrl = ( u ) => FONT_HOSTS.some( ( h ) => u.includes( `//${ h }/` ) ) || /\.(?:woff2?|ttf|otf|eot)(?:[?#]|$)/i.test( u );
 
 // Template census rows of one draft (`source` from draftSources). `handlerOf(expression)` returns { method, value }
