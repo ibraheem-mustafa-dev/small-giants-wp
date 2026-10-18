@@ -74,7 +74,12 @@ async function readOpen( page ) {
 				marker: el.classList.contains( 'm45-custom' )
 					? 'm45-custom'
 					: 'm45-item',
-				delay: cs.animationDelay,
+				// One entry per animation slot (eight, most `none`): the delay is the first running animation's.
+				delay: ( () => {
+					const list = ( t ) => t.split( /,(?![^(]*\))/ ).map( ( x ) => x.trim() );
+					const slot = list( cs.animationName ).findIndex( ( n ) => n !== 'none' );
+					return list( cs.animationDelay )[ Math.max( 0, slot ) ];
+				} )(),
 				name: cs.animationName,
 				entrance: el.hasAttribute( 'data-sgs-me' ),
 			};
