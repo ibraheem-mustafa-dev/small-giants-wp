@@ -1,4 +1,4 @@
-# Clone coverage gap list: 1889 capabilities neither covered nor excluded
+# Clone coverage gap list: 1888 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
@@ -6,22 +6,22 @@
 | draft reading | 348 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 170 |
-| motion writer (4.0) | 166 |
+| motion writer (4.0) | 165 |
 | site and surfaces | 96 |
 | behaviour recognisers | 73 |
 | states | 60 |
 
-## block-setting (88)
+## block-setting (87)
 
 - `block-setting:a11y-text:string`: block settings, role a11y-text, string (8); has nothing; wave content, media and icons; e.g. sgs/before-after.afterVideoAlt, sgs/before-after.beforeVideoAlt, sgs/button.ariaLabel, sgs/cart.ariaLabel, sgs/form.formName
 - `block-setting:behaviour:array`: block settings, role behaviour, array (194); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionDays, sgs/accordion-item.sgsConditionUserRole, sgs/accordion.sgsConditionDays, sgs/accordion.sgsConditionUserRole, sgs/account.sgsConditionDays
 - `block-setting:behaviour:boolean`: block settings, role behaviour, boolean (37); has nothing; wave behaviour recognisers; e.g. sgs/accordion.allowMultiple, sgs/container.bgSvgTextShadow, sgs/container.sgsBlockLinkTarget, sgs/counter.accentStroke, sgs/form-field-address.required
 - `block-setting:behaviour:integer`: block settings, role behaviour, integer (1); has nothing; wave behaviour recognisers; e.g. sgs/form.rateLimit
 - `block-setting:behaviour:mode`: block settings, role behaviour, mode (232); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionLoggedIn, sgs/accordion-item.sgsConditionProductReviews, sgs/accordion.sgsConditionLoggedIn, sgs/accordion.sgsConditionProductReviews, sgs/account.sgsConditionLoggedIn
-- `block-setting:behaviour:motion`: block settings, role behaviour, motion (21, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/before-after.fxDraggable, sgs/buybox.dragMomentum, sgs/buybox.dragToScroll, sgs/buybox.loopCarousel, sgs/gallery.dragMomentum
-- `block-setting:behaviour:number`: block settings, role behaviour, number (193); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsClickRippleDuration, sgs/accordion-item.sgsConditionCollectionQueryId, sgs/accordion.defaultOpen, sgs/accordion.sgsClickRippleDuration, sgs/accordion.sgsConditionCollectionQueryId
+- `block-setting:behaviour:motion`: block settings, role behaviour, motion (16, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/buybox.dragMomentum, sgs/buybox.dragToScroll, sgs/buybox.loopCarousel, sgs/gallery.dragMomentum, sgs/gallery.dragToScroll
+- `block-setting:behaviour:number`: block settings, role behaviour, number (118); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionCollectionQueryId, sgs/accordion.defaultOpen, sgs/accordion.sgsConditionCollectionQueryId, sgs/account.sgsConditionCollectionQueryId, sgs/audio.sgsConditionCollectionQueryId
 - `block-setting:behaviour:object`: block settings, role behaviour, object (13); has nothing; wave behaviour recognisers; e.g. sgs/google-reviews.arrowStep, sgs/nav-bar-menu.triggerDetachAfter, sgs/nav-drawer-menu.itemOrnamentFramePlay, sgs/site-footer-row.rowHideOnScroll, sgs/site-footer-row.rowShrink
-- `block-setting:behaviour:string`: block settings, role behaviour, string (890); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsClickEffect, sgs/accordion-item.sgsClickRippleColour, sgs/accordion-item.sgsCollapseVisibility, sgs/accordion-item.sgsConditionDateEnd, sgs/accordion-item.sgsConditionDateStart
+- `block-setting:behaviour:string`: block settings, role behaviour, string (742); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsCollapseVisibility, sgs/accordion-item.sgsConditionDateEnd, sgs/accordion-item.sgsConditionDateStart, sgs/accordion-item.sgsConditionReferrer, sgs/accordion-item.sgsConditionUrlParam
 - `block-setting:boolean-visibility:object`: block settings, role boolean-visibility, object (3); has nothing; wave behaviour recognisers; e.g. sgs/nav-drawer.chromeLogoShow, sgs/nav-drawer.chromeRatingShow, sgs/nav-drawer.chromeSlotShow
 - `block-setting:boolean-visibility:styling`: block settings, role boolean-visibility, styling (291); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.sgsHideOnDesktop, sgs/accordion-item.sgsHideOnMobile, sgs/accordion-item.sgsHideOnTablet, sgs/accordion.sgsHideOnDesktop, sgs/accordion.sgsHideOnMobile
 - `block-setting:color:string`: block settings, role color, string (69); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.backgroundColourHover, sgs/brand-strip.tileShadowColourHover, sgs/business-info.openStatusClosedBackground, sgs/business-info.openStatusOpenBackground, sgs/buybox.guidedMeterColour
@@ -38,7 +38,7 @@
 - `block-setting:enum-class-probe:object`: block settings, role enum-class-probe, object (8); has nothing; wave content, media and icons; e.g. sgs/nav-bar-menu.triggerIcon, sgs/nav-drawer-menu.itemExpanderIcon, sgs/nav-drawer-menu.itemOrnamentIcon, sgs/nav-drawer-menu.itemOrnamentIconHover, sgs/nav-drawer-menu.sublinkMarkerIcon
 - `block-setting:enum-class-probe:string`: block settings, role enum-class-probe, string (17); has nothing; wave content, media and icons; e.g. sgs/accordion.closeIcon, sgs/accordion.openIcon, sgs/button.icon, sgs/button.linkId, sgs/buybox.addToCartModalId
 - `block-setting:enum-class-probe:styling`: block settings, role enum-class-probe, styling (3); has nothing; wave content, media and icons; e.g. sgs/responsive-logo.logoId, sgs/responsive-logo.logoIdMobile, sgs/responsive-logo.logoIdTablet
-- `block-setting:enum-mode:mode`: block settings, role enum-mode, mode (101); has nothing; wave modes and values with no CSS property; e.g. sgs/audio.audioPreload, sgs/audio.audioSource, sgs/before-after.orientation, sgs/brand-strip.brandDisplay, sgs/brand-strip.source
+- `block-setting:enum-mode:mode`: block settings, role enum-mode, mode (100); has nothing; wave modes and values with no CSS property; e.g. sgs/audio.audioPreload, sgs/audio.audioSource, sgs/before-after.orientation, sgs/brand-strip.brandDisplay, sgs/brand-strip.source
 - `block-setting:enum-mode:object`: block settings, role enum-mode, object (1); has nothing; wave modes and values with no CSS property; e.g. sgs/site-header.contrastSafe
 - `block-setting:enum-mode:string`: block settings, role enum-mode, string (9); has nothing; wave modes and values with no CSS property; e.g. sgs/before-after.handleIconSource, sgs/form.successRedirectSource, sgs/google-rating-badge.listingUrlSource, sgs/icon.linkUrlSource, sgs/media.linkUrlSource
 - `block-setting:icon-dashicon:string`: block settings, role icon-dashicon, string (2); has nothing; wave content, media and icons; e.g. sgs/icon.dashiconName, sgs/separator.contentIconDashicon
@@ -62,7 +62,7 @@
 - `block-setting:link-content:string`: block settings, role link-content, string (2); has nothing; wave content, media and icons; e.g. sgs/whatsapp-cta.message, sgs/whatsapp-cta.phoneNumber
 - `block-setting:link-href:array`: block settings, role link-href, array (1); has nothing; wave content, media and icons; e.g. sgs/social-icons.hiddenLinks
 - `block-setting:link-href:mode`: block settings, role link-href, mode (1); has nothing; wave content, media and icons; e.g. sgs/icon.linkTarget
-- `block-setting:motion:motion`: block settings, role motion, motion (967, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/accordion-item.sgsParallax, sgs/accordion-item.sgsParallaxStrength, sgs/accordion.sgsAnimation, sgs/accordion.sgsAnimationDelay, sgs/accordion.sgsAnimationDistance
+- `block-setting:motion:motion`: block settings, role motion, motion (52, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/brand-strip.transitionDuration, sgs/brand-strip.transitionEasing, sgs/card-grid.transitionDuration, sgs/card-grid.transitionEasing, sgs/cart.freeDeliveryFillDuration
 - `block-setting:number-css-px:string`: block settings, role number-css-px, string (9); has nothing; wave modes and values with no CSS property; e.g. sgs/container.surfaceBlur, sgs/hero.surfaceBlur, sgs/mega-panel.surfaceBlur, sgs/multi-button.surfaceBlur, sgs/nav-drawer.surfaceBlur
 - `block-setting:numeric-content:number`: block settings, role numeric-content, number (3); has nothing; wave content, media and icons; e.g. sgs/google-reviews.averageRating, sgs/google-reviews.reviewCount, sgs/testimonial.ratingScale
 - `block-setting:position:object`: block settings, role position, object (2); has nothing; wave modes and values with no CSS property; e.g. sgs/site-header.headerFloatInset, sgs/site-header.zIndex
@@ -72,9 +72,8 @@
 - `block-setting:select-from-enum:mode`: block settings, role select-from-enum, mode (53); has nothing; wave modes and values with no CSS property; e.g. sgs/before-after.afterMediaType, sgs/before-after.beforeMediaType, sgs/brand-strip.logoLayout, sgs/business-info.displayType, sgs/buybox.framingMode
 - `block-setting:select-from-enum:number`: block settings, role select-from-enum, number (2); has nothing; wave modes and values with no CSS property; e.g. sgs/form-field-file.maxSize, sgs/star-rating.starSize
 - `block-setting:select-from-enum:object`: block settings, role select-from-enum, object (18); has nothing; wave modes and values with no CSS property; e.g. sgs/button.iconShapeSize, sgs/button.iconSize, sgs/button.widthType, sgs/choice-flow.optionMediaSize, sgs/container.shapeDividerBottomScale
-- `block-setting:select-from-enum:string`: block settings, role select-from-enum, string (26); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion.iconPosition, sgs/audio.audioMimeType, sgs/brand-strip.imageEffect, sgs/button.iconPosition, sgs/buybox.pickerBandScale
+- `block-setting:select-from-enum:string`: block settings, role select-from-enum, string (23); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion.iconPosition, sgs/audio.audioMimeType, sgs/brand-strip.imageEffect, sgs/button.iconPosition, sgs/buybox.pickerBandScale
 - `block-setting:styling:boolean`: block settings, role styling, boolean (16); has nothing; wave modes and values with no CSS property; e.g. sgs/container.shapeDividerBottomFlip, sgs/container.shapeDividerBottomInvert, sgs/container.shapeDividerTopFlip, sgs/container.shapeDividerTopInvert, sgs/hero.shapeDividerBottomFlip
-- `block-setting:styling:motion`: block settings, role styling, motion (2, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/decorative-image.pathDrawDurationMs, sgs/decorative-image.pathDrawOnScroll
 - `block-setting:styling:number`: block settings, role styling, number (3); has nothing; wave modes and values with no CSS property; e.g. sgs/nav-bar-menu.collapsePoint, sgs/responsive-logo.logoSwitchCustomPx, sgs/table-of-contents.scrollOffset
 - `block-setting:styling:object`: block settings, role styling, object (2); has nothing; wave modes and values with no CSS property; e.g. sgs/decorative-image.decorMedia, sgs/nav-drawer.anchor
 - `block-setting:styling:string`: block settings, role styling, string (106); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion-item.sgsCustomCss, sgs/accordion.sgsCustomCss, sgs/account.sgsCustomCss, sgs/audio.sgsCustomCss, sgs/before-after.sgsCustomCss
@@ -86,7 +85,7 @@
 - `block-setting:technical:integer`: block settings, role technical, integer (2); has nothing; wave shop, forms and data; e.g. sgs/filter-search.threshold, sgs/icon-list.menuRef
 - `block-setting:technical:number`: block settings, role technical, number (19); has nothing; wave shop, forms and data; e.g. sgs/card-grid.categoryTerm, sgs/card-grid.count, sgs/card-grid.productLimit, sgs/card-grid.queryCategory, sgs/card-grid.queryPostsPerPage
 - `block-setting:technical:object`: block settings, role technical, object (1); has nothing; wave shop, forms and data; e.g. sgs/product-search.maxResults
-- `block-setting:technical:string`: block settings, role technical, string (92); has nothing; wave shop, forms and data; e.g. sgs/button.anchor, sgs/button.className, sgs/button.rel, sgs/button.transitionEasingCustom, sgs/buybox.pickerBandAxis
+- `block-setting:technical:string`: block settings, role technical, string (91); has nothing; wave shop, forms and data; e.g. sgs/button.anchor, sgs/button.className, sgs/button.rel, sgs/buybox.pickerBandAxis, sgs/buybox.pickerSubLabelMetaKey
 - `block-setting:text-content:number`: block settings, role text-content, number (1); has nothing; wave content, media and icons; e.g. sgs/nav-drawer-menu.itemMagnetStrength
 - `block-setting:text-content:object`: block settings, role text-content, object (3); has nothing; wave content, media and icons; e.g. sgs/business-info.separators, sgs/cart.separators, sgs/pricing-table.featureSeparators
 - `block-setting:typography:mode`: block settings, role typography, mode (5); has nothing; wave modes and values with no CSS property; e.g. sgs/button.textDecorationHover, sgs/nav-bar-menu.itemTextAlign, sgs/nav-bar-menu.itemTextWrap, sgs/nav-drawer-menu.itemTextAlign, sgs/nav-drawer-menu.itemTextWrap
@@ -96,11 +95,11 @@
 - `block-setting:unclassified:number`: block settings, role unclassified, number (25); has nothing; wave behaviour recognisers; e.g. sgs/audio.reactiveSensitivity, sgs/brand-strip.brandMaxItems, sgs/container.surfaceSaturate, sgs/diagram-dimension.extOvershoot, sgs/diagram-dimension.extReach
 - `block-setting:unclassified:object`: block settings, role unclassified, object (21); has nothing; wave behaviour recognisers; e.g. sgs/account.cardDescriptions, sgs/account.navIcons, sgs/account.statusStepLabels, sgs/card-grid.separators, sgs/choice-flow.headerLogo
 - `block-setting:unclassified:string`: block settings, role unclassified, string (73); has nothing; wave behaviour recognisers; e.g. sgs/account.greeting, sgs/account.latestOrderHeading, sgs/account.parcelTrackingLabel, sgs/account.shopLinkLabel, sgs/account.viewOrderLabel
-- `block-setting:visual:boolean`: block settings, role visual, boolean (33); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.sgsHoverBorderAccent, sgs/container.sgsHoverGrayscale, sgs/container.sgsHoverImageZoom, sgs/container.sgsHoverTilt3D, sgs/google-reviews.sgsHoverBorderAccent
-- `block-setting:visual:mode`: block settings, role visual, mode (12); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.backgroundAttachment, sgs/container.sgsHoverScalePreset, sgs/google-reviews.sgsHoverScalePreset, sgs/hero.backgroundAttachment, sgs/info-box.sgsHoverScalePreset
-- `block-setting:visual:number`: block settings, role visual, number (30); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.sgsHoverScale, sgs/container.sgsHoverZoom, sgs/google-reviews.sgsHoverScale, sgs/google-reviews.sgsHoverZoom, sgs/info-box.sgsHoverScale
+- `block-setting:visual:boolean`: block settings, role visual, boolean (5); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/multi-button.bgSvgTextShadow, sgs/physics-canvas.bgSvgTextShadow, sgs/product-card.showShadow, sgs/site-footer.bgSvgTextShadow, sgs/site-header.bgSvgTextShadow
+- `block-setting:visual:mode`: block settings, role visual, mode (5); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.backgroundAttachment, sgs/hero.backgroundAttachment, sgs/multi-button.backgroundAttachment, sgs/nav-drawer.backgroundAttachment, sgs/physics-canvas.backgroundAttachment
+- `block-setting:visual:number`: block settings, role visual, number (16); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/media.overlayOpacity, sgs/mega-panel.surfaceOpacity, sgs/multi-button.bgSvgOpacity, sgs/nav-bar-menu.submenuCaretOpacity, sgs/nav-bar-menu.submenuCaretOpacityHover
 - `block-setting:visual:object`: block settings, role visual, object (7); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/brand-strip.separators, sgs/container.separators, sgs/icon-list.separators, sgs/nav-bar-menu.separators, sgs/nav-bar-menu.submenuSeparators
-- `block-setting:visual:string`: block settings, role visual, string (22); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/container.sgsHoverShadow, sgs/container.sgsHoverShadowCustom, sgs/container.sgsHoverZoomStyle, sgs/google-rating-badge.shadow, sgs/google-reviews.sgsHoverShadow
+- `block-setting:visual:string`: block settings, role visual, string (1); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgs/google-rating-badge.shadow
 
 ## fx (33)
 

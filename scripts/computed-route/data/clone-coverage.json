@@ -1758,14 +1758,6 @@
 			"wave": "modes and values with no CSS property",
 			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
 		},
-		"block-setting:styling:motion": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
-			"note": "motion settings: the cloning writer for sgsMotion is plan step 4.0 (Spec 38A M7)"
-		},
 		"block-setting:styling:number": {
 			"recognise": null,
 			"write": null,
