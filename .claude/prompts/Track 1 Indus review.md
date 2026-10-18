@@ -1,12 +1,12 @@
 Invoke /autopilot before doing anything else.
 
-TRACK: Spec 48 Indus build, plan step 15 (Bean's intake review). It may run now, beside clone coverage step 4.0 (the coverage plan's Phase 4 "Order", lane B): the review needs no coverage wave. Previous session closed 2026-10-13 at origin/main b1e879cfb.
+TRACK: Spec 48 Indus build, plan steps 15 (Bean's intake review), then 16, 17 and 19, the steps that need no clone coverage wave. It may run now, beside clone coverage step 4.0 (the coverage plan's Phase 4 "Order", lane B): the review needs no coverage wave. Previous session closed 2026-10-13 at origin/main b1e879cfb.
 
 CONTEXT (plain English)
 - Spec 48 turns a Claude Design export (draft pages in sites/indus-foods/handoff/) into an SGS WordPress site. Stage 1, "intake", reads the export and proposes everything Bean confirms in one review (review.md). Bean has decided category 1 (draft defects), category 2 (missing features) and skeleton batches 1 to 5 (which SGS block each draft element becomes, for the top bar, header, mega menus, drawer, footer, home hero and brand strip).
 - His decisions are now framework-wide "standing rules" in scripts/computed-route/lib/skeleton-rules.mjs (28 rules; data in scripts/computed-route/data/skeleton-decisions.json `rules`), plus his already-built posts (sites/indus-foods/build/skeleton/built-surfaces.json). His recorded outcomes are sites/indus-foods/build/intake/approved-decisions.json; `node scripts/computed-route/check-approved.mjs indus-foods` reproduces all 93 comparable rows (exit 0).
 - The review's skeleton section is grouped by cause: 555 rows; 82 need his individual decision (77 agent picks, 3 low, 2 unresolved); 230 are settled by a named rule or built post (he approves each rule once); 243 are confident proposals.
-- Work in the shared checkout on `main`. The committed intake.json and review.md are the 18 October re-run (`71ae521`) with today's standing rules applied (`--rerun-skeletons`), so no regeneration is needed unless the export changes: 1,336 rows, 813 to read, 523 that Accept all covers; read the counts from review.md itself. 184 rows are seen-but-unsupported missing features, one per capability the draft uses that the clone coverage map does not cover; Accept all marks each `gap:<wave>`, or `difference` when Bean excluded the capability (Bean, 2026-10-18), so they need no row-by-row reading. Two of them (`html:image-slot`, `html:indus-logo`) are custom elements a fixed bug named by tag: mark both `gap:draft reading`. A full re-run takes about 100 minutes; its draft-defects pass B prints nothing for over an hour.
+- Work in the shared checkout on `main`. The committed intake.json and review.md are the 18 October re-run (`71ae521`) with today's standing rules applied (`--rerun-skeletons`), so no regeneration is needed unless the export changes: 1,336 rows, 813 to read, 523 that Accept all covers; read the counts from review.md itself. 184 rows are seen-but-unsupported missing features, one per capability the draft uses that the clone coverage map does not cover; Accept all marks each `gap:<wave>`, or `difference` when Bean excluded the capability (Bean, 2026-10-18), so they need no row-by-row reading. Two of them (`html:image-slot`, `html:indus-logo`) are custom elements a fixed bug named by tag; Bean has marked both `gap:draft reading`. A full re-run takes about 100 minutes; its draft-defects pass B prints nothing for over an hour.
 
 READ FIRST
 - .claude/plans/2026-10-11-spec48-indus-build.md step 15 (its Progress note) and steps 16 to 20.
@@ -20,13 +20,12 @@ TASKS, IN ORDER
    - c. Inventory diffs (default mark `ours`), page map (his rule: no site-part or brand prefixes in slugs), palette roles (propose from his existing rules, never ask), Site Info (use plan step 15's facts: Google Business Profile, directions, address), flags, not-defects, notices.
    - Before presenting, answer every question you can from code, the spec or the draft yourself; filter out anything that is standard web practice (memory: autoplay-pause-button-off-by-default). Never mark a row for him.
 2. Apply his marks (inline, ~20 min): write them into review.md, run `node scripts/computed-route/intake.mjs --apply-review indus-foods` (must exit 0). Any new ruling that generalises becomes a standing rule with a MUST FAIL test in tests/skeleton-rules.test.mjs and an entry in approved-decisions.json; re-run check-approved.mjs (exit 0). Commit intake.json, review.md, page-map.json, approved-decisions.json and the decisions file.
-3. Run /handoff to make sure all relevant documentation and then write a prompt for the next session that covers what I've listed below:
-
-NEXT SESSION
-
-Plan steps 16 to 20 (delegate heavy WP work to wp-sgs-developer via /delegate; ~2 h): Site Info from step 15's facts; the theme snapshot including the missing settings.custom.sgs header/footer pattern keys that fail ThemeSnapshotManifestTest; the site build; default paint; the header with Bean's eye.
-
-To wrap up the planning session run: /qc-council before /handoff.
+3. Continue straight into the Indus steps that need no clone coverage wave (`.claude/plans/2026-10-11-spec48-indus-build.md`; plan mode first, delegate heavy WordPress work to the wp-sgs-developer agent; about 2 hours):
+   - Step 16, Appendix A on `indus-test`: its open steps 5 (snapshot, done by step 17), 10 (Site Info: FR-48-59's dry run, then `--apply`, from step 15's facts: Google Business Profile, directions, address) and 12 (cache clear). Step 11, the site build, is plan step 18, which waits on the site and surfaces wave.
+   - Step 17, the snapshot: the extractor reads `tokens/*.css` with Bean's confirmed palette roles, including the missing `settings.custom.sgs` header and footer pattern keys that fail `ThemeSnapshotManifestTest`; dry run, then push with `push-theme-snapshot.py`.
+   - Step 19, the default-paint step: FR-48-18's exit, the refresh loop's step 4.
+   - Done when each step's done-when in the build plan holds and is ticked there with its commit.
+4. Run /qc-council, then /handoff. Steps 18, 20 and onwards wait on clone coverage waves (the coverage plan's Phase 4 "Order": site and surfaces with media upload for step 18; step 4.0 and states for step 20), so the handoff points the next session at that order and at `.claude/prompts/Clone coverage continue.md`, not at a step 16 to 20 session.
 
 GUARDRAILS
 - `node --test "scripts/computed-route/tests/*.test.mjs"`: only the 3 known lint.test.mjs brand failures; `node scripts/computed-route/lint.mjs` passes; `node scripts/computed-route/check-approved.mjs indus-foods` exits 0.
