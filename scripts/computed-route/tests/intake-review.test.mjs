@@ -335,6 +335,26 @@ test( 'MUST FAIL a missing-feature row shows its one-line description, never the
 	assert.ok( ! renderReview( intake ).includes( '{"construct"' ) );
 } );
 
+test( 'MUST FAIL: Accept all marks a seen-but-unsupported row as a tracked gap with its wave (difference when excluded); a non-coverage missing feature with no block, or a coverage row the map does not hold, is never bulk-accepted', () => {
+	const intake = fixture( { missingFeatures: [
+		{ rowId: 'missing:coverage:css-at:container', draftId: 'Home:3', construct: 'css-at:container', from: 'coverage', line: 'css-at:container seen 2 times in the draft: seen but unsupported', mainFlow: null, wave: 'draft reading' },
+		{ rowId: 'missing:coverage:svg:unlisted', draftId: 'logo.svg', construct: 'svg:unlisted', from: 'coverage', line: 'svg:unlisted seen 4 times in the draft: seen but unsupported', mainFlow: null, excluded: true },
+		{ rowId: 'missing:coverage:html:new-thing', draftId: 'Home:4', construct: 'html:new-thing', from: 'coverage', line: 'html:new-thing seen 1 time in the draft: seen but unsupported', mainFlow: null },
+		{ rowId: 'missing:Quiz:1', draftId: 'Quiz:1', construct: 'flavour quiz', from: 'census', line: 'flavour quiz: no SGS block holds it', mainFlow: null, wave: 'behaviour recognisers' },
+	] } );
+	const rows = Object.fromEntries( reviewRows( intake ).filter( ( r ) => 'missing-feature' === r.rowType ).map( ( r ) => [ r.rowId, r ] ) );
+	assert.equal( rows[ 'missing:coverage:css-at:container' ].acceptAll, 'gap:draft reading' );
+	assert.equal( rows[ 'missing:coverage:css-at:container' ].needs, null, 'a tracked gap needs no reading' );
+	assert.equal( rows[ 'missing:coverage:svg:unlisted' ].acceptAll, 'difference' );
+	assert.equal( rows[ 'missing:Quiz:1' ].acceptAll, null, 'only a coverage row is a tracked gap, whatever fields it carries' );
+	const r = applyReview( intake, mark( renderReview( intake ), { accept: ROW_TYPES } ), { today: TODAY } );
+	const got = Object.fromEntries( r.intake.review.filter( ( x ) => 'missing-feature' === x.rowType ).map( ( x ) => [ x.rowId, x.mark ] ) );
+	assert.deepEqual( got, { 'missing:coverage:css-at:container': 'gap:draft reading', 'missing:coverage:svg:unlisted': 'difference', 'missing:coverage:html:new-thing': null, 'missing:Quiz:1': null } );
+	assert.deepEqual( r.missing.map( ( m ) => m.rowId ).sort(), [ 'missing:Quiz:1', 'missing:coverage:html:new-thing' ] );
+	assert.equal( markProblem( 'missing-feature', 'gap:states' ), null );
+	assert.ok( markProblem( 'missing-feature', 'gap:' ) );
+} );
+
 test( 'review.md writes each paragraph of its guide as one line (no hard wraps)', () => {
 	const md = renderReview( fixture() );
 	const guide = md.split( '\n' ).find( ( l ) => l.startsWith( 'How to mark:' ) );

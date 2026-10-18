@@ -889,7 +889,7 @@ Status: built 2026-10-12 (`lib/intake-flags.mjs`, `tests/intake-flags.test.mjs`)
   2. a code-declared state, motion or behaviour is unreached at every tested width (375, 768 and 1440) under the harness (FR-48-28), even with the state forced (hover and focus forced through the DevTools protocol, the state keys set that the code's own condition reads, the scroll pass run). Eye Care's reveal below 1440 is this case.
 
   The code's intent is built and the defect is listed for Bean and for Claude Design. Every other code-render disagreement is `render-wins`: the rendered value is written and the row is reported (§10, FR-48-36). A state reached at some tested widths and not others is not a defect: it is a breakpoint (row 9).
-- **Missing features** are one line each: a construct the census found that no SGS block or feature holds. Bean marks each one "map to an existing block", "record as a deliberate difference" or "build". Stage 1 builds only what stops a main flow (buy, contact, apply).
+- **Missing features** are one line each: a construct the census found that no SGS block or feature holds. Bean marks each one "map to an existing block", "record as a deliberate difference", "build" or, for a seen-but-unsupported row (a capability the clone coverage map does not cover, `lib/intake-missing.mjs::coverageMissing`), "tracked gap" in its Phase 4 wave, which "accept all" sets. Stage 1 builds only what stops a main flow (buy, contact, apply).
 
 Outcomes that are not defects (decided 2026-10-12 while building): a construct gated on a component prop no parent mounts is a prop variant (FR-48-29); a construct behind a constant guard the code itself fixes, reached only through a `renderVals()` key no template binds, or inside an `sc-if` whose loop-item value is false for every item of the draft's own constant data (with code reached only through elements inside one), is dead code (the code's intent is "off"); a construct inside code whose rendered elements are all flagged placeholder or prototype-only is prototype-only (FR-48-33). Defects are listed grouped by the class member or script that holds them, so the review marks a function, not each call site.
 
@@ -1658,7 +1658,7 @@ Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-
 | Flag (placeholder, stock, prototype-only) | `accept-flagged` (the default), `not-flagged` |
 | Draft defect | `accept` (build the code's intent), `render-wins` |
 | Not a defect (unwired dead code) | `not-a-defect` (the default), `defect` (build it as a draft defect) |
-| Missing feature | `map:<block>`, `difference` (record as deliberate), `build` |
+| Missing feature | `map:<block>`, `difference` (record as deliberate), `build`, `gap:<wave>` (a tracked gap in the clone coverage map's Phase 4 wave); "accept all" sets `map:<block>` on a row proposing a block, `gap:<wave>` on a seen-but-unsupported row (`difference` when its capability is excluded), and nothing on any other row |
 | Skeleton block choice | `accept`, `block:<slug>`, `remove` (the element is absorbed into its parent block and gets none of its own) |
 | Inventory diff | `ours`, `theirs` |
 | Unknown host request or command-like prose | `noted` |

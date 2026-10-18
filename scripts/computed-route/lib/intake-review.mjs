@@ -49,7 +49,8 @@ export const MARKS = {
 	flag: [ { value: 'accept-flagged' }, { value: 'not-flagged' } ],
 	'draft-defect': [ { value: 'accept' }, { value: 'render-wins' } ],
 	'not-a-defect': [ { value: 'not-a-defect' }, { value: 'defect' } ],
-	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' } ],
+	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' },
+		{ shape: 'gap:<wave>', re: /^gap:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the wave is empty' ) } ],
 	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'remove' } ],
 	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
 	notice: [ { value: 'noted' } ],
@@ -191,8 +192,11 @@ export function reviewRows( intake ) {
 	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', UNWIRED_NOTE ) );
 	( intake.missingFeatures || [] ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
-		const acceptAll = block && BLOCK.test( block ) ? `map:${ block }` : null;
-		add( 'missing-feature', r, r.draftId, describe( r ), block ? `map:${ block }` : 'no block proposed', text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
+		// A seen-but-unsupported row (clone coverage) is a tracked gap: Accept all marks it with the coverage map's Phase
+		// 4 wave, or `difference` when Bean excluded the capability (Bean, 2026-10-18); one the map does not hold is read.
+		const tracked = 'coverage' === r.from ? ( r.wave ? `gap:${ r.wave }` : r.excluded ? 'difference' : null ) : null;
+		const acceptAll = tracked ?? ( block && BLOCK.test( block ) ? `map:${ block }` : null );
+		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
 	} );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
@@ -437,7 +441,7 @@ export function applyReview( intake, markdown, { today = isoDay() } = {} ) {
 			}
 		} else if ( parsed.sections[ r.rowType ]?.acceptAll ) {
 			mark = r.acceptAll;
-			why = 'Accept all cannot mark it: it proposes no block; mark map:<block>, difference or build';
+			why = 'Accept all cannot mark it: it proposes no block and no tracked gap; mark map:<block>, difference, build or gap:<wave>';
 		} else if ( DEFAULTED.includes( r.rowType ) ) {
 			mark = MARKS[ r.rowType ][ 0 ].value;
 		}

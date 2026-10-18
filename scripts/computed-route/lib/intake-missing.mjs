@@ -1,5 +1,5 @@
 // The missing-features list (Spec 48 FR-48-34, DESIGN decision 7): one line per construct the draft uses that no SGS
-// block or feature holds. Bean marks each `map:<block>`, `difference` or `build` (Appendix C); stage 1 builds only what
+// block or feature holds. Bean marks each `map:<block>`, `difference`, `build` or `gap:<wave>` (Appendix C); stage 1 builds only what
 // stops a main flow (buy, contact, apply), so each row carries `mainFlow`. Rows come from two places, each rule below
 // kept conservative so a construct SGS holds is never listed as missing:
 //   1. Skeleton proposal rows (lib/skeleton-propose.mjs::proposeSkeleton) with `action: 'unresolved'`, or with no
@@ -200,7 +200,8 @@ export function coverageMissing( { skeletonRows = [], census = { rows: [] }, cov
 			: 'excluded' === status ? `${ id } is excluded from cloning (Bean, ${ e.excluded.date }: ${ e.excluded.reason })`
 				: `${ id } has no clone path yet (has ${ [ 'recognise', 'write', 'check' ].filter( ( k ) => e[ k ] ).join( ', ' ) || 'nothing' }; wave ${ e.wave })`;
 		const missed = runtimeOnly ? '; seen only when the page ran: the file read missed it' : '';
-		rows.push( { rowId: `missing:coverage:${ id }`, draftId: String( draftId ), construct: id, from: 'coverage', line: `${ id } seen ${ count } time${ 1 === count ? '' : 's' } in the draft: seen but unsupported`, mainFlow: null, count, why: `${ why }${ missed }` } );
+		const track = 'excluded' === status ? { excluded: true } : e?.wave ? { wave: e.wave } : {};
+		rows.push( { rowId: `missing:coverage:${ id }`, draftId: String( draftId ), construct: id, from: 'coverage', line: `${ id } seen ${ count } time${ 1 === count ? '' : 's' } in the draft: seen but unsupported`, mainFlow: null, count, ...track, why: `${ why }${ missed }` } );
 	}
 	return rows;
 }
