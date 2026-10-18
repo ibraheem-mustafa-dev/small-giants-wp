@@ -2124,7 +2124,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # rather than a genuine judgement call. A `/qc-council` structural re-check --
     # grouping by the `fx:*` marker instead of by name -- found 3 MORE rows with the
     # IDENTICAL bug the name-based pass had missed (`sgs/image-sequence`'s
-    # `fxStart`/`fxEnd`/`fxScrub`), proving the point empirically. This tier closes the
+    # three scroll parameters), proving the point empirically. This tier closes the
     # whole class instead of the instances a name search happens to find, and
     # self-corrects any FUTURE block that adds an `fx:*` attribute without needing a
     # fresh override entry.
@@ -2304,8 +2304,8 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # EXPECTED POPULATION at the time this tier was written: ~20 (Bucket A of the
     # 2026-08-28 investigation -- `sgs/buybox.dragMomentum/dragToScroll/loopCarousel`,
     # `sgs/gallery`/`sgs/google-reviews`/`sgs/post-grid`/`sgs/trustpilot-reviews` [same
-    # 3 each], `sgs/testimonial-slider.dragToScroll`, `sgs/image-sequence.fxStart/
-    # fxEnd/fxScrub/fxPin`, `sgs/before-after.fxDraggable`). A non-zero count on a
+    # 3 each], `sgs/testimonial-slider.dragToScroll`, and the image-sequence and
+    # before-after scroll and drag rows). A non-zero count on a
     # later reseed means a new `fx:*` attribute landed and hit the `css_element IS
     # NULL` state before this tier could correct it -- exactly the case this tier
     # exists to catch automatically, not a bug in the tier itself.
@@ -2326,30 +2326,6 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
                 (row_id,),
             )
             fx_css_element_seeded += 1
-
-    # TIER 3.20b -- ONE-ROW ROLE CORRECTION: sgs/before-after.fxDraggable (2026-08-28,
-    # same investigation as TIER 3.20 immediately above). NOT a generic rule -- every
-    # other `fx:*` row in Bucket A already carries `role='behaviour'` (confirmed live,
-    # 2026-08-28); this ONE row was left on the pre-D604/D607 `role='boolean-visibility'`
-    # value, so its `role` and `css_element` columns would otherwise disagree with each
-    # other and with every sibling `fx:*` row on the same block. Fixed by exact
-    # (block_slug, attr_name) match, not a name/suffix pattern -- deliberately narrower
-    # than TIER 3.17's `css_property LIKE 'fx:%'` guard, because this is a known,
-    # named, one-off inconsistency to close, not a class of defect to prevent
-    # recurring. If a future `fx:*` attribute lands with the wrong role, TIER 3.17
-    # already catches that class generically; this step exists only to reconcile the
-    # one row TIER 3.17 could not retroactively touch (it only ever upgrades FROM
-    # `role='styling'`, never from `role='boolean-visibility'`).
-    before_after_fx_draggable_role_fixed = 0
-    for (row_id,) in conn.execute(
-        "SELECT id FROM block_attributes "
-        "WHERE block_slug = 'sgs/before-after' AND attr_name = 'fxDraggable' "
-        "AND role = 'boolean-visibility'"
-    ).fetchall():
-        cur.execute(
-            "UPDATE block_attributes SET role = 'behaviour' WHERE id = ?", (row_id,)
-        )
-        before_after_fx_draggable_role_fixed += 1
 
     # TIER 3.4 -- UNIT INHERITANCE (2026-08-05, Bean). A `<base>Unit` attr carries the
     # CSS unit for `<base>`; it is the same styling fact, split across two columns
@@ -2679,11 +2655,6 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
         # been seeded once (idempotent, WHERE clause is `css_element IS NULL`);
         # non-zero on a later reseed means a new fx:* attribute needs the same seed.
         "fx_css_element_seeded": fx_css_element_seeded,
-        # TIER 3.20b -- one-row role reconciliation for sgs/before-after.fxDraggable
-        # (see TIER 3.20b docstring above for why this is narrower than TIER 3.17/3.20
-        # on purpose). Expected steady-state count is 0 once applied once; non-zero on
-        # a later reseed would mean the row regressed to 'boolean-visibility' again.
-        "before_after_fx_draggable_role_fixed": before_after_fx_draggable_role_fixed,
         "unit_inherited": unit_inherited,
         # TIER 3.41 -- device-tier (Tablet/Mobile) sibling inherits its base's role
         # verbatim, content or styling. Non-zero on a later reseed means a new

@@ -9,34 +9,8 @@
  * check-control-ux.js (responsive-family / unit-select anti-patterns) — read
  * both before touching this file; do not duplicate their checks.
  *
- * THREE CHECKS
+ * TWO CHECKS (numbered 2 and 3: the numbers are the identifiers the baseline and severities cite)
  * ------------
- *  CHECK 1 — UNIVERSAL-HOVER-VS-PRIVATE-HOVER (primary target, per block):
- *    src/blocks/extensions/hover-effects.js provides a universal `sgsHover*`
- *    attribute family + "Hover Effects" inspector panel. It is OPT-IN: since
- *    D551 (Phase 2.1) a block carries the panel only when its block.json lists
- *    `supports.sgs.enabledExtensions: ["hover", ...]`. A block that has NOT
- *    opted in never had the universal panel, so its private `*Hover` attrs
- *    cannot duplicate it and it is skipped outright. (`hideExtensions` is a
- *    legacy DENYLIST, now a no-op under the opt-in model; it is still honoured
- *    defensively but is not the gate. ⚠ CORRECTED 2026-08-25: this docblock
- *    previously described CHECK 1 as opt-OUT via `hideExtensions`, which had
- *    been false since D551 — the code always read `enabledExtensions`.)
- *    Many opted-in blocks ALSO declare their OWN private `*Hover` attrs (e.g.
- *    card-grid's `scaleHover`/`shadowHover`) covering the same semantic
- *    ground, so the client is looking at TWO systems nominally responsible for
- *    the same visual effect. Severities `hover:controlled` / `hover:shadow` /
- *    `hover:scoped` / `hover:scoped-shadow` — see SEVERITY_MEANINGS below for
- *    the authoritative text of each.
- *    ⚠ CORRECTED 2026-08-25: the category list above USED to read "scale /
- *    shadow / bg-colour / text-colour / border-colour / image-zoom /
- *    grayscale". The three COLOUR categories were deleted from
- *    UNIVERSAL_HOVER_BY_CATEGORY the same day because hover-effects.js
- *    registers no colour attr at all and exposes no colour control — 36 of 64
- *    findings named a keeper that does not exist. The live categories are
- *    scale / shadow / imageZoom / grayscale / duration / easing / effect, and
- *    the drift guard below now fails loudly rather than let that list rot.
- *
  *  CHECK 2 — SAME-ATTR-TWO-CONTROLS (per block, one edit.js):
  *    Two distinct JSX control elements (SelectControl/RangeControl/
  *    ToggleControl/TextControl/ColorPicker/etc., or the house-style
@@ -46,13 +20,12 @@
  *    Since 2026-08-25 it ALSO resolves DISPATCHER-driven controls — a shared
  *    component handed an attribute-name map that writes a COMPUTED key
  *    (`setAttributes( { [ attrNames.valueHover ]: v } )`), which the literal-key
- *    path could not see. CHECK 1 already folded these in; CHECK 2 did not, so
- *    `ShadowControl` (mounted by 15 blocks) was invisible to it. Gated
+ *    path could not see. `ShadowControl` (mounted by 15 blocks) was invisible to it
+ *    before that. Gated
  *    behaviourally — a tag counts as a dispatcher only if its DEFINING FILE
  *    really contains a computed-key setAttributes. See componentIsDispatcher.
- *    CHECK 2 deliberately stays on the block's OWN edit.js while CHECK 1 scans
- *    a widened transitive corpus; that asymmetry is intentional and the reason
- *    is documented at checkSameFileDuplicateAst().
+ *    CHECK 2 deliberately stays on the block's OWN edit.js; the reason is
+ *    documented at checkSameFileDuplicateAst().
  *
  *  CHECK 3 — PARENT-CHILD-DUPLICATION (per composite block, heuristic):
  *    A composite block's edit.js mounts InnerBlocks with a `template` that
@@ -71,9 +44,8 @@
  *    unvalidated keeper advises deleting a working control in favour of
  *    nothing. See resolveChildBlockDir.
  *
- * SEVERITIES ARE NAMESPACED `<check>:<severity>` (2026-08-25). CHECK 1 and
- * CHECK 3 both used to emit a bare `scoped` meaning two unrelated things, and
- * both emitted a bare `controlled`. Full rationale + the authoritative meaning
+ * SEVERITIES ARE NAMESPACED `<check>:<severity>` (2026-08-25). Two checks
+ * emitting the same bare token would mix two populations. Full rationale + the authoritative meaning
  * of every token: the SEVERITY_MEANINGS block below.
  *
  * FAIL-CLOSED ON BLINDNESS (2026-08-25). Every parse this file performs feeds
@@ -116,10 +88,10 @@
  * R3-a widening case and the CHECK 3 slug-resolution cases resolve real
  * components/blocks through resolveComponentFiles() + BLOCKS_DIR, which is the
  * point — a tmpdir fixture cannot exercise a filesystem-indexing resolver; and
- * (b) WRITES to disk: the CHECK 1 severity cases mkdtemp a directory under
+ * (b) WRITES to disk: the severity-namespacing cases mkdtemp a directory under
  * os.tmpdir(), write fixture edit.js files into it, and rm it in a `finally`.
- * The genuinely in-memory groups are the CHECK 2 AST cases, classifyHoverAttr,
- * the drift guard, collectIndirectControlledAttrs and the dispatcher cases.
+ * The genuinely in-memory groups are the CHECK 2 AST cases,
+ * collectIndirectControlledAttrs and the dispatcher cases.
  *
  * @package SGS\Blocks
  */
@@ -146,192 +118,6 @@ const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
 const BASELINE_FILE = path.join( __dirname, 'duplicate-controls-baseline.json' );
 
 // ---------------------------------------------------------------------------
-// CHECK 1 — universal-hover vs private-hover category table.
-// ---------------------------------------------------------------------------
-
-// The universal sgsHover* attrs injected by hover-effects.js, grouped by the
-// semantic category they control. Kept in sync with that file's
-// `hoverAttributes` object (2026-07-18 shape). Not a DB lookup dict — this is
-// a fixed cross-reference between two hand-authored control systems, same
-// justification class as check-dead-controls.js's PREFIXED_HELPER_SUFFIXES.
-const UNIVERSAL_HOVER_BY_CATEGORY = {
-	// ⛔ bgColour / textColour / borderColour DELETED 2026-08-25. They named
-	// `sgsHoverBgColour`, `sgsHoverTextColour` and `sgsHoverBorderColour` —
-	// hover-effects.js registers NONE of them and exposes no colour control at
-	// all. 36 of 64 findings therefore named a KEEPER that does not exist, i.e.
-	// advised deleting a working block control in favour of nothing. A private
-	// *ColourHover attr has no universal counterpart; it is not a duplicate.
-	// The guard below stops this drifting again.
-	scale: [ 'sgsHoverScale', 'sgsHoverScalePreset' ],
-	shadow: [ 'sgsHoverShadow' ],
-	imageZoom: [ 'sgsHoverImageZoom' ],
-	grayscale: [ 'sgsHoverGrayscale' ],
-	duration: [ 'sgsHoverDuration' ],
-	easing: [ 'sgsHoverEasing' ],
-	effect: [ 'sgsHoverScale', 'sgsHoverShadow', 'sgsHoverImageZoom' ], // "Hover effect" preset vs the "Hover Effects" panel — naming collision, not 1:1.
-};
-
-/**
- * Pure extraction step, split out of readRegisteredUniversalHoverAttrs() so
- * the self-test can exercise it in-memory against a synthetic source string
- * instead of the real hover-effects.js file. Behaviour is byte-identical to
- * the inline version this replaced.
- *
- * Comment-STRIPPED: reading raw source means a comment such as
- * `// sgsHoverBgColour: RETIRED, do not re-add` re-registers the phantom
- * as if it were a live key, silently un-guarding this guard. That is a
- * completely natural way to phrase a retirement note, so it is not a
- * hypothetical.
- *
- * @param {string} rawSrc Raw (not yet comment-stripped) source text.
- * @return {Set<string>} Registered `sgsHover*` / `sgsStagger*` key names.
- */
-function extractRegisteredHoverAttrsFromSrc( rawSrc ) {
-	const src = stripComments( rawSrc );
-	const found = new Set();
-	if ( ! src ) {
-		return found;
-	}
-	const re = /\b(sgsHover[A-Za-z0-9]*|sgsStagger[A-Za-z0-9]*)\s*:/g;
-	let m;
-	while ( ( m = re.exec( src ) ) !== null ) {
-		found.add( m[ 1 ] );
-	}
-	return found;
-}
-
-function readRegisteredUniversalHoverAttrs() {
-	return extractRegisteredHoverAttrsFromSrc(
-		readIfExists(
-			path.join( ROOT, 'src', 'blocks', 'extensions', 'hover-effects', 'attributes.js' )
-		)
-	);
-}
-
-/**
- * Pure per-category drift computation, split out of the top-level guard body
- * so the self-test can exercise it in-memory against a synthetic category
- * list + registered set. Behaviour is byte-identical to the inline version
- * this replaced: a category naming an unregistered attr has that attr
- * dropped from its list and reported in `phantom`.
- *
- * @param {string[]}    list       Attr names a category currently claims.
- * @param {Set<string>} registered The real, currently-registered attr names.
- * @return {{phantom: string[], filtered: string[]}} Dropped names + survivors.
- */
-function computeCategoryDrift( list, registered ) {
-	const phantom = list.filter( ( a ) => ! registered.has( a ) );
-	const filtered = list.filter( ( a ) => registered.has( a ) );
-	return { phantom, filtered };
-}
-
-const REGISTERED_UNIVERSAL_HOVER = readRegisteredUniversalHoverAttrs();
-const UNIVERSAL_MAP_DRIFT = [];
-if ( REGISTERED_UNIVERSAL_HOVER.size > 0 ) {
-	for ( const category of Object.keys( UNIVERSAL_HOVER_BY_CATEGORY ) ) {
-		const { phantom, filtered } = computeCategoryDrift(
-			UNIVERSAL_HOVER_BY_CATEGORY[ category ],
-			REGISTERED_UNIVERSAL_HOVER
-		);
-		if ( phantom.length ) {
-			UNIVERSAL_MAP_DRIFT.push( `${ category } -> ${ phantom.join( ', ' ) }` );
-		}
-		UNIVERSAL_HOVER_BY_CATEGORY[ category ] = filtered;
-	}
-}
-
-// Sub-element prefix words that mean a private *Hover attr targets a named
-// CHILD part of the block (a CTA button, a tab, an icon...) rather than the
-// whole block — NOT the same setting as the block-wide universal control.
-// Reported separately at lower confidence.
-const SCOPED_SUBJECT_WORDS = new Set( [
-	'cta', 'tab', 'link', 'icon', 'shape', 'overlay', 'ripple', 'primary', 'secondary',
-] );
-
-/**
- * Classify a declared attribute name that contains "hover" (case-insensitive)
- * into a semantic category + whether it is scoped to a named sub-element.
- * Returns null if the name contains "hover" but matches no known category
- * (e.g. `pauseOnHover`, `autoScrollPauseOnHover`, `hoverStyle` — behavioural
- * toggles with no universal-hover-panel equivalent).
- *
- * @param {string} attrName Declared attribute name.
- * @return {?{category: string, scoped: boolean, subject: ?string}} Classification.
- */
-function classifyHoverAttr( attrName ) {
-	if ( ! /hover/i.test( attrName ) ) {
-		return null;
-	}
-	// Split camelCase into lowercase word tokens, drop the "hover" token itself.
-	const words = attrName
-		.replace( /([a-z0-9])([A-Z])/g, '$1 $2' )
-		.toLowerCase()
-		.split( /[\s_]+/ )
-		.filter( ( w ) => w && w !== 'hover' );
-
-	const has = ( w ) => words.includes( w );
-
-	// BACKGROUND-IMAGE ZOOM (2026-09-29): the Background panel's "Zoom background on hover"
-	// (`bgHoverZoom`, `bgHoverZoomScale/Duration/Easing/EasingCustom`) is its own effect on
-	// the block's background image, which the universal Hover panel never touches — its
-	// image zoom scales media elements (.sgs-media-el), its scale/duration/easing drive the
-	// block's lift and scale. The words "scale"/"duration"/"easing" in these names are the
-	// zoom's own settings, not a second copy of the panel's (the panel keeps a separate
-	// "Photo zoom duration" for the same reason).
-	if ( has( 'zoom' ) && ( has( 'bg' ) || has( 'background' ) ) ) {
-		return null;
-	}
-
-	let category = null;
-	// COLOUR FIRST (2026-08-25). The universal panel exposes NO colour control
-	// at all — verified against hover-effects.js, which registers only scale /
-	// shadow / imageZoom / grayscale / borderAccent / tilt / duration / easing
-	// / stagger. So ANY private hover attr naming a colour has no universal
-	// counterpart and can never be a duplicate.
-	//
-	// This ordering is load-bearing, not cosmetic. `shadowHoverColour` was
-	// previously caught by the `has('shadow')` branch BELOW and reported as a
-	// duplicate of `sgsHoverShadow` — but that attr is a shadow ELEVATION
-	// PRESET string, while `shadowHoverColour` is the shadow's COLOUR. Two
-	// different properties sharing one category word. Deleting the private one
-	// on that advice would have silently removed the only way to colour a
-	// hover shadow (which ShadowControl drives, per the full-symmetry ruling
-	// of 2026-08-22).
-	const isColour = has( 'colour' ) || has( 'color' );
-	if ( isColour && ( has( 'background' ) || has( 'bg' ) ) ) {
-		category = 'bgColour';
-	} else if ( isColour && has( 'border' ) && ! has( 'accent' ) ) {
-		category = 'borderColour';
-	} else if ( isColour ) {
-		// Every other colour-bearing hover attr, including `shadowHoverColour`
-		// and bare `linkHoverColour`. All colour categories are empty after the
-		// drift guard, so this yields no finding — which is the correct answer.
-		category = 'textColour';
-	} else if ( has( 'scale' ) ) {
-		category = 'scale';
-	} else if ( has( 'shadow' ) ) {
-		category = 'shadow';
-	} else if ( has( 'image' ) && has( 'zoom' ) ) {
-		category = 'imageZoom';
-	} else if ( has( 'grayscale' ) || has( 'greyscale' ) ) {
-		category = 'grayscale';
-	} else if ( has( 'duration' ) ) {
-		category = 'duration';
-	} else if ( has( 'easing' ) ) {
-		category = 'easing';
-	} else if ( has( 'effect' ) ) {
-		category = 'effect';
-	}
-
-	if ( ! category ) {
-		return null;
-	}
-
-	const subject = words.find( ( w ) => SCOPED_SUBJECT_WORDS.has( w ) ) || null;
-	return { category, scoped: !! subject, subject };
-}
-
-// ---------------------------------------------------------------------------
 // Shared helpers
 // ---------------------------------------------------------------------------
 
@@ -346,7 +132,6 @@ function readIfExists( p ) {
 // THE FAILURE DIRECTION IS WHAT MAKES THIS LOAD-BEARING. Every one of this
 // file's parses feeds a "does this attribute have a control?" question. A
 // parse that silently returns nothing makes the attr look UNCONTROLLED, which
-// flips CHECK 1's severity from `hover:controlled` to `hover:shadow` and
 // INVENTS a hidden-duplicate finding — i.e. the tool tells an agent to add a
 // control the client already has. Silence here does not under-report, it
 // MIS-reports, so none of these paths may stay silent.
@@ -674,9 +459,8 @@ function collectControlledAttrs( parts, label ) {
  * 15 blocks) instead takes an `attrNames` MAP from its caller and writes
  * `setAttributes( { [ attrNames.valueHover ]: v } )` — a COMPUTED key. The
  * attribute name appears in the block only as a VALUE inside that map, so the
- * literal-key detector reported five genuinely-controlled attrs as dead
- * (`shadowHover` on card-grid / info-box / team-member, `effectHover` and
- * `imageZoomHover` on gallery). Acting on that would have ADDED a duplicate
+ * literal-key detector reported genuinely-controlled attrs as dead
+ * (`shadowHover` on info-box / team-member). Acting on that would have ADDED a duplicate
  * while claiming to remove one. Same blind spot inspector-scan rule 21 hit:
  * "could not see a control reached through a dispatcher table".
  *
@@ -741,7 +525,7 @@ function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 	//   (a) `attrNames={{ base: 'shadowHover' }}` — the dispatch lives in a
 	//       SHARED COMPONENT, so the question is "is that component a
 	//       dispatcher?" -> componentIsDispatcher( tag ).
-	//   (b) `onChange={ set( 'effectHover' ) }` — the curried setter is a
+	//   (b) `onChange={ set( 'fixtureToneHover' ) }` — the curried setter is a
 	//       LOCAL function in this very file (`const set = ( key ) => ( v ) =>
 	//       setAttributes( { [ key ]: v } )`), mounted on an ordinary control
 	//       that is NOT a dispatcher. Its precondition is the file-level one:
@@ -778,7 +562,7 @@ function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 	//       `attrNames={ { valueHover: 'shadowHover' } }` map idiom that
 	//       ShadowControl uses across 15 blocks.
 	//   (b) a single string ARGUMENT to a call inside a JSX prop — the curried
-	//       setter idiom `onChange={ set( 'effectHover' ) }` where
+	//       setter idiom `onChange={ set( 'fixtureToneHover' ) }` where
 	//       `const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } )`.
 	//       sgs/gallery uses (b) and NOT (a); an earlier version of this
 	//       function claimed to fix gallery and did not, because it only
@@ -933,107 +717,6 @@ function readBlockJson( dir ) {
 }
 
 // ---------------------------------------------------------------------------
-// CHECK 1 — universal hover vs private hover
-// ---------------------------------------------------------------------------
-
-function checkHoverDuplication( blockSlug, blockDir, meta ) {
-	const findings = [];
-	const supportsSgs = meta.supports && meta.supports.sgs ? meta.supports.sgs : {};
-	const hideList = Array.isArray( supportsSgs.hideExtensions ) ? supportsSgs.hideExtensions : [];
-	const enabledList = Array.isArray( supportsSgs.enabledExtensions ) ? supportsSgs.enabledExtensions : [];
-	// D551 (Phase 2.1): 'hover' is OPT-IN, not opt-out — the universal panel
-	// is absent unless the block lists it in enabledExtensions. A block that
-	// hasn't opted in was never carrying the universal panel, so its private
-	// *Hover attrs (if any) cannot be a duplicate of it.
-	if ( ! enabledList.includes( 'hover' ) ) {
-		return findings;
-	}
-	if ( hideList.includes( 'hover' ) ) {
-		// Legacy denylist entry, now a no-op under the opt-in model — kept
-		// harmless rather than treated as a second source of truth.
-		return findings;
-	}
-	// className:false blocks never receive the universal extension either
-	// (hover-effects.js checks type?.supports?.className === false).
-	if ( meta.supports && meta.supports.className === false ) {
-		return findings;
-	}
-
-	const attrs = meta.attributes || {};
-	// loadBlockOwnSrc()'s RETURN value is folded text; we want its side effect of
-	// populating OWN_SRC_PARTS, because both collectors must parse ONE FILE AT A
-	// TIME - parsing folded text throws Babel's `Duplicate declaration "__"`.
-	loadBlockOwnSrc( blockDir );
-	const parts = OWN_SRC_PARTS.get( blockDir ) || [];
-	const controlled = collectControlledAttrs( parts, blockSlug );
-	// Fold in controls reached through a dispatcher table (e.g. ShadowControl's
-	// `attrNames` map) — see collectIndirectControlledAttrs above.
-	for ( const a of collectIndirectControlledAttrs(
-		parts,
-		new Set( Object.keys( attrs ) ),
-		blockSlug
-	) ) {
-		controlled.add( a );
-	}
-
-	for ( const attrName of Object.keys( attrs ) ) {
-		if ( /^sgs[A-Z]/.test( attrName ) ) {
-			continue; // this IS a universal extension attr, not a private one.
-		}
-		// ONE control (Bean's ruling, 2026-09-24, `.claude/reports/2026-09-23-shadow-hover-lift-design.md`):
-		// `shadowLiftOnHover` is the Shadow panel's automatic-lift switch (ShadowControl.js). It
-		// used to collide with the universal Hover Effects panel's "Hover shadow" picker (both
-		// nominally governing the same visual effect) — but that picker is now DYNAMICALLY
-		// hidden on any block declaring this exact attribute
-		// (src/blocks/extensions/hover-effects.js's `hasShadowLift` gate), and ShadowControl's
-		// own new "Hover shadow" select writes the SAME universal `sgsHoverShadow` attribute
-		// instead of a second one. There is now exactly one reachable control for this setting,
-		// so this attribute can never be the "two controls, one effect" shape CHECK 1 looks for.
-		// A private hover-SHAPE attr (e.g. `shadowHover` / `cardShadowHover`, still baselined
-		// separately) is UNAFFECTED — it carries a colour the panel cannot express and stays a
-		// deliberate, accepted duplicate.
-		if ( 'shadowLiftOnHover' === attrName ) {
-			continue;
-		}
-		const classification = classifyHoverAttr( attrName );
-		if ( ! classification ) {
-			continue;
-		}
-		const { category, scoped, subject } = classification;
-		const universalKeepers = UNIVERSAL_HOVER_BY_CATEGORY[ category ] || [];
-		if ( universalKeepers.length === 0 ) {
-			continue;
-		}
-		const hasOwnControl = controlled.has( attrName );
-
-		findings.push( {
-			check: 'hover-duplicate',
-			block: blockSlug,
-			attr: attrName,
-			category,
-			// Defect 1 (2026-08-25): severities are NAMESPACED by check. The
-			// bare token `scoped` used to mean two unrelated things — here
-			// "sub-element-prefixed, so possibly not a duplicate at all", and
-			// in CHECK 3 "parent/child role overlap, low confidence". Anyone
-			// filtering or triaging on `severity` mixed the two populations.
-			// See the SEVERITIES block at the top of this file.
-			severity: hasOwnControl
-				? ( scoped ? 'hover:scoped' : 'hover:controlled' )
-				: ( scoped ? 'hover:scoped-shadow' : 'hover:shadow' ),
-			keeper: universalKeepers.join( ' / ' ),
-			sources: hasOwnControl
-				? [ `${ blockSlug } edit.js: own control for "${ attrName }"`, `universal Hover Effects panel: "${ universalKeepers.join( '" / "' ) }"` ]
-				: [ `${ blockSlug } block.json + render.php: "${ attrName }" declared/consumed but no editor control`, `universal Hover Effects panel: "${ universalKeepers.join( '" / "' ) }" (the only LIVE control for this effect)` ],
-			reason: hasOwnControl
-				? `Block has its own edit.js control for "${ attrName }" (category: ${ category }) while the universal Hover Effects panel ALSO exposes "${ universalKeepers.join( '" / "' ) }" for the same block — the client sees two controls for one visual effect.${ scoped ? ` Scoped to sub-element "${ subject }" — verify it genuinely targets a different element than the universal (whole-block) control before treating as a hard duplicate.` : '' }`
-				: `"${ attrName }" (category: ${ category }) is declared in block.json and consumed in render.php/save.js but has NO editor control of its own — it is permanently stuck at its default while the universal "${ universalKeepers.join( '" / "' ) }" control is the only one the client can actually move. Hidden duplicate: two hover systems nominally cover this property, only one is reachable.${ scoped ? ` Scoped to sub-element "${ subject }".` : '' }`,
-		} );
-	}
-
-	return findings;
-}
-
-// ---------------------------------------------------------------------------
 // CHECK 2 — same attr, two controls, one edit.js (AST)
 // ---------------------------------------------------------------------------
 
@@ -1067,7 +750,6 @@ function looksLikeControlComponent( name ) {
 // CHECK 2 entirely. `ShadowControl` alone is mounted by 15 blocks. A block
 // mounting TWO dispatchers onto one attribute, or a dispatcher alongside its
 // own literal control, is a real visible duplicate CHECK 2 could not see.
-// CHECK 1 already folds these in via collectIndirectControlledAttrs().
 //
 // WHY THE GATE IS BEHAVIOURAL, NOT NAME-KEYED. The obvious cheap version —
 // "harvest string literals out of any object-valued JSX prop" — over-reports
@@ -1144,7 +826,7 @@ function componentIsDispatcher( tagName ) {
  *   (a) a string VALUE inside an object-valued JSX prop —
  *       `attrNames={ { valueHover: 'shadowHover' } }`
  *   (b) a single string ARGUMENT to a call in a JSX prop —
- *       `onChange={ set( 'effectHover' ) }`
+ *       `onChange={ set( 'fixtureToneHover' ) }`
  * Filtered to `declaredAttrs`, so a stray string can never name an attribute
  * this block does not have.
  *
@@ -1308,10 +990,8 @@ function resolveWrite( baseKey, valueNode, paramNames ) {
 	// NAME as the key being written, i.e. it just passes the attribute's own
 	// CURRENT value straight through when this particular control isn't the
 	// one being toggled (a "keep as-is unless I'm clearing you" clause, not a
-	// real setting). Verified live shape: sgs/hero's mutually-exclusive
-	// "Media Ken-burns"/"Media parallax" toggles — splitMediaKenBurns's onChange
-	// writes `{ splitMediaKenBurns: val, splitMediaParallax: val ? false : splitMediaParallax }`
-	// and splitMediaParallax's onChange does the mirror. Without this exclusion
+	// real setting). Shape: a mutually-exclusive toggle pair, where toggle A's onChange
+	// writes `{ a: val, b: val ? false : b }` and toggle B's onChange does the mirror. Without this exclusion
 	// each toggle is credited as a second "writer" for the OTHER's attr,
 	// producing a false same-file-duplicate finding on a standard toggle-pair
 	// pattern (also present in ContainerWrapperControls.js's own comment).
@@ -1382,15 +1062,9 @@ function resolveDynamicWrites( fnNode ) {
  *
  * Throws on unparseable source — caller catches and logs to unparseable[].
  *
- * CORPUS ASYMMETRY, DELIBERATE AND DOCUMENTED (2026-08-25, defect 3). CHECK 1
- * scans a WIDENED corpus — the block's edit.js, its own components/ dir, and
- * the transitive closure of every framework-wide shared component it mounts
- * (loadBlockOwnSrc). CHECK 2 stays on the block's OWN edit.js and does not
- * follow that graph. This asymmetry is KEPT, because the two checks make
- * different claims:
- *   - CHECK 1 asks "does a control for this attribute exist ANYWHERE reachable
- *     from this block?" A wider corpus makes that answer MORE correct, and
- *     missing a control there invents a false `hover:shadow` finding.
+ * CORPUS SCOPE, DELIBERATE AND DOCUMENTED (2026-08-25, defect 3). CHECK 2 stays on the
+ * block's OWN edit.js and does not follow the shared-component graph, because it
+ * makes a different claim:
  *   - CHECK 2 asks "are there TWO knobs in this one editor surface?" Following
  *     the component graph would compare a shared component (mounted by 15
  *     blocks) against each block's own controls and call the pair a duplicate
@@ -1517,8 +1191,7 @@ function checkSameFileDuplicateAst( blockSlug, src, declaredAttrs ) {
 			check: 'same-file-duplicate',
 			block: blockSlug,
 			attr: attrName,
-			// Defect 1 (2026-08-25): namespaced. Was the bare `controlled`,
-			// which CHECK 1 also emits with a DIFFERENT meaning.
+			// Namespaced by check so no two checks share a token.
 			severity: 'same-file:controlled',
 			keeper: sources[ 0 ],
 			sources,
@@ -1583,11 +1256,9 @@ function extractTemplateChildSlugs( src ) {
 // that owns the setting — if the child is a typo, a renamed block, or a slug
 // that only ever appeared in a comment, the keeper names NOTHING and the
 // advice is "delete this control and get no replacement". That is the exact
-// shape of the 36 wrong findings purged from CHECK 1 earlier the same day,
-// where the keeper named `sgsHoverBgColour` and no such attr was registered.
+// shape of a wrong finding that names a keeper which was never registered.
 //
-// Same shape as CHECK 1's drift guard (readRegisteredUniversalHoverAttrs +
-// computeCategoryDrift): resolve the claimed keeper against the real tree
+// So: resolve the claimed keeper against the real tree
 // before asserting it. Reuses the existing primitives BLOCKS_DIR and
 // readBlockJson(), and confirms `meta.name === childSlug` rather than merely
 // that a directory exists — a directory name is not a block name.
@@ -1683,9 +1354,7 @@ function checkParentChildDuplication( blockSlug, blockDir, meta, unresolvedOut )
 				check: 'parent-child-duplicate',
 				block: blockSlug,
 				attr: attrName,
-				// Defect 1 (2026-08-25): was the bare token `scoped`, which
-				// CHECK 1 also emits meaning something else entirely
-				// ("sub-element-prefixed"). This one means "role-keyword
+				// Namespaced by check. This one means "role-keyword
 				// overlap between a parent attr and a mounted child block —
 				// heuristic, low confidence".
 				severity: 'parent-child:heuristic',
@@ -1747,13 +1416,9 @@ function findingKey( f ) {
 // SEVERITIES — namespaced per check (2026-08-25, defect 1).
 // ---------------------------------------------------------------------------
 //
-// THE BUG. CHECK 1 emitted `scoped` meaning "this private attr is prefixed for
-// a named SUB-ELEMENT, so it may not be a duplicate of the block-wide
-// universal control at all" — a CONFIDENCE-LOWERING qualifier about WHICH
-// element is targeted. CHECK 3 hardcoded the same token `scoped` meaning
-// "parent/child role-keyword overlap, heuristic" — an unrelated claim about a
-// different mechanism. Both also emitted a bare `controlled`. Any consumer
-// filtering or triaging on `severity` silently mixed two populations.
+// THE BUG. Two checks emitting the same bare token (`scoped`, `controlled`) mean two
+// unrelated claims, and any consumer filtering or triaging on `severity`
+// silently mixed two populations.
 //
 // FIX CHOSEN: namespace the token as `<check>:<severity>`, rather than the
 // alternative of moving CHECK 3 to an informational stream. Reasons:
@@ -1769,14 +1434,6 @@ function findingKey( f ) {
 // Adding a severity? Add it here too — an unexplained token is how the last
 // one drifted.
 const SEVERITY_MEANINGS = {
-	'hover:controlled':
-		'CHECK 1 — private hover attr HAS its own edit.js control while the universal Hover Effects panel also covers it. Two visible knobs.',
-	'hover:shadow':
-		'CHECK 1 — private hover attr is declared + consumed but has NO control of its own. Hidden duplicate; permanently stuck at its default.',
-	'hover:scoped':
-		'CHECK 1 — as hover:controlled, but the private attr is prefixed for a named SUB-ELEMENT (cta/icon/tab/...), so it may legitimately target a different element. LOWER confidence; verify before acting.',
-	'hover:scoped-shadow':
-		'CHECK 1 — as hover:shadow, but sub-element-scoped. LOWER confidence.',
 	'same-file:controlled':
 		'CHECK 2 — two distinct JSX controls in ONE edit.js write the same attribute with a user-derived value, outside a shared conditional branch.',
 	'parent-child:heuristic':
@@ -1788,45 +1445,6 @@ const SEVERITY_MEANINGS = {
 // ---------------------------------------------------------------------------
 
 function main() {
-	// BLINDNESS CHECK (2026-08-25). The drift guard above validates the hover
-	// category table against hover-effects.js — but it only RUNS when that file
-	// could be read and parsed. If it is renamed, moved, or changes how it
-	// declares attrs, the registered set comes back EMPTY, the guard silently
-	// skips, and the table is used unvalidated: exactly the state that produced
-	// 36 wrong findings before it was fixed. A guard that can quietly stop
-	// guarding is not a guard, so this fails the gate LOUDLY instead.
-	if ( REGISTERED_UNIVERSAL_HOVER.size === 0 ) {
-		process.stderr.write(
-			'[check-duplicate-controls] FAIL - could not read any universal hover attribute\n'
-		);
-		process.stderr.write(
-			'  from src/blocks/extensions/hover-effects/attributes.js, so UNIVERSAL_HOVER_BY_CATEGORY\n'
-		);
-		process.stderr.write( '  CANNOT be validated and this gate is blind.\n' );
-		process.stderr.write(
-			'  Either that file moved, or it no longer declares attrs as `sgsHoverX:` /\n'
-		);
-		process.stderr.write(
-			'  `sgsStaggerX:` keys. Fix readRegisteredUniversalHoverAttrs() to match -\n'
-		);
-		process.stderr.write( '  do NOT delete this check.\n' );
-		process.exit( 1 );
-	}
-	if ( UNIVERSAL_MAP_DRIFT.length ) {
-		process.stderr.write(
-			'[check-duplicate-controls] WARNING - UNIVERSAL_HOVER_BY_CATEGORY has drifted\n'
-		);
-		process.stderr.write(
-			'  from hover-effects.js. These name attrs that are NOT registered and were\n'
-		);
-		process.stderr.write(
-			'  DROPPED for this run (they would advise deleting a working control in\n'
-		);
-		process.stderr.write( '  favour of nothing):\n' );
-		for ( const d of UNIVERSAL_MAP_DRIFT ) {
-			process.stderr.write( '    ' + d + '\n' );
-		}
-	}
 	const asJson = process.argv.includes( '--json' );
 	const isCheck = process.argv.includes( '--check' );
 	const isUpdateBaseline = process.argv.includes( '--update-baseline' );
@@ -1864,12 +1482,6 @@ function main() {
 			continue;
 		}
 		const blockSlug = meta.name || path.basename( dir );
-
-		try {
-			findings = findings.concat( checkHoverDuplication( blockSlug, dir, meta ) );
-		} catch ( e ) {
-			unparseable.push( { dir: blockSlug, reason: `hover-duplicate check: ${ e.message }` } );
-		}
 
 		try {
 			findings = findings.concat(
@@ -2024,8 +1636,8 @@ function main() {
 // SELF-TEST (--self-test). NOT disk-free — see the ⚠ note in the top docblock:
 // it reads the real tree (resolveComponentFiles / BLOCKS_DIR) and writes a
 // temporary fixture directory under os.tmpdir(), removed in a `finally`.
-// Covers CHECK 1 (classify + severities), CHECK 2 (literal + dispatcher),
-// CHECK 3 (role match + child-slug resolution), the drift guard, and the
+// Covers CHECK 2 (literal + dispatcher),
+// CHECK 3 (role match + child-slug resolution), and the
 // parse-diagnostics fail-closed path.
 // ---------------------------------------------------------------------------
 
@@ -2153,87 +1765,6 @@ function runSelfTest() {
 	let totalCases = cases.length + 1; // + the widened-test above.
 
 	// -------------------------------------------------------------------
-	// classifyHoverAttr() — colour-first ordering (2026-08-25 fix).
-	// -------------------------------------------------------------------
-	process.stdout.write( '\n  -- classifyHoverAttr() --\n' );
-	const hoverClassifyCases = [
-		{
-			name: 'shadowHoverColour classifies as a COLOUR category, not shadow (colour-first ordering)',
-			attr: 'shadowHoverColour',
-			// isColour && !background/!border -> falls into the catch-all "every
-			// other colour-bearing hover attr" branch, category 'textColour'.
-			expectCategory: 'textColour',
-		},
-		{ name: 'scaleHover classifies as scale', attr: 'scaleHover', expectCategory: 'scale' },
-		{ name: 'imageZoomHover classifies as imageZoom', attr: 'imageZoomHover', expectCategory: 'imageZoom' },
-		{ name: 'grayscaleHover classifies as grayscale', attr: 'grayscaleHover', expectCategory: 'grayscale' },
-		{
-			name: 'bgHoverZoomEasing classifies to nothing (background-image zoom has no panel equivalent)',
-			attr: 'bgHoverZoomEasing',
-			expectCategory: null,
-		},
-		{ name: 'bgHoverZoomScale classifies to nothing (the zoom amount, not block scale)', attr: 'bgHoverZoomScale', expectCategory: null },
-		{ name: 'bgHoverDuration still classifies as duration (no zoom word)', attr: 'bgHoverDuration', expectCategory: 'duration' },
-		{
-			name: 'pauseOnHover classifies to nothing (behavioural toggle, no panel equivalent)',
-			attr: 'pauseOnHover',
-			expectCategory: null,
-		},
-	];
-	for ( const c of hoverClassifyCases ) {
-		totalCases++;
-		const got = classifyHoverAttr( c.attr );
-		const gotCategory = got ? got.category : null;
-		const ok = gotCategory === c.expectCategory;
-		allOk = allOk && ok;
-		process.stdout.write(
-			`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
-				`         got=${ JSON.stringify( gotCategory ) } (expected ${ JSON.stringify( c.expectCategory ) })\n`
-		);
-	}
-
-	// -------------------------------------------------------------------
-	// Drift guard — extractRegisteredHoverAttrsFromSrc() + computeCategoryDrift().
-	// -------------------------------------------------------------------
-	process.stdout.write( '\n  -- drift guard --\n' );
-
-	totalCases++;
-	const driftPhantomSrc = `
-const hoverAttributes = {
-	sgsHoverScale: {},
-	sgsHoverShadow: {},
-};
-`;
-	const { phantom: driftPhantom, filtered: driftFiltered } = computeCategoryDrift(
-		[ 'sgsHoverScale', 'sgsHoverPhantomGhost' ],
-		extractRegisteredHoverAttrsFromSrc( driftPhantomSrc )
-	);
-	const driftOk =
-		JSON.stringify( driftPhantom ) === JSON.stringify( [ 'sgsHoverPhantomGhost' ] ) &&
-		JSON.stringify( driftFiltered ) === JSON.stringify( [ 'sgsHoverScale' ] );
-	allOk = allOk && driftOk;
-	process.stdout.write(
-		`  [${ driftOk ? 'OK' : 'FAIL' }] a category naming an unregistered attr drops it and reports it; a real attr survives\n` +
-			`         phantom=${ JSON.stringify( driftPhantom ) } filtered=${ JSON.stringify( driftFiltered ) }\n`
-	);
-
-	totalCases++;
-	const driftCommentSrc = `
-// sgsHoverPhantomGhost: RETIRED, do not re-add
-const hoverAttributes = {
-	sgsHoverScale: {},
-};
-`;
-	const registeredFromComment = extractRegisteredHoverAttrsFromSrc( driftCommentSrc );
-	const commentOk =
-		registeredFromComment.has( 'sgsHoverScale' ) && ! registeredFromComment.has( 'sgsHoverPhantomGhost' );
-	allOk = allOk && commentOk;
-	process.stdout.write(
-		`  [${ commentOk ? 'OK' : 'FAIL' }] a phantom name appearing only in a COMMENT does not get registered\n` +
-			`         registered=[${ [ ...registeredFromComment ].join( ', ' ) }]\n`
-	);
-
-	// -------------------------------------------------------------------
 	// collectIndirectControlledAttrs() — the two dispatcher idioms + the
 	// unrelated-lookup-table false positive it must reject.
 	// -------------------------------------------------------------------
@@ -2254,17 +1785,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			expectAttrs: [ 'shadowHover' ],
 		},
 		{
-			name: 'onChange={ set( "effectHover" ) } curried setter in a JSX prop -> controlled',
+			name: 'onChange={ set( "fixtureToneHover" ) } curried setter in a JSX prop -> controlled',
 			src: `
 export default function Edit( { attributes, setAttributes } ) {
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
 	return (
-		<ColorPicker onChange={ set( 'effectHover' ) } />
+		<ColorPicker onChange={ set( 'fixtureToneHover' ) } />
 	);
 }
 `,
-			declaredAttrs: [ 'effectHover' ],
-			expectAttrs: [ 'effectHover' ],
+			declaredAttrs: [ 'fixtureToneHover' ],
+			expectAttrs: [ 'fixtureToneHover' ],
 		},
 		{
 			name: 'unrelated lookup table (not a JSX prop) must NOT be marked controlled',
@@ -2332,137 +1863,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		);
 	}
 
-	// -------------------------------------------------------------------
-	// checkHoverDuplication() — the four severities (controlled / shadow /
-	// scoped / scoped-shadow). Needs real files on disk for loadBlockOwnSrc()
-	// to read, so this is the one group that is NOT in-memory-only: it writes
-	// isolated fixture files under a fresh os.tmpdir() dir and removes them
-	// afterwards.
-	// -------------------------------------------------------------------
-	process.stdout.write( '\n  -- checkHoverDuplication() severities (filesystem fixtures, cleaned up) --\n' );
-
-	const severityCases = [
-		{
-			name: 'own control, unscoped attr -> severity "hover:controlled"',
-			attrName: 'scaleHover',
-			editJs:
-				"import { RangeControl } from '@wordpress/components';\n" +
-				'export default function Edit( { attributes, setAttributes } ) {\n' +
-				"\treturn <RangeControl value={ attributes.scaleHover } onChange={ ( v ) => setAttributes( { scaleHover: v } ) } />;\n" +
-				'}\n',
-			expectSeverity: 'hover:controlled',
-		},
-		{
-			name: 'no control, unscoped attr -> severity "hover:shadow"',
-			attrName: 'grayscaleHover',
-			editJs: 'export default function Edit() {\n\treturn null;\n}\n',
-			expectSeverity: 'hover:shadow',
-		},
-		{
-			name: 'own control, sub-element-scoped attr ("cta") -> severity "hover:scoped"',
-			attrName: 'ctaScaleHover',
-			editJs:
-				"import { RangeControl } from '@wordpress/components';\n" +
-				'export default function Edit( { attributes, setAttributes } ) {\n' +
-				"\treturn <RangeControl value={ attributes.ctaScaleHover } onChange={ ( v ) => setAttributes( { ctaScaleHover: v } ) } />;\n" +
-				'}\n',
-			expectSeverity: 'hover:scoped',
-		},
-		{
-			name: 'no control, sub-element-scoped attr ("icon") -> severity "hover:scoped-shadow"',
-			attrName: 'iconGrayscaleHover',
-			editJs: 'export default function Edit() {\n\treturn null;\n}\n',
-			expectSeverity: 'hover:scoped-shadow',
-		},
-	];
-
-	const tmpRoot = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-hover-selftest-' ) );
-	try {
-		for ( const c of severityCases ) {
-			totalCases++;
-			const blockDir = fs.mkdtempSync( path.join( tmpRoot, 'block-' ) );
-			fs.writeFileSync( path.join( blockDir, 'edit.js' ), c.editJs );
-			const meta = {
-				attributes: { [ c.attrName ]: { type: 'number' } },
-				supports: { sgs: { enabledExtensions: [ 'hover' ] } },
-			};
-			let findings;
-			let error = null;
-			try {
-				findings = checkHoverDuplication( 'sgs/self-test-hover', blockDir, meta );
-			} catch ( e ) {
-				error = e;
-			}
-			if ( error ) {
-				allOk = false;
-				process.stdout.write( `  [ERROR] ${ c.name }: ${ error.message }\n` );
-				continue;
-			}
-			const finding = findings.find( ( f ) => f.attr === c.attrName );
-			const gotSeverity = finding ? finding.severity : null;
-			const ok = gotSeverity === c.expectSeverity;
-			allOk = allOk && ok;
-			process.stdout.write(
-				`  [${ ok ? 'OK' : 'FAIL' }] ${ c.name }\n` +
-					`         got=${ JSON.stringify( gotSeverity ) } (expected ${ JSON.stringify( c.expectSeverity ) })\n`
-			);
-		}
-	} finally {
-		fs.rmSync( tmpRoot, { recursive: true, force: true } );
-	}
-
-	// -------------------------------------------------------------------
-	// ADDED 2026-09-24 — `shadowLiftOnHover` ONE-CONTROL exclusion (Bean's
-	// ruling, `.claude/reports/2026-09-23-shadow-hover-lift-design.md`). The
-	// universal Hover Effects panel's "Hover shadow" picker is now DYNAMICALLY
-	// hidden on any block declaring `shadowLiftOnHover` (src/blocks/extensions/
-	// hover-effects.js), and ShadowControl.js gained its own "Hover shadow"
-	// select writing the SAME `sgsHoverShadow` attribute — collapsing the two
-	// nominal controls into one reachable one. Proven with a POSITIVE case (no
-	// finding for the attribute this fix targets) and a NEGATIVE CONTROL (an
-	// unrelated shadow-category attr on the SAME block still gets flagged, so
-	// the exclusion is scoped to `shadowLiftOnHover` and not the whole
-	// category/block).
-	// -------------------------------------------------------------------
-	process.stdout.write( '\n  -- shadowLiftOnHover ONE-CONTROL exclusion (2026-09-24) --\n' );
-	{
-		const liftTmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-shadowlift-selftest-' ) );
-		try {
-			const blockDir = fs.mkdtempSync( path.join( liftTmp, 'block-' ) );
-			// ShadowControl mounts BOTH shadowLiftOnHover (via its declaresLift check on
-			// `attributes`, no literal setAttributes call needed in edit.js — the toggle lives
-			// INSIDE ShadowControl.js) and its own hover-shape attr `shadowHover` (a genuine,
-			// still-flagged duplicate carrying a colour the panel cannot express).
-			fs.writeFileSync(
-				path.join( blockDir, 'edit.js' ),
-				"import { ShadowControl } from '../../components';\n" +
-					'export default function Edit( { attributes, setAttributes } ) {\n' +
-					'\treturn <ShadowControl attributes={ attributes } setAttributes={ setAttributes } attrNames={ { base: \'shadow\', colour: \'shadowColour\', hover: \'shadowHover\', hoverColour: \'shadowColourHover\' } } />;\n' +
-					'}\n'
-			);
-			totalCases++;
-			const meta = {
-				attributes: {
-					shadowLiftOnHover: { type: 'boolean', default: true },
-					shadowHover: { type: 'string', default: '' },
-				},
-				supports: { sgs: { enabledExtensions: [ 'hover' ] } },
-			};
-			const findings = checkHoverDuplication( 'sgs/self-test-shadowlift', blockDir, meta );
-			const liftFinding = findings.find( ( f ) => f.attr === 'shadowLiftOnHover' );
-			const shapeFinding = findings.find( ( f ) => f.attr === 'shadowHover' );
-			const ok = ! liftFinding && !! shapeFinding;
-			allOk = allOk && ok;
-			process.stdout.write(
-				`  [${ ok ? 'OK' : 'FAIL' }] shadowLiftOnHover excluded, sibling shadowHover attr still flagged (negative control)\n` +
-					`         shadowLiftOnHover finding=${ liftFinding ? 'PRESENT (should be absent)' : 'absent (correct)' }, ` +
-					`shadowHover finding=${ shapeFinding ? 'present (correct)' : 'ABSENT (should be present)' }\n`
-			);
-		} finally {
-			fs.rmSync( liftTmp, { recursive: true, force: true } );
-		}
-	}
-
 	// ===================================================================
 	// ADDED 2026-08-25 — coverage for the four adversarial-council defects.
 	// Every case below was WATCHED FAILING against the unfixed code before
@@ -2479,34 +1879,17 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	// -------------------------------------------------------------------
-	// DEFECT 1 — severity namespacing. The collision test: CHECK 1 and
+	// DEFECT 1 — severity namespacing. The collision test: CHECK 2 and
 	// CHECK 3 must not emit the same token, and every emitted token must be
-	// documented. Under the old code BOTH emitted the bare `scoped`.
+	// documented.
 	// -------------------------------------------------------------------
 	process.stdout.write( '\n  -- defect 1: severity namespacing --\n' );
 
-	const c1Severities = new Set();
 	const c3Severities = new Set();
 	const c2Severities = new Set();
 
 	const defect1Tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-sev-selftest-' ) );
 	try {
-		// A CHECK 1 finding (sub-element-scoped, with its own control).
-		const c1Dir = fs.mkdtempSync( path.join( defect1Tmp, 'c1-' ) );
-		fs.writeFileSync(
-			path.join( c1Dir, 'edit.js' ),
-			"import { RangeControl } from '@wordpress/components';\n" +
-				'export default function Edit( { attributes, setAttributes } ) {\n' +
-				'\treturn <RangeControl value={ attributes.ctaScaleHover } onChange={ ( v ) => setAttributes( { ctaScaleHover: v } ) } />;\n' +
-				'}\n'
-		);
-		for ( const f of checkHoverDuplication( 'sgs/sev-c1', c1Dir, {
-			attributes: { ctaScaleHover: { type: 'number' } },
-			supports: { sgs: { enabledExtensions: [ 'hover' ] } },
-		} ) ) {
-			c1Severities.add( f.severity );
-		}
-
 		// A CHECK 3 finding: composite mounting sgs/text with a `textColour` attr.
 		const c3Dir = fs.mkdtempSync( path.join( defect1Tmp, 'c3-' ) );
 		fs.writeFileSync(
@@ -2528,24 +1911,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		c2Severities.add( f.severity );
 	}
 
-	const sevFixturesProduced =
-		c1Severities.size > 0 && c2Severities.size > 0 && c3Severities.size > 0;
+	const sevFixturesProduced = c2Severities.size > 0 && c3Severities.size > 0;
 	assertCase(
-		'severity fixtures actually produced a finding from all three checks (guards this group against vacuity)',
+		'severity fixtures actually produced a finding from both checks (guards this group against vacuity)',
 		sevFixturesProduced,
-		`check1=[${ [ ...c1Severities ].join( ', ' ) }] check2=[${ [ ...c2Severities ].join( ', ' ) }] check3=[${ [ ...c3Severities ].join( ', ' ) }]`
+		`check2=[${ [ ...c2Severities ].join( ', ' ) }] check3=[${ [ ...c3Severities ].join( ', ' ) }]`
 	);
 
-	const overlap12 = [ ...c1Severities ].filter( ( s ) => c2Severities.has( s ) );
-	const overlap13 = [ ...c1Severities ].filter( ( s ) => c3Severities.has( s ) );
 	const overlap23 = [ ...c2Severities ].filter( ( s ) => c3Severities.has( s ) );
 	assertCase(
-		'no severity token is emitted by two different checks (CHECK 1 + CHECK 3 both said "scoped" before)',
-		sevFixturesProduced && overlap12.length === 0 && overlap13.length === 0 && overlap23.length === 0,
-		`overlaps: 1x2=[${ overlap12.join( ', ' ) }] 1x3=[${ overlap13.join( ', ' ) }] 2x3=[${ overlap23.join( ', ' ) }]`
+		'no severity token is emitted by two different checks',
+		sevFixturesProduced && overlap23.length === 0,
+		`overlaps: 2x3=[${ overlap23.join( ', ' ) }]`
 	);
 
-	const allEmitted = [ ...c1Severities, ...c2Severities, ...c3Severities ];
+	const allEmitted = [ ...c2Severities, ...c3Severities ];
 	const undocumented = allEmitted.filter( ( s ) => ! SEVERITY_MEANINGS[ s ] );
 	assertCase(
 		'every emitted severity token has a SEVERITY_MEANINGS entry',
@@ -2826,7 +2206,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// so the file contributes NO controlled attrs. Under the old code both
 	// events were silent and the caller saw an empty set indistinguishable
 	// from "this file genuinely controls nothing", which is the mis-report
-	// that invents a `hover:shadow` finding. Assert both are now recorded.
+	// that invents a finding. Assert both are now recorded.
 	const degradedReasons = PARSE_DIAGNOSTICS.map( ( d ) => d.reason ).join( ' | ' );
 	assertCase(
 		'collectControlledAttrs on a degraded file reports BOTH degradations (recovered parse + failed traverse); it used to return silently',

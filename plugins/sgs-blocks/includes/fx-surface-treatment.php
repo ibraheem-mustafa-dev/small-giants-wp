@@ -10,7 +10,7 @@
  * `data-sgs-fx-treatment-*` scalar overrides for the float uniforms. None of
  * that can come from the editor's stored attributes without a render layer:
  *
- *   client picks a treatment + palette colour(s) ->  fxTreatment="duotone" etc.
+ *   client picks a treatment + palette colour(s) ->  the layer's treatment value, "duotone" etc.
  *   THIS FILE turns that into                    ->  data-sgs-fx="surface-treatment"
  *                                                     + data-sgs-fx-treatment="duotone"
  *                                                     + a uid-scoped <style> setting
@@ -46,10 +46,8 @@
  * the block's root element — it does not need its own registry entry point.
  *
  * PRIORITY 22 — same slot as `fx-cursor-field.php` / `fx-path-routes.php` /
- * `fx-shape-routes.php` (sibling p22 expanders): AFTER `fx-attributes.php`
- * (p10) has injected the fx data attributes onto DYNAMIC blocks and the motion
- * layer renderer (p20) has written them for a layer — static
- * blocks already carry them from save time — and BEFORE `SGS_Motion_Registry`'s
+ * `fx-shape-routes.php` (sibling p22 expanders): AFTER the motion
+ * layer renderer (p20) has written the fx data attributes for a layer, and BEFORE `SGS_Motion_Registry`'s
  * p99 sniff, which decides whether the module and stylesheet are enqueued at
  * all. This ordering is invisible without a comment: if this filter ran at or
  * after p99, the attribute the registry looks for would not exist yet on a
@@ -113,7 +111,7 @@ function sgs_apply_fx_surface_treatment( string $block_content ): string {
 	 * Skip a leading `<style>` before looking for the block root — the same
 	 * guard `fx-cursor-field.php:138`, `fx-path-routes.php:289` and
 	 * `fx-shape-routes.php:291` use, via the shared helper in
-	 * `fx-attributes.php`.
+	 * `fx-root-offset.php`.
 	 *
 	 * NOT optional and NOT defensive padding: `sgs/container` (a qualifying
 	 * block) prepends its own scoped `<style>` whenever the instance has any
@@ -258,8 +256,8 @@ function sgs_apply_fx_surface_treatment( string $block_content ): string {
 
 	// Reveal-on-scroll (D-reveal, FR-38-29 extension). Closed set — same
 	// skip-with-reason discipline as `$treatment` above, not a coercion.
-	// The default ('' — attribute simply absent, since `fx-attributes.php`
-	// never injects an empty value) means reveal-ON: the treatment develops
+	// The default ('' — attribute simply absent, since the motion emitter
+	// never writes an empty value) means reveal-ON: the treatment develops
 	// in as the element scrolls into view. 'off' is the only other legal
 	// value, and it IS stamped, because its ABSENCE is exactly what the boot
 	// module (`src/shared/effects/fx-surface-treatment.js`) reads as "on" —

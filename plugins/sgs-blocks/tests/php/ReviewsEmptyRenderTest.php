@@ -2,20 +2,9 @@
 /**
  * Tests: a google-reviews block with nothing to show renders NO bytes, front end and editor.
  *
- * Found in the real editor (2026-09-21): the block with no data returned ~222 bytes from
- * /wp/v2/block-renderer, a hover `<style>` tag with no element to style, so ServerSideRender's
- * response was not empty and its empty-state placeholder never showed (blank canvas).
- *
- * render.php itself already returns '' in that case. The junk came from the `render_block` filter
- * `inject_hover_effects()` (includes/hover-effects.php): google-reviews declares hover defaults, so
- * the filter passed its "nothing active" bail-out and appended a scoped `<style>` to the empty
- * string. A filter that decorates a block has nothing to decorate when the block rendered nothing.
- *
- * Two layers are asserted:
- *  1. render.php, run through the QA harness in a child process, returns exactly '' with no data.
- *  2. the real `inject_hover_effects()`, run in a child process against the block type's real
- *     `supports.sgs` (tests/php/stubs/hover-effects-probe.php), returns '' for empty or
- *     whitespace-only content and still decorates real markup exactly as before.
+ * Found in the real editor (2026-09-21): the block with no data returned bytes from /wp/v2/block-renderer, so
+ * ServerSideRender's response was not empty and its empty-state placeholder never showed (blank canvas). render.php,
+ * run through the QA harness in a child process, must return exactly '' with no data, and a sample render must be intact.
  *
  * @package SGS\Blocks\Tests
  */
@@ -25,25 +14,6 @@ declare( strict_types=1 );
 use PHPUnit\Framework\TestCase;
 
 final class ReviewsEmptyRenderTest extends TestCase {
-
-	/**
-	 * Run the real hover filter on some content, in a child process.
-	 *
-	 * @param string $content Rendered block content going into the filter.
-	 * @return string The content coming out.
-	 */
-	private function hover( string $content ): string {
-		$file = tempnam( sys_get_temp_dir(), 'sgshv' );
-		file_put_contents( $file, $content );
-		try {
-			$out = (string) shell_exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __DIR__ . '/stubs/hover-effects-probe.php' ) . ' ' . escapeshellarg( $file ) . ' 2>&1' );
-		} finally {
-			unlink( $file );
-		}
-		$decoded = json_decode( $out, true );
-		$this->assertIsArray( $decoded, 'the probe must print one JSON object, got: ' . substr( $out, 0, 400 ) );
-		return (string) $decoded['out'];
-	}
 
 	/**
 	 * Render the real block through the QA harness.
@@ -78,20 +48,7 @@ final class ReviewsEmptyRenderTest extends TestCase {
 		$this->assertSame( 0, strlen( $this->render( array( 'dataSource' => 'inline', 'reviews' => array() ) ) ) );
 	}
 
-	public function test_the_hover_filter_adds_nothing_to_a_block_that_rendered_nothing(): void {
-		$this->assertSame( 0, strlen( $this->hover( '' ) ), 'empty in, empty out: no junk <style> for an element that does not exist' );
-		$this->assertSame( "  \n\t ", $this->hover( "  \n\t " ), 'whitespace-only content is returned untouched, nothing appended' );
-	}
-
-	public function test_the_hover_filter_leaves_a_block_with_no_hover_default_untouched(): void {
-		$html = '<div class="sgs-google-reviews sgs-gr-abc">x</div>';
-		$out  = $this->hover( $html );
-		// google-reviews declares no hover default (no grow, shadow, lift or ring: register S3, S4), so nothing is added.
-		$this->assertSame( $html, $out );
-		$this->assertStringNotContainsString( 'sgs-has-focus-ring', $out );
-	}
-
-	public function test_a_sample_render_is_unchanged_by_the_filter_guard(): void {
+	public function test_a_sample_render_is_intact(): void {
 		$html = $this->render( array( 'dataSource' => 'placeholder' ) );
 		$this->assertStringContainsString( 'Sarah Patel', $html );
 		$this->assertStringContainsString( 'sgs-google-reviews--slider', $html );

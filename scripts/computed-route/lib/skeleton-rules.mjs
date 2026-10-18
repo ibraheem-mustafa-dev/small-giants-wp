@@ -314,10 +314,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
 				return null;
 			}
-			// A frame that fades the track's edges with a mask is the strip's own edge fade.
-			const parent = m.byKey[ e.parentKey ];
-			const fades = !! parent && Object.keys( declared( parent ) ).some( ( p ) => /^(?:-webkit-)?mask(?:-image)?$/.test( p ) );
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: { [ R.marquee?.logoScrollAttr ]: true, ...( fades && R.marquee?.logoFadeAttr ? { [ R.marquee.logoFadeAttr ]: true } : {} ) }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: { [ R.marquee?.itemScrollAttr ]: true }, absorb: true } );
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {

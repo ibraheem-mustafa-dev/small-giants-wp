@@ -30,9 +30,6 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
-			"hideExtensions": [
-				"animation"
-			],
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",

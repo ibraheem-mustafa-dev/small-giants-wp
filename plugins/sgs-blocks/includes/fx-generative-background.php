@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The four colour slots this effect carries.
  *
  * FOUR, matching the technique spec's own colour count (§2/§5): the
- * `DesignTokenPicker`-fed `fxGenColour1`-`fxGenColour4` attributes.
+ * `DesignTokenPicker`-fed colour fields of the generative-background layer.
  *
  * @var string[]
  */

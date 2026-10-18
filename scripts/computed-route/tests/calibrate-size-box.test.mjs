@@ -50,12 +50,12 @@ test( 'MUST FAIL: Fill writes a per-device {width, height} size in that shape', 
 
 test( 'MUST FAIL: a transition time repeated for every transitioned property is one time', () => {
 	// The Eye Care footer link transitions two properties for 0.25s each: computed "0.25s, 0.25s".
-	const calibration = { settings: { childIconTransitionDuration: { slot: SHAPE, slots: [ SHAPE ], property: 'transition-duration', forms: [] } } };
-	const r = resolve( { block: 'sgs/social-icons', slot: SHAPE, prop: 'transition-duration', perWidth: { 375: '0.25s, 0.25s', 768: '0.25s, 0.25s', 1440: '0.25s, 0.25s' }, current: {} }, { db: openDb(), calibration, snapshot: SNAP, log: [] } );
+	const calibration = { settings: { itemMotionDuration: { slot: SHAPE, slots: [ SHAPE ], property: 'transition-duration', forms: [] } } };
+	const r = resolve( { block: 'sgs/icon-list', slot: SHAPE, prop: 'transition-duration', perWidth: { 375: '0.25s, 0.25s', 768: '0.25s, 0.25s', 1440: '0.25s, 0.25s' }, current: {} }, { db: openDb(), calibration, snapshot: SNAP, log: [] } );
 	assert.equal( r.gap, undefined, r.detail );
-	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'childIconTransitionDuration' ] );
+	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'itemMotionDuration' ] );
 	// negative control: two different times are two values, and stay a gap.
-	const two = resolve( { block: 'sgs/social-icons', slot: SHAPE, prop: 'transition-duration', perWidth: { 1440: '0.25s, 0.4s' }, current: {} }, { db: openDb(), calibration, snapshot: SNAP, log: [] } );
+	const two = resolve( { block: 'sgs/icon-list', slot: SHAPE, prop: 'transition-duration', perWidth: { 1440: '0.25s, 0.4s' }, current: {} }, { db: openDb(), calibration, snapshot: SNAP, log: [] } );
 	assert.equal( two.gap, 'shape' );
 } );
 

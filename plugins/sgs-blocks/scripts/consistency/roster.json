@@ -1415,7 +1415,7 @@
         "colour": true,
         "link": false,
         "media": false,
-        "animation": true
+        "animation": false
       },
       "qualifies": {
         "paintDeclarations": 9,
@@ -1935,7 +1935,7 @@
         "colour": true,
         "link": true,
         "media": true,
-        "animation": true
+        "animation": false
       },
       "qualifies": {
         "paintDeclarations": 32,

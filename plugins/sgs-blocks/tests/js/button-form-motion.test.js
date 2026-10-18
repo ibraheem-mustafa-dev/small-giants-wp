@@ -31,8 +31,8 @@ describe( 'hover lift', () => {
 
 describe( 'shadow lift attribute names', () => {
 	it( 'keeps the block-root names without a prefix and namespaces them with one', () => {
-		expect( shadowLiftAttrKeys() ).toEqual( { lift: 'shadowLiftOnHover', hover: 'sgsHoverShadow' } );
-		expect( shadowLiftAttrKeys( 'submit' ) ).toEqual( { lift: 'submitShadowLiftOnHover', hover: 'submitSgsHoverShadow' } );
+		expect( shadowLiftAttrKeys() ).toEqual( { lift: 'shadowLiftOnHover' } );
+		expect( shadowLiftAttrKeys( 'submit' ) ).toEqual( { lift: 'submitShadowLiftOnHover' } );
 	} );
 } );
 

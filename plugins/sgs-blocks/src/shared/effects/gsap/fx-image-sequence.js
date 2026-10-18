@@ -10,8 +10,8 @@
  *     viewport — see `computeVisibilityWindow()` inside `initImageSequence`
  *     for the anchoring method and why the obvious shorter-window fix was
  *     rejected.
- *   - Pin ON (`data-sgs-fx-pin="true"`, block attribute `fxPin`, an
- *     inspector toggle): the block is held in place the moment it becomes
+ *   - Pin ON (`data-sgs-fx-pin="true"`, written from the sgsMotion
+ *     image-sequence layer's pin setting): the block is held in place the moment it becomes
  *     fully visible and released the moment it would next start leaving, so
  *     the entire scrub plays with the block stationary. This REPLACES the
  *     old guidance of composing the block inside a `sgs/container` with
@@ -436,8 +436,8 @@ export function initImageSequence( el ) {
 		 * percentage approximation of it. See its own docblock for the
 		 * derivation and the taller-than-viewport fallback.
 		 *
-		 * D435 Part 2 — pinning is now a first-class inspector toggle
-		 * (`fxPin` / `data-sgs-fx-pin`) instead of a composition workaround.
+		 * D435 Part 2 — pinning is a first-class motion setting
+		 * (`data-sgs-fx-pin`) instead of a composition workaround.
 		 * Pinning the trigger holds it exactly where it first became fully
 		 * visible (the resolved `start`) for the resolved scroll distance,
 		 * so the block never moves while its scrub plays — genuinely fully

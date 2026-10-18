@@ -22,10 +22,7 @@
  * Everything downstream — the emitter's own overlay and every participant —
  * reads those properties and never names a type. So a new type is ONE rule
  * here, plus the slug in `SGS_FX_CURSOR_FIELD_TYPES`
- * (`includes/fx-cursor-field.php`) and in `FX_FIELD_TYPE_OPTIONS`
- * (`src/blocks/extensions/fx.js`). No new selector.
- * `scripts/check-fx-list-drift.py` invariant I6 fails the build if those three
- * lists disagree, so a half-added type cannot ship.
+ * (`includes/fx-cursor-field.php`) and in the cursor-field type enum of the effect schema. No new selector.
  *
  * ⚠ "NO NEW JS" IS TRUE ONLY FOR AN UNMASKED TYPE (corrected 2026-08-24, D767).
  * A type that MASKS needs the element-relative coordinate pair the emitter now
@@ -150,7 +147,7 @@
 	--sgs-cursor-field-layer: radial-gradient(
 		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-x) var(--sgs-cursor-y),
 		var(--sgs-cursor-field-colour),
-		transparent 70%
+		transparent var(--sgs-cursor-field-falloff, 70%)
 	);
 }
 
@@ -188,7 +185,7 @@
 	--sgs-cursor-field-mask: radial-gradient(
 		var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
 		#000 0%,
-		transparent 70%
+		transparent var(--sgs-cursor-field-falloff, 70%)
 	);
 
 	/* A mask resolves against each element's OWN box, so a participant would
@@ -399,7 +396,7 @@
 		radial-gradient(
 			var(--sgs-cursor-field-geometry) at var(--sgs-cursor-local-x) var(--sgs-cursor-local-y),
 			#000 0%,
-			transparent 70%
+			transparent var(--sgs-cursor-field-falloff, 70%)
 		);
 
 	--sgs-cursor-field-mask-size: 84px 68px, 100% 100%;
@@ -422,7 +419,7 @@
 	background-image: var(--sgs-cursor-field-layer);
 	filter: var(--sgs-cursor-field-filter, none);
 	mix-blend-mode: var(--sgs-cursor-field-blend-mode, normal);
-	opacity: var(--sgs-cursor-field-opacity, 0.9);
+	opacity: var(--sgs-cursor-field-opacity, var(--sgs-cursor-field-layer-opacity, 0.9));
 	background-attachment: var(--sgs-cursor-field-attachment, fixed);
 	background-size: var(--sgs-cursor-field-pattern-size, auto);
 	background-position: var(--sgs-cursor-field-position, 0% 0%);

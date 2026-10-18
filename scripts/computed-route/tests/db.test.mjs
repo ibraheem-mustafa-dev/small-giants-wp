@@ -1,5 +1,6 @@
 // Proves R-47-2: the framework database opens read-only and the route's queries read real rows.
 import test from 'node:test';
+import { DatabaseSync } from 'node:sqlite';
 import assert from 'node:assert/strict';
 import { openDb, attrsFor, candidates, siblings, attrRow, cssPropertiesOf, modifierOf, isPseudoProperty, enumSettings, PSEUDO_NAMESPACES } from '../lib/db.mjs';
 
@@ -15,7 +16,7 @@ test( 'reads the heading line-height setting as a tier object', () => {
 test( 'returns block settings and extension settings, never native rows', () => {
 	const rows = attrsFor( db, 'sgs/container' );
 	assert.ok( rows.every( ( r ) => [ 'sgs', 'sgs-ext' ].includes( r.source ) ) );
-	assert.ok( rows.some( ( r ) => 'sgs-ext' === r.source ), 'an extension setting with a css property (sgsHoverLift) is a candidate' );
+	assert.ok( rows.some( ( r ) => 'sgs-ext' === r.source ), 'an extension setting with a css property is a candidate' );
 } );
 
 test( 'finds flat_sibling rows by base name', () => {
@@ -40,9 +41,12 @@ test( 'MUST FAIL: anim:duration is reached as animation-duration, and every unma
 	assert.deepEqual( cssPropertiesOf( 'fx:pin' ), [] );
 	assert.equal( isPseudoProperty( 'fx:scrub' ), true );
 	assert.equal( isPseudoProperty( 'grid-template-columns:count' ), false );
-	// sgs/card-grid::sgsAnimationDuration carries css_property 'anim:duration' and is now a candidate.
-	assert.deepEqual( candidates( db, 'sgs/card-grid', 'animation-duration' ).map( ( r ) => r.attr_name ), [ 'sgsAnimationDuration' ] );
-	assert.deepEqual( candidates( db, 'sgs/card-grid', 'animation-timing-function' ).map( ( r ) => r.attr_name ), [ 'sgsAnimationEasing' ] );
+	// A fixture row whose css_property is 'anim:duration' / 'anim:easing' is a candidate for the property its leaf stands for.
+	const fixture = new DatabaseSync( ':memory:' );
+	fixture.exec( 'CREATE TABLE block_attributes (block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role)' );
+	fixture.exec( "INSERT INTO block_attributes (block_slug, attr_name, css_property, source) VALUES ('sgs/card-grid', 'fixtureKeywordDuration', 'anim:duration', 'sgs-ext'), ('sgs/card-grid', 'fixtureKeywordEasing', 'anim:easing', 'sgs-ext')" );
+	assert.deepEqual( candidates( fixture, 'sgs/card-grid', 'animation-duration' ).map( ( r ) => r.attr_name ), [ 'fixtureKeywordDuration' ] );
+	assert.deepEqual( candidates( fixture, 'sgs/card-grid', 'animation-timing-function' ).map( ( r ) => r.attr_name ), [ 'fixtureKeywordEasing' ] );
 } );
 
 test( 'MUST FAIL TO MATCH: grid-template-columns:count keeps its stored string and never matches grid-template-columns', () => {
@@ -69,13 +73,13 @@ test( 'MUST FAIL TO MATCH: grid-template-columns:count keeps its stored string a
 // peer sessions added attributes and changed `sgs/cart::countPopAnimation` from a boolean to a string enum, which
 // JOINED it to the pool. An exact count conflates the two directions — a DECREASE means a discovery-pool setting
 // was routed (the real defect), while an INCREASE is ordinary schema growth and happens on every reseed. So the
-// floor is asserted instead, plus named members that must stay unrouted, which tests the hazard rather than the
+// floor is asserted instead (633 until Spec 38A M6.6 deleted the old motion attributes, whose enum rows left the pool: 615 after groups G1 to G5, 455 after G0 removed the flat fx, entrance and hover enums from every block; deleting a setting is not routing one), plus named members that must stay unrouted, which tests the hazard rather than the
 // number. Never re-pin this to an exact count: the DB is the source of truth and a cached count in a test rots
 // exactly like a cached count in a doc.
 test( 'the enum discovery pool never shrinks and no candidate is ever a css_property NULL row', () => {
 	const blocks = db.prepare( 'SELECT slug FROM blocks' ).all().map( ( r ) => r.slug );
 	const pool = blocks.reduce( ( n, b ) => n + enumSettings( db, b ).length, 0 );
-	assert.ok( pool >= 633, `the discovery pool is ${ pool }, below the 633 floor R-47-10 was written at: a setting that used to reach calibration discovery has been given a css_property, which deletes that path` );
+	assert.ok( pool >= 455, `the discovery pool is ${ pool }, below the 455 floor R-47-10 was written at: a setting that used to reach calibration discovery has been given a css_property, which deletes that path` );
 	// Named members, so routing one is caught even if an unrelated addition keeps the total above the floor.
 	for ( const [ block, attr ] of [ [ 'sgs/cart', 'displayMode' ], [ 'sgs/cart', 'triggerStyle' ], [ 'sgs/cart', 'itemRemoveStyle' ] ] ) {
 		assert.ok( enumSettings( db, block ).some( ( r ) => r.attr_name === attr ),

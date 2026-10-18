@@ -21,10 +21,10 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, MotionEasingControl } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
-import { usePreviewTier, hoverLiftPreviewRule } from '../../utils';
+import { usePreviewTier } from '../../utils';
 import { buttonPreviewStyle, labelCollapsedAt, LABEL_CLIP_STYLE } from './preview-style';
 import { parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { SiteInfoLabelToggle, IconShapeSizeItem } from './ButtonExtraControls';
@@ -134,15 +134,8 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
-		scaleHover,
-		liftHover,
 		contentAlign,
 		iconGap,
-		scaleHoverTarget,
-		opacityHover,
-		transitionDuration,
-		transitionEasing,
-		transitionEasingCustom,
 		boxShadow,
 		boxShadowColour,
 		boxShadowHover,
@@ -233,10 +226,6 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 		blockClasses.push( `sgs-button--${ inheritStyle }` );
 	}
 	if ( widthType?.desktop === 'full' ) blockClasses.push( 'sgs-button--full' );
-	// Hover lift canvas mirror — a clientId-scoped :hover rule (render.php
-	// emits translate: 0 -N px on the same hover state).
-	const liftScope = `sgs-button-lift-${ clientId }`;
-	if ( liftHover > 0 ) blockClasses.push( liftScope );
 	// Keyboard focus: render.php's class (none for a refused Signature), and Signature's host border width.
 	const { focusClass, signatureRefused } = buttonFocusState( attributes );
 	const focusPreview = useFocusPreview();
@@ -587,7 +576,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 								</ToolsPanelItem>
 								<IconShapeSizeItem attributes={ attributes } setAttributes={ setAttributes } />
 								{ /* iconGap is a TIER OBJECT — block.json attributes.iconGap +
-								   render.php (gap on the button root / face wrapper). */ }
+								   render.php (gap on the button root). */ }
 								<ToolsPanelItem
 									label={ __( 'Icon gap', 'sgs-blocks' ) }
 									hasValue={ () => !! iconGap?.desktop }
@@ -707,8 +696,8 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 					</ResponsiveOverride>
 
 					{ /* Content alignment — block.json attributes.contentAlign (tier
-					   object) + render.php (justify-content on the button root and
-					   its face wrapper). textAlign cannot move flex content. */ }
+					   object) + render.php (justify-content on the button root).
+					   textAlign cannot move flex content. */ }
 					<ResponsiveOverride
 						label={ __( 'Content alignment', 'sgs-blocks' ) }
 						value={ contentAlign }
@@ -933,71 +922,6 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 
 				{ /* Effects */ }
 				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
-					<RangeControl
-						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						value={ scaleHover }
-						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
-						min={ 0.9 }
-						max={ 1.2 }
-						step={ 0.01 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Hover lift (px)', 'sgs-blocks' ) }
-						help={ __( 'Raises the button on hover/focus. 0 = no lift. Works together with scale.', 'sgs-blocks' ) }
-						value={ liftHover ?? 0 }
-						onChange={ ( val ) => setAttributes( { liftHover: val ?? 0 } ) }
-						min={ 0 }
-						max={ 24 }
-						step={ 1 }
-						allowReset
-						resetFallbackValue={ 0 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'What scales', 'sgs-blocks' ) }
-						help={ __( 'Whole button scales the border and fill together with the label (the classic effect). Inner face only scales the label/icon, leaving the border and fill exactly where they are.', 'sgs-blocks' ) }
-						value={ scaleHoverTarget ?? 'whole' }
-						options={ [
-							{ label: __( 'Whole button', 'sgs-blocks' ), value: 'whole' },
-							{ label: __( 'Inner face only', 'sgs-blocks' ), value: 'face' },
-						] }
-						onChange={ ( val ) => setAttributes( { scaleHoverTarget: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Hover opacity', 'sgs-blocks' ) }
-						help={ __( 'Fades the button on hover/focus. 1 = no fade. 0 disables the fade entirely.', 'sgs-blocks' ) }
-						value={ opacityHover ?? 0 }
-						onChange={ ( val ) => setAttributes( { opacityHover: val ?? 0 } ) }
-						min={ 0 }
-						max={ 1 }
-						step={ 0.05 }
-						allowReset
-						resetFallbackValue={ 0 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
-						min={ 0 }
-						max={ 1000 }
-						step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<MotionEasingControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						custom={ transitionEasingCustom }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
-						onCustomChange={ ( val ) => setAttributes( { transitionEasingCustom: val } ) }
-					/>
 					{ /* Keyboard focus (focusStyle): the stored Default '' reads as "nothing selected", so it shows as 'default';
 					   Signature is disabled with its reason when ::before is taken (focus-style.js::signatureRefusal). */ }
 					<ToggleGroupControl
@@ -1054,7 +978,6 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 			{ /* Editor preview — the button element IS the block root (D288, no wrapper div).
 			   The label is now RichText on-canvas (matching core/button) instead of a
 			   sidebar TextControl. */ }
-			{ liftHover > 0 && <style>{ hoverLiftPreviewRule( `.${ liftScope }`, liftHover ) }</style> }
 			<span { ...blockProps }>
 				{ backgroundLayerStyle && (
 					<span aria-hidden="true" style={ backgroundLayerStyle } />

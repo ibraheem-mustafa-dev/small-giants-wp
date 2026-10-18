@@ -69,10 +69,6 @@
 					"closePadding"
 				]
 			},
-			"hideExtensions": [
-				"clickEffects",
-				"parallax"
-			],
 			"elements": {
 				"scrim": {
 					"motion": false,

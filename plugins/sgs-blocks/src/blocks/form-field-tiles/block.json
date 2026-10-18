@@ -23,10 +23,7 @@
 			"motionItems": "tile",
 			"motion": true,
 			"iconPicker": true,
-			"imageControls": false,
-			"hideExtensions": [
-				"animation"
-			],
+			"imageControls": false,
 			"elements": {
 				"tile": {
 					"label": "Each tile",

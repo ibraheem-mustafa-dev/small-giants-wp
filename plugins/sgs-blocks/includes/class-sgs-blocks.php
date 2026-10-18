@@ -76,14 +76,15 @@ final class SGS_Blocks {
 			Sgs_Motion_Settings::register();
 		}
 
-		// Tier G fx data-attribute injection for DYNAMIC blocks (Spec 38
-		// §11.2). Runs at render_block p10, before the registry's p99 sniff —
-		// that ordering is what lets a dynamic block's effect be detected.
-		require_once SGS_BLOCKS_PATH . 'includes/fx-attributes.php';
+		// Shared helpers of the fx render filters below: token matching for the `data-sgs-fx` list grammar and the
+		// root-tag locator that skips a leading scoped <style>. The motion renderer writes the `data-sgs-fx*` attributes;
+		// the filters below expand them at render_block p11, before the registry's p99 sniff.
+		require_once SGS_BLOCKS_PATH . 'includes/fx-token-match.php';
+		require_once SGS_BLOCKS_PATH . 'includes/fx-root-offset.php';
 
 		// Motion-path route expansion (Spec 38 §11.2). Runs at
-		// render_block p11 — after the p10 injection above has put
-		// `data-sgs-fx-path` on dynamic blocks, and before the registry's p99
+		// render_block p11 — after the motion renderer has put
+		// `data-sgs-fx-path` on the block, and before the registry's p99
 		// sniff. Turns the client's chosen route preset into the hidden <svg>
 		// + `-motion-path-target` selector `fx-motion-path.js` already expects,
 		// so the runtime needs no change at all.
@@ -91,8 +92,8 @@ final class SGS_Blocks {
 
 		// Shape-pair expansion for MorphSVG (Spec 38 s11.2). Same
 		// slot as fx-path-routes.php above (a sibling expansion, never
-		// the same block instance) - after the p10 injection has put
-		// data-sgs-fx-shape on dynamic blocks, before the registry's p99
+		// the same block instance) - after the motion renderer has put
+		// data-sgs-fx-shape on the block, before the registry's p99
 		// sniff. Turns the client's chosen shape-pair preset into the
 		// visible FROM svg + hidden TO svg + morph-target selector
 		// fx-morph.js already expects, so that runtime needs no change.
@@ -104,6 +105,7 @@ final class SGS_Blocks {
 		// and emits a uid-scoped <style> for the per-instance colour/radius
 		// (Spec 32 forbids the inline declarations those would otherwise be).
 		require_once SGS_BLOCKS_PATH . 'includes/fx-cursor-field.php';
+		require_once SGS_BLOCKS_PATH . 'includes/fx-magnet.php';
 		require_once SGS_BLOCKS_PATH . 'includes/fx-wave-gradient.php';
 
 		// Generative background (Tier W, Spec 38 — static build only).
@@ -479,8 +481,7 @@ final class SGS_Blocks {
 	/**
 	 * Enqueue frontend CSS and JS for extensions.
 	 *
-	 * Animation CSS and IntersectionObserver script load on every page.
-	 * Combined weight is < 2KB — negligible impact on performance.
+	 * The extension stylesheet and the dependency-free page-flag scripts load on every page.
 	 */
 	public function enqueue_frontend_assets(): void {
 		$css_file = SGS_BLOCKS_PATH . 'assets/css/extensions.css';
@@ -521,62 +522,17 @@ final class SGS_Blocks {
 			);
 		}
 
-		// The entrance observer reads its trigger line and stagger from
-		// sgsEntranceTiming (animation-entrance-timing.js), loaded first.
-		wp_register_script(
-			'sgs-animation-entrance-timing',
-			SGS_BLOCKS_URL . 'assets/js/animation-entrance-timing.js',
-			[],
-			SGS_BLOCKS_VERSION,
-			true
-		);
-
-		$js_file = SGS_BLOCKS_PATH . 'assets/js/animation-observer.js';
-		if ( file_exists( $js_file ) ) {
+		// Marks <html> with `.sgs-js` once script runs: the gate the image-sequence and horizontal-panel
+		// stylesheets wait for before they hide their no-JavaScript fallback. Dependency-free, so it costs one tiny file.
+		$js_flag = SGS_BLOCKS_PATH . 'assets/js/js-flag.js';
+		if ( file_exists( $js_flag ) ) {
 			wp_enqueue_script(
-				'sgs-animation-observer',
-				SGS_BLOCKS_URL . 'assets/js/animation-observer.js',
-				[ 'sgs-animation-entrance-timing' ],
-				SGS_BLOCKS_VERSION,
-				true
-			);
-		}
-
-		$tilt_js = SGS_BLOCKS_PATH . 'assets/js/tilt-3d.js';
-		if ( file_exists( $tilt_js ) ) {
-			wp_enqueue_script(
-				'sgs-tilt-3d',
-				SGS_BLOCKS_URL . 'assets/js/tilt-3d.js',
+				'sgs-js-flag',
+				SGS_BLOCKS_URL . 'assets/js/js-flag.js',
 				[],
 				SGS_BLOCKS_VERSION,
 				true
 			);
-		}
-
-		$ripple_js = SGS_BLOCKS_PATH . 'assets/js/ripple.js';
-		if ( file_exists( $ripple_js ) ) {
-			wp_enqueue_script(
-				'sgs-ripple',
-				SGS_BLOCKS_URL . 'assets/js/ripple.js',
-				[],
-				SGS_BLOCKS_VERSION,
-				true
-			);
-		}
-
-		$parallax_js = SGS_BLOCKS_PATH . 'assets/js/parallax.js';
-		if ( file_exists( $parallax_js ) ) {
-			wp_register_script(
-				'sgs-parallax',
-				SGS_BLOCKS_URL . 'assets/js/parallax.js',
-				array(),
-				SGS_BLOCKS_VERSION,
-				array(
-					'strategy'  => 'defer',
-					'in_footer' => true,
-				)
-			);
-			wp_enqueue_script( 'sgs-parallax' );
 		}
 	}
 }

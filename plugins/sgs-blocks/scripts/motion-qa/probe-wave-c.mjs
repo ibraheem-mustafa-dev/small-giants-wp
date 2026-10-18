@@ -85,7 +85,7 @@
  *    before the trigger line is crossed.
  *  · `morph` is NOT measured and is reported `NOT-BUILT`, not
  *    `INCONCLUSIVE`. Verified two ways before writing this: (1)
- *    `src/blocks/extensions/fx.js`'s `SHIPPED_EFFECTS` array explicitly
+ *    the effects picker list (`in_picker` in the fx_effects table) explicitly
  *    excludes it with a comment — "the module landed, but its asset half is
  *    deliberately deferred (D427)" — so no client can select it from any
  *    inspector; (2) every plausible canary slug
@@ -113,8 +113,7 @@ import zlib from 'node:zlib';
  * framework's page JS budget at <50KB; `SGS_Motion_Diagnostics::BUDGET_BYTES_GZIP`
  * (`plugins/sgs-blocks/includes/class-sgs-motion-diagnostics.php`) cites the
  * same 51200 for the admin-panel report, and any editor-side authoring-time
- * warning (fx.js, owned by a different track per this session's file split)
- * should read this SAME number rather than picking its own — three surfaces
+ * warning should read this SAME number rather than picking its own — three surfaces
  * measuring against three different thresholds would let a page pass one and
  * fail another for no real reason. If this number ever changes, change it in
  * both PHP and this file together.
@@ -1766,7 +1765,7 @@ if ( a.morphCount > 0 || r.morphCount > 0 ) {
 	effectVerdicts.morph = 'INCONCLUSIVE — premise changed, live instance(s) found';
 } else {
 	effectVerdicts.morph =
-		'NOT-BUILT — excluded from src/blocks/extensions/fx.js SHIPPED_EFFECTS ' +
+		'NOT-BUILT — excluded from the effects picker (in_picker=0) ' +
 		'(the module exists but its curated shape-pair asset library is deliberately ' +
 		'deferred, D427); no inspector can select it and no canary slug ' +
 		'(motion-canary-morph, motion-canary-morphsvg) resolves — both 404 live, ' +

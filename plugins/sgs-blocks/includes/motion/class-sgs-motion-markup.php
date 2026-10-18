@@ -3,7 +3,7 @@
  * Motion markup: data attributes on each target element and the injected paint layers (Spec 38A §6.5, FR-38A-49).
  *
  * Attributes go on through `WP_HTML_Tag_Processor`, which escapes every value. The block root is the first tag after
- * any leading `<style>`/`<script>` a block prepends (the same skip `includes/animation-attributes.php` uses). A part
+ * any leading `<style>`/`<script>` a block prepends (the same skip `includes/fx-root-offset.php` makes). A part
  * target is every element carrying its BEM class; a custom target is every element matching its selector's last
  * compound (classes and tag). A target marked `child` (the container wrapper's band) matches a direct child of the root
  * only, so a nested container's band, which carries the same classes, is never stamped.

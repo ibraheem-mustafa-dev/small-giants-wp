@@ -19,7 +19,7 @@
  * (view.js) progressively enhances the same markup: a native
  * `<input type="range">` (always rendered, always keyboard + native-touch
  * operable) drives the CSS custom property `--sgs-before-after-position`,
- * and — when `fxDraggable` is on — GSAP Draggable adds free-drag directly on
+ * and — when `freeDrag` is on — GSAP Draggable adds free-drag directly on
  * the image area, writing back to the same range input so there is exactly
  * one source of truth.
  *
@@ -100,7 +100,7 @@ $orientation_raw   = $attributes['orientation'] ?? 'horizontal';
 $orientation       = in_array( $orientation_raw, array( 'horizontal', 'vertical' ), true ) ? $orientation_raw : 'horizontal';
 $reverse_direction = ! empty( $attributes['reverseDirection'] );
 
-$fx_draggable = ! empty( $attributes['fxDraggable'] ) || ! isset( $attributes['fxDraggable'] );
+$free_drag = ! empty( $attributes['freeDrag'] ) || ! isset( $attributes['freeDrag'] );
 
 // startPosition — clamp 0-100.
 $start_position = isset( $attributes['startPosition'] ) ? (float) $attributes['startPosition'] : 50;
@@ -548,7 +548,7 @@ $root_attr_args = array(
 	'class'               => implode( ' ', $root_classes ),
 	'data-orientation'    => $orientation,
 	'data-reverse'        => $reverse_direction ? '1' : '0',
-	'data-fx-draggable'   => $fx_draggable ? '1' : '0',
+	'data-free-drag'      => $free_drag ? '1' : '0',
 	'data-has-video'      => $has_video_slot ? '1' : '0',
 	'data-video-autoplay' => $video_autoplay ? '1' : '0',
 );
@@ -632,7 +632,7 @@ foreach ( array(
 // code at all.
 // ---------------------------------------------------------------------------
 
-if ( $fx_draggable && ! is_admin() ) {
+if ( $free_drag && ! is_admin() ) {
 	wp_enqueue_script_module( '@sgs/motion-provider' );
 	wp_enqueue_script_module( '@sgs/gsap-draggable' );
 }

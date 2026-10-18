@@ -10,14 +10,11 @@ import {
 	SelectControl,
 	RadioControl,
 	ToggleControl,
-	RangeControl,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
-import { CSS_EASING_OPTIONS as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -256,13 +253,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		borderStyle,
 		borderColour,
 		borderColourGradient,
-		scaleHover,
 		customWidth,
 		customWidthUnit,
 		maxWidth,
 		maxWidthUnit,
-		transitionDuration,
-		transitionEasing,
 	} = attributes;
 	// ⚠ textAlign / fontStyle / textDecoration / letterSpacing /
 	// letterSpacingUnit / textTransform / textWrap are deliberately NOT
@@ -610,47 +604,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						setAttributes={ setAttributes }
 						attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
 					/>
-					<RangeControl
-						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						value={ parseFloat( scaleHover ) || 1 }
-						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
-						min={ 1 }
-						max={ 1.1 }
-						step={ 0.01 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
-						min={ 0 }
-						max={ 1000 }
-						step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ /* D812 (2026-08-26): a 2-5 option enum with longest rendered
-					   label <=12 chars renders as ToggleGroupControl, not
-					   SelectControl (this enum: 5 options, longest label 11
-					   chars — "Ease in-out"). Reference: sgs/mega-aside's Format
-					   ToggleGroupControl mount. */ }
-					<ToggleGroupControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val || 'ease' } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						{ EASING_OPTIONS.map( ( option ) => (
-							<ToggleGroupControlOption
-								key={ option.value }
-								value={ option.value }
-								label={ option.label }
-							/>
-						) ) }
-					</ToggleGroupControl>
 				</PanelBody>
 
 				{ /* ── Spacing panel ── padding/margin are each a single block-owned

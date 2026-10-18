@@ -89,7 +89,7 @@
 							}
 						}
 					},
-					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). The wrapper declares no native `supports.typography`; typography is owned per element (icon, number, title, description) through the shared TypographyControls/sgs_typography_css_rule() families. backgroundColourGradient/textColourGradient added (QC-council-validated) — keyed `css:background-color-gradient`/`css:color-gradient` distinct from each other, since this wrapper paints BOTH background and text on the same root selector (info-box's `box` element precedent). render.php moves the background paint onto a `::after` layer (`sgs_block_background_layer_css()`) so it cannot be clipped by a text gradient's `background-clip:text` on the same node."
+					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). The wrapper declares no native `supports.typography`; typography is owned per element (icon, number, title, description) through the shared TypographyControls/sgs_typography_css_rule() families. backgroundColourGradient/textColourGradient added (QC-council-validated) — keyed `css:background-color-gradient`/`css:color-gradient` distinct from each other, since this wrapper paints BOTH background and text on the same root selector (info-box's `box` element precedent). render.php moves the background paint onto a `::after` layer (`sgs_block_background_layer_css()`) so it cannot be clipped by a text gradient's `background-clip:text` on the same node."
 				},
 				"icon": {
 					"label": "Step icon",
@@ -217,20 +217,6 @@
 					"order": 6,
 					"clusters": [],
 					"_note": "connectorStyle (line/none) is a structural variant selector — no colour/fill control exists for the connector on this block (unlike sgs/timeline's connectorColour). Declared for documentation only; orphan-scan-exempt (no prefix). The connector never renders when `layout` is 'list' (style.css hides the step's ::after regardless of connectorStyle), since a stacked list of plain numbered copy has no line to connect."
-				},
-				"animation": {
-					"motion": false,
-					"label": "Scroll-reveal animation",
-					"order": 7,
-					"clusters": [
-						"animation"
-					],
-					"attrMap": {
-						"anim:preset": "sgsAnimation",
-						"anim:duration": "sgsAnimationDuration",
-						"anim:easing": "sgsAnimationEasing"
-					},
-					"_note": "Spec 35 FR-35-6 — JS scroll-driven motion, a separate mechanism from the `motion` (CSS-transition) cluster on `wrapper`. No stagger/parallax/trigger attrs exist on this block — honest gaps."
 				},
 				"step": {
 					"label": "Each process step",
@@ -441,10 +427,6 @@
 			"default": "",
 			"description": "CSS gradient string painting the wrapper's hover-state border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColourHover on :hover."
 		},
-		"effectHover": {
-			"type": "string",
-			"default": "none"
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
@@ -486,18 +468,6 @@
 		"transitionEasing": {
 			"type": "string",
 			"default": "ease-in-out"
-		},
-		"sgsAnimation": {
-			"type": "string",
-			"default": "fade-up"
-		},
-		"sgsAnimationDuration": {
-			"type": "string",
-			"default": "medium"
-		},
-		"sgsAnimationEasing": {
-			"type": "string",
-			"default": "ease-out"
 		},
 		"numberBackgroundGradient": {
 			"type": "string",

@@ -151,8 +151,9 @@ namespace SGS\Blocks\Motion {
 	ok( 'block-reveals' === $mapper->family(), 'the family slug is the file suffix' );
 	ok( 'SGS\\Blocks\\Motion\\Sgs_Motion_Map_Block_Reveals' === Sgs_Motion_Migrate_Runner::mapper_class( 'block-reveals' ) && $mapper instanceof Sgs_Motion_Mapper_Interface, 'the runner finds the class from the family slug' );
 	$read = static function ( string $slug ) use ( $root ): array {
-		$json = json_decode( (string) file_get_contents( $root . '/src/blocks/' . $slug . '/block.json' ), true );
-		return is_array( $json['attributes'] ?? null ) ? $json['attributes'] : array();
+		$frozen = json_decode( (string) file_get_contents( $root . '/includes/motion/migrate/data/legacy-declarations.json' ), true );
+		$json   = json_decode( (string) file_get_contents( $root . '/src/blocks/' . $slug . '/block.json' ), true );
+		return array_merge( is_array( $frozen['attributes']['sgs/' . $slug] ?? null ) ? $frozen['attributes']['sgs/' . $slug] : array(), is_array( $json['attributes'] ?? null ) ? $json['attributes'] : array() );
 	};
 	foreach ( Sgs_Motion_Map_Block_Reveals::STAGGER_DELAY_BLOCKS as $block => $rule ) {
 		$declared = $read( substr( $block, 4 ) )['staggerDelay']['default'] ?? null;
@@ -161,8 +162,8 @@ namespace SGS\Blocks\Motion {
 	$timeline = $read( 'timeline' );
 	ok( true === $timeline['revealOnScroll']['default'] && Sgs_Motion_Map_Block_Reveals::TIMELINE_DEFAULT_STAGGER === $timeline['revealStagger']['default'] && 'viewport' === $timeline['revealTrigger']['default'], 'timeline reveal defaults match block.json' );
 	ok( 'none' === ( $read( 'buybox' )['photoEntrance']['default'] ?? null ) && false === ( $read( 'site-footer-row' )['fxFooterStagger']['default'] ?? null ) && false === ( $read( 'gallery' )['captionReveal']['default'] ?? null ), 'buybox, footer row and gallery defaults match block.json' );
-	$roster = (string) file_get_contents( $root . '/src/blocks/extensions/extension-roster.json' );
-	ok( 1 === preg_match( '/"sgsStaggerDelay":\s*\{\s*"type":\s*"number",\s*"default":\s*0/', $roster ), 'sgsStaggerDelay default 0 matches the extension roster' );
+	$frozen_ext = json_decode( (string) file_get_contents( $root . '/includes/motion/migrate/data/legacy-declarations.json' ), true )['extensions'] ?? array();
+	ok( 0 === ( $frozen_ext['sgsStaggerDelay']['default'] ?? null ), 'sgsStaggerDelay default 0 matches the frozen extension declarations' );
 
 	// 1. staggerDelay.
 	$r = migrate( 'sgs/card-grid', array( 'staggerDelay' => 120 ) );

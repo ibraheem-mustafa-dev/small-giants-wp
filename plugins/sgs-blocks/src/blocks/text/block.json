@@ -79,8 +79,6 @@
 						"css:box-shadow-color": "boxShadowColour",
 						"css:width": "customWidth",
 						"css:max-width": "maxWidth",
-						"css:transition-duration": "transitionDuration",
-						"css:transition-timing-function": "transitionEasing",
 						"css:color-gradient": "textColourGradient",
 						"css:color-link": "linkColour",
 						"css:color-link-gradient": "linkColourGradient"
@@ -98,7 +96,7 @@
 							}
 						}
 					},
-					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color maps to the SGS custom textColour attr directly, not native:. No `layer` — no children to arrange. scaleHover has no Spec 35 vocabulary member and is left unclaimed. `css:background-color`/`css:background-image` (+ their Hover siblings) moved OFF this element onto the new `background` element below (2026-08-22, text/background pseudo-element split) — this element's `css:color-gradient` paints via `background-clip:text`, which would otherwise overwrite/clip a background painted on the SAME node."
+					"_note": "Single-semantic-element block — the <p> root IS the wrapper. `color` support is `false` in this block's supports (no native color path), so css:color maps to the SGS custom textColour attr directly, not native:. No `layer` — no children to arrange. `css:background-color`/`css:background-image` (+ their Hover siblings) moved OFF this element onto the new `background` element below (2026-08-22, text/background pseudo-element split) — this element's `css:color-gradient` paints via `background-clip:text`, which would otherwise overwrite/clip a background painted on the SAME node."
 				},
 				"background": {
 					"motion": false,
@@ -395,9 +393,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"scaleHover": {
-			"type": "number"
-		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
@@ -425,21 +420,6 @@
 		"inheritStyle": {
 			"type": "boolean",
 			"default": false
-		},
-		"transitionDuration": {
-			"type": "number",
-			"default": 300
-		},
-		"transitionEasing": {
-			"type": "string",
-			"enum": [
-				"ease",
-				"ease-in",
-				"ease-out",
-				"ease-in-out",
-				"linear"
-			],
-			"default": "ease"
 		},
 		"borderColourHover": {
 			"type": "string",

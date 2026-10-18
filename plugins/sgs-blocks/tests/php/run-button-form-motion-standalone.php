@@ -206,13 +206,11 @@ ok( false !== strpos( sgs_hover_lift_rule( '.x', 99 ), 'translate:0 -24px' ), '1
 // 2. The lift-attribute prefix.
 // =====================================================================
 
-ok( array( 'lift' => 'shadowLiftOnHover', 'hover' => 'sgsHoverShadow' ) === sgs_shadow_lift_attr_names(), '2. no prefix = the block-root attribute names' );
-ok( array( 'lift' => 'submitShadowLiftOnHover', 'hover' => 'submitSgsHoverShadow' ) === sgs_shadow_lift_attr_names( 'submit' ), '2. prefix submit = submit* attribute names' );
+ok( array( 'lift' => 'shadowLiftOnHover' ) === sgs_shadow_lift_attr_names(), '2. no prefix = the block-root attribute names' );
+ok( array( 'lift' => 'submitShadowLiftOnHover' ) === sgs_shadow_lift_attr_names( 'submit' ), '2. prefix submit = submit* attribute names' );
 ok( false === sgs_shadow_lift_enabled( array( 'submitShadowLiftOnHover' => false ), '', 'submit' ), '2. submitShadowLiftOnHover:false turns the prefixed lift off' );
 ok( true === sgs_shadow_lift_enabled( array( 'shadowLiftOnHover' => false ), '', 'submit' ), '2. the block-root switch does not govern the prefixed lift' );
 ok( false === sgs_shadow_lift_enabled( array( 'shadowLiftOnHover' => false ) ), '2. the block-root switch still governs the unprefixed lift' );
-ok( false === sgs_shadow_lift_enabled( array( 'submitSgsHoverShadow' => 'lg' ), '', 'submit' ), '2. a chosen prefixed hover preset replaces the lift' );
-ok( true === sgs_shadow_lift_enabled( array( 'sgsHoverShadow' => 'lg' ), '', 'submit' ), '2. the block-root hover preset does not replace the prefixed lift' );
 
 // =====================================================================
 // 3. sgs/form submit button.
@@ -229,7 +227,6 @@ $form_defaults_set  = render_block_child(
 		'submitShadowHover'       => '',
 		'submitShadowColourHover' => '',
 		'submitShadowLiftOnHover' => true,
-		'submitSgsHoverShadow'    => '',
 	)
 );
 ok( normalise_uid( $form_default['html'] ) === normalise_uid( $form_defaults_set['html'] ), '3. NEGATIVE CONTROL: every new form attribute at its default renders exactly as a form without them' );
@@ -254,8 +251,6 @@ $auto = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitShad
 ok( 1 === preg_match( '/\.sgs-form__button--submit:hover\{box-shadow:0px 5px 18px -6px #0a7ea880\}/', $auto['css'] ), '3. a resting shadow alone lifts automatically on hover' );
 $auto_off = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitShadow' => '0 4px 14px -6px', 'submitShadowColour' => '#0a7ea880', 'submitShadowLiftOnHover' => false ) );
 ok( false === strpos( $auto_off['css'], '.sgs-form__button--submit:hover{box-shadow' ), '3. submitShadowLiftOnHover:false prints no automatic hover shadow' );
-$preset = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitShadow' => '0 4px 14px -6px', 'submitShadowColour' => '#0a7ea880', 'submitSgsHoverShadow' => 'lg' ) );
-ok( false !== strpos( $preset['css'], '.sgs-form__button--submit:hover{box-shadow:var(--wp--preset--shadow--lg)}' ), '3. a chosen hover preset paints on hover' );
 $lift_only = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitLiftHover' => 99 ) );
 ok( false !== strpos( $lift_only['css'], 'translate:0 -24px' ), '3. a lift alone paints, clamped to 24px' );
 $lift_four = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitLiftHover' => 4 ) );
@@ -317,13 +312,6 @@ ok( 1 === preg_match( '/\.sgs-button:hover \.sgs-button__icon\{background-color:
 $default_size = render_block_child( 'sgs/button', $icon_attrs + array( 'iconBackground' => '#00aa00' ) );
 ok( false !== strpos( $default_size['css'], 'calc(var(--sgs-btn-icon-size,1em)*1.8)' ) && false === strpos( $default_size['css'], '--sgs-btn-icon-shape-size:' ), '5. no diameter = 1.8 times the icon size' );
 
-// =====================================================================
-// 6. Existing button output is unchanged (lift + icon colour fixtures).
-// =====================================================================
-
-$lift_render = render_block_child( 'sgs/button', array( 'label' => 'Go', 'liftHover' => 6 ) );
-ok( 1 === preg_match( '/:hover\{translate:0 -6px;transform:none\}/', $lift_render['css'] ), '6. sgs/button lift renders translate:0 -6px;transform:none on hover' );
-ok( array() === lifts_outside_motion_gate( $lift_render['css'] ), '6. reduced motion: the sgs/button lift prints no lift outside the motion gate' );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

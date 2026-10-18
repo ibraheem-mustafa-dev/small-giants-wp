@@ -75,8 +75,8 @@ function query( text ) {
 	return queries[ text ];
 }
 
-function mount( { fxToken = 'svg-loop', attrs = '' } = {} ) {
-	document.body.innerHTML = `<div class="wp-block-sgs-container"><div data-sgs-fx="${ fxToken }" ${ attrs }></div><a href="#x">link</a></div>`;
+function mount( { effectToken = 'svg-loop', attrs = '' } = {} ) {
+	document.body.innerHTML = `<div class="wp-block-sgs-container"><div data-sgs-fx="${ effectToken }" ${ attrs }></div><a href="#x">link</a></div>`;
 	const root = document.body.firstElementChild;
 	const el = root.querySelector( '[data-sgs-fx]' );
 	el.animate = jest.fn( fakeAnimation );
@@ -231,7 +231,7 @@ describe( 'pausing and reduced motion', () => {
 describe( 'selection', () => {
 	test( 'NEGATIVE CONTROL: an element without svg-loop in data-sgs-fx is never animated', () => {
 		const { el } = mount( {
-			fxToken: 'ken-burns ambient-float',
+			effectToken: 'ken-burns ambient-float',
 			attrs: `${ ATTR }motion="pulse"`,
 		} );
 		boot();
@@ -240,7 +240,7 @@ describe( 'selection', () => {
 	} );
 
 	test( 'a token list that includes svg-loop is animated', () => {
-		const { el } = mount( { fxToken: 'sheen svg-loop' } );
+		const { el } = mount( { effectToken: 'sheen svg-loop' } );
 		boot();
 		expect( el.animate ).toHaveBeenCalledTimes( 1 );
 	} );

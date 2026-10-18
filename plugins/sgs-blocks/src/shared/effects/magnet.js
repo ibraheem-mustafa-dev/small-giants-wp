@@ -153,16 +153,23 @@ export function createMagnet( el, opts = {} ) {
 	let curY = 0;
 	let held = false;
 
+	// The element that moves: a declared part of the block, else the element itself. The pull is still measured from
+	// `el`, so the catch area is the whole block.
+	const mover = opts.target && opts.target !== el ? opts.target : el;
+	if ( mover !== el ) {
+		mover.setAttribute( 'data-sgs-mag-part', '' );
+	}
+
 	const write = ( x, y, ms ) => {
-		el.style.setProperty( '--sgs-mag-x', x.toFixed( 2 ) + 'px' );
-		el.style.setProperty( '--sgs-mag-y', y.toFixed( 2 ) + 'px' );
-		el.style.setProperty( '--sgs-mag-dur', ms + 'ms' );
+		mover.style.setProperty( '--sgs-mag-x', x.toFixed( 2 ) + 'px' );
+		mover.style.setProperty( '--sgs-mag-y', y.toFixed( 2 ) + 'px' );
+		mover.style.setProperty( '--sgs-mag-dur', ms + 'ms' );
 		curX = x;
 		curY = y;
 	};
 
 	if ( opts.returnEasing ) {
-		el.style.setProperty( '--sgs-mag-ease', String( opts.returnEasing ) );
+		mover.style.setProperty( '--sgs-mag-ease', String( opts.returnEasing ) );
 	}
 
 	// Resting write up front, so the element sits at its natural spot until
@@ -242,7 +249,10 @@ export function createMagnet( el, opts = {} ) {
 				'--sgs-mag-y',
 				'--sgs-mag-dur',
 				'--sgs-mag-ease',
-			].forEach( ( name ) => el.style.removeProperty( name ) );
+			].forEach( ( name ) => mover.style.removeProperty( name ) );
+			if ( mover !== el ) {
+				mover.removeAttribute( 'data-sgs-mag-part' );
+			}
 		},
 	};
 }

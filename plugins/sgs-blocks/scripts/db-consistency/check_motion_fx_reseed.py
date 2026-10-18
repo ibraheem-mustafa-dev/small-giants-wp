@@ -187,7 +187,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
             mismatches.append(f"scope: db={db_scope!r} expected={expected['scope']!r}")
         if db_requires != expected["requires"]:
             mismatches.append(f"requires: db={db_requires!r} expected={expected['requires']!r}")
-        # D416 — pins drives the fxEnd control's wording, triggers drives which
+        # D416 — pins drives the end control's wording, triggers drives which
         # "When it starts" options a client is offered. Both are read by the
         # editor via the generated map, so drift here silently changes the
         # inspector rather than erroring anywhere.
@@ -212,21 +212,10 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
         # (FX_EFFECTS carries the key, _seed_fx_effects writes the column) but
         # nothing compared it back, so a hand-edited row read green here forever.
         #
-        # WHY THE OBVIOUS OBJECTION IS WRONG. The seeder's own comment says
-        # "check-fx-list-drift.py (I1) compares it against SHIPPED_EFFECTS in
-        # BOTH directions", which reads like this guard would be duplicating it.
-        # That claim is narrow-true and broad-false: check-fx-list-drift.py
-        # explicitly does NOT read the DB (its docstring says it "stands ALONE"
-        # and takes the fact from the committed generated-fx-effect-meta.json).
-        # The real chain is
-        #     DB.in_picker -> generate-fx-effects-php.py -> meta.json -> drift gate
-        # so drift guards the DOWNSTREAM ARTEFACT against fx.js, never the DB
-        # against the seeder. Hand-edit this column — failure mode (a) in this
-        # module's own docstring — and BOTH gates stay green until someone
-        # happens to regenerate the JSON, at which point drift fires and blames
-        # SHIPPED_EFFECTS for a corruption that actually lives in the DB.
-        # That gap is precisely this guard's remit, which is why the comparison
-        # belongs here and is not a duplicate.
+        # The chain is DB.in_picker -> generate-fx-effects-php.py -> meta.json.
+        # Hand-edit this column — failure mode (a) in this module's own
+        # docstring — and nothing downstream notices until someone regenerates
+        # the JSON. Comparing the DB value against the seeder here closes that gap.
         if int(db_in_picker) != int(expected.get("in_picker", 0)):
             mismatches.append(
                 f"in_picker: db={db_in_picker!r} expected={expected.get('in_picker', 0)!r}"

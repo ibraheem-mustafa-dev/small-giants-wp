@@ -52,7 +52,6 @@ ATTR_TO_CSS: dict[str, str] = {
     "boxShadow": "box-shadow",
     "transitionDuration": "transition-duration",
     "transitionEasing": "transition-timing-function",
-    "scaleHover": "transform",
     "shadowHover": "box-shadow",
     "minHeight": "min-height",
     "maxWidth": "max-width",

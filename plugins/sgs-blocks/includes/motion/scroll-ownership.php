@@ -3,8 +3,7 @@
  * Scroll ownership: whether an effect owns transform and opacity across a scroll range (Spec 38 §4.3, Spec 38A §10
  * "Scroll effects win").
  *
- * Read by the legacy entrance injector (`includes/animation-attributes.php::inject_animation_attributes`) and by the
- * motion renderer (`includes/motion/class-sgs-motion-renderer.php`), which suppresses an element's entrance when one of
+ * Read by the motion renderer (`includes/motion/class-sgs-motion-renderer.php`), which suppresses an element's entrance when one of
  * its effect layers owns the scroll range. The `owns_scroll_transform` flag comes from the generated registry map
  * (`SGS_Motion_Registry::effects()`, projected from the `fx_effects` DB table), never a hardcoded list: a
  * load-triggered effect (DrawSVG, ScrambleText) does not own the scroll range and never suppresses an entrance.

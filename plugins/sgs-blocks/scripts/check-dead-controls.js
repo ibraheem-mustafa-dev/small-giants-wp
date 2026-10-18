@@ -242,7 +242,7 @@ function collectFacadeResolvedSources( facadePath ) {
 // block.json — so CHECK 1 (which iterates block DIRECTORIES and explicitly
 // skips `extensions`) never reaches this surface at all, and neither has any
 // other guard in this project. That is the exact gap Spec 38's inspector
-// panels (fx.js's "Scroll & effects" panel foremost) shipped through.
+// panels shipped through.
 const EXTENSIONS_DIR = path.join( BLOCKS_DIR, 'extensions' );
 const BASELINE_FILE = path.join( __dirname, 'dead-controls-baseline.json' );
 
@@ -280,18 +280,7 @@ const EDITOR_ONLY_ATTRS = new Set( [ 'templateLock' ] );
 // same discipline as EDITOR_ONLY_ATTRS above (this is CHECK 3's own version
 // of that allowlist, kept separate because the two checks scan different
 // corpora and a block-attr name could coincidentally collide).
-const EXTENSION_EDITOR_ONLY_ATTRS = new Set( [
-	// fx/Scroll & effects panel (Spec 38 §7): a preset is a WRITER, not a
-	// stored effect parameter — choosing "Dramatic" stamps its whole governed
-	// set into the real fx* attributes (fx.js `applyPreset`), and `fxPreset`
-	// survives only as a label so the panel can show which preset is still
-	// truthfully applied. `includes/fx-attributes.php`'s own FX_ATTR_MAP
-	// docblock states this explicitly: "fxPreset is ABSENT on purpose... a
-	// preset writes its values into the params above, so emitting the label
-	// too would ship a data attribute no runtime reads." Confirmed absent
-	// from FX_ATTR_MAP (2026-08-01).
-	'fxPreset',
-] );
+const EXTENSION_EDITOR_ONLY_ATTRS = new Set();
 
 // Object-literal keys that show up inside setAttributes()-adjacent callbacks
 // (e.g. MediaUpload onSelect `{ id, url, alt }`, ternary results `? false : x`)
@@ -687,22 +676,12 @@ function readBlock( dir ) {
 	);
 	const providesContext = meta.providesContext || {}; // { contextKey: attrName }
 	const usesContext = Array.isArray( meta.usesContext ) ? meta.usesContext : [];
-	// A block's own stagger attribute, declared as `anim:stagger` in an
-	// element's attrMap, is read by name at render time by the shared entrance
-	// code (includes/animation-stagger.php::sgs_entrance_declared_stagger_attr),
-	// so its literal never needs to appear in the block's own files.
-	const animStaggerAttrs = new Set(
-		Object.values( meta.supports?.sgs?.elements || {} )
-			.map( ( el ) => el?.attrMap?.[ 'anim:stagger' ] )
-			.filter( ( a ) => 'string' === typeof a && a )
-	);
 	return {
 		name: meta.name || path.basename( dir ),
 		dir,
 		attrs,
 		dynamic,
 		usesWrapper,
-		animStaggerAttrs,
 		ownCorpus,
 		providesContext,
 		usesContext,
@@ -1177,11 +1156,6 @@ function checkBlock( block, wrapperControlled, sharedCorpus, contextConsumed ) {
 			if ( mediaElementAtomConsumed.has( attr ) ) {
 				continue;
 			}
-		// Declared entrance stagger (attrMap `anim:stagger`), read by the shared
-		// consumer named in readBlock() — only while that consumer exists.
-		if ( block.animStaggerAttrs?.has( attr ) && /\bsgs_entrance_declared_stagger_attr\s*\(/.test( sharedCorpus ) ) {
-			continue;
-		}
 		// Rule (a) — responsive variant: a {base}Tablet/Mobile/Desktop attr is
 		// consumed if its base is consumed AND the BLOCK'S OWN corpus builds
 		// responsive keys dynamically / emits @media (the legitimate reason its
@@ -1383,9 +1357,7 @@ function checkFullyDeadAttrs( block, wrapperControlled, sharedCorpus, contextCon
 // is no block.json to enumerate and no per-block directory to walk, so CHECK 1
 // structurally cannot reach it (it explicitly filters `d.name !== 'extensions'`)
 // and no other guard in this project has ever scanned this surface either.
-// Confirmed live 2026-08-01: `fxPreset` is the one attribute in this file that
-// intentionally has no consumer (see EXTENSION_EDITOR_ONLY_ATTRS above); every
-// other fx* / sgs* attribute IS consumed, either by this file's own
+// Every extension attribute is expected to be consumed, either by this file's own
 // `getSaveContent.extraProps` function (static blocks) or by the matching
 // `includes/*.php` file via the `render_block` filter (dynamic blocks) — both
 // already fall inside `sharedCorpus`, since that is every .php file under
@@ -1422,8 +1394,7 @@ function extractBalancedBraceBlock( text, openBraceIndex ) {
  *
  * This is deliberately the ONLY shape resolved. Every extension's own
  * getSaveContent.extraProps consumer in this codebase today uses a named
- * function declaration (fx.js `addFxSaveProps`, animation.js
- * `addAnimationSaveProps`, custom-css.js `saveCustomCssAttribute`,
+ * function declaration (custom-css.js `saveCustomCssAttribute`,
  * custom-spacing.js `applySpacingClasses`, responsive-visibility.js
  * `addVisibilityClasses`) — confirmed by reading each file, not assumed. A
  * file whose consumer is an inline arrow or `const` HOC (none currently is)
@@ -1459,9 +1430,8 @@ function extractFilterCallbackBody( src, hookName ) {
 /**
  * Collect controlled attrs for an extension file, recognising the same
  * `setAttributes( { ... } )` shapes `collectControlledAttrs` already knows,
- * PLUS the `setParam( { ... } )` convenience wrapper fx.js defines and
- * documents as "a WRITER, not a filter" that always resolves to a real
- * `setAttributes` call (see fx.js `withFxControls`). A textual alias
+ * PLUS the `setParam( { ... } )` convenience wrapper, which always
+ * resolves to a real `setAttributes` call. A textual alias
  * substitution reuses the one tested regex implementation rather than
  * maintaining a second parallel attribute-key parser that could silently
  * drift from it.
@@ -1478,7 +1448,7 @@ function collectExtensionControlledAttrs( src ) {
  * so the self-test can exercise the exact same logic against a synthetic
  * fixture without touching the real extensions directory.
  *
- * @param {string}      name          Reporting name, e.g. 'fx.js'.
+ * @param {string}      name          Reporting name, e.g. 'custom-css.js'.
  * @param {string}      src           Extension-file source (raw, not comment-stripped).
  * @param {string}      sharedCorpus  Comment-stripped concatenation of every includes/*.php file.
  * @param {Set<string>} declaredAttrs The real extension-attribute registry (EXTENSION_ATTRS in
@@ -1603,8 +1573,7 @@ function checkExtensionFile( filePath, sharedCorpus ) {
 //      include function — right there in render.php); or (b) re-read
 //      `$attributes['attr']` a second time at the call site — which leaves a
 //      second quoted occurrence of the attribute name, satisfying rule 2
-//      (real example: sgs/gallery's `transitionDuration`/`transitionEasing`
-//      — the variable IS flagged, correctly, per the note above). A shared
+//      (a variable that is re-read at the call site is flagged, correctly, per the note above). A shared
 //      include consuming the value with literally ZERO trace left in
 //      render.php's own text is not constructible in ordinary PHP (the
 //      value has to get there somehow), so this is a bounded gap, not an
@@ -2325,7 +2294,7 @@ function shouldFailBuild(
 // not it is actually checking anything. This plants a KNOWN dead control into a synthetic
 // fixture, confirms the plant landed on disk, then asserts CHECK 3 catches it
 // — alongside a negative control (a genuinely-wired attr that must NOT be
-// flagged) and the documented editor-only exemption (fxPreset-shaped, must
+// flagged) and the documented editor-only exemption (a name added to the allowlist for the test, must
 // also NOT be flagged). It then runs the same function against the REAL
 // extensions directory and reports what it finds, so the "zero false
 // positives on the current panel" acceptance condition has real evidence
@@ -2337,12 +2306,12 @@ function runSelfTest() {
 
 	log( '[check-dead-controls --self-test] CHECK 3 (extension-file dead controls)\n' );
 
-	// Synthetic extension file, same shape as the real fx.js:
+	// Synthetic extension file, same shape as the real extension files:
 	//   liveAttr — declared, controlled, genuinely consumed by its own
 	//              getSaveContent.extraProps function. Must NOT be flagged.
 	//   deadAttr — declared, controlled, consumed NOWHERE. The PLANTED
 	//              DEFECT — the known failure this self-test exists to catch.
-	//   fxPreset — declared, controlled, consumed nowhere, but on the
+	//   fixtureEditorOnly — declared, controlled, consumed nowhere, but on the
 	//              documented EXTENSION_EDITOR_ONLY_ATTRS allowlist. Proves
 	//              the allowlist path works rather than just "nothing fires".
 	const fixtureSrc = [
@@ -2355,7 +2324,7 @@ function runSelfTest() {
 		'			...settings.attributes,',
 		"			liveAttr: { type: 'string', default: '' },",
 		"			deadAttr: { type: 'string', default: '' },",
-		"			fxPreset: { type: 'string', default: '' },",
+		"			fixtureEditorOnly: { type: 'string', default: '' },",
 		'		},',
 		'	};',
 		'}',
@@ -2365,7 +2334,7 @@ function runSelfTest() {
 		'	const { setAttributes } = props;',
 		"	setAttributes( { liveAttr: 'x' } );",
 		"	setAttributes( { deadAttr: 'x' } ); // PLANTED DEFECT — never consumed below.",
-		"	setAttributes( { fxPreset: 'dramatic' } );",
+		"	setAttributes( { fixtureEditorOnly: 'dramatic' } );",
 		'	return null;',
 		'};',
 		"addFilter( 'editor.BlockEdit', 'sgs/fixture-controls', withFixtureControls );",
@@ -2399,11 +2368,14 @@ function runSelfTest() {
 	}
 	log( 'CONFIRMED — planted defect ("deadAttr") is present in the on-disk fixture.\n' );
 
-	const declaredAttrs = new Set( [ 'liveAttr', 'deadAttr', 'fxPreset' ] );
+	const declaredAttrs = new Set( [ 'liveAttr', 'deadAttr', 'fixtureEditorOnly' ] );
 	// Empty sharedCorpus is deliberate: this isolates the JS-side own-corpus
 	// path so the test cannot pass-by-accident off unrelated real includes/
 	// PHP text containing the word "liveAttr" or "deadAttr".
+	// The real allowlist is empty; the test adds one name so the allowlist path is still proven.
+	EXTENSION_EDITOR_ONLY_ATTRS.add( 'fixtureEditorOnly' );
 	const findings = checkExtensionFileSrc( 'fixture-extension.js', readBack, '', declaredAttrs );
+	EXTENSION_EDITOR_ONLY_ATTRS.delete( 'fixtureEditorOnly' );
 	const findingAttrs = new Set( findings.map( ( f ) => f.attr ) );
 
 	if ( findingAttrs.has( 'deadAttr' ) ) {
@@ -2420,10 +2392,10 @@ function runSelfTest() {
 		pass = false;
 	}
 
-	if ( ! findingAttrs.has( 'fxPreset' ) ) {
-		log( 'PASS — Test C: documented editor-only attr ("fxPreset") was NOT flagged.' );
+	if ( ! findingAttrs.has( 'fixtureEditorOnly' ) ) {
+		log( 'PASS — Test C: documented editor-only attr ("fixtureEditorOnly") was NOT flagged.' );
 	} else {
-		log( 'FAIL — Test C: documented editor-only attr ("fxPreset") was flagged — allowlist broken.' );
+		log( 'FAIL — Test C: documented editor-only attr ("fixtureEditorOnly") was flagged — allowlist broken.' );
 		pass = false;
 	}
 
@@ -2922,12 +2894,11 @@ function runDumpJsonSelfTest( log ) {
 	// key-noise) each with no control and no consumption, proving `exempt`
 	// disambiguates them from a real fully-dead finding.
 	//
-	// `sgsAnimation` is a REAL registered extension attribute (verified:
-	// includes/extension-attributes.generated.php declares `'sgsAnimation' =>
+	// `sgsCustomCss` is a REAL registered extension attribute (verified:
+	// includes/extension-attributes.generated.php declares `'sgsCustomCss' =>
 	// array(...)`, matching loadExtensionAttrs()'s own `sgs[A-Za-z0-9]+`
 	// extraction pattern — NOT the same allowlist as EXTENSION_EDITOR_ONLY_ATTRS,
-	// whose `fxPreset` entry does not start with `sgs` and so is NOT in
-	// EXTENSION_ATTRS at all), used here — rather than a synthetic name — so
+	// which is empty), used here — rather than a synthetic name — so
 	// the system-attr case is proven against isSystemAttr()'s real
 	// EXTENSION_ATTRS (loaded earlier in runSelfTest, before this function
 	// runs) instead of requiring a temporary mutation of that global just for
@@ -2952,7 +2923,7 @@ function runDumpJsonSelfTest( log ) {
 			'respBaseTablet',
 			'deadControlledAttr',
 			'fullyDeadAttr',
-			'sgsAnimation',
+			'sgsCustomCss',
 			'fixtureEditorOnlyAttr',
 			'id',
 			'anchor',
@@ -3007,7 +2978,7 @@ function runDumpJsonSelfTest( log ) {
 		[ 'respBaseTablet', false, true, 'responsive-variant', false, null ],
 		[ 'deadControlledAttr', true, false, 'none', false, null ],
 		[ 'fullyDeadAttr', false, false, 'none', false, null ],
-		[ 'sgsAnimation', false, false, 'none', true, 'system-attr' ],
+		[ 'sgsCustomCss', false, false, 'none', true, 'system-attr' ],
 		[ 'fixtureEditorOnlyAttr', false, false, 'none', true, 'editor-only' ],
 		[ 'id', false, false, 'none', true, 'key-noise' ],
 		[ 'anchor', false, false, 'none', true, 'core-supports' ],
@@ -3090,17 +3061,17 @@ function runDumpJsonSelfTest( log ) {
 		pass = false;
 	}
 
-	// Live check — the synthetic sgsAnimation case above (Test I) proves the
+	// Live check — the synthetic sgsCustomCss case above (Test I) proves the
 	// exemptReason='system-attr' WIRING against the real EXTENSION_ATTRS set,
 	// but on a fixture block, not a real block.json. This confirms the SAME
-	// resolution holds through the full live pipeline: sgs/card-grid declares
-	// sgsAnimation for real, and it must come back exempt here too.
+	// resolution holds through the full live pipeline: sgs/nav-drawer declares
+	// sgsCustomCss for real, and it must come back exempt here too.
 	const cardGridAnimRow = liveRows.find(
-		( r ) => 'sgs/card-grid' === r.block && 'sgsAnimation' === r.attr
+		( r ) => 'sgs/nav-drawer' === r.block && 'sgsCustomCss' === r.attr
 	);
 	if ( cardGridAnimRow && true === cardGridAnimRow.exempt && 'system-attr' === cardGridAnimRow.exemptReason ) {
 		log(
-			'PASS — Test J (live, exempt): sgs/card-grid.sgsAnimation -> exempt=true, ' +
+			'PASS — Test J (live, exempt): sgs/nav-drawer.sgsCustomCss -> exempt=true, ' +
 				"exemptReason='system-attr'."
 		);
 	} else {

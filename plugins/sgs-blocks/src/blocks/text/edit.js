@@ -29,14 +29,13 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	RangeControl,
 	ToggleControl,
 } from '@wordpress/components';
 // ⛔ ResponsiveControl is deliberately NOT imported any more: the only mount was
 // the bolted-on "Line height (tablet / mobile)" pair, now replaced by the shared
 // TypographyControls' own tier-aware line-height field.
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
 	resolveTextColourPreviewStyle,
@@ -49,7 +48,6 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import { composeShadow } from '../../utils/shadow-layers';
-import { CSS_EASING_OPTIONS as EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -304,12 +302,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkColourHoverGradient,
 		linkUnderline,
 		linkUnderlineThickness,
-		scaleHover,
 		customWidth,
 		customWidthUnit,
 		inheritStyle,
-		transitionDuration,
-		transitionEasing,
 	} = attributes;
 
 	// Drop-cap ::first-letter preview — gate the class only when dropCap is on
@@ -851,48 +846,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 						attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
 					/>
-					<RangeControl
-						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						value={ parseFloat( scaleHover ) || 1 }
-						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
-						min={ 1 }
-						max={ 1.1 }
-						step={ 0.01 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration ?? 300 }
-						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
-						min={ 0 }
-						max={ 1000 }
-						step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ /* D812 (2026-08-26): a 2-5 option enum with longest rendered
-					   label <=12 chars renders as ToggleGroupControl, not
-					   SelectControl (this enum: 5 options, longest label 11
-					   chars — "Ease in-out"). Reference: sgs/heading's identical
-					   transitionEasing mount (both blocks share the same
-					   enum shape, fixed there first). */ }
-					<ToggleGroupControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val || 'ease' } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						{ EASING_OPTIONS.map( ( option ) => (
-							<ToggleGroupControlOption
-								key={ option.value }
-								value={ option.value }
-								label={ option.label }
-							/>
-						) ) }
-					</ToggleGroupControl>
 				</PanelBody>
 			</InspectorControls>
 

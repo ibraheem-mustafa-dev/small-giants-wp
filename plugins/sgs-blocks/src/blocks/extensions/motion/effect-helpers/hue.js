@@ -1,6 +1,5 @@
 /**
- * The hue helpers behind the narrow-palette warning (D946/1f). Moved out of `fx.js` (Spec 38A M3.6), which
- * re-exports them until its panel is retired.
+ * The hue helpers behind the narrow-palette warning (D946/1f). Read by the Effects panel.
  *
  * @package
  */

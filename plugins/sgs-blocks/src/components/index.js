@@ -60,7 +60,6 @@ export { activeShapeKey, weightsToTrack } from './ColumnShapePicker';
 export { default as ScaleAxisControl } from './ScaleAxisControl';
 export { default as ShadowControl, shadowAttrName, shadowAttrKeys } from './ShadowControl';
 export { default as SpacingControl } from './SpacingControl';
-export { default as AnimationControl } from './AnimationControl';
 export { IconPicker, IconPreview } from './IconPicker';
 export { default as RowQuickInsertAppender } from './RowQuickInsertAppender';
 export { default as RowScrollBehaviourControls } from './RowScrollBehaviourControls';
@@ -95,9 +94,9 @@ export { default as SgsSeparatorControl } from './SgsSeparatorControl';
 export { default as SweepAngleControl } from './SweepAngleControl';
 export { default as LinkUnderlineControl } from './LinkUnderlineControl';
 export {
-	default as MotionEasingControl,
-	MOTION_EASING_OPTIONS,
-	isValidCubicBezier,
+	default as EasingAtom,
+	NAV_EASING_OPTIONS as MOTION_EASING_OPTIONS,
 	motionEasingCss,
-} from './MotionEasingControl';
+} from './motion/EasingAtom';
+export { isValidCubicBezier } from './motion/field-types';
 export { default as ShadowLiftControls } from './ShadowLiftControls';

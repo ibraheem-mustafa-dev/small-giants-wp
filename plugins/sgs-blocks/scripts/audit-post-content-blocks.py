@@ -90,10 +90,10 @@ NATIVE = {
 #
 # These two constants are the FALLBACK only. The authoritative list is read from
 # includes/extension-attributes.generated.php by _load_extension_attrs() below.
-EXT_PREFIXES = ('sgsHideOn', 'sgsAnim')
+EXT_PREFIXES = ('sgsHideOn',)
 EXT_EXACT = {'sgsCustomCss'}
 
-# Attr names in the generated server mirror, e.g. "\t'fxStart' => array( ... )".
+# Attr names in the generated server mirror, e.g. "\t'sgsCustomCss' => array( ... )".
 _GENERATED_ATTR_RE = re.compile(r"^\s*'([A-Za-z][A-Za-z0-9]*)'\s*=>", re.M)
 
 
@@ -103,7 +103,7 @@ def _load_extension_attrs() -> set:
     WHY THIS IS READ RATHER THAN HARDCODED (fixed 2026-07-29, Spec 38 Wave A):
     extension attrs are added by JS filters, so they are invisible to a
     block.json-only scan and every one of them looks "undeclared" here. The
-    previous hardcoded ('sgsHideOn', 'sgsAnim') + {'sgsCustomCss'} list meant
+    previous hardcoded ('sgsHideOn',) + {'sgsCustomCss'} list meant
     each NEW extension silently began raising false HIGH findings against real,
     correct stored content — Spec 38's `fx*` attrs did exactly that, and a HIGH
     here aborts the deploy.

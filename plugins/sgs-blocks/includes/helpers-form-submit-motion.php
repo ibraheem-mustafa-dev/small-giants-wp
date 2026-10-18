@@ -4,8 +4,8 @@
  *
  * Three settings on the form block, all empty by default (an untouched form prints nothing here):
  * `submitShadow` (+ `submitShadowColour`) the resting shadow, `submitShadowHover` /
- * `submitShadowColourHover` and `submitShadowLiftOnHover` / `submitSgsHoverShadow` the hover
- * shadow (an explicit hover shadow, a preset, or the automatic lift of the resting one), and
+ * `submitShadowColourHover` and `submitShadowLiftOnHover` the hover
+ * shadow (an explicit hover shadow, or the automatic lift of the resting one), and
  * `submitLiftHover` the hover lift in px. The shadow goes through the shared composers
  * (sgs_shadow_decls) and the lift through sgs_hover_lift_rule(), the same two helpers sgs/button
  * uses. JS twin for the editor preview: src/blocks/form/submit-motion-preview.js.
@@ -33,7 +33,6 @@ if ( ! function_exists( 'sgs_form_submit_shadow_map' ) ) {
 			'hover'        => 'submitShadowHover',
 			'hover_colour' => 'submitShadowColourHover',
 			'lift_prefix'  => 'submit',
-			'hover_preset' => 'submitSgsHoverShadow',
 		);
 	}
 }

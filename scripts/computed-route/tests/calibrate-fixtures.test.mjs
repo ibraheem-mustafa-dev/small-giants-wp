@@ -96,8 +96,6 @@ test( 'MUST FAIL (mega-group sgsChildSizing discovered empty): the group is buil
 } );
 
 test( 'MUST FAIL (L5.6 NEEDS_VARIANT_OR_TOGGLE / NEEDS_LAYOUT_MODE): variants turn on the element each setting styles', () => {
-	assert.ok( effective( 'sgs/brand-strip' ).some( ( a ) => true === a.fadeEdges ), 'brand-strip fadeEdges gates fadeWidth' );
-	assert.ok( render( 'brand-strip' ).includes( '$fade_edges' ) );
 	assert.ok( effective( 'sgs/social-icons' ).some( ( a ) => true === a.childIconShowBackground ), 'social-icons background switch paints childIconBackground' );
 	assert.ok( effective( 'sgs/notice-banner' ).some( ( a ) => 'circle' === a.iconStyle ), 'notice-banner circle paints the icon circle' );
 	assert.ok( blockJson( 'notice-banner' ).attributes.iconStyle.enum.includes( 'circle' ) );

@@ -246,13 +246,13 @@ def test_d2_config_map_held_in_a_variable(tmp_path):
 
 def test_d5_double_quoted_composite_transition(tmp_path):
     php = (
-        "<?php\n$transition_duration = absint( $attributes['transitionDuration'] ?? 300 );\n"
-        "$transition_easing = (string) ( $attributes['transitionEasing'] ?? 'ease' );\n"
+        "<?php\n$transition_duration = absint( $attributes['loopDuration'] ?? 300 );\n"
+        "$transition_easing = (string) ( $attributes['loopEasing'] ?? 'ease' );\n"
         "$css[] = \".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}\";\n"
     )
-    ev = _extended(php, {"transitionDuration", "transitionEasing"}, "button", tmp_path)
-    assert ev["raw"]["transitionDuration"] == {"transition-duration"}
-    assert ev["raw"]["transitionEasing"] == {"transition-timing-function"}
+    ev = _extended(php, {"loopDuration", "loopEasing"}, "button", tmp_path)
+    assert ev["raw"]["loopDuration"] == {"transition-duration"}
+    assert ev["raw"]["loopEasing"] == {"transition-timing-function"}
 
 
 # ── D3: custom property read by another block's stylesheet ────────────────────

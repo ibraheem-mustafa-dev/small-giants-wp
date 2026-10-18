@@ -1,5 +1,5 @@
 /**
- * Spec 38A FR-38A-51, Track S open item 1: a drawer whose old `itemStaggerOnClose` was off closes all at once.
+ * Spec 38A FR-38A-51, Track S open item 1: a drawer whose item stagger on close is off closes all at once.
  *
  * The fixture is an old-shape drawer (`tests/fixtures/motion/pages/nav-drawer-close-together-drawer.json`: a 60ms item
  * stagger, close in order off, the canary's Primary Menu and a button) migrated by `wp sgs motion-migrate`, whose

@@ -336,9 +336,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"scaleHover": {
-			"type": "number"
-		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
@@ -363,14 +360,6 @@
 		"inheritStyle": {
 			"type": "boolean",
 			"default": false
-		},
-		"transitionDuration": {
-			"type": "string",
-			"default": "300"
-		},
-		"transitionEasing": {
-			"type": "string",
-			"default": "ease-in-out"
 		},
 		"borderColourHover": {
 			"type": "string",

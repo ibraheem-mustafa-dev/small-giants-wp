@@ -42,7 +42,7 @@ import { ToolsPanel, ToolsPanelItem } from './primitives';
 import ResponsiveOverride from './ResponsiveOverride';
 import SgsBoxControl from './SgsBoxControl';
 import { BOX_UNITS, normaliseResponsiveBox } from './ResponsiveBoxControl';
-import MotionEasingControl from './MotionEasingControl';
+import EasingAtom from './motion/EasingAtom';
 
 /**
  * Derive a stable, DOM-safe anchor id for a child that has none yet.
@@ -369,7 +369,8 @@ export default function RowScrollBehaviourControls( {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							<MotionEasingControl
+							<EasingAtom
+								vocab="nav"
 								label={ __( 'Shrink motion curve', 'sgs-blocks' ) }
 								value={ rowShrinkEasing }
 								custom={ rowShrinkEasingCustom }

@@ -88,7 +88,7 @@
  *   elsewhere, a false positive. Measured live 2026-08-13 against the
  *   152-finding backlog: exactly 9 findings are this shape (7x
  *   `fieldName` across the form-field-* family via `field_id()`, plus
- *   `sgs/post-grid`'s `transitionDuration`/`transitionEasing` via
+ *   `sgs/post-grid`'s transition duration and easing via
  *   `sgs_transition_vars()`) — 5.9% of the backlog. DELIBERATELY NOT
  *   extended into a real cross-file AST walk: at this volume, hand-
  *   verifying each call site and baselining it is faster and lower-risk

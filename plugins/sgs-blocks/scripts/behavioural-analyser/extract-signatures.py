@@ -3460,8 +3460,7 @@ def extract_css_property_and_layer() -> dict:
     # never on attr_type: a type-based guard was measured and rejected — 1,680
     # string + 105 boolean rows carry a legitimate css_property tree-wide
     # (including 59 colour attrs with no manifest entry, and booleans that
-    # legitimately drive effects, e.g. card-grid.imageZoomHover -> transform,
-    # container.bgKenBurns -> animation). Role-based blast radius is exactly the
+    # legitimately drive effects, e.g. the hover-zoom switch -> transform). Role-based blast radius is exactly the
     # 2 rows these roles actually describe (both sgs/responsive-logo: `alt`
     # role=image-alt, `logoDecorative` role=boolean-visibility).
     _NON_PAINTING_ROLES = frozenset({"image-alt", "boolean-visibility"})
@@ -3592,7 +3591,7 @@ _KNOWN_CONTROLS = (
     "ToggleGroupControl", "Button",
     # This framework's own single-attribute controls (src/components/).
     "ResponsiveBoxControl", "ResponsiveBorderRadiusControl", "BorderRadiusControl",
-    "SpacingControl", "ShadowControl", "GradientOverlayControl", "AnimationControl",
+    "SpacingControl", "ShadowControl", "GradientOverlayControl",
     "IconPicker", "SgsLinkControl", "StateToggleControl",
     "ResponsiveTriStateControl", "BooleanResponsiveControl",
     "RRangeControl", "RUnitControl",

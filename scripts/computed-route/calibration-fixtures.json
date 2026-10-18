@@ -222,7 +222,6 @@
   "sgs/brand-strip": {
     "attributes": {
       "source": "manual",
-      "scrolling": false,
       "logos": [
         {
           "_key": "cal-logo-1",
@@ -256,9 +255,6 @@
       },
       {
         "brandDisplay": "text"
-      },
-      {
-        "fadeEdges": true
       }
     ]
   },
@@ -478,7 +474,6 @@
   "sgs/cart": {
     "attributes": {
       "pillLabel": "Bag",
-      "countPopAnimation": true,
       "freeDeliveryMessage": "Add %s more for free UK delivery",
       "showZero": true,
       "panelHeading": "Bag",
@@ -1256,7 +1251,6 @@
   },
   "sgs/hero": {
     "attributes": {
-      "bgKenBurns": true,
       "bgVideo": {
         "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/calibration-loop.mp4",
         "type": "video"
@@ -1777,7 +1771,6 @@
       "submenuModel": "accordion",
       "chromeSlotText": "MENU",
       "chromeSlotPlacement": "after-logo",
-      "itemStagger": 50,
       "chromeLogoUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
       "chromeLogoId": 4080,
       "chromeSlotType": "label"
@@ -2056,12 +2049,7 @@
           "mobile": "on"
         }
       }
-    ],
-    "preconditions": {
-      "bgHoverZoomScale": {
-        "bgHoverZoom": true
-      }
-    }
+    ]
   },
   "sgs/site-header-row": {
     "attributes": {

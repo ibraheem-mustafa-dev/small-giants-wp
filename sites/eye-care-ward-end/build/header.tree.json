@@ -41,11 +41,25 @@
         }
       ],
       "className": "cr-ref-header-0",
-      "autoScroll": true,
-      "autoScrollBelow": 768,
-      "autoScrollDuration": 30,
-      "autoScrollPauseOnHover": true,
-      "autoScrollPauseButton": false
+      "sgsMotion": {
+        "v": 1,
+        "elements": {
+          "root": {
+            "effects": [
+              {
+                "id": "marquee",
+                "effect": "marquee",
+                "values": {
+                  "duration": 30000,
+                  "hoverRate": 0,
+                  "pauseOnTouch": true,
+                  "belowBreakpoint": "mobile"
+                }
+              }
+            ]
+          }
+        }
+      }
     }
   },
   {
@@ -180,7 +194,6 @@
               "itemBorderColourCurrent": "transparent",
               "itemColourHover": "text",
               "itemFontWeightCurrent": "400",
-              "submenuAnimationDuration": 200,
               "itemDisabledColour": "#8B8478",
               "burgerBarCount": 2,
               "burgerIconWidth": {
@@ -202,7 +215,7 @@
               },
               "burgerHoverColour": "transparent",
               "margin": {
-                "desktop": {},
+                "desktop": [],
                 "tablet": {
                   "left": "-8px"
                 }
@@ -237,7 +250,33 @@
                 "desktop": "10px"
               },
               "className": "cr-ref-header-4",
-              "itemBorderHoverTreatment": "sweep"
+              "itemBorderHoverTreatment": "sweep",
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "panel": {
+                    "entrance": {
+                      "base": {
+                        "trigger": "open",
+                        "values": {
+                          "from": {
+                            "opacity": 0
+                          },
+                          "to": {
+                            "opacity": 1
+                          },
+                          "duration": 200,
+                          "easing": "ease-out"
+                        },
+                        "close": {
+                          "closeDuration": 150,
+                          "closeEasing": "ease-out"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
           {
@@ -267,7 +306,6 @@
                   "linkToHome": true,
                   "shrinkWidth": 40,
                   "shrinkWidthUnit": "px",
-                  "opacityHover": 1,
                   "className": "cr-ref-header-6"
                 }
               },
@@ -294,7 +332,6 @@
                       "linkToHome": false,
                       "shrinkWidth": 91,
                       "shrinkWidthUnit": "px",
-                      "opacityHover": 1,
                       "className": "cr-ref-header-8"
                     },
                     "innerBlocks": []
@@ -427,12 +464,37 @@
                   "itemBorderColourCurrent": "transparent",
                   "itemColourHover": "text",
                   "itemFontWeightCurrent": "400",
-                  "submenuAnimationDuration": 200,
                   "itemMinHeight": {
                     "desktop": "0px"
                   },
                   "className": "cr-ref-header-12",
-                  "itemBorderHoverTreatment": "sweep"
+                  "itemBorderHoverTreatment": "sweep",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "panel": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "open",
+                            "values": {
+                              "from": {
+                                "opacity": 0
+                              },
+                              "to": {
+                                "opacity": 1
+                              },
+                              "duration": 200,
+                              "easing": "ease-out"
+                            },
+                            "close": {
+                              "closeDuration": 150,
+                              "closeEasing": "ease-out"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               },
               {
@@ -441,7 +503,6 @@
                   "triggerStyle": "pill",
                   "pillLabel": "Bag",
                   "displayMode": "drawer",
-                  "countPopAnimation": "load-and-change",
                   "pillBorderColour": "primary",
                   "pillBorderStyle": "solid",
                   "pillBorderWidth": {
@@ -675,7 +736,41 @@
                   "scrimOpacity": {
                     "desktop": 0.45
                   },
-                  "className": "cr-ref-header-13"
+                  "className": "cr-ref-header-13",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "badge": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "state",
+                            "state": "count-loaded",
+                            "values": {
+                              "keyframes": [
+                                {
+                                  "offset": 0,
+                                  "opacity": 0,
+                                  "scale": 0.6
+                                },
+                                {
+                                  "offset": 60,
+                                  "opacity": 1,
+                                  "scale": 1.15
+                                },
+                                {
+                                  "offset": 100,
+                                  "opacity": 1,
+                                  "scale": 1
+                                }
+                              ],
+                              "duration": 500,
+                              "easing": "ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             ]

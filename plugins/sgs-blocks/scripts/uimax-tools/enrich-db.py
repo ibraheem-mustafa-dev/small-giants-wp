@@ -99,9 +99,6 @@ CONTAINER_NEW_ATTR_SLOTS: dict[str, str] = {
     "backgroundOverlayColour": "overlay",
     "backgroundOverlayOpacity": "overlay",
     "backgroundRepeat": "backgroundMedia",
-    "bgAnimationDuration": "animation",
-    "bgKenBurns": "animation",
-    "bgParallax": "parallax",
     "bgVideo": "backgroundMedia",
     "bgVideoMobile": "backgroundMedia",
     "overlayGradientAngle": "overlay",
@@ -164,7 +161,7 @@ def target_21_canonical_slots(conn: sqlite3.Connection, dry_run: bool) -> int:
     NEW_SYNONYMS = [
         ("layout", ["layoutType", "direction", "flexDirection", "gridColumns"],
          "Layout mode / direction control for flex/grid containers"),
-        ("parallax", ["parallaxSpeed", "bgParallax", "parallaxOffset"],
+        ("parallax", ["parallaxSpeed", "parallaxOffset"],
          "Parallax scroll effect attributes"),
         ("column", ["columns", "columnCount", "numColumns"],
          "Column count / layout column control"),

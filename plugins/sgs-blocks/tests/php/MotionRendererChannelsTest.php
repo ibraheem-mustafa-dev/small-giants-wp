@@ -147,16 +147,6 @@ final class MotionRendererChannelsTest extends TestCase {
 		$this->assertSame( '<p>x</p>', $out );
 	}
 
-	public function test_legacy_entrance_injector_skips_a_block_with_the_new_attribute(): void {
-		require_once dirname( __DIR__, 2 ) . '/includes/animation-timing-clamp.php';
-		require_once dirname( __DIR__, 2 ) . '/includes/animation-attributes.php';
-		$html  = '<div class="wp-block-sgs-info-box" data-sgs-animation="fade-up">x</div>';
-		$both  = \SGS\Blocks\inject_animation_attributes( $html, array( 'blockName' => 'sgs/info-box', 'attrs' => array( 'sgsAnimation' => 'fade-up', 'sgsMotion' => self::load_fade() ) ) );
-		$this->assertStringNotContainsString( 'data-sgs-animation', $both );
-		$old = \SGS\Blocks\inject_animation_attributes( '<div class="a">x</div>', array( 'blockName' => 'sgs/info-box', 'attrs' => array( 'sgsAnimation' => 'fade-up' ) ) );
-		$this->assertStringContainsString( 'data-sgs-animation="fade-up"', $old, 'negative control: the old model alone still renders' );
-	}
-
 	public function test_an_x_or_y_owner_without_a_perspective_gets_the_default(): void {
 		$this->render( self::media_hover( array( 'rotateY' => 5 ) ) );
 		$this->assertStringContainsString( '--sgs-persp-self:800px;', $this->css(), 'a hover Y angle with no perspective gets 800px, never none' );

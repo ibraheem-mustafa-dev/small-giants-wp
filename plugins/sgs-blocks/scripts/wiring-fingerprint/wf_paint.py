@@ -57,7 +57,7 @@ PLAYBACK_RE = re.compile(r"(?:Loop|Autoplay|AutoPlay|Muted|Controls|PlaysInline|
 EFFECT_NAME_RE = re.compile(r"Lottie|Parallax|Magnet|Physics|Sequence|PathDraw|Reactive|KenBurns|Tilt|Particle|Shader|WebGL|Fx[A-Z]|^fx|^anim|Animation", re.I)
 MODIFIERS = ("Mobile", "Tablet", "Desktop", "Hover", "Unit", "Custom")
 STATE_RE = re.compile(r"(Hover|Focus|Active|Scrolled|Open|Pressed|Visited)(Gradient|Colour|Color)?$|Hover[A-Z]|Focus[A-Z]|Scrolled[A-Z]")
-MOTION_RE = re.compile(r"(Duration|Easing|EasingCustom|Delay|Stagger|Speed|Animation|Parallax|KenBurns|Reveal\w*)$|^sgsAnimation|^anim|^fx[A-Z]")
+MOTION_RE = re.compile(r"(Duration|Easing|EasingCustom|Delay|Stagger|Speed|Animation|Parallax|KenBurns|Reveal\w*)$|^anim|^fx[A-Z]")
 
 
 def strip_modifiers(name: str) -> str:
@@ -120,9 +120,9 @@ class PaintClassifier:
             # colour). Any other declaration it gates (one that shows, hides, sizes or
             # places a box, or carries another setting's value), and a data attribute
             # it sets, are the content or behaviour it switches. A hover, state or
-            # motion effect toggle (`shadowLiftOnHover`, `bgHoverZoom`) paints through
+            # motion effect toggle (`shadowLiftOnHover`) paints through
             # the declaration it gates, and a visual-effect runtime toggle
-            # (`bgLottieLoop`, `itemMagnetEnabled`) through its data attribute.
+            # (`heroLottieLoop`, `itemMagnetEnabled`) through its data attribute.
             if signals.get("utility_class_rule"):
                 return "css", "class-rule"
             if signals.get("toggle_paint"):

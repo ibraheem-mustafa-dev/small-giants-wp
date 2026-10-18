@@ -162,7 +162,31 @@
               "extrasBeforeCartCount": 1,
               "stackBelow": "tablet",
               "className": "cr-ref-product-4",
-              "photoEntrance": "rise"
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "main-photo": {
+                    "entrance": {
+                      "base": {
+                        "preset": "entrance-fade-up",
+                        "trigger": "load",
+                        "values": {
+                          "from": {
+                            "opacity": 0,
+                            "translateY": "token:entrance.distance"
+                          },
+                          "to": {
+                            "opacity": 1,
+                            "translateY": 0
+                          },
+                          "duration": "token:entrance.duration",
+                          "easing": "token:entrance.easing"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             },
             "innerBlocks": [
               {
@@ -267,7 +291,6 @@
                     "desktop": 56
                   },
                   "minHeightUnit": "px",
-                  "transitionDuration": 250,
                   "widthType": {
                     "desktop": "full"
                   },
@@ -280,7 +303,21 @@
                     "desktop": 13
                   },
                   "fontSizeUnit": "px",
-                  "className": "cr-ref-product-8"
+                  "className": "cr-ref-product-8",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "duration": 250
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               },
               {
@@ -2371,7 +2408,26 @@
                       "iconSize": {
                         "desktop": 18
                       },
-                      "iconRotation": 45
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "turning-icon": {
+                            "entrance": {
+                              "base": {
+                                "trigger": "state",
+                                "state": "expanded",
+                                "values": {
+                                  "to": {
+                                    "rotate": 45
+                                  },
+                                  "duration": "token:duration.medium",
+                                  "easing": "token:easing.default"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     },
                     "innerBlocks": [
                       {

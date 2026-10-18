@@ -53,7 +53,7 @@ final class Sgs_Motion_Fx_Grammar {
 	);
 
 	/**
-	 * The GSAP eases the flat `fxEase` attribute stores as the schema easings that draw them: `none` is `linear`, the
+	 * The GSAP eases a stored effect holds, as the schema easings that draw them: `none` is `linear`, the
 	 * power and back eases their standard cubic-bezier equivalents. `bounce.out` and `elastic.out(1,0.5)`, which no
 	 * cubic-bezier can draw, are `linear()` curves sampled from GSAP's own functions (`self::gsap_curves`). Twin: the
 	 * `gsap` vocabulary of `src/components/motion/easing-master-list.js` (every non-empty value is a key here).
@@ -248,7 +248,7 @@ final class Sgs_Motion_Fx_Grammar {
 	}
 
 	/**
-	 * A flat `fxEase` GSAP ease as a schema easing.
+	 * A stored GSAP ease as a schema easing.
 	 *
 	 * @param mixed $ease Stored GSAP ease.
 	 * @return string|null Null for an empty or unknown ease.

@@ -12,11 +12,11 @@
  *
  * Attributes (declared in each of those blocks' block.json; controls in
  * src/blocks/container/components/BackgroundPanel.js):
- *   bgHoverZoom             on/off
- *   bgHoverZoomScale        zoom in % (101-150, default 105)
- *   bgHoverZoomDuration     ms (0-3000, default 600)
- *   bgHoverZoomEasing       named easing (sgs_motion_easing_css(), default 'ease')
- *   bgHoverZoomEasingCustom cubic-bezier() for the 'custom' easing
+ *   surfaceZoom             on/off
+ *   surfaceZoomScale        zoom in % (101-150, default 105)
+ *   surfaceZoomDuration     ms (0-3000, default 600)
+ *   surfaceZoomEasing       named easing (sgs_motion_easing_css(), default 'ease')
+ *   surfaceZoomEasingCustom cubic-bezier() for the 'custom' easing
  *
  * Off while Ken Burns or parallax is on: both already move the same image.
  *

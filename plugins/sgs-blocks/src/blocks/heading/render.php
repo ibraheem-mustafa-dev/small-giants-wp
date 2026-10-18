@@ -161,13 +161,6 @@ $box_shadow_decls = sgs_shadow_decls(
 	$block->name ?? ''
 );
 
-$transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 0;
-$transition_duration     = $transition_duration_raw;
-$transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
-$allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
-
-$hover_scale  = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
 $hover_colour = $attributes['textColourHover'] ?? '';
 // D636 — sibling-attribute shape, see $text_colour_gradient above.
 $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
@@ -375,15 +368,7 @@ if ( '' !== $hover_colour_effective ) {
 if ( $box_shadow_decls['hover'] ) {
 	$hover_rules = array_merge( $hover_rules, $box_shadow_decls['hover'] );
 }
-$has_scale = null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001;
-if ( $has_scale ) {
-	$hover_rules[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
-}
-
-if ( $hover_rules || $has_scale ) {
-	if ( $transition_duration > 0 ) {
-		$scoped_css[] = "{$root_sel}{transition:all {$transition_duration}ms {$transition_easing};}";
-	}
+if ( $hover_rules ) {
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
 		$scoped_css[]         = sgs_hover_state_rules( $root_sel, implode( ';', $hover_rules ), ':focus-within' );
@@ -438,11 +423,6 @@ if ( ! $inherit_style ) {
 	);
 	if ( '' !== $background_layer_css ) {
 		$scoped_css[] = $background_layer_css;
-		// Keep the ::after layer's own background transition in step with the
-		// root's hover transition above (only relevant when a hover state exists).
-		if ( ( $hover_rules || $has_scale ) && $transition_duration > 0 ) {
-			$scoped_css[] = "{$root_sel}::after{transition:background-color {$transition_duration}ms {$transition_easing},background-image {$transition_duration}ms {$transition_easing};}";
-		}
 	}
 }
 
@@ -531,11 +511,8 @@ if ( ! $inherit_style ) {
 $sgs_hdg_shrunk_size = sgs_css_length_value( (string) ( $attributes['shrunkFontSize'] ?? '' ) );
 if ( '' !== $sgs_hdg_shrunk_size ) {
 	$scoped_css[] = ".is-header-shrunk {$root_sel},.is-row-shrunk {$root_sel}{font-size:{$sgs_hdg_shrunk_size};}";
-	// A hover effect already transitions `all` (above), font size included.
-	if ( ! ( $hover_rules || $has_scale ) ) {
-		$scoped_css[] = "{$root_sel}{transition:font-size var(--sgs-row-shrink-duration, 300ms) var(--sgs-row-shrink-easing, ease);}";
-		$scoped_css[] = "@media (prefers-reduced-motion: reduce){{$root_sel}{transition:none;}}";
-	}
+	$scoped_css[] = "{$root_sel}{transition:font-size var(--sgs-row-shrink-duration, 300ms) var(--sgs-row-shrink-easing, ease);}";
+	$scoped_css[] = "@media (prefers-reduced-motion: reduce){{$root_sel}{transition:none;}}";
 }
 
 // ---------------------------------------------------------------------------

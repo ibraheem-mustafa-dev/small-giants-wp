@@ -213,7 +213,7 @@ const PAGE_FN = ({ plan, mode, oldRaw, newRawAfterSave }) => {
 		const mismatches = [];
 		let benignExtensionAdds = 0;
 		// The editor save round-trip appends SGS extension attrs (sgsBlockLink,
-		// sgsClickEffect, …) with inert default values to EVERY block's serialized
+		// sgsBlockLink, …) with inert default values to EVERY block's serialized
 		// JSON — a pre-existing plugin behaviour on any manual save too. Benign iff
 		// the key is sgs-prefixed, ABSENT before, and equal to its runtime default
 		// (or an inert zero-value). Anything else is a real regression.

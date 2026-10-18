@@ -42,7 +42,7 @@
 					"attrMap": {
 						"css:aspect-ratio": "aspectRatio"
 					},
-					"_note": "The block root `.sgs-image-sequence` (render.php:172-176). `aspectRatio` is the ONLY per-instance style value and is emitted into the block's own scoped <style> (render.php:131), never inline. No `layer` is declared because the root arranges no children (the stage owns the layering), so the arrangement members are correctly never asked about. This block declares no colour/spacing/border/typography supports at all, so every other layout member is an honest GAP. `prefix: \"\"` is an explicit opt-out of orphan scanning: the remaining attributes are frame-source config and Spec 38 fx params, not style properties."
+					"_note": "The block root `.sgs-image-sequence` (render.php:172-176). `aspectRatio` is the ONLY per-instance style value and is emitted into the block's own scoped <style> (render.php:131), never inline. No `layer` is declared because the root arranges no children (the stage owns the layering), so the arrangement members are correctly never asked about. This block declares no colour/spacing/border/typography supports at all, so every other layout member is an honest GAP. `prefix: \"\"` is an explicit opt-out of orphan scanning: the remaining attributes are frame-source config, not style properties."
 				},
 				"stage": {
 					"label": "Stage",
@@ -63,7 +63,7 @@
 					"order": 4,
 					"clusters": [],
 					"prefix": "",
-					"_note": "`.sgs-image-sequence__canvas` (render.php:187) — the Tier G scrub surface. Its opacity/transition are the reveal contract (style.css:42-53), not client controls; the fx* attributes are Spec 38 §11.2 effect params, not CSS style properties. `prefix: \"\"` opts out of orphan scanning for that reason."
+					"_note": "`.sgs-image-sequence__canvas` (render.php:187) — the Tier G scrub surface. Its opacity/transition are the reveal contract (style.css:42-53), not client controls; no client control writes it. `prefix: \"\"` opts out of orphan scanning for that reason."
 				}
 			}
 		}
@@ -163,22 +163,6 @@
 				"jpeg",
 				"png"
 			]
-		},
-		"fxStart": {
-			"type": "string",
-			"default": ""
-		},
-		"fxEnd": {
-			"type": "string",
-			"default": ""
-		},
-		"fxScrub": {
-			"type": "number",
-			"default": 1
-		},
-		"fxPin": {
-			"type": "boolean",
-			"default": false
 		}
 	},
 	"render": "file:./render.php",

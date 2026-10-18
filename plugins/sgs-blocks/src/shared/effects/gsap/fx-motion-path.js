@@ -65,7 +65,7 @@
  * `(prefers-reduced-motion: no-preference)`; when that fails to match, this
  * module runs no code at all). What changed 2026-08-01 (D441): "resting
  * position" no longer means "wherever the server happened to render it" —
- * it means the CLIENT-CHOSEN resting position (§11.2's `fxPathRest` control),
+ * it means the CLIENT-CHOSEN resting position (the motion layer's resting-position setting),
  * because `assets/css/fx-motion-path.css` applies that unconditionally under
  * `@media (prefers-reduced-motion: reduce)`, keyed off the exact same
  * `data-sgs-fx-motion-path-rest*` attributes this module's normal-motion

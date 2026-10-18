@@ -24,11 +24,6 @@
         "html": false,
         "anchor": false,
         "sgs": {
-            "hideExtensions": [
-                "animation",
-                "clickEffects",
-                "parallax"
-            ],
             "elements": {
                 "heading": {
                     "label": "Result heading",

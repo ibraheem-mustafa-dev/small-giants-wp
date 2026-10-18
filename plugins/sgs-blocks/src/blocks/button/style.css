@@ -72,8 +72,8 @@
 	cursor: pointer;
 	white-space: normal;
 	/* Every property a hover state actually paints must be listed. render.php
-	   writes the lift as `translate` and the hover shadow through
-	   sgs_shadow_decls(); a list that omits them leaves those two effects
+	   writes the hover shadow through
+	   sgs_shadow_decls(); a list that omits it leaves that effect
 	   snapping while the rest ease. */
 	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, translate var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
 	-webkit-appearance: none;
@@ -126,15 +126,8 @@
 	/* Preset hover transform (FR-33-4 open-bag "transform-lift"): applied from the client's
 	   buttonPresets hover-transform token, then the site-wide buttonPresets.default
 	   hover-transform; `none` fallback = no lift when neither is set.
-	   A per-instance scaleHover attr emits a higher-specificity `.uid.sgs-button:hover` rule
-	   (render.php) that overrides this; reduced-motion forces transform:none !important. */
+	   Reduced-motion forces transform:none !important. */
 	transform: var(--sgs-btn-transform-hover, var(--wp--custom--button-presets--default--hover-transform, none));
-	/* Hover opacity (opacityHover attribute, render.php) — a real editor
-	   control, never a hardcoded literal here. Fallback 1 = no visible change
-	   when the attribute is unset (0, the off-sentinel). Touch-guarded at
-	   build time (scripts/hover-guard postbuild transform, same as every
-	   other compiled block stylesheet); source stays unguarded on purpose. */
-	opacity: var(--sgs-btn-opacity-hover, 1);
 }
 
 /*
@@ -257,23 +250,6 @@
 	flex: 0 0 auto;
 	max-width: 100%;
 	align-self: stretch;
-}
-
-/* Inner-face wrapper (G-14) — mounted by render.php ONLY when scaleHoverTarget
-   is 'face': the hover-scale rule then targets THIS element instead of the
-   root .sgs-button, so the border/fill painted on the root stay put and only
-   the label/icon/note face scales. Mirrors the root's own flex layout so
-   wrapping changes nothing visually at rest for a button that uses it. */
-.sgs-button__face {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-}
-
-.sgs-button__face:has(> .sgs-button__note) {
-	justify-content: space-between;
-	gap: 12px;
 }
 
 /* Icon alignment */

@@ -1,6 +1,5 @@
 /**
- * The per-page Tier G motion cost hook (Spec 38 §7 build task 19, D446, D448). Moved out of `fx.js` (Spec 38A M3.6),
- * which re-exports it until its panel is retired.
+ * The per-page Tier G motion cost hook (Spec 38 §7 build task 19, D446, D448).
  *
  * @package
  */

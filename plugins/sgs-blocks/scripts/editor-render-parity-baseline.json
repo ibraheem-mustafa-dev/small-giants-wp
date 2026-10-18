@@ -19,55 +19,6 @@
     },
     {
       "check": "editor-canvas-desync",
-      "block": "sgs/container",
-      "attr": "bgLottieLoop",
-      "disposition": "by-design",
-      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
-    },
-    {
-      "check": "editor-canvas-desync",
-      "block": "sgs/hero",
-      "attr": "bgLottieLoop",
-      "disposition": "by-design",
-      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
-    },
-    {
-      "check": "editor-canvas-desync",
-      "block": "sgs/multi-button",
-      "attr": "bgLottieLoop",
-      "disposition": "by-design",
-      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
-    },
-    {
-      "check": "editor-canvas-desync",
-      "block": "sgs/physics-canvas",
-      "attr": "bgLottieLoop",
-      "disposition": "by-design",
-      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
-    },
-    {
-      "check": "editor-canvas-desync",
-      "block": "sgs/site-footer",
-      "attr": "bgLottieLoop",
-      "disposition": "by-design",
-      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
-    },
-    {
-      "check": "editor-canvas-desync",
-      "block": "sgs/site-header",
-      "attr": "bgLottieLoop",
-      "disposition": "by-design",
-      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
-    },
-    {
-      "check": "editor-canvas-desync",
-      "block": "sgs/trust-bar",
-      "attr": "bgLottieLoop",
-      "disposition": "by-design",
-      "reason": "Tier H Lottie background (Spec 38 §1.2a, D1151), same shape as the pre-existing bgVideo pair: bgLottie itself now has a real editor-canvas preview (background-preview.js's backgroundPreview() paints the same teal placeholder bgVideo gets, since the editor never mounts the real lottie-web player). bgLottieLoop controls only whether a MOUNTED player repeats after finishing — it has zero effect on the single static placeholder frame the editor renders, so there is nothing for a canvas preview to show. bgVideo has no equivalent loop attribute at all to compare against; this is the first background-media attribute where the loop flag is genuinely unpreviewable rather than just unbuilt."
-    },
-    {
-      "check": "editor-canvas-desync",
       "block": "sgs/notice-banner",
       "attr": "rotateInterval",
       "disposition": "accepted-debt",
@@ -355,13 +306,6 @@
     },
     {
       "check": "editor-canvas-desync",
-      "block": "sgs/hero",
-      "attr": "bgZoomStart",
-      "disposition": "by-design",
-      "reason": "Register row 51 (2026-10-07): the starting zoom of the hero's one-off 'zoom out once' load animation. The hero canvas deliberately previews no ken-burns motion at all (hero/edit.js comment above backgroundPreview(): a second animated background would mount), and an entrance that plays once on page load has nothing to show in a static editor canvas."
-    },
-    {
-      "check": "editor-canvas-desync",
       "block": "sgs/card-grid",
       "attr": "subtitleColourHover",
       "disposition": "accepted-debt",
@@ -387,13 +331,6 @@
       "attr": "queryCategory",
       "disposition": "accepted-debt",
       "reason": "Query mode: the canvas draws the grid's manual items, not the queried posts (render.php's WP_Query branch); previewing real posts needs a posts fetch in the canvas, not a one-line fix."
-    },
-    {
-      "check": "editor-canvas-desync",
-      "block": "sgs/card-grid",
-      "attr": "staggerDelay",
-      "disposition": "accepted-debt",
-      "reason": "The grid's legacy item stagger (attrMap anim:stagger) delays an entrance the static canvas never plays; Replay previews the motion stagger (sgsMotion.stagger), not this attribute."
     }
   ]
 }

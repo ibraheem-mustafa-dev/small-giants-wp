@@ -12,14 +12,6 @@
 			"_reason": "2026-10-13: the submit button hover lift, classified exactly as sgs/button::liftHover (the shared lift helper, includes/helpers-hover-lift.php, prints translate on :hover)."
 		},
 		{
-			"slug": "sgs/form",
-			"attr": "submitSgsHoverShadow",
-			"fields": {
-				"role": "select-from-enum"
-			},
-			"_reason": "2026-10-13: the name of the theme shadow preset the submit button lifts to on hover (a choice among presets, printed as var(--wp--preset--shadow--<slug>) by sgs_shadow_decls), not a CSS value of its own."
-		},
-		{
 			"slug": "sgs/mega-panel",
 			"attr": "drawerCardLayout",
 			"fields": {
@@ -1137,26 +1129,10 @@
 			}
 		},
 		{
-			"slug": "sgs/button",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
 			"slug": "sgs/nav-drawer",
 			"attr": "closeHoverOpacity",
 			"fields": {
 				"css_property": "opacity",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/button",
-			"attr": "liftHover",
-			"fields": {
-				"css_property": "translate",
 				"css_state": "hover"
 			}
 		},
@@ -1175,32 +1151,9 @@
 			}
 		},
 		{
-			"slug": "sgs/heading",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "scaleHover",
-			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
 			"slug": "sgs/info-box",
 			"attr": "scaleHover",
 			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
 				"css_state": "hover"
 			}
 		},
@@ -1219,14 +1172,6 @@
 			}
 		},
 		{
-			"slug": "sgs/text",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
 			"slug": "sgs/card-grid",
 			"attr": "grayscaleHover",
 			"fields": {
@@ -1257,43 +1202,6 @@
 				"css_property": "filter",
 				"css_state": "hover"
 			}
-		},
-		{
-			"slug": "sgs/card-grid",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			}
-		},
-		{
-			"slug": "sgs/gallery",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			}
-		},
-		{
-			"slug": "sgs/team-member",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			}
-		},
-		{
-			"slug": "sgs/post-grid",
-			"attr": "imageZoomHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover",
-				"css_element": "image"
-			},
-			"_why": "css_element PINNED 2026-08-15. The css_element reset added to sgs-update-v2.py the same day cleared this value because the derivation cannot re-derive it for THIS block: post-grid's hover-zoom rule targets `.sgs-post-grid__img` (style.css:488) while 13 other rules in the same file use `.sgs-post-grid__image`, and the manifest declares `image` — one block, two class names for one element. Without this pin `lift_per_element_state` stops routing the attr and post-grid's image hover-zoom is SILENTLY DROPPED on every clone, the exact defect converter/tests/test_per_element_state_lift.py exists to prevent (this attr is one of the five named in its docstring). Siblings card-grid/gallery/team-member are unaffected — their selectors end in `__image`, matching their manifests. DO NOT remove this pin to tidy up: fix post-grid's own `__img` vs `__image` split first, re-verify that test, THEN remove."
 		},
 		{
 			"slug": "sgs/quote",
@@ -1545,70 +1453,6 @@
 			"fields": {
 				"role": "behaviour",
 				"_reason": "2026-08-13 (D603). Same shape and fix as sgs/buybox.loopCarousel — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxStart",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607, /qc-council follow-up on D604). Was 'styling'. SAME root cause as dragMomentum/loopCarousel, missed in the first pass because that pass searched by attribute NAME rather than by the structural signal: css_property already carries the fx:* pseudo-namespace marker (seed-motion-fx-registry.py) which assign-canonical.py's TIER 3 generic-styling-backstop (WHERE role IS NULL AND css_property IS NOT NULL -> 'styling') does not special-case — it treats ANY non-null css_property as CSS paint, including the fx:* markers. ⛔ This override is a STOPGAP, not the real fix — the real fix is a TIER 3.15-shaped upgrade pass in assign-canonical.py (css_property LIKE 'fx:%' AND role='styling' -> 'behaviour'), which would self-correct this row AND every future fx:* attribute without needing an override entry per instance. Flagged to Bean 2026-08-13, not built (shared classifier mechanism, design-gate per CLAUDE.md Rule 7)."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxEnd",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxScrub",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607). Same shape and fix as sgs/image-sequence.fxStart — see that entry's reason."
-			}
-		},
-		{
-			"slug": "sgs/image-sequence",
-			"attr": "fxPin",
-			"fields": {
-				"role": "behaviour",
-				"_reason": "2026-08-13 (D607). Was NULL (css_property also NULL — not yet seeded into the fx:* namespace by seed-motion-fx-registry.py, unlike its siblings fxStart/fxEnd/fxScrub). Same family, same confirmed INTERACTION-ONLY classification from this session's editor-render-parity triage — seeded here for consistency with its siblings rather than left as an unexplained gap."
-			}
-		},
-		{
-			"slug": "sgs/container",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "boolean-visibility",
-				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
-			}
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "boolean-visibility",
-				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
-			}
-		},
-		{
-			"slug": "sgs/site-footer",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "boolean-visibility",
-				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
-			}
-		},
-		{
-			"slug": "sgs/site-header",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "boolean-visibility",
-				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
 			}
 		},
 		{
@@ -2096,20 +1940,6 @@
 			}
 		},
 		{
-			"slug": "sgs/timeline",
-			"attr": "revealStagger",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
-			"slug": "sgs/decorative-image",
-			"attr": "pathDrawTriggerOffset",
-			"fields": {
-				"role": "behaviour"
-			}
-		},
-		{
 			"slug": "sgs/nav-bar-menu",
 			"attr": "submenuCloseGrace",
 			"fields": {
@@ -2219,13 +2049,6 @@
 			"attr": "logoSwitchCustomPx",
 			"fields": {
 				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/responsive-logo",
-			"attr": "svgAnimationSource",
-			"fields": {
-				"role": "technical"
 			}
 		},
 		{
@@ -2466,26 +2289,6 @@
 				"css_element": "tile"
 			},
 			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/testimonial",
-			"attr": "shadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_state": "hover",
-				"css_layer": "OUTER"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "shadowHoverColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"css_state": "hover"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — same class as the other 8 shadow-colour companion-attr overrides in this file (see sgs/card-grid.cardShadowColour for the full explanation). Overridden to box-shadow-color for consistency, even though this one did not raise an F6 error unclassified (css_property=None, css_element=None) — giving it the same explicit classification as its siblings rather than leaving it the only one of the nine still unclassified."
 		},
 		{
 			"slug": "sgs/before-after",
@@ -6179,13 +5982,6 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-bar-menu",
-			"attr": "burgerMorphEasingCustom",
-			"fields": {
-				"role": "technical"
-			}
-		},
-		{
 			"slug": "sgs/card-grid",
 			"attr": "glyphColour",
 			"fields": {
@@ -6362,14 +6158,6 @@
 				"role": "technical"
 			},
 			"_why": "2026-09-30 (Gate 3C wholesale-food client scrim). A hand-typed cubic-bezier() read only when scrimFadeEasing is custom; same role as burgerMorphEasingCustom."
-		},
-		{
-			"slug": "sgs/button",
-			"attr": "transitionEasingCustom",
-			"fields": {
-				"role": "technical"
-			},
-			"_why": "2026-09-30 (Gate 3C reference-site CTA). A hand-typed cubic-bezier() read only when transitionEasing is custom (the button now uses the shared sgs_motion_easing_css list); same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
 		},
 		{
 			"slug": "sgs/nav-bar-menu",
@@ -7006,82 +6794,6 @@
 			}
 		},
 		{
-			"slug": "sgs/icon",
-			"attr": "iconRotateHover",
-			"fields": {
-				"role": "select-from-enum",
-				"css_property": "transform:rotate",
-				"css_state": "hover"
-			},
-			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "offsetXHover",
-			"fields": {
-				"role": "select-from-enum",
-				"css_property": "transform:translate-x",
-				"css_state": "hover"
-			},
-			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "offsetYHover",
-			"fields": {
-				"role": "select-from-enum",
-				"css_property": "transform:translate-y",
-				"css_state": "hover"
-			},
-			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "paintDuration",
-			"fields": {
-				"role": "select-from-enum"
-			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
-		},
-		{
-			"slug": "sgs/social-icons",
-			"attr": "childIconRotateHover",
-			"fields": {
-				"role": "select-from-enum",
-				"css_property": "transform:rotate",
-				"css_state": "hover"
-			},
-			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
-		},
-		{
-			"slug": "sgs/social-icons",
-			"attr": "childIconOffsetXHover",
-			"fields": {
-				"role": "select-from-enum",
-				"css_property": "transform:translate-x",
-				"css_state": "hover"
-			},
-			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
-		},
-		{
-			"slug": "sgs/social-icons",
-			"attr": "childIconOffsetYHover",
-			"fields": {
-				"role": "select-from-enum",
-				"css_property": "transform:translate-y",
-				"css_state": "hover"
-			},
-			"_why": "The hover pose of the icon shape composes one transform from move-across, move-down, turn and scale; each part has its own setting, so each routes to its own transform part (property:part, like grid-template-columns:count) and never to a measured transform, which cannot be split into parts. Role select-from-enum like scaleHover."
-		},
-		{
-			"slug": "sgs/social-icons",
-			"attr": "childIconPaintDuration",
-			"fields": {
-				"role": "select-from-enum"
-			},
-			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
-		},
-		{
 			"slug": "sgs/nav-drawer",
 			"attr": "chromeSlotFontFamily",
 			"fields": {
@@ -7288,6 +7000,57 @@
 				"role": "enum-mode"
 			},
 			"_reason": "2026-10-13 (shared link source, plan item 10). Where the link goes: '' (the typed URL), post:<id>, a Site Info source or top, resolved by includes/helpers-link-source.php. A mode switch that paints no CSS property, classified as sgs/button::linkSource already is."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "submenuAnimationDuration",
+			"fields": {
+				"role": "motion",
+				"css_property": "transition-duration",
+				"css_element": "accordion",
+				"css_state": "open"
+			},
+			"_reason": "2026-10-17 (Spec 38A M6.6-G5). The drawer menu's ::details-content section timing, kept on CSS by Bean's decision C: includes/nav-drawer-menu-section-css.php writes it as --sgs-ndm-acc-in (on the [open] rule), --sgs-ndm-acc-out (the resting rule) and --sgs-ndm-acc-ease, which nav-drawer-menu/style.css reads in its transition shorthands. Classified per longhand and state so the three no longer share one (transition, accordion) slot."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "submenuExitDuration",
+			"fields": {
+				"role": "motion",
+				"css_property": "transition-duration",
+				"css_element": "accordion"
+			},
+			"_reason": "2026-10-17 (Spec 38A M6.6-G5). The drawer menu's ::details-content section timing, kept on CSS by Bean's decision C: includes/nav-drawer-menu-section-css.php writes it as --sgs-ndm-acc-in (on the [open] rule), --sgs-ndm-acc-out (the resting rule) and --sgs-ndm-acc-ease, which nav-drawer-menu/style.css reads in its transition shorthands. Classified per longhand and state so the three no longer share one (transition, accordion) slot."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "submenuAnimationEasing",
+			"fields": {
+				"role": "motion",
+				"css_property": "transition-timing-function",
+				"css_element": "accordion"
+			},
+			"_reason": "2026-10-17 (Spec 38A M6.6-G5). The drawer menu's ::details-content section timing, kept on CSS by Bean's decision C: includes/nav-drawer-menu-section-css.php writes it as --sgs-ndm-acc-in (on the [open] rule), --sgs-ndm-acc-out (the resting rule) and --sgs-ndm-acc-ease, which nav-drawer-menu/style.css reads in its transition shorthands. Classified per longhand and state so the three no longer share one (transition, accordion) slot."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "shadowColourHover",
+			"fields": {
+				"role": "color",
+				"css_property": "box-shadow-color",
+				"css_state": "hover",
+				"css_layer": "OUTER"
+			},
+			"_reason": "2026-10-17 (Spec 38A M6.6-G4). The hover shadow's colour, renamed from shadowHoverColour; classified exactly as sgs/post-grid::shadowColourHover (box-shadow-color on hover), so it no longer shares the (box-shadow, OUTER, hover) slot with shadowHover, which paints the shadow itself."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "brandName",
+			"fields": {
+				"css_property": null,
+				"css_element": null
+			},
+			"_reason": "2026-10-18 (Spec 38A M6.6). brandName chooses WHICH brand the icon is; the brand's paint (glyph, ring, border, gradient) comes from the brand registry through sgs_brand_paint() and the icon's colour attributes, so the emission scanner's pairing of those declarations with brandName is wrong. Classified with no css_property, as identity, so a skeleton carrying a brand icon is not read as carrying a style value (scripts/computed-route/lint.mjs::lintSkeleton)."
 		}
 	]
 }

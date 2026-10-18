@@ -6,10 +6,10 @@
  * `data-sgs-fx` / `data-sgs-fx-*` attributes the shipped runtimes read, for `Sgs_Motion_Renderer` to stamp onto the
  * layer's target element (the root or a declared part, resolved by `Sgs_Motion_Targets::resolve`) through
  * `Sgs_Motion_Markup::apply`, whose `split_head` skips a block's leading `<style>`/`<script>` as
- * `includes/fx-attributes.php::sgs_fx_root_offset` did. Each value field writes its schema `x-sgs-field.dataAttr` in
+ * `includes/fx-root-offset.php::sgs_fx_root_offset` does. Each value field writes its schema `x-sgs-field.dataAttr` in
  * its `dataUnit` and `dataForm` (`Sgs_Motion_Fx_Grammar`).
  *
- * Grammar rules carried over from `includes/fx-attributes.php::sgs_fx_data_attr_string`:
+ * Grammar rules:
  * - `data-sgs-fx` names the effect; an element holding several effect layers lists their slugs in paint order,
  *   separated by single spaces (the runtimes match one token, `[data-sgs-fx~="<effect>"]`).
  * - Only a genuinely absent value is left out: a numeric zero (no smoothing lag) is written.
@@ -17,8 +17,7 @@
  *   it and the later value is reported through the `sgs_motion_layer_dropped` action.
  * - A layer's `off` tiers are written as per-tier token lists, `data-sgs-fx-off-tablet` / `-mobile`, naming the effect
  *   slugs whose own layer is off on that tier (joined across layers like `data-sgs-fx`), so each effect is switched
- *   off per device on its own. The element-wide `data-sgs-fx-disable-tablet` / `-mobile` belong to the flat
- *   `fxDisableTablet` / `fxDisableMobile` attributes (`includes/fx-attributes.php`) and are never written here.
+ *   off per device on its own. The element-wide `data-sgs-fx-disable-tablet` / `-mobile` are never written here.
  *   Both switches are read by `src/shared/effects/gsap/provider.js::isDisabledAtThisTier`, the boot gate of the Tier G
  *   effects; the vanilla runtimes (`src/shared/effects/fx-*.js`) and the stylesheet-only effects (`assets/css/fx-*.css`)
  *   read neither switch.

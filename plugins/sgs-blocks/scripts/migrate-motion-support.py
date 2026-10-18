@@ -7,13 +7,12 @@ WHAT THIS DOES
     no block.json ever declares the attribute itself.
 
 THE COMPATIBLE SET (never a hand-written list)
-    1. Every block the framework DB records as carrying the entrance attribute:
-       SELECT DISTINCT block_slug FROM block_attributes WHERE attr_name = 'sgsAnimation'.
-    2. Plus the blocks the spec names for state or nav motion (SPEC_NAMED below; the DB has no column for them).
-    3. Only blocks that exist as src/blocks/<slug>/block.json (the DB can be wider than the tree).
+    1. Every block whose block.json already declares `supports.sgs.motion` (the declaration is the record of which
+       blocks carry the model; the old entrance attribute that once seeded the set no longer exists).
+    2. Plus the blocks the spec names for state or nav motion (SPEC_NAMED below).
+    3. Only blocks that exist as src/blocks/<slug>/block.json.
     4. Minus blocks whose block.json sets supports.sgs.hideExtensions including "animation", except the SPEC_NAMED
-       blocks: that key hides the legacy entrance extension, and a spec-named block carries the motion model for its
-       declared states whatever it hides.
+       blocks.
 
     Core blocks (core/group, core/columns, core/cover, core/image) are never in the set: motion is for SGS blocks only.
 
@@ -30,7 +29,6 @@ import argparse
 import json
 import os
 import shutil
-import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -44,8 +42,6 @@ if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLUGIN = os.path.dirname(HERE)
 BLOCKS_DIR = os.path.join(PLUGIN, 'src', 'blocks')
-DB_PATH = os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db')
-DB_QUERY = "SELECT DISTINCT block_slug FROM block_attributes WHERE attr_name = 'sgsAnimation'"
 CORE_PREFIX = 'core/'
 
 # Blocks the spec names for state or nav motion. Spec 38A section 5.2 (the open and state triggers), FR-38A-51
@@ -74,14 +70,6 @@ def slug_dir(slug):
 
 def block_json_path(blocks_dir, slug):
     return os.path.join(blocks_dir, slug_dir(slug), 'block.json')
-
-
-def db_slugs():
-    con = sqlite3.connect(f'file:{DB_PATH}?mode=ro', uri=True)
-    try:
-        return sorted(r[0] for r in con.execute(DB_QUERY))
-    finally:
-        con.close()
 
 
 def read_text(path):
@@ -253,20 +241,34 @@ def pending(blocks_dir, census):
     return [s for s in census['compatible'] if not has_motion(json.loads(read_text(block_json_path(blocks_dir, s))))]
 
 
-def candidates_from_db():
-    return set(db_slugs()) | set(SPEC_NAMED)
+def declared_slugs():
+    """Slugs of every block whose block.json declares supports.sgs.motion."""
+    out = set()
+    for entry in sorted(os.listdir(BLOCKS_DIR)):
+        path = os.path.join(BLOCKS_DIR, entry, 'block.json')
+        if not os.path.isfile(path):
+            continue
+        try:
+            data = json.loads(read_text(path))
+        except ValueError:
+            continue
+        if has_motion(data):
+            out.add('sgs/' + entry)
+    return out
+
+
+def candidates_from_tree():
+    return declared_slugs() | set(SPEC_NAMED)
 
 
 def survey(blocks_dir, candidates, as_json):
     census = classify(blocks_dir, candidates)
     census['todo'] = pending(blocks_dir, census)
-    census['db_count'] = len(set(db_slugs()))
-    census['spec_named_not_in_db'] = sorted(s for s in SPEC_NAMED if s not in set(db_slugs()))
     if as_json:
         print(json.dumps(census, indent=2))
         return census
     print(f"tree blocks with a block.json: {census['tree_blocks']}")
-    print(f"candidates: {len(candidates)} (DB sgsAnimation rows {census['db_count']}, spec-named blocks not in the DB {len(census['spec_named_not_in_db'])})")
+    print(f"candidates: {len(candidates)} (declared or spec-named)")
     print(f"compatible: {len(census['compatible'])}")
     print(f"  already declare the key: {len(census['compatible']) - len(census['todo'])}")
     print(f"  need the key: {len(census['todo'])}")
@@ -386,7 +388,7 @@ def main():
     args = parser.parse_args()
     if args.self_test:
         return self_test()
-    candidates = candidates_from_db()
+    candidates = candidates_from_tree()
     if args.survey:
         survey(BLOCKS_DIR, candidates, args.json)
         return 0

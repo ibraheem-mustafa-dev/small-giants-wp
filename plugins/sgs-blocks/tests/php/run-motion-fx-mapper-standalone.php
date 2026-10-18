@@ -4,7 +4,7 @@
  *
  * Runs the real `Sgs_Motion_Map_Fx` over flat attribute sets and emits its layers through the real
  * `Sgs_Motion_Fx_Emitter`, comparing that with what the flat attributes rendered
- * (`includes/fx-attributes.php::sgs_fx_data_attr_string`). Every mapped document must pass the shipped schema
+ * (`includes/motion/migrate/legacy-fx-grammar.php::sgs_fx_data_attr_string`). Every mapped document must pass the shipped schema
  * unchanged. A difference is allowed only where the runtime reads both forms the same; each such equivalence is
  * listed in `fx_runtime_same()` with the runtime line that makes it so.
  *
@@ -29,7 +29,7 @@ namespace {
 
 	require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-motion-registry.php';
 	require_once __DIR__ . '/stubs/motion-render-stubs.php';
-	require_once dirname( __DIR__, 2 ) . '/includes/fx-attributes.php';
+	require_once dirname( __DIR__, 2 ) . '/includes/motion/migrate/legacy-fx-grammar.php';
 
 	use SGS\Blocks\Motion\Sgs_Motion_Document as Document;
 	use SGS\Blocks\Motion\Sgs_Motion_Fx_Emitter as Emitter;

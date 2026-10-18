@@ -73,13 +73,10 @@ CARD = dict(
     titleLineHeight=1.25, priceFontFamily="body", priceFontSize={"desktop": 18}, priceFontSizeUnit="px",
     priceFontWeight="500", showAttributeTag=True, attributeTagSource="tag", attributeTagTerm="polarised",
     attributeTagText="Polarised", attributeTagFontWeight="400", attributeTagBorderColour="border-strong",
-    # The draft's card hover: 4px lift over 0.4s, a soft 18/44 shadow, the photo to 106% over 0.9s, border #CFC7BB.
-    sgsHoverLift=4, sgsHoverDurationMs=400, sgsHoverShadow="diffuse", sgsHoverImageZoom=True, sgsHoverZoom=106,
-    sgsHoverZoomDuration=900, borderColourHover="border-hover",
-    # The draft's scroll-in, exact: each card fades up 26px over 460ms on its cubic ease-out once it passes 6% up
-    # the screen (the framework default), the cards cascading 70ms apart by position, up to the 7th.
-    sgsAnimation="fade-up", sgsAnimationDuration="460", sgsAnimationEasing="cubic-bezier(0.33, 1, 0.68, 1)",
-    sgsAnimationDistance="26", sgsAnimationStagger="70", sgsAnimationStaggerMax="7",
+    # The draft's card hover (4px lift over 0.4s) and scroll-in (each card fades up 26px over 460ms on its cubic ease-out):
+    # the sgsMotion value the motion sweep writes for them; the photo zoom, soft shadow and cascade have no destination in it.
+    borderColourHover="border-hover",
+    sgsMotion={"v": 1, "elements": {"root": {"entrance": {"base": {"preset": "entrance-fade-up", "trigger": "scroll", "values": {"from": {"opacity": 0, "translateY": 26}, "to": {"opacity": 1, "translateY": 0}, "duration": 460, "easing": "cubic-bezier(0.33, 1, 0.68, 1)"}}}, "hover": {"state": {"values": {"translateY": -4, "duration": 400}}}}}},
     # Card text parts: price 18/27, RRP in text-label, 17px colour dots growing to 125% when pointed at.
     priceLineHeight=27, priceLineHeightUnit="px", rrpColour="text-label", swatchSize=17, swatchHoverGrow=125,
     # The draft's photo fill, dot and heart rings, and the brand overlay's 12/14 padding.

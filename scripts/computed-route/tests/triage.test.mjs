@@ -336,10 +336,10 @@ test( 'MUST REFUSE THE CITATION: a block declaring the property in another state
 // "anim".
 test( 'MUST FAIL: a modifier row fits its property, and a pseudo-namespaced row fits what its leaf names', () => {
 	assert.equal( settingFits( 'columns', { css_property: 'grid-template-columns:count' }, 'grid-template-columns' ), true );
-	assert.equal( settingFits( 'sgsAnimationDuration', { css_property: 'anim:duration' }, 'animation-duration' ), true );
-	assert.equal( settingFits( 'sgsAnimationEasing', { css_property: 'anim:easing' }, 'animation-timing-function' ), true );
+	assert.equal( settingFits( 'fixtureKeywordDuration', { css_property: 'anim:duration' }, 'animation-duration' ), true );
+	assert.equal( settingFits( 'fixtureKeywordEasing', { css_property: 'anim:easing' }, 'animation-timing-function' ), true );
 	// And neither reading invents a fit: no stored value fits a property nothing names.
-	assert.equal( settingFits( 'sgsAnimationDuration', { css_property: 'anim:duration' }, 'mask-composite' ), false );
+	assert.equal( settingFits( 'fixtureKeywordDuration', { css_property: 'anim:duration' }, 'mask-composite' ), false );
 	assert.equal( settingFits( 'sgsScrollPin', { css_property: 'fx:pin' }, 'position' ), false );
 	const r = row( { key: 'grid-template-columns', draft: '1fr 1fr', live: 'none', path: '' } );
 	const v = run( { missing: [ r ] }, [ r ], ctxOf( { attrRows: () => [ { attr_name: 'columns', css_property: 'grid-template-columns:count', source: 'sgs' } ] } ) ).verdicts[ 0 ];
@@ -397,9 +397,9 @@ import { helperIndex } from '../lib/triage-source.mjs';
 const ZOOM_PHP = new URL( './fixtures/bg-zoom-helper.php.txt', import.meta.url );
 const zoomHelpers = () => helperIndex( [ { file: 'includes/zoom-helper-fixture.php', text: fs.readFileSync( ZOOM_PHP, 'utf8' ) } ] );
 const ZOOM_ROWS = [
-	{ attr_name: 'bgHoverZoomDuration', css_property: 'transition-duration', css_element: null, css_state: null, source: 'sgs' },
-	{ attr_name: 'bgHoverZoomEasing', css_property: 'transition-timing-function', css_element: null, css_state: null, source: 'sgs' },
-	{ attr_name: 'bgHoverZoomScale', css_property: 'transform', css_element: null, css_state: null, source: 'sgs' },
+	{ attr_name: 'surfaceZoomDuration', css_property: 'transition-duration', css_element: null, css_state: null, source: 'sgs' },
+	{ attr_name: 'surfaceZoomEasing', css_property: 'transition-timing-function', css_element: null, css_state: null, source: 'sgs' },
+	{ attr_name: 'surfaceZoomScale', css_property: 'transform', css_element: null, css_state: null, source: 'sgs' },
 ];
 const zoomRow = ( key, path, over = {} ) => row( { key, draft: '0.35s', live: '0s', path, ref: 'cr-ref-s-1', pair: 'field',
 	owners: [ { ref: 'cr-ref-s-2', block: 'sgs-container', path, tag: 'div' } ], ...over } );
@@ -415,7 +415,7 @@ const zoomCtx = ( over = {} ) => ctxOf( {
 const runZoom = ( r, ctx = zoomCtx() ) => triage( reportOf( { unresolved: [ r ] } ), walkOf( [ r ] ), 's', ctx ).verdicts[ 0 ];
 const scaleOver = { draft: 'scale(1.05)', live: 'none' };
 
-test( 'MUST FAIL: a bgHoverZoom control is never credited with a form input, which its emission selector cannot match', () => {
+test( 'MUST FAIL: a surfaceZoom control is never credited with a form input, which its emission selector cannot match', () => {
 	for ( const key of [ 'transition-duration', 'transition-timing-function', 'transform' ] ) {
 		const v = runZoom( zoomRow( key, '.sgs-form-field__input', 'transform' === key ? scaleOver : {} ) );
 		assert.ok( ! v.evidence.some( ( e ) => 'canvas-settable' === e.check ), `${ key }: no citation` );
@@ -425,7 +425,7 @@ test( 'MUST FAIL: a bgHoverZoom control is never credited with a form input, whi
 } );
 
 test( 'not over-suppressing: the same controls ARE credited with the background layer they paint, .sgs-container__image-bg', () => {
-	for ( const [ key, attr ] of [ [ 'transition-duration', 'bgHoverZoomDuration' ], [ 'transition-timing-function', 'bgHoverZoomEasing' ], [ 'transform', 'bgHoverZoomScale' ] ] ) {
+	for ( const [ key, attr ] of [ [ 'transition-duration', 'surfaceZoomDuration' ], [ 'transition-timing-function', 'surfaceZoomEasing' ], [ 'transform', 'surfaceZoomScale' ] ] ) {
 		const v = runZoom( zoomRow( key, '.sgs-container__image-bg', 'transform' === key ? scaleOver : {} ) );
 		assert.equal( v.class, 'W', key );
 		assert.equal( v.decidedBy, 'canvas-settable', key );
@@ -446,7 +446,7 @@ test( 'ctx.emissionFor names the emission selectors and decides before the sourc
 } );
 
 test( 'the resolver hop citation is held to the same emission selector', () => {
-	const hop = () => ( { gap: 'canvas-settable', detail: 'cited', cite: { check: 'canvas-settable', ref: 'cr-ref-s-2', block: 'sgs/container', setting: 'bgHoverZoomDuration', property: 'transition-duration', via: 'declared' } } );
+	const hop = () => ( { gap: 'canvas-settable', detail: 'cited', cite: { check: 'canvas-settable', ref: 'cr-ref-s-2', block: 'sgs/container', setting: 'surfaceZoomDuration', property: 'transition-duration', via: 'declared' } } );
 	const bare = { attrRows: () => [], canvasBlocks: () => [], ancestorHop: hop };
 	const refused = runZoom( zoomRow( 'transition-duration', '.sgs-form-field__input' ), zoomCtx( bare ) );
 	assert.equal( refused.class, 'F' );
@@ -461,7 +461,7 @@ import { measuredReachFrom, reachabilityVerified } from '../lib/triage.mjs';
 test( 'MUST FAIL ON REVERT: a citation measured unreachable is refused even where the source credits it', () => {
 	const r = zoomRow( 'transition-duration', '.sgs-container__image-bg' );
 	assert.equal( runZoom( r ).decidedBy, 'canvas-settable', 'the control: the source alone credits this citation' );
-	const refuted = measuredReachFrom( [ { block: 'sgs/container', setting: 'bgHoverZoomDuration', property: 'transition-duration', verdict: 'NO-RULE', sheets: { skipped: 0 } } ] );
+	const refuted = measuredReachFrom( [ { block: 'sgs/container', setting: 'surfaceZoomDuration', property: 'transition-duration', verdict: 'NO-RULE', sheets: { skipped: 0 } } ] );
 	const v = runZoom( r, zoomCtx( { measuredReach: refuted } ) );
 	assert.equal( v.class, 'F' );
 	assert.equal( v.decidedBy, 'no-setting' );
@@ -472,8 +472,8 @@ test( 'not over-suppressing: an unmeasured citation still fails open, and a meas
 	const v = runZoom( zoomRow( 'transition-duration', '.sgs-form-field__input' ), zoomCtx( { helpers: helperIndex( [] ), measuredReach: none } ) );
 	assert.equal( v.decidedBy, 'canvas-settable', 'no measurement and no readable source: the deliberate fail-open holds' );
 	const issue = { rows: [ { key: 'transition-duration', path: '.sgs-form-field__input', ref: 'cr-ref-s-1' } ] };
-	const cite = { block: 'sgs/container', setting: 'bgHoverZoomDuration' };
-	const refuted = measuredReachFrom( [ { block: 'sgs/container', setting: 'bgHoverZoomDuration', property: 'transition-duration', verdict: 'REFUTED', sheets: { skipped: 0 } } ] );
+	const cite = { block: 'sgs/container', setting: 'surfaceZoomDuration' };
+	const refuted = measuredReachFrom( [ { block: 'sgs/container', setting: 'surfaceZoomDuration', property: 'transition-duration', verdict: 'REFUTED', sheets: { skipped: 0 } } ] );
 	assert.equal( reachabilityVerified( cite, issue, { helpers: helperIndex( [] ), measuredReach: refuted } ), true );
 	assert.equal( reachabilityVerified( cite, issue, { helpers: helperIndex( [] ), measuredReach: none } ), false );
 } );

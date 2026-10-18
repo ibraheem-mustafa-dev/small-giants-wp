@@ -201,6 +201,27 @@ final class Sgs_Motion_Targets {
 	}
 
 	/**
+	 * Whether a block's sgsMotion holds the named effect as a layer on the block root, for the container wrapper to force
+	 * the band that effect needs (the horizontal panel's track).
+	 *
+	 * @param array<string,mixed> $attributes Block attributes.
+	 * @param string              $effect     Effect slug, for example `horizontal-panel`.
+	 * @return bool
+	 */
+	public static function root_holds_effect( array $attributes, string $effect ): bool {
+		$layers = $attributes['sgsMotion']['elements']['root']['effects'] ?? null;
+		if ( ! is_array( $layers ) ) {
+			return false;
+		}
+		foreach ( $layers as $layer ) {
+			if ( is_array( $layer ) && ( $layer['effect'] ?? '' ) === $effect ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * One resolved target.
 	 *
 	 * @param string            $selector CSS selector.

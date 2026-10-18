@@ -2393,7 +2393,7 @@ if ( '' !== $title_colour ) {
 	} );
 
 	// --- end-to-end: dry-run then apply on a real fixture directory ---
-	const fx1 = makeFixture( tmpRoot, 'fixture-a', {
+	const fixt1 = makeFixture( tmpRoot, 'fixture-a', {
 		editJs: FIXTURE_EDIT_JS,
 		renderPhp: FIXTURE_RENDER_PHP,
 		blockJson: FIXTURE_BLOCK_JSON,
@@ -2410,32 +2410,32 @@ if ( '' !== $title_colour ) {
 		return { row, plan: planRow( db, path.basename( dir ), 'sgs/fixture', row, phpText, path.join( dir, 'block.json' ) ), phpText };
 	}
 
-	let fx1Plan;
+	let fixt1Plan;
 	check( 'fixture row plans as fixable (hover-only, mechanism=text)', () => {
-		const { plan } = planFixtureRow( fx1 );
+		const { plan } = planFixtureRow( fixt1 );
 		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
 		assert( plan.hoverAttr === 'titleColourHover', 'wrong hover attr name: ' + plan.hoverAttr );
-		fx1Plan = plan;
+		fixt1Plan = plan;
 	} );
 
 	check( 'DRY RUN writes nothing', () => {
 		const before = {
-			editJs: fs.readFileSync( path.join( fx1, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx1, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx1, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt1, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt1, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt1, 'block.json' ), 'utf8' ),
 		};
-		const plan = Object.assign( {}, fx1Plan, {
+		const plan = Object.assign( {}, fixt1Plan, {
 			dir: 'fixture-a',
 			slug: 'sgs/fixture',
-			editFile: path.join( fx1, 'edit.js' ),
-			renderFile: path.join( fx1, 'render.php' ),
-			blockJsonPath: path.join( fx1, 'block.json' ),
+			editFile: path.join( fixt1, 'edit.js' ),
+			renderFile: path.join( fixt1, 'render.php' ),
+			blockJsonPath: path.join( fixt1, 'block.json' ),
 		} );
 		applyPlan( plan, false );
 		const after = {
-			editJs: fs.readFileSync( path.join( fx1, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx1, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx1, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt1, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt1, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt1, 'block.json' ), 'utf8' ),
 		};
 		assert( before.editJs === after.editJs, 'DRY RUN mutated edit.js' );
 		assert( before.renderPhp === after.renderPhp, 'DRY RUN mutated render.php' );
@@ -2443,36 +2443,36 @@ if ( '' !== $title_colour ) {
 	} );
 
 	check( 'APPLY writes a literal hover state (D738 guard: static element count)', () => {
-		const plan = Object.assign( {}, fx1Plan, {
+		const plan = Object.assign( {}, fixt1Plan, {
 			dir: 'fixture-a',
 			slug: 'sgs/fixture',
-			editFile: path.join( fx1, 'edit.js' ),
-			renderFile: path.join( fx1, 'render.php' ),
-			blockJsonPath: path.join( fx1, 'block.json' ),
+			editFile: path.join( fixt1, 'edit.js' ),
+			renderFile: path.join( fixt1, 'render.php' ),
+			blockJsonPath: path.join( fixt1, 'block.json' ),
 		} );
 		const result = applyPlan( plan, true );
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
-		const editSrc = fs.readFileSync( path.join( fx1, 'edit.js' ), 'utf8' );
+		const editSrc = fs.readFileSync( path.join( fixt1, 'edit.js' ), 'utf8' );
 		const count = countLiteralStatesElements( editSrc );
 		assert( count === 2, 'expected 2 literal states elements after fix, got ' + count );
-		const php = fs.readFileSync( path.join( fx1, 'render.php' ), 'utf8' );
+		const php = fs.readFileSync( path.join( fixt1, 'render.php' ), 'utf8' );
 		// FINDING 1 (final-branch review): the source no longer contains a
 		// literal `:hover` selector text at all — that string is now built
 		// INSIDE `sgs_hover_state_rules()` at runtime, not spliced into the
 		// PHP source. Assert the call itself is present instead.
 		assert( php.includes( 'sgs_hover_state_rules(' ), 'render.php missing sgs_hover_state_rules() call after fix' );
-		const bj = JSON.parse( fs.readFileSync( path.join( fx1, 'block.json' ), 'utf8' ) );
+		const bj = JSON.parse( fs.readFileSync( path.join( fixt1, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.titleColourHover, 'block.json missing titleColourHover attribute' );
 	} );
 
 	// --- Idempotence control ---
 	check( 'idempotence: applying twice is a no-op the second time', () => {
 		const cache = new SourceCache();
-		const editFile = path.join( fx1, 'edit.js' );
+		const editFile = path.join( fixt1, 'edit.js' );
 		const rows = rowsInFile( cache, editFile );
-		const phpText = fs.readFileSync( path.join( fx1, 'render.php' ), 'utf8' );
+		const phpText = fs.readFileSync( path.join( fixt1, 'render.php' ), 'utf8' );
 		const db = { 'sgs/fixture': { titleColour: { css_property: 'color' } } };
-		const plan2 = planRow( db, 'fixture-a', 'sgs/fixture', rows[ 0 ], phpText, path.join( fx1, 'block.json' ) );
+		const plan2 = planRow( db, 'fixture-a', 'sgs/fixture', rows[ 0 ], phpText, path.join( fixt1, 'block.json' ) );
 		assert( ! plan2.fixable, 'expected second run to find nothing left to fix' );
 		assert( /CONFORMANT-already/.test( plan2.reason ), 'expected CONFORMANT-already, got: ' + plan2.reason );
 	} );
@@ -2486,7 +2486,7 @@ if ( '' !== $weird_colour ) {
 	$scoped_css_parts[] = ".{\$uid}.sgs-fixture__weird{color:" . sgs_colour_value( $weird_colour ) . '}';
 }
 `;
-	const fx2 = makeFixture( tmpRoot, 'fixture-b', {
+	const fixt2 = makeFixture( tmpRoot, 'fixture-b', {
 		editJs: FIXTURE_EDIT_JS_AMBIGUOUS,
 		renderPhp: FIXTURE_RENDER_PHP_AMBIGUOUS,
 		blockJson: {
@@ -2497,26 +2497,26 @@ if ( '' !== $weird_colour ) {
 	} );
 
 	check( 'refusal control: no css_property in DB => REFUSED, file byte-identical after', () => {
-		const before = fs.readFileSync( path.join( fx2, 'render.php' ), 'utf8' );
+		const before = fs.readFileSync( path.join( fixt2, 'render.php' ), 'utf8' );
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx2, 'edit.js' ) );
-		const phpText = fs.readFileSync( path.join( fx2, 'render.php' ), 'utf8' );
+		const rows = rowsInFile( cache, path.join( fixt2, 'edit.js' ) );
+		const phpText = fs.readFileSync( path.join( fixt2, 'render.php' ), 'utf8' );
 		const db = { 'sgs/fixture-b': { weirdColour: { css_property: null } } }; // unresolvable on purpose
-		const plan = planRow( db, 'fixture-b', 'sgs/fixture-b', rows[ 0 ], phpText, path.join( fx2, 'block.json' ) );
+		const plan = planRow( db, 'fixture-b', 'sgs/fixture-b', rows[ 0 ], phpText, path.join( fixt2, 'block.json' ) );
 		assert( ! plan.fixable, 'expected refusal for null css_property' );
 		assert( /no-css_property-mechanism-unresolved/.test( plan.reason ), 'wrong refusal reason: ' + plan.reason );
-		const after = fs.readFileSync( path.join( fx2, 'render.php' ), 'utf8' );
+		const after = fs.readFileSync( path.join( fixt2, 'render.php' ), 'utf8' );
 		assert( before === after, 'refusal control: file was mutated despite refusal' );
 	} );
 
 	// --- Detection control: a single-state row is DETECTED by --check ---
 	check( 'detection control: single-state row makes --check-equivalent report non-empty, then empty after fix', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx1, 'edit.js' ) ); // fx1 already fixed above => 2 states now
+		const rows = rowsInFile( cache, path.join( fixt1, 'edit.js' ) ); // fixt1 already fixed above => 2 states now
 		assert( rows[ 0 ].statesCount === 2, 'fixture-a expected to already carry 2 states from the apply step above' );
 
 		// Build a FRESH single-state fixture to prove detection independently.
-		const fx3 = makeFixture( tmpRoot, 'fixture-c', {
+		const fixt3 = makeFixture( tmpRoot, 'fixture-c', {
 			editJs: FIXTURE_EDIT_JS.split( 'titleColour' ).join( 'panelColour' ),
 			renderPhp: `<?php
 $panel_colour = $attributes['panelColour'] ?? '';
@@ -2531,29 +2531,29 @@ if ( '' !== $panel_colour ) {
 				attributes: { panelColour: { type: 'string', default: '' } },
 			},
 		} );
-		const rows3 = rowsInFile( new SourceCache(), path.join( fx3, 'edit.js' ) );
+		const rows3 = rowsInFile( new SourceCache(), path.join( fixt3, 'edit.js' ) );
 		assert( rows3[ 0 ].statesCount < 2, 'expected the deliberately-broken fixture to have <2 states (this is the mutation-landed check)' );
 
-		const phpText3 = fs.readFileSync( path.join( fx3, 'render.php' ), 'utf8' );
+		const phpText3 = fs.readFileSync( path.join( fixt3, 'render.php' ), 'utf8' );
 		const db3 = { 'sgs/fixture-c': { panelColour: { css_property: 'background-color' } } };
-		const planBefore = planRow( db3, 'fixture-c', 'sgs/fixture-c', rows3[ 0 ], phpText3, path.join( fx3, 'block.json' ) );
+		const planBefore = planRow( db3, 'fixture-c', 'sgs/fixture-c', rows3[ 0 ], phpText3, path.join( fixt3, 'block.json' ) );
 		assert( planBefore.fixable, '--check-equivalent: expected the broken fixture to be detected as an outstanding fixable row: ' + JSON.stringify( planBefore ) );
 
 		const result = applyPlan(
 			Object.assign( {}, planBefore, {
 				dir: 'fixture-c',
 				slug: 'sgs/fixture-c',
-				editFile: path.join( fx3, 'edit.js' ),
-				renderFile: path.join( fx3, 'render.php' ),
-				blockJsonPath: path.join( fx3, 'block.json' ),
+				editFile: path.join( fixt3, 'edit.js' ),
+				renderFile: path.join( fixt3, 'render.php' ),
+				blockJsonPath: path.join( fixt3, 'block.json' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply on fixture-c failed: ' + JSON.stringify( result ) );
 
-		const rows3After = rowsInFile( new SourceCache(), path.join( fx3, 'edit.js' ) );
-		const phpText3After = fs.readFileSync( path.join( fx3, 'render.php' ), 'utf8' );
-		const planAfter = planRow( db3, 'fixture-c', 'sgs/fixture-c', rows3After[ 0 ], phpText3After, path.join( fx3, 'block.json' ) );
+		const rows3After = rowsInFile( new SourceCache(), path.join( fixt3, 'edit.js' ) );
+		const phpText3After = fs.readFileSync( path.join( fixt3, 'render.php' ), 'utf8' );
+		const planAfter = planRow( db3, 'fixture-c', 'sgs/fixture-c', rows3After[ 0 ], phpText3After, path.join( fixt3, 'block.json' ) );
 		assert( ! planAfter.fixable, '--check-equivalent: expected fixture-c to be clean after fix' );
 		assert( /CONFORMANT-already/.test( planAfter.reason ), 'expected CONFORMANT-already after fix, got: ' + planAfter.reason );
 	} );
@@ -2565,7 +2565,7 @@ if ( '' !== $panel_colour ) {
 	// shifted every subsequent byte position) corrupted the file. This
 	// control fixes that regression in perpetuity.
 	check( 'two tier-A rows in the same file both apply cleanly (stale-offset regression control)', () => {
-		const fx4 = makeFixture( tmpRoot, 'fixture-d', {
+		const fixt4 = makeFixture( tmpRoot, 'fixture-d', {
 			editJs: `import { __ } from '@wordpress/i18n';
 import { SgsColourPanel } from '../../components/SgsColourPanel';
 
@@ -2634,14 +2634,14 @@ if ( '' !== $label_colour ) {
 		};
 
 		for ( const attr of [ 'titleColour', 'labelColour' ] ) {
-			const result = reresolveAndApplyOneForSelfTest( db4, fx4, 'fixture-d', 'sgs/fixture-d', attr, true );
+			const result = reresolveAndApplyOneForSelfTest( db4, fixt4, 'fixture-d', 'sgs/fixture-d', attr, true );
 			assert( result.ok, `apply of ${ attr } failed: ` + JSON.stringify( result ) );
 		}
 
-		const finalEditSrc = fs.readFileSync( path.join( fx4, 'edit.js' ), 'utf8' );
+		const finalEditSrc = fs.readFileSync( path.join( fixt4, 'edit.js' ), 'utf8' );
 		babelParser.parse( finalEditSrc, BABEL_PARSE_OPTS ); // throws on any corruption — that IS the assertion.
 		assert( ( finalEditSrc.match( /key:\s*['"]hover['"]/g ) || [] ).length === 2, 'expected exactly 2 hover states after both fixes, got a corrupted or incomplete result' );
-		const finalPhp = fs.readFileSync( path.join( fx4, 'render.php' ), 'utf8' );
+		const finalPhp = fs.readFileSync( path.join( fixt4, 'render.php' ), 'utf8' );
 		// FINDING 1 (final-branch review): no literal `:hover` selector text in
 		// source any more — count the sgs_hover_state_rules() calls instead.
 		assert( ( finalPhp.match( /sgs_hover_state_rules\(/g ) || [] ).length === 2, 'expected exactly 2 sgs_hover_state_rules() calls in render.php' );
@@ -2690,7 +2690,7 @@ if ( '' !== $border_colour ) {
 	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-e__border{border-color:" . sgs_colour_value( $border_colour ) . '}';
 }
 `;
-	const fx5 = makeFixture( tmpRoot, 'fixture-e', {
+	const fixt5 = makeFixture( tmpRoot, 'fixture-e', {
 		editJs: FIXTURE_EDIT_JS_GRADIENT,
 		renderPhp: FIXTURE_RENDER_PHP_GRADIENT,
 		blockJson: {
@@ -2706,31 +2706,31 @@ if ( '' !== $border_colour ) {
 
 	check( 'planRow still plans the row fixable (hover-only) when a gradient sibling is present', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx5, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt5, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-e' );
-		const phpText = fs.readFileSync( path.join( fx5, 'render.php' ), 'utf8' );
-		const plan = planRow( db5, 'fixture-e', 'sgs/fixture-e', rows[ 0 ], phpText, path.join( fx5, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt5, 'render.php' ), 'utf8' );
+		const plan = planRow( db5, 'fixture-e', 'sgs/fixture-e', rows[ 0 ], phpText, path.join( fixt5, 'block.json' ) );
 		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
 		assert( plan.baseIdent === 'borderColour', 'expected baseIdent to be borderColour, got: ' + plan.baseIdent );
 	} );
 
 	check( 'APPLY strips the unrenderable gradient sibling from the hover clone (CRITICAL DEFECT control)', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx5, 'edit.js' ) );
-		const phpText = fs.readFileSync( path.join( fx5, 'render.php' ), 'utf8' );
-		const plan = planRow( db5, 'fixture-e', 'sgs/fixture-e', rows[ 0 ], phpText, path.join( fx5, 'block.json' ) );
+		const rows = rowsInFile( cache, path.join( fixt5, 'edit.js' ) );
+		const phpText = fs.readFileSync( path.join( fixt5, 'render.php' ), 'utf8' );
+		const plan = planRow( db5, 'fixture-e', 'sgs/fixture-e', rows[ 0 ], phpText, path.join( fixt5, 'block.json' ) );
 		const result = applyPlan(
 			Object.assign( {}, plan, {
 				dir: 'fixture-e',
 				slug: 'sgs/fixture-e',
-				editFile: path.join( fx5, 'edit.js' ),
-				renderFile: path.join( fx5, 'render.php' ),
+				editFile: path.join( fixt5, 'edit.js' ),
+				renderFile: path.join( fixt5, 'render.php' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 
-		const editSrc = fs.readFileSync( path.join( fx5, 'edit.js' ), 'utf8' );
+		const editSrc = fs.readFileSync( path.join( fixt5, 'edit.js' ), 'utf8' );
 		babelParser.parse( editSrc, BABEL_PARSE_OPTS ); // throws on any corruption from the property removal.
 		assert( ( editSrc.match( /key:\s*['"]hover['"]/g ) || [] ).length === 1, 'expected exactly 1 hover state' );
 		assert( editSrc.includes( 'borderColourHover' ), 'expected the hover state to reference borderColourHover' );
@@ -2744,7 +2744,7 @@ if ( '' !== $border_colour ) {
 		);
 		assert( ! /gradientValue|onGradientChange/.test( editSrc.slice( editSrc.indexOf( "key: 'hover'" ) ) ), 'expected no gradientValue/onGradientChange props on the hover state' );
 
-		const bj = JSON.parse( fs.readFileSync( path.join( fx5, 'block.json' ), 'utf8' ) );
+		const bj = JSON.parse( fs.readFileSync( path.join( fixt5, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.borderColourHover, 'block.json missing borderColourHover' );
 		assert( ! bj.attributes.borderColourHoverGradient, 'block.json must NOT declare borderColourHoverGradient — nothing writes to it any more' );
 	} );
@@ -2791,7 +2791,7 @@ if ( '' !== $panel_bg ) {
 	$root_decls[] = 'background-color:' . sgs_colour_value( $panel_bg );
 }
 `;
-	const fx6 = makeFixture( tmpRoot, 'fixture-f', {
+	const fixt6 = makeFixture( tmpRoot, 'fixture-f', {
 		editJs: FIXTURE_EDIT_JS_FILL,
 		renderPhp: FIXTURE_RENDER_PHP_FILL,
 		blockJson: {
@@ -2811,10 +2811,10 @@ if ( '' !== $panel_bg ) {
 
 	check( 'gradient round-trip control: fill-direct fix lands all three legs (declared+wired+consumed)', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx6, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt6, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-f' );
-		const phpText = fs.readFileSync( path.join( fx6, 'render.php' ), 'utf8' );
-		const plan = planRow( db6, 'fixture-f', 'sgs/fixture-f', rows[ 0 ], phpText, path.join( fx6, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt6, 'render.php' ), 'utf8' );
+		const plan = planRow( db6, 'fixture-f', 'sgs/fixture-f', rows[ 0 ], phpText, path.join( fixt6, 'block.json' ) );
 		assert( plan.fixable, 'expected fixable (fill-direct), got refusal: ' + JSON.stringify( plan ) );
 		assert( plan.kind === 'gradient' && plan.gradientPlan.mode === 'fill-direct', 'expected fill-direct gradient plan, got: ' + JSON.stringify( plan ) );
 
@@ -2822,26 +2822,26 @@ if ( '' !== $panel_bg ) {
 			Object.assign( {}, plan, {
 				dir: 'fixture-f',
 				slug: 'sgs/fixture-f',
-				editFile: path.join( fx6, 'edit.js' ),
-				renderFile: path.join( fx6, 'render.php' ),
+				editFile: path.join( fixt6, 'edit.js' ),
+				renderFile: path.join( fixt6, 'render.php' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 
-		const editSrc = fs.readFileSync( path.join( fx6, 'edit.js' ), 'utf8' );
+		const editSrc = fs.readFileSync( path.join( fixt6, 'edit.js' ), 'utf8' );
 		babelParser.parse( editSrc, BABEL_PARSE_OPTS );
 		assert( editSrc.includes( 'gradientValue: attributes.panelBgGradient' ), 'edit.js missing gradientValue wiring' );
 		assert( editSrc.includes( 'onGradientChange' ) && editSrc.includes( 'panelBgGradient' ), 'edit.js missing onGradientChange wiring' );
 
-		const bj = JSON.parse( fs.readFileSync( path.join( fx6, 'block.json' ), 'utf8' ) );
+		const bj = JSON.parse( fs.readFileSync( path.join( fixt6, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.panelBgGradient, 'block.json missing panelBgGradient declaration' );
 		assert(
 			bj.supports.sgs.elements[ 0 ].attrMap[ 'css:background-image' ] === 'panelBgGradient',
 			'block.json missing the manifest attrMap entry for panelBgGradient — the D948 gap this fix closes'
 		);
 
-		let phpAfter = fs.readFileSync( path.join( fx6, 'render.php' ), 'utf8' );
+		let phpAfter = fs.readFileSync( path.join( fixt6, 'render.php' ), 'utf8' );
 		assert( phpAfter.includes( 'sgs_background_paint_decl( $panel_bg, $panel_bg_gradient )' ), 'render.php did not switch to sgs_background_paint_decl' );
 
 		// All three legs present. Verify the render leg with a DIRECT check
@@ -2883,7 +2883,7 @@ if ( '' !== $panel_bg ) {
 	// and is idempotent when the gradient key is already present.
 	// -------------------------------------------------------------------
 	check( 'manifest attrMap fix REFUSES when the element declares clusters:[] (D948 live incident shape), file byte-identical', () => {
-		const fx6b = makeFixture( tmpRoot, 'fixture-f-no-cluster', {
+		const fixt6b = makeFixture( tmpRoot, 'fixture-f-no-cluster', {
 			editJs: FIXTURE_EDIT_JS_FILL.replace( /panelBg/g, 'panelBg2' ),
 			renderPhp: FIXTURE_RENDER_PHP_FILL.replace( /panel_bg/g, 'panel_bg2' ).replace( /panelBg/g, 'panelBg2' ),
 			blockJson: {
@@ -2904,17 +2904,17 @@ if ( '' !== $panel_bg ) {
 		} );
 		const dbFixture = { 'sgs/fixture-f-no-cluster': { panelBg2: { css_property: 'background-color' } } };
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx6b, 'edit.js' ) );
-		const phpText = fs.readFileSync( path.join( fx6b, 'render.php' ), 'utf8' );
-		const bjBefore = fs.readFileSync( path.join( fx6b, 'block.json' ), 'utf8' );
-		const plan = planRow( dbFixture, 'fixture-f-no-cluster', 'sgs/fixture-f-no-cluster', rows[ 0 ], phpText, path.join( fx6b, 'block.json' ) );
+		const rows = rowsInFile( cache, path.join( fixt6b, 'edit.js' ) );
+		const phpText = fs.readFileSync( path.join( fixt6b, 'render.php' ), 'utf8' );
+		const bjBefore = fs.readFileSync( path.join( fixt6b, 'block.json' ), 'utf8' );
+		const plan = planRow( dbFixture, 'fixture-f-no-cluster', 'sgs/fixture-f-no-cluster', rows[ 0 ], phpText, path.join( fixt6b, 'block.json' ) );
 		assert( ! plan.fixable, 'expected refusal for clusters:[], got: ' + JSON.stringify( plan ) );
 		assert( /manifest-cluster-missing-fill/.test( plan.reason ), 'wrong refusal reason: ' + plan.reason );
-		assert( fs.readFileSync( path.join( fx6b, 'block.json' ), 'utf8' ) === bjBefore, 'block.json changed despite refusal' );
+		assert( fs.readFileSync( path.join( fixt6b, 'block.json' ), 'utf8' ) === bjBefore, 'block.json changed despite refusal' );
 	} );
 
 	check( 'manifest attrMap fix REFUSES when no element attrMap resolves the base attribute at all, file byte-identical', () => {
-		const fx6c = makeFixture( tmpRoot, 'fixture-f-no-attrmap', {
+		const fixt6c = makeFixture( tmpRoot, 'fixture-f-no-attrmap', {
 			editJs: FIXTURE_EDIT_JS_FILL.replace( /panelBg/g, 'panelBg3' ),
 			renderPhp: FIXTURE_RENDER_PHP_FILL.replace( /panel_bg/g, 'panel_bg3' ).replace( /panelBg/g, 'panelBg3' ),
 			blockJson: {
@@ -2927,13 +2927,13 @@ if ( '' !== $panel_bg ) {
 		} );
 		const dbFixture = { 'sgs/fixture-f-no-attrmap': { panelBg3: { css_property: 'background-color' } } };
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx6c, 'edit.js' ) );
-		const phpText = fs.readFileSync( path.join( fx6c, 'render.php' ), 'utf8' );
-		const bjBefore = fs.readFileSync( path.join( fx6c, 'block.json' ), 'utf8' );
-		const plan = planRow( dbFixture, 'fixture-f-no-attrmap', 'sgs/fixture-f-no-attrmap', rows[ 0 ], phpText, path.join( fx6c, 'block.json' ) );
+		const rows = rowsInFile( cache, path.join( fixt6c, 'edit.js' ) );
+		const phpText = fs.readFileSync( path.join( fixt6c, 'render.php' ), 'utf8' );
+		const bjBefore = fs.readFileSync( path.join( fixt6c, 'block.json' ), 'utf8' );
+		const plan = planRow( dbFixture, 'fixture-f-no-attrmap', 'sgs/fixture-f-no-attrmap', rows[ 0 ], phpText, path.join( fixt6c, 'block.json' ) );
 		assert( ! plan.fixable, 'expected refusal with no manifest at all, got: ' + JSON.stringify( plan ) );
 		assert( /manifest-base-attrmap-entry-not-found/.test( plan.reason ), 'wrong refusal reason: ' + plan.reason );
-		assert( fs.readFileSync( path.join( fx6c, 'block.json' ), 'utf8' ) === bjBefore, 'block.json changed despite refusal' );
+		assert( fs.readFileSync( path.join( fixt6c, 'block.json' ), 'utf8' ) === bjBefore, 'block.json changed despite refusal' );
 	} );
 
 	check( 'manifest attrMap fix is idempotent: already-present gradient key is a no-op, not a duplicate/collision', () => {
@@ -3004,7 +3004,7 @@ if ( '' !== $heading_colour ) {
 	$scoped_css[] = ".{\$uid}.sgs-fixture-g__heading{color:" . sgs_colour_value( $heading_colour ) . '}';
 }
 `;
-	const fx7 = makeFixture( tmpRoot, 'fixture-g', {
+	const fixt7 = makeFixture( tmpRoot, 'fixture-g', {
 		editJs: FIXTURE_EDIT_JS_TEXT,
 		renderPhp: FIXTURE_RENDER_PHP_TEXT,
 		blockJson: {
@@ -3017,15 +3017,15 @@ if ( '' !== $heading_colour ) {
 
 	check( 'text-refusal control: text-mechanism row needing a gradient is REFUSED by name, file byte-identical', () => {
 		const before = {
-			editJs: fs.readFileSync( path.join( fx7, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx7, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx7, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt7, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt7, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt7, 'block.json' ), 'utf8' ),
 		};
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx7, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt7, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-g' );
-		const phpText = fs.readFileSync( path.join( fx7, 'render.php' ), 'utf8' );
-		const plan = planRow( db7, 'fixture-g', 'sgs/fixture-g', rows[ 0 ], phpText, path.join( fx7, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt7, 'render.php' ), 'utf8' );
+		const plan = planRow( db7, 'fixture-g', 'sgs/fixture-g', rows[ 0 ], phpText, path.join( fixt7, 'block.json' ) );
 		assert( ! plan.fixable, 'expected a text-mechanism gradient row to be REFUSED, got fixable: ' + JSON.stringify( plan ) );
 		assert(
 			/background-clip:text/.test( plan.reason ) && /Task 3/.test( plan.reason ),
@@ -3034,9 +3034,9 @@ if ( '' !== $heading_colour ) {
 		);
 
 		const after = {
-			editJs: fs.readFileSync( path.join( fx7, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx7, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx7, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt7, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt7, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt7, 'block.json' ), 'utf8' ),
 		};
 		assert( before.editJs === after.editJs, 'text-refusal control: edit.js was mutated despite refusal' );
 		assert( before.renderPhp === after.renderPhp, 'text-refusal control: render.php was mutated despite refusal' );
@@ -3092,7 +3092,7 @@ if ( '' !== $number_background ) {
 	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-h__num{background-color:" . sgs_colour_value( $number_background ) . '}';
 }
 `;
-	const fx8 = makeFixture( tmpRoot, 'fixture-h', {
+	const fixt8 = makeFixture( tmpRoot, 'fixture-h', {
 		editJs: FIXTURE_EDIT_JS_GRADIENT_MEMBER,
 		renderPhp: FIXTURE_RENDER_PHP_GRADIENT_MEMBER,
 		blockJson: {
@@ -3108,10 +3108,10 @@ if ( '' !== $number_background ) {
 
 	check( 'APPLY strips a MemberExpression-shaped gradient sibling from the hover clone (regression control — real defect found live on sgs/process-steps)', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx8, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt8, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-h' );
-		const phpText = fs.readFileSync( path.join( fx8, 'render.php' ), 'utf8' );
-		const plan = planRow( db8, 'fixture-h', 'sgs/fixture-h', rows[ 0 ], phpText, path.join( fx8, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt8, 'render.php' ), 'utf8' );
+		const plan = planRow( db8, 'fixture-h', 'sgs/fixture-h', rows[ 0 ], phpText, path.join( fixt8, 'block.json' ) );
 		assert( plan.fixable, 'expected fixable (hover-only, gradient already present), got refusal: ' + JSON.stringify( plan ) );
 		assert( plan.kind === 'hover', 'expected the hover-creation path (gradient already conformant), got: ' + plan.kind );
 
@@ -3119,14 +3119,14 @@ if ( '' !== $number_background ) {
 			Object.assign( {}, plan, {
 				dir: 'fixture-h',
 				slug: 'sgs/fixture-h',
-				editFile: path.join( fx8, 'edit.js' ),
-				renderFile: path.join( fx8, 'render.php' ),
+				editFile: path.join( fixt8, 'edit.js' ),
+				renderFile: path.join( fixt8, 'render.php' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 
-		const editSrc = fs.readFileSync( path.join( fx8, 'edit.js' ), 'utf8' );
+		const editSrc = fs.readFileSync( path.join( fixt8, 'edit.js' ), 'utf8' );
 		babelParser.parse( editSrc, BABEL_PARSE_OPTS ); // throws on any corruption from the property removal.
 		assert( ( editSrc.match( /key:\s*['"]hover['"]/g ) || [] ).length === 1, 'expected exactly 1 hover state' );
 		assert( editSrc.includes( 'numberBackgroundHover' ), 'expected the hover state to reference numberBackgroundHover' );
@@ -3144,7 +3144,7 @@ if ( '' !== $number_background ) {
 			'expected no gradientValue/onGradientChange props on the hover state'
 		);
 
-		const bj = JSON.parse( fs.readFileSync( path.join( fx8, 'block.json' ), 'utf8' ) );
+		const bj = JSON.parse( fs.readFileSync( path.join( fixt8, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.numberBackgroundHover, 'block.json missing numberBackgroundHover' );
 		assert( ! bj.attributes.numberBackgroundHoverGradient, 'block.json must NOT declare numberBackgroundHoverGradient — nothing writes to it any more' );
 	} );
@@ -3176,7 +3176,7 @@ if ( '' !== $banner_colour ) {
 	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-i__banner{color:" . sgs_colour_value( $banner_colour ) . ';}';
 }
 `;
-	const fx9 = makeFixture( tmpRoot, 'fixture-i', {
+	const fixt9 = makeFixture( tmpRoot, 'fixture-i', {
 		editJs: FIXTURE_EDIT_JS_SEMI,
 		renderPhp: FIXTURE_RENDER_PHP_SEMI,
 		blockJson: {
@@ -3189,10 +3189,10 @@ if ( '' !== $banner_colour ) {
 
 	check( 'FINDING 1 regression guard: resolveDirectSelector captures the FULL statement when the literal carries its own `;` (nav-menu:1168 shape), not a truncated one', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx9, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt9, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-i' );
-		const phpText = fs.readFileSync( path.join( fx9, 'render.php' ), 'utf8' );
-		const plan = planRow( db9, 'fixture-i', 'sgs/fixture-i', rows[ 0 ], phpText, path.join( fx9, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt9, 'render.php' ), 'utf8' );
+		const plan = planRow( db9, 'fixture-i', 'sgs/fixture-i', rows[ 0 ], phpText, path.join( fixt9, 'block.json' ) );
 		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
 		assert( plan.mode === 'direct-new-statement', 'expected the resolveDirectSelector path, got mode=' + plan.mode );
 
@@ -3200,15 +3200,15 @@ if ( '' !== $banner_colour ) {
 			Object.assign( {}, plan, {
 				dir: 'fixture-i',
 				slug: 'sgs/fixture-i',
-				editFile: path.join( fx9, 'edit.js' ),
-				renderFile: path.join( fx9, 'render.php' ),
-				blockJsonPath: path.join( fx9, 'block.json' ),
+				editFile: path.join( fixt9, 'edit.js' ),
+				renderFile: path.join( fixt9, 'render.php' ),
+				blockJsonPath: path.join( fixt9, 'block.json' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 
-		const php = fs.readFileSync( path.join( fx9, 'render.php' ), 'utf8' );
+		const php = fs.readFileSync( path.join( fixt9, 'render.php' ), 'utf8' );
 		// THIS is the assertion that catches the Finding 1 regression: the
 		// ORIGINAL statement, closing brace and all, must survive intact and
 		// UNSPLIT — a naive `indexOf(';', …)` would have truncated it right
@@ -3221,8 +3221,8 @@ if ( '' !== $banner_colour ) {
 		// FINDING 1 (final-branch review): no literal `:hover` selector text in
 		// source any more — assert the sgs_hover_state_rules() call instead.
 		assert( php.includes( 'sgs_hover_state_rules(' ), 'render.php missing sgs_hover_state_rules() call after fix' );
-		babelParser.parse( fs.readFileSync( path.join( fx9, 'edit.js' ), 'utf8' ), BABEL_PARSE_OPTS ); // throws on corruption.
-		const bj = JSON.parse( fs.readFileSync( path.join( fx9, 'block.json' ), 'utf8' ) );
+		babelParser.parse( fs.readFileSync( path.join( fixt9, 'edit.js' ), 'utf8' ), BABEL_PARSE_OPTS ); // throws on corruption.
+		const bj = JSON.parse( fs.readFileSync( path.join( fixt9, 'block.json' ), 'utf8' ) );
 		assert( !! bj.attributes.bannerColourHover, 'block.json missing bannerColourHover' );
 	} );
 
@@ -3267,7 +3267,7 @@ if ( '' !== $name_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $name_colour_sel, $name_colour_effective );
 }
 `;
-	const fx10 = makeFixture( tmpRoot, 'fixture-j', {
+	const fixt10 = makeFixture( tmpRoot, 'fixture-j', {
 		editJs: FIXTURE_EDIT_JS_INTERP,
 		renderPhp: FIXTURE_RENDER_PHP_INTERP,
 		blockJson: {
@@ -3283,10 +3283,10 @@ if ( '' !== $name_colour_effective ) {
 
 	check( 'resolveTextGradientChainSelector resolves the `{$var}` double-quote-interpolation consumption shape (team-member pattern)', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx10, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt10, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-j' );
-		const phpText = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
-		const plan = planRow( db10, 'fixture-j', 'sgs/fixture-j', rows[ 0 ], phpText, path.join( fx10, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt10, 'render.php' ), 'utf8' );
+		const plan = planRow( db10, 'fixture-j', 'sgs/fixture-j', rows[ 0 ], phpText, path.join( fixt10, 'block.json' ) );
 		assert( plan.fixable, 'expected fixable via Strategy T, got refusal: ' + JSON.stringify( plan ) );
 		assert( plan.mode === 'direct-new-statement', 'expected the chain-resolved path, got mode=' + plan.mode );
 		assert( plan.selectorTemplate === '{$name_colour_sel}', 'wrong selector rebuilt from the interpolation shape: ' + plan.selectorTemplate );
@@ -3295,14 +3295,14 @@ if ( '' !== $name_colour_effective ) {
 			Object.assign( {}, plan, {
 				dir: 'fixture-j',
 				slug: 'sgs/fixture-j',
-				editFile: path.join( fx10, 'edit.js' ),
-				renderFile: path.join( fx10, 'render.php' ),
-				blockJsonPath: path.join( fx10, 'block.json' ),
+				editFile: path.join( fixt10, 'edit.js' ),
+				renderFile: path.join( fixt10, 'render.php' ),
+				blockJsonPath: path.join( fixt10, 'block.json' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
-		const php = fs.readFileSync( path.join( fx10, 'render.php' ), 'utf8' );
+		const php = fs.readFileSync( path.join( fixt10, 'render.php' ), 'utf8' );
 		// FINDING 1 (final-branch review): no literal `:hover` selector text in
 		// source any more — the rebuilt selector is passed as the FIRST
 		// argument to sgs_hover_state_rules() instead of being concatenated
@@ -3379,7 +3379,7 @@ if ( '' !== $sublink_colour_effective ) {
 	$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-fixture-k__sublink', $sublink_colour_effective );
 }
 `;
-	const fx11 = makeFixture( tmpRoot, 'fixture-k', {
+	const fixt11 = makeFixture( tmpRoot, 'fixture-k', {
 		editJs: FIXTURE_EDIT_JS_NOVAR,
 		renderPhp: FIXTURE_RENDER_PHP_NOVAR,
 		blockJson: {
@@ -3395,10 +3395,10 @@ if ( '' !== $sublink_colour_effective ) {
 
 	check( 'resolveTextGradientChainSelector resolves the no-intermediate-variable, direct-call-argument consumption shape (nav-menu.submenuColour pattern) — also regression-guards Finding 5\'s narrowed fall-through', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx11, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt11, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-k' );
-		const phpText = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
-		const plan = planRow( db11, 'fixture-k', 'sgs/fixture-k', rows[ 0 ], phpText, path.join( fx11, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt11, 'render.php' ), 'utf8' );
+		const plan = planRow( db11, 'fixture-k', 'sgs/fixture-k', rows[ 0 ], phpText, path.join( fixt11, 'block.json' ) );
 		assert( plan.fixable, 'expected fixable via Strategy T with varName=null, got refusal: ' + JSON.stringify( plan ) );
 		assert( plan.mode === 'direct-new-statement', 'expected the chain-resolved path, got mode=' + plan.mode );
 		assert( plan.selectorTemplate === "{$uid_sel} .sgs-fixture-k__sublink", 'wrong selector rebuilt from the concat shape: ' + plan.selectorTemplate );
@@ -3407,14 +3407,14 @@ if ( '' !== $sublink_colour_effective ) {
 			Object.assign( {}, plan, {
 				dir: 'fixture-k',
 				slug: 'sgs/fixture-k',
-				editFile: path.join( fx11, 'edit.js' ),
-				renderFile: path.join( fx11, 'render.php' ),
-				blockJsonPath: path.join( fx11, 'block.json' ),
+				editFile: path.join( fixt11, 'edit.js' ),
+				renderFile: path.join( fixt11, 'render.php' ),
+				blockJsonPath: path.join( fixt11, 'block.json' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
-		const php = fs.readFileSync( path.join( fx11, 'render.php' ), 'utf8' );
+		const php = fs.readFileSync( path.join( fixt11, 'render.php' ), 'utf8' );
 		// FINDING 1 (final-branch review): no literal `:hover` selector text in
 		// source any more — the rebuilt selector is passed as the FIRST
 		// argument to sgs_hover_state_rules() instead of being concatenated
@@ -3483,7 +3483,7 @@ if ( '' !== $eyebrow_colour_effective ) {
 	}
 }
 `;
-	const fx12 = makeFixture( tmpRoot, 'fixture-l', {
+	const fixt12 = makeFixture( tmpRoot, 'fixture-l', {
 		editJs: FIXTURE_EDIT_JS_AMBIG_CHAIN,
 		renderPhp: FIXTURE_RENDER_PHP_AMBIG_CHAIN,
 		blockJson: {
@@ -3499,24 +3499,24 @@ if ( '' !== $eyebrow_colour_effective ) {
 
 	check( 'FINDING 3: resolveTextGradientChainSelector REFUSES (does not silently pick the first) when the decl var has TWO consumption sites, file byte-identical after', () => {
 		const before = {
-			editJs: fs.readFileSync( path.join( fx12, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx12, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt12, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt12, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt12, 'block.json' ), 'utf8' ),
 		};
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx12, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt12, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-l' );
-		const phpText = fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' );
-		const plan = planRow( db12, 'fixture-l', 'sgs/fixture-l', rows[ 0 ], phpText, path.join( fx12, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt12, 'render.php' ), 'utf8' );
+		const plan = planRow( db12, 'fixture-l', 'sgs/fixture-l', rows[ 0 ], phpText, path.join( fixt12, 'block.json' ) );
 		assert( ! plan.fixable, 'expected a REFUSAL for an ambiguous two-site chain, got fixable: ' + JSON.stringify( plan ) );
 		assert(
 			/multiple-text-gradient-chain-sites-ambiguous/.test( plan.reason ),
 			'THIS ASSERTION IS THE CONTROL — expected the named ambiguity refusal reason, got: ' + plan.reason
 		);
 		const after = {
-			editJs: fs.readFileSync( path.join( fx12, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx12, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx12, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt12, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt12, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt12, 'block.json' ), 'utf8' ),
 		};
 		assert( before.editJs === after.editJs, 'ambiguity control: edit.js was mutated despite refusal' );
 		assert( before.renderPhp === after.renderPhp, 'ambiguity control: render.php was mutated despite refusal' );
@@ -3545,7 +3545,7 @@ if ( '' !== $panel_colour ) {
 	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m__panel{color:inherit;}";
 }
 `;
-	const fx13 = makeFixture( tmpRoot, 'fixture-m', {
+	const fixt13 = makeFixture( tmpRoot, 'fixture-m', {
 		editJs: FIXTURE_EDIT_JS_ELSE,
 		renderPhp: FIXTURE_RENDER_PHP_ELSE,
 		blockJson: {
@@ -3558,15 +3558,15 @@ if ( '' !== $panel_colour ) {
 
 	check( 'FINDING 2 (final-branch review): a base-value guard immediately followed by `else` is REFUSED, not silently hoisted-in-place — file byte-identical after', () => {
 		const before = {
-			editJs: fs.readFileSync( path.join( fx13, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx13, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt13, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt13, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt13, 'block.json' ), 'utf8' ),
 		};
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx13, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt13, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-m' );
-		const phpText = fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' );
-		const plan = planRow( db13, 'fixture-m', 'sgs/fixture-m', rows[ 0 ], phpText, path.join( fx13, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt13, 'render.php' ), 'utf8' );
+		const plan = planRow( db13, 'fixture-m', 'sgs/fixture-m', rows[ 0 ], phpText, path.join( fixt13, 'block.json' ) );
 		// EXPECTATION CHANGED (final-branch review, Finding 2): this used to
 		// assert `plan.fixable` and go on to check that the hover block landed
 		// NESTED INSIDE the original guard — i.e. it locked in the exact
@@ -3582,9 +3582,9 @@ if ( '' !== $panel_colour ) {
 			'THIS ASSERTION IS THE CONTROL — expected the named else-branch refusal reason, got: ' + plan.reason
 		);
 		const after = {
-			editJs: fs.readFileSync( path.join( fx13, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx13, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx13, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt13, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt13, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt13, 'block.json' ), 'utf8' ),
 		};
 		assert( before.editJs === after.editJs, 'refusal control: edit.js was mutated despite refusal' );
 		assert( before.renderPhp === after.renderPhp, 'refusal control: render.php was mutated despite refusal' );
@@ -3609,7 +3609,7 @@ if ( '' !== $drawer_colour ) {
 	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-m2__drawer{color:inherit;}";
 }
 `;
-	const fx13b = makeFixture( tmpRoot, 'fixture-m2', {
+	const fixt13b = makeFixture( tmpRoot, 'fixture-m2', {
 		editJs: FIXTURE_EDIT_JS_ELSE_COMMENT,
 		renderPhp: FIXTURE_RENDER_PHP_ELSE_COMMENT,
 		blockJson: {
@@ -3622,24 +3622,24 @@ if ( '' !== $drawer_colour ) {
 
 	check( 'FINDING 2: a comment between the guard\'s `}` and `else` does not silently defeat the else-branch refusal, file byte-identical after', () => {
 		const before = {
-			editJs: fs.readFileSync( path.join( fx13b, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx13b, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt13b, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt13b, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt13b, 'block.json' ), 'utf8' ),
 		};
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx13b, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt13b, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-m2' );
-		const phpText = fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' );
-		const plan = planRow( db13b, 'fixture-m2', 'sgs/fixture-m2', rows[ 0 ], phpText, path.join( fx13b, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt13b, 'render.php' ), 'utf8' );
+		const plan = planRow( db13b, 'fixture-m2', 'sgs/fixture-m2', rows[ 0 ], phpText, path.join( fixt13b, 'block.json' ) );
 		assert( ! plan.fixable, 'expected a REFUSAL for a comment-preceded else branch, got fixable: ' + JSON.stringify( plan ) );
 		assert(
 			/REFUSED:hoist-blocked-by-else-branch/.test( plan.reason ),
 			'THIS ASSERTION IS THE CONTROL — a comment between `}` and `else` must not silently defeat the else-branch detection, got: ' + plan.reason
 		);
 		const after = {
-			editJs: fs.readFileSync( path.join( fx13b, 'edit.js' ), 'utf8' ),
-			renderPhp: fs.readFileSync( path.join( fx13b, 'render.php' ), 'utf8' ),
-			blockJson: fs.readFileSync( path.join( fx13b, 'block.json' ), 'utf8' ),
+			editJs: fs.readFileSync( path.join( fixt13b, 'edit.js' ), 'utf8' ),
+			renderPhp: fs.readFileSync( path.join( fixt13b, 'render.php' ), 'utf8' ),
+			blockJson: fs.readFileSync( path.join( fixt13b, 'block.json' ), 'utf8' ),
 		};
 		assert( before.editJs === after.editJs, 'refusal control: edit.js was mutated despite refusal' );
 		assert( before.renderPhp === after.renderPhp, 'refusal control: render.php was mutated despite refusal' );
@@ -3661,7 +3661,7 @@ if ( '' !== $strap_colour ) {
 	$scoped_css_parts[] = ".{\$uid}.sgs-fixture-n__strap{color:" . sgs_colour_value( $strap_colour ) . ';}';
 }
 `;
-	const fx14 = makeFixture( tmpRoot, 'fixture-n', {
+	const fixt14 = makeFixture( tmpRoot, 'fixture-n', {
 		editJs: FIXTURE_EDIT_JS_COMMENT,
 		renderPhp: FIXTURE_RENDER_PHP_COMMENT,
 		blockJson: {
@@ -3674,25 +3674,25 @@ if ( '' !== $strap_colour ) {
 
 	check( 'FINDING 3: a `//` comment line immediately before the guard does not silently disable hoisting', () => {
 		const cache = new SourceCache();
-		const rows = rowsInFile( cache, path.join( fx14, 'edit.js' ) );
+		const rows = rowsInFile( cache, path.join( fixt14, 'edit.js' ) );
 		assert( rows.length === 1, 'expected exactly one row in fixture-n' );
-		const phpText = fs.readFileSync( path.join( fx14, 'render.php' ), 'utf8' );
-		const plan = planRow( db14, 'fixture-n', 'sgs/fixture-n', rows[ 0 ], phpText, path.join( fx14, 'block.json' ) );
+		const phpText = fs.readFileSync( path.join( fixt14, 'render.php' ), 'utf8' );
+		const plan = planRow( db14, 'fixture-n', 'sgs/fixture-n', rows[ 0 ], phpText, path.join( fixt14, 'block.json' ) );
 		assert( plan.fixable, 'expected fixable, got refusal: ' + JSON.stringify( plan ) );
 
 		const result = applyPlan(
 			Object.assign( {}, plan, {
 				dir: 'fixture-n',
 				slug: 'sgs/fixture-n',
-				editFile: path.join( fx14, 'edit.js' ),
-				renderFile: path.join( fx14, 'render.php' ),
-				blockJsonPath: path.join( fx14, 'block.json' ),
+				editFile: path.join( fixt14, 'edit.js' ),
+				renderFile: path.join( fixt14, 'render.php' ),
+				blockJsonPath: path.join( fixt14, 'block.json' ),
 			} ),
 			true
 		);
 		assert( result.ok, 'apply failed: ' + JSON.stringify( result ) );
 
-		const php = fs.readFileSync( path.join( fx14, 'render.php' ), 'utf8' );
+		const php = fs.readFileSync( path.join( fixt14, 'render.php' ), 'utf8' );
 		// THE REGRESSION GUARD: the hover if-block must have landed AFTER the
 		// (comment-preceded) guard's own closing `}` — TOP-LEVEL, matching the
 		// already-shipped burgerBg/burgerHoverColour sibling shape — not

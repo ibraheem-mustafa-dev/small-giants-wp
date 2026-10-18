@@ -54,7 +54,7 @@ const FX_STYLESHEET = /\/fx-[a-z0-9-]+\.css/;
  * real effect stylesheet from the first page; the detector must see that request, so a listener that sees nothing
  * cannot pass the check.
  */
-async function fxStylesheetChecks( ctx ) {
+async function effectStylesheetChecks( ctx ) {
 	const { rep, browser, width, base, urls } = ctx;
 	const load = async ( url, probeUrl ) => {
 		const context = await browser.newContext( { viewport: { width, height: HEIGHT } } );
@@ -124,7 +124,7 @@ async function main() {
 				return { page, close: () => context.close() };
 			};
 			const ctx = { browser, engine, width, base, args, markers, rep, newPage, shared, urls };
-			for ( const run of [ hoverChecks, touchAndFocusChecks, fadeChecks, loadChecks, keyframeChecks, scrollDriverChecks, tiltAndInlineChecks, assetChecks, fxStylesheetChecks, reducedMotionChecks ] ) {
+			for ( const run of [ hoverChecks, touchAndFocusChecks, fadeChecks, loadChecks, keyframeChecks, scrollDriverChecks, tiltAndInlineChecks, assetChecks, effectStylesheetChecks, reducedMotionChecks ] ) {
 				try {
 					await run( ctx );
 				} catch ( e ) {

@@ -73,15 +73,19 @@ namespace {
 		return is_array( $out ) ? $out : array();
 	};
 
-	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'icon', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'team-member', 'testimonial', 'timeline', 'trustpilot-reviews' );
+	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'icon', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'product-card', 'team-member', 'testimonial', 'timeline', 'trustpilot-reviews' );
 	$shipped = SGS\Blocks\Shipped_Block_Defaults::all();
-	$check( 'data file names exactly the twelve blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
+	$check( 'data file names exactly the thirteen blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
 
 	// (a) no saved defaults.
 	$GLOBALS['t_option'] = array();
 	$out = $injected();
 	$check( '(a) card-grid carries the shipped entrance on its item part', 'entrance-fade-up' === ( $out['sgs/card-grid']['sgsMotion']['elements']['item']['entrance']['base']['preset'] ?? null ) );
 	$check( '(a) pricing-table carries slide-up', 'entrance-slide-up' === ( $out['sgs/pricing-table']['sgsMotion']['elements']['root']['entrance']['base']['preset'] ?? null ) );
+	$check( '(a) info-box keeps its lift and gains the 1.02 scale and the media zoom', -1 !== ( $out['sgs/info-box']['sgsMotion']['elements']['root']['hover']['state']['values']['scale'] <=> 1.0 ) && 'hover-lift' === ( $out['sgs/info-box']['sgsMotion']['elements']['root']['hover']['state']['preset'] ?? null ) && 1.1 === ( $out['sgs/info-box']['sgsMotion']['elements']['media']['hover']['state']['values']['scale'] ?? null ) );
+	$check( '(a) team-member carries the 1.02 scale and the image zoom', 1.02 === ( $out['sgs/team-member']['sgsMotion']['elements']['root']['hover']['state']['values']['scale'] ?? null ) && 1.1 === ( $out['sgs/team-member']['sgsMotion']['elements']['image']['hover']['state']['values']['scale'] ?? null ) );
+	$check( '(a) pricing-table carries the 1.02 scale beside its entrance', 1.02 === ( $out['sgs/pricing-table']['sgsMotion']['elements']['root']['hover']['state']['values']['scale'] ?? null ) && isset( $out['sgs/pricing-table']['sgsMotion']['elements']['root']['entrance'] ) );
+	$check( '(a) product-card lifts 4px', -4 === ( $out['sgs/product-card']['sgsMotion']['elements']['root']['hover']['state']['values']['translateY'] ?? null ) );
 	$check( '(a) every shipped block is injected', count( array_intersect_key( $out, $shipped ) ) === count( $shipped ) );
 
 	// (b) a saved sgsMotion wins.

@@ -18,7 +18,6 @@ describe( 'the canvas stories', () => {
 			.filter( ( name ) => name.endsWith( '.js' ) && name !== 'index.js' )
 			.map( ( name ) => name.replace( /\.js$/, '' ) )
 			.sort();
-		expect( files.length ).toBeGreaterThan( 0 );
 		expect( Object.keys( manifest.stories ).sort() ).toEqual( files );
 		expect( [ ...canvasStories() ].sort() ).toEqual( files );
 	} );

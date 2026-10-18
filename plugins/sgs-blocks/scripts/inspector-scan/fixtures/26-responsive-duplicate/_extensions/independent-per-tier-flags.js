@@ -1,9 +1,8 @@
 /**
  * MUST NOT FLAG — independent per-device flags, not a responsive cascade.
  *
- * Mirrors conditional-visibility.js (`sgsHideOnDesktop/Tablet/Mobile`) and
- * fx.js:1303 (`fxDisableTablet/Mobile`). Both were flagged by this rule's first
- * live run and both are CORRECT AS WRITTEN:
+ * Mirrors responsive-visibility.js (`sgsHideOnDesktop/Tablet/Mobile`). It was
+ * flagged by this rule's first live run and is CORRECT AS WRITTEN:
  *
  *   A cascade resolves ONE tier at a time and falls back up the chain, so it
  *   never needs to see two of its own tiers at once. These are conjunctive —

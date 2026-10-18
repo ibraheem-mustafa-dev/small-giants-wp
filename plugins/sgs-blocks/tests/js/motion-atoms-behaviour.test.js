@@ -29,7 +29,7 @@ const {
 } = require( '../../src/components/motion' );
 const presetFile = require( '../../src/components/motion/generated-motion-presets.json' );
 const defs = require( '../../src/components/motion/generated-motion-defs.json' );
-const fxMeta = require( '../../src/blocks/extensions/generated-fx-effect-meta.json' );
+const effectMeta = require( '../../src/blocks/extensions/generated-fx-effect-meta.json' );
 
 const quoteBlock = JSON.parse(
 	fs.readFileSync( path.join( __dirname, '..', '..', 'src', 'blocks', 'quote', 'block.json' ), 'utf8' )
@@ -128,7 +128,7 @@ describe( 'the trigger picker', () => {
 	} );
 
 	it( 'is filtered by the effect fx_effects.triggers', () => {
-		const cursor = fxMeta[ 'cursor-field' ].triggers;
+		const cursor = effectMeta[ 'cursor-field' ].triggers;
 		expect( triggersFor( { panel: 'effects', effectTriggers: cursor } ) ).toEqual( cursor );
 		expect( triggersFor( { panel: 'effects', effectTriggers: [ 'click', 'load', 'swipe' ] } ) ).toEqual( [ 'load', 'click' ] );
 	} );

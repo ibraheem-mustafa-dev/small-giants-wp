@@ -449,10 +449,10 @@
 			"type": "number",
 			"default": 50
 		},
-		"fxDraggable": {
+		"freeDrag": {
 			"type": "boolean",
 			"default": true,
-			"_comment": "Spec 38 FR-38-13 roster opt-in. When true, GSAP Draggable enhances the divider so the visitor can drag anywhere on the image, on top of the always-present native range input (keyboard + native touch drag + no-JS-safe). When false, only the native range input drives the divider — still fully operable, just without the free-drag-on-image layer."
+			"_comment": "When true, GSAP Draggable enhances the divider so the visitor can drag anywhere on the image, on top of the always-present native range input (keyboard + native touch drag + no-JS-safe). When false, only the native range input drives the divider — still fully operable, just without the free-drag-on-image layer."
 		},
 		"dividerColour": {
 			"type": "string",

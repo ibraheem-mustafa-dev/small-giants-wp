@@ -1,26 +1,20 @@
-// Entrance start (lib/entrance.mjs): a block the draft shows at rest while live holds its entrance waiting for a scroll
-// gets sgsAnimationStart 'load'; nothing else does.
+// Entrance start (lib/entrance.mjs): between Spec 38A M6.6 and M7 the cloning route writes no motion, so an entrance
+// the draft shows at rest while live holds it waiting for a scroll writes nothing, and no old animation attribute.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { entranceStart, groupRects } from '../lib/entrance.mjs';
 
-const col = ( attrs = {} ) => ( { name: 'sgs/container', attributes: { className: 'cr-ref-a-11', sgsAnimation: 'fade-up', ...attrs } } );
+const col = ( attrs = {} ) => ( { name: 'sgs/container', attributes: { className: 'cr-ref-a-11', ...attrs } } );
 const group = ( prop, live, extra = {} ) => ( { prop, path: '', state: null, rows: [ { width: 375, draft: 'x', live } ], ...extra } );
 
 const TOP = { 375: { y: 120, h: 300 } };
 const FOLD = { 375: { y: 1500, h: 300 } };
 
-test( 'MUST FAIL TO MISS: a first-viewport entrance hidden live and shown on the draft at rest starts on page load', () => {
-	assert.deepEqual( entranceStart( group( 'opacity', '0', { rects: TOP } ), col(), { 375: '1' } ), { writes: [ { attr: 'sgsAnimationStart', value: 'load', merge: 'replace' } ] } );
-	assert.ok( entranceStart( group( 'translate', '0px 18px' ), col(), { 375: 'none' }, TOP ) );
-} );
-
-test( 'NEGATIVE CONTROL (red on revert): a below-the-fold armed entrance writes nothing', () => {
+test( 'NEGATIVE CONTROL: an entrance hidden live and shown on the draft at rest writes nothing, first viewport or below the fold', () => {
+	assert.equal( entranceStart( group( 'opacity', '0', { rects: TOP } ), col(), { 375: '1' } ), null );
+	assert.equal( entranceStart( group( 'translate', '0px 18px' ), col(), { 375: 'none' }, TOP ), null );
 	assert.equal( entranceStart( group( 'opacity', '0', { rects: FOLD } ), col(), { 375: '1' } ), null );
 	assert.equal( entranceStart( group( 'translate', '0px 26px' ), col(), { 375: 'none' }, FOLD ), null );
-	// Inside the viewport at one width but below the fold at another: still no write.
-	assert.equal( entranceStart( group( 'opacity', '0' ), col(), { 375: '1' }, { 375: { y: 100, h: 50 }, 1440: { y: 1500, h: 50 } } ), null );
-	// No geometry at all is unknown, never assumed first-screen.
 	assert.equal( entranceStart( group( 'opacity', '0' ), col(), { 375: '1' } ), null );
 } );
 
@@ -30,14 +24,12 @@ test( 'groupRects reads the live box of the group pair at every run width', () =
 	assert.deepEqual( groupRects( {}, { pair: 'p' } ), {} );
 } );
 
-test( 'positive control: no entrance, already on load, a part, a hover, a half opacity or a draft still hidden writes nothing', () => {
-	assert.equal( entranceStart( group( 'opacity', '0' ), { name: 'sgs/text', attributes: {} }, { 375: '1' }, TOP ), null );
-	assert.equal( entranceStart( group( 'opacity', '0' ), col( { sgsAnimationStart: 'load' } ), { 375: '1' }, TOP ), null );
-	assert.equal( entranceStart( group( 'opacity', '0', { path: '.sgs-container__inner' } ), col(), { 375: '1' }, TOP ), null );
-	assert.equal( entranceStart( group( 'opacity', '0', { state: 'hover' } ), col(), { 375: '1' }, TOP ), null );
-	assert.equal( entranceStart( group( 'opacity', '0.5' ), col(), { 375: '1' }, TOP ), null );
-	assert.equal( entranceStart( group( 'opacity', '0' ), col(), { 375: '0' }, TOP ), null );
-	assert.equal( entranceStart( group( 'color', 'red' ), col(), { 375: 'blue' } ), null );
+test( 'entranceStart never returns an attribute write, for any group', () => {
+	for ( const node of [ col(), { name: 'sgs/text', attributes: {} }, col( { sgsMotion: { v: 1 } } ) ] ) {
+		for ( const g of [ group( 'opacity', '0' ), group( 'opacity', '0', { path: '.sgs-container__inner' } ), group( 'opacity', '0', { state: 'hover' } ), group( 'color', 'red' ) ] ) {
+			assert.equal( entranceStart( g, node, { 375: '1' }, TOP ), null );
+		}
+	}
 } );
 
 // The viewport narrowing is only real if the callers supply the rect. `rects` defaults to `g.rects`, which no code

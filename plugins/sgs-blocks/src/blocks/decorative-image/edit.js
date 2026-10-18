@@ -16,7 +16,6 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePanelLayout';
 import { elementCustomProperties, requiresBox } from '../../components/media/canvasStyle';
 import { resolveTier, usePreviewTier } from '../../utils';
-import { PATH_DRAW_EASING_OPTIONS } from '../../components/motion/easing-master-list';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -42,10 +41,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		overflow,
 		hideOnTablet,
 		hideOnMobile,
-		pathDrawOnScroll,
-		pathDrawDurationMs,
-		pathDrawTriggerOffset,
-		pathDrawEasing,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -348,52 +343,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'SVG Path Draw', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Draw SVG paths on scroll', 'sgs-blocks' ) }
-						help={ __( 'When the image scrolls into view, SVG strokes animate in. Only affects SVG files with visible strokes.', 'sgs-blocks' ) }
-						checked={ pathDrawOnScroll }
-						onChange={ ( val ) => setAttributes( { pathDrawOnScroll: val } ) }
-					/>
-					{ pathDrawOnScroll && (
-						<>
-							<RangeControl
-								label={ __( 'Draw duration (ms)', 'sgs-blocks' ) }
-								help={ __( 'How long the stroke animation takes.', 'sgs-blocks' ) }
-								value={ pathDrawDurationMs }
-								onChange={ ( val ) => setAttributes( { pathDrawDurationMs: val } ) }
-								min={ 300 }
-								max={ 4000 }
-								step={ 100 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<RangeControl
-								label={ __( 'Trigger offset (%)', 'sgs-blocks' ) }
-								help={ __( 'How much of the image must be visible before drawing starts. 20 = 20% visible.', 'sgs-blocks' ) }
-								value={ pathDrawTriggerOffset }
-								onChange={ ( val ) => setAttributes( { pathDrawTriggerOffset: val } ) }
-								min={ 0 }
-								max={ 80 }
-								step={ 5 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<SelectControl
-								label={ __( 'Draw easing', 'sgs-blocks' ) }
-								value={ pathDrawEasing }
-								options={ PATH_DRAW_EASING_OPTIONS }
-								onChange={ ( val ) => setAttributes( { pathDrawEasing: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</>
-					) }
 				</PanelBody>
 
 				<PanelBody

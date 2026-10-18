@@ -45,11 +45,6 @@
     },
     {
       "block": "brand-strip",
-      "attr": "scrollDirection",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "brand-strip",
       "attr": "tileShape",
       "disposition": "accepted-debt"
     },
@@ -151,11 +146,6 @@
     {
       "block": "tabs",
       "attr": "tabStyle",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "trust-bar",
-      "attr": "autoScrollSpeed",
       "disposition": "accepted-debt"
     },
     {

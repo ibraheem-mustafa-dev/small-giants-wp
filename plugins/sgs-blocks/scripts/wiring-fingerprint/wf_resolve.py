@@ -4,7 +4,7 @@ The front-end pass (wf_pass) gives the channel the block's own PHP shows. Three
 things complete it here, where every block's result is at hand:
 
 - an element-manifest motion entry (`supports.sgs.elements[].attrMap` anim/fx,
-  read by an `includes/` hook emitter such as animation-stagger.php) or a
+  read by an `includes/` hook emitter) or a
   media-element atom (the check-dead-controls dump's `renderVia`) supplies a
   channel the block's own PHP does not show;
 - a value forwarded into a nested block (`render_block( array( 'blockName' =>
@@ -26,7 +26,7 @@ from wf_tokens import Channel
 
 def manifest_motion_attrs(bjson: dict) -> dict[str, str]:
     """attr -> pseudo-property for `supports.sgs.elements[].attrMap` motion/fx entries
-    (the element manifest's hook emitters, e.g. includes/animation-stagger.php, read them)."""
+    (the element manifest's hook emitters read them)."""
     els = ((bjson.get("supports") or {}).get("sgs") or {}).get("elements") or []
     if isinstance(els, dict):
         els = list(els.values())

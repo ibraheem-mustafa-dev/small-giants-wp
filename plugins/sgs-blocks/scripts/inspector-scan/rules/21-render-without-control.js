@@ -85,10 +85,8 @@ const DOC_ATTR_RE = /^(_comment|_note)/;
 // control DOES, not what it is called... every gate keyed to a component name
 // has a blind spot by construction"). The exclusion had that blind spot too:
 //
-//   The whole `fx` motion family is extension-owned, and NOT ONE of those
-//   names matches `^sgs[A-Z_]` — the family is `fx`, `fxTrigger`,
-//   `fxGridDotColour`, … So the escape hatch missed, twice over, the very
-//   surface it was written to cover.
+//   Extension-owned names need not match `^sgs[A-Z_]`, so the escape hatch
+//   could miss the very surface it was written to cover.
 //
 // The consequence was a CATCH-22 with no passing state. Declare an extension
 // attr on a block and THIS rule fires (no control visible). Leave it
@@ -1166,9 +1164,7 @@ module.exports = {
 			'gradient-helper-derived',
 			'typography-helper-derived',
 			// The extension surface, excluded by OWNERSHIP rather than by name
-			// shape. `fx` and `fxGridDotColour` match no `sgs*` pattern at all,
-			// which is exactly why the old regex missed the whole motion family
-			// and put every declaring block in a catch-22 with
+			// shape, so a declaring block is never in a catch-22 with
 			// check-undeclared-attrs.py. Paired with
 			// `extension-lookalike-still-flags` above.
 			'extension-owned-attr',

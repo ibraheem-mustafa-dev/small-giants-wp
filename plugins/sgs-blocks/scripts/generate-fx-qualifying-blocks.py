@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """generate-fx-qualifying-blocks.py — derives the block -> qualifying-fx-effects
-map, replacing the hand-curated `FX_BLOCKS` array that used to live in
-src/blocks/extensions/fx.js.
+map, replacing a hand-curated block roster.
 
 Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 (placement taxonomy) + §7
 (inspector panel). Task: "Replace a hardcoded block roster with a DERIVED one"
@@ -67,8 +66,8 @@ WHAT COUNTS AS "PROVIDING" A REQUIREMENT (ground truth, not invented)
                     `sgs_get_wp_icon()` output straight into an inline `<span
                     class="sgs-icon__svg">…svg…</span>` (real path glyphs).
                   - sgs/responsive-logo's render.php inlines a
-                    wp_kses-sanitised media-library SVG when
-                    `animationStyle !== 'none'`, and its own comment names
+                    wp_kses-sanitised media-library SVG when its stroke-draw
+                    style is not 'none', and its own comment names
                     `data-sgs-fx="draw"` as already wired to that span
                     (FR-38-15).
                   - sgs/separator's render.php calls the SAME two helpers as
@@ -290,7 +289,7 @@ OUTPUT (ONE file, deterministic, no timestamps)
 ----------------------------------------------------------------------------
 src/blocks/extensions/generated-fx-qualifying-blocks.json — plain JSON,
 `{ "sgs/heading": ["scrub", "split-reveal"], ... }`, imported directly by
-fx.js (webpack bundles .json imports natively — no codegen step needed).
+the motion editor (webpack bundles .json imports natively — no codegen step needed).
 No timestamp is emitted: a dirty-always file makes the deploy-gate's dirty
 check meaningless.
 
@@ -946,8 +945,8 @@ def compute_map() -> dict[str, list[str]]:
         # mega-panel), overlays (modal), form fields and inner child blocks are
         # all structurally section- or text-shaped while being meaningless
         # scroll-effect targets. Each declares the opt-out in its OWN block.json
-        # rather than appearing in a dict here (R-31-1), exactly as animation.js
-        # does since its hardcoded denylist was retired.
+        # rather than appearing in a dict here (R-31-1), exactly as the
+        # universal extensions do.
         hidden = (
             block_json.get("supports", {}).get("sgs", {}).get("hideExtensions") or []
         )
@@ -1039,7 +1038,7 @@ def compute_map() -> dict[str, list[str]]:
             # bans (HC2 / the duplicate-control gate).
             #
             # The live case: `sgs/responsive-logo` owns stroke-draw through its
-            # `animationStyle` enum (draw-on-load | hover-redraw |
+            # stroke-draw style enum (draw-on-load | hover-redraw |
             # scroll-trigger), which FR-38-15 keeps byte-identical across the
             # Vivus -> DrawSVG runtime swap. The other three SVG-bearing blocks
             # (icon / separator / decorative-image) genuinely DO want `draw`
@@ -1047,8 +1046,7 @@ def compute_map() -> dict[str, list[str]]:
             #
             # This is expressed as a DECLARATION THE BLOCK OWNS
             # (`supports.sgs.fx.providesNatively`), not a slug carve-out here —
-            # `fx.js`'s own comment named that as the required shape of the fix,
-            # and R-31-1 forbids a hardcoded per-block dict in a pipeline
+            # R-31-1 forbids a hardcoded per-block dict in a pipeline
             # script. Any future block that natively owns an fx capability
             # declares it the same way and needs no change to this generator.
             natively_provided = set(

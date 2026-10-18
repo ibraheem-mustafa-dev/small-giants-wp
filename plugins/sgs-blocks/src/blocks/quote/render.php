@@ -135,17 +135,14 @@ $box_shadow_decls = sgs_shadow_decls(
 	),
 	$block->name ?? ''
 );
-$hover_scale             = isset( $attributes['scaleHover'] ) && null !== $attributes['scaleHover'] ? (float) $attributes['scaleHover'] : null;
 $hover_colour            = $attributes['textColourHover'] ?? '';
 $hover_colour_gradient   = $attributes['textColourHoverGradient'] ?? '';
 $hover_bg                = $attributes['backgroundColourHover'] ?? '';
 $hover_bg_gradient       = $attributes['backgroundColourHoverGradient'] ?? '';
 
-$transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
-$transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
-$transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease-in-out';
-$allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease-in-out';
+// Colour hover transition: fixed timing. Scale and timed hover motion belong to the sgsMotion hover state.
+$transition_duration = 300;
+$transition_easing   = 'ease-in-out';
 
 // Width. `maxWidth` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE
 // attr holding {desktop,tablet,mobile}, read through the shared normaliser.
@@ -353,14 +350,9 @@ if ( '' !== $hover_colour_effective ) {
 if ( $box_shadow_decls['hover'] ) {
 	$hover_rules = array_merge( $hover_rules, $box_shadow_decls['hover'] );
 }
-$has_scale = null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001;
-if ( $has_scale ) {
-	$hover_rules[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
-}
-
 $hover_rules = array_merge( $hover_rules, $border['hover'] );
-if ( $hover_rules || $has_scale ) {
-	$scoped_css[] = "{$root_sel}{transition:transform {$transition_duration}ms {$transition_easing},box-shadow {$transition_duration}ms {$transition_easing},background-color {$transition_duration}ms {$transition_easing},color {$transition_duration}ms {$transition_easing};}";
+if ( $hover_rules ) {
+	$scoped_css[] = "{$root_sel}{transition:box-shadow {$transition_duration}ms {$transition_easing},background-color {$transition_duration}ms {$transition_easing},color {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
 	if ( $hover_rules ) {
 		$scoped_css[]        = sgs_hover_state_rules( $root_sel, implode( ';', $hover_rules ), ':focus-within' );

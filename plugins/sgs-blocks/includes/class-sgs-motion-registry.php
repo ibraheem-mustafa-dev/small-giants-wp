@@ -1186,10 +1186,8 @@ class SGS_Motion_Registry {
 	 * D446 Task 15) and `data-sgs-fx-off-tablet` / `-mobile` (Spec 38A) are
 	 * DELIBERATELY NOT read anywhere in this class.
 	 *
-	 * The disable flags (every effect on the element) are emitted by
-	 * `includes/fx-attributes.php` and `src/blocks/extensions/fx.js` from the
-	 * flat `fxDisableTablet` / `fxDisableMobile`; the off lists (the named
-	 * effects only) by `Sgs_Motion_Fx_Emitter` from a layer's `off`. Both are
+	 * The element-wide disable flags (every effect on the element) are read when present in the markup; the off lists (the named
+	 * effects only) are written by `Sgs_Motion_Fx_Emitter` from a layer's `off`. Both are
 	 * read at boot, against a live `matchMedia` check, by
 	 * `src/shared/effects/gsap/provider.js::isDisabledAtThisTier`, which
 	 * gates every Tier G effect; this file touches neither.

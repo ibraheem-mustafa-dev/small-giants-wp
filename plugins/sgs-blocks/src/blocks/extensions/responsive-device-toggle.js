@@ -66,7 +66,7 @@ import {
 	// ⛔ The `__experimental` prefix is REQUIRED on this WordPress version, and
 	// aliasing it is the established pattern in every one of this plugin's five
 	// other callers (nav-menu/edit.js:38-39, ContainerWrapperControls.js:51-52,
-	// fx.js:39-40, before-after/BooleanResponsiveControl.js:44-45). The
+	// before-after/BooleanResponsiveControl.js:44-45). The
 	// unprefixed names are NOT exported: `wp.components.ToggleGroupControl` is
 	// literally `undefined` at runtime, which React reports only as minified
 	// error #130 ("element type is invalid… got: undefined") — it builds clean,
@@ -82,9 +82,9 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/p
  * registerPlugin warns-and-no-ops on a duplicate name rather than throwing, so
  * "renders once by construction" holds only while this file is imported from
  * exactly one place. That invariant has been broken in this repo before — a
- * direct block-level import of animation.js once produced two Animation panels
- * on every block (D148). Matches the identical pattern in animation.js:109,
- * parallax.js:49, responsive-visibility.js and conditional-visibility.js:64.
+ * direct block-level import of an extension once produced two copies of its
+ * panel on every block (D148). Matches the identical pattern in
+ * responsive-visibility.js and conditional-visibility.js:64.
  */
 if ( ! window.__sgsResponsiveDeviceToggleRegistered ) {
 window.__sgsResponsiveDeviceToggleRegistered = true;

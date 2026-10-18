@@ -245,12 +245,6 @@ export const CSS_EASING_OPTIONS_IN_OUT_FIRST = easingView( 'css', {
 	order: [ 'ease-in-out', 'ease', 'ease-in', 'ease-out', 'linear' ],
 } );
 
-// The path-draw list: three CSS keywords, ease out recommended.
-export const PATH_DRAW_EASING_OPTIONS = easingView( 'css', {
-	order: [ 'ease-out', 'ease-in-out', 'linear' ],
-	labels: { 'ease-out': __( 'Ease out (recommended)', 'sgs-blocks' ) },
-} );
-
 // The animation control: the theme curves with plain-English hints, then the CSS default curve.
 export const ANIMATION_EASING_OPTIONS = [
 	...easingView( 'theme', {

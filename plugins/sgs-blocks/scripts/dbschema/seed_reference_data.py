@@ -16,9 +16,6 @@ the source of truth; the DB tables are the runtime query target, R-31-1):
   motion_presets         <- motion-presets.json      (validated against the motion schema first; a bad
                             preset aborts with a non-zero exit; rows the file lacks are deleted)
 
-Also exposes ``fx_attr_roster()``, the full ``fx*`` attribute roster read from
-``includes/fx-attributes.php`` and ``includes/extension-attributes.generated.php``.
-
 Importing this module touches nothing: no database connection, no file read. ``seed_all(db_path)``
 opens its own connection. The table DDL lives in ``dbschema/schema.sql``; a missing table or an
 unwritable database is reported on stderr and that seeder is skipped.
@@ -54,10 +51,6 @@ _SCALAR_MEDIA_ROLES_FILE = _DATA_DIR / "scalar-media-roles.json"
 _SCALAR_MEDIA_ROLE = "scalar-media"
 _ATOMIC_TAG_MAP_FILE = _DATA_DIR / "atomic-tag-map.json"
 
-_FX_ATTRIBUTES_PHP = _PLUGIN_DIR / "includes" / "fx-attributes.php"
-_EXTENSION_ATTRS_GENERATED_PHP = _PLUGIN_DIR / "includes" / "extension-attributes.generated.php"
-_FX_MAP_ENTRY_RE = re.compile(r"'(\w+)'\s*=>\s*'(data-sgs-[\w-]+)'")
-_EXT_ATTR_TYPE_RE = re.compile(r"'(\w+)'\s*=>\s*array\(\s*'type'\s*=>\s*'(\w+)'")
 
 # table -> (data file, ordered columns)
 _SEEDED_TABLES: dict[str, tuple[str, tuple[str, ...]]] = {
@@ -443,45 +436,6 @@ def seed_all(db_path: Path | str | None = None) -> None:
                 _warn(f"{label} seeder skipped: {exc}")
     finally:
         conn.close()
-
-
-@functools.lru_cache(maxsize=1)
-def fx_attr_roster() -> dict[str, dict[str, str]]:
-    """``{attr_name: {"data_attr": "data-sgs-...", "type": "string"|...}}`` for every ``fx*`` attr.
-
-    Names and data attributes come from ``FX_ATTR_MAP`` in ``includes/fx-attributes.php``; types
-    come from ``includes/extension-attributes.generated.php`` (a name missing there is typed
-    'string'). ``fxDisableTablet`` and ``fxDisableMobile`` render through their own branch rather
-    than the generic map loop, so they are added explicitly (type 'boolean' by default). A missing
-    or unreadable PHP file degrades to an empty or partial roster.
-    """
-    data_attrs: dict[str, str] = {}
-    try:
-        text = _FX_ATTRIBUTES_PHP.read_text(encoding="utf-8")
-        for name, data_attr in _FX_MAP_ENTRY_RE.findall(text):
-            data_attrs[name] = data_attr
-    except Exception as exc:  # noqa: BLE001
-        _warn(f"fx_attr_roster: FX_ATTR_MAP unreadable: {exc}")
-
-    types: dict[str, str] = {}
-    try:
-        text = _EXTENSION_ATTRS_GENERATED_PHP.read_text(encoding="utf-8")
-        for name, typ in _EXT_ATTR_TYPE_RE.findall(text):
-            types[name] = typ
-    except Exception as exc:  # noqa: BLE001
-        _warn(f"fx_attr_roster: extension-attributes.generated.php unreadable: {exc}")
-
-    roster = {
-        name: {"data_attr": data_attr, "type": types.get(name, "string")}
-        for name, data_attr in data_attrs.items()
-    }
-    for name, data_attr in (
-        ("fxDisableTablet", "data-sgs-fx-disable-tablet"),
-        ("fxDisableMobile", "data-sgs-fx-disable-mobile"),
-    ):
-        if name not in roster:
-            roster[name] = {"data_attr": data_attr, "type": types.get(name, "boolean")}
-    return roster
 
 
 def main(argv: list[str] | None = None) -> int:

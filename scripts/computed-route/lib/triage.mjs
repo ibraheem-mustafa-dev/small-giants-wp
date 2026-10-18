@@ -598,11 +598,7 @@ export function triageIssue( issue, ctx ) {
 	evidence.push( res.gap ? { check: 'resolver', gap: res.gap, detail: res.detail } : { check: 'resolver', wouldWrite: res.writes.map( ( w ) => w.attr ), on: res.on, holds: res.holds, ...( blocked ? { blocked } : {} ), ...( tried ? { solveWrote: tried.attr, group: tried.group } : {} ) } );
 	const fits = fittingSettings( issue, ctx );
 	evidence.push( ...fits );
-	const entrance = res.writes && ! res.holds && res.writes.some( ( w ) => 'sgsAnimationStart' === w.attr );
 	const withSource = () => ( { source: sourcePass( issue, [ ...( res.writes || [] ).map( ( w ) => w.attr ), ...fits.map( ( f ) => f.setting ) ], ctx ) } );
-	if ( entrance ) {
-		return verdict( 'T', 'entrance-start' );
-	}
 	const artefact = transient || used || conseq;
 	if ( artefact ) {
 		return verdict( 'W', artefact.check, 'hardcode' === issue.solveClass ? withSource() : {} );

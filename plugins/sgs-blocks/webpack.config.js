@@ -182,7 +182,7 @@ if ( moduleConfig ) {
 	 * @param {string[]} segments     Directory segments under the plugin root.
 	 * @return {Object} Entry map.
 	 */
-	const fxEntries = ( outputPrefix, segments ) => {
+	const effectEntries = ( outputPrefix, segments ) => {
 		const dir = path.resolve( process.cwd(), ...segments );
 		return Object.fromEntries(
 			fs
@@ -327,8 +327,8 @@ if ( moduleConfig ) {
 			 * each filename must match its DB effect key exactly. A new effect file
 			 * needs no edit here.
 			 */
-			...fxEntries( 'shared/effects', [ 'src', 'shared', 'effects' ] ),
-			...fxEntries( 'shared/effects/gsap', [
+			...effectEntries( 'shared/effects', [ 'src', 'shared', 'effects' ] ),
+			...effectEntries( 'shared/effects/gsap', [
 				'src',
 				'shared',
 				'effects',

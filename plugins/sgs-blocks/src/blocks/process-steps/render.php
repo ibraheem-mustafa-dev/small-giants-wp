@@ -105,7 +105,6 @@ $description_colour_gradient = $attributes['descriptionColourGradient'] ?? '';
 // backgroundColourHover/textColourHover are read directly from $attributes
 // further down (sgs_resolve_text_colour_or_gradient()/sgs_fill_decls()), not
 // pre-extracted here — they no longer feed the flat $hover_decls bucket.
-$hover_effect            = $attributes['effectHover'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '';
 $transition_easing       = $attributes['transitionEasing'] ?? '';
 
@@ -166,14 +165,9 @@ $root_sel = '.' . $uid . '.sgs-process-steps';
 $wrapper_classes   = array( 'sgs-process-steps', $uid );
 $wrapper_classes[] = 'sgs-process-steps--connector-' . esc_attr( $connector_style );
 $wrapper_classes[] = 'sgs-process-steps--number-' . esc_attr( $number_style );
-// Only emitted for the non-default value, matching the effectHover pattern
-// just below — existing pages (no stored `layout`, default 'row') keep
-// today's markup byte-identical.
+// Only emitted for the non-default value (default 'row').
 if ( 'list' === $layout ) {
 	$wrapper_classes[] = 'sgs-process-steps--layout-list';
-}
-if ( $hover_effect && 'none' !== $hover_effect ) {
-	$wrapper_classes[] = 'sgs-process-steps--hover-' . esc_attr( $hover_effect );
 }
 if ( '' !== $preset_text_slug ) {
 	$wrapper_classes[] = 'has-text-color';

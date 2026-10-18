@@ -1083,7 +1083,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// same way container queries do, here, at $band_will_render and at
 			// $do_wrap, and it mints a uid on its own. Not with the GSAP
 			// horizontal-panel effect, which owns that element's scrolling.
-			$sgs_scroll_row_on = 'horizontal-panel' !== ( $attributes['fx'] ?? '' )
+			$sgs_horizontal_panel = class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Targets' ) && \SGS\Blocks\Motion\Sgs_Motion_Targets::root_holds_effect( $attributes, 'horizontal-panel' );
+			$sgs_scroll_row_on    = ! $sgs_horizontal_panel
 				&& ! empty( sgs_resolve_on_tiers( $attributes['scrollSideways'] ?? array(), 'on', 'off' ) );
 			if ( $sgs_scroll_row_on ) {
 				$grid_on_inner = true;
@@ -3052,49 +3053,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= '.' . $uid . ' .sgs-container__svg-bg{--sgs-svg-opacity:' . esc_attr( $bg_svg_opacity / 100 ) . ';}';
 				}
 
-				/*
-				 * DrawSVG marker (Spec 38, `draw` effect) — placed HERE, on the
-				 * SVG layer, not on the block root.
-				 *
-				 * `fx-draw.js`'s `collectDrawTargets()` walks the fx element's
-				 * OWN descendants for drawable shapes. On the block root that
-				 * subtree is the whole section, so it would also collect every
-				 * chevron, star and icon glyph rendered by child blocks and
-				 * stroke-animate those too. This div's subtree is exactly the
-				 * operator's own background SVG and nothing else.
-				 *
-				 * Same reasoning, and the same placement rule, as the
-				 * `data-sgs-fx-track` mark below: only the code that emits an
-				 * element knows which element it is, so the mark belongs at the
-				 * point of emission rather than in a later scan of the output.
-				 *
-				 * Emitting `data-sgs-fx` here also stops
-				 * `sgs_inject_fx_attributes()` writing a second copy onto the
-				 * root (it bails on seeing the attribute anywhere in the block),
-				 * so the full parameter set is built here via the shared
-				 * `sgs_fx_data_attr_string()` rather than a hand-rolled subset.
-				 *
-				 * NO COLLISION WITH THE `svg-loop` EFFECT — the two animate different
-				 * things and compose. The `svg-loop` and `ambient-float` layers on the
-				 * `svg-bg` part move THIS DIV's `transform`/`opacity` as an ambient
-				 * loop. DrawSVG animates `stroke-dashoffset` on
-				 * the `<path>` elements INSIDE it, once, on scroll. Different
-				 * element, different property, different trigger; an operator
-				 * can legitimately run both, and `providesNatively` (the
-				 * subtract-an-effect declaration `sgs/responsive-logo` uses to
-				 * suppress `draw`, because its own draw style IS
-				 * stroke-draw) would be wrong here — it would deny a capability
-				 * this block does not otherwise have.
-				 */
-				$svg_fx_attr = '';
-				if ( 'draw' === ( $attributes['fx'] ?? '' )
-					&& function_exists( '\\SGS\\Blocks\\sgs_fx_data_attr_string' ) ) {
-					$svg_fx_attr = \SGS\Blocks\sgs_fx_data_attr_string( $attributes );
-				}
-
+				// A motion layer on the `svg-bg` part (the `draw` effect) reaches this element through the part's own
+				// selector, so the div carries no effect attributes of its own.
 				$svg_html = sprintf(
-					'<div class="sgs-container__svg-bg" aria-hidden="true"%s>%s</div>',
-					$svg_fx_attr,
+					'<div class="sgs-container__svg-bg" aria-hidden="true">%s</div>',
 					wp_kses( $bg_svg_content, $allowed_svg_tags )
 				);
 			}
@@ -3286,7 +3248,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				if ( $container_queries && ( 'grid' === $layout || 'flex' === $layout || 'stack' === $layout ) ) {
 					$band_will_render = true;
 				}
-				if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) || $sgs_scroll_row_on || $sgs_motion_band ) {
+				if ( $sgs_horizontal_panel || $sgs_scroll_row_on || $sgs_motion_band ) {
 					$band_will_render = true;
 				}
 				$band_obj_sel = $uid
@@ -3831,7 +3793,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			 * this effect sets, mirroring the $container_queries force directly above.
 			 */
 			$fx_track_attr = '';
-			if ( 'horizontal-panel' === ( $attributes['fx'] ?? '' ) ) {
+			if ( $sgs_horizontal_panel ) {
 				$do_wrap = true;
 
 				/*

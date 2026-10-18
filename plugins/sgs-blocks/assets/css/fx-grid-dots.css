@@ -51,7 +51,7 @@
 	   the whole point is that the client controls it rather than discovering a
 	   constant they cannot reach.
 
-	   Per-instance override: `fxGridDotColour` -> `data-sgs-fx-grid-colour` ->
+	   Per-instance override: the layer's dot colour -> `data-sgs-fx-grid-colour` ->
 	   `includes/fx-grid-dots.php` emits this custom property scoped to the
 	   instance. A client who wants a different colour sets one; nobody has to
 	   accept this default. */

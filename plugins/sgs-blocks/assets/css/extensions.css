@@ -1,25 +1,3 @@
-/* ===== SGS Animation Extension ===== */
-/*
- * Entrances run from assets/js/animation-observer.js as script animations
- * (Web Animations API, element.animate()), never as CSS. A script animation
- * is its own effect in the element's animation stack, so it never shares
- * `transition`, `animation` or `transform` with a block's own effects
- * (hover transitions, the header's shrink keyframes, hide-on-scroll).
- *
- * Nothing here moves an element and nothing is gated behind .sgs-js. The
- * one hiding rule is the head flag `sgs-entrance-pending`, printed
- * render-blocking by includes/animation-attributes.php::
- * print_entrance_pending_flag (this file loads asynchronously, so it cannot
- * hold anything before the first paint); it only exists while JavaScript
- * runs and lifts itself after 3s. After that the observer hides
- * an element only through its own paused, fill:'backwards' animation.
- *
- * The effect table (start pose per preset, matching what used to live here)
- * lives in animation-observer.js between the `sgs-entrance-effects:start`
- * and `sgs-entrance-effects:end` markers — read that file, not this one, for
- * what each preset does.
- */
-
 /* ===== SGS Device Visibility Extension ===== */
 
 /*
@@ -40,218 +18,6 @@
  * includes/device-visibility.php — one breakpoint source shared with the
  * Spec 37 FR-37-16 responsive engine (R-31-1). Do NOT re-add a hardcoded pair here.
  */
-
-/* --- Universal Hover Effects --- */
-
-.sgs-has-hover {
-	transition: background-color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
-	            color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
-	            border-color var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
-	            transform var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
-	            box-shadow var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease),
-	            opacity var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease);
-}
-
-/*
- * Padding indent — own transition, own gated class (sgs-has-hover-indent is
- * only ever emitted alongside sgsHoverIndent being set, mirroring every
- * other per-property class above), since a block without this control set
- * never pays for a padding-inline-start transition it did not ask for.
- */
-.sgs-has-hover-indent {
-	transition: padding-inline-start var(--sgs-hover-duration, 250ms) var(--sgs-hover-easing, ease);
-}
-
-/*
- * hover-effects.php emits --sgs-hover-scale/shadow as CSS custom properties
- * inside a scoped `<style>` rule keyed to `.sgs-hover-{uid}` (Spec 32
- * no-inline contract, FR-32-11) — it NEVER writes a `style=""` attribute.
- * An attribute gate (`[style*="--sgs-hover-*"]`) could never match, so these
- * rules are UN-GATED on that attribute, using the same unconditional
- * var(--x, fallback) pattern already used above for the image-controls
- * rules.
- *
- * ⛔ EACH PROPERTY IS GATED ON ITS OWN CLASS — do NOT collapse these into one
- * `.sgs-has-hover:hover` rule with var() fallbacks. That was tried and is a
- * REGRESSION, not a simplification:
- *
- *   `.sgs-has-hover` is added when ANY ONE hover effect is set — it is a
- *   per-BLOCK flag, not per-property (hover-effects.php's early bail only
- *   excludes blocks with ZERO hover intent). So a block that set only a hover
- *   SCALE would also receive `box-shadow:none` on hover, visibly stripping a
- *   resting shadow it never asked to change.
- *
- * CSS cannot express "declare this only if the custom property exists" —
- * `var()` ALWAYS declares, and no fallback value means "don't declare me". So
- * the gate has to come from the CLASS LIST. Each class is emitted under the
- * SAME condition as its custom property, so a rule can only apply where the
- * operator (or a block's own hover default) genuinely set that value — and
- * the fallbacks below are therefore unreachable safety nets, not silent
- * behaviour.
- *
- * `.sgs-has-hover-bg/text/border` were REMOVED 2026-08-20: the
- * sgsHoverBgColour/TextColour/BorderColour attrs behind them were dead —
- * gated behind the 'hover' opt-in extension that zero blocks declare, and
- * duplicative of each block's own element-owned backgroundColourHover/
- * textColourHover/borderColourHover controls. See hover-effects.js.
- */
-.sgs-has-hover-shadow:hover {
-	box-shadow: var(--sgs-hover-shadow, none);
-}
-
-/* Lift and scale in one transform, so a block can use either or both. */
-.sgs-has-hover-scale:hover,
-.sgs-has-hover-lift:hover {
-	transform: translateY(calc(-1 * var(--sgs-hover-lift, 0px))) scale(var(--sgs-hover-scale, 1));
-}
-
-/* Hover opacity — own class, own var, same per-property gating as scale/lift/
-   shadow above: hover-effects.php only emits --sgs-hover-opacity and this
-   class together, so a block with no opacity set is never affected. */
-.sgs-has-hover-opacity:hover {
-	opacity: var(--sgs-hover-opacity, 1);
-}
-
-/*
- * Padding indent — additive hover/focus-within inline-start growth
- * (build_hover_vars() → --sgs-hover-indent[-base]). `:focus-within` is
- * KEYBOARD-reachable and stays OUTSIDE the touch guard (a keyboard user on a
- * touchscreen laptop still needs it); `:hover` gets BOTH layers of the
- * touch-safe guard (helpers-hover-state.php's model, hand-mirrored here
- * since this file is a static plugin asset the hover-guard build transform
- * never reaches — it only rewrites `build/blocks/*\/style.css`):
- *   1. `@media (hover: hover) and (pointer: fine)` — the device's primary
- *      pointer, needs no JavaScript.
- *   2. `:where(:root:not(.sgs-touch-input))` — the reactive touch-input
- *      class (src/shared/effects/motion-utils.js) for hybrid devices layer 1
- *      alone can't catch. Zero-specificity `:where()` so `:hover` alone still
- *      out-ranks the resting rule, same as every PHP-guarded rule.
- */
-@media (hover: hover) and (pointer: fine) {
-	:where(:root:not(.sgs-touch-input)) .sgs-has-hover-indent:hover {
-		padding-inline-start: calc(var(--sgs-hover-indent-base, 0px) + var(--sgs-hover-indent, 0px));
-	}
-}
-
-.sgs-has-hover-indent:focus-within {
-	padding-inline-start: calc(var(--sgs-hover-indent-base, 0px) + var(--sgs-hover-indent, 0px));
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-has-hover {
-		transition: none;
-	}
-
-	.sgs-has-hover-indent {
-		transition: none;
-	}
-
-	.sgs-has-hover-scale:hover,
-	.sgs-has-hover-lift:hover {
-		transform: none;
-	}
-}
-
-/* ===== Border Accent Line ===== */
-
-.sgs-has-border-accent {
-	position: relative;
-}
-
-.sgs-has-border-accent::before {
-	content: '';
-	position: absolute;
-	inset: auto 0 0 0;
-	height: 3px;
-	background: var(--wp--preset--color--accent, #F87A1F);
-	transform: scaleX(0);
-	transform-origin: left;
-	transition: transform 250ms ease;
-	pointer-events: none;
-	z-index: 10;
-}
-
-.sgs-has-border-accent:hover::before,
-.sgs-has-border-accent:focus-within::before {
-	transform: scaleX(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-has-border-accent::before {
-		transition: none;
-	}
-}
-
-/* ===== Hover Image Zoom — the shared rule (Hover panel "Zoom image on hover") =====
- *
- * Keyed on the media MARKERS every image carries through the media-atom system
- * (assets/css/media-element.css): `.sgs-media-box` (the frame) and `.sgs-media-el`
- * (the <img>/<video>). So the switch works on any block whose image is a media
- * element — the block root being the frame itself (sgs/media) or holding one.
- * The trigger is hovering (or focusing into) the FRAME, never the block root: a
- * block with several images zooms only the one under the pointer.
- *
- * Values come from the Hover panel via includes/hover-effects/vars.php:
- *   --sgs-hover-zoom            Photo zoom (%) as a factor (unset = 1.1)
- *   --sgs-hover-zoom-duration   Photo zoom duration (ms)   (unset = 0.5s)
- *   --sgs-hover-easing          the panel's easing
- * Zoom style (sgsHoverZoomStyle): default clips the image to its frame; "Whole
- * image grows" adds `sgs-has-img-zoom--spill` and the image scales past it.
- *
- * card-grid, team-member, info-box and product-card also keep their own zoom
- * rules (they zoom on hovering the whole card); where both match they set the
- * same transform. Grayscale-to-colour has no shared rule: it works only on the
- * blocks that style it (card-grid, gallery, info-box, team-member).
- *
- * `transition-property` lists box-shadow too: the shadow atom
- * (assets/css/media-atoms/shadow.css) animates it with longhands on this same
- * element, and a list that dropped it would make the shadow jump.
- */
-:is(.sgs-has-img-zoom.sgs-media-box, .sgs-has-img-zoom .sgs-media-box):not(.sgs-has-img-zoom--spill, .sgs-has-img-zoom--spill *) {
-	overflow: hidden;
-}
-
-:is(.sgs-has-img-zoom--spill.sgs-media-box, .sgs-has-img-zoom--spill .sgs-media-box) {
-	overflow: visible;
-}
-
-:where(.sgs-has-img-zoom--spill.sgs-media-box, .sgs-has-img-zoom--spill .sgs-media-box) {
-	position: relative;
-}
-
-/* The growing image paints over its neighbours rather than under the next one. */
-:is(.sgs-has-img-zoom--spill.sgs-media-box, .sgs-has-img-zoom--spill .sgs-media-box):is(:hover, :focus-within) {
-	z-index: 2;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-	:is(.sgs-has-img-zoom.sgs-media-box, .sgs-has-img-zoom .sgs-media-box) .sgs-media-el {
-		transition-property: transform, box-shadow;
-		transition-duration: var(--sgs-hover-zoom-duration, 0.5s), 0.3s;
-		transition-timing-function: var(--sgs-hover-easing, ease), ease;
-	}
-
-	/* Pointer hover is touch-guarded (includes/helpers-hover-state.php), so a tap does not
-	 * leave the image stuck zoomed; keyboard focus stays unguarded. */
-	@media (hover: hover) and (pointer: fine) {
-		:where(:root:not(.sgs-touch-input)) :is(.sgs-has-img-zoom.sgs-media-box, .sgs-has-img-zoom .sgs-media-box):hover .sgs-media-el {
-			transform: scale(var(--sgs-hover-zoom, 1.1));
-		}
-	}
-
-	:is(.sgs-has-img-zoom.sgs-media-box, .sgs-has-img-zoom .sgs-media-box):focus-within .sgs-media-el {
-		transform: scale(var(--sgs-hover-zoom, 1.1));
-	}
-}
-
-/* ===== 3D Tilt on Hover ===== */
-
-.sgs-has-tilt-3d {
-    transform: perspective(var(--sgs-tilt-persp, 800px)) rotateX(var(--sgs-tilt-x, 0deg)) rotateY(var(--sgs-tilt-y, 0deg));
-    transform-style: preserve-3d;
-    transition: transform 100ms ease-out;
-    will-change: transform;
-}
 
 /* ===== Button Fill Animation ===== */
 
@@ -379,45 +145,9 @@
 	}
 }
 
-/* ===== Click Ripple ===== */
-
-/*
- * Radial ripple from click coordinates.
- * JS (ripple.js) sets --ripple-x / --ripple-y and toggles .is-rippling.
- * Respects prefers-reduced-motion — effect is skipped entirely.
- */
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-has-click-ripple {
-		position: relative;
-		overflow: hidden;
-	}
-
-	.sgs-has-click-ripple::after {
-		content: '';
-		position: absolute;
-		border-radius: 50%;
-		pointer-events: none;
-		width: 4px;
-		height: 4px;
-		left: var(--ripple-x, 50%);
-		top: var(--ripple-y, 50%);
-		transform: translate(-50%, -50%) scale(0);
-		background: var(--sgs-ripple-colour, color-mix(in srgb, currentColor 30%, transparent));
-		opacity: 1;
-		transition:
-			transform var(--sgs-ripple-duration, 600ms) ease-out,
-			opacity var(--sgs-ripple-duration, 600ms) ease-out;
-	}
-
-	.sgs-has-click-ripple.is-rippling::after {
-		transform: translate(-50%, -50%) scale(var(--ripple-scale, 200));
-		opacity: 0;
-	}
-}
-
 /*
  * ===== Block Link Extension — stretched-link overlay pattern =====
- * includes/hover-effects.php injects an EMPTY `sgs-block-link-overlay` <a>
+ * includes/hover-effects/block-link.php injects an EMPTY `sgs-block-link-overlay` <a>
  * as the block root's LAST CHILD (a sibling of the content), never a
  * wrapper — this is what makes nested <a>/<button> elements already inside
  * the block valid HTML. `.sgs-has-block-link` on the block ROOT (added
@@ -494,31 +224,6 @@
 	z-index: auto;
 }
 
-/* ── Parallax extension ─────────────────────────────────────────────────── */
-/* 'Background parallax' (the .sgs-parallax-background rules that used to
- * live here) was RETIRED 2026-08-19 — its editor toggle was dead UI (see
- * src/blocks/extensions/parallax.js's docblock). BackgroundPanel's own
- * bgKenBurns/bgParallax pair (container/components/BackgroundPanel.js) is
- * the real, working background-motion mechanism; this extension now covers
- * element parallax only. */
-
-/* Respect reduced motion — disable all parallax effects */
-@media (prefers-reduced-motion: reduce) {
-	.sgs-parallax-element {
-		animation: none !important;
-		transform: none !important;
-		translate: none !important;
-	}
-}
-
-/* The parallax script writes --sgs-plx-y on every browser; this rule moves the element by it. An element that
- * also holds a motion translate channel takes the composite in motion.css instead. */
-.sgs-parallax-element:not([data-sgs-mc~="translate"]) {
-	translate: 0 var(--sgs-plx-y, 0px);
-}
-
-/* ── End parallax extension ─────────────────────────────────────────────── */
-
 /* ===== Image Controls Extension ===== */
 
 /*
@@ -591,43 +296,13 @@
 	}
 }
 
-/* ===== SVG Path Draw on Scroll ===== */
-
-/*
- * Applied to <path> elements inside SVGs hosted in .sgs-decorative-image
- * blocks with data-sgs-path-draw="true". The JS (animation-observer.js)
- * sets stroke-dasharray/stroke-dashoffset and the transition via inline
- * styles — this block only supplies the reduced-motion safety net.
- */
-@media (prefers-reduced-motion: reduce) {
-	[data-sgs-path-draw="true"] path {
-		stroke-dashoffset: 0 !important;
-		transition: none !important;
-	}
-}
-
-/*
- * Element-parallax help text in the block inspector (editor only).
- *
- * Matches WordPress's native help-text convention (12px, muted) so the
- * plain-English explanation of what element parallax does reads as guidance,
- * not body copy.
- */
-.sgs-parallax-help {
-	margin: 0 0 12px;
-	font-size: 12px;
-	line-height: 1.5;
-	color: #757575;
-}
-
 /* ===== Shared BackgroundPanel editor-canvas preview (2026-08-26) =====
  *
  * Every block that mounts the shared `BackgroundPanel` control
  * (`src/blocks/container/components/ContainerWrapperControls.js` —
  * sgs/container, sgs/multi-button, sgs/physics-canvas, sgs/site-footer,
  * sgs/site-header, sgs/trust-bar; sgs/hero has its own equivalent copy,
- * out of scope here) writes background image/video, overlay, ken-burns and
- * parallax attributes that `SGS_Container_Wrapper::render()` paints on the
+ * out of scope here) writes background image/video and overlay attributes that `SGS_Container_Wrapper::render()` paints on the
  * FRONTEND. Until this pass only sgs/container built a JS+CSS mirror so the
  * EDITOR CANVAS showed the same thing — CHECK A finding group
  * "BackgroundPanel canvas-preview gap"
@@ -663,25 +338,6 @@
 	background-position: var( --sgs-ed-bg-position, center center );
 	background-repeat: var( --sgs-ed-bg-repeat, no-repeat );
 	background-attachment: var( --sgs-ed-bg-attachment, scroll );
-}
-
-/* Background zoom on hover (Background panel) — the canvas twin of
- * includes/container-bg-hover-zoom.php: hovering the block scales its image
- * layer inside the block. Values from backgroundPreview(). */
-.sgs-ed-bg-hover-zoom {
-	overflow: hidden;
-}
-
-.sgs-ed-bg-hover-zoom::before {
-	transition-property: transform;
-	transition-duration: var( --sgs-ed-bg-zoom-duration, 600ms );
-	transition-timing-function: var( --sgs-ed-bg-zoom-easing, ease );
-}
-
-@media (prefers-reduced-motion: no-preference) {
-	.sgs-ed-bg-hover-zoom:hover::before {
-		transform: scale( var( --sgs-ed-bg-zoom, 1.05 ) );
-	}
 }
 
 .sgs-ed-has-overlay {
@@ -720,7 +376,7 @@
  *
  * `a.` raises specificity above the theme's `:root :where(a)` link rules
  * (underline, link colour, link focus colour). Hover gets both layers of the
- * touch-safe guard (see "Padding indent" above); `:focus-visible` stays outside
+ * touch-safe guard (`@media (hover: hover) and (pointer: fine)` plus `:where(:root:not(.sgs-touch-input))`); `:focus-visible` stays outside
  * them because it is keyboard-reachable.
  */
 a.sgs-field-fallback,

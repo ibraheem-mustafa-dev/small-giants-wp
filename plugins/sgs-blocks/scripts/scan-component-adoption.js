@@ -238,8 +238,8 @@ for ( const name of blockDirs() ) {
 }
 // blocks/extensions/*.js is a REAL consumption surface — the universal
 // extensions mount shared controls onto blocks that never import them
-// directly. AnimationControl read 0 adopters purely because this was not
-// scanned, while blocks/extensions/animation.js uses it. A zero from an
+// directly. A shared control used only by an extension would read 0 adopters if
+// this were not scanned. A zero from an
 // incomplete corpus is an artefact of where you looked.
 // A block's index.js is a real consumer — the `icons` util is imported there by
 // 35 blocks for registration and never appears in an edit.js.

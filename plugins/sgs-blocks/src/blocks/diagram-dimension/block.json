@@ -29,13 +29,6 @@
 		"html": false,
 		"reusable": false,
 		"sgs": {
-			"hideExtensions": [
-				"parallax",
-				"clickEffects",
-				"animation",
-				"fx"
-			],
-			"_comment_hideExtensions": "A measurement is one line and one label inside a diagram; motion, parallax or click effects on a single measurement would pull it off the point it measures.",
 			"elements": {
 				"label": {
 					"label": "Label position",

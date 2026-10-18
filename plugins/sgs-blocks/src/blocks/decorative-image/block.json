@@ -39,13 +39,9 @@
                         "css:max-width": "maxWidthPercent",
                         "css:width": "width",
                         "css:opacity": "opacity",
-                        "css:z-index": "zIndex",
-                        "anim:duration": "pathDrawDurationMs",
-                        "anim:easing": "pathDrawEasing",
-                        "anim:trigger": "pathDrawOnScroll"
+                        "css:z-index": "zIndex"
                     },
-                    "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are percentage-based anchor coordinates for the whole floating element, not literal CSS top/bottom offsets or object-position within a box, so they are deliberately left unmapped — css:top/css:bottom stay genuine gaps rather than being force-mapped to a different semantic. No layer field is declared (this is not a composite). The old motion cluster (transition-duration/transition-timing-function) is still deliberately NOT declared here — these are JS-driven scroll-triggered parameters, not CSS transitions, and mapping them there would misrepresent the mechanism.",
-                    "_note_animation": "FR-35-6 — pathDrawDurationMs/pathDrawEasing/pathDrawOnScroll resolve via the `animation` cluster's anim:duration/anim:easing/anim:trigger members (explicit attrMap; the mechanism this block actually uses — JS scroll-observers — is exactly what FR-35-6 exists for). anim:preset and anim:stagger are honest gaps: this block has no entrance preset picker or stagger attribute (entrance and parallax are the motion model's). pathDrawTriggerOffset and fadeOnScroll are NOT claimed by any member (pathDrawTriggerOffset is a secondary trigger-offset param with only one attrMap slot per member already used by pathDrawOnScroll; fadeOnScroll is a bare boolean fade toggle with no duration/easing of its own) — both stay unmapped; no orphan is reported for either because this element's `prefix: \"\"` opts it out of orphan-scanning entirely."
+                    "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are percentage-based anchor coordinates for the whole floating element, not literal CSS top/bottom offsets or object-position within a box, so they are deliberately left unmapped — css:top/css:bottom stay genuine gaps rather than being force-mapped to a different semantic. No layer field is declared (this is not a composite). The old motion cluster (transition-duration/transition-timing-function) is still deliberately NOT declared here — these are JS-driven scroll-triggered parameters, not CSS transitions, and mapping them there would misrepresent the mechanism."
                 }
             }
         }
@@ -135,22 +131,6 @@
         "hideOnMobile": {
             "type": "boolean",
             "default": false
-        },
-        "pathDrawOnScroll": {
-            "type": "boolean",
-            "default": false
-        },
-        "pathDrawDurationMs": {
-            "type": "number",
-            "default": 1500
-        },
-        "pathDrawTriggerOffset": {
-            "type": "number",
-            "default": 20
-        },
-        "pathDrawEasing": {
-            "type": "string",
-            "default": "ease-out"
         }
     },
     "render": "file:./render.php",

@@ -132,14 +132,6 @@ $frames_config = array(
 
 $has_any_tier = array_filter( $frames_config );
 
-// fx params — Spec 38 §11.2. Empty values are simply omitted; the runtime's
-// resolveStart()/resolveScrub() fall back to their own module defaults, and
-// an author-set value is never silently overridden (D417 pattern).
-$fx_start = trim( (string) ( $attributes['fxStart'] ?? '' ) );
-$fx_end   = trim( (string) ( $attributes['fxEnd'] ?? '' ) );
-$fx_scrub = $attributes['fxScrub'] ?? 1;
-$fx_pin   = ! empty( $attributes['fxPin'] );
-
 $uid      = 'sgs-is-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid;
 
@@ -230,24 +222,11 @@ $canvas_attrs = array(
 // configured. Without it the block is a plain thumbnail image — a legitimate,
 // fully-rendered state for a fresh block, not a broken one, and the sniff
 // registry never sees a data-sgs-fx marker, so zero GSAP bytes load for it.
+// The scroll range, scrub smoothing and pin come from the block's sgsMotion
+// image-sequence layer through the motion renderer, not from this block.
 if ( ! empty( $has_any_tier ) ) {
 	$canvas_attrs['data-sgs-fx']                    = 'image-sequence';
 	$canvas_attrs['data-sgs-image-sequence-frames'] = wp_json_encode( $frames_config );
-	if ( '' !== $fx_start ) {
-		$canvas_attrs['data-sgs-fx-start'] = $fx_start;
-	}
-	if ( '' !== $fx_end ) {
-		$canvas_attrs['data-sgs-fx-end'] = $fx_end;
-	}
-	if ( is_numeric( $fx_scrub ) ) {
-		$canvas_attrs['data-sgs-fx-scrub'] = (string) round( (float) $fx_scrub, 2 );
-	}
-	// D435 Part 2 — pin is a first-class inspector toggle, not a composition
-	// workaround. Only emitted when true; the runtime treats its absence as
-	// "not pinned" (see fx-image-sequence.js).
-	if ( $fx_pin ) {
-		$canvas_attrs['data-sgs-fx-pin'] = 'true';
-	}
 }
 
 $canvas_attr_html = array();

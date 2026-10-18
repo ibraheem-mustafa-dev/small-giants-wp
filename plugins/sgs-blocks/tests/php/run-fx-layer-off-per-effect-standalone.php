@@ -4,8 +4,7 @@
  *
  * `Sgs_Motion_Fx_Emitter` writes each layer's `off` tiers as a per-tier token list, `data-sgs-fx-off-tablet` /
  * `data-sgs-fx-off-mobile`, naming the effect slugs (the `data-sgs-fx` vocabulary) whose own layer set that tier off.
- * The element-wide switches `data-sgs-fx-disable-tablet` / `-mobile` belong to the legacy flat `fxDisableTablet` /
- * `fxDisableMobile` attributes only, so one layer's `off` never disables a sibling effect on the same element.
+ * The element-wide switches `data-sgs-fx-disable-tablet` / `-mobile` are never written from a layer, so one layer's `off` never disables a sibling effect on the same element.
  *
  *   php plugins/sgs-blocks/tests/php/run-fx-layer-off-per-effect-standalone.php
  *

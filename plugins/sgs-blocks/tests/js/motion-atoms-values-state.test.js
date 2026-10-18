@@ -23,11 +23,11 @@ const {
 	NAV_EASING_OPTIONS,
 	SCHEMA_EASING_OPTIONS,
 	easingCssFor,
+	motionEasingCss,
 	easingView,
 	presetValueFor,
 } = require( '../../src/components/motion' );
 const { validateField } = require( '../../src/components/motion/field-types' );
-const { motionEasingCss } = require( '../../src/components/MotionEasingControl' );
 const presetFile = require( '../../src/components/motion/generated-motion-presets.json' );
 
 let container;

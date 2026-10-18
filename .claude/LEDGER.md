@@ -8,7 +8,7 @@ last_updated: 2026-10-17
 
 ## Summary for Bean
 
-- **Motion model (Spec 38A, Front M):** S1 to S5 are done; S6 is part done (removal groups G1 to G5 are on `main`; no deploy of them is recorded yet); their deploys, G0 and Gate 8 are next, then S7 (literals sweep, final acceptance).
+- **Motion model (Spec 38A, Front M):** sessions S1 to S6 are done (the old motion code is removed on all four sites); S7 (literals sweep, final acceptance, Gate 9) is next.
 - **Clone coverage (Front M):** Phase 1 is done (2026-10-18: every framework capability and everything a draft can hold is listed, each covered, excluded by you or a gap in its wave; intake reads what each draft uses from its files, with the running page as the check). Phase 2 (Spec 48 in both directions) is next.
 - **Cloning (Spec 48, Front H):** the Indus clone is paused at your intake review (plan step 15) until Spec 38A is finished, so the draft's motion transfers to the clone too.
 - **Eye Care (Front F):** built by hand and live on eye-care-test; it is the cloning system's answer key. Next: run Spec 48's intake on it and close the fix register's open rows.
@@ -23,11 +23,11 @@ last_updated: 2026-10-17
 
 ### Front M: Motion model (Spec 38A) and clone coverage
 
-**State:** `plans/2026-10-12-spec38a-motion-build.md` S1 to S5 are done (Gate 7 passed, the M6.5 sweep left zero old-motion blocks on every target except the canary's active header 3777 and drawer 3778). Each S4 track's open items are in its plan bullet. The M6.6C removal census is built (`reports/2026-10-17-motion-removal-census.md`).
+**State:** `plans/2026-10-12-spec38a-motion-build.md` S1 to S6 are done. S6 (2026-10-17/18) removed the old motion code in groups G0 to G5 and Gate 8 passed: all four sites run `80fb73e19` with the canary's full live motion QA `[motion-qa] PASS`, `migrate_motion.py --check --target <site>` reports no old motion attribute on any site, `--consumers` exits 0, and FR-38A-22, 32, 43 and 52 read built. The plan's "M6.6 (S6" bullet lists the commits, the decision B fixture migrations, the stylesheet-order fix, the retired-attribute strip tool and the parked decorative SVG draw feature.
 
-**S6 (part done):** M6.6C and M6.6-G1 to G5 are on `main` (`254fb47` to `37498db`, shared files `0046d33`, reseed `07422e7`). The G1 to G5 canary deploy was refused by the stored-content audit for 19 leftover old values on 13 posts; `strip-retired-motion-attrs.py` (`01238b3`) stripped them on sandybrown (second dry run 0). **Next:** re-run the canary deploy, deploy to the three opt-in targets, then G0 (merges last) and Gate 8. **Then S7:** M5.18 (includes Track I item 4, the Fade Bold travel) and M6.7.
+**Next: S7** (M5.18 literals sweep, M6.7 acceptance, Gate 9). Its open S6 carry-overs: FR-38A-51 clause (b) and FR-38A-54's per-atom live check still read partly built; the golden masters (`scripts/consistency/goldens/behaviour.json`, `golden-controls.json`, `setting-registry*.json`) still describe the deleted animation and hover controls (assigned `keep` in `consumer-groups.json`) and need the M6.7 registry rewrite; three live settings the census lists as unrecognised (`opacityHover` on responsive-logo, the transition pair on brand-strip and card-grid) need a motion-or-not ruling in S7's M6.7 (motion: catalogue and map them; not motion: add them to `migrate_motion.py::KEPT`).
 
-**Clone coverage** (`plans/2026-10-12-clone-coverage-foundation.md`): Spec 38A is its Phase 0. Phase 1 is done on branch `claude/clone-coverage-plan-review-2bbei4` (2026-10-18; Bean signed 247 exclusions and re-opened the WebKit CSS group and the obsolete elements that still render; 2,312 capabilities, 172 covered, 1,893 gaps in their waves). Gate: `node scripts/computed-route/capabilities.mjs --gate`. Next: Phase 2, rewriting Spec 48 §10 so the value matrix has the framework-out direction from the coverage map; the branch needs merging to `main` first.
+**Clone coverage** (`plans/2026-10-12-clone-coverage-foundation.md`): Spec 38A is its Phase 0. Phase 1 is done (2026-10-18; Bean signed the exclusions and re-opened the WebKit CSS group and the obsolete elements that still render; 2,306 capabilities, 172 covered, 245 excluded, 1,889 gaps in their waves). Its DB sections predate S6's reseed: refresh them with `capabilities.mjs --write` on Bean's PC. Gate: `node scripts/computed-route/capabilities.mjs --gate`. Next: Phase 2, rewriting Spec 48 §10 so the value matrix has the framework-out direction from the coverage map; the motion families in the coverage map wait on S7.
 
 ### Front H: Cloning system (Spec 48) and the Claude Design handover
 

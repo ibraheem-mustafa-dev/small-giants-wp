@@ -2,7 +2,7 @@
  * SGS motion: the per-device off switch for Tier V effect runtimes (Spec 38A FR-38A-23).
  *
  * The emitter (`Sgs_Motion_Fx_Emitter`) writes two switches per tier (tablet, mobile) on an element:
- *  - `data-sgs-fx-disable-<tier>`: the flat `fxDisableTablet` / `fxDisableMobile` attributes. Present = every effect
+ *  - `data-sgs-fx-disable-<tier>`: written from the layer's per-device off setting. Present = every effect
  *    on the element is off at that tier.
  *  - `data-sgs-fx-off-<tier>`: a motion layer's `off` list, space-separated effect slugs in the `data-sgs-fx`
  *    vocabulary. Only the listed effects are off at that tier, so a sibling effect on the same element keeps running.

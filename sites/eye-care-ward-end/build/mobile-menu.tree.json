@@ -38,13 +38,7 @@
         "left": "0px"
       },
       "closeBorderStyle": "none",
-      "itemStagger": 50,
-      "itemStaggerDuration": 500,
-      "itemStaggerDistance": {
-        "desktop": 18
-      },
       "className": "cr-ref-mobile-menu-0",
-      "staggerInsideGroups": true,
       "chromeRating": true,
       "chromeRatingPlacement": "end",
       "chromeRatingShowCount": false,
@@ -52,7 +46,43 @@
       "chromeLogoWidth": {
         "desktop": "97px"
       },
-      "chromeLogoLink": true
+      "chromeLogoLink": true,
+      "sgsMotion": {
+        "v": 1,
+        "elements": {
+          "root": {
+            "entrance": {
+              "base": {
+                "trigger": "open",
+                "values": {
+                  "from": {
+                    "opacity": 0,
+                    "translateY": -8
+                  },
+                  "to": {
+                    "opacity": 1,
+                    "translateY": 0
+                  },
+                  "duration": 250,
+                  "easing": "ease-out"
+                },
+                "close": {
+                  "closeDuration": 200,
+                  "closeEasing": "ease-out"
+                }
+              }
+            }
+          }
+        },
+        "stagger": {
+          "apply": false,
+          "offset": 0,
+          "step": 50,
+          "order": "row-first",
+          "perRow": false,
+          "closeOrder": "together"
+        }
+      }
     },
     "innerBlocks": [
       {
@@ -72,7 +102,18 @@
               "top": "32px"
             }
           },
-          "className": "cr-ref-mobile-menu-1"
+          "className": "cr-ref-mobile-menu-1",
+          "sgsMotion": {
+            "v": 1,
+            "stagger": {
+              "apply": false,
+              "offset": 0,
+              "step": 50,
+              "order": "row-first",
+              "perRow": false,
+              "closeOrder": "together"
+            }
+          }
         },
         "innerBlocks": [
           {
@@ -284,7 +325,18 @@
               "top": "23px"
             }
           },
-          "className": "cr-ref-mobile-menu-8"
+          "className": "cr-ref-mobile-menu-8",
+          "sgsMotion": {
+            "v": 1,
+            "stagger": {
+              "apply": false,
+              "offset": 0,
+              "step": 50,
+              "order": "row-first",
+              "perRow": false,
+              "closeOrder": "together"
+            }
+          }
         },
         "innerBlocks": [
           {
@@ -353,7 +405,18 @@
               "top": "28px"
             }
           },
-          "className": "cr-ref-mobile-menu-10"
+          "className": "cr-ref-mobile-menu-10",
+          "sgsMotion": {
+            "v": 1,
+            "stagger": {
+              "apply": false,
+              "offset": 0,
+              "step": 50,
+              "order": "row-first",
+              "perRow": false,
+              "closeOrder": "together"
+            }
+          }
         },
         "innerBlocks": [
           {
@@ -505,10 +568,24 @@
                   "sgsChildSizing": {
                     "desktop": "fill"
                   },
-                  "scaleHover": 1,
                   "className": "cr-ref-mobile-menu-17",
                   "linkTarget": "_blank",
-                  "linkRel": "noopener"
+                  "linkRel": "noopener",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "shape": {
+                        "hover": {
+                          "state": {
+                            "source": "root",
+                            "values": {
+                              "scale": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               },
               {
@@ -529,11 +606,25 @@
                   "sgsChildSizing": {
                     "desktop": "fill"
                   },
-                  "scaleHover": 1,
                   "className": "cr-ref-mobile-menu-18",
                   "ariaLabel": "Google reviews",
                   "linkTarget": "_blank",
-                  "linkRel": "noopener"
+                  "linkRel": "noopener",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "shape": {
+                        "hover": {
+                          "state": {
+                            "source": "root",
+                            "values": {
+                              "scale": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               },
               {
@@ -554,10 +645,24 @@
                   "sgsChildSizing": {
                     "desktop": "fill"
                   },
-                  "scaleHover": 1,
                   "className": "cr-ref-mobile-menu-19",
                   "linkTarget": "_blank",
-                  "linkRel": "noopener"
+                  "linkRel": "noopener",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "shape": {
+                        "hover": {
+                          "state": {
+                            "source": "root",
+                            "values": {
+                              "scale": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             ]

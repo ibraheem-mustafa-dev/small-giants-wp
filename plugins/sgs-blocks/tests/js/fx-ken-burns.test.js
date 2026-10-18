@@ -75,8 +75,8 @@ function query( text ) {
 	return queries[ text ];
 }
 
-function mount( { fxToken = 'ken-burns', attrs = '' } = {} ) {
-	document.body.innerHTML = `<div class="wp-block-sgs-container"><div data-sgs-fx="${ fxToken }" ${ attrs }></div><a href="#x">link</a></div>`;
+function mount( { effectToken = 'ken-burns', attrs = '' } = {} ) {
+	document.body.innerHTML = `<div class="wp-block-sgs-container"><div data-sgs-fx="${ effectToken }" ${ attrs }></div><a href="#x">link</a></div>`;
 	const root = document.body.firstElementChild;
 	const el = root.querySelector( '[data-sgs-fx]' );
 	el.animate = jest.fn( fakeAnimation );
@@ -323,7 +323,7 @@ describe( 'loop', () => {
 describe( 'selection', () => {
 	test( 'NEGATIVE CONTROL: an element without ken-burns in data-sgs-fx is never animated', () => {
 		const { el } = mount( {
-			fxToken: 'sheen ambient-float',
+			effectToken: 'sheen ambient-float',
 			attrs: once(),
 		} );
 		boot();
@@ -332,7 +332,7 @@ describe( 'selection', () => {
 	} );
 
 	test( 'a token list that includes ken-burns is animated', () => {
-		const { el } = mount( { fxToken: 'sheen ken-burns' } );
+		const { el } = mount( { effectToken: 'sheen ken-burns' } );
 		boot();
 		expect( el.animate ).toHaveBeenCalledTimes( 1 );
 	} );

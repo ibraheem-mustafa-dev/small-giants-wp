@@ -763,7 +763,7 @@ function runSelfTest() {
 	}
 
 	// --- Positive: has backgroundColour attr, no contrastAgainst yet ---
-	const fxPositive = makeFixtureBlock( tmpRoot, 'fixture-positive', FIXTURE_POSITIVE, {
+	const fixtPositive = makeFixtureBlock( tmpRoot, 'fixture-positive', FIXTURE_POSITIVE, {
 		borderWidth: { type: 'object', default: {} },
 		borderStyle: { type: 'string', default: 'solid' },
 		borderColour: { type: 'string', default: '' },
@@ -773,19 +773,19 @@ function runSelfTest() {
 	} );
 
 	check( 'positive fixture classifies as exactly 1 target', () => {
-		const findings = classifyFileAt( fxPositive, 'fixture-positive' );
+		const findings = classifyFileAt( fixtPositive, 'fixture-positive' );
 		assert( findings.length === 1, 'expected 1 finding, got ' + findings.length );
 		assert( findings[ 0 ].status === 'target', 'expected status target, got ' + findings[ 0 ].status );
 	} );
 
 	let planned;
 	check( 'fix plan declares a NEW contrast var (dry run — file on disk unchanged)', () => {
-		const before = fs.readFileSync( path.join( fxPositive, 'edit.js' ), 'utf8' );
-		planned = planFileFixAt( fxPositive, 'fixture-positive' );
+		const before = fs.readFileSync( path.join( fixtPositive, 'edit.js' ), 'utf8' );
+		planned = planFileFixAt( fixtPositive, 'fixture-positive' );
 		assert( planned, 'expected a plan' );
 		assert( ! planned.reused, 'expected a new var, not reuse' );
 		assert( planned.varName === 'fixturePositiveContrastAgainst', 'unexpected var name: ' + planned.varName );
-		assert( fs.readFileSync( path.join( fxPositive, 'edit.js' ), 'utf8' ) === before, 'dry-run mutated the file on disk' );
+		assert( fs.readFileSync( path.join( fixtPositive, 'edit.js' ), 'utf8' ) === before, 'dry-run mutated the file on disk' );
 	} );
 
 	check( 'APPLY writes the const + the JSX prop', () => {
@@ -808,17 +808,17 @@ function runSelfTest() {
 	} );
 
 	check( 're-classifying the applied file reports wired, not target', () => {
-		const findings = classifyFileAt( fxPositive, 'fixture-positive' );
+		const findings = classifyFileAt( fixtPositive, 'fixture-positive' );
 		assert( findings.length === 1 && findings[ 0 ].status === 'wired', 'expected wired, got ' + JSON.stringify( findings ) );
 	} );
 
 	check( 'idempotence: re-running --fix on the applied file makes zero further edits', () => {
-		const plan = planFileFixAt( fxPositive, 'fixture-positive' );
+		const plan = planFileFixAt( fixtPositive, 'fixture-positive' );
 		assert( plan === null, 'expected no plan (nothing left to fix), got a plan' );
 	} );
 
 	// --- Definition: already wired, must be classified wired and left alone ---
-	const fxDefinition = makeFixtureBlock( tmpRoot, 'fixture-definition', FIXTURE_DEFINITION, {
+	const fixtDefinition = makeFixtureBlock( tmpRoot, 'fixture-definition', FIXTURE_DEFINITION, {
 		borderWidth: { type: 'object', default: {} },
 		borderStyle: { type: 'string', default: 'solid' },
 		borderColour: { type: 'string', default: '' },
@@ -826,16 +826,16 @@ function runSelfTest() {
 		backgroundColour: { type: 'string', default: '' },
 	} );
 	check( 'definition fixture (already wired) classifies as wired, never target', () => {
-		const before = fs.readFileSync( path.join( fxDefinition, 'edit.js' ), 'utf8' );
-		const findings = classifyFileAt( fxDefinition, 'fixture-definition' );
+		const before = fs.readFileSync( path.join( fixtDefinition, 'edit.js' ), 'utf8' );
+		const findings = classifyFileAt( fixtDefinition, 'fixture-definition' );
 		assert( findings.length === 1 && findings[ 0 ].status === 'wired', 'expected wired, got ' + JSON.stringify( findings ) );
-		const plan = planFileFixAt( fxDefinition, 'fixture-definition' );
+		const plan = planFileFixAt( fixtDefinition, 'fixture-definition' );
 		assert( plan === null, 'expected no plan for an already-wired file' );
-		assert( fs.readFileSync( path.join( fxDefinition, 'edit.js' ), 'utf8' ) === before, 'definition fixture must stay byte-identical' );
+		assert( fs.readFileSync( path.join( fixtDefinition, 'edit.js' ), 'utf8' ) === before, 'definition fixture must stay byte-identical' );
 	} );
 
 	// --- Edge: reusable existing var (the sgs/text shape) ---
-	const fxEdge = makeFixtureBlock( tmpRoot, 'fixture-edge-reuse', FIXTURE_EDGE_REUSE, {
+	const fixtEdge = makeFixtureBlock( tmpRoot, 'fixture-edge-reuse', FIXTURE_EDGE_REUSE, {
 		borderWidth: { type: 'object', default: {} },
 		borderStyle: { type: 'string', default: 'solid' },
 		borderColour: { type: 'string', default: '' },
@@ -844,7 +844,7 @@ function runSelfTest() {
 		backgroundColourGradient: { type: 'string', default: '' },
 	} );
 	check( 'edge fixture (existing reusable var) reuses it, declares no duplicate', () => {
-		const plan = planFileFixAt( fxEdge, 'fixture-edge-reuse' );
+		const plan = planFileFixAt( fixtEdge, 'fixture-edge-reuse' );
 		assert( plan, 'expected a plan' );
 		assert( plan.reused === true, 'expected reuse:true' );
 		assert( plan.varName === 'fixtureEdgeReuseContrastAgainst', 'unexpected var name: ' + plan.varName );
@@ -857,32 +857,32 @@ function runSelfTest() {
 	} );
 
 	// --- Negative control: no SgsBorderControl at all ---
-	const fxNegative = makeFixtureBlock( tmpRoot, 'fixture-negative', FIXTURE_NEGATIVE, {
+	const fixtNegative = makeFixtureBlock( tmpRoot, 'fixture-negative', FIXTURE_NEGATIVE, {
 		label: { type: 'string', default: '' },
 	} );
 	check( 'negative control: no SgsBorderControl mount -> zero findings, file untouched', () => {
-		const before = fs.readFileSync( path.join( fxNegative, 'edit.js' ), 'utf8' );
-		const findings = classifyFileAt( fxNegative, 'fixture-negative' );
+		const before = fs.readFileSync( path.join( fixtNegative, 'edit.js' ), 'utf8' );
+		const findings = classifyFileAt( fixtNegative, 'fixture-negative' );
 		assert( findings.length === 0, 'expected 0 findings, got ' + findings.length );
-		const plan = planFileFixAt( fxNegative, 'fixture-negative' );
+		const plan = planFileFixAt( fixtNegative, 'fixture-negative' );
 		assert( plan === null, 'expected no plan' );
-		assert( fs.readFileSync( path.join( fxNegative, 'edit.js' ), 'utf8' ) === before, 'negative control must stay byte-identical' );
+		assert( fs.readFileSync( path.join( fixtNegative, 'edit.js' ), 'utf8' ) === before, 'negative control must stay byte-identical' );
 	} );
 
 	// --- Exempt: mounts SgsBorderControl but declares no backgroundColour attr ---
-	const fxExempt = makeFixtureBlock( tmpRoot, 'fixture-exempt', FIXTURE_POSITIVE, {
+	const fixtExempt = makeFixtureBlock( tmpRoot, 'fixture-exempt', FIXTURE_POSITIVE, {
 		borderWidth: { type: 'object', default: {} },
 		borderStyle: { type: 'string', default: 'solid' },
 		borderColour: { type: 'string', default: '' },
 		borderColourGradient: { type: 'string', default: '' },
 	} );
 	check( 'exempt fixture (no backgroundColour attr) classifies as exempt, never target', () => {
-		const before = fs.readFileSync( path.join( fxExempt, 'edit.js' ), 'utf8' );
-		const findings = classifyFileAt( fxExempt, 'fixture-exempt' );
+		const before = fs.readFileSync( path.join( fixtExempt, 'edit.js' ), 'utf8' );
+		const findings = classifyFileAt( fixtExempt, 'fixture-exempt' );
 		assert( findings.length === 1 && findings[ 0 ].status === 'exempt', 'expected exempt, got ' + JSON.stringify( findings ) );
-		const plan = planFileFixAt( fxExempt, 'fixture-exempt' );
+		const plan = planFileFixAt( fixtExempt, 'fixture-exempt' );
 		assert( plan === null, 'expected no plan for an exempt file' );
-		assert( fs.readFileSync( path.join( fxExempt, 'edit.js' ), 'utf8' ) === before, 'exempt fixture must stay byte-identical' );
+		assert( fs.readFileSync( path.join( fixtExempt, 'edit.js' ), 'utf8' ) === before, 'exempt fixture must stay byte-identical' );
 	} );
 
 	// --- Corpus control (D775-style): a second, dumb, wide walk must

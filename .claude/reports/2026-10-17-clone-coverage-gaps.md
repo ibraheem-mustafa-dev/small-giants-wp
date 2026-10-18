@@ -1,4 +1,4 @@
-# Clone coverage gap list: 1893 capabilities neither covered nor excluded
+# Clone coverage gap list: 1889 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
@@ -6,9 +6,9 @@
 | draft reading | 348 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 170 |
-| motion writer (4.0) | 169 |
+| motion writer (4.0) | 166 |
 | site and surfaces | 96 |
-| behaviour recognisers | 74 |
+| behaviour recognisers | 73 |
 | states | 60 |
 
 ## block-setting (88)
@@ -198,18 +198,14 @@
 - `motion-preset:hover:magnet`: hover presets, family magnet (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. magnet-bold, magnet-standard, magnet-subtle
 - `motion-preset:hover:sheen`: hover presets, family sheen (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sheen-bold, sheen-standard, sheen-subtle
 
-## extension (12)
+## extension (8)
 
-- `extension:animation`: extension animation (animation.js) (10, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsAnimation, sgsAnimationDelay, sgsAnimationDistance, sgsAnimationDuration, sgsAnimationEasing
 - `extension:blockLink`: extension blockLink (hover-effects/attributes.js) (4); has nothing; wave behaviour recognisers; e.g. sgsBlockLink, sgsBlockLinkLabel, sgsBlockLinkSource, sgsBlockLinkTarget
 - `extension:blockLinkAuto`: extension blockLinkAuto (hover-effects/attributes.js) (1); has nothing; wave behaviour recognisers; e.g. sgsBlockLinkAuto
 - `extension:childSizing`: extension childSizing (child-sizing.js) (2); has nothing; wave modes and values with no CSS property; e.g. sgsChildSizing, sgsChildWidth
 - `extension:chipGap`: extension chipGap (product-filter-chips-gap.js) (1); has nothing; wave modes and values with no CSS property; e.g. sgsChipGap
-- `extension:clickEffects`: extension clickEffects (hover-effects/attributes.js) (3); has nothing; wave behaviour recognisers; e.g. sgsClickEffect, sgsClickRippleColour, sgsClickRippleDuration
 - `extension:customCss`: extension customCss (custom-css.js) (3); has nothing; wave modes and values with no CSS property; e.g. sgsCustomCss, sgsCustomCssId, sgsCustomCssNote
-- `extension:hover`: extension hover (hover-effects/attributes.js) (19, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsHoverBorderAccent, sgsHoverDuration, sgsHoverDurationMs, sgsHoverEasing, sgsHoverEasingCustom
 - `extension:imageControls`: extension imageControls (image-controls.js) (8); has nothing; wave content, media and icons; e.g. sgsColourTreatment, sgsHeightDesktop, sgsHeightMobile, sgsHeightTablet, sgsHeightUnit
-- `extension:parallax`: extension parallax (parallax.js) (2, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. sgsParallax, sgsParallaxStrength
 - `extension:responsiveVisibility`: extension responsiveVisibility (responsive-visibility.js) (4); has nothing; wave modes and values with no CSS property; e.g. sgsCollapseVisibility, sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet
 - `extension:sameTerm`: extension sameTerm (product-collection-same-term.js) (1); has nothing; wave shop, forms and data; e.g. sgsSameTermAs
 

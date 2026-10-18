@@ -7,6 +7,8 @@
  * 100 x 50) and `getComputedStyle().translate` is empty (no offset to subtract).
  */
 
+jest.mock( '@sgs/magnet', () => ( { DEFAULT_RADIUS: 120, DEFAULT_RETURN_MS: 250, registerMagnet: () => () => {} } ), { virtual: true } );
+
 const BOX = { left: 100, top: 100, width: 100, height: 50 };
 
 function mockBox( node ) {
@@ -223,5 +225,43 @@ describe( 'reduced motion is live', () => {
 		expect( listeners.size ).toBe( 1 );
 		cleanup();
 		expect( listeners.size ).toBe( 0 );
+	} );
+} );
+
+describe( 'moving part (movingPart)', () => {
+	test( 'a declared part receives the pull and the root stays put; absent or root moves the element itself', () => {
+		const { magnet, flush } = setup();
+		const root = makeEl();
+		root.setAttribute( 'data-sgs-fx-magnet-moving-part', 'cta' );
+		root.setAttribute( 'data-sgs-fx-magnet-part-selector', '.sgs-demo__cta' );
+		const part = document.createElement( 'span' );
+		part.className = 'sgs-demo__cta';
+		root.appendChild( part );
+		const { resolveMovingPart } = require( '../../src/shared/effects/fx-magnet.js' );
+		expect( resolveMovingPart( root ) ).toBe( part );
+		const cleanup = magnet.registerMagnet( root, { axis: 'both', maxPull: 20, target: part } );
+		move( 240, 140, flush );
+		expect( px( part, '--sgs-mag-x' ) ).not.toBe( 0 );
+		expect( part.hasAttribute( 'data-sgs-mag-part' ) ).toBe( true );
+		expect( root.style.getPropertyValue( '--sgs-mag-x' ) ).toBe( '' );
+		cleanup();
+		expect( part.hasAttribute( 'data-sgs-mag-part' ) ).toBe( false );
+
+		root.setAttribute( 'data-sgs-fx-magnet-moving-part', 'root' );
+		expect( resolveMovingPart( root ) ).toBe( root );
+		root.removeAttribute( 'data-sgs-fx-magnet-moving-part' );
+		expect( resolveMovingPart( root ) ).toBe( root );
+		root.setAttribute( 'data-sgs-fx-magnet-moving-part', 'cta' );
+		root.setAttribute( 'data-sgs-fx-magnet-part-selector', '.missing' );
+		expect( resolveMovingPart( root ) ).toBe( root );
+	} );
+
+	test( 'no target moves the element itself', () => {
+		const { magnet, flush } = setup();
+		const node = makeEl();
+		const cleanup = magnet.registerMagnet( node, { axis: 'both', maxPull: 20 } );
+		move( 240, 140, flush );
+		expect( px( node, '--sgs-mag-x' ) ).not.toBe( 0 );
+		cleanup();
 	} );
 } );

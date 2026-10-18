@@ -37,7 +37,7 @@
 	},
 	{
 		"block": "sgs/exempt-system-attr",
-		"attr": "sgsAnimation",
+		"attr": "sgsCustomCss",
 		"renderConsumed": false,
 		"controlPresent": false,
 		"renderVia": "none",

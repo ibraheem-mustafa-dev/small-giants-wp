@@ -12,7 +12,7 @@ shape and it IS decidable from source + build files alone:
 
   `assets/css/extensions.css` had `.sgs-has-image-controls[style*="--sgs-
   object-fit"]` and `.sgs-has-hover[style*="--sgs-hover-bg"]`, but
-  `includes/image-controls.php` and `includes/hover-effects.php` emit those
+  `includes/image-controls.php` and a hover emitter emit those
   custom properties ONLY inside a scoped `<style>` tag (via
   `sgs_append_scoped_var_style()`, Spec 32 / FR-32-11) — never as a literal
   `style="…"` HTML attribute. The attribute-selector precondition
@@ -386,7 +386,7 @@ def _build_fixture_tree(base: Path) -> None:
     # --- Detection 1: style-attr gate ---------------------------------
     _write(base, "assets/css/extensions.css", """
 /*
- * hover-effects.php emits --sgs-hover-bg inside a scoped <style> rule — it
+ * a hover emitter emits --sgs-hover-bg inside a scoped <style> rule — it
  * NEVER writes a style="" attribute. The [style*="--sgs-hover-bg"] gate
  * below could never match.
  */
@@ -412,7 +412,7 @@ def _build_fixture_tree(base: Path) -> None:
     # the shared scoped-<style> helper — mirrors the real pre-fix shape.
     # Comments here deliberately restate the "NEVER style=\"\"" prose to
     # prove comment-stripping works, exactly like the real historical files.
-    _write(base, "includes/hover-effects.php", """<?php
+    _write(base, "includes/hover-emitter.php", """<?php
 // no-inline contract, FR-32-11 -- NEVER a style="" attribute. Same pattern
 // as image-controls.php.
 function sgs_hover_render( $block_content ) {

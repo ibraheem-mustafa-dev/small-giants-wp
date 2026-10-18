@@ -1,5 +1,5 @@
 """seed_motion_fx_data.py - the data seed-motion-fx-registry.py writes: FX_EFFECTS (one row per fx_effects effect)
-and FX_ATTR_CSS_PROPERTY (the block_attributes fx:* namespace map).
+and FX_ATTR_CSS_PROPERTY (the block_attributes fx:* namespace map for the drag and loop attributes).
 
 A data module: seed-motion-fx-registry.py imports and re-exports both names, so every reader that loads the seeder
 module (db-consistency checks, sgs-update-v2.py) keeps reading `_seeder_mod.FX_EFFECTS`. Edit rows here; the seeder is
@@ -137,9 +137,8 @@ FX_EFFECTS: list[dict] = [
     {
         # FR-38-6, §2 row "Pin + scrub section timeline", §9 row 1, §10 row 1.
         "effect": "pin-scrub",
-        # in_picker=1 — offered in fx.js's SHIPPED_EFFECTS picker. This key is
-        # the DB's single statement of that fact; check-fx-list-drift.py (I1)
-        # compares it against SHIPPED_EFFECTS in BOTH directions.
+        # in_picker=1 — offered in the generic effects picker. This key is
+        # the DB's single statement of that fact.
         "in_picker": 1,
         # pins/triggers (D416). VERIFIED: fx-pin-scrub.js sets pin:true. Pin spans a scroll RANGE, so scroll is the only coherent trigger.
         "pins": 1,
@@ -530,7 +529,7 @@ FX_EFFECTS: list[dict] = [
         # SVG renderer, playing a designer-supplied animation file
         # (`data-sgs-fx="lottie"`, rendered by `sgs_render_lottie()`).
         "effect": "lottie",
-        # in_picker=0: not offered in fx.js's generic effects picker — a
+        # in_picker=0: not offered in the generic effects picker — a
         # Lottie instance is chosen via the media-type atom (mediaType:
         # 'lottie'), never the fx ToolsPanel.
         "in_picker": 0,
@@ -859,7 +858,7 @@ FX_EFFECTS: list[dict] = [
         # for the same reason it was for `draggable`: the scroller is a
         # DESCENDANT (`.sgs-gallery__grid`), not the block root, and the
         # generic panel only ever stamps the root. So this effect is excluded
-        # from `fx.js`'s SHIPPED_EFFECTS/qualifying-blocks roster entirely
+        # from the qualifying-blocks roster entirely
         # (never added there) and creates_panel documents that decision
         # rather than being consulted by any code path — same shape as
         # `draggable`'s row above, which also never gained a `creates_panel`
@@ -870,7 +869,7 @@ FX_EFFECTS: list[dict] = [
         # Tier W (D479, "rendering substrate" tier — WebGL) / D555. A shader
         # pass (grain, halftone, duotone — TREATMENT_PRESETS in
         # src/shared/effects/surface-treatments/presets.js) drawn ONCE over a
-        # block's own image, via the four fxTreatment* attrs named in the
+        # block's own image, via the four treatment attrs named in the
         # build brief. This is the first fx_effects row of tier 'W' — every
         # prior row is 'V' or 'G'; D479's own five-part test is what admits a
         # rendering substrate as a tier at all, not re-litigated here.
@@ -979,11 +978,11 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
-        # Spec 38A FR-38A-43 (effect table row "parallax", Effects, Tier V, Part). Writes --sgs-plx-x / --sgs-plx-y from assets/js/parallax.js.
+        # Spec 38A FR-38A-43 (effect table row "parallax", Effects, Tier V, Part). Writes --sgs-plx-x / --sgs-plx-y from the model's parallax layer.
         "effect": "parallax",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.parallax), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "scroll",
@@ -1007,7 +1006,7 @@ FX_EFFECTS: list[dict] = [
         "effect": "glare",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover panel
         # (schemas/motion.schema.json::x-sgs-effects.glare), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "hover",
@@ -1025,11 +1024,11 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
-        # Spec 38A FR-38A-45 (Effects, Tier V, Part). assets/js/ripple.js sets --ripple-x / --ripple-y and toggles .is-rippling; extensions.css .sgs-has-click-ripple paints the ::after circle.
+        # Spec 38A FR-38A-45 (Effects, Tier V, Part). the ripple runtime sets --ripple-x / --ripple-y and toggles .is-rippling; extensions.css .sgs-has-click-ripple paints the ::after circle.
         "effect": "ripple",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.ripple), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "pointerdown,click",
@@ -1039,7 +1038,7 @@ FX_EFFECTS: list[dict] = [
         # 0: its contribution composes by the section 10 channel table (sum per axis or product), so it never
         # needs an entrance suppressed.
         "owns_scroll_transform": 0,
-        # Suppress: ripple.js returns early and plays nothing under reduce (FR-38A-45).
+        # Suppress: the ripple runtime returns early and plays nothing under reduce (FR-38A-45).
         "reduced_motion": "suppress",
         "editor_story": "end-state",
         "scope": "element",
@@ -1051,7 +1050,7 @@ FX_EFFECTS: list[dict] = [
         "effect": "sheen",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.sheen), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "hover",
@@ -1073,7 +1072,7 @@ FX_EFFECTS: list[dict] = [
         "effect": "scroll-progress",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.scroll-progress), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "scroll",
@@ -1095,7 +1094,7 @@ FX_EFFECTS: list[dict] = [
         "effect": "ambient-float",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.ambient-float), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "load,visible",
@@ -1117,7 +1116,7 @@ FX_EFFECTS: list[dict] = [
         "effect": "marquee",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.marquee), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "load,visible",
@@ -1139,7 +1138,7 @@ FX_EFFECTS: list[dict] = [
         "effect": "ken-burns",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.ken-burns), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "load,visible",
@@ -1161,7 +1160,7 @@ FX_EFFECTS: list[dict] = [
         "effect": "svg-loop",
         # in_picker=0 and creates_panel=0: a Spec 38A motion-model layer on the Hover or Effects panel
         # (schemas/motion.schema.json::x-sgs-effects.svg-loop), never a `data-sgs-fx` value, so it is not in
-        # fx.js's SHIPPED_EFFECTS picker and creates no legacy fx panel.
+        # the generic effects picker and creates no legacy fx panel.
         "in_picker": 0,
         "pins": 0,
         "triggers": "load,visible",
@@ -1227,163 +1226,14 @@ FX_EFFECTS: list[dict] = [
 
 # ---------------------------------------------------------------------------
 # 2. block_attributes fx:* pseudo-namespace map (§6.2 / §11.3) — attr_name ->
-#    css_property. Mirrors the anim:* namespace's suffix shape exactly (anim:preset,
-#    anim:duration, anim:easing, anim:stagger, anim:parallax, anim:trigger — verified
-#    live against block_attributes before writing this).
+#    css_property, for the block attributes that carry a drag or loop feature on
+#    their own block.json (the flat fx* extension attributes no longer exist).
 # ---------------------------------------------------------------------------
 FX_ATTR_CSS_PROPERTY: dict[str, str] = {
-    "fx": "fx:effect",
-    "fxTrigger": "fx:trigger",
-    "fxStart": "fx:start",
-    "fxEnd": "fx:end",
-    # D417 — how long a pinning effect holds its finished state before the pin
-    # releases. Spec 38 s11.2 amended in the same change that added this.
-    "fxHold": "fx:hold",
-    "fxScrub": "fx:scrub",
-    "fxStagger": "fx:stagger",
-    "fxDuration": "fx:duration",
-    "fxEase": "fx:ease",
-    # ------------------------------------------------------------------
-    # Added 2026-07-31 — closing the gap between what the GRAMMAR claims and
-    # what the registry actually holds. Spec 38 s11.3 states a "1:1 attr
-    # mapping"; before these rows that sentence was aspirational for three
-    # attributes that were already emitted, already read by a runtime module,
-    # and already controlled in the editor, while appearing in no fx:* row.
-    # ------------------------------------------------------------------
-    #
-    # `dragMomentum` -> fx:momentum. THE DRIFT HAZARD, and note the attr name:
-    # unlike every other row here this is a BLOCK attribute, not an fx
-    # extension attribute. sgs/gallery and sgs/testimonial-slider both declare
-    # `dragMomentum` in their block.json and both emit `data-sgs-fx-momentum`
-    # from render.php; fx-draggable.js / testimonial-slider's view.js read it
-    # back off the DOM. So the whole loop existed EXCEPT the registry row, and
-    # the mapping is keyed on the real declared attr name rather than an
-    # invented `fxMomentum` that no block.json has - a row keyed on a name
-    # nothing declares would report [skip] forever and prove nothing.
+    # gallery and testimonial-slider declare `dragMomentum` and emit `data-sgs-fx-momentum`.
     "dragMomentum": "fx:momentum",
-    #
-    # `loopCarousel` -> fx:loop (Spec 38 s11 loop FR, 2026-08-02). Same shape
-    # as `dragMomentum` above and for the same reason: a real BLOCK attribute
-    # (not an fx extension attribute), declared in sgs/gallery's block.json,
-    # emitted as `data-sgs-loop="1"` from its own render.php and read back by
-    # `shared/effects/fx-carousel-loop.js`. Deliberately its own `fx:loop`
-    # value rather than folded into `fx:momentum`'s neighbourhood — looping
-    # is an INDEPENDENT control from drag (Bean's ruling), so the cloning
-    # grammar keeps them as two separate mappable attributes.
+    # the carousel loop flag, emitted as `data-sgs-loop="1"` from the block's own render.php.
     "loopCarousel": "fx:loop",
-    #
-    # `dragToScroll` -> fx:draggable (2026-08-13, DB role-remediation part 2). Same
-    # shape as `dragMomentum`/`loopCarousel` above: a real BLOCK attribute (not an fx
-    # extension attribute), the master gate `sgs/gallery/render.php:101,113-114` reads
-    # to decide whether to emit `data-sgs-fx="draggable"` at all (the SAME grammar
-    # `dragMomentum` rides — that attribute only ever matters once `dragToScroll` has
-    # already turned the feature on). Found by a parallel investigation agent
-    # confirming that TIER 3.17's `css_property LIKE 'fx:%'` rescue could never reach
-    # `dragToScroll` because it had no fx:* marker at all -- this registry row is the
-    # actual "at source" fix (registry-completeness gap), not a new assign-canonical.py
-    # tier: once this row exists, TIER 3.17 self-corrects `dragToScroll` -> 'behaviour'
-    # on any future reseed with no further action needed.
+    # whether the block emits `data-sgs-fx="draggable"` at all.
     "dragToScroll": "fx:draggable",
-    #
-    # `fxPath` -> fx:path. The curated motion-path route (s11.2, D427). This is
-    # the AUTHORING surface; `data-sgs-fx-motion-path-target` is render-layer
-    # OUTPUT and deliberately gets no row - a draft never writes it, and only
-    # the route is mapped, never the resolved selector.
-    "fxPath": "fx:path",
-    "fxPathAsset": "fx:path-asset",
-    "fxPathRotate": "fx:path-rotate",
-    #
-    # `fxPathRest` / `fxPathRestVh` -> fx:path-rest / fx:path-rest-vh (D441,
-    # 2026-08-01). The resting-position control: where the traveller settles
-    # once its scrub completes (below-header / middle / lower-third / custom
-    # preset, plus a 5vh-stepped fine-tune for custom). Both map to plain
-    # `data-sgs-fx-motion-path-rest*` attributes that `assets/css/
-    # fx-motion-path.css` resolves declaratively via `calc()`/`max()` against
-    # `--sgs-header-height` — mirrors `fxPathRotate`'s naming shape (the
-    # runtime's own attribute name, not an invented one) rather than the
-    # `fx:path-*` shape used for the route-picking pair above, because these
-    # two are consumed by the SAME runtime attribute family, not new ones.
-    "fxPathRest": "fx:path-rest",
-    "fxPathRestVh": "fx:path-rest-vh",
-    #
-    # `fxShape` -> fx:shape. Seeded AHEAD of the morph control (s11.2 lists it
-    # beside fx:path). Reports [skip] until a block declares it, which is the
-    # documented no-op this step already has for every unshipped attr - the row
-    # exists so the grammar's own claim is true of the registry rather than
-    # true only of the effects that happen to have shipped.
-    "fxShape": "fx:shape",
-    #
-    # `fxShapeAssetFrom` / `fxShapeAssetTo` -> fx:shape-asset-from /
-    # fx:shape-asset-to. The MorphSVG `custom` mode's two media-library
-    # attachment IDs (2026-08-01, D427 build). TWO rows, not one, because a
-    # morph pair is never a single asset the way a motion-path route is - it
-    # needs a matched FROM and TO shape, and `includes/fx-shape-routes.php`
-    # resolves them independently (either missing fails the whole pair, see
-    # that file's `sgs_fx_resolve_shape_pair()`). Naming mirrors `fxPathAsset`
-    # exactly, split by direction rather than invented from scratch.
-    "fxShapeAssetFrom": "fx:shape-asset-from",
-    "fxShapeAssetTo": "fx:shape-asset-to",
-    #
-    # `fxPreset` -> fx:preset. The client-facing intensity layer (s7). It is
-    # deliberately NOT part of the data-attribute grammar: a preset writes its
-    # values into the params above, so emitting the label as well would put an
-    # attribute in the markup that no runtime reads. It IS a stored block
-    # attribute, so it gets a registry row.
-    "fxPreset": "fx:preset",
-    #
-    # `fxDisableTablet` / `fxDisableMobile` -> fx:disable-tablet /
-    # fx:disable-mobile (Spec 38 s7 build task, D446 Task 15, 2026-08-01).
-    # Per-breakpoint disable, named with the EXISTING device-tier suffix
-    # vocabulary (Tablet/Mobile) the rest of the framework already uses for
-    # responsive attrs, not a new one. Booleans, unlike every other row here
-    # - `includes/fx-attributes.php` and `fx.js` both special-case them
-    # outside the generic value-or-absent FX_ATTR_MAP loop for exactly that
-    # reason (a `false` is not `''`/`null`, so the generic rule would leave
-    # an empty-but-present attribute rather than omitting it).
-    "fxDisableTablet": "fx:disable-tablet",
-    "fxDisableMobile": "fx:disable-mobile",
-    #
-    # `fxTreatment` / `fxTreatmentIntensity` / `fxTreatmentShadow` /
-    # `fxTreatmentHighlight` -> fx:treatment / fx:treatment-intensity /
-    # fx:treatment-shadow / fx:treatment-highlight (Tier W surface-treatment,
-    # D479/D555). Same shape as the fxPath*/fxShape* rows above: the AUTHORING
-    # attrs a block declares in its own block.json, each mapped 1:1 to its
-    # `fx:*` pseudo-namespace name rather than invented from scratch. Four
-    # separate rows, not one, because the shader pass has four independently
-    # settable parameters (preset id, an intensity float, and two colour
-    # overrides) — collapsing them would lose which one a cloned draft's
-    # value belongs to.
-    "fxTreatment": "fx:treatment",
-    "fxTreatmentIntensity": "fx:treatment-intensity",
-    "fxTreatmentShadow": "fx:treatment-shadow",
-    "fxTreatmentHighlight": "fx:treatment-highlight",
-    #
-    # `fxPin` -> fx:pin (2026-08-28, registry-completeness gap). A real BLOCK
-    # attribute on sgs/image-sequence, read by `shared/effects/gsap/
-    # fx-image-sequence.js` as `data-sgs-fx-pin` to decide whether the canvas
-    # pins for the duration of its scrub. It had NO fx:* marker at all, so it
-    # sat at css_property=NULL with nothing marking it — the same
-    # registry-completeness gap `dragToScroll` had above, and the same fix.
-    # `attr-classification-overrides.json` already recorded the diagnosis in
-    # its own `_reason` field ("not yet seeded into the fx:* namespace ...
-    # unlike its siblings fxStart/fxEnd/fxScrub") without anyone acting on it.
-    "fxPin": "fx:pin",
-    #
-    # `fxDraggable` -> fx:drag-handle, NOT fx:draggable.
-    #
-    # ⛔ THE OBVIOUS NAME IS ALREADY TAKEN. `dragToScroll` claims `fx:draggable`
-    # ~70 lines above. These are two genuinely different mechanisms that both
-    # reasonably answer to the word "draggable", and collapsing them would lose
-    # which one a cloned draft's value belongs to (the same argument the
-    # fxTreatment* rows make for staying four rows rather than one):
-    #   · `dragToScroll` (sgs/gallery, sgs/buybox, sgs/google-reviews) — drag a
-    #     carousel horizontally to SCROLL it. Gates `data-sgs-fx="draggable"`.
-    #   · `fxDraggable`  (sgs/before-after) — GSAP Draggable free-drag on the
-    #     comparison DIVIDER (`before-after/view.js:20`, read as
-    #     `data-sgs-fx-draggable`). Nothing scrolls; it moves a handle.
-    # Hence `fx:drag-handle` — named for what it actually drags. This is a
-    # judgement call on a DB-namespace name, made deliberately and reversible:
-    # if a later spec amendment prefers a different value, change it here and
-    # reseed; nothing downstream hardcodes it.
-    "fxDraggable": "fx:drag-handle",
 }

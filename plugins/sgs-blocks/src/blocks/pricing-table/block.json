@@ -60,18 +60,6 @@
 					"borderWidth"
 				]
 			},
-			"enabledExtensions": [
-				"hover"
-			],
-			"hoverDefaults": {
-				"scalePreset": "1.02",
-				"shadow": "soft",
-				"imageZoom": false
-			},
-			"hoverExcludeControls": [
-				"imageZoom",
-				"grayscale"
-			],
 			"collection": true,
 			"iconPicker": true,
 			"imageControls": false,

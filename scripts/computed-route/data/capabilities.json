@@ -2237,13 +2237,13 @@
 				{
 					"id": "sgs-support:enabledExtensions",
 					"label": "supports.sgs.enabledExtensions",
-					"count": 21,
+					"count": 18,
 					"examples": [
 						"sgs/button",
 						"sgs/container",
-						"sgs/google-reviews",
 						"sgs/heading",
-						"sgs/hero"
+						"sgs/hero",
+						"sgs/icon"
 					],
 					"motion": false
 				},
@@ -2276,38 +2276,10 @@
 				{
 					"id": "sgs-support:hideExtensions",
 					"label": "supports.sgs.hideExtensions",
-					"count": 32,
+					"count": 2,
 					"examples": [
-						"sgs/accordion-item",
-						"sgs/brand-strip",
-						"sgs/choice-flow",
-						"sgs/choice-flow-question",
-						"sgs/choice-flow-result"
-					],
-					"motion": false
-				},
-				{
-					"id": "sgs-support:hoverDefaults",
-					"label": "supports.sgs.hoverDefaults",
-					"count": 6,
-					"examples": [
-						"sgs/google-reviews",
-						"sgs/info-box",
-						"sgs/pricing-table",
-						"sgs/product-card",
-						"sgs/team-member"
-					],
-					"motion": false
-				},
-				{
-					"id": "sgs-support:hoverExcludeControls",
-					"label": "supports.sgs.hoverExcludeControls",
-					"count": 4,
-					"examples": [
-						"sgs/container",
-						"sgs/google-reviews",
-						"sgs/pricing-table",
-						"sgs/whatsapp-cta"
+						"sgs/nav-bar-menu",
+						"sgs/nav-drawer-menu"
 					],
 					"motion": false
 				},
@@ -2596,19 +2568,6 @@
 			"status": "ok",
 			"entries": [
 				{
-					"id": "extension:animation",
-					"label": "extension animation (animation.js)",
-					"count": 10,
-					"examples": [
-						"sgsAnimation",
-						"sgsAnimationDelay",
-						"sgsAnimationDistance",
-						"sgsAnimationDuration",
-						"sgsAnimationEasing"
-					],
-					"motion": true
-				},
-				{
 					"id": "extension:blockLink",
 					"label": "extension blockLink (hover-effects/attributes.js)",
 					"count": 4,
@@ -2649,17 +2608,6 @@
 					"motion": false
 				},
 				{
-					"id": "extension:clickEffects",
-					"label": "extension clickEffects (hover-effects/attributes.js)",
-					"count": 3,
-					"examples": [
-						"sgsClickEffect",
-						"sgsClickRippleColour",
-						"sgsClickRippleDuration"
-					],
-					"motion": false
-				},
-				{
 					"id": "extension:conditionalVisibility",
 					"label": "extension conditionalVisibility (conditional-visibility.js)",
 					"count": 9,
@@ -2684,19 +2632,6 @@
 					"motion": false
 				},
 				{
-					"id": "extension:hover",
-					"label": "extension hover (hover-effects/attributes.js)",
-					"count": 19,
-					"examples": [
-						"sgsHoverBorderAccent",
-						"sgsHoverDuration",
-						"sgsHoverDurationMs",
-						"sgsHoverEasing",
-						"sgsHoverEasingCustom"
-					],
-					"motion": true
-				},
-				{
 					"id": "extension:imageControls",
 					"label": "extension imageControls (image-controls.js)",
 					"count": 8,
@@ -2708,16 +2643,6 @@
 						"sgsHeightUnit"
 					],
 					"motion": false
-				},
-				{
-					"id": "extension:parallax",
-					"label": "extension parallax (parallax.js)",
-					"count": 2,
-					"examples": [
-						"sgsParallax",
-						"sgsParallaxStrength"
-					],
-					"motion": true
 				},
 				{
 					"id": "extension:responsiveVisibility",

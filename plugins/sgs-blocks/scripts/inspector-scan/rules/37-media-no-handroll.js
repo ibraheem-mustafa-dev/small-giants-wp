@@ -295,7 +295,7 @@ const MEDIA_CSS_PROPERTIES = [
 // property suffix (`splitMediaObjectPosition`, `splitMediaOverlayColour`,
 // `logoFit`, `badgeImageObjectFit`). The background-panel family is always
 // BARE-PREFIXED — the attribute name itself starts with `background`/`bg`
-// (`backgroundOverlayColour`, `backgroundSize`, `bgParallax`, `bgKenBurns`)
+// (`backgroundOverlayColour`, `backgroundSize`, `bgFixedAttachment`)
 // with no element name in front of it. Verified live across all 7 blocks
 // this rule flagged for the bare-`backgroundOverlay*` shape (sgs/container,
 // sgs/multi-button, sgs/physics-canvas, sgs/site-footer,

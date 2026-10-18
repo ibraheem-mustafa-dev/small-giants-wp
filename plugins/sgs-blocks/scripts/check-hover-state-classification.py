@@ -24,12 +24,12 @@ THE PREDICATE IS DELIBERATELY NARROW
 Each conjunct earns its place; measured against the live DB on 2026-08-29:
 
   * WITHOUT `css_property IS NOT NULL` the predicate returns 95 rows, but most
-    are attributes that are not CSS at all (`pauseOnHover`, `hoverStyle`,
-    `effectHover` — behaviour flags and variant selectors). NULL is CORRECT for
+    are attributes that are not CSS at all (`pauseOnHover`, `hoverStyle` —
+    behaviour flags and variant selectors). NULL is CORRECT for
     those, and flagging them would train everyone to ignore this gate.
 
-  * We do NOT also require `css_element IS NULL`. That would over-flag: the nine
-    `scaleHover` rows legitimately carry `css_state='hover'` with a NULL element,
+  * We do NOT also require `css_element IS NULL`. That would over-flag: the
+    `fixtureLiftHover` rows legitimately carry `css_state='hover'` with a NULL element,
     because a transform on the block root genuinely has no sub-element. State is
     the discriminating column here; element is not.
 
@@ -193,17 +193,17 @@ def self_test() -> int:
         ("positive control: classified hover row passes", find_unclassified_hover_states([good]) == [])
     )
 
-    # A non-CSS *Hover flag (pauseOnHover / hoverStyle / effectHover) is NOT a
+    # A non-CSS *Hover flag (pauseOnHover / hoverStyle) is NOT a
     # finding — NULL is the correct classification for a behaviour attribute.
     behaviour = Row("sgs/fixture", "pauseOnHover", None, None, None)
     checks.append(
         ("non-CSS hover flag is not flagged", find_unclassified_hover_states([behaviour]) == [])
     )
 
-    # A root-level transform (scaleHover) legitimately has a NULL element while
+    # A root-level transform (fixtureLiftHover) legitimately has a NULL element while
     # carrying a hover state. It must NOT be flagged — this is the over-match
     # the predicate was narrowed to avoid.
-    root_transform = Row("sgs/fixture", "scaleHover", "transform", None, "hover")
+    root_transform = Row("sgs/fixture", "fixtureLiftHover", "transform", None, "hover")
     checks.append(
         ("NULL element with a real state is not flagged", find_unclassified_hover_states([root_transform]) == [])
     )

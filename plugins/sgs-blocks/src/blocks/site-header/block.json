@@ -36,9 +36,6 @@
 				"width",
 				"background"
 			],
-			"hideExtensions": [
-				"fx"
-			],
 			"boxFamilies": {
 				"contentBandPadding": [
 					"contentBandPadding"

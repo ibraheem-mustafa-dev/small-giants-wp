@@ -2,7 +2,7 @@
  * SGS motion: Follow pointer's pointer writer (Spec 38A FR-38A-41, FR-38A-47). Tier V.
  *
  * The `@sgs/fx-follow-pointer` script module the PHP motion registry enqueues for an element the renderer marked
- * `data-sgs-fx="follow-pointer"` that also carries `data-sgs-mc~="transform"`. It replaces `assets/js/tilt-3d.js`.
+ * `data-sgs-fx="follow-pointer"` that also carries `data-sgs-mc~="transform"`.
  *
  * It writes two custom properties on that element and nothing else: `--sgs-tilt-x` and `--sgs-tilt-y` (degrees).
  * They do not inherit, so the element that carries the transform channel is the one written. `assets/css/motion.css`

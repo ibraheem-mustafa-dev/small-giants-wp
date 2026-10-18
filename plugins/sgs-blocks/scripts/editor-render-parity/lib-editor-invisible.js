@@ -19,10 +19,6 @@
 // `backgroundRepeat`, this file's own worked example of a property the
 // canvas SHOULD show) can never be swept in by a loose match:
 //
-//   · bgSvgAnimation / bgSvgAnimationSpeed — motion: animation + its timing,
-//     nothing a static canvas can render.
-//   · bgParallax — motion: scroll-driven, no resting frame to show.
-//   · bgKenBurns / bgAnimationDuration — motion: animated pan/zoom + timing.
 //   · rowTransparent / rowHideOnScroll / rowShrink / rowShrinkHideTarget —
 //     scroll-gated two-state behaviour (site-header-row/site-footer-row);
 //     `rowShrink` already ships an opt-in "Show me the shrunk size" toggle —
@@ -78,23 +74,16 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// alone.
 	'thumbnailDecorative',
 	// Hover-only transform (2026-09-05). `scaleHover` emits a
-	// `transform:scale()` exclusively through `sgs_hover_state_rules()`
-	// (button/render.php:438-441) — a `:hover` rule, and the editor canvas
+	// `transform:scale()` exclusively through the hover-state rules — a `:hover` rule, and the editor canvas
 	// never renders a hover state, which is the SAME doctrine already applied
 	// to the client-set hover VALUES below.
-	// ⚠ NAME-KEYED, AND THIS NAME IS NOT UNIQUE: `scaleHover` is declared by 11
-	// blocks (button, card-grid, gallery, heading, icon, info-box, post-grid,
-	// quote, team-member, testimonial, text). Only `sgs/button` has a finding
-	// today, so this also pre-emptively suppresses the other 10. That is
+	// ⚠ NAME-KEYED, AND THIS NAME IS NOT UNIQUE: `scaleHover` is declared by 7
+	// blocks (card-grid, gallery, icon, info-box, post-grid, team-member,
+	// testimonial), so this pre-emptively suppresses all of them. That is
 	// intended — the attribute means the same thing on every one of them — but
 	// if any block ever uses `scaleHover` for a NON-hover transform, this
 	// exemption would hide a real desync there.
 	'scaleHover',
-	'bgSvgAnimation',
-	'bgSvgAnimationSpeed',
-	'bgParallax',
-	'bgKenBurns',
-	'bgAnimationDuration',
 	'rowTransparent',
 	'rowHideOnScroll',
 	'rowShrink',
@@ -141,7 +130,6 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'matchHighlightColourHoverGradient',
 	'resultHoverBackgroundColourHover',
 	'resultHoverBackgroundColourHoverGradient',
-	'shadowHoverColour',
 	// sgs/button, 2026-09-07. Same hover-VALUE class as `shadowHoverColour` directly
 	// above; it is a SEPARATE entry, not a rename of it, because two blocks still
 	// declare the older `shadowHoverColour` spelling. Created by the ShadowControl
@@ -338,14 +326,10 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// difference), 'thumbnailAlt' (sgs/image-sequence — alt text),
 	// 'headerShrink'/'headerHideOnScroll' (sgs/site-header — scroll-position-
 	// triggered, no resting-state difference), 'blockLabel' (sgs/tabs — ARIA
-	// label only), 'revealOnScroll'/'revealStagger' (sgs/timeline — reveal-
-	// animation timing, needs real scroll), 'autoScroll' (sgs/trust-bar —
-	// needs real overflow + time), 'message' (sgs/whatsapp-cta — pre-fills
+	// label only), 'message' (sgs/whatsapp-cta — pre-fills
 	// the opened chat, never rendered on-page), the drawer and panel motion
-	// attributes (sgs/nav-drawer entryAnimation, entryDuration, exitDuration,
-	// entryEasing, entryEasingCustom, entryFade, curtainColour, itemStagger*,
-	// scrimFadeDuration; sgs/nav-bar-menu submenuAnimationDuration,
-	// submenuExitDuration, submenuAnimationEasing*, submenuItemStagger* —
+	// attributes (sgs/nav-drawer scrimFadeDuration; sgs/nav-bar-menu
+	// submenuAnimationDuration, submenuExitDuration, submenuAnimationEasing* —
 	// only observable while a drawer or panel opens or closes), and
 	// sgs/nav-drawer anchorOffset (the gap between the open panel and the live
 	// burger or header it hangs from; the canvas previews the drawer as a
@@ -354,9 +338,7 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// (b) GSAP ScrollTrigger / transition CONFIG whose css_property resolves
 	// to a namespaced motion key (`fx:*`) or a real CSS property that is
 	// observationally inert without a live interaction/scroll the static
-	// canvas cannot provide: 'fxStart'/'fxEnd'/'fxScrub'/'fxPin' (32 blocks —
-	// scroll-scrub configuration; same "means the same thing everywhere"
-	// reasoning already used for scaleHover above), 'fadeOnScroll'/
+	// canvas cannot provide: 'fadeOnScroll'/
 	// 'pathDrawOnScroll' (sgs/decorative-image — scroll-intersection
 	// triggers, no static resting frame), 'transitionDuration'/
 	// 'transitionEasing' (8 blocks — css_property IS `transition-duration`/
@@ -374,39 +356,15 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'headerShrink',
 	'headerHideOnScroll',
 	'blockLabel',
-	'revealOnScroll',
-	'revealStagger',
-	'autoScroll',
 	'message',
-	'entryAnimation',
-	'entryDuration',
-	'exitDuration',
-	'entryEasing',
-	'entryEasingCustom',
-	'entryFade',
-	'curtainColour',
 	'curtainColourGradient',
-	'itemStagger',
-	'itemStaggerDistance',
-	'itemStaggerDuration',
-	'itemStaggerMax',
-	'itemStaggerOnClose',
 	'scrimFadeDuration',
 	'anchorOffset',
 	'submenuAnimationDuration',
 	'submenuExitDuration',
 	'submenuAnimationEasing',
 	'submenuAnimationEasingCustom',
-	'submenuItemStagger',
-	'submenuItemStaggerDuration',
-	'submenuItemStaggerMax',
-	'submenuItemStaggerDistance',
-	'fxStart',
-	'fxEnd',
-	'fxScrub',
-	'fxPin',
 	'fadeOnScroll',
-	'pathDrawOnScroll',
 	'transitionDuration',
 	'transitionEasing',
 ] );

@@ -8,8 +8,7 @@
  *   editing a non-desktop tier. Imported FIRST so it is registered before any
  *   panel-rendering extension. It registers a plugin (not a BlockEdit filter),
  *   so its position in this list does not affect panel order.
- * - Animation: controls for sgs/* blocks only (scroll-triggered animations).
- * - Hover effects: hover animations for sgs/* blocks.
+ * - Block link: the whole-block link panel for sgs/* blocks that opt in (hover-effects/).
  * - Child sizing: fit / fill / fixed width inside a flex row, per device, for
  *   blocks that opt in with supports.sgs.enabledExtensions ["childSizing"].
  * - Custom CSS: per-block scoped CSS textarea in Advanced panel (also
@@ -39,14 +38,11 @@
  *   product-filter-chips-gap.js (frontend rule: includes/product-filter-chips-gap.php).
  */
 import './responsive-device-toggle';
-import './animation';
 import './hover-effects';
 import './child-sizing';
 import './custom-css';
 import './block-defaults';
-import './parallax';
 import './image-controls';
-import './fx';
 import './responsive-visibility';
 import './media-elements';
 import './cpt-default-panel';
@@ -66,12 +62,6 @@ import './motion';
 // Spec-31 F5 anti-cheat gate on sgs/accordion).
 import '../../components/colour-picker/color-picker/editor.scss';
 import '../../components/colour-picker/dropdown/editor.scss';
-// "Scroll & effects" panel — the motion-budget Notice spans both ToolsPanel
-// grid columns. Imported HERE rather than from fx.js for the reason the comment
-// above gives: an editor stylesheet imported from a non-entry module gets
-// attributed to an arbitrary block's FRONTEND bundle by webpack's per-entry CSS
-// extraction, which the F5 anti-cheat gate catches on sgs/accordion.
-import './fx-panel.scss';
-// Child sizing's editor-canvas preview rules (same reason as fx-panel.scss).
+// Child sizing's editor-canvas preview rules (an editor stylesheet imported from a non-entry module is attributed to an arbitrary block's frontend bundle, so it is imported here).
 import './child-sizing.scss';
 import './conditional-visibility';

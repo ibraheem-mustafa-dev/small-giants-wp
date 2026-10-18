@@ -94,13 +94,6 @@ $fade_on_scroll      = (bool) ( $attributes['fadeOnScroll'] ?? false );
 $allowed_overflows   = array( 'visible', 'hidden', 'clip', 'scroll', 'auto' );
 $overflow_raw        = $attributes['overflow'] ?? 'visible';
 $overflow            = in_array( $overflow_raw, $allowed_overflows, true ) ? $overflow_raw : 'visible';
-$path_draw           = (bool) ( $attributes['pathDrawOnScroll'] ?? false );
-$path_draw_duration  = absint( $attributes['pathDrawDurationMs'] ?? 1500 );
-$path_draw_offset    = absint( $attributes['pathDrawTriggerOffset'] ?? 20 );
-$allowed_easings     = array( 'ease-out', 'ease-in-out', 'linear' );
-$path_draw_easing    = in_array( $attributes['pathDrawEasing'] ?? 'ease-out', $allowed_easings, true )
-	? ( $attributes['pathDrawEasing'] ?? 'ease-out' )
-	: 'ease-out';
 
 // Responsive overrides. positionX/positionY/rotation tablet+mobile tiers now
 // come off the normalised tier objects built above ($position_x_obj etc.) —
@@ -280,12 +273,6 @@ if ( $image_decorative ) {
 
 if ( $fade_on_scroll ) {
 	$img_attrs['data-fade-on-scroll'] = 'true';
-}
-if ( $path_draw ) {
-	$img_attrs['data-sgs-path-draw']          = 'true';
-	$img_attrs['data-sgs-path-draw-duration'] = esc_attr( $path_draw_duration );
-	$img_attrs['data-sgs-path-draw-offset']   = esc_attr( $path_draw_offset );
-	$img_attrs['data-sgs-path-draw-easing']   = esc_attr( $path_draw_easing );
 }
 if ( $hide_on_tablet ) {
 	$img_attrs['data-hide-tablet'] = 'true';

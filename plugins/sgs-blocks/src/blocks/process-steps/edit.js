@@ -23,12 +23,6 @@ const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
 
-const HOVER_EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
-	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-];
 import { IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import {
@@ -144,7 +138,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		textColourHoverGradient,
 		borderColourHover,
 		borderColourHoverGradient,
-		effectHover,
 		transitionDuration,
 		transitionEasing,
 		borderWidth,
@@ -257,7 +250,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		`sgs-process-steps--connector-${ connectorStyle }`,
 		`sgs-process-steps--number-${ numberStyle }`,
 		'list' === layout ? 'sgs-process-steps--layout-list' : '',
-		effectHover && effectHover !== 'none' ? `sgs-process-steps--hover-${ effectHover }` : '',
 	].filter( Boolean ).join( ' ' );
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
@@ -727,16 +719,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					title={ __( 'Hover States', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SelectControl
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						value={ effectHover }
-						options={ HOVER_EFFECT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { effectHover: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<TextControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 						value={ transitionDuration }

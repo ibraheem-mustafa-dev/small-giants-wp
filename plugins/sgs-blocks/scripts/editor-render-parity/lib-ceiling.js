@@ -190,7 +190,7 @@ const CHECK_B_BLOCKS_BUILD = true;
 // ⛔ RAISED AGAIN 209→211, 2026-09-04, third occurrence of the identical
 // pattern. Blocking deployment of the D946/D947 generative-background
 // fixes (a separate track this same session), which touched only
-// fx-generative-background.js/webgl/generative-background.js/fx.js and
+// fx-generative-background.js/webgl/generative-background.js and
 // added zero new CHECK A findings itself (confirmed: `git log -- <the
 // affected block edit.js files>` shows none of them touched by the
 // generative-background commits). The +2 traces to commit `2d1acab31`

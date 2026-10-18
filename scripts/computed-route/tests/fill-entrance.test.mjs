@@ -91,22 +91,7 @@ test( 'in a real browser: a keyframe entrance is sampled for delay, duration, di
 
 const db = openDb();
 const snapshot = { palette: [], spacing: [], fontSizes: [] };
-const same = ( v ) => ( { 375: v, 768: v, 1440: v } );
-const CAL = { block: 'sgs/text', elements: { '': {} }, settings: {}, discovered: { sgsAnimation: {
-	opacity: { slots: [ '' ], values: { 'fade-up': same( '0' ), 'fade-in': same( '0' ) } },
-	transform: { slots: [ '' ], values: { 'fade-up': same( 'matrix(1, 0, 0, 1, 0, 18)' ), 'fade-in': same( 'none' ) } },
-} } };
 const ENTRANCE = shapeEntrance( { seenAt: 0, first: RISE, firstChange: RISE, start: 200, end: 800, loop: false } );
-
-test( 'entranceWrites: the preset comes from the setting calibration ties to opacity and transform, and duration and delay with no setting are UNMAPPED with the measured values', () => {
-	const node = { name: 'sgs/text', attributes: {} };
-	const r = entranceWrites( { entrance: ENTRANCE, node, ref: 'cr-ref-x-3', block: 'sgs/text', calibration: CAL, db, snapshot, log: [] } );
-	assert.equal( node.attributes.sgsAnimation, 'fade-up', 'fade-up and fade-in both fit opacity 0; the transform picks fade-up' );
-	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.after, w.prop ] ), [ [ 'sgsAnimation', 'fade-up', 'entrance opacity' ] ] );
-	assert.deepEqual( r.unmapped.map( ( u ) => [ u.property, u.value ] ), [ [ 'entrance animation-duration', '600ms' ], [ 'entrance animation-delay', '200ms' ] ] );
-	assert.match( r.unmapped[ 0 ].reason, /^no-setting: / );
-	assert.equal( r.unmapped[ 0 ].node, 'cr-ref-x-3' );
-} );
 
 test( 'entranceWrites with a calibration that ties nothing writes nothing and lists every measured entrance value', () => {
 	const node = { name: 'sgs/text', attributes: {} };

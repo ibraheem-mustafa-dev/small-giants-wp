@@ -42,7 +42,7 @@
  * would make "which SVG morphs" depend on how many the block's own markup
  * happens to contain, which is not predictable from the outside. It always:
  *   1. Operates on the block's ROOT element only (same root-offset helper
- *      `fx-attributes.php` uses, so both files agree on where a composite's
+ *      `fx-root-offset.php` provides, so every fx filter agrees on where a composite's
  *      real root starts after any Spec-32 scoped `<style>` block).
  *   2. Appends exactly two NEW elements as siblings immediately after that
  *      root — never inside it, never touching whatever the block already
@@ -58,9 +58,8 @@
  * becomes an icon", not "reshape whatever the block happened to draw").
  *
  * PRIORITY 22 — same slot as `fx-path-routes.php` (a sibling expansion, never
- * the same block instance). Must run AFTER `fx-attributes.php` (p10) injects
- * `data-sgs-fx-shape` onto dynamic blocks and the motion layer renderer (p20)
- * writes it for a layer, and BEFORE `SGS_Motion_Registry`'s
+ * the same block instance). Must run AFTER the motion layer renderer (p20)
+ * writes `data-sgs-fx-shape` for a layer, and BEFORE `SGS_Motion_Registry`'s
  * p99 sniff, which decides whether MorphSVGPlugin is enqueued at all.
  *
  * SECURITY. A custom shape pair is TWO media-library attachment IDs, never
@@ -85,8 +84,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Curated shape-pair presets, read from the shared JSON both sides use.
  *
- * Shared with the editor's thumbnail picker (`src/blocks/extensions/fx.js`
- * imports the same file) rather than duplicated — a second copy of a shape
+ * Kept in one file rather than duplicated — a second copy of a shape
  * list is exactly the drift class Spec 38 Task 3 exists to close.
  *
  * @return array<string, array{label:string, description:string, from:array{d:string}, to:array{d:string}}>
@@ -322,8 +320,8 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 		return $block_content;
 	}
 
-	// These are the fx params `fx.js` / `fx-attributes.php` already put on the
-	// root via the shared `FX_ATTR_MAP` channel. They belong on the NEW
+	// These are the fx params the motion renderer already put on the
+	// root. They belong on the NEW
 	// FROM-shape element now — a shape node is what `fx-morph.js` requires —
 	// so they are read here and then stripped off the root below.
 	$trigger  = (string) $processor->get_attribute( 'data-sgs-fx-trigger' );

@@ -376,7 +376,7 @@ export function resolve( input, ctx ) {
 	const row = others[ 0 ] || flat[ 0 ];
 	const attr = others[ 0 ] ? row.attr_name : [ ...bases ][ 0 ];
 	// A pseudo-namespaced setting (anim:duration, anim:easing, fx:*) holds a KEYWORD slug, not a measured CSS value:
-	// `includes/animation-timing-clamp.php` clamps sgsAnimationDuration to instant, fast, medium, slow, extra-slow, and
+	// a block clamps such a setting to a list of keyword slugs, and
 	// block.json declares the attribute `{ type: 'string' }` with no enum, so a measured "0.3s" would be written and
 	// then silently coerced back to the default on render. The measured value is only written when the schema declares
 	// it as one of the setting's own values; otherwise the row is a shape gap, and what the route still needs is a
@@ -385,7 +385,7 @@ export function resolve( input, ctx ) {
 		const allowed = [].concat( schema[ attr ]?.enum || [] );
 		const bad = Object.values( tiers ).find( ( v ) => ! allowed.includes( String( v ) ) );
 		if ( undefined !== bad ) {
-			return { gap: 'shape', detail: `${ attr } holds a ${ row.css_property } keyword (includes/animation-timing-clamp.php: instant, fast, medium, slow, extra-slow), not the measured ${ bad }` };
+			return { gap: 'shape', detail: `${ attr } holds a ${ row.css_property } keyword (a slug the block clamps to its own list), not the measured ${ bad }` };
 		}
 	}
 	const unitAttr = schema[ `${ attr }Unit` ] ? `${ attr }Unit` : null;

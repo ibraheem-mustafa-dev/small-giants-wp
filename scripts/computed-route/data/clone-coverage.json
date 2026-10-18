@@ -8762,14 +8762,6 @@
 			"wave": "content, media and icons",
 			"note": "Zoomable embed (zoomable.ca): a third-party embed; no embed writer (core/embed where WordPress supports the host)"
 		},
-		"extension:animation": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
-			"note": "extension settings: motion writer (4.0)"
-		},
 		"extension:blockLink": {
 			"recognise": null,
 			"write": null,
@@ -8798,13 +8790,6 @@
 			"wave": "modes and values with no CSS property",
 			"note": "extension settings: modes and values with no CSS property"
 		},
-		"extension:clickEffects": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "extension settings: behaviour recognisers"
-		},
 		"extension:conditionalVisibility": {
 			"excluded": {
 				"reason": "conditional display by login, role or date",
@@ -8819,28 +8804,12 @@
 			"wave": "modes and values with no CSS property",
 			"note": "extension settings: modes and values with no CSS property"
 		},
-		"extension:hover": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
-			"note": "extension settings: motion writer (4.0)"
-		},
 		"extension:imageControls": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "content, media and icons",
 			"note": "extension settings: content, media and icons"
-		},
-		"extension:parallax": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
-			"note": "extension settings: motion writer (4.0)"
 		},
 		"extension:responsiveVisibility": {
 			"recognise": null,
@@ -15033,20 +15002,6 @@
 			}
 		},
 		"sgs-support:hideExtensions": {
-			"excluded": {
-				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
-		},
-		"sgs-support:hoverDefaults": {
-			"excluded": {
-				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
-		},
-		"sgs-support:hoverExcludeControls": {
 			"excluded": {
 				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
 				"signedBy": "Bean",

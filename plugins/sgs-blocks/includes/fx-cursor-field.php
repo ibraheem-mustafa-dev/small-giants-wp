@@ -32,9 +32,7 @@
  * JS adds only the tracking.
  *
  * PRIORITY 22 matches the sibling route-expanders (`fx-path-routes.php`,
- * `fx-shape-routes.php`): after `fx-attributes.php` (p10) has injected the fx
- * data attributes onto DYNAMIC blocks — static blocks already carry them from
- * save time — and after the motion layer renderer (p20), which writes
+ * `fx-shape-routes.php`): after the motion layer renderer (p20), which writes
  * `data-sgs-fx` for an effect authored as a layer (an earlier filter finds no
  * effect on such a block); and before `SGS_Motion_Registry`'s p99 sniff, which decides
  * whether the module and stylesheet are enqueued at all.
@@ -293,7 +291,7 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	/*
 	 * Skip a leading `<style>` before looking for the block root — the same
 	 * guard `fx-path-routes.php:289` and `fx-shape-routes.php:291` use, via the
-	 * shared helper in `fx-attributes.php`.
+	 * shared helper in `fx-root-offset.php`.
 	 *
 	 * NOT optional and NOT defensive padding: `sgs/container` (a qualifying
 	 * block) prepends its own scoped `<style>` whenever the instance has any
@@ -393,6 +391,18 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 			'--sgs-cursor-field-blend:%d',
 			\max( 0, \min( 100, (int) $blend ) )
 		);
+	}
+
+	// FALLOFF is the percentage along the gradient where the field has faded to nothing; LAYER OPACITY is the painted
+	// layer's resting opacity. Both are read here and written as the custom properties the stylesheet consumes, so an
+	// absent attribute leaves the stylesheet's own 70% and 0.9 standing. Zero is a real value for both.
+	$falloff = sgs_fx_cursor_field_number( $processor->get_attribute( 'data-sgs-fx-cursor-field-falloff' ), 1, 100 );
+	if ( null !== $falloff ) {
+		$declarations[] = '--sgs-cursor-field-falloff:' . $falloff . '%';
+	}
+	$layer_opacity = sgs_fx_cursor_field_number( $processor->get_attribute( 'data-sgs-fx-cursor-field-layer-opacity' ), 0, 1 );
+	if ( null !== $layer_opacity ) {
+		$declarations[] = '--sgs-cursor-field-layer-opacity:' . $layer_opacity;
 	}
 
 	// `image-reveal` owns its radius: the rest and hover values go on the paint slot below, not on the root.

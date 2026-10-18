@@ -40,16 +40,10 @@ const NAV_BLOCK_ENUMS = [
 
 // Every consumer that used to define its own list: the file, the local name it keeps, and the master view it imports.
 const CONSUMERS = [
-	[ 'src/blocks/extensions/fx.js', 'GSAP_EASING_OPTIONS', 'GSAP_EASING_OPTIONS' ],
-	[ 'src/blocks/extensions/hover-effects/constants.js', 'EASING_OPTIONS', 'THEME_EASING_OPTIONS' ],
-	[ 'src/components/AnimationControl.js', 'EASINGS', 'ANIMATION_EASING_OPTIONS' ],
 	[ 'src/blocks/card-grid/components/card-grid-options.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/info-box/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/team-member/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/gallery/components/gallery-options.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],
-	[ 'src/blocks/heading/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],
-	[ 'src/blocks/text/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],
-	[ 'src/blocks/decorative-image/edit.js', 'PATH_DRAW_EASING_OPTIONS', 'PATH_DRAW_EASING_OPTIONS' ],
 ].map( ( [ file, local, view ] ) => ( { file, local, view } ) );
 
 // A view must equal the enum of every block.json attribute it feeds (as a set; `extra` are values the attribute adds).
@@ -62,8 +56,6 @@ const ENUM_PROOFS = [
 			extra: attr === 'submenuCaretTurnEasing' ? [ '' ] : [],
 		} ) )
 	),
-	{ view: 'CSS_EASING_OPTIONS', file: 'src/blocks/heading/block.json', attr: 'transitionEasing', extra: [] },
-	{ view: 'CSS_EASING_OPTIONS', file: 'src/blocks/text/block.json', attr: 'transitionEasing', extra: [] },
 ];
 
 // Easing enums that no view feeds yet, each with the reason. A new easing enum not listed here or above fails --check.
@@ -353,7 +345,7 @@ function selfTest() {
 	fs.writeFileSync( consumerPath, clean );
 	const masterPath = path.join( tmp, MASTER );
 	const original = read( masterPath );
-	fs.writeFileSync( masterPath, original.replace( "css: 'ease-in-out'", "css: 'ease-in-outt'" ) );
+	fs.writeFileSync( masterPath, original.replace( "nav: 'ease-in-out'", "nav: 'ease-in-outt'" ) );
 	expect( 'plant 2: a mismatched view is caught', check( tmp, [ consumer ] ), false, 'differs from' );
 	fs.writeFileSync( masterPath, original );
 	fs.writeFileSync( consumerPath, 'export const nothing = 1;\n' );

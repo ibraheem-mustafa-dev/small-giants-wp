@@ -1707,22 +1707,22 @@ function d1_self_test(string $repoRoot): int {
         $failures[] = "CHECK 7: fixture not found at $fixture";
     } else {
         $fixtureRows = d1_collect([$fixture], [], $repoRoot);
-        $nested = array_values(array_filter($fixtureRows, fn ($r) => 'fxNestedCapture' === $r['attr_key']));
+        $nested = array_values(array_filter($fixtureRows, fn ($r) => 'qaNestedCapture' === $r['attr_key']));
         if ([] === $nested) {
-            $failures[] = 'CHECK 7: fxNestedCapture (Shape H) produced ZERO rows — Limitation A nested-argument capture has regressed.';
+            $failures[] = 'CHECK 7: qaNestedCapture (Shape H) produced ZERO rows — Limitation A nested-argument capture has regressed.';
         } elseif ('NOT-content' !== $nested[0]['category']) {
-            $failures[] = 'CHECK 7: fxNestedCapture (Shape H) resolved ' . $nested[0]['category'] . ', expected NOT-content.';
+            $failures[] = 'CHECK 7: qaNestedCapture (Shape H) resolved ' . $nested[0]['category'] . ', expected NOT-content.';
         }
 
         // --- 8. glue-boundary regression guard: close-tag/HTML/reopen-tag --
         // Shape I. Before the fix, a leading close-tag/HTML/reopen-tag glue
         // made match_assignment()'s `^\$var` anchor fail, so this attribute
         // never entered the symbol table and produced ZERO rows.
-        $glued2 = array_values(array_filter($fixtureRows, fn ($r) => 'fxGluedBoundary' === $r['attr_key']));
+        $glued2 = array_values(array_filter($fixtureRows, fn ($r) => 'qaGluedBoundary' === $r['attr_key']));
         if ([] === $glued2) {
-            $failures[] = 'CHECK 8: fxGluedBoundary (Shape I) produced ZERO rows — the "?> ... <?php" statement-glue strip has regressed.';
+            $failures[] = 'CHECK 8: qaGluedBoundary (Shape I) produced ZERO rows — the "?> ... <?php" statement-glue strip has regressed.';
         } elseif ('a11y-metadata' !== $glued2[0]['category']) {
-            $failures[] = 'CHECK 8: fxGluedBoundary (Shape I) resolved ' . $glued2[0]['category'] . ', expected a11y-metadata.';
+            $failures[] = 'CHECK 8: qaGluedBoundary (Shape I) resolved ' . $glued2[0]['category'] . ', expected a11y-metadata.';
         }
 
         // --- 9. LIMITATION B regression guard: interprocedural param bind --
@@ -1731,11 +1731,11 @@ function d1_self_test(string $repoRoot): int {
         // collect_function_param_names()/collect_call_site_param_bindings()
         // seeding $varToAttr before the file is walked, this produces ZERO
         // rows regardless of how the call-site argument is wrapped.
-        $bound = array_values(array_filter($fixtureRows, fn ($r) => 'fxRowTarget' === $r['attr_key']));
+        $bound = array_values(array_filter($fixtureRows, fn ($r) => 'qaRowTarget' === $r['attr_key']));
         if ([] === $bound) {
-            $failures[] = 'CHECK 9: fxRowTarget (Shape J) produced ZERO rows — Limitation B interprocedural parameter binding has regressed.';
+            $failures[] = 'CHECK 9: qaRowTarget (Shape J) produced ZERO rows — Limitation B interprocedural parameter binding has regressed.';
         } elseif ('NOT-content' !== $bound[0]['category']) {
-            $failures[] = 'CHECK 9: fxRowTarget (Shape J) resolved ' . $bound[0]['category'] . ', expected NOT-content.';
+            $failures[] = 'CHECK 9: qaRowTarget (Shape J) resolved ' . $bound[0]['category'] . ', expected NOT-content.';
         }
     }
 

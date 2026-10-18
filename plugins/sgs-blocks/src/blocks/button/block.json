@@ -117,7 +117,7 @@
 							}
 						}
 					},
-					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap (per-device label-to-icon gap) is mapped on the button element as css:gap because the gap is a flex gap on the button root (and its `.sgs-button__face` wrapper). `liftHover` is unmapped like scaleHover (hover translate, classified by an attr-classification override). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient/iconColourHoverGradient, added 2026-08-16 (Builder 4) — non-empty wins over the flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap (per-device label-to-icon gap) is mapped on the button element as css:gap because the gap is a flex gap on the button root. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient/iconColourHoverGradient, added 2026-08-16 (Builder 4) — non-empty wins over the flat currentColor paint at render time (helpers-svg-gradient.php)."
 				}
 			}
 		}
@@ -388,15 +388,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"scaleHover": {
-			"type": "number",
-			"default": 1
-		},
-		"liftHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Raises the button by this many px on hover/focus (translateY(-N px), 0-24; 0 = off, so an untouched button is unaffected). Combines with scaleHover in one transform."
-		},
 		"contentAlign": {
 			"type": "object",
 			"default": {},
@@ -407,36 +398,11 @@
 			"default": {},
 			"description": "Per-device gap between the label and the icon (CSS length). Tier object {desktop,tablet,mobile}; empty adds no gap."
 		},
-		"opacityHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Fades the button to this opacity on hover/focus (0-1; 1 = no visible change). 0 (default) disables the fade entirely, so an untouched button is unaffected."
-		},
-		"scaleHoverTarget": {
-			"type": "string",
-			"enum": [ "whole", "face" ],
-			"default": "whole",
-			"description": "What the hover scale above applies to. 'whole' scales the entire button (border, fill and label together) — the existing behaviour. 'face' scales only the inner label/icon face (a `.sgs-button__face` wrapper), leaving the border and background fill in place — an inset-face effect."
-		},
-		"transitionDuration": {
-			"type": "number",
-			"default": 0
-		},
 		"focusStyle": {
 			"type": "string",
 			"enum": [ "", "duotone", "signature" ],
 			"default": "",
 			"description": "Keyboard focus look (focus system, theme focus.css). '' uses the site's focus style; 'duotone' adds sgs-focus--duotone (the dark-and-light ring, for photos or busy grounds); 'signature' adds sgs-focus--signature (a slowly turning border in the site's colours that stops turning under reduced motion). Signature is refused when a gradient border or a motion effect already owns the button's ::before (helpers-button-focus.php)."
-		},
-		"transitionEasing": {
-			"type": "string",
-			"default": "ease",
-			"description": "Hover transition easing: a shared motion easing name (sgs_motion_easing_css), or custom with transitionEasingCustom."
-		},
-		"transitionEasingCustom": {
-			"type": "string",
-			"default": "",
-			"description": "A cubic-bezier(x1, y1, x2, y2) curve, read when transitionEasing is custom. An invalid curve falls back to ease."
 		},
 		"icon": {
 			"type": "string",

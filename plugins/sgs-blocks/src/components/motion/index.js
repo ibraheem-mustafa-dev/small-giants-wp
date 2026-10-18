@@ -18,6 +18,7 @@ export {
 	SCHEMA_EASING_OPTIONS,
 	easingView,
 	easingCssFor,
+	motionEasingCss,
 } from './EasingAtom';
 export { default as DistanceAtom } from './DistanceAtom';
 export { default as AngleAtom } from './AngleAtom';

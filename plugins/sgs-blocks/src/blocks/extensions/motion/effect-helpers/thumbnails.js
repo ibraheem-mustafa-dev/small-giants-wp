@@ -1,7 +1,6 @@
 /**
  * The effect picker thumbnails (Spec 38 §11.2, D427, D479): the surface-treatment glyphs, the morph shape-pair and
- * the motion-path route previews, each a small inline SVG drawn from the same data the render layer uses. Moved out of
- * `fx.js` (Spec 38A M3.6), which re-exports them until its panel is retired.
+ * the motion-path route previews, each a small inline SVG drawn from the same data the render layer uses.
  *
  * @package
  */

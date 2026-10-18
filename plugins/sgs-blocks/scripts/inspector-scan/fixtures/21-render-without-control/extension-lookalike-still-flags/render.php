@@ -6,7 +6,7 @@
  * fixture's extension attributes must NOT flag there.
  */
 
-$one = isset( $attributes['fxNotARegisteredAttr'] ) ? $attributes['fxNotARegisteredAttr'] : '';
+$one = isset( $attributes['sgsMotionNotRegisteredAttr'] ) ? $attributes['sgsMotionNotRegisteredAttr'] : '';
 $two = isset( $attributes['sgsNotARegisteredAttr'] ) ? $attributes['sgsNotARegisteredAttr'] : '';
 
 printf(

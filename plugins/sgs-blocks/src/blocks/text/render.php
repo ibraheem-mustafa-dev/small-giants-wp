@@ -120,7 +120,6 @@ $box_shadow_decls = sgs_shadow_decls(
 );
 
 // Hover state.
-$hover_scale  = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : null;
 $hover_colour = $attributes['textColourHover'] ?? '';
 // D636 — sibling-attribute shape, see $text_colour_gradient above.
 $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
@@ -134,12 +133,9 @@ $custom_width_unit = $attributes['customWidthUnit'] ?? 'px';
 // Inherit-style escape hatch.
 $inherit_style = ! empty( $attributes['inheritStyle'] );
 
-// Configurable hover transition.
-$transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
-$transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
-$transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
-$allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
+// Colour hover transition: fixed timing. Scale, opacity and timed hover motion belong to the sgsMotion hover state.
+$transition_duration = 300;
+$transition_easing   = 'ease';
 
 // ---------------------------------------------------------------------------
 // 2. Soft-fail: nothing to render if text is empty.
@@ -529,7 +525,7 @@ $css_hover = '';
 // gradient siblings here keep $has_hover true when only a gradient is set.
 $hover_colour_effective    = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
 $first_letter_colour_hover = (string) ( $attributes['firstLetterColourHover'] ?? '' );
-$has_hover                 = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_decls['hover'] || '' !== $first_letter_colour_hover || $border['hover'] );
+$has_hover                 = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || $box_shadow_decls['hover'] || '' !== $first_letter_colour_hover || $border['hover'] );
 if ( $has_hover ) {
 	$hover_decls = array();
 
@@ -541,9 +537,6 @@ if ( $has_hover ) {
 	}
 	// Hover background paint is NOT joined into $hover_decls (the root element)
 	// — it is emitted on the `::after` background layer instead, in step 6b.
-	if ( null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001 ) {
-		$hover_decls[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
-	}
 	if ( $box_shadow_decls['hover'] ) {
 		$hover_decls = array_merge( $hover_decls, $box_shadow_decls['hover'] );
 	}
@@ -551,7 +544,7 @@ if ( $has_hover ) {
 
 	if ( $hover_decls || '' !== $first_letter_colour_hover ) {
 		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
-		$css_hover = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
+		$css_hover = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
 		if ( $hover_decls ) {
 			$css_hover .= sgs_hover_state_rules( $scope, implode( ';', $hover_decls ), ':focus-visible' );
 			$css_hover .= sgs_hover_media_wrap(

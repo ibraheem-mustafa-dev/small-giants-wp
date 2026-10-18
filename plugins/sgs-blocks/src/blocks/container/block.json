@@ -44,16 +44,10 @@
 				"background",
 				"shapeDividers",
 				"gridItems",
-				"hover",
 				"blockLink",
 				"childSizing"
 			],
 			"sectionPadding": true,
-			"_comment_hoverExclude": "The Hover panel's image zoom and grayscale have nothing to act on here: a container's own picture is its background, moved by the motion model's `background` part, and an image block inside has its own Hover panel.",
-			"hoverExcludeControls": [
-				"imageZoom",
-				"grayscale"
-			],
 			"boxFamilies": {
 				"padding": [
 					"padding"

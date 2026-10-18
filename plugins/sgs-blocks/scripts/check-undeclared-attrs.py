@@ -44,7 +44,7 @@ EXTENSION ATTRIBUTES
 ~44 extension-injected attributes are legitimate across all sgs/* blocks. They are
 not declared per-block; they are added universally via WordPress filters. Extensions
 register them via `addFilter('blocks.registerBlockType', ...)` and pass attribute
-validation. Examples: sgsAnimation, sgsHideOnMobile, sgsCustomCss, sgsHoverScalePreset.
+validation. Examples: sgsHideOnMobile, sgsCustomCss, sgsChildSizing.
 
 This script DERIVES the extension list from extension/*.js files (R-31-1: DB-first,
 but only where a source exists; extension lists are code-first, not DB-first).
@@ -537,10 +537,10 @@ def self_test() -> int:
         failures.append('MUSTFLAG control failed: "customUndeclared" (a truly undeclared attr) was not flagged.')
 
     # Test 2: MUSTNOTFLAG — extension attribute.
-    destructured = {'sgsAnimation'}  # Known extension
+    destructured = {'sgsCustomCss'}  # Known extension
     undeclared = destructured - (declared | ext_attrs | native_injected)
-    if 'sgsAnimation' in undeclared:
-        failures.append('MUSTNOTFLAG control failed: "sgsAnimation" (an extension attr) was flagged.')
+    if 'sgsCustomCss' in undeclared:
+        failures.append('MUSTNOTFLAG control failed: "sgsCustomCss" (an extension attr) was flagged.')
 
     # Test 3: MUSTNOTFLAG — native-supports-injected attribute on a block that declares support.
     # Simulating a block with supports.align: true, which injects `align`.

@@ -32,7 +32,7 @@ COMPS = [
     'ResponsiveControl', 'ResponsiveOverride', 'ResponsiveTriStateControl',
     'ResponsiveBoxControl', 'ResponsiveBoxControls', 'ResponsiveBorderRadiusControl',
     'TypographyControls', 'ShadowControl', 'IconPicker', 'MediaPicker', 'MediaGalleryPicker',
-    'StateToggleControl', 'SpacingControl', 'AnimationControl', 'ScaleAxisControl', 'DeviceTabs',
+    'StateToggleControl', 'SpacingControl', 'ScaleAxisControl', 'DeviceTabs',
     # core primitives
     'SelectControl', 'ToggleGroupControl', 'ToggleControl', 'TextControl', 'RangeControl',
     'UnitControl', 'NumberControl', 'BoxControl', 'CheckboxControl', 'TextareaControl',

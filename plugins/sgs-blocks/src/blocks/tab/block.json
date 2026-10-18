@@ -26,10 +26,7 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"sgs": {
-			"hideExtensions": [
-				"animation"
-			],
+		"sgs": {
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",

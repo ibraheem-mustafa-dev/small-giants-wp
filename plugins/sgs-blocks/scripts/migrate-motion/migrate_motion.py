@@ -113,6 +113,22 @@ CATALOGUE = [
       'submenuItemStaggerDuration', 'submenuItemStaggerMax', 'submenuItemStaggerScope'), 'nav-bar',
      ('sgs/nav-bar-menu',)),
 ]
+# Catalogued names that stay on purpose: the built hover mapper reports them and leaves the attribute on the block, so a
+# stored value is not old motion that should be gone. (name, blocks, reason); `blocks` None = any block. `lookup` answers
+# `kept` for these; --check and --survey list them and do not count them, and the strip tool and the consumer census
+# skip them. A name belongs here only while the mapper leaves it (Sgs_Motion_Map_Hover reports it with consumed false).
+_CARD_SCALE = ('sgs/card-grid', 'sgs/gallery', 'sgs/info-box', 'sgs/post-grid', 'sgs/team-member', 'sgs/testimonial')
+KEPT = [
+    ('shadowLiftOnHover', None,
+     'a switch of the shadow control. Spec 38A section 13.2 says it becomes the lift effect, but the built mapper decided '
+     '(Sgs_Motion_Map_Hover::shadow_lift) that the switch has no hover-state value: a value equal to the block default is '
+     'reported and stays, and only a switched-on non-default value is consumed. Keep the mapper decision.'),
+    ('childIconShadowLiftOnHover', ('sgs/social-icons',),
+     'the row-level twin of shadowLiftOnHover, a shadow-control switch with no hover-state value; it stays with its pair.'),
+    ('scaleHover', _CARD_SCALE,
+     'on the card blocks it scales each item on its own hover through the item rule of the block; no per-item hover state '
+     'exists, so the mapper reports it and leaves it (Sgs_Motion_Map_Hover::block_owned, CARD_BLOCKS).'),
+]
 # Rename-only rows: the value stays in its control and the attribute is renamed (section 13.2: "the shadow and colour
 # values stay in their controls ... `shadowHoverColour` vs `shadowColourHover` naming is tidied in the same sweep").
 # `shadowColourHover` is the survivor (7 blocks declare it, 2 declare `shadowHoverColour`: sgs/info-box, sgs/testimonial).
@@ -169,8 +185,31 @@ def mapper_families(directory=MAPPERS_DIR):
                   for f in glob.glob(os.path.join(directory, MAPPER_PREFIX + '*.php')))
 
 
+def kept_reason(block, attr):
+    """Why a catalogued pair stays on the block (the KEPT reason), or None when the pair is old motion."""
+    for name, blocks, reason in KEPT:
+        if attr == name and (blocks is None or block in blocks):
+            return reason
+    return None
+
+
+def kept_everywhere(attr):
+    """True when KEPT covers the name on every block it is catalogued for (the consumer census then skips it)."""
+    for name, blocks, _reason in KEPT:
+        if attr != name:
+            continue
+        if blocks is None:
+            return True
+        scoped = [b for names, _f, bl in CATALOGUE if (names.match(attr) if hasattr(names, 'match') else attr in names)
+                  for b in (bl or ())]
+        return bool(scoped) and all(b in blocks for b in scoped)
+    return False
+
+
 def lookup(block, attr):
-    """(family, status) for one attribute; status is 'found', 'unrecognised' or None."""
+    """(family, status) for one attribute; status is 'found', 'kept', 'unrecognised' or None."""
+    if kept_reason(block, attr):
+        return None, 'kept'
     out_of_scope = False
     for names, family, blocks in CATALOGUE:
         hit = names.match(attr) if hasattr(names, 'match') else attr in names
@@ -203,7 +242,7 @@ def parse_blocks(content):
 
 def survey(posts, families, db_attrs=None):
     """The census. `families` is the set of family slugs that have a mapper file."""
-    found, unrec, core, bad = catalogue_rows(families, db_attrs), {}, [], []
+    found, unrec, core, bad, kept = catalogue_rows(families, db_attrs), {}, [], [], {}
     migrated = 0
     for post in posts:
         pid, ptype = post.get('ID'), post.get('post_type') or 'unknown'
@@ -217,7 +256,10 @@ def survey(posts, families, db_attrs=None):
                 family, status = lookup(name, attr)
                 if status is None:
                     continue
-                if status == 'unrecognised':
+                if status == 'kept':
+                    row = kept.setdefault(attr, {'attr': attr, 'count': 0, 'posts': set(), 'blocks': set(),
+                                                 'reason': kept_reason(name, attr)})
+                elif status == 'unrecognised':
                     row = unrec.setdefault(attr, {'attr': attr, 'count': 0, 'posts': set(), 'blocks': set()})
                 else:
                     row = found.setdefault(row_key(found, attr, family), {'attr': attr, 'family': family,
@@ -256,6 +298,7 @@ def survey(posts, families, db_attrs=None):
         'by_family': by_family,
         'core_block_entrances': core,
         'unrecognised': freeze(unrec),
+        'kept': freeze(kept),
         'unparsable_blocks': bad,
     }
 
@@ -273,6 +316,8 @@ def print_survey(result, source):
         print('  family %-14s %-10s %d attribute(s), %d occurrence(s)' % (fam, row['destination'], row['attributes'], row['occurrences']))
     for row in result['core_block_entrances']:
         print('  CORE-BLOCK motion (re-home onto the SGS replacement): post %s %s %s' % (row['post'], row['block'], row['attr']))
+    for row in result['kept']:
+        print('  KEPT %-32s x%-3d blocks %s (not counted): %s' % (row['attr'], row['count'], ','.join(row['blocks']), row['reason']))
     for row in result['unrecognised']:
         print('  UNRECOGNISED %-28s x%-3d blocks %s' % (row['attr'], row['count'], ','.join(row['blocks'])))
     for row in result['unparsable_blocks']:
@@ -281,18 +326,16 @@ def print_survey(result, source):
         print('  -> read the UNRECOGNISED / UNPARSABLE lines; --check does not count them.')
 
 
-def load_build_deploy():
-    """Import build-deploy.py (hyphenated name) for TARGETS, NON_BLOCK_POST_TYPES and ssh_base_cmd."""
-    path = os.path.join(PLUGIN, 'scripts', 'build-deploy.py')
-    spec = importlib.util.spec_from_file_location('build_deploy', path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+def load_deploy_common():
+    """deploy_common.py (beside build-deploy.py) for TARGETS, NON_BLOCK_POST_TYPES and ssh_base_cmd."""
+    sys.path.insert(0, os.path.join(PLUGIN, 'scripts'))
+    import deploy_common
+    return deploy_common
 
 
 def fetch_target(name):
     """Read-only dump of every block-bearing post over SSH, the way step_oldshape_audit does."""
-    bd = load_build_deploy()
+    bd = load_deploy_common()
     if name not in bd.TARGETS:
         sys.exit('unknown target %r; choose from %s' % (name, ', '.join(sorted(bd.TARGETS))))
     wp_root = bd.TARGETS[name]['wp_content'].rsplit('/wp-content', 1)[0]
@@ -324,6 +367,8 @@ def check(result):
     if remaining:
         print('CHECK FAILED: %d old motion attribute occurrence(s) remain (%d attribute(s)).' % (remaining, result['attributes_found']))
         return 1
+    if result['kept']:
+        print('  kept by design, not counted: %s' % ', '.join('%s x%d' % (r['attr'], r['count']) for r in result['kept']))
     print('check ok: no old motion attributes remain%s.' % (
         '; %d unrecognised attribute(s) still to read' % len(result['unrecognised']) if result['unrecognised'] else ''))
     return 0
@@ -359,8 +404,9 @@ def self_test():
     attrs = {r['attr']: r for r in sorted(res['attributes'], key=lambda r: r['count'])}
     expect({'sgsAnimation', 'sgsHoverLift', 'entryAnimation', 'itemStagger'} <= set(attrs) and 1 in attrs['sgsHoverLift']['posts'],
            'an old attribute in an sgs_header post is found')
-    expect(attrs['shadowLiftOnHover']['post_types'] == ['product'] and 'fxScramble' in attrs and 'sgsParallax' in attrs,
-           'old attributes in a product post are found (hover, fx prefix, parallax)')
+    expect([r['attr'] for r in res['kept']] == ['shadowLiftOnHover'] and 'fxScramble' in attrs and 'sgsParallax' in attrs
+           and attrs['sgsParallax']['post_types'] == ['product'],
+           'old attributes in a product post are found (fx prefix, parallax); the kept shadowLiftOnHover is listed, not counted')
     expect(attrs['sgsHoverLift']['destination'] == 'hover' and attrs['sgsParallax']['destination'] == 'unmapped',
            'destination is the family while its mapper file exists and unmapped otherwise')
     expect(attrs['entryAnimation']['family'] == 'nav-drawer' and attrs['scrolling']['family'] == 'marquee'
@@ -407,6 +453,15 @@ def self_test():
     expect(survey([{'ID': 12, 'post_type': 'page', 'post_content': '<!-- wp:sgs/icon {"offsetYHover":2} /-->'}], {'hover'})
            ['attributes'][[r['attr'] for r in survey([], {'hover'})['attributes']].index('offsetYHover')]['destination'] == 'unmapped',
            'an icon attribute reads unmapped while the icon mapper file is missing')
+    kept = survey([{'ID': 13, 'post_type': 'page', 'post_content':
+                    '<!-- wp:sgs/card-grid {"scaleHover":"1.05","shadowLiftOnHover":true} /-->'
+                    '<!-- wp:sgs/social-icons {"childIconShadowLiftOnHover":true} /-->'}], {'hover', 'icon'})
+    expect(check(kept) == 0 and [r['attr'] for r in kept['kept']] == ['childIconShadowLiftOnHover', 'scaleHover', 'shadowLiftOnHover']
+           and kept['remaining_occurrences'] == 0 and lookup('sgs/card-grid', 'scaleHover') == (None, 'kept'),
+           'a KEPT pair (card-grid scaleHover, shadowLiftOnHover) is listed as kept and not counted')
+    notkept = survey([{'ID': 14, 'post_type': 'page', 'post_content': '<!-- wp:sgs/heading {"scaleHover":1.1} /-->'}], {'hover'})
+    expect(check(notkept) == 1 and notkept['kept'] == [] and lookup('sgs/heading', 'scaleHover') == ('hover', 'found'),
+           'the same name on a block outside KEPT (heading scaleHover) is still counted')
     expect(check(res) == 1, '--check exits 1 while old attributes remain')
     clean = survey([FIXTURE[3]], set())
     expect(check(clean) == 0, '--check exits 0 on content with only sgsMotion')

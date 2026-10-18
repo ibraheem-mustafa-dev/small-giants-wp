@@ -74,3 +74,14 @@
 		--sgs-mag-y: 0px !important;
 	}
 }
+
+/*
+ * A declared moving part (`data-sgs-fx-magnet-moving-part`) is marked `data-sgs-mag-part` by the driver and carries the
+ * magnet's custom properties itself; the block root then stays put. Same return transition and translate slot as the root.
+ */
+[data-sgs-mag-part] {
+	transition:
+		--sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out),
+		--sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, ease-out);
+	translate: var(--sgs-mag-x, 0px) var(--sgs-mag-y, 0px);
+}

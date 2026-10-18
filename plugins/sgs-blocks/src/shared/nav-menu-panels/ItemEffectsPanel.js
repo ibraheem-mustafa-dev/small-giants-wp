@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl } from '@wordpress/components';
-import { MotionEasingControl } from '../../components';
+import EasingAtom from '../../components/motion/EasingAtom';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const LABEL_ROLL_OPTIONS = [
@@ -97,7 +97,8 @@ export default function ItemEffectsPanel( {
 				__next40pxDefaultSize
 			/>
 
-			<MotionEasingControl
+			<EasingAtom
+				vocab="nav"
 				label={ __( 'Effect easing', 'sgs-blocks' ) }
 				value={ itemMotionEasing }
 				custom={ itemMotionEasingCustom }

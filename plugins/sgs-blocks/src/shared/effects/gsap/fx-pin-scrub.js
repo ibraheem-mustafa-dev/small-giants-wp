@@ -23,7 +23,7 @@
  *      no inspector control. Verified by grep across src/, includes/ and
  *      theme/ (only this file mentioned it) and on the live canary
  *      (`document.querySelectorAll('[data-sgs-fx-child]').length === 0`). A
- *      read with no writer is the same defect class as `fxTrigger`, and it
+ *      read with no writer is the same defect class as a trigger nothing wrote, and it
  *      failed silently because an empty participant list still builds a valid
  *      timeline — the pin engages, so the effect LOOKS wired.
  *   2. It looked at DIRECT children of the pinned element. `sgs/container`

@@ -256,7 +256,23 @@
 					"heading": "Tilt card",
 					"description": "This card uses the legacy 3D tilt.",
 					"className": "m29-tilt",
-					"sgsHoverTilt3D": true
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"values": {
+											"followPointer": true,
+											"maxAngle": 6,
+											"resetDuration": 100,
+											"resetEasing": "ease-out"
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		]

@@ -181,7 +181,6 @@ hp_check( '0.94' === ( $attrs['data-sgs-fx-horizontal-panel-edge-scale'] ?? null
 
 // 5. The legacy intensity presets land on the new fields: Standard is the reference Heritage track (70vh per panel,
 // no smoothing, no hold) and the three levels rise in pin length per panel.
-require_once dirname( __DIR__, 2 ) . '/includes/fx-attributes.php';
 if ( ! class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Map_Fx' ) ) {
 	require_once dirname( __DIR__, 2 ) . '/includes/motion/migrate/mappers/class-sgs-motion-map-fx.php';
 }

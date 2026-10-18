@@ -126,7 +126,7 @@ def render_reads_attr(slug: str, attr: str, own_source_only: bool = False) -> bo
       caller (``sgs-update-v2.py::_populate_emit_shape``, already narrowed to content-role attrs, FR-31-2.2)
       asks about, and it is an OVER-APPROXIMATION for anything else: a shared helper that reads a same-named
       generic attribute on behalf of every block it serves (``$attributes['borderRadius']`` in
-      includes/helpers-box.php, ``transitionDuration`` in helpers-tokens.php) makes every block that requires
+      includes/helpers-box.php) makes every block that requires
       it "read" that attribute. Measured across every block.json attribute, the default answer differs from
       the one-hop answer for 77 attributes, of which only the four sgs/google-reviews content attributes are
       real reads.

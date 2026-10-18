@@ -19,16 +19,6 @@
 	"supports": {
 		"sgs": {
 			"motion": true,
-			"enabledExtensions": [
-				"hover"
-			],
-			"hoverDefaults": {
-				"imageZoom": false
-			},
-			"hoverExcludeControls": [
-				"imageZoom",
-				"grayscale"
-			],
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [
