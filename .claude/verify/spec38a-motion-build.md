@@ -1,6 +1,6 @@
 # Verification Criteria — Spec 38A build (the SGS motion model)
 
-Reference: `.claude/plans/2026-10-12-spec38a-motion-build.md` (spec `.claude/specs/38A-SGS-MOTION-MODEL.md`). Generated 2026-10-12; STATUS is updated by handoff reconciliation. A phase passes when every row passes.
+Reference: `.claude/plans/archive/2026-10-12-spec38a-motion-build.md` (spec `.claude/specs/38A-SGS-MOTION-MODEL.md`). Generated 2026-10-12; STATUS is updated by handoff reconciliation. A phase passes when every row passes.
 
 ## M0 — Baseline before the support registration (PASSED 2026-10-13)
 

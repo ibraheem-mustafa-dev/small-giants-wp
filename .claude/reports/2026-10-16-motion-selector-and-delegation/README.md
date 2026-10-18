@@ -59,4 +59,4 @@ Container-kind blocks whose content is inner blocks (info-box, multi-button) mar
 
 ## Next session (not started)
 
-Fix Issue A and Issue B together under plan item 11 in `.claude/plans/2026-10-12-spec38a-motion-build.md`, with the gate first (red on the ten rows above), then the selector vocabulary fix per block, then the delegation design (Bean to choose A, B or C).
+Fix Issue A and Issue B together under plan item 11 in `.claude/plans/archive/2026-10-12-spec38a-motion-build.md`, with the gate first (red on the ten rows above), then the selector vocabulary fix per block, then the delegation design (Bean to choose A, B or C).

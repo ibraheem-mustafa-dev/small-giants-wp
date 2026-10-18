@@ -1,6 +1,6 @@
 # Spec 38A gap closure (session S2)
 
-Governing spec: `.claude/specs/38A-SGS-MOTION-MODEL.md` (v1.7). Build plan: `.claude/plans/2026-10-12-spec38a-motion-build.md`. Bean asked (2026-10-13) for the gaps found in S2 to be closed now through subagent-driven development, not deferred. The universal rotate redesign (Bean: tilt should be a modular rotate) is a blueprint for Bean's approval first, not a task here.
+Governing spec: `.claude/specs/38A-SGS-MOTION-MODEL.md` (v1.7). Build plan: `.claude/plans/archive/2026-10-12-spec38a-motion-build.md`. Bean asked (2026-10-13) for the gaps found in S2 to be closed now through subagent-driven development, not deferred. The universal rotate redesign (Bean: tilt should be a modular rotate) is a blueprint for Bean's approval first, not a task here.
 
 ## Global constraints
 
@@ -69,7 +69,7 @@ Problem (measured 2026-10-13 on `plugins/sgs-blocks/build/`): 95 of 97 `build/bl
 
 ## Review findings carried to later units
 
-The four council reports (rotate, layout-property hovers, form states, timing and extras) are written back in Spec 38A v1.7 and in `.claude/plans/2026-10-12-spec38a-motion-build.md` under "Risk-driven amendments", "Per unit" (the bullets for M3.1 and M5.6, M3.4, M4.4 and M5.17, M5.12, M4.1 or M3.5, and M7).
+The four council reports (rotate, layout-property hovers, form states, timing and extras) are written back in Spec 38A v1.7 and in `.claude/plans/archive/2026-10-12-spec38a-motion-build.md` under "Risk-driven amendments", "Per unit" (the bullets for M3.1 and M5.6, M3.4, M4.4 and M5.17, M5.12, M4.1 or M3.5, and M7).
 
 From the Task 1 and 1b review (`.superpowers/sdd/s2gap-task-1-review.md`, 2026-10-13); Important 1 and 2 and Minor 1, 3 and 4 are fixed in this plan's review-fix commit.
 

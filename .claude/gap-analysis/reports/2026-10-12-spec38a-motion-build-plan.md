@@ -1,6 +1,6 @@
 # Gap analysis: Spec 38A build plan (the SGS motion model)
 
-Target: `C:\Users\Bean\Projects\small-giants-wp\.claude\plans\2026-10-12-spec38a-motion-build.md` (status: draft, 72 units, 22 waves). Target type: plan. Run: 2026-10-12, independent judge inside a subagent; the parent runs Step 7.6 (qc-inline) and Step 7.75 (qc-council), so `qc_pending: true`. Self-preference counter applied (the plan was written by Claude in the parent session): litmus tests applied literally, and every factual claim the grade rests on was re-checked with a command.
+Target: `C:\Users\Bean\Projects\small-giants-wp\.claude\plans\archive\2026-10-12-spec38a-motion-build.md` (status: draft, 72 units, 22 waves). Target type: plan. Run: 2026-10-12, independent judge inside a subagent; the parent runs Step 7.6 (qc-inline) and Step 7.75 (qc-council), so `qc_pending: true`. Self-preference counter applied (the plan was written by Claude in the parent session): litmus tests applied literally, and every factual claim the grade rests on was re-checked with a command.
 
 **Verdict: B (3.78 / 5). The strategic-plan hard gate (B, 3.5 or above) passes.** The plan is unusually rigorous: its file-level claims check out, its waves are consistent, and its risk amendments are specific. It has one real build hole (FR-38A-42 has no unit), three B-grade integration gaps, and five C-grade gaps. Every C+ fix is small: about an hour in total.
 
@@ -133,7 +133,7 @@ Searched 4 external and 3 internal sources. No S-grade opportunity for the plan 
 ## 8. Human Summary
 
 ```
-Target: Spec 38A build plan (.claude/plans/2026-10-12-spec38a-motion-build.md)
+Target: Spec 38A build plan (.claude/plans/archive/2026-10-12-spec38a-motion-build.md)
 Grade: B (3.78/5); passes the strategic-plan hard gate (B, 3.5 or above)
 Strongest: dependency mapping (4.2)
 Weakest: effort estimation (3.3)
@@ -147,7 +147,7 @@ Persona divergence: None
 
 ```json
 {
-  "target": "Spec 38A build plan (small-giants-wp/.claude/plans/2026-10-12-spec38a-motion-build.md)",
+  "target": "Spec 38A build plan (small-giants-wp/.claude/plans/archive/2026-10-12-spec38a-motion-build.md)",
   "target_type": "plan",
   "timestamp": "2026-10-12T22:30:00+01:00",
   "overall_grade": "B",
