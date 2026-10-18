@@ -146,15 +146,30 @@ async function readItems( page, selector ) {
 	} ), selector );
 }
 
-/** Every style rule in every readable stylesheet, flattened with its media condition. */
-async function readRules( page ) {
-	return page.evaluate( () => {
+/**
+ * Every style rule in every readable stylesheet, flattened with its media condition. A rule keyed on a loop index is kept
+ * only when everything it matches is one of the scope's items, so another loop's rules (the site header's nav items carry
+ * loop indexes too) never count against this one.
+ */
+async function readRules( page, scope ) {
+	return page.evaluate( ( scopeSel ) => {
+		const inScope = new Set( document.querySelectorAll( scopeSel ) );
+		const scoped = ( selector ) => {
+			if ( ! /\[data-sgs-loop-i=/.test( selector ) ) return true;
+			let hits;
+			try {
+				hits = [ ...document.querySelectorAll( selector ) ];
+			} catch ( e ) {
+				return true;
+			}
+			return hits.length > 0 && hits.every( ( el ) => inScope.has( el ) );
+		};
 		const rows = [];
 		let unreadable = 0;
 		const walk = ( list, media ) => {
 			for ( const rule of list ) {
 				if ( rule.cssRules && rule.conditionText !== undefined ) walk( rule.cssRules, rule.conditionText );
-				else if ( rule.selectorText ) rows.push( { selector: rule.selectorText, css: rule.style ? rule.style.cssText : '', media } );
+				else if ( rule.selectorText && scoped( rule.selectorText ) ) rows.push( { selector: rule.selectorText, css: rule.style ? rule.style.cssText : '', media } );
 			}
 		};
 		for ( const sheet of document.styleSheets ) {
@@ -165,7 +180,7 @@ async function readRules( page ) {
 			}
 		}
 		return { rows, unreadable };
-	} );
+	}, scope );
 }
 
 async function checkCase( rep, page, args, kase, width ) {
@@ -189,10 +204,18 @@ async function checkCase( rep, page, args, kase, width ) {
 	const indexes = items.map( ( item ) => Number( item.index ) );
 	rep.check( 'index-is-document-order', { ...where, measured: indexes, expected: 'from 0, step 1', pass: indexes.every( ( n, i ) => n === i ) } );
 
-	const styled = items.filter( ( item ) => item.hasStyleAttr ).length;
-	rep.check( 'no-style-attribute', { ...where, property: 'style', measured: styled, expected: 0, pass: styled === 0 } );
+	// The server's markup is what the writer owns: a script that sets an inline style at run time (GSAP Flip resets
+	// translate, rotate and scale on a product collection's items) is not the loop-delay writer, so the check reads
+	// the delivered HTML, not the live DOM.
+	const styled = await page.evaluate( async ( { href, selector } ) => {
+		const html = await ( await fetch( href, { credentials: 'same-origin' } ) ).text();
+		const doc = new DOMParser().parseFromString( html, 'text/html' );
+		return [ ...doc.querySelectorAll( selector ) ].filter( ( el ) => el.hasAttribute( 'style' ) ).length;
+	}, { href: url, selector: args.itemSelector } );
+	const runtimeStyled = items.filter( ( item ) => item.hasStyleAttr ).length;
+	rep.check( 'no-style-attribute', { ...where, property: 'style (server markup)', measured: styled, expected: 0, pass: styled === 0, why: runtimeStyled ? `${ runtimeStyled } item(s) hold a style attribute a script wrote after load` : '' } );
 
-	const { rows, unreadable } = await readRules( page );
+	const { rows, unreadable } = await readRules( page, args.itemSelector );
 	const counts = rulesPerIndex( rows, items.length );
 	rep.check( 'one-rule-per-item', { ...where, measured: counts, expected: 'one top-level rule per index', pass: counts.every( ( n ) => n === 1 ) } );
 	const nth = findNthDelayRules( rows );

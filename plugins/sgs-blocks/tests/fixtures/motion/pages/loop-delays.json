@@ -1,0 +1,99 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"className": "m43-loops"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Core and WooCommerce loop delays",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Core and WooCommerce loop delays",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "core/query",
+				"attributes": {
+					"className": "m43-query",
+					"queryId": 4301,
+					"query": {
+						"perPage": 6,
+						"pages": 0,
+						"offset": 0,
+						"postType": "post",
+						"order": "desc",
+						"orderBy": "date",
+						"inherit": false
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "core/post-template",
+						"attributes": {
+							"layout": {
+								"type": "grid",
+								"columnCount": 3
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "core/post-title",
+								"attributes": {
+									"isLink": true
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "woocommerce/product-collection",
+				"attributes": {
+					"className": "m43-products",
+					"queryId": 4302,
+					"query": {
+						"perPage": 6,
+						"pages": 0,
+						"offset": 0,
+						"postType": "product",
+						"order": "asc",
+						"orderBy": "title",
+						"inherit": false
+					},
+					"displayLayout": {
+						"type": "flex",
+						"columns": 3,
+						"shrinkColumns": true
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "woocommerce/product-template",
+						"innerBlocks": [
+							{
+								"name": "woocommerce/product-image",
+								"attributes": {}
+							},
+							{
+								"name": "core/post-title",
+								"attributes": {
+									"isLink": true
+								}
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]
