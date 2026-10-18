@@ -155,32 +155,25 @@ async function stackMagnetProximity( page, rep ) {
 	await away( page );
 }
 
-/** Rest-position facts of an element: the rect top less its own computed translate, its height and the viewport height. */
-const restFacts = ( sel ) => {
-	const el = document.querySelector( sel );
-	const rect = el.getBoundingClientRect();
-	const t = getComputedStyle( el ).translate;
-	const ty = t && t !== 'none' ? parseFloat( t.split( ' ' )[ 1 ] ) || 0 : 0;
-	return { restTop: rect.top - ty, height: rect.height, viewport: window.innerHeight };
-};
-
 async function stackLiftParallax( page, rep ) {
 	const id = 'stack-lift-parallax';
 	const first = await reveal( page, SEL.c );
 	if ( ! first ) return rep.check( id, { selector: SEL.c, pass: null, why: 'no .m5z-c element on the page' } );
-	// Centred in the viewport the view-basis travel is 0, so the translate is the lift alone.
+	// The element's own view travel (the custom property the driver writes) fixes the parallax term exactly, wherever the smooth scroll left the box.
+	const liveTravel = () => page.evaluate( ( sel ) => parseFloat( document.querySelector( sel ).style.getPropertyValue( '--sgs-fx-parallax-travel' ) ) || 0, SEL.c );
 	const centred = await cornerRead( page, SEL.c, 14 );
-	rep.check( id, { selector: SEL.c, property: `computed translate y with the box centred in the viewport against lift ${ L.LIFT }px (view-basis travel 0), tilt applied`, measured: { translate: centred.translate, angles: L.decompose( centred.matrix ) }, expected: `translate y ${ L.LIFT }px within 0.5px and rotation non-zero`, pass: L.judgeLiftParallaxStack( centred, 0 ) } );
+	const centredTravel = await liveTravel();
+	const centredOffset = L.parallaxOffset( centredTravel );
+	rep.check( id, { selector: SEL.c, property: `computed translate y with the box near the viewport centre (view travel ${ centredTravel }px) against lift ${ L.LIFT }px plus the capped parallax term (${ centredOffset }px), tilt applied`, measured: { translate: centred.translate, angles: L.decompose( centred.matrix ), travel: centredTravel }, expected: `translate y ${ L.LIFT + centredOffset }px within 0.5px, the term within +-${ L.PARALLAX_CLAMP }px and rotation non-zero`, pass: Math.abs( centredOffset ) <= L.PARALLAX_CLAMP && L.judgeLiftParallaxStack( centred, centredOffset ) } );
 	// Moved above the centre by 250px of scroll: travel is about 250px, the offset is ratio x travel and never passes the clamp.
 	await away( page );
 	await page.evaluate( () => window.scrollBy( 0, 250 ) );
 	await page.waitForTimeout( 1200 );
 	const r = await cornerRead( page, SEL.c, 14, false );
-	const facts = await page.evaluate( restFacts, SEL.c );
-	const travel = L.viewTravel( facts.restTop, facts.height, facts.viewport );
+	const travel = await liveTravel();
 	const offset = L.parallaxOffset( travel );
 	rep.check( id, { selector: SEL.c, property: `computed translate y at view travel ${ travel }px against lift ${ L.LIFT }px plus ratio ${ L.PARALLAX_RATIO } x travel capped at ${ L.PARALLAX_CLAMP }px (${ offset }px), tilt applied`, measured: { translate: r.translate, angles: L.decompose( r.matrix ), travel }, expected: `translate y ${ L.LIFT + offset }px within 0.5px, a non-zero offset within +-${ L.PARALLAX_CLAMP }px and rotation non-zero`, pass: Math.abs( offset ) > 0 && Math.abs( offset ) <= L.PARALLAX_CLAMP && L.judgeLiftParallaxStack( r, offset ) } );
-	rep.control( id, { selector: SEL.c, property: 'the off-centre reading against the lift alone (no parallax term), then the centred reading against the off-centre offset', measured: r.translate, expected: `${ L.LIFT }px, which the parallax offset must break`, red: ! L.judgeLiftParallaxStack( r, 0 ) && L.judgeLiftParallaxStack( r, offset ) && ! L.judgeLiftParallaxStack( centred, offset ) } );
+	rep.control( id, { selector: SEL.c, property: 'the off-centre reading against the lift alone (no parallax term), then the centred reading against the off-centre offset', measured: r.translate, expected: `${ L.LIFT }px, which the parallax offset must break`, red: ! L.judgeLiftParallaxStack( r, 0 ) && L.judgeLiftParallaxStack( r, offset ) && ! L.judgeLiftParallaxStack( r, offset + 12 ) } );
 	const plain = await cornerRead( page, SEL.control, 12, false );
 	rep.control( id, { selector: SEL.control, property: 'the control card at the same scroll position through the same judge', measured: plain && plain.translate, expected: 'no lift, no parallax, no tilt', red: !! plain && ! L.judgeLiftParallaxStack( plain, offset ) } );
 	await page.evaluate( () => window.scrollTo( 0, 0 ) );

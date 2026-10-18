@@ -283,7 +283,7 @@
 }
 
 /* A running bar without a title: the lane spans every column of a grid root. */
-.sgs-trust-bar[data-sgs-marquee="on"] > .sgs-trust-bar__lane[data-sgs-marquee-lane="on"] {
+.sgs-trust-bar[data-sgs-marquee="on"]:not(:has(> .sgs-trust-bar__title)) > .sgs-trust-bar__lane[data-sgs-marquee-lane="on"] {
 	grid-column: 1 / -1;
 }
 
