@@ -65,11 +65,56 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_brand_logo_for_product` | `function sgs_brand_logo_for_product( $product_id )` | Everything a surface needs to print one product's brand: the name, its logo when the brand has one, and the brand archive URL. |
 | `sgs_brand_logo_img_markup` | `function sgs_brand_logo_img_markup( array $logo, string $class_name )` | One brand logo as an `<img>`, with the BRAND NAME as its text alternative. |
 
+#### `includes/helpers-business-info-map.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_business_info_map_url` | `function sgs_business_info_map_url( string $source, string $address, string $business_name ): string` | The iframe src for the map, or '' when there is nothing to search for. |
+
+#### `includes/helpers-business-info-open-status.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_business_info_open_status_labels` | `function sgs_business_info_open_status_labels( array $attributes ): array` | The wording the status pill and line use: the block's attributes, falling back to the defaults. |
+| `sgs_business_info_open_status_html` | `function sgs_business_info_open_status_html( array $attributes, bool $editor ): string` | The open-status markup, or '' when Site Info holds no opening hours. |
+| `sgs_business_info_open_status_css` | `function sgs_business_info_open_status_css( array $attributes, string $root_sel ): string` | Scoped custom properties for the pill and dot colours; an unset colour emits nothing, so the stylesheet defaults apply. |
+
+#### `includes/helpers-button-focus.php` — 6 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_button_focus_style` | `function sgs_button_focus_style( array $attributes ): string` | The stored focus style, validated: `''`, `'duotone'` or `'signature'`. |
+| `sgs_button_focus_before_owner` | `function sgs_button_focus_before_owner( array $attributes, string $block_name = 'sgs/button' ): string` | The label of the motion effect on the button root that claims the `::before` paint slot, or `''`. |
+| `sgs_button_focus_signature_refused` | `function sgs_button_focus_signature_refused( array $attributes ): bool` | Whether Signature is refused: a gradient border or a `::before`-owning motion effect is on the button. |
+| `sgs_button_focus_class` | `function sgs_button_focus_class( array $attributes ): string` | The focus-system class the button root carries, or `''` (Default, or a refused Signature). |
+| `sgs_button_focus_host_border` | `function sgs_button_focus_host_border( array $widths, string $border_style, string $preset ): string` | The `--sgs-focus-host-border` value of a signature button: its own border width (the widest side when the sides differ), else its preset's… |
+| `sgs_button_focus_group_host_border` | `function sgs_button_focus_group_host_border( array $context ): string` | The `--sgs-focus-host-border` value a preset-less button takes from its sgs/multi-button group default border. |
+
+#### `includes/helpers-button-icon-circle.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_button_icon_circle_css` | `function sgs_button_icon_circle_css( string $uid, array $attributes ): array` | The scoped CSS rules for the circle behind a button's icon. |
+
+#### `includes/helpers-button-inner-kses.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_button_inner_allowed_html` | `function sgs_button_inner_allowed_html(): array` | The wp_kses() allowlist for the button's inner markup. |
+
 #### `includes/helpers-button-note.php` — 1 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_button_note_html` | `function sgs_button_note_html( array $attributes ): string` | The note's markup. |
+
+#### `includes/helpers-button-site-info-label.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_button_site_info_label_sources` | `function sgs_button_site_info_label_sources(): array` | The link sources whose Site Info value can be the button's label. |
+| `sgs_button_site_info_label` | `function sgs_button_site_info_label( string $source ): string` | The plain-text Site Info value for a link source. |
+| `sgs_button_site_info_label_html` | `function sgs_button_site_info_label_html( string $label, string $source ): string` | The label HTML for a Site Info value: an email address is obscured the same way as its mailto: link (antispambot() returns only character… |
 
 #### `includes/helpers-button-style.php` — 3 function(s)
 
@@ -190,6 +235,21 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_tab_content_is_empty` | `function sgs_tab_content_is_empty( string $html ): bool` | Whether a rendered tab's HTML carries no visible text and no media. |
 
+#### `includes/helpers-form-submit-motion.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_form_submit_shadow_map` | `function sgs_form_submit_shadow_map(): array` | The submit button's shadow attribute names for sgs_shadow_decls(). |
+| `sgs_form_submit_motion_css` | `function sgs_form_submit_motion_css( string $selector, array $attributes, string $block_name = '' ): string` | The scoped CSS for the submit button's shadow and lift. |
+
+#### `includes/helpers-gallery-grid-css.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_gallery_wrapper_attributes` | `function sgs_gallery_wrapper_attributes( array $attributes ): array` | The gallery's attributes as SGS_Container_Wrapper should see them. |
+| `sgs_gallery_grid_owned_keys` | `function sgs_gallery_grid_owned_keys(): array` | The attributes that belong to the image grid, never to the wrapper. |
+| `sgs_gallery_grid_layout_css` | `function sgs_gallery_grid_layout_css( string $grid_sel, array $attributes ): string` | Scoped CSS for the grid layout's grid settings, on the image grid. |
+
 #### `includes/helpers-global-settings.php` — 1 function(s)
 
 | Function | Signature | Purpose |
@@ -216,6 +276,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_grid_item_needs_scoped_css` | `function sgs_grid_item_needs_scoped_css( array $s ): bool` | Does any grid-item state need a scoped rule (and so a uid)? |
 | `sgs_grid_item_state_css` | `function sgs_grid_item_state_css( array $s, string $uid, array $attributes = array(), string $block_name = ''…` | The scoped grid-item state rules at both cell depths: background hover, text-colour gradient and hover, the border-gradient ring, and the… |
 
+#### `includes/helpers-hover-lift.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_hover_lift_px` | `function sgs_hover_lift_px( $raw ): int` | The lift distance as a whole number of pixels, clamped to 0..SGS_HOVER_LIFT_MAX_PX. |
+| `sgs_hover_lift_decls` | `function sgs_hover_lift_decls( int $px, bool $reset_transform = false ): string` | The declarations a lift paints on hover and focus. |
+| `sgs_hover_lift_rule` | `function sgs_hover_lift_rule( string $selector, $raw, bool $reset_transform = false ): string` | The complete touch-safe hover and focus rule pair for a lift, gated on motion being allowed. |
+
 #### `includes/helpers-hover-links.php` — 1 function(s)
 
 | Function | Signature | Purpose |
@@ -230,11 +298,10 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_hover_state_rules` | `function sgs_hover_state_rules( string $selector, string $decls, string $focus = ':focus-visible', string…` | Emit a hover state as a touch-safe PAIR: a guarded hover rule plus an unguarded focus rule carrying the identical declarations. |
 | `sgs_hover_media_wrap` | `function sgs_hover_media_wrap( string $rule ): string` | Wrap an ALREADY-BUILT hover rule in the layer-1 media query. |
 
-#### `includes/helpers-icon-motion.php` — 2 function(s)
+#### `includes/helpers-icon-shadow.php` — 1 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
-| `sgs_icon_motion_decls` | `function sgs_icon_motion_decls( array $values, string $prefix ): array` | The hover-move and motion custom properties for one set of values. |
 | `sgs_icon_shadow_vars` | `function sgs_icon_shadow_vars( array $attributes, array $map, string $prefix, bool $pin_hover = false ): array` | The resting and hover shadow as custom properties. |
 
 #### `includes/helpers-icon.php` — 18 function(s)
@@ -277,11 +344,16 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_label_roll_wrap_html` | `function sgs_label_roll_wrap_html( string $safe_html, string $roll ): string` | The roll around label HTML that is already safe (e.g. an icon-list item's kses'd text, which may carry inline formatting). The copy is the… |
 | `sgs_label_roll_css` | `function sgs_label_roll_css( string $scope_sel, string $trigger_sel, string $open_sel, array $attributes )…` | The roll's motion, scoped to one block instance. |
 
-#### `includes/helpers-link-source.php` — 1 function(s)
+#### `includes/helpers-link-source.php` — 6 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
-| `sgs_resolve_link_source` | `function sgs_resolve_link_source( string $source, string $typed_url ): array` | Resolve a button's `linkSource` attribute to a final href plus any extra wrapper attributes the source needs on the rendered element. |
+| `sgs_link_source_site_info_keys` | `function sgs_link_source_site_info_keys(): array` | Link sources that read Site Info through Sgs_Site_Info_Binding::link_for_key(), keyed by source value, valued by the Site Info key.… |
+| `sgs_link_source_post_id` | `function sgs_link_source_post_id( string $source ): int` | The post ID a `post:<id>` source names, or 0 for any other value. |
+| `sgs_link_source_is_safe_url` | `function sgs_link_source_is_safe_url( string $url ): bool` | True when a resolved URL may become an href: http, https, mailto or tel, or a scheme-less relative path or fragment. Anything else… |
+| `sgs_resolve_link_source` | `function sgs_resolve_link_source( string $source, string $typed_url ): array` | Resolve a link source to a final href plus any extra attributes the source needs on the rendered link element. |
+| `sgs_link_source_href` | `function sgs_link_source_href( string $source, string $typed_url ): string` | The resolved href alone, for a call site that prints its own anchor. Unescaped: the caller escapes with esc_url() as before. Pair with… |
+| `sgs_link_source_attrs_html` | `function sgs_link_source_attrs_html( string $source ): string` | The extra attributes a source puts on its link element, as escaped HTML with a leading space (' data-sgs-link-source="top"'), or '' for… |
 
 #### `includes/helpers-link-underline.php` — 1 function(s)
 
@@ -337,12 +409,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_media_position_focal_to_css` | `function sgs_media_position_focal_to_css( $focal_point )` | FocalPointPicker {x,y} (floats 0-1) -> CSS "X% Y%" object-position value. Clamped 0-1, rounded 2dp. Returns '' when unset or at the CSS… |
 | `sgs_media_position_css` | `function sgs_media_position_css( array $attributes, $prefix, $selector )` | Build a scoped object-fit/object-position CSS rule for one media element. The caller passes its OWN, already-safe selector — this function… |
 
-#### `includes/helpers-media.php` — 4 function(s)
+#### `includes/helpers-media.php` — 5 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_responsive_image` | `function sgs_responsive_image( int $id, string $url, string $alt = '', string $size = 'large', array $attrs =…` | Output a responsive image tag with srcset when a valid attachment ID is available. |
 | `sgs_next_background_image_index` | `function sgs_next_background_image_index(): int` | Return the next 1-based index in the PAGE-WIDE background-image render order. |
+| `sgs_content_image_claims_priority` | `function sgs_content_image_claims_priority( bool $leads_page = false ): bool` | Whether the content image about to print is the page's likely LCP image, so it takes `loading="eager"` and `fetchpriority="high"`; every… |
 | `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. |
 | `sgs_render_media` | `function sgs_render_media( $attrs, $context = '' )` | Render an image or video from a unified SGS media-slot attribute. |
 
@@ -362,22 +435,46 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_motion_easing_css` | `function sgs_motion_easing_css( string $value, string $custom = '', string $fallback = 'ease' ): string` | Resolve a named easing (plus its custom curve) to a CSS easing function. |
 | `sgs_flat_duration_ms` | `function sgs_flat_duration_ms( $raw, int $default, int $max = 3000 ): int` | Read a flat millisecond attribute (a nav, cart, icon or header duration) as whole milliseconds. |
 
-#### `includes/helpers-nav-drawer-motion.php` — 5 function(s)
+#### `includes/helpers-motion-effect.php` — 1 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
-| `sgs_nav_drawer_motion_shapes` | `function sgs_nav_drawer_motion_shapes(): array` | Every `entryAnimation` value. Mirrors the JSON enum of the tier values. |
-| `sgs_nav_drawer_motion_keyframes` | `function sgs_nav_drawer_motion_keyframes( string $shape, string $anchor ): array` | The keyframe pair and transform origin for one resolved shape. |
-| `sgs_nav_drawer_motion_tier_decls` | `function sgs_nav_drawer_motion_tier_decls( string $shape, string $anchor, bool $grow_any = false ): string` | The custom-property declarations for one tier's shape. |
-| `sgs_nav_drawer_motion` | `function sgs_nav_drawer_motion( array $attributes, string $root_sel, $anchor_raw, array $allowed_anchors )…` | Build the drawer's motion CSS, root classes and root data attributes. |
-| `sgs_nav_drawer_motion_distance` | `function sgs_nav_drawer_motion_distance( $raw )` | One tier's item travel distance: a bare number is pixels, and negative means the item falls from above. |
+| `sgs_motion_root_has_effect` | `function sgs_motion_root_has_effect( array $attributes, string $effect ): bool` | Whether the block's root element stores an effect layer of the given slug. |
 
-#### `includes/helpers-nav-drawer-stagger-shape.php` — 2 function(s)
+#### `includes/helpers-motion-pause.php` — 4 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
-| `sgs_nav_drawer_stagger_axes` | `function sgs_nav_drawer_stagger_axes(): array` | Every `itemStaggerAxis` tier value, with its (x, y) travel multipliers. |
-| `sgs_nav_drawer_stagger_shape` | `function sgs_nav_drawer_stagger_shape( array $attributes, string $root_sel ): array` | The shaped-entrance CSS and class for one drawer. |
+| `sgs_motion_pause_placements` | `function sgs_motion_pause_placements(): array` | The button placements, the first being the default. |
+| `sgs_motion_pause_button` | `function sgs_motion_pause_button( array $args ): string` | The pause / play button markup. Enqueues the shared stylesheet. |
+| `sgs_motion_pause_enqueue_style` | `function sgs_motion_pause_enqueue_style(): void` | Enqueue the shared stylesheet. A block theme renders the content before the head assets print, so enqueueing from a render still lands in… |
+| `sgs_motion_pause_editor_assets` | `function sgs_motion_pause_editor_assets(): void` | Editor: the canvas preview is a server render, which never runs the page's enqueue. |
+
+#### `includes/helpers-nav-accessible-label.php` — 1 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_nav_label_is_word` | `function sgs_nav_label_is_word( string $label ): bool` | True when the label holds at least one letter or digit. |
+
+#### `includes/helpers-nav-bar-motion-model.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_nav_bar_motion_item_parts` | `function sgs_nav_bar_motion_item_parts(): array` | The bar's item parts on the Entrance model: part key => [ container class, item class ]. An item is a direct child of a container; the item… |
+| `sgs_nav_bar_motion_layer` | `function sgs_nav_bar_motion_layer( array $attributes, string $part ): ?array` | One part's entrance layer (`elements.<part>.entrance.base`). |
+| `sgs_nav_bar_motion_timing` | `function sgs_nav_bar_motion_timing( array $attributes ): array` | The panel entrance's timing, for the scrim: `enter_ms` the open duration, `exit_ms` the close duration (falling back to the open duration… |
+| `sgs_nav_bar_motion_tag_panels` | `function sgs_nav_bar_motion_tag_panels( string $html, array $parts ): array` | Mark every panel wrap as a motion state host and give each item its class and its index in its own panel. |
+| `sgs_nav_bar_motion_panels` | `function sgs_nav_bar_motion_panels( string $html, string $uid, array $attributes ): array` | The bar's panels on the Entrance model: the tagged items, the stored item delays and the closing-panel rule. |
+
+#### `includes/helpers-nav-drawer-motion-model.php` — 5 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_nav_drawer_anchor_origin` | `function sgs_nav_drawer_anchor_origin( string $anchor ): string` | The transform origin the panel's entrance scales and rotates around: `header` and `container` expand down from the header edge, a `trigger`… |
+| `sgs_nav_drawer_open_layer` | `function sgs_nav_drawer_open_layer( array $attributes ): ?array` | The drawer panel's entrance: the root's `entrance.base` layer when its trigger is `open`. |
+| `sgs_nav_drawer_motion_ms` | `function sgs_nav_drawer_motion_ms( $raw ): ?int` | A stored duration as whole milliseconds; a token reference or junk gives null (the caller keeps its default). |
+| `sgs_nav_drawer_motion_timing` | `function sgs_nav_drawer_motion_timing( array $attributes ): array` | The panel entrance's timing, for the scrim and the focus deferral. |
+| `sgs_nav_drawer_motion_origin_css` | `function sgs_nav_drawer_motion_origin_css( string $root_sel, $anchor_raw, array $allowed_anchors ): string` | The panel's anchor-derived transform origin: `--sgs-nd-anim-origin` per tier (`sgs_nav_drawer_anchor_origin()`). A tier follows the tier… |
 
 #### `includes/helpers-preselect-url.php` — 2 function(s)
 
@@ -512,7 +609,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_shadow_preset_literal` | `function sgs_shadow_preset_literal( string $slug ): string` | The literal shadow value of a theme preset, from the theme's settings. |
 | `sgs_shadow_value_to_drop_shadow` | `function sgs_shadow_value_to_drop_shadow( string $composed ): string` | Convert a composed `box-shadow` value into a `filter` value: one `drop-shadow()` per layer. |
 
-#### `includes/helpers-shadow-hover.php` — 7 function(s)
+#### `includes/helpers-shadow-hover.php` — 9 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
@@ -520,7 +617,9 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_shadow_hover_raw_map` | `function sgs_shadow_hover_raw_map(): array` | The hover map (`settings.custom.shadowHover`) as slug => hover text, first origin wins. |
 | `sgs_shadow_hover_lift_shape` | `function sgs_shadow_hover_lift_shape( string $shape ): ?string` | Lift a custom layered shape (not a preset slug): each OUTER layer's y offset and blur x1.25, rounded to the nearest whole pixel; x, spread… |
 | `sgs_shadow_hover_value` | `function sgs_shadow_hover_value( ?string $shape, ?string $colour ): string` | The hover shadow value for a resting shadow (`box-shadow`-ready CSS, or '' for none). |
-| `sgs_shadow_lift_enabled` | `function sgs_shadow_lift_enabled( array $attributes, string $block_name = '' ): bool` | Is the automatic lift-on-hover allowed for this block instance? (Design H4/H5.) |
+| `sgs_shadow_lift_attr_names` | `function sgs_shadow_lift_attr_names( string $prefix = '' ): array` | The attribute name the lift-on-hover switch reads and writes. An empty prefix gives the block-root name; a prefix names a second shadow on… |
+| `sgs_shadow_lift_enabled` | `function sgs_shadow_lift_enabled( array $attributes, string $block_name = '', string $prefix = '' ): bool` | Is the automatic lift-on-hover allowed for this block instance? (Design H4/H5.) |
+| `sgs_focus_under_decls` | `function sgs_focus_under_decls( array $decls ): array` | Pair every `box-shadow:X` declaration with `--sgs-focus-under:X`. |
 | `sgs_shadow_hover_rules` | `function sgs_shadow_hover_rules( string $selector, string $shape, string $colour, array $attributes, string…` | The complete touch-safe hover RULE for a resting shadow (design H4). |
 | `sgs_shadow_style_engine_shape` | `function sgs_shadow_style_engine_shape( string $raw ): string` | Resolve a native WP `style.shadow` value (`supports.shadow`, the five style-engine blocks: card-grid, info-box, process-steps, testimonial… |
 
@@ -569,6 +668,17 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_slider_nav_render` | `function sgs_slider_nav_render( array $args ): string` | The whole navigation: rail, arrows, leading slot and dots, in reading order for the placement. |
 | `sgs_slider_nav_enqueue_style` | `function sgs_slider_nav_enqueue_style(): void` | Enqueue the shared stylesheet. Called by a slider block's render when its navigation renders. |
 | `sgs_slider_nav_editor_assets` | `function sgs_slider_nav_editor_assets(): void` | Editor: the canvas preview is a server render, which never runs the page's enqueue, so the stylesheet is always loaded into the editor… |
+
+#### `includes/helpers-state-motion-model.php` — 6 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_state_motion_layer` | `function sgs_state_motion_layer( $motion, string $part ): ?array` | One part's entrance layer (`elements.<part>.entrance.base`) from a block's `sgsMotion` attribute. |
+| `sgs_state_motion_state_of` | `function sgs_state_motion_state_of( ?array $layer ): string` | The state a layer plays on: its `state` when the trigger is `state`, else ''. |
+| `sgs_cart_count_pop_mode` | `function sgs_cart_count_pop_mode( array $attributes ): ?string` | The cart count pop's mode when the badge part holds an Entrance layer. |
+| `sgs_nav_bar_burger_morph_timing` | `function sgs_nav_bar_burger_morph_timing( array $attributes ): array` | The burger morph's speed and easing from the layer on the `burger` part. |
+| `sgs_nav_bar_burger_morph_vars` | `function sgs_nav_bar_burger_morph_vars( array $attributes ): string` | The burger morph's custom-property declarations from the burger layer's timing. |
+| `sgs_accordion_icon_turn_on_model` | `function sgs_accordion_icon_turn_on_model( $motion ): bool` | Whether the accordion's turning-icon part holds a `state` entrance on `expanded` (the icon turn is on the model). |
 
 #### `includes/helpers-stretched-link.php` — 3 function(s)
 
@@ -676,15 +786,6 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_trust_bar_library_icon_svg` | `function sgs_trust_bar_library_icon_svg( string $slug ): string` | SVG for an icon slug (Lucide, WordPress or SGS library), sanitised for output. |
 | `sgs_trust_bar_item_css` | `function sgs_trust_bar_item_css( array $attributes, string $root_sel ): string` | Scoped CSS for the badge item's own spacing: `itemGap` (icon to label) and `itemPadding`, both responsive tier objects. |
 
-#### `includes/helpers-trust-bar-marquee.php` — 4 function(s)
-
-| Function | Signature | Purpose |
-|---|---|---|
-| `sgs_trust_bar_marquee_below` | `function sgs_trust_bar_marquee_below( $raw ): int` | Normalise the `autoScrollBelow` attribute to one of the device-tier standards. |
-| `sgs_trust_bar_marquee_duration` | `function sgs_trust_bar_marquee_duration( $raw ): float` | Normalise the custom marquee duration in seconds. |
-| `sgs_trust_bar_seconds` | `function sgs_trust_bar_seconds( float $seconds ): string` | Format a duration in seconds for CSS ("30s", "12.5s"); locale-independent. |
-| `sgs_trust_bar_marquee_css` | `function sgs_trust_bar_marquee_css( string $uid_scope, int $below, float $duration ): string` | Scoped CSS for the marquee options. Empty when neither option is set, so a default block's output is unchanged. |
-
 #### `includes/helpers-typography.php` — 5 function(s)
 
 | Function | Signature | Purpose |
@@ -703,7 +804,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). |
 
-**69 files, 343 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**81 files, 384 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -711,23 +812,20 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 
 | File | Exports | Purpose |
 |---|---|---|
-| `AnimationControl.js` | `AnimationControl (default)` | Animation selector for block sidebar. |
 | `BooleanResponsiveControl.js` | `BooleanResponsiveControl (default)` | BooleanResponsiveControl — a single ToggleControl on Desktop, a 3-way Inherit/On/Off switch on Tablet/Mobile, driven by the… |
 | `BorderStyleControl.js` | `BorderStyleControl (default)` | BorderStyleControl — thin SGS wrapper matching WP core's native `BorderControlStylePicker` exactly (Bean-directed, 2026-08-19). |
 | `ColumnShapePicker.js` | `ColumnShapePicker (default)`, `weightsToTrack`, `activeShapeKey`, `ColumnShapePicker` | ColumnShapePicker — pick a column SHAPE by clicking a diagram (FR-37-42). |
-| `CursorFieldRowControls.js` | `CursorFieldRowControls` | CursorFieldRowControls — shared cursor-reactive-field (FR-38-25) controls for blocks that are NOT on the shared fx ToolsPanel… |
 | `DateTimePickerField.js` | `DateTimePickerField (default)` | DateTimePickerField — the SGS standard DATE control (golden-controls.json goldens/input.json `date` row, Bean-approved live… |
 | `DesignTokenPicker.js` | `DesignTokenPicker (default)`, `resolveColourToken` | Colour picker that reads the active theme.json palette. |
-| `EntranceStaggerControls.js` | `EntranceStaggerControls (default)` | EntranceStaggerControls — when an entrance starts and how blocks cascade. |
 | `FieldLabelLayoutPanel.js` | `FieldLabelLayoutPanel (default)` | "Label and headings" panel for SGS form fields: whether the field's label shows or is read only by screen readers, and (for boxes… |
-| `FlowingGradientRowControls.js` | `isCssOnlyFlowingGradientVariant`, `FlowingGradientRowControls` | FlowingGradientRowControls — shared "flowing gradient" (`wave-gradient`) controls for blocks that reach the effect via a… |
 | `FocalPositionField.js` | `FocalPositionField (default)` | FocalPositionField — the SGS wrapper around WP-native `FocalPointPicker` |
 | `GradientCapableColourControl.js` | `GradientCapableColourControl (default)`, `isGradientValue` | GradientCapableColourControl — the text-colour gradient rollout's shared control (D636 Task 1b, "text" builder). |
 | `GradientOverlayControl.js` | `GradientOverlayControl (default)`, `gradientOverlayAttrName`, `gradientOverlayAttrKeys` | GradientOverlayControl |
-| `GridDotFieldRowControls.js` | `GridDotFieldRowControls` | GridDotFieldRowControls — shared grid-dot field (FR-38-33) controls for blocks that reach the effect via a block-private escape… |
 | `index.js` | `ResponsiveControl`, `BooleanResponsiveControl`, `ResponsiveOverride`… | export { default as ResponsiveControl } from './ResponsiveControl'; export { default as BooleanResponsiveControl } from… |
 | `InheritedBoxContext.js` | `InheritedBoxContext` | What each side or corner of a box takes from a wider device tier, for the box control inside a `ResponsiveOverride`. The override… |
+| `LinkPopoverContent.js` | `LinkPopoverContent`, `TARGET_ENUM_OPTIONS` | LinkPopoverContent — the `<Popover>` primitive of the SGS standard LINK control, and the `Open in` target options.… |
 | `LinkPopoverControl.js` | `LinkPopoverField (default)`, `LinkPopoverContent`, `TARGET_ENUM_OPTIONS` | LinkPopoverControl — the SGS standard LINK control (Spec 35 §2 LINK, promoted from `sgs/button`'s pilot 2026-08-13, Bean-approved… |
+| `LinkSourcePicker.js` | `LinkSourcePicker (default)`, `linkSourceMode`, `isSiteInfoMode`, `linkSourceLabel`… | LinkSourcePicker — the "Link to" choice inside the shared link popover |
 | `LinkUnderlineControl.js` | `LinkUnderlineControl (default)` | LinkUnderlineControl — how the links inside a block's text are underlined. |
 | `LogicalAlignControl.js` | `LogicalAlignControl (default)`, `LogicalAlignToolbar` | LogicalAlignControl — the one inspector control for a box's horizontal alignment, stored as the logical values `start \| center… |
 | `MediaElementControls.js` | `mediaAttrName`, `mediaAttrType`, `mediaAttrKeys`, `mediaStoredAttrName`, `MEDIA_BASES`… | L1 — media attribute NAMING. The contract every later wave inherits. |
@@ -735,8 +833,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
 | `MediaPicker.js` | `MediaPicker (default)` | MediaPicker — shared media-slot component for SGS blocks. |
 | `MediaSizingPanel.js` | `MediaSizingPanel (default)`, `RATIO_OPTIONS` | MediaSizingPanel — the shared "media size & crop" panel (C19, 2026-08-27). |
-| `MotionEasingControl.js` | `MotionEasingControl (default)`, `motionEasingCss`, `MOTION_EASING_OPTIONS`… | MotionEasingControl: the shared named-easing picker for nav motion (Wave 3C U-5). One list read by the burger morph, the drawer… |
-| `ParticleTrailRowControls.js` | `ParticleTrailRowControls` | ParticleTrailRowControls — shared particle-trail (FR-38-32) controls for blocks that reach the effect via a block-private escape… |
+| `MotionPausePreview.js` | `MotionPausePreview (default)` | Editor-canvas twin of the shared pause / play button (includes/helpers-motion-pause.php). |
 | `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
 | `ResponsiveControl.js` | `ResponsiveControl (default)` | Responsive breakpoint switcher for block sidebar controls. |
@@ -759,18 +856,17 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SgsMultiSelectField.js` | `SgsMultiSelectField (default)` | SgsMultiSelectField — the SGS standard MULTI-SELECT / TOKEN control |
 | `SgsSeparatorControl.js` | `SgsSeparatorControl (default)` | SgsSeparatorControl — the one control for the lines drawn between a list's items. |
 | `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — the shared layered box-shadow control. |
-| `ShadowLiftControls.js` | `ShadowLiftControls (default)` | ShadowLiftControls: the ONE hover-shadow control (Bean's ruling, 2026-09-24). |
+| `ShadowLiftControls.js` | `ShadowLiftControls (default)`, `shadowLiftAttrKeys` | ShadowLiftControls: the Shadow panel's "Lift on hover" switch. |
 | `ShapeDividerPreview.js` | `ShapeDividerPreview (default)` | Editor-canvas twin of sgs_render_shape_divider(): the top or bottom shape divider of any block routed through… |
 | `SpacingControl.js` | `SpacingControl (default)` | Spacing control that reads theme.json spacing presets. |
 | `SsrPreviewGuard.js` | `SsrPreviewGuard (default)` | SsrPreviewGuard — replaces `<Disabled>` around `<ServerSideRender>` previews. |
 | `starter-look-owned-keys.js` | `deepClone`, `parseExplicitBlocks`, `findExplicitRoot`, `collectOwnedKeys`… | Owned-key derivation for the Starter Look preset control (FR-37-47). |
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
 | `SurfaceGroundControls.js` | `SurfaceGroundControls (default)` | SurfaceGroundControls: the shared inspector controls for a frosted surface |
-| `SurfaceTreatmentPanel.js` | `isSimpleBackgroundImage`, `SurfaceTreatmentPanel` | SurfaceTreatmentPanel — shared surface-treatment (grain/halftone/duotone) controls for blocks that reach the effect via… |
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**58 files.**
+**53 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
@@ -794,8 +890,6 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `media-padding.js` | `attrKey`, `sidesToShorthand`, `sideDecls`, `disclosure`, `validate`, `css` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
 | `media-type.control.js` | `control` | `media-type` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
 | `media-type.js` | `validate`, `disclosure`, `css`, `CANONICAL_ENUM`, `TIER_ENUM` | `media-type` atom — LOGIC half (pure: css/validate/disclosure). |
-| `motion.control.js` | `control` | `motion` atom — CONTROL half (JSX). |
-| `motion.js` | `validateBoolean`, `validateDuration`, `attrKeys`, `validate`, `disclosure`, `css` | `motion` atom — L2b control + disclosure + validator + value-setter. |
 | `object-fit.control.js` | `control` | `object-fit` atom — CONTROL half (JSX). |
 | `object-fit.js` | `validate`, `disclosure`, `css` | `object-fit` atom — LOGIC half (L2b value-setter + validator + disclosure). |
 | `opacity.control.js` | `control` | `opacity` atom — CONTROL half (JSX). |
@@ -804,7 +898,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `overlay.js` | `validateGradient`, `resolveColour`, `resolvePaint`, `attrKeys`, `disclosure`… | `overlay` atom — L2b control + disclosure + validator + value-setter. |
 | `registry.js` | `basesForAtoms`, `atomsForElement`, `MEDIA_ATOMS`, `MEDIA_ATOM_IDS` | L2b — the ATOM registry. The middle level between names and panels. |
 | `shadow.control.js` | `control` | `shadow` atom — CONTROL half (JSX). |
-| `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `css` | `shadow` atom: L2b control + disclosure + validator + value-setter. |
+| `shadow.js` | `attrKeys`, `resolveShadow`, `disclosure`, `validate`, `liftAttrName`, `liftOn`, `css` | `shadow` atom: L2b control + disclosure + validator + value-setter. |
 | `source.control.js` | `pairPickerRow`, `control` | Atom: SOURCE (control half) — the editor UI. |
 | `source.js` | `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: SOURCE (logic half) — which media is showing. |
 | `svg-presentation.control.js` | `control` | `svg-presentation` atom — CONTROL half (JSX). |
@@ -812,6 +906,6 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `video-behaviour.control.js` | `control` | `video-behaviour` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
 | `video-behaviour.js` | `validate`, `disclosure`, `css` | `video-behaviour` atom — LOGIC half (pure: css/validate/disclosure). |
 
-**33 files.**
+**31 files.**
 
 <!-- HELPER-CATALOGUE:END -->

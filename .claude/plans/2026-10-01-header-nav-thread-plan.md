@@ -57,7 +57,7 @@ Walked after the deploy of every cloud-session fix and a rebuild of the five cha
 - lamalama pill logo: the reference draws an animated pixel "L" on a canvas; the copy shows a still PNG. Needs an animated asset (`sgs/responsive-logo` Lottie or SVG animation source); same paint if the canvas proves static.
 - lamalama drawer rows: the reference paints a hover ground; the copy paints the marker only. `sgs/nav-drawer-menu::itemBgHover` is set but does not show: check `itemBorderColourHover` and the 650ms motion.
 - lamalama Pitch Deck CTA hover text ends dark (#1a1c1c) where the reference ends cream: `sgs/button::colourTextHover` #f9f4eb.
-- lamalama CTAs: the reference grows a hover ground and scales an inner part; the copy shows neither on Call. `sgs/button::colourBackgroundHover` and `scaleHover` (target `face`) to the reference's values.
+- lamalama CTAs: the reference grows a hover ground and scales an inner part; the copy shows neither on Call. `sgs/button::colourBackgroundHover` and the scale of the button's `sgsMotion` Hover panel (target `face`) to the reference's values.
 
 **Jitter, for Bean:** the About, Sectors and Brands panels' opacity 30ms into opening reads 0.27/0.15/0.27 in one run and 0.39/0.28/0.28 in the next, against the draft's 1 (the draft opens instantly).
 

@@ -97,7 +97,7 @@ The block is built and live (plan `plans/archive/2026-10-07-measured-diagram-blo
 |---|---|
 | **67** | Tabs gain a panel padding setting (Eye Care sets 0) |
 | **94** | The gallery photo joins the shared hover zoom |
-| **Card-grid zoom** | A zoom amount control on `sgs/card-grid`: it has only the boolean `imageZoomHover` and `scaleHover`, so the zoom size cannot be set |
+| **Card-grid zoom** | A zoom amount control on `sgs/card-grid`: the card has a hover scale, and the image zoom amount is the scale of the image part in the `sgsMotion` Hover panel (Spec 38A), so check that its scale control covers the zoom size |
 | **77** | A selected-tile border width setting (Eye Care wants 2px against 1px) |
 | **49** | A "collapsed icon size" setting on the floating WhatsApp button, so the icon stays 28px or larger once it collapses to a circle |
 | **19** | A bar fill duration setting on the free-delivery bar |

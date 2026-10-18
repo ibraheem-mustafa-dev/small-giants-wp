@@ -148,6 +148,11 @@ def attribute_needles():
 
 def build_needles(data, counts):
     needles = []
+    counts = dict(counts)
+    for row in data['deleted_paths']:
+        if row['action'] in ('delete', 'split') and row.get('kind') != 'dir' and not os.path.exists(os.path.join(REPO, row['path'])):
+            base = row['path'].rsplit('/', 1)[-1]
+            counts[base] = counts.get(base, 0) + 1  # a deleted file's name is shared with any live file of that name
     for row in data['deleted_paths']:
         if row['action'] in ('delete', 'split'):
             needles.extend(path_needles(row, counts))
