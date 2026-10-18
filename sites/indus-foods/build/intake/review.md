@@ -1,10 +1,10 @@
 # Intake review: indus-foods
 
-Taken on 2026-10-12T20:54:14.892Z; manifest 1.0, files hash dd9e9aec7ae9a787.
+Taken on 2026-10-18T09:52:38.971Z; manifest 1.0, files hash dd9e9aec7ae9a787.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1213; 795 need reading, 418 are confident proposals that Accept all covers (skeleton block choices 347, missing features 71).
+Rows: 1336; 813 need reading, 523 are confident proposals that Accept all covers (skeleton block choices 328, missing features 195).
 
 Not defects counted, not listed: breakpoint 84, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 2, prototype-only 21, reached-when-forced 144, render-wins 552.
 
@@ -15,8 +15,8 @@ Marks per section (first value = Accept all):
 - Flags: `accept-flagged`, `not-flagged`
 - Draft defects: `accept`, `render-wins`
 - Not defects: unwired code: `not-a-defect`, `defect`
-- Missing features: `map:<block>`, `difference`, `build`
-- Skeleton block choices: `accept`, `block:<slug>`
+- Missing features: `map:<block>`, `difference`, `build`, `gap:<wave>`
+- Skeleton block choices: `accept`, `block:<slug>`, `remove`
 - Inventory diffs: `ours`, `theirs`
 - Notices: `noted`
 
@@ -190,16 +190,13 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:Indus Foods Website v2:111` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:120` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:232` | <span>: no SGS block fits it | no block proposed | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:318` | <span>: no SGS block fits it | no block proposed | 27 copies of one template element on 27 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:368` | <span>: no SGS block fits it | no block proposed | 12 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:518` | <span>: no SGS block fits it | no block proposed | 23 copies of one template element on 23 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:52` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Indus Foods Website v2:332` | **changed** <span>: no SGS block fits it | no block proposed | 3 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Indus Foods Website v2:402` | **changed** <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:621` | <span>: no SGS block fits it | no block proposed | 6 copies of one template element on 6 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:623` | <span>: no SGS block fits it | no block proposed | 6 copies of one template element on 6 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:TradeApplication:14` | <div>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:coverage:html:image-slot` | html:image-slot seen 11 times in the draft: seen but unsupported | no block proposed | html:image-slot is not in the clone coverage map: the capability inventory does not list it |  |
+| `missing:coverage:html:indus-logo` | html:indus-logo seen 3 times in the draft: seen but unsupported | no block proposed | html:indus-logo is not in the clone coverage map: the capability inventory does not list it |  |
 | `missing:handler@Indus Foods Website v2:571/template:onMouseEnter` | Indus Foods Website v2: an element that animates from code on hover (onMouseEnter → btnEnter) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database |  |
 | `missing:handler@Indus Foods Website v2:571/template:onMouseLeave` | Indus Foods Website v2: an element that animates from code on hover (onMouseLeave → btnLeave) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database |  |
 | `missing:handler@Indus Foods Website v2:js:1179:6/addEventListener:mouseenter` | Indus Foods Website v2: an element that animates from code on hover (mouseenter) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database |  |
@@ -211,281 +208,717 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `missing:EnquiryForm:26` | <input>: no SGS block fits it | map:sgs/form-field-text | 8 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:EnquiryForm:31` | <textarea>: no SGS block fits it | map:sgs/form-field-textarea | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:101` | <image-slot>: no SGS block fits it | map:sgs/media | 10 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:109` | <span>: no SGS block fits it | map:sgs/decorative-image | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:110` | <span>: no SGS block fits it | map:sgs/decorative-image | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:114` | <indus-logo>: no SGS block fits it | map:sgs/responsive-logo | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:119` | <span>: no SGS block fits it | map:sgs/icon | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:128` | <span>: no SGS block fits it | map:sgs/container | 2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:130` | <span>: no SGS block fits it | map:sgs/icon | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:200` | <span>: no SGS block fits it | map:sgs/icon | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:214` | <span>: no SGS block fits it | map:sgs/icon | 3 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:217` | <image-slot>: no SGS block fits it | map:sgs/media | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:225` | <image-slot>: no SGS block fits it | map:sgs/media | 20 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:234` | <image-slot>: no SGS block fits it | map:sgs/media | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:244` | <span>: no SGS block fits it | map:sgs/icon | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:257` | <span>: no SGS block fits it | map:sgs/separator | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:273` | <span>: no SGS block fits it | map:sgs/icon | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:279` | <image-slot>: no SGS block fits it | map:sgs/media | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:289` | <image-slot>: no SGS block fits it | map:sgs/media | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:297` | <span>: no SGS block fits it | map:sgs/separator | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:319` | <span>: no SGS block fits it | map:sgs/decorative-image | 27 copies of one template element on 27 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:321` | <div>: no SGS block fits it | map:sgs/media | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:332` | <span>: no SGS block fits it | map:sgs/icon | 28 copies of one template element on 28 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:342` | <image-slot>: no SGS block fits it | map:sgs/media | 20 copies of one template element on 20 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:351` | <span>: no SGS block fits it | map:sgs/separator | 27 copies of one template element on 23 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:361` | <span>: no SGS block fits it | map:sgs/separator | 8 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:369` | <span>: no SGS block fits it | map:sgs/decorative-image | 12 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:370` | <span>: no SGS block fits it | map:sgs/decorative-image | 12 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:372` | <image-slot>: no SGS block fits it | map:sgs/media | 12 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:38` | <div>: no SGS block fits it | map:sgs/container | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:383` | <span>: no SGS block fits it | map:sgs/separator | 15 copies of one template element on 13 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:391` | <span>: no SGS block fits it | map:sgs/icon | 47 copies of one template element on 12 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:396` | <image-slot>: no SGS block fits it | map:sgs/media | 15 copies of one template element on 13 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:402` | <span>: no SGS block fits it | map:sgs/separator | 8 copies of one template element on 8 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:419` | <span>: no SGS block fits it | map:sgs/icon | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:43` | <indus-logo>: no SGS block fits it | map:sgs/responsive-logo | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:441` | <div>: no SGS block fits it | map:sgs/container | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:452` | <image-slot>: no SGS block fits it | map:sgs/media | 10 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:484` | <image-slot>: no SGS block fits it | map:sgs/media | 8 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:496` | <image-slot>: no SGS block fits it | map:sgs/media | 14 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:50` | <span>: no SGS block fits it | map:sgs/icon | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:503` | <image-slot>: no SGS block fits it | map:sgs/media | 10 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:516` | <span>: no SGS block fits it | map:sgs/decorative-image | 23 copies of one template element on 23 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:517` | <span>: no SGS block fits it | map:sgs/decorative-image | 23 copies of one template element on 23 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:521` | <span>: no SGS block fits it | map:sgs/separator | 23 copies of one template element on 23 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:532` | <span>: no SGS block fits it | map:sgs/icon | 3 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:560` | <input>: no SGS block fits it | map:sgs/form-field-text | 14 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:562` | <select>: no SGS block fits it | map:sgs/form-field-select | 8 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:566` | <textarea>: no SGS block fits it | map:sgs/form-field-textarea | 4 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:568` | <input>: no SGS block fits it | map:sgs/form-field-file | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:570` | <input>: no SGS block fits it | map:sgs/form-field-consent | 4 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:573` | <span>: no SGS block fits it | map:sgs/decorative-image | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:576` | <span>: no SGS block fits it | map:sgs/separator | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Indus Foods Website v2:581` | <span>: no SGS block fits it | map:sgs/icon | 5 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:596` | <span>: no SGS block fits it | map:sgs/icon | 12 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:608` | <image-slot>: no SGS block fits it | map:sgs/media | 24 copies of one template element on 7 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:638` | <span>: no SGS block fits it | map:sgs/icon | 6 copies of one template element on 6 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:654` | <span>: no SGS block fits it | map:sgs/separator | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:655` | <span>: no SGS block fits it | map:sgs/decorative-image | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:659` | <span>: no SGS block fits it | map:sgs/icon | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:665` | <span>: no SGS block fits it | map:sgs/icon | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:674` | <span>: no SGS block fits it | map:sgs/icon | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:684` | <indus-logo>: no SGS block fits it | map:sgs/responsive-logo | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:707` | <span>: no SGS block fits it | map:sgs/icon | 6 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:727` | <span>: no SGS block fits it | map:sgs/icon | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:78` | <image-slot>: no SGS block fits it | map:sgs/media | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Indus Foods Website v2:89` | <image-slot>: no SGS block fits it | map:sgs/media | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:TradeApplication:13` | <span>: no SGS block fits it | map:sgs/icon | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:TradeApplication:39` | <input>: no SGS block fits it | map:sgs/form-field-text | 6 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:TradeApplication:41` | <select>: no SGS block fits it | map:sgs/form-field-select | 4 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:TradeApplication:96` | <span>: no SGS block fits it | map:sgs/icon | 10 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:coverage:aria-attr:aria-checked` | aria-attr:aria-checked seen 1 time in the draft: seen but unsupported | gap:states | aria-attr:aria-checked has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:aria-attr:aria-expanded` | aria-attr:aria-expanded seen 2 times in the draft: seen but unsupported | gap:states | aria-attr:aria-expanded has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:aria-attr:aria-hidden` | aria-attr:aria-hidden seen 30 times in the draft: seen but unsupported | gap:states | aria-attr:aria-hidden has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:aria-attr:aria-label` | aria-attr:aria-label seen 30 times in the draft: seen but unsupported | gap:content, media and icons | aria-attr:aria-label has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:aria-attr:aria-pressed` | aria-attr:aria-pressed seen 2 times in the draft: seen but unsupported | gap:states | aria-attr:aria-pressed has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:aria-role:checkbox` | aria-role:checkbox seen 1 time in the draft: seen but unsupported | gap:behaviour recognisers | aria-role:checkbox has no clone path yet (has nothing; wave behaviour recognisers) |  |
+| `missing:coverage:aria-role:dialog` | aria-role:dialog seen 1 time in the draft: seen but unsupported | gap:behaviour recognisers | aria-role:dialog has no clone path yet (has nothing; wave behaviour recognisers) |  |
+| `missing:coverage:construct:binding` | construct:binding seen 967 times in the draft: seen but unsupported | gap:draft reading | construct:binding has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:data-hook` | construct:data-hook seen 57 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:data-hook has no clone path yet (has recognise; wave behaviour recognisers) |  |
+| `missing:coverage:construct:dc-import` | construct:dc-import seen 2 times in the draft: seen but unsupported | gap:draft reading | construct:dc-import has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:getter` | construct:getter seen 12 times in the draft: seen but unsupported | gap:draft reading | construct:getter has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:handler` | construct:handler seen 86 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:handler has no clone path yet (has recognise; wave behaviour recognisers) |  |
+| `missing:coverage:construct:helmet-font` | construct:helmet-font seen 3 times in the draft: seen but unsupported | gap:site and surfaces | construct:helmet-font has no clone path yet (has nothing; wave site and surfaces) |  |
+| `missing:coverage:construct:helmet-script` | construct:helmet-script seen 2 times in the draft: seen but unsupported | gap:draft reading | construct:helmet-script has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:keyframes` | construct:keyframes seen 9 times in the draft: seen but unsupported | gap:motion writer (4.0) | construct:keyframes has no clone path yet (has recognise; wave motion writer (4.0)) |  |
+| `missing:coverage:construct:link` | construct:link seen 71 times in the draft: seen but unsupported | gap:draft reading | construct:link has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:observer` | construct:observer seen 5 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:observer has no clone path yet (has recognise; wave behaviour recognisers) |  |
+| `missing:coverage:construct:ref` | construct:ref seen 15 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:ref has no clone path yet (has recognise; wave behaviour recognisers) |  |
+| `missing:coverage:construct:renderVals-key` | construct:renderVals-key seen 133 times in the draft: seen but unsupported | gap:draft reading | construct:renderVals-key has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:sc-for` | construct:sc-for seen 53 times in the draft: seen but unsupported | gap:draft reading | construct:sc-for has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:sc-if` | construct:sc-if seen 115 times in the draft: seen but unsupported | gap:draft reading | construct:sc-if has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:style-hover` | construct:style-hover seen 103 times in the draft: seen but unsupported | gap:draft reading | construct:style-hover has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:template-element` | construct:template-element seen 900 times in the draft: seen but unsupported | gap:draft reading | construct:template-element has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:construct:timer` | construct:timer seen 29 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:timer has no clone path yet (has recognise; wave behaviour recognisers) |  |
+| `missing:coverage:construct:transition` | construct:transition seen 135 times in the draft: seen but unsupported | gap:motion writer (4.0) | construct:transition has no clone path yet (has recognise; wave motion writer (4.0)) |  |
+| `missing:coverage:construct:waapi` | construct:waapi seen 49 times in the draft: seen but unsupported | gap:motion writer (4.0) | construct:waapi has no clone path yet (has recognise; wave motion writer (4.0)) |  |
+| `missing:coverage:css-at:keyframes` | css-at:keyframes seen 1 time in the draft: seen but unsupported | gap:motion writer (4.0) | css-at:keyframes has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-at:media` | css-at:media seen 5 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-at:media has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-function:blur` | css-function:blur seen 9 times in the draft: seen but unsupported | gap:draft reading | css-function:blur has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:calc` | css-function:calc seen 8 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:calc has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-function:circle` | css-function:circle seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:circle has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:clamp` | css-function:clamp seen 34 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:clamp has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-function:contrast` | css-function:contrast seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:contrast has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:cubic-bezier` | css-function:cubic-bezier seen 97 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:cubic-bezier has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:env` | css-function:env seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:env has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:grayscale` | css-function:grayscale seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:grayscale has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:inset` | css-function:inset seen 6 times in the draft: seen but unsupported | gap:draft reading | css-function:inset has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:linear-gradient` | css-function:linear-gradient seen 34 times in the draft: seen but unsupported | gap:draft reading | css-function:linear-gradient has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:max` | css-function:max seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:max has no clone path yet (has nothing; wave modes and values with no CSS property); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:css-function:min` | css-function:min seen 3 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:min has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-function:minmax` | css-function:minmax seen 89 times in the draft: seen but unsupported | gap:draft reading | css-function:minmax has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:radial-gradient` | css-function:radial-gradient seen 10 times in the draft: seen but unsupported | gap:draft reading | css-function:radial-gradient has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:repeat` | css-function:repeat seen 29 times in the draft: seen but unsupported | gap:draft reading | css-function:repeat has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-function:rotate` | css-function:rotate seen 30 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:rotate has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:scale` | css-function:scale seen 65 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:scale has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:scalex` | css-function:scalex seen 6 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:scalex has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:scaley` | css-function:scaley seen 2 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:scaley has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:skewx` | css-function:skewx seen 2 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:skewx has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:translate` | css-function:translate seen 3 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:translate has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:translate3d` | css-function:translate3d seen 3 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:translate3d has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:translatex` | css-function:translatex seen 28 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:translatex has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-function:translatey` | css-function:translatey seen 73 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:translatey has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-group:animations` | css-group:animations seen 9 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-group:animations has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-group:backgrounds-and-borders` | css-group:backgrounds-and-borders seen 773 times in the draft: seen but unsupported | gap:draft reading | css-group:backgrounds-and-borders has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:basic-user-interface` | css-group:basic-user-interface seen 99 times in the draft: seen but unsupported | gap:draft reading | css-group:basic-user-interface has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:box-alignment` | css-group:box-alignment seen 444 times in the draft: seen but unsupported | gap:draft reading | css-group:box-alignment has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:box-model` | css-group:box-model seen 384 times in the draft: seen but unsupported | gap:draft reading | css-group:box-model has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:box-sizing` | css-group:box-sizing seen 374 times in the draft: seen but unsupported | gap:draft reading | css-group:box-sizing has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:color` | css-group:color seen 401 times in the draft: seen but unsupported | gap:draft reading | css-group:color has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:compositing-and-blending` | css-group:compositing-and-blending seen 2 times in the draft: seen but unsupported | gap:draft reading | css-group:compositing-and-blending has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:custom-properties-for-cascading-variables` | css-group:custom-properties-for-cascading-variables seen 34 times in the draft: seen but unsupported | gap:draft reading | css-group:custom-properties-for-cascading-variables has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:display` | css-group:display seen 375 times in the draft: seen but unsupported | gap:draft reading | css-group:display has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:filter-effects` | css-group:filter-effects seen 6 times in the draft: seen but unsupported | gap:draft reading | css-group:filter-effects has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:flexible-box-layout` | css-group:flexible-box-layout seen 385 times in the draft: seen but unsupported | gap:draft reading | css-group:flexible-box-layout has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:fonts` | css-group:fonts seen 566 times in the draft: seen but unsupported | gap:draft reading | css-group:fonts has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:generated-content` | css-group:generated-content seen 2 times in the draft: seen but unsupported | gap:draft reading | css-group:generated-content has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:grid-layout` | css-group:grid-layout seen 47 times in the draft: seen but unsupported | gap:draft reading | css-group:grid-layout has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:images` | css-group:images seen 3 times in the draft: seen but unsupported | gap:draft reading | css-group:images has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:inline` | css-group:inline seen 80 times in the draft: seen but unsupported | gap:draft reading | css-group:inline has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:logical-properties-and-values` | css-group:logical-properties-and-values seen 20 times in the draft: seen but unsupported | gap:draft reading | css-group:logical-properties-and-values has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:masking` | css-group:masking seen 20 times in the draft: seen but unsupported | gap:draft reading | css-group:masking has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:overflow` | css-group:overflow seen 75 times in the draft: seen but unsupported | gap:draft reading | css-group:overflow has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:overscroll-behavior` | css-group:overscroll-behavior seen 1 time in the draft: seen but unsupported | gap:draft reading | css-group:overscroll-behavior has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:pointer-events` | css-group:pointer-events seen 2 times in the draft: seen but unsupported | gap:draft reading | css-group:pointer-events has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:positioned-layout` | css-group:positioned-layout seen 294 times in the draft: seen but unsupported | gap:draft reading | css-group:positioned-layout has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:scalable-vector-graphics` | css-group:scalable-vector-graphics seen 315 times in the draft: seen but unsupported | gap:draft reading | css-group:scalable-vector-graphics has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:scroll-snap` | css-group:scroll-snap seen 3 times in the draft: seen but unsupported | gap:draft reading | css-group:scroll-snap has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:scrollbars-styling` | css-group:scrollbars-styling seen 3 times in the draft: seen but unsupported | gap:draft reading | css-group:scrollbars-styling has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:text` | css-group:text seen 183 times in the draft: seen but unsupported | gap:draft reading | css-group:text has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:text-decoration` | css-group:text-decoration seen 9 times in the draft: seen but unsupported | gap:draft reading | css-group:text-decoration has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:transforms` | css-group:transforms seen 128 times in the draft: seen but unsupported | gap:draft reading | css-group:transforms has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:transitions` | css-group:transitions seen 134 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-group:transitions has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-group:webkit-extensions` | css-group:webkit-extensions seen 4 times in the draft: seen but unsupported | gap:draft reading | css-group:webkit-extensions has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:will-change` | css-group:will-change seen 1 time in the draft: seen but unsupported | gap:draft reading | css-group:will-change has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-group:writing-modes` | css-group:writing-modes seen 7 times in the draft: seen but unsupported | gap:draft reading | css-group:writing-modes has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-media-feature:prefers-reduced-motion` | css-media-feature:prefers-reduced-motion seen 4 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-media-feature:prefers-reduced-motion has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-property:-webkit-user-drag` | css-property:-webkit-user-drag seen 2 times in the draft: seen but unsupported | gap:draft reading | css-property:-webkit-user-drag has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-property:unlisted` | css-property:unlisted seen 2 times in the draft: seen but unsupported | difference | css-property:unlisted is excluded from cloning (Bean, 2026-10-18: a CSS property no browser applies (enable-background, an SVG 1.1 editor property, seen in an exported logo); nothing to clone) |  |
+| `missing:coverage:css-pseudo-class:focus` | css-pseudo-class:focus seen 8 times in the draft: seen but unsupported | gap:states | css-pseudo-class:focus has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:css-pseudo-class:focus-visible` | css-pseudo-class:focus-visible seen 1 time in the draft: seen but unsupported | gap:states | css-pseudo-class:focus-visible has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:css-pseudo-class:host` | css-pseudo-class:host seen 14 times in the draft: seen but unsupported | gap:draft reading | css-pseudo-class:host has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-pseudo-class:host-context` | css-pseudo-class:host-context seen 2 times in the draft: seen but unsupported | gap:draft reading | css-pseudo-class:host-context has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-pseudo-class:hover` | css-pseudo-class:hover seen 101 times in the draft: seen but unsupported | gap:states | css-pseudo-class:hover has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:css-pseudo-class:popover-open` | css-pseudo-class:popover-open seen 1 time in the draft: seen but unsupported | gap:states | css-pseudo-class:popover-open has no clone path yet (has nothing; wave states) |  |
+| `missing:coverage:css-pseudo-element:-webkit-scrollbar` | css-pseudo-element:-webkit-scrollbar seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:-webkit-scrollbar has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-pseudo-element:-webkit-scrollbar-thumb` | css-pseudo-element:-webkit-scrollbar-thumb seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:-webkit-scrollbar-thumb has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-pseudo-element:-webkit-scrollbar-track` | css-pseudo-element:-webkit-scrollbar-track seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:-webkit-scrollbar-track has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-pseudo-element:after` | css-pseudo-element:after seen 6 times in the draft: seen but unsupported | gap:content, media and icons | css-pseudo-element:after has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:css-pseudo-element:before` | css-pseudo-element:before seen 3 times in the draft: seen but unsupported | gap:content, media and icons | css-pseudo-element:before has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:css-pseudo-element:selection` | css-pseudo-element:selection seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:selection has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-unit:deg` | css-unit:deg seen 67 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-unit:deg has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-unit:fr` | css-unit:fr seen 93 times in the draft: seen but unsupported | gap:draft reading | css-unit:fr has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:css-unit:ms` | css-unit:ms seen 6 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-unit:ms has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-unit:s` | css-unit:s seen 295 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-unit:s has no clone path yet (has nothing; wave motion writer (4.0)) |  |
+| `missing:coverage:css-unit:vh` | css-unit:vh seen 3 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-unit:vh has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:css-unit:vw` | css-unit:vw seen 40 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-unit:vw has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:embed:other` | embed:other seen 2 times in the draft: seen but unsupported | gap:content, media and icons | embed:other has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:a.rel` | html-attr:a.rel seen 3 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:a.rel has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:a.target` | html-attr:a.target seen 3 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:a.target has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:button.disabled` | html-attr:button.disabled seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:button.disabled has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:button.type` | html-attr:button.type seen 15 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:button.type has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:form.novalidate` | html-attr:form.novalidate seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:form.novalidate has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:global.class` | html-attr:global.class seen 16 times in the draft: seen but unsupported | difference | html-attr:global.class is excluded from cloning (Bean, 2026-10-18: class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census) |  |
+| `missing:coverage:html-attr:global.data` | html-attr:global.data seen 63 times in the draft: seen but unsupported | gap:behaviour recognisers | html-attr:global.data has no clone path yet (has nothing; wave behaviour recognisers) |  |
+| `missing:coverage:html-attr:global.draggable` | html-attr:global.draggable seen 2 times in the draft: seen but unsupported | gap:behaviour recognisers | html-attr:global.draggable has no clone path yet (has nothing; wave behaviour recognisers) |  |
+| `missing:coverage:html-attr:global.id` | html-attr:global.id seen 6 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:global.id has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:global.part` | html-attr:global.part seen 7 times in the draft: seen but unsupported | gap:draft reading | html-attr:global.part has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html-attr:global.popover` | html-attr:global.popover seen 2 times in the draft: seen but unsupported | gap:behaviour recognisers | html-attr:global.popover has no clone path yet (has nothing; wave behaviour recognisers) |  |
+| `missing:coverage:html-attr:global.title` | html-attr:global.title seen 4 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:global.title has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:iframe.loading` | html-attr:iframe.loading seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:iframe.loading has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:iframe.src` | html-attr:iframe.src seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:iframe.src has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:img.alt` | html-attr:img.alt seen 4 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:img.alt has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:img.height` | html-attr:img.height seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | html-attr:img.height has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
+| `missing:coverage:html-attr:img.src` | html-attr:img.src seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html-attr:img.src has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html-attr:input.accept` | html-attr:input.accept seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.accept has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:input.autocomplete` | html-attr:input.autocomplete seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.autocomplete has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:input.placeholder` | html-attr:input.placeholder seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.placeholder has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:input.required` | html-attr:input.required seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.required has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:input.value` | html-attr:input.value seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.value has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:label.for` | html-attr:label.for seen 4 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:label.for has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:link.crossorigin` | html-attr:link.crossorigin seen 1 time in the draft: seen but unsupported | gap:draft reading | html-attr:link.crossorigin has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html-attr:link.href` | html-attr:link.href seen 6 times in the draft: seen but unsupported | gap:draft reading | html-attr:link.href has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html-attr:link.rel` | html-attr:link.rel seen 6 times in the draft: seen but unsupported | gap:draft reading | html-attr:link.rel has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html-attr:meta.content` | html-attr:meta.content seen 1 time in the draft: seen but unsupported | gap:draft reading | html-attr:meta.content has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html-attr:meta.name` | html-attr:meta.name seen 1 time in the draft: seen but unsupported | gap:draft reading | html-attr:meta.name has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html-attr:option.value` | html-attr:option.value seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:option.value has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:script.src` | html-attr:script.src seen 2 times in the draft: seen but unsupported | gap:draft reading | html-attr:script.src has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html-attr:select.name` | html-attr:select.name seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:select.name has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:select.required` | html-attr:select.required seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:select.required has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:textarea.maxlength` | html-attr:textarea.maxlength seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.maxlength has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:textarea.placeholder` | html-attr:textarea.placeholder seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.placeholder has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:textarea.required` | html-attr:textarea.required seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.required has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html-attr:textarea.rows` | html-attr:textarea.rows seen 3 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:textarea.rows has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:button` | html:button seen 17 times in the draft: seen but unsupported | gap:shop, forms and data | html:button has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:canvas` | html:canvas seen 1 time in the draft: seen but unsupported | gap:content, media and icons | html:canvas has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html:custom-element` | html:custom-element seen 25 times in the draft: seen but unsupported | gap:draft reading | html:custom-element has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html:figcaption` | html:figcaption seen 1 time in the draft: seen but unsupported | gap:content, media and icons | html:figcaption has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html:figure` | html:figure seen 1 time in the draft: seen but unsupported | gap:content, media and icons | html:figure has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html:form` | html:form seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:form has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:iframe` | html:iframe seen 2 times in the draft: seen but unsupported | gap:content, media and icons | html:iframe has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html:img` | html:img seen 5 times in the draft: seen but unsupported | gap:content, media and icons | html:img has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:html:input` | html:input seen 5 times in the draft: seen but unsupported | gap:shop, forms and data | html:input has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:label` | html:label seen 6 times in the draft: seen but unsupported | gap:shop, forms and data | html:label has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:link` | html:link seen 6 times in the draft: seen but unsupported | gap:draft reading | html:link has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html:meta` | html:meta seen 1 time in the draft: seen but unsupported | gap:draft reading | html:meta has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html:option` | html:option seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:option has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:script` | html:script seen 2 times in the draft: seen but unsupported | gap:draft reading | html:script has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html:select` | html:select seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:select has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:html:style` | html:style seen 4 times in the draft: seen but unsupported | gap:draft reading | html:style has no clone path yet (has nothing; wave draft reading) |  |
+| `missing:coverage:html:textarea` | html:textarea seen 2 times in the draft: seen but unsupported | gap:shop, forms and data | html:textarea has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:input-type:checkbox` | input-type:checkbox seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:checkbox has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:input-type:email` | input-type:email seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:email has no clone path yet (has nothing; wave shop, forms and data); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:input-type:file` | input-type:file seen 3 times in the draft: seen but unsupported | gap:shop, forms and data | input-type:file has no clone path yet (has nothing; wave shop, forms and data) |  |
+| `missing:coverage:input-type:tel` | input-type:tel seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:tel has no clone path yet (has nothing; wave shop, forms and data); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:input-type:text` | input-type:text seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:text has no clone path yet (has nothing; wave shop, forms and data); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:svg:circle` | svg:circle seen 8 times in the draft: seen but unsupported | gap:content, media and icons | svg:circle has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:defs` | svg:defs seen 2 times in the draft: seen but unsupported | gap:content, media and icons | svg:defs has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:ellipse` | svg:ellipse seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:ellipse has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:feGaussianBlur` | svg:feGaussianBlur seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:feGaussianBlur has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:svg:feMerge` | svg:feMerge seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:feMerge has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:svg:feMergeNode` | svg:feMergeNode seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:feMergeNode has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:svg:filter` | svg:filter seen 1 time in the draft: seen but unsupported | gap:content, media and icons | svg:filter has no clone path yet (has nothing; wave content, media and icons); seen only when the page ran: the file read missed it |  |
+| `missing:coverage:svg:g` | svg:g seen 14 times in the draft: seen but unsupported | gap:content, media and icons | svg:g has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:line` | svg:line seen 3 times in the draft: seen but unsupported | gap:content, media and icons | svg:line has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:linearGradient` | svg:linearGradient seen 4 times in the draft: seen but unsupported | gap:content, media and icons | svg:linearGradient has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:metadata` | svg:metadata seen 3 times in the draft: seen but unsupported | gap:content, media and icons | svg:metadata has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:path` | svg:path seen 106 times in the draft: seen but unsupported | gap:content, media and icons | svg:path has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:polyline` | svg:polyline seen 4 times in the draft: seen but unsupported | gap:content, media and icons | svg:polyline has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:rect` | svg:rect seen 2 times in the draft: seen but unsupported | gap:content, media and icons | svg:rect has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:stop` | svg:stop seen 16 times in the draft: seen but unsupported | gap:content, media and icons | svg:stop has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:svg` | svg:svg seen 24 times in the draft: seen but unsupported | gap:content, media and icons | svg:svg has no clone path yet (has nothing; wave content, media and icons) |  |
+| `missing:coverage:svg:unlisted` | svg:unlisted seen 10 times in the draft: seen but unsupported | difference | svg:unlisted is excluded from cloning (Bean, 2026-10-18: an SVG element no browser renders (meshgradient, meshrow and meshpatch from an SVG editor's draft spec, seen in an exported logo); the SVG file uploads whole, so the clone loses nothing) |  |
 
 ## Skeleton block choices (skeleton-block)
 
 Accept all: [ ]
 
-### about-mega-menu
+### Changed since the last export (147)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:about-mega-menu:Indus Foods Website v2/71` | about-mega-menu Indus Foods Website v2/71 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/73` | about-mega-menu Indus Foods Website v2/73 <span> "Our Story" | block:sgs/text | agent pick 0.7: The bold link title of a repeated mega-menu link; kept as sgs/text rather than a heading so the menu does not add headings to the page outline.; was block:sgs/text 0.25 |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/74` | about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/78#0` | about-mega-menu Indus Foods Website v2/78#0 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/80#0` | about-mega-menu Indus Foods Website v2/80#0 <span> "Since 1962" | block:sgs/label | agent pick 0.85: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | block:sgs/heading | agent pick 0.7: The bold 22px title of the mega-menu feature panel, followed by its description and a button; sgs/heading fits the title role, though the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/67#0` | **changed** about-mega-menu Indus Foods Website v2/67#0 <div> | block:sgs/mega-panel | 1: 2 copies of one template element on 2 surfaces; a menu surface (the panel a navigation item opens) is sgs/mega-panel |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/68#0` | **changed** about-mega-menu Indus Foods Website v2/68#0 <div> | block:sgs/card-grid | 0.5: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/70` | **changed** about-mega-menu Indus Foods Website v2/70 <a> | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/71` | **changed** about-mega-menu Indus Foods Website v2/71 <span> "01" | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/72` | **changed** about-mega-menu Indus Foods Website v2/72 <span> | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/73` | **changed** about-mega-menu Indus Foods Website v2/73 <span> "Our Story" | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/74` | **changed** about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | absorbed | 1: 11 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/76#0` | **changed** about-mega-menu Indus Foods Website v2/76#0 <div> | block:sgs/card-grid | 0.5: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/77#0` | **changed** about-mega-menu Indus Foods Website v2/77#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/78#0` | **changed** about-mega-menu Indus Foods Website v2/78#0 <image-slot> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/79#0` | **changed** about-mega-menu Indus Foods Website v2/79#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/80#0` | **changed** about-mega-menu Indus Foods Website v2/80#0 <span> "Since 1962" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | **changed** about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | **changed** about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:about-mega-menu:Indus Foods Website v2/83#0` | **changed** about-mega-menu Indus Foods Website v2/83#0 <a> "Read our story" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/100` | **changed** brands-mega-menu Indus Foods Website v2/100 <a> | absorbed | 1: 10 copies of one template element; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/101` | **changed** brands-mega-menu Indus Foods Website v2/101 <image-slot> | absorbed | 1: 10 copies of one template element; drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/102#0` | **changed** brands-mega-menu Indus Foods Website v2/102#0 <div> | block:sgs/card-grid | 0.5 |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/103#0` | **changed** brands-mega-menu Indus Foods Website v2/103#0 <span> "Own Brands" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | **changed** brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/105#0` | **changed** brands-mega-menu Indus Foods Website v2/105#0 <a> "View All Brands" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/95#0` | **changed** brands-mega-menu Indus Foods Website v2/95#0 <div> | block:sgs/mega-panel | 1: a menu surface (the panel a navigation item opens) is sgs/mega-panel |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/96#0` | **changed** brands-mega-menu Indus Foods Website v2/96#0 <div> | block:sgs/card-grid | 0.5 |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/97#0` | **changed** brands-mega-menu Indus Foods Website v2/97#0 <div> "Our Brands" | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/98#0` | **changed** brands-mega-menu Indus Foods Website v2/98#0 <div> | absorbed | 1: drawn by sgs/card-grid: array_item_schema: sgs/card-grid holds its items in an attribute |  |
+| `skeleton:footer:Indus Foods Website v2/654#0` | **changed** footer Indus Foods Website v2/654#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:footer:Indus Foods Website v2/655#0` | **changed** footer Indus Foods Website v2/655#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:footer:Indus Foods Website v2/656#0` | **changed** footer Indus Foods Website v2/656#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place |  |
+| `skeleton:footer:Indus Foods Website v2/657#0` | **changed** footer Indus Foods Website v2/657#0 <div> | block:sgs/site-footer-row | 1 |  |
+| `skeleton:footer:Indus Foods Website v2/673#0` | **changed** footer Indus Foods Website v2/673#0 <span> "Open now" | block:sgs/business-info | 1: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours |  |
+| `skeleton:footer:Indus Foods Website v2/674#0` | **changed** footer Indus Foods Website v2/674#0 <span> | absorbed | 1: drawn by sgs/business-info: rule openStatus |  |
+| `skeleton:footer:Indus Foods Website v2/677` | **changed** footer Indus Foods Website v2/677 <div> | block:sgs/business-info | 1: 4 copies of one template element; a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it |  |
+| `skeleton:footer:Indus Foods Website v2/678` | **changed** footer Indus Foods Website v2/678 <span> "Monday – Thursday" | absorbed | 1: 4 copies of one template element; drawn by sgs/business-info: rule hoursRows |  |
+| `skeleton:footer:Indus Foods Website v2/679` | **changed** footer Indus Foods Website v2/679 <span> "9:30am – 5pm" | absorbed | 1: 4 copies of one template element; drawn by sgs/business-info: rule hoursRows |  |
+| `skeleton:footer:Indus Foods Website v2/680#0` | **changed** footer Indus Foods Website v2/680#0 <span> "Closes at 5pm today" | absorbed | 1: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours |  |
+| `skeleton:footer:Indus Foods Website v2/681#0` | **changed** footer Indus Foods Website v2/681#0 <div> | block:sgs/site-footer-row | 1 |  |
+| `skeleton:footer:Indus Foods Website v2/683#0` | **changed** footer Indus Foods Website v2/683#0 <a> | unwrap | 1: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself |  |
+| `skeleton:footer:Indus Foods Website v2/687#0` | **changed** footer Indus Foods Website v2/687#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:footer:Indus Foods Website v2/690#0` | **changed** footer Indus Foods Website v2/690#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:footer:Indus Foods Website v2/693#0` | **changed** footer Indus Foods Website v2/693#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:footer:Indus Foods Website v2/699#0` | **changed** footer Indus Foods Website v2/699#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:footer:Indus Foods Website v2/704#0` | **changed** footer Indus Foods Website v2/704#0 <div> | unwrap | 1: a bare wrapper whose only content is one list goes: the list block is that wrapper |  |
+| `skeleton:footer:Indus Foods Website v2/706` | **changed** footer Indus Foods Website v2/706 <a> "Certifications" | block:sgs/icon-list | 0.7: 6 copies of one template element |  |
+| `skeleton:footer:Indus Foods Website v2/707` | **changed** footer Indus Foods Website v2/707 <span> | absorbed | 1: 6 copies of one template element; drawn by sgs/icon-list: the list item's marker |  |
+| `skeleton:footer:Indus Foods Website v2/712#0` | **changed** footer Indus Foods Website v2/712#0 <iframe> | block:sgs/business-info | 1: an embedded map is sgs/business-info's map display |  |
+| `skeleton:footer:Indus Foods Website v2/719#0` | **changed** footer Indus Foods Website v2/719#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/108#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/108#0 <div> | block:sgs/nav-drawer | 1: a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/113#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/113#0 <a> | unwrap | 1: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/119#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/122#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/122#0 <nav> | block:sgs/nav-drawer-menu | 1: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/124` | **changed** mobile-tablet-drawer Indus Foods Website v2/124 <div> | absorbed | 1: 6 copies of one template element; drawn by sgs/nav-drawer-menu: rule navigation |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/125` | **changed** mobile-tablet-drawer Indus Foods Website v2/125 <button> | absorbed | 1: 6 copies of one template element; drawn by sgs/nav-drawer-menu: rule navigation |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/126` | **changed** mobile-tablet-drawer Indus Foods Website v2/126 <span> "01" | absorbed | 1: 6 copies of one template element; drawn by sgs/nav-drawer-menu: rule navigation |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/127` | **changed** mobile-tablet-drawer Indus Foods Website v2/127 <span> "Home" | absorbed | 1: 6 copies of one template element; drawn by sgs/nav-drawer-menu: rule navigation |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/130` | **changed** mobile-tablet-drawer Indus Foods Website v2/130 <span> | absorbed | 1: 4 copies of one template element; drawn by sgs/nav-drawer-menu: rule navigation |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/181#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/181#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/184#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/184#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/187#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/187#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/193#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/193#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/197#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/197#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/198#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/198#0 <span> "Become A Trade Customer" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/199#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/199#0 <span> | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/200#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/200#0 <span> | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-about:Indus Foods Website v2/316#0` | **changed** page-about Indus Foods Website v2/316#0 <section> | block:sgs/hero | 1: 28 copies of one template element on 28 surfaces; the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-about:Indus Foods Website v2/321#0` | **changed** page-about Indus Foods Website v2/321#0 <div> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-about:Indus Foods Website v2/322#0` | **changed** page-about Indus Foods Website v2/322#0 <div> | unwrap | 1: 28 copies of one template element on 28 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Indus Foods Website v2/325#0` | **changed** page-about Indus Foods Website v2/325#0 <span> "/" | remove | 1: 28 copies of one template element on 28 surfaces; a typed divider between items is the row's separators setting, not a block |  |
+| `skeleton:page-about:Indus Foods Website v2/327#0` | **changed** page-about Indus Foods Website v2/327#0 <span> "/" | remove | 1: 28 copies of one template element on 28 surfaces; a typed divider between items is the row's separators setting, not a block |  |
+| `skeleton:page-about:Indus Foods Website v2/329#0` | **changed** page-about Indus Foods Website v2/329#0 <div> | unwrap | 1: 28 copies of one template element on 28 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Indus Foods Website v2/330#0` | **changed** page-about Indus Foods Website v2/330#0 <div> | unwrap | 1: 28 copies of one template element on 28 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Indus Foods Website v2/331#0` | **changed** page-about Indus Foods Website v2/331#0 <span> "About Indus Foods" | block:sgs/label | 1: 25 copies of one template element on 25 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-about:Indus Foods Website v2/332#0` | **changed** page-about Indus Foods Website v2/332#0 <span> | absorbed | 1: 25 copies of one template element on 25 surfaces; drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-about:Indus Foods Website v2/350` | **changed** page-about Indus Foods Website v2/350 <div> "Our heritage" | block:sgs/label | 1: 27 copies of one template element on 23 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-about:Indus Foods Website v2/351` | **changed** page-about Indus Foods Website v2/351 <span> | absorbed | 1: 27 copies of one template element on 23 surfaces; drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-about:Indus Foods Website v2/361` | **changed** page-about Indus Foods Website v2/361 <span> | remove | 1: 8 copies of one template element on 2 surfaces; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-about:Indus Foods Website v2/444#0` | **changed** page-about Indus Foods Website v2/444#0 <div> | block:sgs/brand-strip | 1: 2 copies of one template element on 2 surfaces; a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 |  |
+| `skeleton:page-about:Indus Foods Website v2/446` | **changed** page-about Indus Foods Website v2/446 <article> | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-about:Indus Foods Website v2/447` | **changed** page-about Indus Foods Website v2/447 <div> | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-about:Indus Foods Website v2/448` | **changed** page-about Indus Foods Website v2/448 <div> "1962" | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-about:Indus Foods Website v2/449` | **changed** page-about Indus Foods Website v2/449 <h3> "A shop in the Balti Triangle" | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-about:Indus Foods Website v2/450` | **changed** page-about Indus Foods Website v2/450 <p> "Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook." | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-about:Indus Foods Website v2/451` | **changed** page-about Indus Foods Website v2/451 <div> | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-about:Indus Foods Website v2/452` | **changed** page-about Indus Foods Website v2/452 <image-slot> | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-about:Indus Foods Website v2/493` | **changed** page-about Indus Foods Website v2/493 <span> "Learn more" | block:sgs/button | 1: 8 copies of one template element; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) |  |
+| `skeleton:page-about:Indus Foods Website v2/520#0` | **changed** page-about Indus Foods Website v2/520#0 <div> "Work with us" | block:sgs/label | 1: 23 copies of one template element on 23 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-about:Indus Foods Website v2/521#0` | **changed** page-about Indus Foods Website v2/521#0 <span> | absorbed | 1: 23 copies of one template element on 23 surfaces; drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-about:Indus Foods Website v2/524#0` | **changed** page-about Indus Foods Website v2/524#0 <div> | block:sgs/multi-button | 0.51: 23 copies of one template element on 23 surfaces |  |
+| `skeleton:page-about:Indus Foods Website v2/526#0` | **changed** page-about Indus Foods Website v2/526#0 <a> "Call 0121 771 4330" | block:sgs/button | 1: 23 copies of one template element on 23 surfaces; a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/101#0` | **changed** page-apply Indus Foods Website v2>TradeApplication@466#0/101#0 <a> "0121 771 4330" | block:sgs/button | 1: 2 copies of one template element on 2 surfaces; a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/22#0` | **changed** page-apply Indus Foods Website v2>TradeApplication@466#0/22#0 <div> | unwrap | 1: 2 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/8#0` | **changed** page-apply Indus Foods Website v2>TradeApplication@466#0/8#0 <div> | unwrap | 1: 2 copies of one template element on 2 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-blog:Indus Foods Website v2/612` | **changed** page-blog Indus Foods Website v2/612 <span> "Feb 2026" | block:sgs/label | 1: 24 copies of one template element on 7 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-blog:Indus Foods Website v2/615` | **changed** page-blog Indus Foods Website v2/615 <span> "Read article" | block:sgs/button | 1: 24 copies of one template element on 7 surfaces; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) |  |
+| `skeleton:page-brands:Indus Foods Website v2/504` | **changed** page-brands Indus Foods Website v2/504 <div> | unwrap | 1: 10 copies of one template element; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-careers:Indus Foods Website v2/575#0` | **changed** page-careers Indus Foods Website v2/575#0 <div> "Talk to us" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-careers:Indus Foods Website v2/576#0` | **changed** page-careers Indus Foods Website v2/576#0 <span> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-careers:Indus Foods Website v2/582#0` | **changed** page-careers Indus Foods Website v2/582#0 <div> | unwrap | 1: 2 copies of one template element on 2 surfaces; a bare wrapper whose only content is one list goes: the list block is that wrapper |  |
+| `skeleton:page-certifications:Indus Foods Website v2/401#0` | **changed** page-certifications Indus Foods Website v2/401#0 <div> "How we protect quality" | block:sgs/label | 1: 7 copies of one template element on 7 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-certifications:Indus Foods Website v2/402#0` | **changed** page-certifications Indus Foods Website v2/402#0 <span> | absorbed | 1: 7 copies of one template element on 7 surfaces; drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-contact:Indus Foods Website v2/538#0` | **changed** page-contact Indus Foods Website v2/538#0 <iframe> | block:sgs/business-info | 1: an embedded map is sgs/business-info's map display |  |
+| `skeleton:page-food-service:Indus Foods Website v2/369` | **changed** page-food-service Indus Foods Website v2/369 <span> | remove | 1: 12 copies of one template element on 4 surfaces; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-food-service:Indus Foods Website v2/377` | **changed** page-food-service Indus Foods Website v2/377 <span> "Explore Manufacturing" | block:sgs/button | 1: 12 copies of one template element on 4 surfaces; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) |  |
+| `skeleton:page-home:Indus Foods Website v2/203#0` | **changed** page-home Indus Foods Website v2/203#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-home:Indus Foods Website v2/204#0` | **changed** page-home Indus Foods Website v2/204#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Indus Foods Website v2/205#0` | **changed** page-home Indus Foods Website v2/205#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Indus Foods Website v2/213` | **changed** page-home Indus Foods Website v2/213 <span> "BRC certified" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Indus Foods Website v2/214` | **changed** page-home Indus Foods Website v2/214 <span> | absorbed | 1: 3 copies of one template element; drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-home:Indus Foods Website v2/215#0` | **changed** page-home Indus Foods Website v2/215#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Indus Foods Website v2/216#0` | **changed** page-home Indus Foods Website v2/216#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Indus Foods Website v2/217#0` | **changed** page-home Indus Foods Website v2/217#0 <image-slot> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Indus Foods Website v2/219#0` | **changed** page-home Indus Foods Website v2/219#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-home:Indus Foods Website v2/221#0` | **changed** page-home Indus Foods Website v2/221#0 <div> | unwrap | 1: the frame that only clips or fades a marquee track goes: sgs/brand-strip draws its own overflow, and a masked edge fade belongs to its marquee motion (Bean, 2026-10-13) |  |
+| `skeleton:page-home:Indus Foods Website v2/222#0` | **changed** page-home Indus Foods Website v2/222#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 |  |
+| `skeleton:page-home:Indus Foods Website v2/224` | **changed** page-home Indus Foods Website v2/224 <a> | absorbed | 1: 20 copies of one template element; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-home:Indus Foods Website v2/225` | **changed** page-home Indus Foods Website v2/225 <image-slot> | absorbed | 1: 20 copies of one template element; drawn by sgs/brand-strip: rule marquee |  |
+| `skeleton:page-home:Indus Foods Website v2/257#0` | **changed** page-home Indus Foods Website v2/257#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-home:Indus Foods Website v2/267#0` | **changed** page-home Indus Foods Website v2/267#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-home:Indus Foods Website v2/292#0` | **changed** page-home Indus Foods Website v2/292#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-home:Indus Foods Website v2/297#0` | **changed** page-home Indus Foods Website v2/297#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-home:Indus Foods Website v2/312#0` | **changed** page-home Indus Foods Website v2/312#0 <div> | unwrap | 1: a bare wrapper whose only content is one list goes: the list block is that wrapper |  |
+| `skeleton:page-our-story:Indus Foods Website v2/340#0` | **changed** page-our-story Indus Foods Website v2/340#0 <div> | unwrap | 1: 20 copies of one template element on 20 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-our-story:Indus Foods Website v2/341#0` | **changed** page-our-story Indus Foods Website v2/341#0 <div> | unwrap | 1: 20 copies of one template element on 20 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-our-story:Indus Foods Website v2/342#0` | **changed** page-our-story Indus Foods Website v2/342#0 <image-slot> | absorbed | 1: 20 copies of one template element on 20 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-our-story:Indus Foods Website v2/382` | **changed** page-our-story Indus Foods Website v2/382 <div> "Still family-run" | block:sgs/label | 1: 15 copies of one template element on 13 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-our-story:Indus Foods Website v2/383` | **changed** page-our-story Indus Foods Website v2/383 <span> | absorbed | 1: 15 copies of one template element on 13 surfaces; drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:scroll-progress-bar:Indus Foods Website v2/38#0` | **changed** scroll-progress-bar Indus Foods Website v2/38#0 <div> | remove | 1: a full-width bar a few pixels tall, fixed to the viewport, is the Floating UI reading progress setting, not a block |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/85#0` | **changed** sectors-mega-menu Indus Foods Website v2/85#0 <div> | block:sgs/mega-panel | 1: a menu surface (the panel a navigation item opens) is sgs/mega-panel |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/93` | **changed** sectors-mega-menu Indus Foods Website v2/93 <div> "Explore Food Service" | block:sgs/button | 1: 4 copies of one template element; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) |  |
+| `skeleton:sticky-header:Indus Foods Website v2/41#0` | **changed** sticky-header Indus Foods Website v2/41#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place |  |
+| `skeleton:sticky-header:Indus Foods Website v2/42#0` | **changed** sticky-header Indus Foods Website v2/42#0 <a> | unwrap | 1: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself |  |
+| `skeleton:sticky-header:Indus Foods Website v2/45#0` | **changed** sticky-header Indus Foods Website v2/45#0 <nav> | block:sgs/nav-bar-menu | 1: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu |  |
+| `skeleton:sticky-header:Indus Foods Website v2/47` | **changed** sticky-header Indus Foods Website v2/47 <button> | absorbed | 1: 6 copies of one template element; drawn by sgs/nav-bar-menu: rule navigation |  |
+| `skeleton:sticky-header:Indus Foods Website v2/50` | **changed** sticky-header Indus Foods Website v2/50 <span> | absorbed | 1: 4 copies of one template element; drawn by sgs/nav-bar-menu: rule navigation |  |
+| `skeleton:sticky-header:Indus Foods Website v2/52#0` | **changed** sticky-header Indus Foods Website v2/52#0 <span> | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation |  |
+| `skeleton:top-bar:Indus Foods Website v2/10#0` | **changed** top-bar Indus Foods Website v2/10#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place |  |
+| `skeleton:top-bar:Indus Foods Website v2/11#0` | **changed** top-bar Indus Foods Website v2/11#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:top-bar:Indus Foods Website v2/14#0` | **changed** top-bar Indus Foods Website v2/14#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:top-bar:Indus Foods Website v2/16#0` | **changed** top-bar Indus Foods Website v2/16#0 <span> "0121 771 4330" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:top-bar:Indus Foods Website v2/20#0` | **changed** top-bar Indus Foods Website v2/20#0 <a> "amir@indusfoodsltd.com" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
+| `skeleton:top-bar:Indus Foods Website v2/23#0` | **changed** top-bar Indus Foods Website v2/23#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:top-bar:Indus Foods Website v2/26#0` | **changed** top-bar Indus Foods Website v2/26#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:top-bar:Indus Foods Website v2/29#0` | **changed** top-bar Indus Foods Website v2/29#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:top-bar:Indus Foods Website v2/35#0` | **changed** top-bar Indus Foods Website v2/35#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
+| `skeleton:top-bar:Indus Foods Website v2/9#0` | **changed** top-bar Indus Foods Website v2/9#0 <div> | block:sgs/site-header-row | 1: a top bar above the header is the header's top row (sgs/site-header-row with its own hide-on-scroll setting), not a separate surface |  |
+| `skeleton:whatsapp-button:Indus Foods Website v2/728#0` | **changed** whatsapp-button Indus Foods Website v2/728#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:whatsapp-button:Indus Foods Website v2/729#0` | **changed** whatsapp-button Indus Foods Website v2/729#0 <img> | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:whatsapp-button:Indus Foods Website v2/731#0` | **changed** whatsapp-button Indus Foods Website v2/731#0 <span> "Chat with our team" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 
-### about-mega-menu: Confident proposals (Accept all covers these)
+### Needs a decision (agent-pick): block:sgs/business-info (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:about-mega-menu:Indus Foods Website v2/67#0` | about-mega-menu Indus Foods Website v2/67#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/68#0` | about-mega-menu Indus Foods Website v2/68#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/70` | about-mega-menu Indus Foods Website v2/70 <a> | block:sgs/container | 1: 11 copies of one template element on 2 surfaces |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/72` | about-mega-menu Indus Foods Website v2/72 <span> | block:sgs/container | 0.75: 11 copies of one template element on 2 surfaces |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/76#0` | about-mega-menu Indus Foods Website v2/76#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/77#0` | about-mega-menu Indus Foods Website v2/77#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/79#0` | about-mega-menu Indus Foods Website v2/79#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:about-mega-menu:Indus Foods Website v2/83#0` | about-mega-menu Indus Foods Website v2/83#0 <a> "Read our story" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
-
-### brands-mega-menu
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:brands-mega-menu:Indus Foods Website v2/101` | brands-mega-menu Indus Foods Website v2/101 <image-slot> | block:sgs/media | agent pick 0.8: A repeated brand-logo image-slot inside a link; these are partner brand images, not the site logo, so sgs/media (replaces core/image) is the block.; was no block 0 |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/103#0` | brands-mega-menu Indus Foods Website v2/103#0 <span> "Own Brands" | block:sgs/label | agent pick 0.85: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/97#0` | brands-mega-menu Indus Foods Website v2/97#0 <div> "Our Brands" | block:sgs/label | agent pick 0.8: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-
-### brands-mega-menu: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:brands-mega-menu:Indus Foods Website v2/100` | brands-mega-menu Indus Foods Website v2/100 <a> | block:sgs/container | 0.75: 10 copies of one template element |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/102#0` | brands-mega-menu Indus Foods Website v2/102#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/105#0` | brands-mega-menu Indus Foods Website v2/105#0 <a> "View All Brands" | block:sgs/button | 0.75 |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/95#0` | brands-mega-menu Indus Foods Website v2/95#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/96#0` | brands-mega-menu Indus Foods Website v2/96#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/98#0` | brands-mega-menu Indus Foods Website v2/98#0 <div> | block:sgs/container | 1 |  |
-
-### footer
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:footer:Indus Foods Website v2/654#0` | footer Indus Foods Website v2/654#0 <span> | block:sgs/separator | agent pick 0.55: A 5px full-width gradient strip at the top edge of the footer; sgs/separator is the DB divider block with colour or gradient and responsive thickness.; was no block 0 |  |
-| `skeleton:footer:Indus Foods Website v2/655#0` | footer Indus Foods Website v2/655#0 <span> | block:sgs/decorative-image | agent pick 0.4: An aria-hidden 520px radial-gradient glow positioned off the footer corner; sgs/decorative-image is the DB block for free-floating decoration, but this is a gradient, not an image.; was no block 0 |  |
-| `skeleton:footer:Indus Foods Website v2/659#0` | footer Indus Foods Website v2/659#0 <span> | block:sgs/icon | agent pick 0.7: A filled or ringed circle holding an icon glyph; sgs/icon has a shape enum (circle), so the circle is the icon's own shape rather than a wrapper.; was no block 0 |  |
-| `skeleton:footer:Indus Foods Website v2/661#0` | footer Indus Foods Website v2/661#0 <span> "Call us" | block:sgs/label | agent pick 0.8: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/662#0` | footer Indus Foods Website v2/662#0 <span> "0121 771 4330" | block:sgs/business-info | agent pick 0.85: The business phone number is Site Info content, so it is sgs/business-info (displayType phone), never typed text.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/663#0` | footer Indus Foods Website v2/663#0 <span> "Speak to our sales team" | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/665#0` | footer Indus Foods Website v2/665#0 <span> | block:sgs/icon | agent pick 0.7: A filled or ringed circle holding an icon glyph; sgs/icon has a shape enum (circle), so the circle is the icon's own shape rather than a wrapper.; was no block 0 |  |
-| `skeleton:footer:Indus Foods Website v2/667#0` | footer Indus Foods Website v2/667#0 <span> "Email us" | block:sgs/label | agent pick 0.8: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/668#0` | footer Indus Foods Website v2/668#0 <span> "amir@indusfoodsltd.com" | block:sgs/business-info | agent pick 0.85: The business email address is Site Info content, so it is sgs/business-info (displayType email), never typed text.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/669#0` | footer Indus Foods Website v2/669#0 <span> "We reply within one working day" | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/672#0` | footer Indus Foods Website v2/672#0 <span> "Opening hours" | block:sgs/label | agent pick 0.8: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/674#0` | footer Indus Foods Website v2/674#0 <span> | block:sgs/icon | agent pick 0.4: An 8px live status dot whose colour follows the current open or closed state; sgs/icon is the nearest block, but no DB block computes a live open-now status, so the behaviour is a missing feature.; was no block 0 |  |
-| `skeleton:footer:Indus Foods Website v2/678` | footer Indus Foods Website v2/678 <span> "Monday – Thursday" | block:sgs/business-info | agent pick 0.55: The day column of a looped opening-hours row is Site Info hours, so it is sgs/business-info (displayType hours, rows layout with space-between); the loop parent should collapse to one hours block, which I cannot see from this row.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/679` | footer Indus Foods Website v2/679 <span> "9:30am – 5pm" | remove | agent pick 0.55: The time column of the looped opening-hours row; sgs/business-info hours renders day and time together (hoursRowJustify space-between), so a separate block would duplicate it.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/680#0` | footer Indus Foods Website v2/680#0 <span> "Closes at 5pm today" | block:sgs/text | agent pick 0.4: A live line computed from today's hours ("Closes at 5pm today"); no DB block reads it from Site Info, so it is typed text for now and the live status is a missing feature.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/684#0` | footer Indus Foods Website v2/684#0 <indus-logo> | block:sgs/responsive-logo | agent pick 0.92: The indus-logo element is the typed brand logo, so it is the logo block; sgs/responsive-logo replaces core/site-logo in the DB.; was no block 0 |  |
-| `skeleton:footer:Indus Foods Website v2/703#0` | footer Indus Foods Website v2/703#0 <div> "Quick links" | block:sgs/heading | agent pick 0.6: A footer column title above a list of links; sgs/heading gives the column an outline entry, though its small uppercase style also fits sgs/label.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/707` | footer Indus Foods Website v2/707 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
-| `skeleton:footer:Indus Foods Website v2/710#0` | footer Indus Foods Website v2/710#0 <div> "Visit us" | block:sgs/heading | agent pick 0.6: A footer column title above the address and directions; sgs/heading gives the column an outline entry, though its small uppercase style also fits sgs/label.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/717#0` | footer Indus Foods Website v2/717#0 <a> "Get Directions" | block:sgs/button | agent pick 0.75: A standalone Google Maps directions link styled as a call-to-action beside the address block; sgs/button is the candidate that fits a link action, since business-info renders the address itself.; was block:sgs/business-info 0.57 |  |
-| `skeleton:footer:Indus Foods Website v2/722#0` | footer Indus Foods Website v2/722#0 <span> "\|" | remove | agent pick 0.7: A typed "\|" divider between bottom-bar items; the parent sgs/container has a separators setting (block_attributes separators) that draws the lines between items.; was block:sgs/text 0.25 |  |
 | `skeleton:footer:Indus Foods Website v2/723#0` | footer Indus Foods Website v2/723#0 <a> "Website by Ibraheem Mustafa" | block:sgs/business-info | agent pick 0.85: A website-credit link is Site Info attribution; sgs/business-info has displayType attribution and is the top candidate.; was block:sgs/business-info 0.38 |  |
-| `skeleton:footer:Indus Foods Website v2/724#0` | footer Indus Foods Website v2/724#0 <span> "\|" | remove | agent pick 0.7: A typed "\|" divider between bottom-bar items; the parent sgs/container has a separators setting (block_attributes separators) that draws the lines between items.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/725#0` | footer Indus Foods Website v2/725#0 <span> "Placeholder photography via Unsplash" | remove | agent pick 0.92: "Placeholder photography via Unsplash" is a designer's brief line about stock images, not site content.; was block:sgs/text 0.25 |  |
-| `skeleton:footer:Indus Foods Website v2/727#0` | footer Indus Foods Website v2/727#0 <span> | block:sgs/icon | agent pick 0.6: A 40px ringed circle holding the back-to-top arrow; sgs/icon has a circle shape enum, so the ring is the icon's own shape.; was no block 0 |  |
 
-### footer: Confident proposals (Accept all covers these)
+### Needs a decision (agent-pick): block:sgs/container (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/441#0` | page-about Indus Foods Website v2/441#0 <div> | block:sgs/container | agent pick 0.35: A 4px progress track with a fill bar for a pinned horizontal-scroll section; no DB block implements a scroll-linked progress bar, so this is a placeholder container pending a missing feature.; was no block 0 |  |
+
+### Needs a decision (agent-pick): block:sgs/counter (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/362` | page-about Indus Foods Website v2/362 <div> "1962" | block:sgs/counter | agent pick 0.5: A large stat number paired with a short label in a repeated stat item; sgs/counter (number with prefix, suffix and label) fits the pattern, but a year like 1962 may not suit a counting animation.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (agent-pick): block:sgs/form-field-consent (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-careers:Indus Foods Website v2/570#0` | page-careers Indus Foods Website v2/570#0 <input> | block:sgs/form-field-consent | agent pick 0.85: A required checkbox whose label reads "I agree to Indus Foods contact..."; sgs/form-field-consent is the DB consent checkbox block (parent_block sgs/form).; was no block 0 |  |
+
+### Needs a decision (agent-pick): block:sgs/form-field-file (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-careers:Indus Foods Website v2/568#0` | page-careers Indus Foods Website v2/568#0 <input> | block:sgs/form-field-file | agent pick 0.85: An input of type file in an application form; sgs/form-field-file is the DB file upload field block (parent_block sgs/form).; was no block 0 |  |
+
+### Needs a decision (agent-pick): block:sgs/form-field-select (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/41` | page-apply Indus Foods Website v2>TradeApplication@466/41 <select> | block:sgs/form-field-select | agent pick 0.8: A select element in the application form; sgs/form-field-select is the DB dropdown field block (parent_block sgs/form).; was no block 0 |  |
+| `skeleton:page-careers:Indus Foods Website v2/562` | page-careers Indus Foods Website v2/562 <select> | block:sgs/form-field-select | agent pick 0.8: A select element in an application form; sgs/form-field-select is the DB dropdown field block (parent_block sgs/form).; was no block 0 |  |
+
+### Needs a decision (agent-pick): block:sgs/form-field-text (3)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/39` | page-apply Indus Foods Website v2>TradeApplication@466/39 <input> | block:sgs/form-field-text | agent pick 0.5: An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks.; was no block 0 |  |
+| `skeleton:page-careers:Indus Foods Website v2/560` | page-careers Indus Foods Website v2/560 <input> | block:sgs/form-field-text | agent pick 0.5: An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks.; was no block 0 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/26` | page-contact Indus Foods Website v2>EnquiryForm@468/26 <input> | block:sgs/form-field-text | agent pick 0.5: An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks.; was no block 0 |  |
+
+### Needs a decision (agent-pick): block:sgs/form-field-textarea (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-careers:Indus Foods Website v2/566#0` | page-careers Indus Foods Website v2/566#0 <textarea> | block:sgs/form-field-textarea | agent pick 0.85: A textarea in an application form; sgs/form-field-textarea is the DB multi-line field block (parent_block sgs/form).; was no block 0 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/31#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/31#0 <textarea> | block:sgs/form-field-textarea | agent pick 0.85: A textarea in the enquiry form; sgs/form-field-textarea is the DB multi-line field block (parent_block sgs/form).; was no block 0 |  |
+
+### Needs a decision (agent-pick): block:sgs/form-field-tiles (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/47` | page-apply Indus Foods Website v2>TradeApplication@466/47 <div> | block:sgs/form-field-tiles | agent pick 0.5: A wrapped group of looped option chips that each pick a business type in the application form; sgs/form-field-tiles (visual tile selection, parent_block sgs/form) fits a choice field better than the multi-button candidate, but I cannot see whether one or several can be chosen.; was block:sgs/multi-button 0.51 |  |
+
+### Needs a decision (agent-pick): block:sgs/heading (6)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/490` | page-about Indus Foods Website v2/490 <div> "Our Story" | block:sgs/heading | agent pick 0.65: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/99#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/99#0 <span> "Need a hand?" | block:sgs/heading | agent pick 0.65: The title of the "Need a hand?" help panel beside the form, followed by text and a phone button; sgs/heading fits the title role.; was block:sgs/text 0.25 |  |
+| `skeleton:page-blog:Indus Foods Website v2/613` | page-blog Indus Foods Website v2/613 <div> "Supporting the trade through Ramadan" | block:sgs/heading | agent pick 0.7: The title of a repeated post card; sgs/heading fits the title role, though the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
+| `skeleton:page-certifications:Indus Foods Website v2/414` | page-certifications Indus Foods Website v2/414 <div> "Supplier approval" | block:sgs/heading | agent pick 0.65: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
+| `skeleton:page-food-service:Indus Foods Website v2/375` | page-food-service Indus Foods Website v2/375 <div> "Manufacturing" | block:sgs/heading | agent pick 0.65: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
+| `skeleton:page-home:Indus Foods Website v2/263` | page-home Indus Foods Website v2/263 <span> "A shop on Ladypool Road" | block:sgs/heading | agent pick 0.6: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (agent-pick): block:sgs/icon (3)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/13#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/13#0 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
+| `skeleton:page-careers:Indus Foods Website v2/581` | page-careers Indus Foods Website v2/581 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
+| `skeleton:page-our-story:Indus Foods Website v2/391` | page-our-story Indus Foods Website v2/391 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
+
+### Needs a decision (agent-pick): block:sgs/label (3)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/19` | page-apply Indus Foods Website v2>TradeApplication@466/19 <span> "1" | block:sgs/label | agent pick 0.5: A step number inside a 32px circle in the looped step navigation; sgs/label is the DB badge block, though sgs/form-step may render the step markers itself.; was block:sgs/text 0.25 |  |
+| `skeleton:page-home:Indus Foods Website v2/261` | page-home Indus Foods Website v2/261 <span> "1962" | block:sgs/label | agent pick 0.55: A year inside a 56px ringed circle marking a milestone; sgs/label is the DB badge block, though sgs/timeline would render the marker itself.; was block:sgs/text 0.25 |  |
+| `skeleton:page-home:Indus Foods Website v2/301` | page-home Indus Foods Website v2/301 <span> "1" | block:sgs/label | agent pick 0.55: A step number inside a 72px circle; sgs/label is the DB badge block, though sgs/process-steps would render the numbered marker itself.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (agent-pick): block:sgs/multi-button (4)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/336#0` | page-about Indus Foods Website v2/336#0 <div> | block:sgs/multi-button | agent pick 0.85: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container.; was block:sgs/multi-button 0.51 |  |
+| `skeleton:page-blog:Indus Foods Website v2/601#0` | page-blog Indus Foods Website v2/601#0 <div> | block:sgs/multi-button | agent pick 0.65: A wrapped row of looped category filter buttons whose children are proposed as sgs/button; sgs/multi-button is the top candidate, though sgs/post-grid has its own AJAX filtering that would replace it.; was block:sgs/multi-button 0.51 |  |
+| `skeleton:page-home:Indus Foods Website v2/208#0` | page-home Indus Foods Website v2/208#0 <div> | block:sgs/multi-button | agent pick 0.85: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container.; was block:sgs/multi-button 0.51 |  |
+| `skeleton:page-home:Indus Foods Website v2/284#0` | page-home Indus Foods Website v2/284#0 <div> | block:sgs/multi-button | agent pick 0.65: A centred row of looped slider dot buttons whose children are proposed as sgs/button; sgs/multi-button is the top candidate, though a slider block would render its own dots.; was block:sgs/multi-button 0.51 |  |
+
+### Needs a decision (agent-pick): block:sgs/text (38)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/663#0` | footer Indus Foods Website v2/663#0 <span> "Speak to our sales team" | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:footer:Indus Foods Website v2/669#0` | footer Indus Foods Website v2/669#0 <span> "We reply within one working day" | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-about:Indus Foods Website v2/328#0` | page-about Indus Foods Website v2/328#0 <span> "About Us" | block:sgs/text | agent pick 0.45: The current page in the breadcrumb trail; kept as text, but the trail should be sgs/breadcrumbs, which renders the current item itself, and I cannot see the parent row to change it.; was block:sgs/text 0.25 |  |
+| `skeleton:page-about:Indus Foods Website v2/363` | page-about Indus Foods Website v2/363 <div> "Family-run since" | block:sgs/text | agent pick 0.6: The short label under a stat number; kept as sgs/text beside the number, as the draft keeps it separate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-about:Indus Foods Website v2/440#0` | page-about Indus Foods Website v2/440#0 <span> "01 / 05" | block:sgs/text | agent pick 0.5: A live position counter ("01 / 05") for a pinned horizontal-scroll section; sgs/text holds the words, but its live update belongs to the pin-scrub effect, which I cannot confirm drives a counter.; was block:sgs/text 0.25 |  |
+| `skeleton:page-about:Indus Foods Website v2/443#0` | page-about Indus Foods Website v2/443#0 <span> "Scroll to explore" | block:sgs/text | agent pick 0.75: A short instruction line beside the pinned-section progress bar; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-about:Indus Foods Website v2/487` | page-about Indus Foods Website v2/487 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
+| `skeleton:page-about:Indus Foods Website v2/491` | page-about Indus Foods Website v2/491 <div> "Three generations and six decades of family heritage." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/84#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/84#0 <span> "Takes about 5 minutes · Your progress saves automatically" | block:sgs/text | agent pick 0.75: A short reassurance line beside the Continue button; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/21` | page-apply Indus Foods Website v2>TradeApplication@466/21 <span> "Business" | block:sgs/text | agent pick 0.55: The step name in the looped step navigation; sgs/text holds the words, though sgs/form-step may render step titles itself.; was block:sgs/text 0.25 |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/64` | page-apply Indus Foods Website v2>TradeApplication@466/64 <span> "Leave blank if you are not VAT registered." | block:sgs/text | agent pick 0.5: A hint under a form field; kept as sgs/text, though the field blocks have a helpText attribute that would carry it.; was block:sgs/text 0.25 |  |
+| `skeleton:page-blog:Indus Foods Website v2/614` | page-blog Indus Foods Website v2/614 <div> "How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-brands:Indus Foods Website v2/506` | page-brands Indus Foods Website v2/506 <div> "Own brand · rice, flour & quality foods" | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-certifications:Indus Foods Website v2/411` | page-certifications Indus Foods Website v2/411 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
+| `skeleton:page-certifications:Indus Foods Website v2/420` | page-certifications Indus Foods Website v2/420 <div> "We vet the producers we import from before their products join our range." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2/536=sgs/text` | page-contact Indus Foods Website v2/536=sgs/text <span> "We’ll route your message to the right team" | block:sgs/text | agent pick 0.8: A short note under a contact detail ("Sales, orders and accounts"); sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/10#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/10#0 <span> "Choose all that apply" | block:sgs/text | agent pick 0.75: A hint beside a form section heading ("Choose all that apply"); sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/21#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/21#0 <span> "02" | block:sgs/text | agent pick 0.6: A step number beside a form section heading; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/33#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/33#0 <span> "0 / 800" | block:sgs/text | agent pick 0.4: A live character counter ("0 / 800") for the message field; no form-field attribute in the DB provides a counter, so it is typed text for now and the live count is a missing feature.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/37#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/37#0 <span> "Reply by" | block:sgs/text | agent pick 0.5: The label of a reply-preference choice whose options are buttons; kept as sgs/text, though the choice may be better as sgs/form-field-radio, whose label would carry it.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/41#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/41#0 <span> "We reply within one working day. Your details are only used to answer your enquiry." | block:sgs/text | agent pick 0.8: A privacy reassurance line beside the submit button; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/8#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/8#0 <span> "01" | block:sgs/text | agent pick 0.6: A step number beside a form section heading; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/14` | page-contact Indus Foods Website v2>EnquiryForm@468/14 <span> "New trade account" | block:sgs/text | agent pick 0.55: The title of a looped selectable option tile in the enquiry form; kept as sgs/text, though the option set may be better as sgs/form-field-tiles, which I cannot see from this row.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/15` | page-contact Indus Foods Website v2>EnquiryForm@468/15 <span> "Open an account with us" | block:sgs/text | agent pick 0.55: The description of a looped selectable option tile in the enquiry form; kept as sgs/text, though the option set may be better as sgs/form-field-tiles.; was block:sgs/text 0.25 |  |
+| `skeleton:page-delivery:Indus Foods Website v2/590#0` | page-delivery Indus Foods Website v2/590#0 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
+| `skeleton:page-food-service:Indus Foods Website v2/374` | page-food-service Indus Foods Website v2/374 <span> "02" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
+| `skeleton:page-food-service:Indus Foods Website v2/376` | page-food-service Indus Foods Website v2/376 <div> "Bulk spices, pulses, nuts and flours supplied consistently to specification." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-home:Indus Foods Website v2/264` | page-home Indus Foods Website v2/264 <span> "One of the UK’s first halal butchers and greengrocers." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-home:Indus Foods Website v2/275#0` | page-home Indus Foods Website v2/275#0 <span> "“" | block:sgs/text | agent pick 0.5: A large typographic opening quote mark above the testimonial words; kept as sgs/text, though sgs/testimonial or sgs/quote would paint it if the parent became one, which I cannot see.; was block:sgs/text 0.25 |  |
+| `skeleton:page-home:Indus Foods Website v2/281#0` | page-home Indus Foods Website v2/281#0 <span> "Purchasing manager" | block:sgs/text | agent pick 0.75: The attribution name line of the testimonial; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-home:Indus Foods Website v2/282#0` | page-home Indus Foods Website v2/282#0 <span> "Wholesale customer" | block:sgs/text | agent pick 0.8: The attribution company line of the testimonial; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/620#0` | page-post-post-1 Indus Foods Website v2/620#0 <span> "Feb 2026" | block:sgs/text | agent pick 0.7: The post date in the article meta row; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/622#0` | page-post-post-1 Indus Foods Website v2/622#0 <span> "2 min read" | block:sgs/text | agent pick 0.7: The reading time in the article meta row; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/624#0` | page-post-post-1 Indus Foods Website v2/624#0 <span> "By the Indus Foods team" | block:sgs/text | agent pick 0.75: The byline in the article meta row; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/634#0` | page-post-post-1 Indus Foods Website v2/634#0 <span> "“" | block:sgs/text | agent pick 0.5: A large typographic opening quote mark inside a blockquote; kept as sgs/text, though sgs/quote would paint it if the blockquote parent became that block.; was block:sgs/text 0.25 |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/635#0` | page-post-post-1 Indus Foods Website v2/635#0 <span> "The aim is simple: nobody should run short in the busiest weeks of their year." | block:sgs/text | agent pick 0.7: The pull-quote words inside a blockquote; sgs/text is the only candidate, though the blockquote parent fits sgs/quote.; was block:sgs/text 0.25 |  |
+| `skeleton:page-terms:Indus Foods Website v2/646` | page-terms Indus Foods Website v2/646 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
+| `skeleton:page-terms:Indus Foods Website v2/651` | page-terms Indus Foods Website v2/651 <span> "01" | block:sgs/text | agent pick 0.55: A section number inside a section heading; kept as sgs/text, though it may belong in the heading's own words.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (agent-pick): remove (10)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/14#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/14#0 <div> | remove | agent pick 0.55: A 6px track with a fill bar showing form step progress; sgs/form has progress bar settings (progressBarColour in block_attributes), so its multi-step mode draws this bar.; was no block 0 |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/33=sgs/text` | page-apply Indus Foods Website v2>TradeApplication@466/33=sgs/text <label> "Registered business name" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/35` | page-apply Indus Foods Website v2>TradeApplication@466/35 <span> "*" | remove | agent pick 0.6: The required asterisk of a form label; SGS form-field blocks have a required attribute that renders the marker, so typed text would duplicate it.; was block:sgs/text 0.25 |  |
+| `skeleton:page-careers:Indus Foods Website v2/556=sgs/text` | page-careers Indus Foods Website v2/556=sgs/text <span> "Phone" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
+| `skeleton:page-careers:Indus Foods Website v2/558` | page-careers Indus Foods Website v2/558 <span> "*" | remove | agent pick 0.6: The required asterisk of a form label; SGS form-field blocks have a required attribute that renders the marker, so typed text would duplicate it.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/32#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/32#0 <label> "How can we help?" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
+| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/27` | page-contact Indus Foods Website v2>EnquiryForm@468/27 <label> "Your name" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/621#0` | page-post-post-1 Indus Foods Website v2/621#0 <span> | remove | agent pick 0.55: A 4px dot between article meta items; the parent sgs/container has a separators setting (block_attributes separators) for the marks between items, though it draws lines rather than dots.; was no block 0 |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/623#0` | page-post-post-1 Indus Foods Website v2/623#0 <span> | remove | agent pick 0.55: A 4px dot between article meta items; the parent sgs/container has a separators setting (block_attributes separators) for the marks between items, though it draws lines rather than dots.; was no block 0 |  |
+| `skeleton:page-terms:Indus Foods Website v2/641#0` | page-terms Indus Foods Website v2/641#0 <div> "Layout draft: these summaries are placeholders. Replace them with Indus Foods’ approved trade terms before launch." | remove | agent pick 0.95: "Layout draft: these summaries are placeholders..." is the designer's brief note, not site content.; was block:sgs/text 0.25 |  |
+
+### Needs a decision (unresolved): no block (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-community:Indus Foods Website v2/332#0` | page-community Indus Foods Website v2/332#0 <span> | no block | 0: 3 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
+| `skeleton:page-wholesale:Indus Foods Website v2/402#0` | page-wholesale Indus Foods Website v2/402#0 <span> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
+
+### Needs a decision (low): block:sgs/text (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-contact:Indus Foods Website v2/535=sgs/text` | page-contact Indus Foods Website v2/535=sgs/text <span> "55–58 Stratford Street North" | block:sgs/text | 0.25: 1 copies of one template element |  |
+
+### Settled by built post sgs_drawer 4456: the client already built this surface ([QA] Indus mobile drawer on sandybrown) (16)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/109#0` | mobile-tablet-drawer Indus Foods Website v2/109#0 <span> | block:sgs/decorative-image | 1: a floating shape that draws an outline (a ring) is a decorative image |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/110#0` | mobile-tablet-drawer Indus Foods Website v2/110#0 <span> | block:sgs/decorative-image | 1: a floating shape that draws an outline (a ring) is a decorative image |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/111#0` | mobile-tablet-drawer Indus Foods Website v2/111#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/112#0` | mobile-tablet-drawer Indus Foods Website v2/112#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0` | mobile-tablet-drawer Indus Foods Website v2/114#0 <indus-logo> | block:sgs/responsive-logo | 1: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/115#0` | mobile-tablet-drawer Indus Foods Website v2/115#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/business-info | 0.67 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | block:sgs/business-info | 0.67 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0` | mobile-tablet-drawer Indus Foods Website v2/118#0 <button> | block:sgs/container | 1 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0` | mobile-tablet-drawer Indus Foods Website v2/120#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/121#0` | mobile-tablet-drawer Indus Foods Website v2/121#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/128` | mobile-tablet-drawer Indus Foods Website v2/128 <span> | absorbed | 1: 6 copies of one template element; drawn by sgs/nav-drawer-menu: rule navigation |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/178#0` | mobile-tablet-drawer Indus Foods Website v2/178#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/179#0` | mobile-tablet-drawer Indus Foods Website v2/179#0 <span> "Follow us" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/180#0` | mobile-tablet-drawer Indus Foods Website v2/180#0 <div> | block:sgs/social-icons | 0.74 |  |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/196#0` | mobile-tablet-drawer Indus Foods Website v2/196#0 <div> | block:sgs/container | 0.75 |  |
+
+### Settled by built post sgs_header 4461: the client already built this surface (QA copy Indus mega menu on sandybrown) (5)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:sticky-header:Indus Foods Website v2/39#0` | sticky-header Indus Foods Website v2/39#0 <header> | block:sgs/site-header | 0.58 |  |
+| `skeleton:sticky-header:Indus Foods Website v2/40#0` | sticky-header Indus Foods Website v2/40#0 <div> | block:sgs/site-header-row | 1 |  |
+| `skeleton:sticky-header:Indus Foods Website v2/43#0` | sticky-header Indus Foods Website v2/43#0 <indus-logo> | block:sgs/responsive-logo | 1: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo |  |
+| `skeleton:sticky-header:Indus Foods Website v2/48` | sticky-header Indus Foods Website v2/48 <span> "Home" | absorbed | 1: 6 copies of one template element; drawn by sgs/nav-bar-menu: rule navigation |  |
+| `skeleton:sticky-header:Indus Foods Website v2/54#0` | sticky-header Indus Foods Website v2/54#0 <a> "Register For A Trade Account" | block:sgs/button | 0.75 |  |
+
+### Settled by built post sgs_mega_menu 4443: the client already built this surface ([QA] Indus mega: Sectors on sandybrown) (6)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/87` | sectors-mega-menu Indus Foods Website v2/87 <a> | block:sgs/container | 1: 4 copies of one template element; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/88` | sectors-mega-menu Indus Foods Website v2/88 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/89` | sectors-mega-menu Indus Foods Website v2/89 <image-slot> | block:sgs/media | 1: 4 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/90` | sectors-mega-menu Indus Foods Website v2/90 <div> | block:sgs/container | 1: 4 copies of one template element |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/91` | sectors-mega-menu Indus Foods Website v2/91 <div> "Food Service" | block:sgs/heading | 1: 4 copies of one template element; the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label |  |
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/92` | sectors-mega-menu Indus Foods Website v2/92 <div> "Quality ingredients for venues, caterers & events across the UK." | block:sgs/text | 0.25: 4 copies of one template element |  |
+
+### Settled by rule backToTop: a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/726#0` | footer Indus Foods Website v2/726#0 <button> "Back to top" | block:sgs/container | 1: a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone |  |
+
+### Settled by rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-brand-sanam:Indus Foods Website v2/491=sgs/button` | page-brand-sanam Indus Foods Website v2/491=sgs/button <div> "Dals, beans and chickpeas." | block:sgs/button | 1: 12 copies of one template element on 4 surfaces; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) |  |
+| `skeleton:page-contact:Indus Foods Website v2/536=sgs/button` | page-contact Indus Foods Website v2/536=sgs/button <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/button | 1: 2 copies of one template element; a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) |  |
+
+### Settled by rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-brands:Indus Foods Website v2/505` | page-brands Indus Foods Website v2/505 <div> "Sanam" | block:sgs/heading | 1: 10 copies of one template element; the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label |  |
+
+### Settled by rule columnHeading: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/703#0` | footer Indus Foods Website v2/703#0 <div> "Quick links" | block:sgs/heading | 1: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style |  |
+| `skeleton:footer:Indus Foods Website v2/710#0` | footer Indus Foods Website v2/710#0 <div> "Visit us" | block:sgs/heading | 1: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style |  |
+
+### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (4)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/518#0` | page-about Indus Foods Website v2/518#0 <span> | remove | 1: 23 copies of one template element on 23 surfaces; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-food-service:Indus Foods Website v2/368` | page-food-service Indus Foods Website v2/368 <span> | remove | 1: 12 copies of one template element on 4 surfaces; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-home:Indus Foods Website v2/232` | page-home Indus Foods Website v2/232 <span> | remove | 1: 4 copies of one template element; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-our-story:Indus Foods Website v2/318#0` | page-our-story Indus Foods Website v2/318#0 <span> | remove | 1: 27 copies of one template element on 27 surfaces; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+
+### Settled by rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image (5)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Indus Foods Website v2/516#0` | page-about Indus Foods Website v2/516#0 <span> | block:sgs/decorative-image | 1: 23 copies of one template element on 23 surfaces; a floating shape that draws an outline (a ring) is a decorative image |  |
+| `skeleton:page-about:Indus Foods Website v2/517#0` | page-about Indus Foods Website v2/517#0 <span> | block:sgs/decorative-image | 1: 23 copies of one template element on 23 surfaces; a floating shape that draws an outline (a ring) is a decorative image |  |
+| `skeleton:page-careers:Indus Foods Website v2/573#0` | page-careers Indus Foods Website v2/573#0 <span> | block:sgs/decorative-image | 1: 2 copies of one template element on 2 surfaces; a floating shape that draws an outline (a ring) is a decorative image |  |
+| `skeleton:page-food-service:Indus Foods Website v2/370` | page-food-service Indus Foods Website v2/370 <span> | block:sgs/decorative-image | 1: 12 copies of one template element on 4 surfaces; a floating shape that draws an outline (a ring) is a decorative image |  |
+| `skeleton:page-our-story:Indus Foods Website v2/319#0` | page-our-story Indus Foods Website v2/319#0 <span> | block:sgs/decorative-image | 1: 27 copies of one template element on 27 surfaces; a floating shape that draws an outline (a ring) is a decorative image |  |
+
+### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (15)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/661#0` | footer Indus Foods Website v2/661#0 <span> "Call us" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:footer:Indus Foods Website v2/667#0` | footer Indus Foods Website v2/667#0 <span> "Email us" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:footer:Indus Foods Website v2/672#0` | footer Indus Foods Website v2/672#0 <span> "Opening hours" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-about:Indus Foods Website v2/489` | page-about Indus Foods Website v2/489 <span> "Heritage" | block:sgs/label | 1: 12 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/10#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/10#0 <span> "Step 1 of 5" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/89#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/89#0 <span> "Have these ready" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-blog:Indus Foods Website v2/611` | page-blog Indus Foods Website v2/611 <span> "Seasonal" | block:sgs/label | 1: 24 copies of one template element on 7 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-careers:Indus Foods Website v2/427` | page-careers Indus Foods Website v2/427 <span> "Warehouse & logistics" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-careers:Indus Foods Website v2/428` | page-careers Indus Foods Website v2/428 <span> "Full-time" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-careers:Indus Foods Website v2/429` | page-careers Indus Foods Website v2/429 <span> "Birmingham B11" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-contact:Indus Foods Website v2/534` | page-contact Indus Foods Website v2/534 <span> "Visit" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Indus Foods Website v2/247` | page-home Indus Foods Website v2/247 <span> "Est. 1962" | block:sgs/label | 1: 4 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Indus Foods Website v2/251#0` | page-home Indus Foods Website v2/251#0 <span> "Our heritage" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Indus Foods Website v2/293#0` | page-home Indus Foods Website v2/293#0 <span> "Getting started" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/619#0` | page-post-post-1 Indus Foods Website v2/619#0 <span> "Seasonal" | block:sgs/label | 1: 6 copies of one template element on 6 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+
+### Settled by rule logoElement: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/684#0` | footer Indus Foods Website v2/684#0 <indus-logo> | block:sgs/responsive-logo | 1: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo |  |
+
+### Settled by rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media (9)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-blog:Indus Foods Website v2/608` | page-blog Indus Foods Website v2/608 <image-slot> | block:sgs/media | 1: 24 copies of one template element on 7 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-brand-sanam:Indus Foods Website v2/496` | page-brand-sanam Indus Foods Website v2/496 <image-slot> | block:sgs/media | 1: 14 copies of one template element on 4 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-brands:Indus Foods Website v2/503` | page-brands Indus Foods Website v2/503 <image-slot> | block:sgs/media | 1: 10 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-certifications:Indus Foods Website v2/484` | page-certifications Indus Foods Website v2/484 <image-slot> | block:sgs/media | 1: 8 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-food-service:Indus Foods Website v2/372` | page-food-service Indus Foods Website v2/372 <image-slot> | block:sgs/media | 1: 12 copies of one template element on 4 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-home:Indus Foods Website v2/234` | page-home Indus Foods Website v2/234 <image-slot> | block:sgs/media | 1: 4 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-home:Indus Foods Website v2/279#0` | page-home Indus Foods Website v2/279#0 <image-slot> | block:sgs/media | 1: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-home:Indus Foods Website v2/289#0` | page-home Indus Foods Website v2/289#0 <image-slot> | block:sgs/media | 1: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+| `skeleton:page-our-story:Indus Foods Website v2/396` | page-our-story Indus Foods Website v2/396 <image-slot> | block:sgs/media | 1: 15 copies of one template element on 13 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media |  |
+
+### Settled by rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/717#0` | footer Indus Foods Website v2/717#0 <a> "Get Directions" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
+| `skeleton:page-contact:Indus Foods Website v2/539#0` | page-contact Indus Foods Website v2/539#0 <a> "Get Directions" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
+
+### Settled by rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text (10)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/659#0` | footer Indus Foods Website v2/659#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:footer:Indus Foods Website v2/665#0` | footer Indus Foods Website v2/665#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:footer:Indus Foods Website v2/727#0` | footer Indus Foods Website v2/727#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/96` | page-apply Indus Foods Website v2>TradeApplication@466/96 <span> | block:sgs/icon | 1: 10 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-careers:Indus Foods Website v2/419` | page-careers Indus Foods Website v2/419 <span> | block:sgs/icon | 1: 4 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-contact:Indus Foods Website v2/532` | page-contact Indus Foods Website v2/532 <span> | block:sgs/icon | 1: 3 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-delivery:Indus Foods Website v2/596` | page-delivery Indus Foods Website v2/596 <span> | block:sgs/icon | 1: 12 copies of one template element on 2 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-home:Indus Foods Website v2/244` | page-home Indus Foods Website v2/244 <span> | block:sgs/icon | 1: 4 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-home:Indus Foods Website v2/273#0` | page-home Indus Foods Website v2/273#0 <span> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-post-post-1:Indus Foods Website v2/638#0` | page-post-post-1 Indus Foods Website v2/638#0 <span> | block:sgs/icon | 1: 6 copies of one template element on 6 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+
+### Settled by rule typedDivider: a typed divider between items is the row's separators setting, not a block (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/722#0` | footer Indus Foods Website v2/722#0 <span> "\|" | remove | 1: a typed divider between items is the row's separators setting, not a block |  |
+| `skeleton:footer:Indus Foods Website v2/724#0` | footer Indus Foods Website v2/724#0 <span> "\|" | remove | 1: a typed divider between items is the row's separators setting, not a block |  |
+
+### Settled by rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) (7)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:footer:Indus Foods Website v2/658#0` | footer Indus Foods Website v2/658#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:footer:Indus Foods Website v2/664#0` | footer Indus Foods Website v2/664#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-about:Indus Foods Website v2/481` | page-about Indus Foods Website v2/481 <a> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-blog:Indus Foods Website v2/606` | page-blog Indus Foods Website v2/606 <a> | block:sgs/container | 1: 24 copies of one template element on 7 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-brands:Indus Foods Website v2/501` | page-brands Indus Foods Website v2/501 <a> | block:sgs/container | 1: 10 copies of one template element; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-contact:Indus Foods Website v2/531` | page-contact Indus Foods Website v2/531 <a> | block:sgs/container | 1: 3 copies of one template element; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-food-service:Indus Foods Website v2/367` | page-food-service Indus Foods Website v2/367 <a> | block:sgs/container | 1: 12 copies of one template element on 4 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+
+### Confident proposals (Accept all covers these) (240)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:footer:Indus Foods Website v2/653#0` | footer Indus Foods Website v2/653#0 <footer> | block:sgs/site-footer | 1 |  |
-| `skeleton:footer:Indus Foods Website v2/656#0` | footer Indus Foods Website v2/656#0 <div> | block:sgs/site-footer-row | 1 |  |
-| `skeleton:footer:Indus Foods Website v2/657#0` | footer Indus Foods Website v2/657#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:footer:Indus Foods Website v2/658#0` | footer Indus Foods Website v2/658#0 <a> | block:sgs/container | 1 |  |
 | `skeleton:footer:Indus Foods Website v2/660#0` | footer Indus Foods Website v2/660#0 <span> | block:sgs/container | 0.75 |  |
-| `skeleton:footer:Indus Foods Website v2/664#0` | footer Indus Foods Website v2/664#0 <a> | block:sgs/container | 1 |  |
+| `skeleton:footer:Indus Foods Website v2/662#0` | footer Indus Foods Website v2/662#0 <span> "0121 771 4330" | block:sgs/business-info | 0.8 |  |
 | `skeleton:footer:Indus Foods Website v2/666#0` | footer Indus Foods Website v2/666#0 <span> | block:sgs/container | 0.75 |  |
+| `skeleton:footer:Indus Foods Website v2/668#0` | footer Indus Foods Website v2/668#0 <span> "amir@indusfoodsltd.com" | block:sgs/business-info | 0.8 |  |
 | `skeleton:footer:Indus Foods Website v2/670#0` | footer Indus Foods Website v2/670#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:footer:Indus Foods Website v2/671#0` | footer Indus Foods Website v2/671#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:footer:Indus Foods Website v2/673#0` | footer Indus Foods Website v2/673#0 <span> "Open now" | block:sgs/container | 1 |  |
 | `skeleton:footer:Indus Foods Website v2/675#0` | footer Indus Foods Website v2/675#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:footer:Indus Foods Website v2/677` | footer Indus Foods Website v2/677 <div> | block:sgs/container | 1: 4 copies of one template element |  |
-| `skeleton:footer:Indus Foods Website v2/681#0` | footer Indus Foods Website v2/681#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:footer:Indus Foods Website v2/682#0` | footer Indus Foods Website v2/682#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:footer:Indus Foods Website v2/683#0` | footer Indus Foods Website v2/683#0 <a> | block:sgs/container | 0.75 |  |
 | `skeleton:footer:Indus Foods Website v2/685#0` | footer Indus Foods Website v2/685#0 <p> "As an industry leading food & drink distributor, based in the heart of the UK, the company specialises in Ethnic Foods & has a strong export operation. Part of the Unitas Wholesale Group, with an annual turnover of £8bn, the company is at the forefront of driving positive growth within the Independent Wholesale sector." | block:sgs/text | 0.75 |  |
 | `skeleton:footer:Indus Foods Website v2/686#0` | footer Indus Foods Website v2/686#0 <div> | block:sgs/social-icons | 0.74 |  |
-| `skeleton:footer:Indus Foods Website v2/687#0` | footer Indus Foods Website v2/687#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:footer:Indus Foods Website v2/690#0` | footer Indus Foods Website v2/690#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:footer:Indus Foods Website v2/693#0` | footer Indus Foods Website v2/693#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:footer:Indus Foods Website v2/699#0` | footer Indus Foods Website v2/699#0 <a> | block:sgs/icon | 0.75 |  |
 | `skeleton:footer:Indus Foods Website v2/702#0` | footer Indus Foods Website v2/702#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:footer:Indus Foods Website v2/704#0` | footer Indus Foods Website v2/704#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:footer:Indus Foods Website v2/706` | footer Indus Foods Website v2/706 <a> "Certifications" | block:sgs/container | 1: 6 copies of one template element |  |
 | `skeleton:footer:Indus Foods Website v2/708#0` | footer Indus Foods Website v2/708#0 <a> "Apply For A Trade Account" | block:sgs/button | 0.75 |  |
 | `skeleton:footer:Indus Foods Website v2/709#0` | footer Indus Foods Website v2/709#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:footer:Indus Foods Website v2/711#0` | footer Indus Foods Website v2/711#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:footer:Indus Foods Website v2/712#0` | footer Indus Foods Website v2/712#0 <iframe> | block:sgs/media | 0.75 |  |
 | `skeleton:footer:Indus Foods Website v2/713#0` | footer Indus Foods Website v2/713#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:footer:Indus Foods Website v2/714#0` | footer Indus Foods Website v2/714#0 <div> "55-58 Stratford St N, Birmingham B11 1BU, United Kingdom" | block:sgs/business-info | 0.8 |  |
 | `skeleton:footer:Indus Foods Website v2/718#0` | footer Indus Foods Website v2/718#0 <div> | block:sgs/site-footer-row | 1 |  |
-| `skeleton:footer:Indus Foods Website v2/719#0` | footer Indus Foods Website v2/719#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:footer:Indus Foods Website v2/720#0` | footer Indus Foods Website v2/720#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:footer:Indus Foods Website v2/721#0` | footer Indus Foods Website v2/721#0 <span> "Copyright © 2026 Indus Foods Ltd" | block:sgs/business-info | 0.8 |  |
-| `skeleton:footer:Indus Foods Website v2/726#0` | footer Indus Foods Website v2/726#0 <button> "Back to top" | block:sgs/container | 1 |  |
-
-### mobile-tablet-drawer
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/109#0` | mobile-tablet-drawer Indus Foods Website v2/109#0 <span> | block:sgs/decorative-image | agent pick 0.45: An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/110#0` | mobile-tablet-drawer Indus Foods Website v2/110#0 <span> | block:sgs/decorative-image | agent pick 0.45: An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/111#0` | mobile-tablet-drawer Indus Foods Website v2/111#0 <span> | remove | agent pick 0.55: An aria-hidden radial-gradient layer covering its parent (inset 0) is the parent container's background overlay paint, which the container's overlay settings and Fill carry, not a content block.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0` | mobile-tablet-drawer Indus Foods Website v2/114#0 <indus-logo> | block:sgs/responsive-logo | agent pick 0.92: The indus-logo element is the typed brand logo, so it is the logo block; sgs/responsive-logo replaces core/site-logo in the DB.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/business-info | agent pick 0.75: A tel link to the business phone is Site Info content; sgs/business-info (displayType phone) is the top candidate, shown icon-only as the draft does.; was block:sgs/business-info 0.67 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | block:sgs/business-info | agent pick 0.75: A mailto link to the business email is Site Info content; sgs/business-info (displayType email) is the top candidate, shown icon-only as the draft does.; was block:sgs/business-info 0.67 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0` | mobile-tablet-drawer Indus Foods Website v2/119#0 <span> | block:sgs/icon | agent pick 0.5: One of two crossed 2.5px bars that together draw the close (X) glyph of the drawer close button; sgs/icon renders the X as one glyph, so the second bar is removed.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0` | mobile-tablet-drawer Indus Foods Website v2/120#0 <span> | remove | agent pick 0.55: The second crossed bar of the close (X) glyph; the first bar is picked as one sgs/icon that draws the whole X, so this stroke is not a separate block.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/126` | mobile-tablet-drawer Indus Foods Website v2/126 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/127` | mobile-tablet-drawer Indus Foods Website v2/127 <span> "Home" | block:sgs/text | agent pick 0.55: A drawer menu item label in a looped button; sgs/text is the only candidate, but the list should be sgs/nav-drawer-menu, which renders its own labels, and I cannot see that row to confirm.; was block:sgs/text 0.25 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/128=unresolved` | mobile-tablet-drawer Indus Foods Website v2/128=unresolved <span> | block:sgs/container | agent pick 0.5: A 40px ringed circle that holds the accordion caret of a drawer item; kept as a container so its caret child (picked as sgs/icon) stays inside it, though sgs/nav-drawer-menu would render this toggle itself.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/130` | mobile-tablet-drawer Indus Foods Website v2/130 <span> | block:sgs/icon | agent pick 0.6: The rotating caret glyph inside the drawer item toggle is an icon; sgs/icon is the DB block for it.; was no block 0 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/179#0` | mobile-tablet-drawer Indus Foods Website v2/179#0 <span> "Follow us" | block:sgs/label | agent pick 0.8: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/198#0` | mobile-tablet-drawer Indus Foods Website v2/198#0 <span> "Become A Trade Customer" | block:sgs/text | agent pick 0.55: The words of a link the draft styles as the drawer call-to-action button; the link parent is proposed as a container, so the words stay sgs/text to avoid a button nested in a link, but the parent should be sgs/button.; was block:sgs/text 0.25 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/200#0` | mobile-tablet-drawer Indus Foods Website v2/200#0 <span> | block:sgs/icon | agent pick 0.75: An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG.; was no block 0 |  |
-
-### mobile-tablet-drawer: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/108#0` | mobile-tablet-drawer Indus Foods Website v2/108#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/112#0` | mobile-tablet-drawer Indus Foods Website v2/112#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/113#0` | mobile-tablet-drawer Indus Foods Website v2/113#0 <a> | block:sgs/container | 1 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/115#0` | mobile-tablet-drawer Indus Foods Website v2/115#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0` | mobile-tablet-drawer Indus Foods Website v2/118#0 <button> | block:sgs/container | 1 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/121#0` | mobile-tablet-drawer Indus Foods Website v2/121#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/122#0` | mobile-tablet-drawer Indus Foods Website v2/122#0 <nav> | block:sgs/container | 0.75 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/124` | mobile-tablet-drawer Indus Foods Website v2/124 <div> | block:sgs/container | 0.75: 6 copies of one template element |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/125` | mobile-tablet-drawer Indus Foods Website v2/125 <button> | block:sgs/container | 1: 6 copies of one template element |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/128=sgs/container` | mobile-tablet-drawer Indus Foods Website v2/128=sgs/container <span> | block:sgs/container | 1: 4 copies of one template element |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/178#0` | mobile-tablet-drawer Indus Foods Website v2/178#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/180#0` | mobile-tablet-drawer Indus Foods Website v2/180#0 <div> | block:sgs/social-icons | 0.74 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/181#0` | mobile-tablet-drawer Indus Foods Website v2/181#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/184#0` | mobile-tablet-drawer Indus Foods Website v2/184#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/187#0` | mobile-tablet-drawer Indus Foods Website v2/187#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/193#0` | mobile-tablet-drawer Indus Foods Website v2/193#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/196#0` | mobile-tablet-drawer Indus Foods Website v2/196#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/197#0` | mobile-tablet-drawer Indus Foods Website v2/197#0 <a> | block:sgs/container | 1 |  |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/199#0` | mobile-tablet-drawer Indus Foods Website v2/199#0 <span> | block:sgs/container | 1 |  |
-
-### page-about
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-about:Indus Foods Website v2/321#0` | page-about Indus Foods Website v2/321#0 <div> | block:sgs/media | agent pick 0.4: An aria-hidden full-cover layer that loads an animation from data-src; sgs/media supports svg and lottie (mediaType enum), but I cannot see the asset format, and it may instead be sgs/decorative-image.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/325#0` | page-about Indus Foods Website v2/325#0 <span> "/" | block:sgs/text | agent pick 0.45: A "/" between breadcrumb links; kept as typed text, but the trail should be sgs/breadcrumbs, which renders its own separator, and I cannot see the parent row to change it.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/327#0` | page-about Indus Foods Website v2/327#0 <span> "/" | block:sgs/text | agent pick 0.45: A "/" between breadcrumb links; kept as typed text, but the trail should be sgs/breadcrumbs, which renders its own separator, and I cannot see the parent row to change it.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/328#0` | page-about Indus Foods Website v2/328#0 <span> "About Us" | block:sgs/text | agent pick 0.45: The current page in the breadcrumb trail; kept as text, but the trail should be sgs/breadcrumbs, which renders the current item itself, and I cannot see the parent row to change it.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/332#0` | page-about Indus Foods Website v2/332#0 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/336#0` | page-about Indus Foods Website v2/336#0 <div> | block:sgs/multi-button | agent pick 0.85: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container.; was block:sgs/multi-button 0.51 |  |
-| `skeleton:page-about:Indus Foods Website v2/351` | page-about Indus Foods Website v2/351 <span> | block:sgs/separator | agent pick 0.5: A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/361` | page-about Indus Foods Website v2/361 <span> | block:sgs/separator | agent pick 0.45: A 44px by 3px accent line on the top edge of a stat; sgs/separator is the DB short divider, though it may be the stat card's own decoration.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/362` | page-about Indus Foods Website v2/362 <div> "1962" | block:sgs/counter | agent pick 0.5: A large stat number paired with a short label in a repeated stat item; sgs/counter (number with prefix, suffix and label) fits the pattern, but a year like 1962 may not suit a counting animation.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/363` | page-about Indus Foods Website v2/363 <div> "Family-run since" | block:sgs/text | agent pick 0.6: The short label under a stat number; kept as sgs/text beside the number, as the draft keeps it separate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/440#0` | page-about Indus Foods Website v2/440#0 <span> "01 / 05" | block:sgs/text | agent pick 0.5: A live position counter ("01 / 05") for a pinned horizontal-scroll section; sgs/text holds the words, but its live update belongs to the pin-scrub effect, which I cannot confirm drives a counter.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/441#0` | page-about Indus Foods Website v2/441#0 <div> | block:sgs/container | agent pick 0.35: A 4px progress track with a fill bar for a pinned horizontal-scroll section; no DB block implements a scroll-linked progress bar, so this is a placeholder container pending a missing feature.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/443#0` | page-about Indus Foods Website v2/443#0 <span> "Scroll to explore" | block:sgs/text | agent pick 0.75: A short instruction line beside the pinned-section progress bar; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/448` | page-about Indus Foods Website v2/448 <div> "1962" | block:sgs/text | agent pick 0.55: A very large outlined year (transparent fill) for each pinned chapter; sgs/text holds the words, though it may be a display heading.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/452` | page-about Indus Foods Website v2/452 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/487` | page-about Indus Foods Website v2/487 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/489` | page-about Indus Foods Website v2/489 <span> "Heritage" | block:sgs/label | agent pick 0.85: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/490` | page-about Indus Foods Website v2/490 <div> "Our Story" | block:sgs/heading | agent pick 0.65: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/491` | page-about Indus Foods Website v2/491 <div> "Three generations and six decades of family heritage." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/493` | page-about Indus Foods Website v2/493 <span> "Learn more" | block:sgs/text | agent pick 0.55: A "read more" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link.; was block:sgs/text 0.25 |  |
-| `skeleton:page-about:Indus Foods Website v2/516#0` | page-about Indus Foods Website v2/516#0 <span> | block:sgs/decorative-image | agent pick 0.45: An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/517#0` | page-about Indus Foods Website v2/517#0 <span> | block:sgs/decorative-image | agent pick 0.45: An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/518#0` | page-about Indus Foods Website v2/518#0 <span> | remove | agent pick 0.55: An aria-hidden radial-gradient layer covering its parent (inset 0) is the parent container's background overlay paint, which the container's overlay settings and Fill carry, not a content block.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/521#0` | page-about Indus Foods Website v2/521#0 <span> | block:sgs/separator | agent pick 0.5: A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration.; was no block 0 |  |
-| `skeleton:page-about:Indus Foods Website v2/526#0` | page-about Indus Foods Website v2/526#0 <a> "Call 0121 771 4330" | block:sgs/business-info | agent pick 0.8: A "Call" link with the business phone number is Site Info content; sgs/business-info (displayType phone) is the top candidate, with textBefore holding the word "Call".; was block:sgs/business-info 0.67 |  |
-
-### page-about: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-about:Indus Foods Website v2/316#0` | page-about Indus Foods Website v2/316#0 <section> | block:sgs/container | 0.75: 28 copies of one template element on 28 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/322#0` | page-about Indus Foods Website v2/322#0 <div> | block:sgs/container | 0.75: 28 copies of one template element on 28 surfaces |  |
+| `skeleton:footer:Indus Foods Website v2/725#0` | footer Indus Foods Website v2/725#0 <span> "Placeholder photography via Unsplash" | remove | 0.9: brief-only line (photo-credit-note): a note that the draft's photographs are stand-ins exists only for the design review; the live site uses the client's own photographs |  |
 | `skeleton:page-about:Indus Foods Website v2/323#0` | page-about Indus Foods Website v2/323#0 <div> | block:sgs/container | 1: 28 copies of one template element on 28 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/324#0` | page-about Indus Foods Website v2/324#0 <a> "Home" | block:sgs/button | 0.75: 28 copies of one template element on 28 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/326#0` | page-about Indus Foods Website v2/326#0 <a> "About" | block:sgs/button | 0.75: 28 copies of one template element on 28 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/329#0` | page-about Indus Foods Website v2/329#0 <div> | block:sgs/container | 1: 28 copies of one template element on 28 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/330#0` | page-about Indus Foods Website v2/330#0 <div> | block:sgs/container | 0.75: 28 copies of one template element on 28 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/331#0` | page-about Indus Foods Website v2/331#0 <span> "About Indus Foods" | block:sgs/container | 0.75: 28 copies of one template element on 28 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/333#0` | page-about Indus Foods Website v2/333#0 <h1> "A family business feeding the UK since 1962." | block:sgs/heading | 0.75: 28 copies of one template element on 28 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/334#0` | page-about Indus Foods Website v2/334#0 <p> "We are a family-run Indian and South Asian food wholesaler based in Birmingham, supplying more than 5,000 foodservice, retail, manufacturing and wholesale customers across the UK and Europe." | block:sgs/text | 0.75: 28 copies of one template element on 28 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/338` | page-about Indus Foods Website v2/338 <a> "Read our story" | block:sgs/button | 0.75: 18 copies of one template element on 9 surfaces |  |
@@ -493,61 +926,24 @@ Accept all: [ ]
 | `skeleton:page-about:Indus Foods Website v2/345` | page-about Indus Foods Website v2/345 <div> | block:sgs/container | 0.75: 88 copies of one template element on 28 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/347` | page-about Indus Foods Website v2/347 <div> | block:sgs/container | 1: 27 copies of one template element on 23 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/348` | page-about Indus Foods Website v2/348 <div> | block:sgs/container | 0.75: 27 copies of one template element on 23 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/350` | page-about Indus Foods Website v2/350 <div> "Our heritage" | block:sgs/container | 1: 27 copies of one template element on 23 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/352` | page-about Indus Foods Website v2/352 <h2> "Six decades in five chapters." | block:sgs/heading | 0.75: 27 copies of one template element on 23 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/358#0` | page-about Indus Foods Website v2/358#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/360` | page-about Indus Foods Website v2/360 <div> | block:sgs/container | 0.75: 8 copies of one template element on 2 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/437#0` | page-about Indus Foods Website v2/437#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/438#0` | page-about Indus Foods Website v2/438#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/439#0` | page-about Indus Foods Website v2/439#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/444#0` | page-about Indus Foods Website v2/444#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/446` | page-about Indus Foods Website v2/446 <article> | block:sgs/container | 1: 10 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/447` | page-about Indus Foods Website v2/447 <div> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/449` | page-about Indus Foods Website v2/449 <h3> "A shop in the Balti Triangle" | block:sgs/heading | 0.75: 10 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/450` | page-about Indus Foods Website v2/450 <p> "Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook." | block:sgs/text | 0.75: 10 copies of one template element on 2 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/451` | page-about Indus Foods Website v2/451 <div> | block:sgs/container | 0.75: 10 copies of one template element on 2 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/479#0` | page-about Indus Foods Website v2/479#0 <div> | block:sgs/container | 1: 11 copies of one template element on 11 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/481` | page-about Indus Foods Website v2/481 <a> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/485` | page-about Indus Foods Website v2/485 <div> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/486` | page-about Indus Foods Website v2/486 <div> | block:sgs/container | 1: 55 copies of one template element on 11 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/515#0` | page-about Indus Foods Website v2/515#0 <div> | block:sgs/container | 1: 23 copies of one template element on 23 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/519#0` | page-about Indus Foods Website v2/519#0 <div> | block:sgs/container | 0.75: 23 copies of one template element on 23 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/520#0` | page-about Indus Foods Website v2/520#0 <div> "Work with us" | block:sgs/container | 1: 23 copies of one template element on 23 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/522#0` | page-about Indus Foods Website v2/522#0 <h2> "Ready to trade with Indus Foods?" | block:sgs/heading | 0.75: 23 copies of one template element on 23 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/523#0` | page-about Indus Foods Website v2/523#0 <p> "Open a trade account for wholesale pricing, a named account manager and UK-wide delivery." | block:sgs/text | 0.75: 23 copies of one template element on 23 surfaces |  |
-| `skeleton:page-about:Indus Foods Website v2/524#0` | page-about Indus Foods Website v2/524#0 <div> | block:sgs/container | 1: 22 copies of one template element on 22 surfaces |  |
 | `skeleton:page-about:Indus Foods Website v2/525#0` | page-about Indus Foods Website v2/525#0 <a> "Become a Trade Customer" | block:sgs/button | 0.75: 23 copies of one template element on 23 surfaces |  |
-
-### page-apply
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/10#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/10#0 <span> "Step 1 of 5" | block:sgs/label | agent pick 0.6: A small uppercase step counter ("Step 1 of 5") above the form progress; sgs/label is the DB kicker block, though sgs/form's multi-step mode may render the step count itself.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/101#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/101#0 <a> "0121 771 4330" | block:sgs/business-info | agent pick 0.85: A tel link showing the business phone number is Site Info content; sgs/business-info (displayType phone) is the top candidate.; was block:sgs/business-info 0.67 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/13#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/13#0 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/14#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/14#0 <div> | remove | agent pick 0.55: A 6px track with a fill bar showing form step progress; sgs/form has progress bar settings (progressBarColour in block_attributes), so its multi-step mode draws this bar.; was no block 0 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/84#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/84#0 <span> "Takes about 5 minutes · Your progress saves automatically" | block:sgs/text | agent pick 0.75: A short reassurance line beside the Continue button; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/89#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/89#0 <span> "Have these ready" | block:sgs/label | agent pick 0.6: A small uppercase title on a disclosure button for the "have these ready" checklist; sgs/label is the DB kicker block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/99#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/99#0 <span> "Need a hand?" | block:sgs/heading | agent pick 0.65: The title of the "Need a hand?" help panel beside the form, followed by text and a phone button; sgs/heading fits the title role.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/19` | page-apply Indus Foods Website v2>TradeApplication@466/19 <span> "1" | block:sgs/label | agent pick 0.5: A step number inside a 32px circle in the looped step navigation; sgs/label is the DB badge block, though sgs/form-step may render the step markers itself.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/21` | page-apply Indus Foods Website v2>TradeApplication@466/21 <span> "Business" | block:sgs/text | agent pick 0.55: The step name in the looped step navigation; sgs/text holds the words, though sgs/form-step may render step titles itself.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/33=sgs/text` | page-apply Indus Foods Website v2>TradeApplication@466/33=sgs/text <label> "Registered business name" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/35` | page-apply Indus Foods Website v2>TradeApplication@466/35 <span> "*" | remove | agent pick 0.6: The required asterisk of a form label; SGS form-field blocks have a required attribute that renders the marker, so typed text would duplicate it.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/39` | page-apply Indus Foods Website v2>TradeApplication@466/39 <input> | block:sgs/form-field-text | agent pick 0.5: An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks.; was no block 0 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/41` | page-apply Indus Foods Website v2>TradeApplication@466/41 <select> | block:sgs/form-field-select | agent pick 0.8: A select element in the application form; sgs/form-field-select is the DB dropdown field block (parent_block sgs/form).; was no block 0 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/47` | page-apply Indus Foods Website v2>TradeApplication@466/47 <div> | block:sgs/form-field-tiles | agent pick 0.5: A wrapped group of looped option chips that each pick a business type in the application form; sgs/form-field-tiles (visual tile selection, parent_block sgs/form) fits a choice field better than the multi-button candidate, but I cannot see whether one or several can be chosen.; was block:sgs/multi-button 0.51 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/64` | page-apply Indus Foods Website v2>TradeApplication@466/64 <span> "Leave blank if you are not VAT registered." | block:sgs/text | agent pick 0.5: A hint under a form field; kept as sgs/text, though the field blocks have a helpText attribute that would carry it.; was block:sgs/text 0.25 |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/96` | page-apply Indus Foods Website v2>TradeApplication@466/96 <span> | block:sgs/icon | agent pick 0.6: A 22px tinted circle holding a check glyph before each checklist line; sgs/icon has a circle shape enum, though the list may be better as sgs/icon-list.; was no block 0 |  |
-
-### page-apply: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-apply:Indus Foods Website v2/466#0` | page-apply Indus Foods Website v2/466#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/100#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/100#0 <p> "Our trade team can complete the application with you over the phone." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/12#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/12#0 <span> "Saves as you go" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/16#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/16#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/22#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/22#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/23#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/23#0 <h2> "Tell us about your business" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/24#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/24#0 <p> "The basics we need to set up your account and check your details." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/26#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/26#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
@@ -555,7 +951,6 @@ Accept all: [ ]
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/6#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/6#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/7#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/7#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/79#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/79#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/8#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/8#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/85#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/85#0 <button> "Continue" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/86#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/86#0 <aside> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/87#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/87#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
@@ -568,84 +963,14 @@ Accept all: [ ]
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/33=sgs/container` | page-apply Indus Foods Website v2>TradeApplication@466/33=sgs/container <label> "What kind of business are you?" | block:sgs/container | 1: 8 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/49` | page-apply Indus Foods Website v2>TradeApplication@466/49 <button> "Restaurant or takeaway" | block:sgs/button | 0.75: 22 copies of one template element on 2 surfaces |  |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/95` | page-apply Indus Foods Website v2>TradeApplication@466/95 <div> "Your trading and registered business name" | block:sgs/container | 1: 10 copies of one template element on 2 surfaces |  |
-
-### page-blog
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-blog:Indus Foods Website v2/601#0` | page-blog Indus Foods Website v2/601#0 <div> | block:sgs/multi-button | agent pick 0.65: A wrapped row of looped category filter buttons whose children are proposed as sgs/button; sgs/multi-button is the top candidate, though sgs/post-grid has its own AJAX filtering that would replace it.; was block:sgs/multi-button 0.51 |  |
-| `skeleton:page-blog:Indus Foods Website v2/608` | page-blog Indus Foods Website v2/608 <image-slot> | block:sgs/media | agent pick 0.8: A repeated post-card image-slot; sgs/media is the DB content image block, though the cards may be better as sgs/post-grid.; was no block 0 |  |
-| `skeleton:page-blog:Indus Foods Website v2/611` | page-blog Indus Foods Website v2/611 <span> "Seasonal" | block:sgs/label | agent pick 0.8: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-blog:Indus Foods Website v2/612` | page-blog Indus Foods Website v2/612 <span> "Feb 2026" | block:sgs/text | agent pick 0.75: The post date line in a repeated post card; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-blog:Indus Foods Website v2/613` | page-blog Indus Foods Website v2/613 <div> "Supporting the trade through Ramadan" | block:sgs/heading | agent pick 0.7: The title of a repeated post card; sgs/heading fits the title role, though the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:page-blog:Indus Foods Website v2/614` | page-blog Indus Foods Website v2/614 <div> "How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-blog:Indus Foods Website v2/615` | page-blog Indus Foods Website v2/615 <span> "Read article" | block:sgs/text | agent pick 0.55: A "read more" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link.; was block:sgs/text 0.25 |  |
-
-### page-blog: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-blog:Indus Foods Website v2/603` | page-blog Indus Foods Website v2/603 <button> "All" | block:sgs/button | 0.75: 5 copies of one template element |  |
 | `skeleton:page-blog:Indus Foods Website v2/604#0` | page-blog Indus Foods Website v2/604#0 <div> | block:sgs/container | 1: 7 copies of one template element on 7 surfaces |  |
-| `skeleton:page-blog:Indus Foods Website v2/606` | page-blog Indus Foods Website v2/606 <a> | block:sgs/container | 1: 24 copies of one template element on 7 surfaces |  |
 | `skeleton:page-blog:Indus Foods Website v2/607` | page-blog Indus Foods Website v2/607 <div> | block:sgs/container | 0.75: 24 copies of one template element on 7 surfaces |  |
 | `skeleton:page-blog:Indus Foods Website v2/609` | page-blog Indus Foods Website v2/609 <div> | block:sgs/container | 1: 24 copies of one template element on 7 surfaces |  |
 | `skeleton:page-blog:Indus Foods Website v2/610` | page-blog Indus Foods Website v2/610 <div> | block:sgs/container | 1: 24 copies of one template element on 7 surfaces |  |
-
-### page-brand-sanam
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-brand-sanam:Indus Foods Website v2/496` | page-brand-sanam Indus Foods Website v2/496 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-
-### page-brand-sanam: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-brand-sanam:Indus Foods Website v2/495` | page-brand-sanam Indus Foods Website v2/495 <span> | block:sgs/container | 0.75: 14 copies of one template element on 4 surfaces |  |
-
-### page-brands
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-brands:Indus Foods Website v2/503` | page-brands Indus Foods Website v2/503 <image-slot> | block:sgs/media | agent pick 0.8: A repeated brand-logo image-slot (fit contain); these are partner brand images, not the site logo, so sgs/media is the block.; was no block 0 |  |
-| `skeleton:page-brands:Indus Foods Website v2/505` | page-brands Indus Foods Website v2/505 <div> "Sanam" | block:sgs/heading | agent pick 0.6: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:page-brands:Indus Foods Website v2/506` | page-brands Indus Foods Website v2/506 <div> "Own brand · rice, flour & quality foods" | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-brands:Indus Foods Website v2/524#0` | page-brands Indus Foods Website v2/524#0 <div> | block:sgs/multi-button | agent pick 0.85: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container.; was block:sgs/multi-button 0.51 |  |
-
-### page-brands: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-brands:Indus Foods Website v2/499#0` | page-brands Indus Foods Website v2/499#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-brands:Indus Foods Website v2/501` | page-brands Indus Foods Website v2/501 <a> | block:sgs/container | 1: 10 copies of one template element |  |
 | `skeleton:page-brands:Indus Foods Website v2/502` | page-brands Indus Foods Website v2/502 <div> | block:sgs/container | 0.75: 10 copies of one template element |  |
-| `skeleton:page-brands:Indus Foods Website v2/504` | page-brands Indus Foods Website v2/504 <div> | block:sgs/container | 0.75: 10 copies of one template element |  |
-| `skeleton:page-brands:Indus Foods Website v2/526#0` | page-brands Indus Foods Website v2/526#0 <a> "Request catalogue" | block:sgs/button | 0.75 |  |
-
-### page-careers
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-careers:Indus Foods Website v2/419` | page-careers Indus Foods Website v2/419 <span> | block:sgs/icon | agent pick 0.75: An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG.; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/427` | page-careers Indus Foods Website v2/427 <span> "Warehouse & logistics" | block:sgs/label | agent pick 0.8: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-careers:Indus Foods Website v2/428` | page-careers Indus Foods Website v2/428 <span> "Full-time" | block:sgs/label | agent pick 0.8: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-careers:Indus Foods Website v2/429` | page-careers Indus Foods Website v2/429 <span> "Birmingham B11" | block:sgs/label | agent pick 0.75: A pill badge naming the role's location (not the business address); sgs/label is the DB badge block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-careers:Indus Foods Website v2/556=sgs/text` | page-careers Indus Foods Website v2/556=sgs/text <span> "Phone" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
-| `skeleton:page-careers:Indus Foods Website v2/558` | page-careers Indus Foods Website v2/558 <span> "*" | remove | agent pick 0.6: The required asterisk of a form label; SGS form-field blocks have a required attribute that renders the marker, so typed text would duplicate it.; was block:sgs/text 0.25 |  |
-| `skeleton:page-careers:Indus Foods Website v2/560` | page-careers Indus Foods Website v2/560 <input> | block:sgs/form-field-text | agent pick 0.5: An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks.; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/562` | page-careers Indus Foods Website v2/562 <select> | block:sgs/form-field-select | agent pick 0.8: A select element in an application form; sgs/form-field-select is the DB dropdown field block (parent_block sgs/form).; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/566#0` | page-careers Indus Foods Website v2/566#0 <textarea> | block:sgs/form-field-textarea | agent pick 0.85: A textarea in an application form; sgs/form-field-textarea is the DB multi-line field block (parent_block sgs/form).; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/568#0` | page-careers Indus Foods Website v2/568#0 <input> | block:sgs/form-field-file | agent pick 0.85: An input of type file in an application form; sgs/form-field-file is the DB file upload field block (parent_block sgs/form).; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/570#0` | page-careers Indus Foods Website v2/570#0 <input> | block:sgs/form-field-consent | agent pick 0.85: A required checkbox whose label reads "I agree to Indus Foods contact..."; sgs/form-field-consent is the DB consent checkbox block (parent_block sgs/form).; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/573#0` | page-careers Indus Foods Website v2/573#0 <span> | block:sgs/decorative-image | agent pick 0.45: An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low.; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/576#0` | page-careers Indus Foods Website v2/576#0 <span> | block:sgs/separator | agent pick 0.5: A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration.; was no block 0 |  |
-| `skeleton:page-careers:Indus Foods Website v2/581` | page-careers Indus Foods Website v2/581 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
-
-### page-careers: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-careers:Indus Foods Website v2/354#0` | page-careers Indus Foods Website v2/354#0 <p> "Apply for an open role below, or register your interest further down if you don’t see the right fit." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/418` | page-careers Indus Foods Website v2/418 <button> "Register interest" | block:sgs/container | 1: 4 copies of one template element |  |
 | `skeleton:page-careers:Indus Foods Website v2/422#0` | page-careers Indus Foods Website v2/422#0 <div> | block:sgs/container | 1 |  |
@@ -667,31 +992,13 @@ Accept all: [ ]
 | `skeleton:page-careers:Indus Foods Website v2/571#0` | page-careers Indus Foods Website v2/571#0 <button> "Send application" | block:sgs/button | 0.75: 4 copies of one template element on 4 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/572#0` | page-careers Indus Foods Website v2/572#0 <aside> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/574#0` | page-careers Indus Foods Website v2/574#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-careers:Indus Foods Website v2/575#0` | page-careers Indus Foods Website v2/575#0 <div> "Talk to us" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/577#0` | page-careers Indus Foods Website v2/577#0 <h3> "Prefer to talk first?" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/578#0` | page-careers Indus Foods Website v2/578#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/580` | page-careers Indus Foods Website v2/580 <div> "Call our office during working hours" | block:sgs/container | 1: 5 copies of one template element on 2 surfaces |  |
-| `skeleton:page-careers:Indus Foods Website v2/582#0` | page-careers Indus Foods Website v2/582#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/583#0` | page-careers Indus Foods Website v2/583#0 <a> "0121 771 4330" | block:sgs/icon-list | 0.7: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-careers:Indus Foods Website v2/584#0` | page-careers Indus Foods Website v2/584#0 <a> "amir@indusfoodsltd.com" | block:sgs/icon-list | 0.7: 2 copies of one template element on 2 surfaces |  |
-
-### page-certifications
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-certifications:Indus Foods Website v2/402#0` | page-certifications Indus Foods Website v2/402#0 <span> | block:sgs/separator | agent pick 0.5: A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration.; was no block 0 |  |
-| `skeleton:page-certifications:Indus Foods Website v2/411` | page-certifications Indus Foods Website v2/411 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
-| `skeleton:page-certifications:Indus Foods Website v2/414` | page-certifications Indus Foods Website v2/414 <div> "Supplier approval" | block:sgs/heading | agent pick 0.65: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:page-certifications:Indus Foods Website v2/420` | page-certifications Indus Foods Website v2/420 <div> "We vet the producers we import from before their products join our range." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-certifications:Indus Foods Website v2/484` | page-certifications Indus Foods Website v2/484 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-
-### page-certifications: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-certifications:Indus Foods Website v2/398#0` | page-certifications Indus Foods Website v2/398#0 <div> | block:sgs/container | 1: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-certifications:Indus Foods Website v2/399#0` | page-certifications Indus Foods Website v2/399#0 <div> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
-| `skeleton:page-certifications:Indus Foods Website v2/401#0` | page-certifications Indus Foods Website v2/401#0 <div> "How we protect quality" | block:sgs/container | 1: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-certifications:Indus Foods Website v2/403#0` | page-certifications Indus Foods Website v2/403#0 <h2> "Controls at every step." | block:sgs/heading | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-certifications:Indus Foods Website v2/405#0` | page-certifications Indus Foods Website v2/405#0 <p> "Certification is only as good as the process behind it." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-certifications:Indus Foods Website v2/408#0` | page-certifications Indus Foods Website v2/408#0 <div> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
@@ -699,41 +1006,13 @@ Accept all: [ ]
 | `skeleton:page-certifications:Indus Foods Website v2/412` | page-certifications Indus Foods Website v2/412 <div> | block:sgs/container | 0.75: 28 copies of one template element on 8 surfaces |  |
 | `skeleton:page-certifications:Indus Foods Website v2/413` | page-certifications Indus Foods Website v2/413 <div> | block:sgs/container | 1: 28 copies of one template element on 8 surfaces |  |
 | `skeleton:page-certifications:Indus Foods Website v2/483` | page-certifications Indus Foods Website v2/483 <div> | block:sgs/container | 0.75: 8 copies of one template element on 2 surfaces |  |
-
-### page-contact
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-contact:Indus Foods Website v2/532` | page-contact Indus Foods Website v2/532 <span> | block:sgs/icon | agent pick 0.7: A filled or ringed circle holding an icon glyph; sgs/icon has a shape enum (circle), so the circle is the icon's own shape rather than a wrapper.; was no block 0 |  |
-| `skeleton:page-contact:Indus Foods Website v2/534` | page-contact Indus Foods Website v2/534 <span> "Visit" | block:sgs/label | agent pick 0.8: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2/535` | page-contact Indus Foods Website v2/535 <span> "55–58 Stratford Street North" | block:sgs/business-info | agent pick 0.55: The value line of a looped contact detail (address, phone or email by item) is Site Info content, so it is sgs/business-info; the display type varies by copy, which I cannot set from one template row.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2/536=sgs/text` | page-contact Indus Foods Website v2/536=sgs/text <span> "Sales, orders and accounts" | block:sgs/text | agent pick 0.8: A short note under a contact detail ("Sales, orders and accounts"); sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2/539#0` | page-contact Indus Foods Website v2/539#0 <a> "Get Directions" | block:sgs/button | agent pick 0.75: A standalone Google Maps directions link styled as a call-to-action under the map; sgs/button is the candidate that fits a link action, since business-info renders the address itself.; was block:sgs/business-info 0.57 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/10#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/10#0 <span> "Choose all that apply" | block:sgs/text | agent pick 0.75: A hint beside a form section heading ("Choose all that apply"); sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/21#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/21#0 <span> "02" | block:sgs/text | agent pick 0.6: A step number beside a form section heading; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/31#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/31#0 <textarea> | block:sgs/form-field-textarea | agent pick 0.85: A textarea in the enquiry form; sgs/form-field-textarea is the DB multi-line field block (parent_block sgs/form).; was no block 0 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/32#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/32#0 <label> "How can we help?" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/33#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/33#0 <span> "0 / 800" | block:sgs/text | agent pick 0.4: A live character counter ("0 / 800") for the message field; no form-field attribute in the DB provides a counter, so it is typed text for now and the live count is a missing feature.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/37#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/37#0 <span> "Reply by" | block:sgs/text | agent pick 0.5: The label of a reply-preference choice whose options are buttons; kept as sgs/text, though the choice may be better as sgs/form-field-radio, whose label would carry it.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/41#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/41#0 <span> "We reply within one working day. Your details are only used to answer your enquiry." | block:sgs/text | agent pick 0.8: A privacy reassurance line beside the submit button; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/8#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/8#0 <span> "01" | block:sgs/text | agent pick 0.6: A step number beside a form section heading; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/14` | page-contact Indus Foods Website v2>EnquiryForm@468/14 <span> "New trade account" | block:sgs/text | agent pick 0.55: The title of a looped selectable option tile in the enquiry form; kept as sgs/text, though the option set may be better as sgs/form-field-tiles, which I cannot see from this row.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/15` | page-contact Indus Foods Website v2>EnquiryForm@468/15 <span> "Open an account with us" | block:sgs/text | agent pick 0.55: The description of a looped selectable option tile in the enquiry form; kept as sgs/text, though the option set may be better as sgs/form-field-tiles.; was block:sgs/text 0.25 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/26` | page-contact Indus Foods Website v2>EnquiryForm@468/26 <input> | block:sgs/form-field-text | agent pick 0.5: An input whose type is a template variable (text, email or phone by field); sgs/form-field-text is the safe default, but I cannot see each field's type to choose the email or phone field blocks.; was no block 0 |  |
-| `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/27` | page-contact Indus Foods Website v2>EnquiryForm@468/27 <label> "Your name" | remove | agent pick 0.5: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words.; was block:sgs/text 0.25 |  |
-
-### page-contact: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
+| `skeleton:page-community:Indus Foods Website v2/331#0` | page-community Indus Foods Website v2/331#0 <span> "About · Community & Charity" | block:sgs/container | 0.75: 3 copies of one template element on 3 surfaces |  |
 | `skeleton:page-contact:Indus Foods Website v2/468#0` | page-contact Indus Foods Website v2/468#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-contact:Indus Foods Website v2/528#0` | page-contact Indus Foods Website v2/528#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-contact:Indus Foods Website v2/529#0` | page-contact Indus Foods Website v2/529#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-contact:Indus Foods Website v2/531` | page-contact Indus Foods Website v2/531 <a> | block:sgs/container | 1: 3 copies of one template element |  |
 | `skeleton:page-contact:Indus Foods Website v2/533` | page-contact Indus Foods Website v2/533 <span> | block:sgs/container | 0.75: 3 copies of one template element |  |
-| `skeleton:page-contact:Indus Foods Website v2/536=sgs/business-info` | page-contact Indus Foods Website v2/536=sgs/business-info <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/business-info | 0.8: 1 copies of one template element |  |
+| `skeleton:page-contact:Indus Foods Website v2/535=sgs/business-info` | page-contact Indus Foods Website v2/535=sgs/business-info <span> "0121 771 4330" | block:sgs/business-info | 0.8: 2 copies of one template element |  |
 | `skeleton:page-contact:Indus Foods Website v2/537#0` | page-contact Indus Foods Website v2/537#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-contact:Indus Foods Website v2/538#0` | page-contact Indus Foods Website v2/538#0 <iframe> | block:sgs/media | 0.75 |  |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/11#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/11#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/20#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/20#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/22#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/22#0 <h3> "Your details" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
@@ -750,18 +1029,6 @@ Accept all: [ ]
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/13` | page-contact Indus Foods Website v2>EnquiryForm@468/13 <button> | block:sgs/container | 1: 12 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/25` | page-contact Indus Foods Website v2>EnquiryForm@468/25 <div> | block:sgs/container | 0.75: 8 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/39` | page-contact Indus Foods Website v2>EnquiryForm@468/39 <button> "Email" | block:sgs/button | 0.75: 6 copies of one template element on 2 surfaces |  |
-
-### page-delivery
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-delivery:Indus Foods Website v2/590#0` | page-delivery Indus Foods Website v2/590#0 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
-| `skeleton:page-delivery:Indus Foods Website v2/596` | page-delivery Indus Foods Website v2/596 <span> | block:sgs/icon | agent pick 0.5: A 32px ringed toggle circle inside an FAQ question button; sgs/icon has a circle shape enum, though sgs/accordion-item would render its own toggle if the FAQ became an accordion.; was no block 0 |  |
-
-### page-delivery: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-delivery:Indus Foods Website v2/586#0` | page-delivery Indus Foods Website v2/586#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-delivery:Indus Foods Website v2/588#0` | page-delivery Indus Foods Website v2/588#0 <div> | block:sgs/container | 1: 4 copies of one template element on 2 surfaces |  |
 | `skeleton:page-delivery:Indus Foods Website v2/589#0` | page-delivery Indus Foods Website v2/589#0 <div> | block:sgs/container | 0.75: 4 copies of one template element on 2 surfaces |  |
@@ -769,80 +1036,17 @@ Accept all: [ ]
 | `skeleton:page-delivery:Indus Foods Website v2/592#0` | page-delivery Indus Foods Website v2/592#0 <div> | block:sgs/container | 0.75: 4 copies of one template element on 2 surfaces |  |
 | `skeleton:page-delivery:Indus Foods Website v2/594` | page-delivery Indus Foods Website v2/594 <div> | block:sgs/container | 0.75: 12 copies of one template element on 2 surfaces |  |
 | `skeleton:page-delivery:Indus Foods Website v2/595` | page-delivery Indus Foods Website v2/595 <button> "Is there a minimum order?" | block:sgs/container | 1: 12 copies of one template element on 2 surfaces |  |
-
-### page-food-service
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-food-service:Indus Foods Website v2/368` | page-food-service Indus Foods Website v2/368 <span> | remove | agent pick 0.55: An aria-hidden radial-gradient layer that follows the pointer (--gx and --gy) is a hover glow effect (cursor-field in the fx_effects table), not content.; was no block 0 |  |
-| `skeleton:page-food-service:Indus Foods Website v2/369` | page-food-service Indus Foods Website v2/369 <span> | block:sgs/decorative-image | agent pick 0.4: An aria-hidden radial shadow blob positioned off the card corner; sgs/decorative-image is the DB block for free-floating decoration, but this is a gradient, not an image.; was no block 0 |  |
-| `skeleton:page-food-service:Indus Foods Website v2/370` | page-food-service Indus Foods Website v2/370 <span> | block:sgs/decorative-image | agent pick 0.45: An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low.; was no block 0 |  |
-| `skeleton:page-food-service:Indus Foods Website v2/372` | page-food-service Indus Foods Website v2/372 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:page-food-service:Indus Foods Website v2/374` | page-food-service Indus Foods Website v2/374 <span> "02" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
-| `skeleton:page-food-service:Indus Foods Website v2/375` | page-food-service Indus Foods Website v2/375 <div> "Manufacturing" | block:sgs/heading | agent pick 0.65: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:page-food-service:Indus Foods Website v2/376` | page-food-service Indus Foods Website v2/376 <div> "Bulk spices, pulses, nuts and flours supplied consistently to specification." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-food-service:Indus Foods Website v2/377` | page-food-service Indus Foods Website v2/377 <span> "Explore Manufacturing" | block:sgs/text | agent pick 0.55: A "read more" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link.; was block:sgs/text 0.25 |  |
-
-### page-food-service: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-food-service:Indus Foods Website v2/365#0` | page-food-service Indus Foods Website v2/365#0 <div> | block:sgs/container | 1: 4 copies of one template element on 4 surfaces |  |
-| `skeleton:page-food-service:Indus Foods Website v2/367` | page-food-service Indus Foods Website v2/367 <a> | block:sgs/container | 1: 12 copies of one template element on 4 surfaces |  |
 | `skeleton:page-food-service:Indus Foods Website v2/371` | page-food-service Indus Foods Website v2/371 <div> | block:sgs/container | 0.75: 12 copies of one template element on 4 surfaces |  |
 | `skeleton:page-food-service:Indus Foods Website v2/373` | page-food-service Indus Foods Website v2/373 <div> | block:sgs/container | 1: 12 copies of one template element on 4 surfaces |  |
-
-### page-home
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-home:Indus Foods Website v2/208#0` | page-home Indus Foods Website v2/208#0 <div> | block:sgs/multi-button | agent pick 0.85: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container.; was block:sgs/multi-button 0.51 |  |
-| `skeleton:page-home:Indus Foods Website v2/214` | page-home Indus Foods Website v2/214 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/217#0` | page-home Indus Foods Website v2/217#0 <image-slot> | block:sgs/media | agent pick 0.88: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/225` | page-home Indus Foods Website v2/225 <image-slot> | block:sgs/media | agent pick 0.7: A repeated brand-logo image-slot inside a link in a strip that starts at x=0; each is sgs/media, though the section may be better as sgs/brand-strip (marquee logo strip), which I cannot see from this row.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/232` | page-home Indus Foods Website v2/232 <span> | remove | agent pick 0.55: An aria-hidden radial-gradient layer that follows the pointer (--gx and --gy) is a hover glow effect (cursor-field in the fx_effects table), not content.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/234` | page-home Indus Foods Website v2/234 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/244` | page-home Indus Foods Website v2/244 <span> | block:sgs/icon | agent pick 0.8: A 46px icon span at the top of a repeated value card; sgs/icon is the DB block for it.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/247` | page-home Indus Foods Website v2/247 <span> "Est. 1962" | block:sgs/label | agent pick 0.8: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/251#0` | page-home Indus Foods Website v2/251#0 <span> "Our heritage" | block:sgs/label | agent pick 0.85: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/257#0` | page-home Indus Foods Website v2/257#0 <span> | block:sgs/separator | agent pick 0.45: A 2px gradient line drawn behind the milestone markers (data-draw); sgs/separator is the DB gradient divider, though the strip may be better as sgs/timeline, whose connector would draw it.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/261` | page-home Indus Foods Website v2/261 <span> "1962" | block:sgs/label | agent pick 0.55: A year inside a 56px ringed circle marking a milestone; sgs/label is the DB badge block, though sgs/timeline would render the marker itself.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/263` | page-home Indus Foods Website v2/263 <span> "A shop on Ladypool Road" | block:sgs/heading | agent pick 0.6: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/264` | page-home Indus Foods Website v2/264 <span> "One of the UK’s first halal butchers and greengrocers." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/273#0` | page-home Indus Foods Website v2/273#0 <span> | block:sgs/icon | agent pick 0.75: An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/275#0` | page-home Indus Foods Website v2/275#0 <span> "“" | block:sgs/text | agent pick 0.5: A large typographic opening quote mark above the testimonial words; kept as sgs/text, though sgs/testimonial or sgs/quote would paint it if the parent became one, which I cannot see.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/279#0` | page-home Indus Foods Website v2/279#0 <image-slot> | block:sgs/media | agent pick 0.8: A circle image-slot (avatar or company logo) beside the testimonial attribution; sgs/media is the DB content image block.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/281#0` | page-home Indus Foods Website v2/281#0 <span> "Purchasing manager" | block:sgs/text | agent pick 0.75: The attribution name line of the testimonial; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/282#0` | page-home Indus Foods Website v2/282#0 <span> "Wholesale customer" | block:sgs/text | agent pick 0.8: The attribution company line of the testimonial; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/284#0` | page-home Indus Foods Website v2/284#0 <div> | block:sgs/multi-button | agent pick 0.65: A centred row of looped slider dot buttons whose children are proposed as sgs/button; sgs/multi-button is the top candidate, though a slider block would render its own dots.; was block:sgs/multi-button 0.51 |  |
-| `skeleton:page-home:Indus Foods Website v2/289#0` | page-home Indus Foods Website v2/289#0 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/293#0` | page-home Indus Foods Website v2/293#0 <span> "Getting started" | block:sgs/label | agent pick 0.85: Short uppercase kicker above a heading or group; sgs/label is the DB block for eyebrow, kicker and badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/297#0` | page-home Indus Foods Website v2/297#0 <span> | block:sgs/separator | agent pick 0.45: A dashed 2px line drawn between the numbered steps (data-draw); sgs/separator is the DB styleable divider, though sgs/process-steps would draw this connector itself.; was no block 0 |  |
-| `skeleton:page-home:Indus Foods Website v2/301` | page-home Indus Foods Website v2/301 <span> "1" | block:sgs/label | agent pick 0.55: A step number inside a 72px circle; sgs/label is the DB badge block, though sgs/process-steps would render the numbered marker itself.; was block:sgs/text 0.25 |  |
-| `skeleton:page-home:Indus Foods Website v2/312#0` | page-home Indus Foods Website v2/312#0 <div> | block:sgs/multi-button | agent pick 0.85: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container.; was block:sgs/multi-button 0.51 |  |
-
-### page-home: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-home:Indus Foods Website v2/201#0` | page-home Indus Foods Website v2/201#0 <main> | block:sgs/container | 0.75: 29 copies of one template element on 29 surfaces |  |
-| `skeleton:page-home:Indus Foods Website v2/203#0` | page-home Indus Foods Website v2/203#0 <section> | block:sgs/container | 0.75 |  |
-| `skeleton:page-home:Indus Foods Website v2/204#0` | page-home Indus Foods Website v2/204#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-home:Indus Foods Website v2/205#0` | page-home Indus Foods Website v2/205#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/206#0` | page-home Indus Foods Website v2/206#0 <h1> "Leading Indian Food & Drinks Wholesaler" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/207#0` | page-home Indus Foods Website v2/207#0 <p> "Proud to be a family-run food wholesaler since 1962!" | block:sgs/text | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/209#0` | page-home Indus Foods Website v2/209#0 <a> "Apply For A Trade Account" | block:sgs/button | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/210#0` | page-home Indus Foods Website v2/210#0 <a> "Request Our Catalogue" | block:sgs/button | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/211#0` | page-home Indus Foods Website v2/211#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-home:Indus Foods Website v2/213` | page-home Indus Foods Website v2/213 <span> "BRC certified" | block:sgs/container | 1: 3 copies of one template element |  |
-| `skeleton:page-home:Indus Foods Website v2/215#0` | page-home Indus Foods Website v2/215#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-home:Indus Foods Website v2/216#0` | page-home Indus Foods Website v2/216#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/218#0` | page-home Indus Foods Website v2/218#0 <section> | block:sgs/container | 0.75 |  |
-| `skeleton:page-home:Indus Foods Website v2/219#0` | page-home Indus Foods Website v2/219#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/220#0` | page-home Indus Foods Website v2/220#0 <h2> "Our Brands" | block:sgs/heading | 0.75 |  |
-| `skeleton:page-home:Indus Foods Website v2/221#0` | page-home Indus Foods Website v2/221#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-home:Indus Foods Website v2/222#0` | page-home Indus Foods Website v2/222#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-home:Indus Foods Website v2/224` | page-home Indus Foods Website v2/224 <a> | block:sgs/container | 0.75: 20 copies of one template element |  |
 | `skeleton:page-home:Indus Foods Website v2/226#0` | page-home Indus Foods Website v2/226#0 <section> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/227#0` | page-home Indus Foods Website v2/227#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/228#0` | page-home Indus Foods Website v2/228#0 <h2> "Our UK Wide Food Services" | block:sgs/heading | 0.75 |  |
@@ -871,7 +1075,6 @@ Accept all: [ ]
 | `skeleton:page-home:Indus Foods Website v2/262` | page-home Indus Foods Website v2/262 <span> | block:sgs/container | 0.75: 4 copies of one template element |  |
 | `skeleton:page-home:Indus Foods Website v2/265#0` | page-home Indus Foods Website v2/265#0 <section> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/266#0` | page-home Indus Foods Website v2/266#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-home:Indus Foods Website v2/267#0` | page-home Indus Foods Website v2/267#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/268#0` | page-home Indus Foods Website v2/268#0 <h2> "Our Partners Love Us!" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/269#0` | page-home Indus Foods Website v2/269#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home:Indus Foods Website v2/270#0` | page-home Indus Foods Website v2/270#0 <div> | block:sgs/container | 0.75 |  |
@@ -888,7 +1091,6 @@ Accept all: [ ]
 | `skeleton:page-home:Indus Foods Website v2/288#0` | page-home Indus Foods Website v2/288#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/290#0` | page-home Indus Foods Website v2/290#0 <section> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/291#0` | page-home Indus Foods Website v2/291#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-home:Indus Foods Website v2/292#0` | page-home Indus Foods Website v2/292#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/294#0` | page-home Indus Foods Website v2/294#0 <h2> "How to open a trade account" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/295#0` | page-home Indus Foods Website v2/295#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/298#0` | page-home Indus Foods Website v2/298#0 <div> | block:sgs/container | 1 |  |
@@ -905,27 +1107,8 @@ Accept all: [ ]
 | `skeleton:page-home:Indus Foods Website v2/311#0` | page-home Indus Foods Website v2/311#0 <p> "Our customers stay with us for decades because they can rely on the quality of the brands we stock, our fast delivery times and never have to look around for food and drinks again!" | block:sgs/text | 0.75 |  |
 | `skeleton:page-home:Indus Foods Website v2/313#0` | page-home Indus Foods Website v2/313#0 <a> "Apply For A Trade Account" | block:sgs/icon-list | 0.7 |  |
 | `skeleton:page-home:Indus Foods Website v2/314#0` | page-home Indus Foods Website v2/314#0 <a> "Request Our Catalogue" | block:sgs/icon-list | 0.7 |  |
-
-### page-our-story
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-our-story:Indus Foods Website v2/318#0` | page-our-story Indus Foods Website v2/318#0 <span> | remove | agent pick 0.55: An aria-hidden radial-gradient layer covering its parent (inset 0) is the parent container's background overlay paint, which the container's overlay settings and Fill carry, not a content block.; was no block 0 |  |
-| `skeleton:page-our-story:Indus Foods Website v2/319#0` | page-our-story Indus Foods Website v2/319#0 <span> | block:sgs/decorative-image | agent pick 0.45: An aria-hidden, absolutely positioned decorative ring; sgs/decorative-image is the DB block for free-floating decoration over a section, but a CSS ring is not an image, so confidence is low.; was no block 0 |  |
-| `skeleton:page-our-story:Indus Foods Website v2/342#0` | page-our-story Indus Foods Website v2/342#0 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:page-our-story:Indus Foods Website v2/383` | page-our-story Indus Foods Website v2/383 <span> | block:sgs/separator | agent pick 0.5: A 28px by 2px accent line beside an eyebrow; sgs/separator is the DB block for a styleable short divider, though it may instead be the eyebrow's own decoration.; was no block 0 |  |
-| `skeleton:page-our-story:Indus Foods Website v2/391` | page-our-story Indus Foods Website v2/391 <span> | block:sgs/icon | agent pick 0.45: A tiny round dot with no words used as a bullet or status marker; sgs/icon is the nearest DB block, but the dot may be better as the parent list's marker (sgs/icon-list), which I cannot see from this row.; was no block 0 |  |
-| `skeleton:page-our-story:Indus Foods Website v2/396` | page-our-story Indus Foods Website v2/396 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-
-### page-our-story: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-our-story:Indus Foods Website v2/340#0` | page-our-story Indus Foods Website v2/340#0 <div> | block:sgs/container | 0.75: 20 copies of one template element on 20 surfaces |  |
-| `skeleton:page-our-story:Indus Foods Website v2/341#0` | page-our-story Indus Foods Website v2/341#0 <div> | block:sgs/container | 0.75: 20 copies of one template element on 20 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/379` | page-our-story Indus Foods Website v2/379 <div> | block:sgs/container | 1: 15 copies of one template element on 13 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/380` | page-our-story Indus Foods Website v2/380 <div> | block:sgs/container | 0.75: 15 copies of one template element on 13 surfaces |  |
-| `skeleton:page-our-story:Indus Foods Website v2/382` | page-our-story Indus Foods Website v2/382 <div> "Still family-run" | block:sgs/container | 1: 15 copies of one template element on 13 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/384` | page-our-story Indus Foods Website v2/384 <h2> "The third generation at the helm." | block:sgs/heading | 0.75: 15 copies of one template element on 13 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/386` | page-our-story Indus Foods Website v2/386 <p> "The grandchildren of our founders now run the business day to day. The approach hasn’t changed: know every customer, keep the shelves full and price fairly." | block:sgs/text | 0.75: 18 copies of one template element on 13 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/388#0` | page-our-story Indus Foods Website v2/388#0 <div> | block:sgs/container | 1: 12 copies of one template element on 12 surfaces |  |
@@ -933,25 +1116,6 @@ Accept all: [ ]
 | `skeleton:page-our-story:Indus Foods Website v2/393#0` | page-our-story Indus Foods Website v2/393#0 <a> "See our certifications" | block:sgs/button | 0.75: 3 copies of one template element on 3 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/394` | page-our-story Indus Foods Website v2/394 <div> | block:sgs/container | 0.75: 15 copies of one template element on 13 surfaces |  |
 | `skeleton:page-our-story:Indus Foods Website v2/395` | page-our-story Indus Foods Website v2/395 <div> | block:sgs/container | 0.75: 15 copies of one template element on 13 surfaces |  |
-
-### page-post-post-1
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-post-post-1:Indus Foods Website v2/619#0` | page-post-post-1 Indus Foods Website v2/619#0 <span> "Seasonal" | block:sgs/label | agent pick 0.8: A pill badge with its own padded ground; sgs/label is the DB block for badge text, ahead of the plain-text candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/620#0` | page-post-post-1 Indus Foods Website v2/620#0 <span> "Feb 2026" | block:sgs/text | agent pick 0.7: The post date in the article meta row; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/621#0` | page-post-post-1 Indus Foods Website v2/621#0 <span> | remove | agent pick 0.55: A 4px dot between article meta items; the parent sgs/container has a separators setting (block_attributes separators) for the marks between items, though it draws lines rather than dots.; was no block 0 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/622#0` | page-post-post-1 Indus Foods Website v2/622#0 <span> "2 min read" | block:sgs/text | agent pick 0.7: The reading time in the article meta row; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/623#0` | page-post-post-1 Indus Foods Website v2/623#0 <span> | remove | agent pick 0.55: A 4px dot between article meta items; the parent sgs/container has a separators setting (block_attributes separators) for the marks between items, though it draws lines rather than dots.; was no block 0 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/624#0` | page-post-post-1 Indus Foods Website v2/624#0 <span> "By the Indus Foods team" | block:sgs/text | agent pick 0.75: The byline in the article meta row; sgs/text is the only candidate.; was block:sgs/text 0.25 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/634#0` | page-post-post-1 Indus Foods Website v2/634#0 <span> "“" | block:sgs/text | agent pick 0.5: A large typographic opening quote mark inside a blockquote; kept as sgs/text, though sgs/quote would paint it if the blockquote parent became that block.; was block:sgs/text 0.25 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/635#0` | page-post-post-1 Indus Foods Website v2/635#0 <span> "The aim is simple: nobody should run short in the busiest weeks of their year." | block:sgs/text | agent pick 0.7: The pull-quote words inside a blockquote; sgs/text is the only candidate, though the blockquote parent fits sgs/quote.; was block:sgs/text 0.25 |  |
-| `skeleton:page-post-post-1:Indus Foods Website v2/638#0` | page-post-post-1 Indus Foods Website v2/638#0 <span> | block:sgs/icon | agent pick 0.75: An icon glyph span with no words (the template arrow or caret icon); sgs/icon is the DB block for icons from Lucide or a pasted SVG.; was no block 0 |  |
-
-### page-post-post-1: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-post-post-1:Indus Foods Website v2/356#0` | page-post-post-1 Indus Foods Website v2/356#0 <a> "All articles" | block:sgs/button | 0.75: 6 copies of one template element on 6 surfaces |  |
 | `skeleton:page-post-post-1:Indus Foods Website v2/617#0` | page-post-post-1 Indus Foods Website v2/617#0 <article> | block:sgs/container | 0.75: 6 copies of one template element on 6 surfaces |  |
 | `skeleton:page-post-post-1:Indus Foods Website v2/618#0` | page-post-post-1 Indus Foods Website v2/618#0 <div> | block:sgs/container | 1: 6 copies of one template element on 6 surfaces |  |
@@ -962,19 +1126,6 @@ Accept all: [ ]
 | `skeleton:page-post-post-1:Indus Foods Website v2/636#0` | page-post-post-1 Indus Foods Website v2/636#0 <div> | block:sgs/container | 1: 6 copies of one template element on 6 surfaces |  |
 | `skeleton:page-post-post-1:Indus Foods Website v2/637#0` | page-post-post-1 Indus Foods Website v2/637#0 <a> "All articles" | block:sgs/container | 1: 6 copies of one template element on 6 surfaces |  |
 | `skeleton:page-post-post-1:Indus Foods Website v2/639#0` | page-post-post-1 Indus Foods Website v2/639#0 <a> "Ask our team" | block:sgs/button | 0.75: 6 copies of one template element on 6 surfaces |  |
-
-### page-terms
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:page-terms:Indus Foods Website v2/641#0` | page-terms Indus Foods Website v2/641#0 <div> "Layout draft: these summaries are placeholders. Replace them with Indus Foods’ approved trade terms before launch." | remove | agent pick 0.95: "Layout draft: these summaries are placeholders..." is the designer's brief note, not site content.; was block:sgs/text 0.25 |  |
-| `skeleton:page-terms:Indus Foods Website v2/646` | page-terms Indus Foods Website v2/646 <span> "01" | block:sgs/text | agent pick 0.6: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here.; was block:sgs/text 0.25 |  |
-| `skeleton:page-terms:Indus Foods Website v2/651` | page-terms Indus Foods Website v2/651 <span> "01" | block:sgs/text | agent pick 0.55: A section number inside a section heading; kept as sgs/text, though it may belong in the heading's own words.; was block:sgs/text 0.25 |  |
-
-### page-terms: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
 | `skeleton:page-terms:Indus Foods Website v2/642#0` | page-terms Indus Foods Website v2/642#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-terms:Indus Foods Website v2/643#0` | page-terms Indus Foods Website v2/643#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-terms:Indus Foods Website v2/645` | page-terms Indus Foods Website v2/645 <div> "Trade accounts" | block:sgs/container | 0.75: 7 copies of one template element |  |
@@ -982,86 +1133,8 @@ Accept all: [ ]
 | `skeleton:page-terms:Indus Foods Website v2/649` | page-terms Indus Foods Website v2/649 <div> | block:sgs/container | 0.75: 7 copies of one template element |  |
 | `skeleton:page-terms:Indus Foods Website v2/650` | page-terms Indus Foods Website v2/650 <h3> "Trade accounts" | block:sgs/container | 0.75: 7 copies of one template element |  |
 | `skeleton:page-terms:Indus Foods Website v2/652` | page-terms Indus Foods Website v2/652 <p> "Trade accounts are available to registered businesses. We may request company details or references before an account is opened." | block:sgs/text | 0.75: 7 copies of one template element |  |
-
-### scroll-progress-bar
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:scroll-progress-bar:Indus Foods Website v2/38#0` | scroll-progress-bar Indus Foods Website v2/38#0 <div> | block:sgs/container | agent pick 0.3: A fixed 3px full-width bar that fills with scroll progress; no DB block or fx_effects entry implements a page scroll-progress bar, so this is a placeholder container pending a missing feature.; was no block 0 |  |
-
-### sectors-mega-menu
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/89` | sectors-mega-menu Indus Foods Website v2/89 <image-slot> | block:sgs/media | agent pick 0.85: An image-slot placeholder is a content image; sgs/media (replaces core/image, mediaType enum includes image) is the DB block for it.; was no block 0 |  |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/91` | sectors-mega-menu Indus Foods Website v2/91 <div> "Food Service" | block:sgs/heading | agent pick 0.65: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed.; was block:sgs/text 0.25 |  |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/92` | sectors-mega-menu Indus Foods Website v2/92 <div> "Quality ingredients for venues, caterers & events across the UK." | block:sgs/text | agent pick 0.85: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block.; was block:sgs/text 0.25 |  |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/93` | sectors-mega-menu Indus Foods Website v2/93 <div> "Explore Food Service" | block:sgs/text | agent pick 0.6: A "read more" style line inside a card the card itself links; kept as sgs/text because a button here would nest a link inside the card link.; was block:sgs/text 0.25 |  |
-
-### sectors-mega-menu: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/85#0` | sectors-mega-menu Indus Foods Website v2/85#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/87` | sectors-mega-menu Indus Foods Website v2/87 <a> | block:sgs/container | 1: 4 copies of one template element |  |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/88` | sectors-mega-menu Indus Foods Website v2/88 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/90` | sectors-mega-menu Indus Foods Website v2/90 <div> | block:sgs/container | 1: 4 copies of one template element |  |
-
-### sticky-header
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:sticky-header:Indus Foods Website v2/39#0` | sticky-header Indus Foods Website v2/39#0 <header> | block:sgs/site-header | agent pick 0.92: The surface root header element spanning the full width at every breakpoint is the site header shell; sgs/site-header is the top-scored candidate.; was block:sgs/site-header 0.58 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/43#0` | sticky-header Indus Foods Website v2/43#0 <indus-logo> | block:sgs/responsive-logo | agent pick 0.92: The indus-logo element is the typed brand logo, so it is the logo block; sgs/responsive-logo replaces core/site-logo in the DB.; was no block 0 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/48=sgs/text` | sticky-header Indus Foods Website v2/48=sgs/text <span> "Home" | block:sgs/text | agent pick 0.45: A nav item label in a looped button; sgs/text is the only candidate, but the nav itself should be sgs/nav-bar-menu, which renders its own labels, and I cannot see the nav row to confirm.; was block:sgs/text 0.25 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/50` | sticky-header Indus Foods Website v2/50 <span> | block:sgs/icon | agent pick 0.55: The dropdown caret beside a nav label is an icon glyph; sgs/icon fits, though sgs/nav-bar-menu would render its own submenu caret if the nav becomes that block.; was no block 0 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/52#0` | sticky-header Indus Foods Website v2/52#0 <span> | remove | agent pick 0.6: An empty 2px underline span under the active nav item is the nav's own active-state indicator paint, not a content block.; was no block 0 |  |
-
-### sticky-header: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:sticky-header:Indus Foods Website v2/40#0` | sticky-header Indus Foods Website v2/40#0 <div> | block:sgs/site-header-row | 1 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/41#0` | sticky-header Indus Foods Website v2/41#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/42#0` | sticky-header Indus Foods Website v2/42#0 <a> | block:sgs/container | 1 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/45#0` | sticky-header Indus Foods Website v2/45#0 <nav> | block:sgs/container | 1 |  |
-| `skeleton:sticky-header:Indus Foods Website v2/47` | sticky-header Indus Foods Website v2/47 <button> | block:sgs/container | 1: 6 copies of one template element |  |
-| `skeleton:sticky-header:Indus Foods Website v2/48=sgs/container` | sticky-header Indus Foods Website v2/48=sgs/container <span> "About" | block:sgs/container | 1: 4 copies of one template element |  |
-| `skeleton:sticky-header:Indus Foods Website v2/54#0` | sticky-header Indus Foods Website v2/54#0 <a> "Register For A Trade Account" | block:sgs/button | 0.75 |  |
-
-### top-bar
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:top-bar:Indus Foods Website v2/16#0` | top-bar Indus Foods Website v2/16#0 <span> "0121 771 4330" | block:sgs/business-info | agent pick 0.85: The words are the business phone number, which is Site Info content; sgs/business-info reads it (displayType enum includes phone), matching its email sibling.; was block:sgs/text 0.25 |  |
-| `skeleton:top-bar:Indus Foods Website v2/20#0` | top-bar Indus Foods Website v2/20#0 <a> "amir@indusfoodsltd.com" | block:sgs/business-info | agent pick 0.9: A mailto link to the business email is Site Info content; sgs/business-info (displayType email) is the top candidate and reads Site Info rather than typed text.; was block:sgs/business-info 0.67 |  |
-
-### top-bar: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:top-bar:Indus Foods Website v2/10#0` | top-bar Indus Foods Website v2/10#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:top-bar:Indus Foods Website v2/11#0` | top-bar Indus Foods Website v2/11#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:top-bar:Indus Foods Website v2/14#0` | top-bar Indus Foods Website v2/14#0 <a> | block:sgs/container | 1 |  |
+| `skeleton:page-wholesale:Indus Foods Website v2/401#0` | page-wholesale Indus Foods Website v2/401#0 <div> "Why wholesalers work with us" | block:sgs/container | 1 |  |
 | `skeleton:top-bar:Indus Foods Website v2/22#0` | top-bar Indus Foods Website v2/22#0 <div> | block:sgs/social-icons | 0.74 |  |
-| `skeleton:top-bar:Indus Foods Website v2/23#0` | top-bar Indus Foods Website v2/23#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:top-bar:Indus Foods Website v2/26#0` | top-bar Indus Foods Website v2/26#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:top-bar:Indus Foods Website v2/29#0` | top-bar Indus Foods Website v2/29#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:top-bar:Indus Foods Website v2/35#0` | top-bar Indus Foods Website v2/35#0 <a> | block:sgs/icon | 0.75 |  |
-| `skeleton:top-bar:Indus Foods Website v2/9#0` | top-bar Indus Foods Website v2/9#0 <div> | block:sgs/container | 0.75 |  |
-
-### whatsapp-button
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:whatsapp-button:Indus Foods Website v2/729#0` | whatsapp-button Indus Foods Website v2/729#0 <img> | block:sgs/icon | agent pick 0.65: A 22px aria-hidden WhatsApp glyph inside the WhatsApp link is a brand icon, not a content image or the site logo; sgs/icon (iconSource enum includes brand) fits better than the sgs/media candidate.; was block:sgs/media 0.29 |  |
-| `skeleton:whatsapp-button:Indus Foods Website v2/731#0` | whatsapp-button Indus Foods Website v2/731#0 <span> "Chat with our team" | block:sgs/text | agent pick 0.6: The label of the floating WhatsApp link; sgs/text is the only candidate, though the whole link would be sgs/whatsapp-cta (floating button variant) if the parent row became that block.; was block:sgs/text 0.25 |  |
-
-### whatsapp-button: Confident proposals (Accept all covers these)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:whatsapp-button:Indus Foods Website v2/728#0` | whatsapp-button Indus Foods Website v2/728#0 <a> | block:sgs/container | 1 |  |
 
 ## Inventory diffs (inventory-diff)
 
@@ -1069,31 +1142,6 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `inventory:count:css_animations` | **changed** count css_animations: ours 9, theirs 0 | ours | a recount replaces any count carried from an older inventory |  |
-| `inventory:count:js_style_writers` | **changed** count js_style_writers: ours 101, theirs 24 | ours | a recount replaces any count carried from an older inventory |  |
-| `inventory:surface-count:routes` | **changed** surface count routes: ours 23, theirs 29 | ours | a recount replaces any count carried from an older inventory |  |
-| `inventory:surface-count:toggling_sc_ifs` | **changed** surface count toggling_sc_ifs: ours 24, theirs 21 | ours | a recount replaces any count carried from an older inventory |  |
-| `inventory:surface:route:post-post-1:only-theirs` | **changed** route post-post-1 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:route:post-post-2:only-theirs` | **changed** route post-post-2 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:route:post-post-3:only-theirs` | **changed** route post-post-3 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:route:post-post-4:only-theirs` | **changed** route post-post-4 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:route:post-post-5:only-theirs` | **changed** route post-post-5 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:route:post-post-6:only-theirs` | **changed** route post-post-6 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:toggling-sc-if:EnquiryForm:28:only-theirs` | **changed** toggling-sc-if EnquiryForm:28 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:129:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:129 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:131:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:131 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:132:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:132 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:136:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:136 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:138:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:138 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:157:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:157 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:166:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:166 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:478:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:478 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:49:only-ours` | **changed** toggling-sc-if Indus Foods Website v2:49 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:543:only-theirs` | **changed** toggling-sc-if Indus Foods Website v2:543 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:549:only-theirs` | **changed** toggling-sc-if Indus Foods Website v2:549 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:toggling-sc-if:Indus Foods Website v2:597:only-theirs` | **changed** toggling-sc-if Indus Foods Website v2:597 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:toggling-sc-if:TradeApplication:65:only-theirs` | **changed** toggling-sc-if TradeApplication:65 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-| `inventory:surface:toggling-sc-if:TradeApplication:92:only-theirs` | **changed** toggling-sc-if TradeApplication:92 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
 | `inventory:anim:EnquiryForm%7Ccss-media:animation-duration.to` | RM-03 (theirs RM-03) animation-duration.to: ours 0.01ms !important, theirs .01ms !important | ours | the re-derived record and Claude Design's disagree on this field |  |
 | `inventory:anim:EnquiryForm%7Ccss-media:properties` | RM-03 (theirs RM-03) properties: ours animation-duration,animation-iteration-count,transition-delay,transition-duration, theirs animation-duration,animation-iteration-count,scroll-behavior,transition-delay,transition-duration | ours | the re-derived record and Claude Design's disagree on this field |  |
 | `inventory:anim:EnquiryForm%7Ccss-media:scroll-behavior.from` | RM-03 (theirs RM-03) scroll-behavior.from: ours null, theirs as declared | ours | the re-derived record and Claude Design's disagree on this field |  |
@@ -1518,9 +1566,34 @@ Accept all: [ ]
 | `inventory:anim:indus-logo.js%7C61%7Cwaapi:trigger.type` | L-08 (theirs L-05) trigger.type: ours load, theirs scroll-into-view | ours | the re-derived record and Claude Design's disagree on this field |  |
 | `inventory:anim:indus-logo.js%7C62%7Cwaapi:trigger.type` | L-09 (theirs L-06) trigger.type: ours load, theirs scroll-into-view | ours | the re-derived record and Claude Design's disagree on this field |  |
 | `inventory:anim:theirs:Indus Foods Website v2.dc.html%7C1389%7Cwaapi:only-theirs` | Claude Design's A-19 waapi Magnetic button press ripple has no re-derived record | ours | only Claude Design's inventory has this effect |  |
+| `inventory:count:css_animations` | count css_animations: ours 9, theirs 0 | ours | a recount replaces any count carried from an older inventory |  |
+| `inventory:count:js_style_writers` | count js_style_writers: ours 101, theirs 24 | ours | a recount replaces any count carried from an older inventory |  |
+| `inventory:surface-count:routes` | surface count routes: ours 23, theirs 29 | ours | a recount replaces any count carried from an older inventory |  |
+| `inventory:surface-count:toggling_sc_ifs` | surface count toggling_sc_ifs: ours 24, theirs 21 | ours | a recount replaces any count carried from an older inventory |  |
 | `inventory:surface:route%7Cabout:states` | S-05 (theirs S-17) states: ours 1, theirs 3 | ours | the re-derived surface and Claude Design's list a different number of states |  |
 | `inventory:surface:route%7Chome:states` | S-04 (theirs S-16) states: ours 1, theirs 7 | ours | the re-derived surface and Claude Design's list a different number of states |  |
 | `inventory:surface:route%7Cour-story:states` | S-06 (theirs S-18) states: ours 1, theirs 3 | ours | the re-derived surface and Claude Design's list a different number of states |  |
+| `inventory:surface:route:post-post-1:only-theirs` | route post-post-1 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:route:post-post-2:only-theirs` | route post-post-2 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:route:post-post-3:only-theirs` | route post-post-3 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:route:post-post-4:only-theirs` | route post-post-4 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:route:post-post-5:only-theirs` | route post-post-5 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:route:post-post-6:only-theirs` | route post-post-6 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:toggling-sc-if:EnquiryForm:28:only-theirs` | toggling-sc-if EnquiryForm:28 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:129:only-ours` | toggling-sc-if Indus Foods Website v2:129 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:131:only-ours` | toggling-sc-if Indus Foods Website v2:131 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:132:only-ours` | toggling-sc-if Indus Foods Website v2:132 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:136:only-ours` | toggling-sc-if Indus Foods Website v2:136 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:138:only-ours` | toggling-sc-if Indus Foods Website v2:138 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:157:only-ours` | toggling-sc-if Indus Foods Website v2:157 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:166:only-ours` | toggling-sc-if Indus Foods Website v2:166 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:478:only-ours` | toggling-sc-if Indus Foods Website v2:478 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:49:only-ours` | toggling-sc-if Indus Foods Website v2:49 is listed only in the re-derived surfaces | ours | only the re-derived inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:543:only-theirs` | toggling-sc-if Indus Foods Website v2:543 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:549:only-theirs` | toggling-sc-if Indus Foods Website v2:549 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:toggling-sc-if:Indus Foods Website v2:597:only-theirs` | toggling-sc-if Indus Foods Website v2:597 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:toggling-sc-if:TradeApplication:65:only-theirs` | toggling-sc-if TradeApplication:65 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
+| `inventory:surface:toggling-sc-if:TradeApplication:92:only-theirs` | toggling-sc-if TradeApplication:92 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
 
 ## Notices (notice)
 
