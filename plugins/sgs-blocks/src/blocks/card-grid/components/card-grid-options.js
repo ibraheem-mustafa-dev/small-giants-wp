@@ -1,8 +1,6 @@
 // Card grid inspector option lists and card style presets.
 import { __ } from '@wordpress/i18n';
 import { MEDIA_SIZING_RATIO_OPTIONS } from '../../../components';
-import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../../components/motion/easing-master-list';
-export { EASING_OPTIONS };
 
 export const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },

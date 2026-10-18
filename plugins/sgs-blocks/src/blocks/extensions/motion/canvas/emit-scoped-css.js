@@ -85,7 +85,10 @@ function hoverState( state, decls, trans, channels ) {
 	const timing = {
 		'transition-duration': tokenOr( 'token:duration.fast', '200ms' ),
 		'transition-delay': '0ms',
-		'transition-timing-function': tokenOr( 'token:easing.emphasised', 'ease-out' ),
+		'transition-timing-function': tokenOr(
+			'token:easing.emphasised',
+			'cubic-bezier(0.2, 0.7, 0.2, 1)'
+		),
 	};
 	const isFollow = follows( tiers.desktop );
 	const follow = followDefaults();
@@ -190,7 +193,10 @@ function effectTransition( layer, trans ) {
 		easeKey = betterTimingKey( easeKey, key, field.type === 'easing', 'Easing' );
 	} );
 	let duration = tokenOr( 'token:duration.medium', '300ms' );
-	let easing = tokenOr( 'token:easing.emphasised', 'ease-out' );
+	let easing = tokenOr(
+			'token:easing.emphasised',
+			'cubic-bezier(0.2, 0.7, 0.2, 1)'
+		);
 	const tiers = tierValues( layer );
 	if ( easeKey !== null && tiers.desktop[ easeKey ] !== undefined && tiers.desktop[ easeKey ] !== null ) {
 		easing = valueCss( def, easeKey, tiers.desktop[ easeKey ] ) ?? easing;

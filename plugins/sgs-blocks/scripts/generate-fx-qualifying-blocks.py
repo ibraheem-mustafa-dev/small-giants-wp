@@ -1058,21 +1058,37 @@ def self_test() -> int:
     for name, effects in fx_map.items():
         if name not in marquee_blocks and "marquee" in effects:
             failures.append(f"{name} has no marquee hook yet is offered marquee")
-    surface_only = [
+    # Paint-only negative control: blocks whose provisions are only surface/image, with no motionSurface (so no `panel`),
+    # no fx opt-out and no exact-match listing, must not be hosts. The set is derived from the blocks' own provisions, not
+    # from the map under test.
+    exact_hosts = {b for blocks in EXACT_MATCH_BLOCKS.values() for b in blocks}
+    paint_only = sorted(
         n for n, j in _load_block_jsons().items()
-        if "surface" in _block_provisions(
+        if "fx" not in (j.get("supports", {}).get("sgs", {}).get("hideExtensions") or [])
+        and n not in exact_hosts
+        and (provisions := _block_provisions(
             n, j, _richtext_blocks(), _x_scroll_track_blocks(), _raster_image_blocks(), marquee_blocks
-        ) and n not in fx_map
-    ]
-    if not surface_only:
-        failures.append("negative control vacuous: no surface-providing block is left out of the map")
-    for name in surface_only:
+        ))
+        and provisions <= EXTENDS_ONLY_REQUIREMENTS
+    )
+    if not paint_only:
+        failures.append("negative control vacuous: no block has only surface/image provisions")
+    for name in paint_only:
         if name in fx_map:
-            failures.append(f"{name} became a host from a paint requirement alone")
+            failures.append(f"{name} has only paint provisions and no motionSurface but became a host")
+    # Mutant: let paint requirements create hosts. The control must go red, proving it can fail.
+    real = EXTENDS_ONLY_REQUIREMENTS
+    globals()['EXTENDS_ONLY_REQUIREMENTS'] = frozenset()
+    try:
+        mutant_map = compute_map()
+    finally:
+        globals()['EXTENDS_ONLY_REQUIREMENTS'] = real
+    if not any(n in mutant_map for n in paint_only):
+        failures.append("mutant survived: letting paint requirements create hosts did not make any paint-only block a host")
     for failure in failures:
         print(f"[generate-fx-qualifying-blocks] SELF-TEST FAIL: {failure}", file=sys.stderr)
     if not failures:
-        print(f"[generate-fx-qualifying-blocks] self-test OK ({len(marquee_blocks)} marquee block(s), {len(surface_only)} paint-only block(s) left out)")
+        print(f"[generate-fx-qualifying-blocks] self-test OK ({len(marquee_blocks)} marquee block(s), {len(paint_only)} paint-only block(s) left out)")
     return 1 if failures else 0
 
 

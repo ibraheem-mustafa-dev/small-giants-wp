@@ -111,6 +111,13 @@ describe( 'setMotionState and clearMotionState', () => {
 		expect( el.getAttribute( ATTR ) ).toBe( '' );
 	} );
 
+	it( 'clearing a name also removes its -out and -rest tokens and keeps other names', () => {
+		const { mod } = load();
+		const { el } = host( 'menu menu-out menu-rest other other-out' );
+		mod.clearMotionState( el, 'menu' );
+		expect( el.getAttribute( ATTR ) ).toBe( 'other other-out' );
+	} );
+
 	it( 'ignores a name outside the schema pattern and a non-element', () => {
 		const { mod } = load();
 		const { el } = host( '' );

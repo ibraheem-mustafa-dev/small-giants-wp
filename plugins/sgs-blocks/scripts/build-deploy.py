@@ -473,6 +473,8 @@ def main() -> int:
     qa_action = motion_qa_action(deploy_blocks, args.skip_motion_qa, target_key, args.motion_qa_tier)
     if qa_action == "skip-target":
         log(f"[motion-qa] SKIPPED: the probes measure the sandybrown canary, not {target_key}")
+    elif qa_action == "none" and deploy_blocks and not args.skip_motion_qa and target_key == "sandybrown":
+        log("[motion-qa] SKIPPED: --motion-qa-tier none (the default); run --motion-qa-tier full before a release that touches motion, shared effects or theme tokens")
     elif qa_action == "run":
         rc = timed("motion-qa", step_motion_qa, args.dry_run, args.motion_qa_tier, args.motion_qa_parallel,
                    shipped_uncommitted(dirty, args.payload) if intends_dirty_ship else [], args.skip_verify)

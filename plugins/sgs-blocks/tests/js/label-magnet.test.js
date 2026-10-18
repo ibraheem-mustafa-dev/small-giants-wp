@@ -44,6 +44,21 @@ describe( 'initLabelMagnet', () => {
 		expect( stops[ 0 ] ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	test( 'a throw inside initMagnet is swallowed (no unhandled rejection)', async () => {
+		mockInitMagnet.mockImplementationOnce( () => {
+			throw new Error( 'boom' );
+		} );
+		const seen = [];
+		const onRejection = ( reason ) => seen.push( reason );
+		process.on( 'unhandledRejection', onRejection );
+		const stop = initLabelMagnet( document.createElement( 'span' ) );
+		await flush();
+		await flush();
+		process.off( 'unhandledRejection', onRejection );
+		expect( seen ).toEqual( [] );
+		expect( () => stop() ).not.toThrow();
+	} );
+
 	test( 'negative control: cleanup before the load cancels the attach', async () => {
 		const stop = initLabelMagnet( document.createElement( 'span' ) );
 		stop();

@@ -7,7 +7,10 @@ curve). Content saved before the change stores the old names, and a value outsid
 attribute's default on render, so every stored value must be rewritten once:
 
     ease-out-css  ->  ease-out      (the keyword keeps its look)
-    ease-out      ->  emphasised    (the house curve keeps its look)
+
+The old house-curve name `ease-out` is NOT rewritten: after the change `ease-out` is the keyword, so a stored `ease-out` is
+indistinguishable from a new one. The survey found none stored on any of the four sites. The one rewrite is a fixed point:
+`ease-out` is not in the map, so running --apply twice equals running it once.
 
 TARGET SHAPE (settled by Bean's ruling): the nav vocabulary in `includes/helpers-motion-easing.php::sgs_motion_easing_values`.
 
@@ -20,8 +23,7 @@ TARGET SHAPE (settled by Bean's ruling): the nav vocabulary in `includes/helpers
                                                                  or a stored-content attribute is not declared in block.json
   python sweep-easing-vocabulary.py --self-test
 
-The two renames overlap (`ease-out` is both an old and a new name), so the rewrite is NOT safe to repeat on content that has
-already been swept. A post with an `<id>.easing-swept` marker beside its backup is skipped as "already swept".
+--check also fails closed when the scanned roots do not exist.
 """
 from __future__ import annotations
 
@@ -43,8 +45,9 @@ REPO = PLUGIN.parent.parent
 BACKUPS = REPO / '.claude' / 'backups' / '2026-10-18-s7'
 sys.path.insert(0, str(HERE.parent))
 
-OLD_TO_NEW = {'ease-out-css': 'ease-out', 'ease-out': 'emphasised'}
+OLD_TO_NEW = {'ease-out-css': 'ease-out'}
 REMOVED = 'ease-out-css'
+SCAN_ROOTS = ('src', 'includes', 'tests', 'scripts')
 NAV_MARK = 'quart-out'  # an enum holding this is a nav-vocabulary enum
 
 # Free-text attributes that store a nav-vocabulary name without declaring the enum.
@@ -141,7 +144,7 @@ def load_strip():
 PHP_APPLY = r"""
 $plan   = json_decode( base64_decode( '%PLAN%' ), true );
 $map    = json_decode( base64_decode( '%MAP%' ), true );
-$olds   = array( 'ease-out-css' => 'ease-out', 'ease-out' => 'emphasised' );
+$olds   = array( 'ease-out-css' => 'ease-out' );
 $swap   = static function ( array $blocks ) use ( &$swap, $map, $olds ) {
 	foreach ( $blocks as $i => $block ) {
 		foreach ( $map[ $block['blockName'] ?? '' ] ?? array() as $key ) {
@@ -199,14 +202,12 @@ def survey(target: str | None, as_json: bool) -> int:
                 for block, key, old, new in entry['changes']:
                     label = f'{block}.{key}: {old} -> {new}'
                     tally[label] = tally.get(label, 0) + 1
-            swept = sorted(p.name.split('.')[0] for p in (BACKUPS / site).glob('*.easing-swept')) if (BACKUPS / site).exists() else []
             report['sites'][site] = {
                 'posts_scanned': len(posts),
                 'posts_to_change': len(todo),
                 'values': tally,
                 'all_stored_values': stored_values(posts, attr_map),
                 'posts': {pid: {'type': e['type'], 'values': [f'{b}.{k}={o}' for b, k, o, _ in e['changes']]} for pid, e in todo.items()},
-                'already_swept_backups': swept,
             }
     if as_json:
         print(json.dumps(report, indent=2))
@@ -221,8 +222,6 @@ def survey(target: str | None, as_json: bool) -> int:
         print(f'    all stored values of these attributes: {json.dumps(data["all_stored_values"])}')
         for pid, entry in sorted(data['posts'].items(), key=lambda kv: int(kv[0])):
             print(f'    post {pid} ({entry["type"]}): {", ".join(entry["values"])}')
-        if data['already_swept_backups']:
-            print(f'    already swept (backup present): {", ".join(data["already_swept_backups"])}')
     return 0
 
 
@@ -232,26 +231,20 @@ def apply(target: str) -> int:
     posts = strip.fetch_posts(target)
     folder = BACKUPS / target
     plan: dict[str, dict] = {}
-    skipped: list[str] = []
     for post in posts:
         content = post.get('post_content') or ''
         new, changes = rewrite_content(content, attr_map)
         if not changes:
             continue
         pid = str(post['ID'])
-        if (folder / f'{pid}.easing-swept').exists():
-            skipped.append(pid)
-            continue
         plan[pid] = {'old': content, 'new': new}
-    print(f'[sweep-easing] {target}: {len(plan)} post(s) to rewrite, {len(skipped)} already swept (backup present): {", ".join(skipped)}')
+    print(f'[sweep-easing] {target}: {len(plan)} post(s) to rewrite')
     if not plan:
         return 0
     folder.mkdir(parents=True, exist_ok=True)
     import hashlib
     for pid, row in plan.items():
-        # The backup is written before anything changes and is the "already swept" record.
         (folder / f'{pid}.txt').write_text(row['old'], encoding='utf-8', newline='')
-        (folder / f'{pid}.easing-swept').write_text('written before the rewrite; its presence stops a second sweep of this post', encoding='utf-8')
         row['old_md5'] = hashlib.md5(row['old'].encode('utf-8')).hexdigest()
     payload = {pid: {'old_md5': r['old_md5'], 'new': r['new']} for pid, r in plan.items()}
     php = (PHP_APPLY
@@ -260,12 +253,12 @@ def apply(target: str) -> int:
     return strip.run_php(target, php)
 
 
-def code_hits() -> list[str]:
+def code_hits(scan_base: Path = PLUGIN) -> list[str]:
     """Every place in code that still names the removed value, outside the allowed historical readers."""
     hits: list[str] = []
-    for root in ('src', 'includes', 'tests', 'scripts'):
-        for path in (PLUGIN / root).rglob('*'):
-            rel = path.relative_to(PLUGIN).as_posix()
+    for root in SCAN_ROOTS:
+        for path in (scan_base / root).rglob('*'):
+            rel = path.relative_to(scan_base).as_posix()
             if (not path.is_file() or path.suffix not in ('.php', '.js', '.json', '.scss', '.css')
                     or rel.startswith(CODE_EXEMPT) or 'node_modules' in rel or '/build/' in rel
                     or rel.endswith('generated-motion-defs.json')):
@@ -276,9 +269,10 @@ def code_hits() -> list[str]:
     return hits
 
 
-def check(blocks_dir: Path | None = None) -> list[str]:
-    problems = [f'removed name `{REMOVED}` still in {h}' for h in code_hits() if not h.startswith('scripts/migrate-motion/sweep-easing-vocabulary.py')
-                and not h.startswith('scripts/gates.json')]
+def check(blocks_dir: Path | None = None, scan_base: Path = PLUGIN) -> list[str]:
+    problems = [f'scanned root missing (fail closed): {scan_base / r}' for r in SCAN_ROOTS if not (scan_base / r).is_dir()]
+    problems += [f'removed name `{REMOVED}` still in {h}' for h in code_hits(scan_base) if not h.startswith('scripts/migrate-motion/sweep-easing-vocabulary.py')
+                 and not h.startswith('scripts/gates.json')]
     blocks_dir = blocks_dir or PLUGIN / 'src' / 'blocks'
     for path in sorted(blocks_dir.glob('*/block.json')):
         data = json.loads(path.read_text(encoding='utf-8'))
@@ -302,30 +296,40 @@ def check(blocks_dir: Path | None = None) -> list[str]:
 def self_test() -> int:
     failures: list[str] = []
     attr_map = {'sgs/nav-bar-menu': ['itemMotionEasing', 'scrimFadeEasing'], 'sgs/cart': ['panelSlideEasing']}
-    old = ('<!-- wp:sgs/nav-bar-menu {"itemMotionEasing":"ease-out-css","scrimFadeEasing":"ease-out","other":"ease-out"} -->\n'
-           '<!-- wp:sgs/cart {"panelSlideEasing":"ease-out"} /-->\n'
-           '<!-- wp:sgs/button {"itemMotionEasing":"ease-out"} /-->\n'
+    old = ('<!-- wp:sgs/nav-bar-menu {"itemMotionEasing":"ease-out-css","scrimFadeEasing":"ease-out","other":"ease-out-css"} -->\n'
+           '<!-- wp:sgs/cart {"panelSlideEasing":"ease-out-css"} /-->\n'
+           '<!-- wp:sgs/button {"itemMotionEasing":"ease-out-css"} /-->\n'
            '<!-- wp:sgs/nav-bar-menu {"itemMotionEasing":"ease"} /-->')
     new, changes = rewrite_content(old, attr_map)
-    if len(changes) != 3:
-        failures.append(f'planted old values: expected 3 changes, got {changes}')
-    expect = old.replace('"itemMotionEasing":"ease-out-css"', '"itemMotionEasing":"ease-out"').replace(
-        '"scrimFadeEasing":"ease-out"', '"scrimFadeEasing":"emphasised"').replace('"panelSlideEasing":"ease-out"', '"panelSlideEasing":"emphasised"')
+    if len(changes) != 2:
+        failures.append(f'planted old values: expected 2 changes, got {changes}')
+    expect = old.replace('"itemMotionEasing":"ease-out-css","scrimFadeEasing"', '"itemMotionEasing":"ease-out","scrimFadeEasing"').replace(
+        '"panelSlideEasing":"ease-out-css"', '"panelSlideEasing":"ease-out"')
     if new != expect:
         failures.append('rewrite produced unexpected text:\n' + new)
-    if '"other":"ease-out"' not in new or '<!-- wp:sgs/button {"itemMotionEasing":"ease-out"} /-->' not in new:
+    if '"other":"ease-out-css"' not in new or '<!-- wp:sgs/button {"itemMotionEasing":"ease-out-css"} /-->' not in new:
         failures.append('an undeclared key or an unrelated block was touched (negative control)')
-    # The second pass is NOT a fixed point (ease-out is both an old and a new name): the guard is the backup record.
+    if '"scrimFadeEasing":"ease-out"' not in new:
+        failures.append('a stored `ease-out` (the keyword) must be left alone')
+    # Idempotence: applying twice equals applying once.
     again, again_changes = rewrite_content(new, attr_map)
-    if not again_changes:
-        failures.append('expected the overlapping rename to be detected as repeatable (the apply guard depends on it)')
-    # Guarded idempotence: a post with a swept marker is skipped, so a repeated apply plans nothing.
+    if again != new or again_changes:
+        failures.append('the rewrite is not a fixed point: a second apply changed the text')
+    # --check positive control: a planted `ease-out-css` in a temp tree must fail; a clean tree passes; missing roots fail closed.
     with tempfile.TemporaryDirectory() as tmp:
-        folder = Path(tmp)
-        (folder / '7.easing-swept').write_text('x', encoding='utf-8')
-        planned = [pid for pid in ('7',) if not (folder / f'{pid}.easing-swept').exists()]
-        if planned:
-            failures.append('a swept post would be rewritten again')
+        base = Path(tmp)
+        for root in SCAN_ROOTS:
+            (base / root).mkdir(exist_ok=True)
+        blocks = base / 'src' / 'blocks'
+        blocks.mkdir(exist_ok=True)
+        if check(blocks, base):
+            failures.append('--check flagged a clean temp tree')
+        (base / 'src' / 'planted.js').write_text("const e = 'ease-out-css';\n", encoding='utf-8')
+        if not any('still in src/planted.js' in p for p in check(blocks, base)):
+            failures.append('--check positive control: a planted `ease-out-css` was not flagged')
+    with tempfile.TemporaryDirectory() as tmp:
+        if not any('fail closed' in p for p in check(Path(tmp), Path(tmp))):
+            failures.append('--check did not fail closed on missing scanned roots')
     # --check negative control: a temp block.json with a nav enum lacking `emphasised` must fail.
     with tempfile.TemporaryDirectory() as tmp:
         bad = Path(tmp) / 'demo'

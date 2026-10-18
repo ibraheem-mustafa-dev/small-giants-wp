@@ -40,7 +40,6 @@ const NAV_BLOCK_ENUMS = [
 
 // Every consumer that used to define its own list: the file, the local name it keeps, and the master view it imports.
 const CONSUMERS = [
-	[ 'src/blocks/card-grid/components/card-grid-options.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/info-box/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/team-member/edit.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS_IN_OUT_FIRST' ],
 	[ 'src/blocks/gallery/components/gallery-options.js', 'EASING_OPTIONS', 'CSS_EASING_OPTIONS' ],

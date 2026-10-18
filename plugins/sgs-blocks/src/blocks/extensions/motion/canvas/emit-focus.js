@@ -60,7 +60,7 @@ export function emitFocus( layer, selector ) {
 		'transition-delay': '0ms',
 		'transition-timing-function': tokenOr(
 			'token:easing.emphasised',
-			'ease-out'
+			'cubic-bezier(0.2, 0.7, 0.2, 1)'
 		),
 	};
 	const base = { desktop: {}, tablet: {}, mobile: {} };

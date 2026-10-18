@@ -285,7 +285,12 @@ export function clearMotionState( el, name ) {
 	if ( usable( el, name ) ) {
 		write(
 			el,
-			tokens( el ).filter( ( t ) => name !== t )
+			tokens( el ).filter(
+				( t ) =>
+					name !== t &&
+					name + OUT_SUFFIX !== t &&
+					name + REST_SUFFIX !== t
+			)
 		);
 	}
 }

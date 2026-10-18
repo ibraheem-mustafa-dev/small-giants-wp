@@ -198,6 +198,27 @@ def _block_window(masked: str, pos: int) -> str:
     return masked[max(start, pos - LOOP_WINDOW):min(end, pos + LOOP_WINDOW)]
 
 
+COUNT_DECL = re.compile(r"(?<![\w-])animation-iteration-count\s*:\s*([^;{}]*)")
+
+
+def _loops(masked: str, base: int, prop: str, idx: int, items: list[tuple[int, int]]) -> bool:
+    """Whether the comma item `idx` of this animation declaration loops forever.
+
+    `animation` shorthand: the item's own text holds `infinite`. `animation-duration`: the same rule's
+    `animation-iteration-count` list, matched by comma position (CSS repeats a shorter list), holds `infinite` there.
+    """
+    if prop.endswith("animation"):
+        a, b = items[idx]
+        return bool(INFINITE.search(masked[base + a:base + b]))
+    if not prop.endswith("animation-duration"):
+        return False
+    counts = [c for m in COUNT_DECL.finditer(_block_window(masked, base)) for c in [m.group(1).split(",")]]
+    if not counts:
+        return False
+    last = counts[-1]
+    return bool(INFINITE.search(last[idx % len(last)]))
+
+
 def scan_text(text: str, rel: str, tokens: dict) -> list[Finding]:
     php = rel.endswith(".php")
     masked = mask(text, php)
@@ -242,7 +263,7 @@ def scan_text(text: str, rel: str, tokens: dict) -> list[Finding]:
             if kind == "time" and not f.exempt and _in_calc(work, s):
                 f.exempt, f.match, f.nearest, f.exempt_reason = True, None, "", "calc() stagger step"
             if (kind == "time" and not f.exempt and role == "duration" and prop.endswith(("animation", "animation-duration"))
-                    and (INFINITE.search(masked[base:base + len(value)]) or INFINITE.search(_block_window(masked, base)))):
+                    and _loops(masked, base, prop, idx, items)):
                 f.exempt, f.match, f.nearest, f.exempt_reason = True, None, "", "loop period"
             if not f.exempt and not f.match and (MARK_IN.search(text[pm.start():f.vend]) or MARK_AFTER.match(text, f.vend)):
                 f.marked = True

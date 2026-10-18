@@ -40,6 +40,8 @@ export function initLabelMagnet( el, opts ) {
 		if ( ! cancelled && mod && 'function' === typeof mod.initMagnet ) {
 			stop = opts ? mod.initMagnet( el, opts ) : mod.initMagnet( el );
 		}
+	} ).catch( () => {
+		// A throw inside the shared initMagnet leaves the label still: the pull is decoration.
 	} );
 	return () => {
 		cancelled = true;
