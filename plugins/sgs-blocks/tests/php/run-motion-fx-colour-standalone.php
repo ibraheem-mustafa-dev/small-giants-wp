@@ -84,8 +84,17 @@ namespace {
 			$check( '#aabbcc80' === $got, $name . ': a hex (with alpha) prints as written' );
 			$got = Emitter::layer_attrs( $layer( 'no-such-slug' ) )[ $field['attr'] ] ?? null;
 			$check( null === $got, $name . ': a slug the palette lacks is not written (got ' . var_export( $got, true ) . ')' );
+			foreach ( array( 'white', 'black', 'transparent', 'currentcolor', 'rebeccapurple' ) as $keyword ) {
+				$got = Emitter::layer_attrs( $layer( $keyword ) )[ $field['attr'] ] ?? null;
+				$check( $keyword === $got, $name . ': the CSS colour keyword ' . $keyword . ' prints as written (got ' . var_export( $got, true ) . ')' );
+			}
+			$got = Emitter::layer_attrs( $layer( 'not-a-colour' ) )[ $field['attr'] ] ?? null;
+			$check( null === $got, $name . ': a non-colour token is not written (got ' . var_export( $got, true ) . ')' );
 		}
 	}
+	// The guard names the function the method calls (a guard on another helper lets a missing one fatal).
+	$source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/motion/class-sgs-motion-fx-emitter.php' );
+	$check( 1 === preg_match( "/function_exists\( 'sgs_colour_resolve_hex_alpha' \)/", $source ), 'palette_colour guards on sgs_colour_resolve_hex_alpha, the function it calls' );
 	$check( $seen >= 20, "the detector found $seen colour fields with a data attribute" );
 
 	echo PHP_EOL . ( $count - $fail ) . "/$count passed" . PHP_EOL;

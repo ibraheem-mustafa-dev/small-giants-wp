@@ -373,6 +373,16 @@ namespace SGS\Blocks\Motion {
 	$third = $runner->migrate_content( $clean );
 	ok( ! $third['changed'] && $third['content'] === $clean, 'content that holds only sgsMotion is untouched' );
 
+	// 8. A part another mapper (or the author) already wrote: the runner merges the hover timing into its hover state without overwriting; a clash is flagged.
+	$strip_a = blk( 'sgs/brand-strip', array( 'transitionDuration' => '500', 'transitionEasing' => 'linear', 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'item' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.05 ) ) ) ) ) ) ) );
+	$strip_b = blk( 'sgs/brand-strip', array( 'transitionDuration' => '500', 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'item' => array( 'hover' => array( 'state' => array( 'values' => array( 'duration' => 200 ) ) ) ) ) ) ) );
+	$part_run = $runner->migrate_content( render_tree( array( $strip_a, $strip_b ) ) );
+	$part_out = parse_blocks( $part_run['content'] );
+	$vals_a   = $part_out[0]['attrs']['sgsMotion']['elements']['item']['hover']['state']['values'] ?? array();
+	ok( 1.05 === ( $vals_a['scale'] ?? null ) && 500 === ( $vals_a['duration'] ?? null ) && 'linear' === ( $vals_a['easing'] ?? null ) && ! isset( $part_out[0]['attrs']['transitionDuration'] ) && ! isset( $part_out[0]['attrs']['transitionEasing'] ), 'item part already holding a hover value: the timing is merged beside it and the old attributes are consumed', js( $part_out[0]['attrs'] ?? null ) );
+	$vals_b = $part_out[1]['attrs']['sgsMotion']['elements']['item']['hover']['state']['values'] ?? array();
+	ok( 200 === ( $vals_b['duration'] ?? null ) && ! isset( $part_out[1]['attrs']['transitionDuration'] ) && 1 <= count( array_filter( $part_run['flags'], static fn( $f ) => false !== strpos( (string) $f['key'], 'conflict' ) ) ), 'item part already holding a different duration: the stored value is kept and the clash is flagged by the runner (the run policy: stored wins, the old attribute is consumed)', js( $part_out[1]['attrs'] ?? null ) . js( $part_run['flags'] ) );
+
 	echo "\nRESULT  $pass passed, $fail failed\n";
 	exit( $fail > 0 ? 1 : 0 );
 }

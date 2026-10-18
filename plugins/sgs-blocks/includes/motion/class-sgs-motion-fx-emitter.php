@@ -294,7 +294,13 @@ final class Sgs_Motion_Fx_Emitter {
 			return $value;
 		}
 		require_once dirname( __DIR__ ) . '/helpers-colour-wcag.php';
-		if ( ! function_exists( 'sgs_resolve_palette_hex' ) || ! function_exists( 'wp_get_global_settings' ) ) {
+		require_once dirname( __DIR__ ) . '/helpers-tokens.php';
+		if ( ! function_exists( 'sgs_colour_resolve_hex_alpha' ) || ! function_exists( 'wp_get_global_settings' ) ) {
+			return $value;
+		}
+		// A CSS colour keyword (`white`, `transparent`, `currentcolor`, ...) prints as written; any other slug resolves
+		// through the palette (a client snapshot's override wins); a token that is neither is not a colour.
+		if ( ! in_array( $value, array( 'inherit', 'initial', 'unset' ), true ) && function_exists( 'sgs_is_css_colour' ) && \sgs_is_css_colour( $value ) ) {
 			return $value;
 		}
 		$resolved = \sgs_colour_resolve_hex_alpha( $value );

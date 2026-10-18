@@ -195,5 +195,38 @@ foreach ( $markups as $i => $markup ) {
 	$check( 0 === preg_match( '/\sstyle\s*=/i', $markup ), "no style attribute in markup $i" );
 }
 
+// 7. Reduced motion (FR-38A-27): the close and open name lists exist only under no-preference, so under reduce the state
+// `-out` rule's `animation-name: var(--sgs-mt-out,none)` is `none` and no close keyframes play (nothing moves).
+$name_list_media = static function ( string $css ): array {
+	$media = array();
+	$stack = array();
+	$token = '';
+	$len   = strlen( $css );
+	for ( $i = 0; $i < $len; $i++ ) {
+		$ch = $css[ $i ];
+		if ( '{' === $ch ) {
+			$stack[] = trim( $token );
+			$token   = '';
+		} elseif ( '}' === $ch ) {
+			array_pop( $stack );
+			$token = '';
+		} elseif ( ';' === $ch ) {
+			if ( 1 === preg_match( '/--sgs-mt-(?:out|in)\s*:/', $token ) ) {
+				$at      = array_values( array_filter( $stack, static fn( $s ) => 0 === strpos( $s, '@media' ) ) );
+				$media[] = array() === $at ? '(no media)' : $at[0];
+			}
+			$token = '';
+		} else {
+			$token .= $ch;
+		}
+	}
+	return array_values( array_unique( $media ) );
+};
+$triggers_css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/motion-triggers.css' );
+$declared_in  = $name_list_media( $triggers_css );
+$check( array( '@media (prefers-reduced-motion: no-preference)' ) === $declared_in, 'the --sgs-mt-out and --sgs-mt-in name lists are declared only under no-preference: ' . json_encode( $declared_in ) );
+$planted = $name_list_media( '@media (prefers-reduced-motion: reduce){ a{ --sgs-mt-out: x; } } @media (prefers-reduced-motion: no-preference){ a{ --sgs-mt-in: y; } }' );
+$check( array( '@media (prefers-reduced-motion: reduce)', '@media (prefers-reduced-motion: no-preference)' ) === $planted, 'negative control: a name list planted under reduce is detected' );
+
 echo $failures ? "FAILED: $failures of $checks checks\n" : "PASS: $checks checks\n";
 exit( $failures ? 1 : 0 );

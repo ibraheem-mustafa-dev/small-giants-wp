@@ -266,6 +266,10 @@ namespace {
 	$pin = Emitter::layer_attrs( array( 'effect' => 'pin-scrub', 'values' => array( 'hold' => 0.2, 'startElement' => 'top', 'startViewport' => 0 ) ) );
 	fx_check( false !== strpos( $css, '--sgs-pin-scrub-end:+=150%;--sgs-pin-scrub-hold:0.2;--sgs-pin-scrub-start:top top;' ) && false !== strpos( $css, '{--sgs-pin-scrub-end:+=200%;}' ) && '0.2' === ( $pin['data-sgs-fx-hold'] ?? null ) && 'top top' === ( $pin['data-sgs-fx-start'] ?? null ), 'pin-scrub: pin length as +=N% per tier, hold as a number, start as a position: ' . $css . ' ' . json_encode( $pin ) );
 
+	// A digit-then-letter token key prints as WordPress prints it (`2xl` is `2-xl`).
+	fx_check( 'var(--wp--custom--distance--2-xl)' === Types::resolve_token( 'token:distance.2xl' ), 'token:distance.2xl resolves to var(--wp--custom--distance--2-xl): ' . var_export( Types::resolve_token( 'token:distance.2xl' ), true ) );
+	fx_check( 'calc(-1 * var(--wp--custom--distance--2-xl))' === Types::resolve_token( '-token:distance.2xl' ), '-token:distance.2xl resolves to the negated 2-xl variable' );
+
 	echo PHP_EOL . ( $GLOBALS['fx_count'] - $GLOBALS['fx_fail'] ) . ' of ' . $GLOBALS['fx_count'] . ' checks passed' . PHP_EOL;
 	exit( $GLOBALS['fx_fail'] > 0 ? 1 : 0 );
 }
