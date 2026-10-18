@@ -1,0 +1,44 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"className": "m43-loops-grid"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Core and WooCommerce loop delays",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/post-grid",
+				"attributes": {
+					"className": "m43-grid",
+					"postType": "post",
+					"postsPerPage": 6,
+					"layout": "grid",
+					"columns": {
+						"desktop": 3,
+						"tablet": 2,
+						"mobile": 1
+					},
+					"sgsMotion": {
+						"v": 1,
+						"stagger": {
+							"apply": false,
+							"offset": 0,
+							"step": 80,
+							"order": "row-first",
+							"perRow": true,
+							"closeOrder": "same"
+						}
+					}
+				}
+			}
+		]
+	}
+]
