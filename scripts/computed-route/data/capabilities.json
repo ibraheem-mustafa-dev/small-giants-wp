@@ -184,7 +184,7 @@
 				{
 					"id": "block-setting:color:styling",
 					"label": "block settings, role color, styling",
-					"count": 862,
+					"count": 864,
 					"examples": [
 						"sgs/accordion-item.backgroundColour",
 						"sgs/accordion-item.borderColour",
@@ -210,7 +210,7 @@
 				{
 					"id": "block-setting:colour-gradient:styling",
 					"label": "block settings, role colour-gradient, styling",
-					"count": 518,
+					"count": 520,
 					"examples": [
 						"sgs/accordion-item.borderColourGradient",
 						"sgs/accordion-item.textColourGradient",
@@ -621,7 +621,7 @@
 				{
 					"id": "block-setting:layout:styling",
 					"label": "block settings, role layout, styling",
-					"count": 664,
+					"count": 665,
 					"examples": [
 						"sgs/accordion-item.maxWidth",
 						"sgs/accordion.alignContent",
@@ -675,13 +675,13 @@
 				{
 					"id": "block-setting:motion:motion",
 					"label": "block settings, role motion, motion",
-					"count": 52,
+					"count": 48,
 					"examples": [
-						"sgs/brand-strip.transitionDuration",
-						"sgs/brand-strip.transitionEasing",
-						"sgs/card-grid.transitionDuration",
-						"sgs/card-grid.transitionEasing",
-						"sgs/cart.freeDeliveryFillDuration"
+						"sgs/cart.freeDeliveryFillDuration",
+						"sgs/cart.freeDeliveryFillEasing",
+						"sgs/cart.panelSlideDuration",
+						"sgs/cart.panelSlideEasing",
+						"sgs/counter.duration"
 					],
 					"motion": true
 				},
@@ -844,7 +844,7 @@
 				{
 					"id": "block-setting:select-from-enum:styling",
 					"label": "block settings, role select-from-enum, styling",
-					"count": 167,
+					"count": 168,
 					"examples": [
 						"sgs/accordion.iconSize",
 						"sgs/accordion.writingMode",
@@ -1050,7 +1050,7 @@
 				{
 					"id": "block-setting:text-content:string",
 					"label": "block settings, role text-content, string",
-					"count": 181,
+					"count": 182,
 					"examples": [
 						"sgs/accordion-item.title",
 						"sgs/account.guestLineText",
@@ -1085,7 +1085,7 @@
 				{
 					"id": "block-setting:typography:string",
 					"label": "block settings, role typography, string",
-					"count": 500,
+					"count": 503,
 					"examples": [
 						"sgs/accordion.fontSizeUnit",
 						"sgs/accordion.letterSpacingUnit",
@@ -1098,7 +1098,7 @@
 				{
 					"id": "block-setting:typography:styling",
 					"label": "block settings, role typography, styling",
-					"count": 1622,
+					"count": 1632,
 					"examples": [
 						"sgs/accordion.fontFamily",
 						"sgs/accordion.fontSize",
@@ -1236,7 +1236,7 @@
 				{
 					"id": "block-setting:visual:styling",
 					"label": "block settings, role visual, styling",
-					"count": 400,
+					"count": 399,
 					"examples": [
 						"sgs/accordion-item.borderRadius",
 						"sgs/accordion-item.borderStyle",
