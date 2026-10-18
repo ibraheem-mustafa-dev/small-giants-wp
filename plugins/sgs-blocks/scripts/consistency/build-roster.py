@@ -391,7 +391,7 @@ def main():
         sys.exit(0 if check_against(OUT, payload) else 1)
 
     # Normal mode: write roster
-    OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8", newline="\n")
 
     def cnt(flag):
         return sum(1 for b in roster if b["surfaces"][flag])

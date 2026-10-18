@@ -880,7 +880,7 @@ def main() -> int:
         return 0
 
     JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    JSON_OUTPUT.write_text(json_source, encoding="utf-8")
+    JSON_OUTPUT.write_text(json_source, encoding="utf-8", newline="\n")
     print(
         f"[generate-fx-qualifying-blocks] Generated {JSON_OUTPUT} "
         f"with {len(fx_map)} qualifying block(s)."

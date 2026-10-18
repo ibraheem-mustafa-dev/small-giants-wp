@@ -308,11 +308,11 @@ def main() -> int:
         return 0
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_FILE.write_text(php_source, encoding="utf-8")
+    OUTPUT_FILE.write_text(php_source, encoding="utf-8", newline="\n")
     print(f"[generate-fx-effects-php] Generated {OUTPUT_FILE} with {len(rows)} effects.")
 
     JSON_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    JSON_OUTPUT_FILE.write_text(json_source, encoding="utf-8")
+    JSON_OUTPUT_FILE.write_text(json_source, encoding="utf-8", newline="\n")
     print(f"[generate-fx-effects-php] Generated {JSON_OUTPUT_FILE} with {len(meta_count(json_source))} effects.")
     return 0
 
