@@ -204,9 +204,11 @@ function cssUnits( css, bcd ) {
 }
 
 // HTML attributes: every global attribute (`html-attr:global.<name>`) and every element's own attribute
-// (`html-attr:<element>.<name>`), the union of browser-compat-data (with its deprecated flags) and the WHATWG lists in
-// html-element-attributes (`*` holds the global ones). `data_attributes` stands for every data-*.
-function htmlAttributes( bcd, lists ) {
+// (`html-attr:<element>.<name>`), the union of browser-compat-data (with its deprecated flags), the WHATWG lists in
+// html-element-attributes (`*` holds the global ones) and the WHATWG Rendering section's attribute rules
+// (data/presentational-hints.json: `<table background>` renders though neither list holds it). `data_attributes`
+// stands for every data-*.
+function htmlAttributes( bcd, lists, hints = [] ) {
 	const out = new Map();
 	const add = ( id, label, deprecated ) => out.set( id, withFlag( one( id, label ), deprecated || out.get( id )?.deprecated ) );
 	const g = bcd.html.global_attributes;
@@ -219,8 +221,12 @@ function htmlAttributes( bcd, lists ) {
 	for ( const [ el, attrs ] of Object.entries( lists ).filter( ( [ el ] ) => '*' !== el ) ) {
 		attrs.filter( ( a ) => ! out.has( `html-attr:${ el }.${ a }` ) && ! out.has( `html-attr:global.${ a }` ) ).forEach( ( a ) => add( `html-attr:${ el }.${ a }`, `<${ el } ${ a }>`, deprecatedIn( bcd.html.elements[ el ] ) ) );
 	}
+	hints.filter( ( h ) => '*' !== h.element && ! out.has( `html-attr:${ h.element }.${ h.attribute }` ) && ! out.has( `html-attr:global.${ h.attribute }` ) ).forEach( ( h ) => add( `html-attr:${ h.element }.${ h.attribute }`, `<${ h.element } ${ h.attribute }>`, deprecatedIn( bcd.html.elements[ h.element ] ) ) );
 	return [ ...out.values() ].sort( byId );
 }
+
+export const HINTS_FILE = path.join( ROUTE, 'data', 'presentational-hints.json' );
+const readHints = () => ( fs.existsSync( HINTS_FILE ) ? readJson( HINTS_FILE ).entries : [] );
 
 // Every function mdn-data's CSS grammar names (`repeat()`, `fit-content()` and the like that its function list omits):
 // each `name(` in a syntax, a property syntax or an at-rule descriptor syntax.
@@ -230,14 +236,23 @@ export function grammarFunctions( css ) {
 }
 
 // What a draft can hold, from the web platform's data packages and the construct registry.
-export function draftSections( { registry = loadRegistry(), css = require( 'mdn-data/css' ), tags = htmlTagNames, bcd = require( '@mdn/browser-compat-data' ), oembed = require( 'oembed-providers' ), aria = require( 'aria-query' ), attributes = htmlElementAttributes } = {} ) {
+export function draftSections( { registry = loadRegistry(), css = require( 'mdn-data/css' ), tags = htmlTagNames, bcd = require( '@mdn/browser-compat-data' ), oembed = require( 'oembed-providers' ), aria = require( 'aria-query' ), attributes = htmlElementAttributes, hints = readHints() } = {} ) {
 	const groups = [];
 	for ( const [ prop, p ] of Object.entries( css.properties ) ) {
 		( p.groups || [ 'ungrouped' ] ).forEach( ( g ) => groups.push( { prop, g } ) );
 	}
 	const media = bcd.css[ 'at-rules' ].media;
-	const selectors = Object.entries( css.selectors ).filter( ( [ k ] ) => k.startsWith( ':' ) );
-	const name = ( k ) => k.replace( /^:+/, '' ).replace( /\(\)$/, '' );
+	// Pseudo-classes and pseudo-elements: mdn-data's, and browser-compat-data's (which also holds the vendor ones a
+	// draft uses for scrollbars, sliders and meters, `::-webkit-scrollbar`), each written with its colons in the
+	// description. Obsolete (mdn-data) or deprecated (browser-compat-data) is flagged; vendor-prefixed is not, since
+	// `::-webkit-slider-thumb` is non-standard but is how every current browser styles a range slider.
+	const bcdSel = bcd.css.selectors || {};
+	const selectors = [
+		...Object.entries( css.selectors ).filter( ( [ k ] ) => k.startsWith( ':' ) ).map( ( [ k, v ] ) => [ k, 'obsolete' === v.status ] ),
+		...kidsOf( bcdSel ).map( ( k ) => [ /^<code>(::?[a-z-]+)/i.exec( bcdSel[ k ].__compat?.description || '' )?.[ 1 ], deprecatedIn( bcdSel[ k ] ) ] ).filter( ( [ k ] ) => k ),
+	];
+	const name = ( k ) => k.replace( /^:+/, '' ).replace( /\(\)$/, '' ).toLowerCase();
+	const bcdProps = bcd.css.properties || {};
 	const input = bcd.html.elements.input;
 	const hosts = new Map();
 	for ( const p of oembed ) {
@@ -249,16 +264,18 @@ export function draftSections( { registry = loadRegistry(), css = require( 'mdn-
 	}
 	return {
 		html: [ ...new Set( tags ) ].sort().map( ( t ) => withFlag( one( `html:${ t }`, `<${ t }>` ), deprecatedIn( bcd.html.elements[ t ] ) ) ),
-		'html-attr': htmlAttributes( bcd, attributes ),
+		'html-attr': htmlAttributes( bcd, attributes, hints ),
 		'input-type': kidsOf( input ).filter( ( k ) => k.startsWith( 'type_' ) ).map( ( k ) => withFlag( one( `input-type:${ k.slice( 5 ) }`, `<input type="${ k.slice( 5 ) }">` ), deprecatedIn( input[ k ] ) ) ).sort( byId ),
 		svg: kidsOf( bcd.svg.elements ).map( ( e ) => withFlag( one( `svg:${ e }`, `SVG <${ e }>`, [ 'animate', 'animateMotion', 'animateTransform', 'set', 'mpath' ].includes( e ) ), deprecatedIn( bcd.svg.elements[ e ] ) ) ).sort( byId ),
 		embed: [ ...hosts ].sort().map( ( [ h, n ] ) => one( `embed:${ h }`, `${ n } embed (${ h })` ) ),
 		'css-at': Object.keys( css.atRules ).sort().map( ( a ) => one( `css-at:${ a.replace( /^@/, '' ) }`, a ) ),
 		'css-media-feature': kidsOf( media ).filter( ( k ) => ! k.includes( '_' ) ).map( ( k ) => withFlag( one( `css-media-feature:${ k }`, `@media (${ k })`, 'prefers-reduced-motion' === k ), deprecatedIn( media[ k ] ) ) ).sort( byId ),
 		'css-group': grouped( groups, ( r ) => `css-group:${ groupSlug( r.g ) }`, ( r ) => `CSS properties: ${ r.g }`, ( r ) => r.prop, ( r ) => /animation|transition|motion|scroll-driven/i.test( r.g ) ),
-		'css-pseudo-class': unique( selectors.filter( ( [ k ] ) => ! k.startsWith( '::' ) ).map( ( [ k, v ] ) => withFlag( one( `css-pseudo-class:${ name( k ) }`, k ), 'obsolete' === v.status || 'nonstandard' === v.status ) ) ),
-		'css-pseudo-element': unique( selectors.filter( ( [ k ] ) => k.startsWith( '::' ) ).map( ( [ k, v ] ) => withFlag( one( `css-pseudo-element:${ name( k ) }`, k ), 'obsolete' === v.status || 'nonstandard' === v.status ) ) ),
-		'css-function': unique( [ ...Object.entries( css.functions ), ...grammarFunctions( css ).map( ( f ) => [ `${ f }()`, { status: 'standard' } ] ) ].map( ( [ k, v ] ) => withFlag( one( `css-function:${ k.replace( /\(\)$/, '' ).toLowerCase() }`, k, /^(?:matrix|rotate|scale|skew|translate|perspective|steps|cubic-bezier|linear|scroll|view)/i.test( k ) ), 'obsolete' === v.status || 'nonstandard' === v.status ) ) ),
+		'css-pseudo-class': unique( selectors.filter( ( [ k ] ) => ! k.startsWith( '::' ) ).map( ( [ k, dep ] ) => withFlag( one( `css-pseudo-class:${ name( k ) }`, k ), dep ) ) ),
+		'css-pseudo-element': unique( selectors.filter( ( [ k ] ) => k.startsWith( '::' ) ).map( ( [ k, dep ] ) => withFlag( one( `css-pseudo-element:${ name( k ) }`, k ), dep ) ) ),
+		// CSS properties mdn-data's groups do not hold (vendor and legacy ones, `-webkit-user-drag`), by browser-compat-data.
+		'css-property': kidsOf( bcdProps ).filter( ( p ) => ! css.properties[ p ] ).map( ( p ) => withFlag( one( `css-property:${ p }`, p ), deprecatedIn( bcdProps[ p ] ) ) ).sort( byId ),
+		'css-function': unique( [ ...Object.entries( css.functions ), ...grammarFunctions( css ).map( ( f ) => [ `${ f }()`, { status: 'standard' } ] ) ].map( ( [ k, v ] ) => withFlag( one( `css-function:${ k.replace( /\(\)$/, '' ).toLowerCase() }`, k, /^(?:matrix|rotate|scale|skew|translate|perspective|steps|cubic-bezier|linear|scroll|view)/i.test( k ) ), 'obsolete' === v.status ) ) ),
 		'css-unit': cssUnits( css, bcd ),
 		'aria-role': [ ...aria.roles.keys() ].filter( ( r ) => ! aria.roles.get( r ).abstract ).sort().map( ( r ) => one( `aria-role:${ r }`, `role="${ r }"` ) ),
 		'aria-attr': [ ...aria.aria.keys() ].sort().map( ( a ) => one( `aria-attr:${ a }`, a ) ),
@@ -270,7 +287,7 @@ export function draftSections( { registry = loadRegistry(), css = require( 'mdn-
 
 const DB_SECTIONS = [ 'block-setting', 'fx', 'motion-preset' ];
 const CODE_SECTIONS = [ 'sgs-support', 'extension', 'template', 'part', 'pattern', 'post-type', 'plugin', 'snapshot-key' ];
-const DRAFT_SECTIONS = [ 'html', 'html-attr', 'input-type', 'svg', 'embed', 'css-at', 'css-media-feature', 'css-group', 'css-pseudo-class', 'css-pseudo-element', 'css-function', 'css-unit', 'aria-role', 'aria-attr', 'construct' ];
+const DRAFT_SECTIONS = [ 'html', 'html-attr', 'input-type', 'svg', 'embed', 'css-at', 'css-media-feature', 'css-group', 'css-property', 'css-pseudo-class', 'css-pseudo-element', 'css-function', 'css-unit', 'aria-role', 'aria-attr', 'construct' ];
 
 // { sections: { <name>: { side, source, status, entries } } }. `dbFile` null or missing marks the DB sections absent.
 export function buildInventory( { root = REPO, dbFile = DB_PATH, ...sources } = {} ) {

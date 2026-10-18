@@ -30,6 +30,10 @@ const BCD_GLOBALS = new Set( Object.keys( require( '@mdn/browser-compat-data' ).
 // `on*` are census constructs too; `key` is the runtime's list identity).
 const RUNTIME_TAG = /^(?:sc|dc|x)-|^helmet$/;
 const RUNTIME_ATTR = /^(?:data-dc-|data-sc-|sc-(?!camel-))|^(?:ref|key)$|^on/;
+// The presentational hints (data/presentational-hints.json, from the WHATWG Rendering section): `<element>.<attribute>`
+// → the CSS properties the browser turns that attribute into (`td.align` → text-align).
+const HINTS = new Map( JSON.parse( fs.readFileSync( new URL( '../data/presentational-hints.json', import.meta.url ), 'utf8' ) ).entries.map( ( e ) => [ `${ e.element }.${ e.attribute }`, e.css ] ) );
+
 // React props a template writes for an HTML attribute (the draft runtime renders through React).
 const REACT_PROP = { defaultValue: 'value', defaultChecked: 'checked', className: 'class', htmlFor: 'for' };
 const EMBED_TAGS = new Set( [ 'iframe', 'embed', 'object' ] );
@@ -149,7 +153,8 @@ const svgOnly = ( name, known ) => Boolean( svgName( name, known ) ) && ! known.
 // Every capability one element uses: its tag (`svg` is an SVG element's own-case name, or true with `tag` holding it;
 // a custom element is its tag alone), its attributes (global or its own; data-* as one; aria-* and role as ARIA; an SVG
 // element's ARIA only), its state styles (`style-<state>`: that pseudo-class or pseudo-element, and the CSS), its input
-// type, its embed host and its inline style. A bound value (`{{ }}`) is never parsed. Returns parse problems.
+// type, its embed host, its inline style, and the CSS a presentational attribute becomes (`<td align>`: text
+// alignment, by the WHATWG presentational hints). A bound value (`{{ }}`) is never parsed. Returns parse problems.
 export function elementUsage( { tag, attrs = [], svg = null }, t, draftId, known = new Set() ) {
 	const real = realTag( String( tag || '' ) );
 	const lower = real.toLowerCase();
@@ -193,6 +198,8 @@ export function elementUsage( { tag, attrs = [], svg = null }, t, draftId, known
 		} else {
 			note( t, BCD_GLOBALS.has( a ) || known.has( `html-attr:global.${ a }` ) ? `html-attr:global.${ a }` : `html-attr:${ lower }.${ a }`, draftId );
 		}
+		// A presentational attribute is the CSS it becomes too (`<td align>` uses text alignment).
+		( HINTS.get( `${ lower }.${ a }` ) || [] ).forEach( ( prop ) => propertyIds( prop ).forEach( ( id ) => note( t, id, draftId ) ) );
 		if ( 'input' === lower && 'type' === a && ! bound ) {
 			note( t, `input-type:${ value.toLowerCase() }`, draftId );
 		}

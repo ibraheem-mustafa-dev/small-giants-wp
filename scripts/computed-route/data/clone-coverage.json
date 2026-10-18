@@ -3546,57 +3546,57 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"wave": "modes and values with no CSS property",
+			"note": "(-moz-device-pixel-ratio): the old spelling of resolution (retina image swaps); no writer"
 		},
 		"css-media-feature:-webkit-animation": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"note": "(-webkit-animation): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
 		},
 		"css-media-feature:-webkit-device-pixel-ratio": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"wave": "modes and values with no CSS property",
+			"note": "(-webkit-device-pixel-ratio): the old spelling of resolution (retina image swaps); no writer"
 		},
 		"css-media-feature:-webkit-max-device-pixel-ratio": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"wave": "modes and values with no CSS property",
+			"note": "(-webkit-max-device-pixel-ratio): the old spelling of resolution (retina image swaps); no writer"
 		},
 		"css-media-feature:-webkit-min-device-pixel-ratio": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"wave": "modes and values with no CSS property",
+			"note": "(-webkit-min-device-pixel-ratio): the old spelling of resolution (retina image swaps); no writer"
 		},
 		"css-media-feature:-webkit-transform-2d": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"note": "(-webkit-transform-2d): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
 		},
 		"css-media-feature:-webkit-transform-3d": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"note": "(-webkit-transform-3d): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
 		},
 		"css-media-feature:-webkit-transition": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"note": "(-webkit-transition): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
 		},
 		"css-media-feature:any-hover": {
 			"recognise": null,
@@ -3617,77 +3617,77 @@
 			"write": null,
 			"check": null,
 			"wave": "modes and values with no CSS property",
-			"note": "(aspect-ratio): breakpoints; draft thresholds are read (intake-breakpoints), per-block writing is not built (FR-48-45, FR-48-50)"
+			"note": "(aspect-ratio): breakpoints; draft thresholds are read from the logic only, not from CSS @media, and per-block writing is not built (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:calc": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(calc): a device or display capability query, or a syntax note"
+			"note": "calc: a syntax note in browser-compat-data, not a media feature"
 		},
 		"css-media-feature:color": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(color): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(color): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:color-gamut": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(color-gamut): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(color-gamut): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:color-index": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(color-index): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(color-index): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:device-aspect-ratio": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"wave": "modes and values with no CSS property",
+			"note": "(device-aspect-ratio): an old form of the width, height or aspect-ratio breakpoint; draft thresholds are read from the logic only, not from CSS @media (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:device-height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"wave": "modes and values with no CSS property",
+			"note": "(device-height): an old form of the width, height or aspect-ratio breakpoint; draft thresholds are read from the logic only, not from CSS @media (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:device-posture": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(device-posture): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(device-posture): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:device-width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated or vendor-prefixed media feature"
+			"wave": "modes and values with no CSS property",
+			"note": "(device-width): an old form of the width, height or aspect-ratio breakpoint; draft thresholds are read from the logic only, not from CSS @media (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:display-mode": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(display-mode): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(display-mode): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:dynamic-range": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(dynamic-range): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(dynamic-range): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:forced-colors": {
 			"recognise": null,
@@ -3700,22 +3700,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(grid): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(grid): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "modes and values with no CSS property",
-			"note": "(height): breakpoints; draft thresholds are read (intake-breakpoints), per-block writing is not built (FR-48-45, FR-48-50)"
+			"note": "(height): breakpoints; draft thresholds are read from the logic only, not from CSS @media, and per-block writing is not built (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:horizontal-viewport-segments": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(horizontal-viewport-segments): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(horizontal-viewport-segments): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:hover": {
 			"recognise": null,
@@ -3735,36 +3735,36 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(monochrome): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(monochrome): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:nested-queries": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(nested-queries): a device or display capability query, or a syntax note"
+			"note": "nested-queries: a syntax note in browser-compat-data, not a media feature"
 		},
 		"css-media-feature:orientation": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "modes and values with no CSS property",
-			"note": "(orientation): breakpoints; draft thresholds are read (intake-breakpoints), per-block writing is not built (FR-48-45, FR-48-50)"
+			"note": "(orientation): breakpoints; draft thresholds are read from the logic only, not from CSS @media, and per-block writing is not built (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:overflow-block": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(overflow-block): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(overflow-block): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:overflow-inline": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(overflow-inline): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(overflow-inline): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:pointer": {
 			"recognise": null,
@@ -3791,8 +3791,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(prefers-reduced-data): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(prefers-reduced-data): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:prefers-reduced-motion": {
 			"recognise": null,
@@ -3814,49 +3814,742 @@
 			"write": null,
 			"check": null,
 			"wave": "modes and values with no CSS property",
-			"note": "(resolution): breakpoints; draft thresholds are read (intake-breakpoints), per-block writing is not built (FR-48-45, FR-48-50)"
+			"note": "(resolution): breakpoints; draft thresholds are read from the logic only, not from CSS @media, and per-block writing is not built (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:scan": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(scan): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(scan): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:scripting": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(scripting): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(scripting): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:update": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(update): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(update): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:vertical-viewport-segments": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(vertical-viewport-segments): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(vertical-viewport-segments): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:video-dynamic-range": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(video-dynamic-range): a device or display capability query, or a syntax note"
+			"wave": "modes and values with no CSS property",
+			"note": "(video-dynamic-range): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "modes and values with no CSS property",
-			"note": "(width): breakpoints; draft thresholds are read (intake-breakpoints), per-block writing is not built (FR-48-45, FR-48-50)"
+			"note": "(width): breakpoints; draft thresholds are read from the logic only, not from CSS @media, and per-block writing is not built (FR-48-45, FR-48-50)"
+		},
+		"css-property:-webkit-app-region": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-app-region: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-border-horizontal-spacing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-border-horizontal-spacing: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-border-vertical-spacing": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-border-vertical-spacing: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-column-axis": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-column-axis: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-column-break-after": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-column-break-after: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-column-break-before": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-column-break-before: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-column-break-inside": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-column-break-inside: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-column-progression": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-column-progression: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-cursor-visibility": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-cursor-visibility: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-hyphenate-limit-after": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-hyphenate-limit-after: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-hyphenate-limit-before": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-hyphenate-limit-before: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-hyphenate-limit-lines": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-hyphenate-limit-lines: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-line-align": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-line-align: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-line-box-contain": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-line-box-contain: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-line-grid": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-line-grid: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-line-snap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-line-snap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-locale": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-locale: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-logical-height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-logical-width": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-mask-box-image": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-mask-box-image: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-mask-source-type": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-mask-source-type: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-max-logical-height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-max-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-max-logical-width": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-max-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-min-logical-height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-min-logical-height: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-min-logical-width": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-min-logical-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-nbsp-mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-nbsp-mode: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-perspective-origin-x": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-perspective-origin-x: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-perspective-origin-y": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-perspective-origin-y: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-rtl-ordering": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-rtl-ordering: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-text-combine": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-text-combine: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-text-decorations-in-effect": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-text-decorations-in-effect: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-text-security": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-text-security: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-text-zoom": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-text-zoom: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-transform-origin-x": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-transform-origin-x: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-transform-origin-y": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-transform-origin-y: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-transform-origin-z": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-transform-origin-z: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:-webkit-user-drag": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "-webkit-user-drag: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:alt": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "alt: deprecated and no longer rendered"
+		},
+		"css-property:background-repeat-x": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "background-repeat-x: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:background-repeat-y": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "background-repeat-y: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:block-ellipsis": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "block-ellipsis: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:buffered-rendering": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "buffered-rendering: deprecated and no longer rendered"
+		},
+		"css-property:color-adjust": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "color-adjust: deprecated and no longer rendered"
+		},
+		"css-property:color-interpolation": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "color-interpolation: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:color-rendering": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "color-rendering: deprecated and no longer rendered"
+		},
+		"css-property:column-rule-break": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-cap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-cap-end": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-cap-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-cap-start": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-cap-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-end": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-junction": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-junction-end": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-junction-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-junction-start": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-junction-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-inset-start": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:column-rule-visibility-items": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "column-rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:continue": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "continue: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:custom-property": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "custom-property: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:flow-tolerance": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "flow-tolerance: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:glyph-orientation-vertical": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "glyph-orientation-vertical: deprecated and no longer rendered"
+		},
+		"css-property:hyphenate-limit-lines": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "hyphenate-limit-lines: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-break": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-color": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-color: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-cap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-cap-end": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-cap-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-cap-start": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-cap-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-end": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-junction": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-junction-end": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-junction-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-junction-start": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-junction-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-inset-start": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-style": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-style: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-visibility-items": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:row-rule-width": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "row-rule-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-break": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-break: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-color": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-color: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-inset": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-inset: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-inset-cap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-inset-cap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-inset-end": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-inset-end: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-inset-junction": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-inset-junction: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-inset-start": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-inset-start: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-overlap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-overlap: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-style": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-style: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-visibility-items": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-visibility-items: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:rule-width": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "rule-width: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:size": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "size: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:speak": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "speak: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:text-decoration-skip-spaces": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "text-decoration-skip-spaces: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:user-modify": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "user-modify: deprecated and no longer rendered"
+		},
+		"css-property:view-transition-group": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "view-transition-group: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:white-space-trim": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "white-space-trim: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:wrap-inside": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "wrap-inside: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-pseudo-class:-moz-first-node": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "-moz-first-node: a Firefox or WebKit internal with no design value"
+		},
+		"css-pseudo-class:-moz-last-node": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "-moz-last-node: a Firefox or WebKit internal with no design value"
+		},
+		"css-pseudo-class:-moz-only-whitespace": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "-moz-only-whitespace: a Firefox or WebKit internal with no design value"
+		},
+		"css-pseudo-class:-moz-window-inactive": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "exclusion candidate (awaiting Bean)",
+			"note": "-moz-window-inactive: a Firefox or WebKit internal with no design value"
 		},
 		"css-pseudo-class:active": {
 			"recognise": null,
@@ -4033,6 +4726,13 @@
 			"wave": "states",
 			"note": ":has-slotted: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
+		"css-pseudo-class:heading": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": ":heading: a structural or matching selector; not read as itself"
+		},
 		"css-pseudo-class:host": {
 			"recognise": null,
 			"write": null,
@@ -4137,6 +4837,13 @@
 			"check": null,
 			"wave": "states",
 			"note": ":muted: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+		},
+		"css-pseudo-class:navigation-source": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "states",
+			"note": ":navigation-source: a link state during navigation; walker states are built, the state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:not": {
 			"recognise": null,
@@ -4383,166 +5090,299 @@
 			"wave": "draft reading",
 			"note": ":xr-overlay: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
 		},
+		"css-pseudo-element:-moz-color-swatch": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-moz-color-swatch: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-moz-list-bullet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "-moz-list-bullet: list markers; no writer"
+		},
+		"css-pseudo-element:-moz-list-number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "-moz-list-number: list markers; no writer"
+		},
 		"css-pseudo-element:-moz-progress-bar": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-moz-progress-bar: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-moz-range-progress": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-moz-range-progress: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-moz-range-thumb": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-moz-range-thumb: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-moz-range-track": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-moz-range-track: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-ms-browse": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-browse: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-check": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-check: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-clear": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-clear: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-expand": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-expand: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-fill": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-fill: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-fill-lower": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-fill-lower: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-fill-upper": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-fill-upper: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-reveal": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-reveal: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-thumb": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-thumb: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-ticks-after": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-ticks-after: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-ticks-before": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-ticks-before: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-tooltip": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-tooltip: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-track": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-track: Internet Explorer and old Edge only; no current browser renders it"
 		},
 		"css-pseudo-element:-ms-value": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"note": "-ms-value: Internet Explorer and old Edge only; no current browser renders it"
+		},
+		"css-pseudo-element:-webkit-inner-spin-button": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-inner-spin-button: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-meter-bar": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-meter-bar: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-meter-even-less-good-value": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-meter-even-less-good-value: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-meter-inner-element": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-meter-inner-element: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-meter-optimum-value": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-meter-optimum-value: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-meter-suboptimum-value": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-meter-suboptimum-value: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-webkit-progress-bar": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-webkit-progress-bar: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-progress-inner-element": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-progress-inner-element: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-webkit-progress-inner-value": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-webkit-progress-inner-value: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-webkit-progress-value": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-webkit-progress-value: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-resizer": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "-webkit-resizer: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+		},
+		"css-pseudo-element:-webkit-scrollbar": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "-webkit-scrollbar: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+		},
+		"css-pseudo-element:-webkit-scrollbar-button": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "-webkit-scrollbar-button: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+		},
+		"css-pseudo-element:-webkit-scrollbar-corner": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "-webkit-scrollbar-corner: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+		},
+		"css-pseudo-element:-webkit-scrollbar-thumb": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "-webkit-scrollbar-thumb: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+		},
+		"css-pseudo-element:-webkit-scrollbar-track": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "-webkit-scrollbar-track: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+		},
+		"css-pseudo-element:-webkit-scrollbar-track-piece": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "-webkit-scrollbar-track-piece: custom scrollbar styling (still the way Chrome and Safari style a scrollbar's parts); no writer"
+		},
+		"css-pseudo-element:-webkit-search-cancel-button": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-search-cancel-button: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
+		},
+		"css-pseudo-element:-webkit-search-results-button": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "shop, forms and data",
+			"note": "-webkit-search-results-button: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-webkit-slider-runnable-track": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-webkit-slider-runnable-track: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-webkit-slider-thumb": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "non-standard, vendor-prefixed or obsolete pseudo-element"
+			"wave": "shop, forms and data",
+			"note": "-webkit-slider-thumb: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:after": {
 			"recognise": null,
@@ -4571,6 +5411,13 @@
 			"check": null,
 			"wave": "modes and values with no CSS property",
 			"note": "::checkmark: a styled part; no writer"
+		},
+		"css-pseudo-element:column": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "::column: a styled part; no writer"
 		},
 		"css-pseudo-element:cue": {
 			"recognise": null,
@@ -4663,6 +5510,14 @@
 			"wave": "modes and values with no CSS property",
 			"note": "::placeholder: a styled part; no writer"
 		},
+		"css-pseudo-element:scroll-button": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "scroll-button: transition or scroll-marker part: the motion writer"
+		},
 		"css-pseudo-element:scroll-marker": {
 			"recognise": null,
 			"write": null,
@@ -4678,6 +5533,13 @@
 			"wave": "motion writer (4.0)",
 			"waiting": "phase-0",
 			"note": "::scroll-marker-group: transition or scroll-marker part: the motion writer"
+		},
+		"css-pseudo-element:search-text": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "::search-text: a styled part; no writer"
 		},
 		"css-pseudo-element:selection": {
 			"recognise": null,
@@ -4722,6 +5584,14 @@
 			"wave": "motion writer (4.0)",
 			"waiting": "phase-0",
 			"note": "::view-transition-group: transition or scroll-marker part: the motion writer"
+		},
+		"css-pseudo-element:view-transition-group-children": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "view-transition-group-children: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:view-transition-image-pair": {
 			"recognise": null,
@@ -8262,21 +9132,21 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<a attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:a.charset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<a charset>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:a.coords": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<a coords>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:a.download": {
 			"recognise": null,
@@ -8316,8 +9186,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<a name>: an old-style anchor target, still honoured for #fragment links; no writer"
 		},
 		"html-attr:a.ping": {
 			"recognise": null,
@@ -8345,14 +9215,14 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<a rev>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:a.shape": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<a shape>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:a.target": {
 			"recognise": null,
@@ -8457,7 +9327,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<area attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:area.coords": {
 			"recognise": null,
@@ -8499,7 +9369,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<area nohref>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:area.ping": {
 			"recognise": null,
@@ -8656,81 +9526,85 @@
 			"note": "<blockquote cite>: element semantics (link target, list numbering, citation, date); no writer"
 		},
 		"html-attr:body.alink": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body alink>: a presentational attribute the browser turns into color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.background": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.bottommargin": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<body bottommargin>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:body.leftmargin": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body leftmargin>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.link": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body link>: a presentational attribute the browser turns into color (WHATWG presentational hints), which Fill reads as computed values"
+		},
+		"html-attr:body.marginheight": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body marginheight>: a presentational attribute the browser turns into margin-bottom, margin-top (WHATWG presentational hints), which Fill reads as computed values"
+		},
+		"html-attr:body.marginwidth": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body marginwidth>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.rightmargin": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<body rightmargin>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:body.text": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body text>: a presentational attribute the browser turns into color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.topmargin": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body topmargin>: a presentational attribute the browser turns into margin-bottom, margin-top (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.vlink": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<body vlink>: a presentational attribute the browser turns into color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:br.clear": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<br clear>: a presentational attribute the browser turns into clear (WHATWG presentational hints); Fill does not read clear"
 		},
 		"html-attr:button.command": {
 			"recognise": null,
@@ -8838,53 +9712,57 @@
 			"note": "<button value>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:canvas.height": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<canvas height>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<canvas height>: a presentational attribute the browser turns into aspect-ratio (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:canvas.moz-opaque": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<canvas moz-opaque>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:canvas.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<canvas width>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<canvas width>: a presentational attribute the browser turns into aspect-ratio (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:caption.align": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<caption align>: a presentational attribute the browser turns into caption-side (WHATWG presentational hints); Fill does not read caption-side"
+		},
+		"html-attr:center.align": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<center align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:col.align": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<col align>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:col.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<col char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:col.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<col charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:col.span": {
 			"recognise": null,
@@ -8898,35 +9776,34 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<col valign>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:col.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<col width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:colgroup.align": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<colgroup align>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:colgroup.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<colgroup char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:colgroup.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<colgroup charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:colgroup.span": {
 			"recognise": null,
@@ -8940,14 +9817,14 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<colgroup valign>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:colgroup.width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<colgroup width>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:data.value": {
 			"recognise": null,
@@ -8981,8 +9858,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "<details open>: native open state or behaviour; not read"
+			"wave": "modes and values with no CSS property",
+			"note": "<details open>: a presentational attribute the browser turns into list-style-type (WHATWG presentational hints); Fill does not read list-style-type"
 		},
 		"html-attr:dialog.closedby": {
 			"recognise": null,
@@ -8992,25 +9869,23 @@
 			"note": "<dialog closedby>: native open state or behaviour; not read"
 		},
 		"html-attr:dialog.open": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "behaviour recognisers",
-			"note": "<dialog open>: native open state or behaviour; not read"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<dialog open>: a presentational attribute the browser turns into display (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:dir.compact": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<dir compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:div.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<div align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:dl.compact": {
 			"recognise": null,
@@ -9023,22 +9898,28 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<embed align>: a presentational attribute the browser turns into float, vertical-align (WHATWG presentational hints); Fill does not read float, vertical-align"
 		},
 		"html-attr:embed.height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<embed height>: media; no media upload or attachment map yet (FR-48-39)"
+			"wave": "modes and values with no CSS property",
+			"note": "<embed height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
+		},
+		"html-attr:embed.hspace": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<embed hspace>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:embed.name": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<embed name>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:embed.src": {
 			"recognise": null,
@@ -9054,33 +9935,38 @@
 			"wave": "content, media and icons",
 			"note": "<embed type>: media; no media upload or attachment map yet (FR-48-39)"
 		},
+		"html-attr:embed.vspace": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<embed vspace>: a presentational attribute the browser turns into margin-bottom, margin-top (WHATWG presentational hints), which Fill reads as computed values"
+		},
 		"html-attr:embed.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<embed width>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<embed width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:fencedframe.allow": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<fencedframe allow>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:fencedframe.height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<fencedframe height>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:fencedframe.width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<fencedframe width>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:fieldset.disabled": {
 			"recognise": null,
@@ -9104,25 +9990,22 @@
 			"note": "<fieldset name>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:font.color": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<font color>: a presentational attribute the browser turns into color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:font.face": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<font face>: a presentational attribute the browser turns into font-family (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:font.size": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<font size>: a presentational attribute the browser turns into font-size (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:form.accept": {
 			"recognise": null,
@@ -9199,70 +10082,70 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame frameborder>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frame.longdesc": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame longdesc>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frame.marginheight": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame marginheight>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frame.marginwidth": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame marginwidth>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frame.name": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame name>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frame.noresize": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame noresize>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frame.scrolling": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame scrolling>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frame.src": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frame src>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frameset.cols": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frameset cols>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:frameset.rows": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<frameset rows>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
 		},
 		"html-attr:geolocation.autolocate": {
 			"recognise": null,
@@ -9289,8 +10172,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "anchor: component, performance or editing plumbing (no value a design holds)"
+			"wave": "behaviour recognisers",
+			"note": "anchor: ties a popover or tooltip to its anchor element; no behaviour writer"
 		},
 		"html-attr:global.autocapitalize": {
 			"recognise": null,
@@ -9318,28 +10201,28 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "class names carry no value of their own; their styles reach the clone through the computed values Fill reads"
+			"note": "class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census"
 		},
 		"html-attr:global.containertiming": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "containertiming: component, performance or editing plumbing (no value a design holds)"
+			"note": "containertiming: performance measurement only"
 		},
 		"html-attr:global.containertimingignore": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "containertimingignore: component, performance or editing plumbing (no value a design holds)"
+			"note": "containertimingignore: performance measurement only"
 		},
 		"html-attr:global.contenteditable": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "contenteditable: component, performance or editing plumbing (no value a design holds)"
+			"note": "contenteditable: makes text editable in the browser; a published site is never edited in place"
 		},
 		"html-attr:global.data": {
 			"recognise": null,
@@ -9367,7 +10250,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "elementtiming: component, performance or editing plumbing (no value a design holds)"
+			"note": "elementtiming: performance measurement only"
 		},
 		"html-attr:global.enterkeyhint": {
 			"recognise": null,
@@ -9380,22 +10263,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "exportparts: component, performance or editing plumbing (no value a design holds)"
+			"wave": "draft reading",
+			"note": "exportparts: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
 		},
 		"html-attr:global.headingoffset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "headingoffset: component, performance or editing plumbing (no value a design holds)"
+			"wave": "content, media and icons",
+			"note": "headingoffset: shifts heading levels inside a section; no writer"
 		},
 		"html-attr:global.headingreset": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "headingreset: component, performance or editing plumbing (no value a design holds)"
+			"wave": "content, media and icons",
+			"note": "headingreset: shifts heading levels inside a section; no writer"
 		},
 		"html-attr:global.hidden": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -9428,8 +10311,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "is: component, performance or editing plumbing (no value a design holds)"
+			"wave": "draft reading",
+			"note": "is: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
 		},
 		"html-attr:global.itemid": {
 			"recognise": null,
@@ -9478,14 +10361,14 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "nonce: component, performance or editing plumbing (no value a design holds)"
+			"note": "nonce: a security token for the content security policy; generated by the server"
 		},
 		"html-attr:global.part": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "part: component, performance or editing plumbing (no value a design holds)"
+			"wave": "draft reading",
+			"note": "part: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
 		},
 		"html-attr:global.popover": {
 			"recognise": null,
@@ -9498,8 +10381,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "slot: component, performance or editing plumbing (no value a design holds)"
+			"wave": "draft reading",
+			"note": "slot: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
 		},
 		"html-attr:global.spellcheck": {
 			"recognise": null,
@@ -9550,46 +10433,40 @@
 			"note": "form input hint; no form writer"
 		},
 		"html-attr:h1.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<h1 align>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<h1 align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:h2.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<h2 align>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<h2 align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:h3.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<h3 align>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<h3 align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:h4.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<h4 align>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<h4 align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:h5.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<h5 align>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<h5 align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:h6.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<h6 align>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<h6 align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:head.profile": {
 			"recognise": null,
@@ -9599,39 +10476,37 @@
 			"note": "<head profile>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:hr.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<hr align>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:hr.color": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<hr color>: a presentational attribute the browser turns into border-bottom-width, border-left-width, border-right-width, border-style, border-top-width, color, height (WHATWG presentational hints); Fill does not read border-style, height"
 		},
 		"html-attr:hr.noshade": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<hr noshade>: a presentational attribute the browser turns into border-bottom-width, border-left-width, border-right-width, border-style, border-top-width, height (WHATWG presentational hints); Fill does not read border-style, height"
 		},
 		"html-attr:hr.size": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<hr size>: a presentational attribute the browser turns into border-bottom-width, border-left-width, border-right-width, border-top-width, height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:hr.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<hr width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:html.manifest": {
 			"recognise": null,
@@ -9645,7 +10520,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<html version>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:html.xmlns": {
 			"recognise": null,
@@ -9658,8 +10533,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<iframe align>: a presentational attribute the browser turns into float, vertical-align (WHATWG presentational hints); Fill does not read float, vertical-align"
 		},
 		"html-attr:iframe.allow": {
 			"recognise": null,
@@ -9680,7 +10555,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<iframe allowpaymentrequest>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:iframe.allowusermedia": {
 			"recognise": null,
@@ -9694,7 +10569,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<iframe browsingtopics>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:iframe.credentialless": {
 			"recognise": null,
@@ -9711,18 +10586,17 @@
 			"note": "<iframe csp>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:iframe.frameborder": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<iframe frameborder>: a presentational attribute the browser turns into border-bottom-width, border-left-width, border-right-width, border-top-width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:iframe.height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<iframe height>: media; no media upload or attachment map yet (FR-48-39)"
+			"wave": "modes and values with no CSS property",
+			"note": "<iframe height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:iframe.loading": {
 			"recognise": null,
@@ -9736,21 +10610,21 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<iframe longdesc>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:iframe.marginheight": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<iframe marginheight>: still honoured by browsers for the embedded page (scrollbars, its body margin); no embed writer"
 		},
 		"html-attr:iframe.marginwidth": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<iframe marginwidth>: still honoured by browsers for the embedded page (scrollbars, its body margin); no embed writer"
 		},
 		"html-attr:iframe.name": {
 			"recognise": null,
@@ -9784,8 +10658,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<iframe scrolling>: still honoured by browsers for the embedded page (scrollbars, its body margin); no embed writer"
 		},
 		"html-attr:iframe.src": {
 			"recognise": null,
@@ -9802,18 +10676,17 @@
 			"note": "<iframe srcdoc>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:iframe.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<iframe width>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<iframe width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:img.align": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<img align>: a presentational attribute the browser turns into float, margin-left, margin-right, vertical-align (WHATWG presentational hints); Fill does not read float, vertical-align"
 		},
 		"html-attr:img.alt": {
 			"recognise": null,
@@ -9827,14 +10700,13 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<img attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:img.border": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<img border>: a presentational attribute the browser turns into border-bottom-style, border-bottom-width, border-left-style, border-left-width, border-right-style, border-right-width, border-top-style, border-top-width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:img.crossorigin": {
 			"recognise": null,
@@ -9861,15 +10733,14 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<img height>: media; no media upload or attachment map yet (FR-48-39)"
+			"wave": "modes and values with no CSS property",
+			"note": "<img height>: a presentational attribute the browser turns into aspect-ratio, height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:img.hspace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<img hspace>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:img.ismap": {
 			"recognise": null,
@@ -9890,14 +10761,14 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<img longdesc>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:img.name": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<img name>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:img.referrerpolicy": {
 			"recognise": null,
@@ -9935,18 +10806,16 @@
 			"note": "<img usemap>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:img.vspace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<img vspace>: a presentational attribute the browser turns into margin-bottom, margin-top (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:img.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<img width>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<img width>: a presentational attribute the browser turns into aspect-ratio, width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:input.accept": {
 			"recognise": null,
@@ -9959,8 +10828,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<input align>: a presentational attribute the browser turns into float, vertical-align (WHATWG presentational hints); Fill does not read float, vertical-align"
 		},
 		"html-attr:input.alpha": {
 			"recognise": null,
@@ -9982,6 +10851,12 @@
 			"check": null,
 			"wave": "shop, forms and data",
 			"note": "<input autocomplete>: form; no form-field writer (FR-48-48)"
+		},
+		"html-attr:input.border": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<input border>: a presentational attribute the browser turns into border-bottom-style, border-bottom-width, border-left-style, border-left-width, border-right-style, border-right-width, border-top-style, border-top-width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:input.capture": {
 			"recognise": null,
@@ -10064,8 +10939,14 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input height>: form; no form-field writer (FR-48-48)"
+			"wave": "modes and values with no CSS property",
+			"note": "<input height>: a presentational attribute the browser turns into aspect-ratio, height (WHATWG presentational hints); Fill does not read height"
+		},
+		"html-attr:input.hspace": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<input hspace>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:input.ismap": {
 			"recognise": null,
@@ -10197,15 +11078,15 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input type>: form; no form-field writer (FR-48-48)"
+			"wave": "modes and values with no CSS property",
+			"note": "<input type>: a presentational attribute the browser turns into appearance, direction, display, overflow-clip-margin (WHATWG presentational hints); Fill does not read appearance, direction, overflow-clip-margin"
 		},
 		"html-attr:input.usemap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<input usemap>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:input.value": {
 			"recognise": null,
@@ -10213,6 +11094,12 @@
 			"check": null,
 			"wave": "shop, forms and data",
 			"note": "<input value>: form; no form-field writer (FR-48-48)"
+		},
+		"html-attr:input.vspace": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<input vspace>: a presentational attribute the browser turns into margin-bottom, margin-top (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:input.webkitdirectory": {
 			"recognise": null,
@@ -10222,11 +11109,10 @@
 			"note": "<input webkitdirectory>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:input.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<input width>: form; no form-field writer (FR-48-48)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<input width>: a presentational attribute the browser turns into aspect-ratio, width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:ins.cite": {
 			"recognise": null,
@@ -10281,22 +11167,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<legend align>: a presentational attribute the browser turns into justify-self (WHATWG presentational hints); Fill does not read justify-self"
 		},
 		"html-attr:li.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<li type>: a presentational attribute the browser turns into list-style-type (WHATWG presentational hints); Fill does not read list-style-type"
 		},
 		"html-attr:li.value": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<li value>: element semantics (link target, list numbering, citation, date); no writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<li value>: a presentational attribute the browser turns into counter-set (WHATWG presentational hints); Fill does not read counter-set"
 		},
 		"html-attr:link.as": {
 			"recognise": null,
@@ -10317,7 +11203,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<link charset>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:link.color": {
 			"recognise": null,
@@ -10408,7 +11294,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<link rev>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:link.sizes": {
 			"recognise": null,
@@ -10422,7 +11308,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<link target>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:link.type": {
 			"recognise": null,
@@ -10442,78 +11328,80 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "<marquee behavior>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<marquee bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:marquee.direction": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "<marquee direction>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.height": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<marquee height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:marquee.hspace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<marquee hspace>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:marquee.loop": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "<marquee loop>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.scrollamount": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "<marquee scrollamount>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.scrolldelay": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "<marquee scrolldelay>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.truespeed": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "<marquee truespeed>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.vspace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<marquee vspace>: a presentational attribute the browser turns into margin-bottom, margin-top (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:marquee.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<marquee width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:menu.compact": {
 			"recognise": null,
@@ -10562,7 +11450,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<meta scheme>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:meter.high": {
 			"recognise": null,
@@ -10652,43 +11540,42 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<object align>: media; no media upload or attachment map yet (FR-48-39)"
+			"wave": "modes and values with no CSS property",
+			"note": "<object align>: a presentational attribute the browser turns into float, vertical-align (WHATWG presentational hints); Fill does not read float, vertical-align"
 		},
 		"html-attr:object.archive": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<object archive>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:object.border": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<object border>: a presentational attribute the browser turns into border-bottom-style, border-bottom-width, border-left-style, border-left-width, border-right-style, border-right-width, border-top-style, border-top-width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:object.classid": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<object classid>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:object.codebase": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<object codebase>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:object.codetype": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<object codetype>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:object.data": {
 			"recognise": null,
@@ -10702,7 +11589,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<object declare>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:object.form": {
 			"recognise": null,
@@ -10715,15 +11602,14 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<object height>: media; no media upload or attachment map yet (FR-48-39)"
+			"wave": "modes and values with no CSS property",
+			"note": "<object height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:object.hspace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<object hspace>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<object hspace>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:object.name": {
 			"recognise": null,
@@ -10737,7 +11623,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<object standby>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:object.type": {
 			"recognise": null,
@@ -10758,49 +11644,47 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<object usemap>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:object.vspace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<object vspace>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<object vspace>: a presentational attribute the browser turns into margin-bottom, margin-top (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:object.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<object width>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<object width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:ol.compact": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<ol compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:ol.reversed": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<ol reversed>: element semantics (link target, list numbering, citation, date); no writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<ol reversed>: a presentational attribute the browser turns into counter-reset (WHATWG presentational hints); Fill does not read counter-reset"
 		},
 		"html-attr:ol.start": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<ol start>: element semantics (link target, list numbering, citation, date); no writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<ol start>: a presentational attribute the browser turns into counter-reset (WHATWG presentational hints); Fill does not read counter-reset"
 		},
 		"html-attr:ol.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<ol type>: element semantics (link target, list numbering, citation, date); no writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<ol type>: a presentational attribute the browser turns into list-style-type (WHATWG presentational hints); Fill does not read list-style-type"
 		},
 		"html-attr:optgroup.disabled": {
 			"recognise": null,
@@ -10866,46 +11750,52 @@
 			"note": "<output name>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:p.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<p align>: element semantics (link target, list numbering, citation, date); no writer"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<p align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:param.name": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<param name>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:param.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<param type>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:param.value": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<param value>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:param.valuetype": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<param valuetype>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
 		},
 		"html-attr:pre.width": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<pre width>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+		},
+		"html-attr:pre.wrap": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "<pre wrap>: a presentational attribute the browser turns into white-space (WHATWG presentational hints); Fill does not read white-space"
 		},
 		"html-attr:progress.max": {
 			"recognise": null,
@@ -10940,7 +11830,7 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<script attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
 		},
 		"html-attr:script.blocking": {
 			"recognise": null,
@@ -11143,147 +12033,178 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<style type>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:table.align": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<table align>: a presentational attribute the browser turns into float, margin-inline (WHATWG presentational hints); Fill does not read float, margin-inline"
+		},
+		"html-attr:table.background": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<table background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:table.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<table bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:table.border": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<table border>: a presentational attribute the browser turns into border-bottom-width, border-left-width, border-right-width, border-style, border-top-width, border-width (WHATWG presentational hints); Fill does not read border-style, border-width"
+		},
+		"html-attr:table.bordercolor": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<table bordercolor>: a presentational attribute the browser turns into border-bottom-color, border-left-color, border-right-color, border-top-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:table.cellpadding": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<table cellpadding>: a presentational attribute the browser turns into padding-bottom, padding-left, padding-right, padding-top (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:table.cellspacing": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<table cellspacing>: a presentational attribute the browser turns into border-spacing (WHATWG presentational hints); Fill does not read border-spacing"
 		},
 		"html-attr:table.frame": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<table frame>: a presentational attribute the browser turns into border-color, border-style (WHATWG presentational hints); Fill does not read border-color, border-style"
+		},
+		"html-attr:table.height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "<table height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:table.rules": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<table rules>: a presentational attribute the browser turns into border-block-style, border-block-width, border-collapse, border-color, border-inline-style, border-inline-width, border-style, border-width (WHATWG presentational hints); Fill does not read border-block-style, border-block-width, border-collapse, border-color, border-inline-style, border-inline-width, border-style, border-width"
 		},
 		"html-attr:table.summary": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<table summary>: deprecated metadata with no rendering or behaviour effect in any current browser"
 		},
 		"html-attr:table.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<table width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tbody.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tbody align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
+		},
+		"html-attr:tbody.background": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tbody background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tbody.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tbody bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tbody.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<tbody char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:tbody.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<tbody charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+		},
+		"html-attr:tbody.height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "<tbody height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:tbody.valign": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<tbody valign>: a presentational attribute the browser turns into vertical-align (WHATWG presentational hints); Fill does not read vertical-align"
 		},
 		"html-attr:td.abbr": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<td abbr>: table header semantics read by screen readers; no table writer"
 		},
 		"html-attr:td.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<td align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:td.axis": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<td axis>: table header semantics read by screen readers; no table writer"
+		},
+		"html-attr:td.background": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<td background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:td.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<td bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:td.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<td char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:td.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<td charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:td.colspan": {
 			"recognise": null,
@@ -11303,15 +12224,15 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<td height>: table structure; no table writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<td height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:td.nowrap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<td nowrap>: table structure; no table writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<td nowrap>: a presentational attribute the browser turns into white-space (WHATWG presentational hints); Fill does not read white-space"
 		},
 		"html-attr:td.rowspan": {
 			"recognise": null,
@@ -11324,22 +12245,21 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<td scope>: table header semantics read by screen readers; no table writer"
 		},
 		"html-attr:td.valign": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<td valign>: a presentational attribute the browser turns into vertical-align (WHATWG presentational hints); Fill does not read vertical-align"
 		},
 		"html-attr:td.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<td width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:template.for": {
 			"recognise": null,
@@ -11485,43 +12405,54 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "shop, forms and data",
-			"note": "<textarea wrap>: form; no form-field writer (FR-48-48)"
+			"wave": "modes and values with no CSS property",
+			"note": "<textarea wrap>: a presentational attribute the browser turns into white-space (WHATWG presentational hints); Fill does not read white-space"
 		},
 		"html-attr:tfoot.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tfoot align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
+		},
+		"html-attr:tfoot.background": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tfoot background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tfoot.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tfoot bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tfoot.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<tfoot char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:tfoot.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<tfoot charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+		},
+		"html-attr:tfoot.height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "<tfoot height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:tfoot.valign": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<tfoot valign>: a presentational attribute the browser turns into vertical-align (WHATWG presentational hints); Fill does not read vertical-align"
 		},
 		"html-attr:th.abbr": {
 			"recognise": null,
@@ -11531,39 +12462,43 @@
 			"note": "<th abbr>: table structure; no table writer"
 		},
 		"html-attr:th.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<th align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:th.axis": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "content, media and icons",
+			"note": "<th axis>: table header semantics read by screen readers; no table writer"
+		},
+		"html-attr:th.background": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<th background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:th.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<th bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:th.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<th char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:th.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<th charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:th.colspan": {
 			"recognise": null,
@@ -11583,15 +12518,15 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<th height>: table structure; no table writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<th height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:th.nowrap": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<th nowrap>: table structure; no table writer"
+			"wave": "modes and values with no CSS property",
+			"note": "<th nowrap>: a presentational attribute the browser turns into white-space (WHATWG presentational hints); Fill does not read white-space"
 		},
 		"html-attr:th.rowspan": {
 			"recognise": null,
@@ -11611,50 +12546,60 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<th valign>: a presentational attribute the browser turns into vertical-align (WHATWG presentational hints); Fill does not read vertical-align"
 		},
 		"html-attr:th.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<th width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:thead.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<thead align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
+		},
+		"html-attr:thead.background": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<thead background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:thead.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<thead bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:thead.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<thead char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:thead.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<thead charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+		},
+		"html-attr:thead.height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "<thead height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:thead.valign": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<thead valign>: a presentational attribute the browser turns into vertical-align (WHATWG presentational hints); Fill does not read vertical-align"
 		},
 		"html-attr:time.datetime": {
 			"recognise": null,
@@ -11664,39 +12609,50 @@
 			"note": "<time datetime>: element semantics (link target, list numbering, citation, date); no writer"
 		},
 		"html-attr:tr.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tr align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
+		},
+		"html-attr:tr.background": {
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tr background>: a presentational attribute the browser turns into background-image (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tr.bgcolor": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<tr bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tr.char": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<tr char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:tr.charoff": {
 			"recognise": null,
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<tr charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+		},
+		"html-attr:tr.height": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "modes and values with no CSS property",
+			"note": "<tr height>: a presentational attribute the browser turns into height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:tr.valign": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<tr valign>: a presentational attribute the browser turns into vertical-align (WHATWG presentational hints); Fill does not read vertical-align"
 		},
 		"html-attr:track.default": {
 			"recognise": null,
@@ -11738,14 +12694,14 @@
 			"write": null,
 			"check": null,
 			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"note": "<ul compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
 		},
 		"html-attr:ul.type": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "deprecated attribute, or an attribute of a deprecated element"
+			"wave": "modes and values with no CSS property",
+			"note": "<ul type>: a presentational attribute the browser turns into list-style-type (WHATWG presentational hints); Fill does not read list-style-type"
 		},
 		"html-attr:video.autoplay": {
 			"recognise": null,
@@ -11793,8 +12749,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "content, media and icons",
-			"note": "<video height>: media; no media upload or attachment map yet (FR-48-39)"
+			"wave": "modes and values with no CSS property",
+			"note": "<video height>: a presentational attribute the browser turns into aspect-ratio, height (WHATWG presentational hints); Fill does not read height"
 		},
 		"html-attr:video.loading": {
 			"recognise": null,
@@ -11846,11 +12802,10 @@
 			"note": "<video src>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:video.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "<video width>: media; no media upload or attachment map yet (FR-48-39)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "<video width>: a presentational attribute the browser turns into aspect-ratio, width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html:a": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",

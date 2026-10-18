@@ -50,7 +50,7 @@ test( 'POSITIVE: an element maps its tag, attributes, input type, embed host, AR
 	elementUsage( { tag: 'animate', svg: 'animate', attrs: [ [ 'attributeName', 'r' ], [ 'role', 'presentation' ] ] }, t, 'Home:5', KNOWN );
 	elementUsage( { tag: 'lineargradient', svg: 'linearGradient', attrs: [] }, t, 'Home:6', KNOWN );
 	elementUsage( { tag: 'sc-if', attrs: [ [ 'value', '{{ x }}' ] ] }, t, 'Home:7', KNOWN );
-	assert.deepEqual( ids( t ), [ 'aria-attr:aria-label', 'aria-role:presentation', 'css-group:box-sizing', 'embed:youtube.com', 'html-attr:global.data', 'html-attr:global.style', 'html-attr:iframe.loading', 'html-attr:iframe.src', 'html-attr:input.required', 'html:iframe', 'html:input', 'input-type:date', 'svg:animate', 'svg:linearGradient' ] );
+	assert.deepEqual( ids( t ), [ 'aria-attr:aria-label', 'aria-role:presentation', 'css-group:basic-user-interface', 'css-group:box-sizing', 'css-group:display', 'css-group:overflow', 'css-group:writing-modes', 'embed:youtube.com', 'html-attr:global.data', 'html-attr:global.style', 'html-attr:iframe.loading', 'html-attr:iframe.src', 'html-attr:input.required', 'html:iframe', 'html:input', 'input-type:date', 'svg:animate', 'svg:linearGradient' ] );
 	ids( t ).filter( ( id ) => ! id.startsWith( 'css-group:' ) ).forEach( ( id ) => assert.ok( KNOWN.has( id ), `${ id } is in the inventory` ) );
 } );
 
@@ -197,7 +197,7 @@ test( 'POSITIVE: elements made in code are read: React.createElement and its ali
 }`;
 	const t = tally();
 	codeUsage( parseLogic( code ), t, ( n ) => `Home:js:${ n.loc.start.line }`, KNOWN );
-	assert.deepEqual( ids( t ), [ 'aria-attr:aria-expanded', 'css-group:display', 'css-group:scroll-snap', 'html-attr:details.open', 'html-attr:global.class', 'html:details', 'html:dialog', 'svg:feGaussianBlur', 'svg:line', 'svg:polyline', 'svg:svg' ] );
+	assert.deepEqual( ids( t ), [ 'aria-attr:aria-expanded', 'css-group:display', 'css-group:lists-and-counters', 'css-group:scroll-snap', 'html-attr:details.open', 'html-attr:global.class', 'html:details', 'html:dialog', 'svg:feGaussianBlur', 'svg:line', 'svg:polyline', 'svg:svg' ] );
 	assert.equal( t.get( 'svg:polyline' ).draftId, 'Home:js:3' );
 } );
 
@@ -223,4 +223,10 @@ test( 'POSITIVE: an SVG-only tag made away from its svg parent is SVG; a name bo
 	const u = tally();
 	codeUsage( parseLogic( "class C { icon() { const c = React.createElement; return [ c( 'path', { d: 'M0 0' } ), c( 'a', { href: '#' } ) ]; } }" ), u, () => 'Home:js:1', KNOWN );
 	assert.deepEqual( ids( u ), [ 'html-attr:a.href', 'html:a', 'svg:path' ] );
+} );
+
+test( 'POSITIVE: a presentational attribute is the CSS the browser turns it into; one with no rendering rule adds none', () => {
+	const t = tally();
+	elementUsage( { tag: 'td', attrs: [ [ 'align', 'center' ], [ 'bgcolor', '#fff' ], [ 'char', '.' ] ] }, t, 'Table:4', KNOWN );
+	assert.deepEqual( ids( t ), [ 'css-group:backgrounds-and-borders', 'css-group:text', 'html-attr:td.align', 'html-attr:td.bgcolor', 'html-attr:td.char', 'html:td' ] );
 } );
