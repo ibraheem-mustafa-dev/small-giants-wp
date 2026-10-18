@@ -663,6 +663,8 @@ function sgs_fx_normalise( array $attrs, string $effect ): array {
  *
  * Sharing FX_ATTR_MAP is the point: the mapper's expectation and the grammar it maps stay one list.
  *
+ * A colour slug (`primary`) is printed bare, exactly as old content stored it: this reproduces the retired output, and the mapper's `Sgs_Motion_Fx_Emitter::palette_colour` resolving the slug to a palette value is the deliberate change.
+ *
  * @param array $attrs Parsed block attributes.
  * @return string Leading-space-prefixed attribute string, or '' when no effect
  *                is set. Every value is passed through `esc_attr()`.

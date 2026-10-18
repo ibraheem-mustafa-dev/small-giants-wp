@@ -1,305 +1,39 @@
 #!/usr/bin/env python3
-"""generate-fx-qualifying-blocks.py — derives the block -> qualifying-fx-effects
-map, replacing a hand-curated block roster.
+"""generate-fx-qualifying-blocks.py: derives the block -> offered-effects map for the Effects panel.
 
-Spec ref: .claude/specs/38-SGS-MOTION-SYSTEM.md §2 (placement taxonomy) + §7
-(inspector panel). Task: "Replace a hardcoded block roster with a DERIVED one"
-(2026-07-29) — the owner's own framing: "an easy way to judge which effects
-qualify for which blocks" is exactly Spec 38 §2's Level/Exposure-surface/
-Conditions columns, already captured as `fx_effects.scope`/`requires` by
-seed-motion-fx-registry.py (extended by this same task). This script is the
-SECOND half: turn "what an effect requires" + "what a block provides" into a
-concrete per-block roster, DERIVED, never hand-typed.
+Spec: .claude/specs/38-SGS-MOTION-SYSTEM.md section 2 (placement taxonomy) and section 7 (inspector panel).
 
-WHY A SEPARATE ARTEFACT FROM generated-fx-effects.php
-----------------------------------------------------------------------------
-generated-fx-effects.php answers "what GSAP plugins does effect X need" —
-keyed by EFFECT, consumed by the server-side plugin-loading registry.
-This script answers "which effects can block Y even offer" — keyed by BLOCK,
-consumed by BOTH the editor (does this block get the fx panel + which options
-does its SelectControl list) and the render layer (is a `data-sgs-fx` value
-on this block's markup even legitimate, or has it drifted from a block whose
-capabilities changed since the client set it). Two different keys, two
-different consumers — a single merged structure would force one side to
-filter the other's shape.
+Reads
+- The effect side, from `sgs-framework.db` (`$SGS_FRAMEWORK_DB` overrides the path) via `_load_qualifying_effects`: `fx_effects.effect` and `fx_effects.requires` for rows whose `scope` is `block` or `element`. Rows of any other scope (site, paired, flavour) never reach a block panel.
+- The block side, from the shipped files only (never the DB): each block's `block.json`, its `edit.js`, its `style.css` / `style.scss` and its `*.php`.
 
-WHAT COUNTS AS "PROVIDING" A REQUIREMENT (ground truth, not invented)
-----------------------------------------------------------------------------
-- 'section'  <- block.json `supports.sgs.containerKind === "section"`
-                (mirrors block_composition.container_kind, populated by
-                sync-container-wrapping-blocks.py from the SAME flag — see
-                the DB-vs-block.json gap note below) OR the block IS
-                `sgs/container` itself (the container never declares its own
-                containerKind — nothing wraps it, it wraps others — but
-                pin-scrub's own §2 row names it explicitly: "Inspector panel
-                on `sgs/container` + section-KIND composites").
-- 'text'     <- the block's edit.js imports/uses `RichText` (WordPress's own
-                rich-text-editing component) — "the block owns and renders
-                its own text" ground-tested as "does it render an editable
-                RichText field", not a name-matching heuristic over
-                attribute names (which over-matches: `role: "content"` scalar
-                string attrs also cover url/label/id-shaped values on ~40
-                unrelated blocks — verified via a throwaway scan before
-                settling on this test).
-- 'svg' / 'svg-subtree' — SPLIT 2026-07-31 (Motion Wave D register Step 4).
-                Before the split both DrawSVG and MorphSVG shared a single
-                'svg' requirement, computed as one union below. That
-                conflated two different facts about a block and had a real
-                consequence: `sgs/container`/`sgs/hero`/
-                `sgs/trust-bar` (the `bgSvgContent` providers — a `<div>`
-                wrapper with an operator-supplied decorative background SVG
-                blob, no shape geometry at its OWN root) satisfied the
-                single 'svg' token and so were wrongly offered `morph`,
-                which warns and skips at runtime because there is no `d` on
-                the block's own root to rewrite (D430 finding). The two
-                tokens now mean, and are computed, separately:
+Requirement tokens (`_block_provisions` derives the set a block provides; an effect is offered when its `requires` is in that set)
+- `none`: always met. Never makes a block a host by itself.
+- `section`: `supports.sgs.containerKind` is `section`, or the block is `CONTAINER_BLOCK`.
+- `text`: `_richtext_blocks`, the block's edit.js uses RichText.
+- `svg`: the block's own root renders shape geometry. This is the retained named-list exception, `SPEC_NAMED_SVG_BLOCKS`: those blocks render SVG through helper calls or sanitised inlining in their own render.php, no block.json flag or DB role marks them, and a `<svg` text scan both over- and under-matches.
+- `svg-subtree`: `svg`, or the block declares the `SVG_CONTENT_ATTRIBUTE` attribute (an inline SVG layer from `SGS_Container_Wrapper`).
+- `track`: `_x_scroll_track_blocks`, the block's stylesheet declares `overflow-x: auto|scroll` reachable at desktop widths (a rule bounded to narrow viewports only does not count), or `supports.sgs.fx.draggable` is true. The declaration only adds; `supports.sgs.fx.providesNatively` is the one subtraction.
+- `marquee-track`: `_marquee_track_blocks`, a `*.php` of the block prints `MARQUEE_SET_HOOK`.
+- `item-set`: `supports.sgs.fx.pairedFilter` is true.
+- `surface`: `supports.sgs.containerKind` is set to any value, or a `backgroundImage*` attribute exists.
+- `image`: `supports.sgs.imageControls` is true, or `_raster_image_blocks` finds a rendered raster image.
+- `panel` is not a `requires` value. `supports.sgs.fx.motionSurface` true provides it, which makes the block a host without any specific requirement.
 
-                'svg' <- block_slug is one of the 3 blocks confirmed to
-                genuinely render inline SVG shape geometry at their own root:
-                sgs/responsive-logo, sgs/icon, sgs/separator
-                (SPEC_NAMED_SVG_BLOCKS). Means "this block's OWN rendered
-                output CAN contain shape geometry with a `d`/path to act on"
-                — verified live for all 3, corrected 2026-07-31 after a QC
-                pass caught a grep blind spot (a literal `<svg` text search
-                missed helper-function indirection):
-                  - sgs/icon's render.php emits `sgs_get_lucide_icon()` /
-                    `sgs_get_wp_icon()` output straight into an inline `<span
-                    class="sgs-icon__svg">…svg…</span>` (real path glyphs).
-                  - sgs/responsive-logo's render.php inlines a
-                    wp_kses-sanitised media-library SVG when its stroke-draw
-                    style is not 'none', and its own comment names
-                    `data-sgs-fx="draw"` as already wired to that span
-                    (FR-38-15).
-                  - sgs/separator's render.php calls the SAME two helpers as
-                    sgs/icon — `sgs_get_wp_icon( $icon_wp_name )` (line 310)
-                    and `sgs_get_lucide_icon( $icon_name )` (line 315) —
-                    conditionally, when `contentMode === 'icon'`. A first
-                    pass on this block missed it: grepping the file for the
-                    literal string `<svg` finds nothing, because the SVG
-                    markup is produced by a helper function call, not typed
-                    inline in this file — the same shape geometry sgs/icon
-                    itself renders, one indirection layer deeper.
-                sgs/decorative-image was ALSO in this roster before
-                2026-07-31 (the spec's own §2 DrawSVG row names it) but is
-                REMOVED as of this split: its render.php has been searched
-                for every SVG-related surface — `svg`, `SVG`, `get_wp_icon`,
-                `get_lucide_icon`, `wp_kses` — case-insensitively, and none
-                appear. It renders an absolute-positioned `<img>` (raster) or
-                a video via `sgs_render_media()`; even when an operator picks
-                an `.svg` file as the image source, `<img src="…svg">`
-                references the file as an opaque image resource — the
-                browser has no DOM access to the paths inside it, so there is
-                no `d` attribute reachable for MorphSVG to rewrite and
-                nothing DrawSVG's `collectDrawTargets()` descendant search
-                would ever find. Unlike sgs/responsive-logo (which inlines
-                its SVG via `wp_kses` specifically so the paths become real
-                DOM nodes — see that block's own comment), decorative-image
-                has no inlining path today. The spec's own citation is
-                therefore stale against the live code for this one block;
-                see the amendment text below this docstring's dated note for
-                the exact wording returned to the spec owner (§38, not
-                edited here — that file is owned and serialised elsewhere).
-                This is the correct requirement for `morph` (MorphSVG
-                rewrites the element's OWN `d` attribute).
+Offer rules (`compute_map`)
+- A block with `supports.sgs.hideExtensions` containing `fx` gets nothing.
+- An effect named in `EXACT_MATCH_BLOCKS` is offered only on the listed blocks and counts as a specific match there.
+- A block is a host when it meets a specific requirement or provides `panel`. A host is offered every `none` effect and every effect whose requirement is in `EXTENDS_ONLY_REQUIREMENTS` (`surface`, `image`) that it meets. Those requirements are met by nearly every block, so they extend a host and never create one.
+- Then `supports.sgs.fx.providesNatively` effects are removed, and `ROOT_SCROLL_EFFECTS` are removed unless the root scrolls (`_root_scroll_blocks`) or `supports.sgs.fx.draggable` is true. A block left with no effects is omitted.
 
-                'svg-subtree' <- the 'svg' set (above) UNION any block that
-                declares a `bgSvgContent` ATTRIBUTE in its own block.json
-                (it renders operator-supplied inline `<svg>` markup through
-                `SGS_Container_Wrapper`'s `.sgs-container__svg-bg` layer —
-                verified at includes/class-sgs-container-wrapper.php, which
-                emits `<div class="sgs-container__svg-bg" aria-hidden>
-                {svg}</div>` only when `$is_section` is true). Means "this
-                block's rendered SUBTREE contains inline SVG somewhere,
-                whether or not the block's own root is a shape" — a
-                strictly WIDER set than 'svg', since a shape trivially is
-                also a subtree containing itself. This is the correct
-                requirement for `draw` (DrawSVG strokes whatever
-                path/line/polyline/polygon/rect/ellipse/circle it finds
-                inside the fx element's descendants — verified:
-                responsive-logo's render.php comment names
-                `collectDrawTargets()` as a descendant search, not a
-                root-only check — so a block whose only SVG is a nested
-                `bgSvgContent` decoration still has real drawable geometry).
+Output
+- `src/blocks/extensions/generated-fx-qualifying-blocks.json`: `{ "sgs/heading": ["scrub", ...], ... }`, sorted, tab-indented, no timestamp (`_render_json`).
+- Consumers: the editor (`src/blocks/extensions/motion/effect-options.js`) for which effects the panel lists, and `scripts/db-consistency/check_fx_qualifying_blocks_stale.py` for staleness. The JSON is the only artefact.
 
-                The `bgSvgContent` half is DERIVED (2026-07-31, unchanged by
-                this split) and is 'svg-subtree''s primary route beyond the
-                'svg' set. The 3-name half of 'svg' (corrected 2026-07-31 —
-                see the 'svg' section above for the separator/decorative-image
-                QC correction) is a RETAINED, documented exception to
-                "derive, don't hardcode": those blocks render their SVG from
-                their own render.php rather than through the wrapper's bgSvg
-                layer, no structural block.json flag or DB role unifies them
-                (verified — a `<svg` literal-markup scan over-matches wildly,
-                hitting a dozen unrelated blocks that only ship chevron/star
-                glyphs, AND under-matches sgs/separator, whose SVG comes from
-                a helper-function call rather than literal markup — grep's
-                blind spot is the shape of the grep, not just its over-reach),
-                and the spec itself gives a closed, named list rather than a
-                detectable rule. Citing the spec's own literal roster is not
-                the same failure mode as inventing one.
-
-                EDGE CASE — a block with BOTH `bgSvgContent` AND its own SVG
-                render path (asked for explicitly by the Step 4 register; no
-                such block exists today — verified, none of the 3
-                SPEC_NAMED_SVG_BLOCKS members declares `bgSvgContent` and
-                none of the 4 bgSvgContent providers is in
-                SPEC_NAMED_SVG_BLOCKS). DECISION: no special-case code is
-                needed. The union computation below naturally grants such a
-                block BOTH provisions — 'svg' (it has its own shape) AND
-                'svg-subtree' (a shape is trivially also a subtree) — so it
-                would correctly qualify for both `draw` (stroke either/both
-                SVGs) and `morph` (rewrite its own shape's `d`). This is the
-                intended behaviour, not an accident of the union: a block
-                that is genuinely both a shape AND a subtree container has
-                no less claim to either effect than a block that is only
-                one of the two.
-- 'track'    <- DERIVED (2026-07-31) from the block's OWN stylesheet
-                (style.css / style.scss): it declares `overflow-x: auto` or
-                `overflow-x: scroll` in a rule that is reachable at desktop
-                widths. This is the EXACT structural question the runtime
-                asks — `fx-draggable.js`'s `isNativeHorizontalScroller()`
-                tests `getComputedStyle(el).overflowX` for auto|scroll plus a
-                real `scrollWidth > clientWidth` overflow — so deriving the
-                roster from the same signal makes adoption automatic for
-                every block of that shape, instead of manual.
-
-                Why this replaced the old hand-declared route as the PRIMARY
-                one: the mechanism is purely structural and needs no per-block
-                code, yet a block only RECEIVED the capability if its
-                block.json hand-declared it. Three blocks did. Manual adoption
-                of a universal mechanism is precisely what R-31-9 ("universal
-                mechanisms, no per-block hyperfocus") forbids by construction.
-
-                PRECEDENCE — additive, declaration cannot subtract:
-                  derived-from-CSS  OR  `supports.sgs.fx.draggable === true`
-                The declaration is retained as an explicit OPT-IN OVERRIDE for
-                a block whose scroller this generator cannot see: built by JS
-                at runtime, inherited from a shared/parent stylesheet, or
-                composed from a block the file scan does not reach. It can
-                only ADD a block to the roster, never remove one — removal is
-                what `supports.sgs.fx.providesNatively` is for, and keeping
-                exactly one subtraction mechanism means a block's roster is
-                never the result of two flags cancelling out.
-
-                DESKTOP-REACHABILITY, and why it is not a tabs carve-out: a
-                declaration that lives ONLY inside a narrow-viewport-only
-                media query (a `max-width` bound below the 1024px desktop
-                breakpoint, with no `min-width` to re-open it) describes a
-                scroller that exists at phone widths and nowhere else.
-                `fx-draggable.js` is gated behind `(pointer: fine)` and binds
-                nothing on a coarse pointer — by design, so touch keeps the
-                browser's own momentum scrolling. So a mobile-only scroller
-                and a mouse-only effect have an intersection of very nearly
-                nothing, and offering the control would put a toggle in the
-                inspector that does nothing on the devices that see the
-                scroller. This test is a property of the DECLARATION's
-                context, applied identically to every block; today it happens
-                to exclude `sgs/tabs` (whose `.sgs-tabs__nav` scrolls only
-                under `@media (max-width: 599px)`, and only in the vertical
-                variant), and it would exclude any future block that grows the
-                same shape, with no change here.
-- 'item-set' <- block.json `supports.sgs.fx.pairedFilter === true`. Zero
-                blocks declare this today either — Flip's roster is honestly
-                EMPTY (and Flip's scope='paired' excludes it from this
-                generic map anyway — see below).
-- 'none'     <- always satisfied (scrub, image-sequence).
-
-A SEPARATE, NON-`requires` TOKEN: 'panel' (follow-up fix, 2026-07-31)
-----------------------------------------------------------------------------
-'panel' is NOT a `requires` value any `fx_effects` row can hold — it never
-appears in the `requires` column and is never matched against an effect's
-`requires`. It exists purely to satisfy `compute_map()`'s panel-existence
-gate (`if specific or panel_forced:`) on behalf of a block that has NO
-`requires`-derivable provision at all but is still a legitimate fx-panel
-host by its own declared fact: `supports.sgs.fx.motionSurface === true`
-(read in `_block_provisions()` alongside `draggable`/`pairedFilter`).
-
-THE PROBLEM IT SOLVES: `motion-path` and `scrub` both have `requires='none'`
-— broadly available WHEREVER a panel already exists, but (deliberately)
-unable to CREATE a panel by themselves, because that is exactly what stops
-scrub alone putting a panel on all ~80 sgs/* blocks (see the "WHY" comment
-on the gate). A block whose ONLY qualifying effects are 'none'-requires ones
-therefore gets NO panel under the normal rule — `sgs/decorative-image` is
-the block that surfaced this (Spec 38 §2's MotionPath row names it
-explicitly as that effect's Inspector target, and §10 cites it as the
-reduced-motion reference implementation, yet it has zero text/section/svg/
-svg-subtree/track/item-set signal of its own). 'panel' is the block-owned
-escape hatch: declare `motionSurface: true`, and the gate treats that
-exactly like a real specific-requires match, without adding a fake "panel"
-entry to the generated effects list (`panel_forced` is a bare bool, kept
-separate from `specific`).
-
-HOW MANY OTHER BLOCKS ARE IN THE SAME LATENT STATE (computed 2026-07-31, via
-`_block_provisions()` over every `_load_block_jsons()` entry — recomputable
-any time, not a cached figure): of the 83 block.json files under src/blocks,
-49 currently resolve ZERO `requires`-derivable provisions — form fields,
-nav-menu, tabs, button, etc. All 49 correctly get no panel today, and
-continue to unless they come to declare `motionSurface`. Of the blocks that
-DO currently have ≥1 provision (and so DO get a panel), **19** have EXACTLY
-ONE provision category feeding their `specific` list (13 from 'text':
-sgs/counter, sgs/collapsible-text, sgs/heading, sgs/info-box, sgs/label,
-sgs/pricing-table, sgs/product-card, sgs/product-faq, sgs/quote,
-sgs/team-member, sgs/testimonial, sgs/text, sgs/whatsapp-cta; 6 from 'track':
-sgs/before-after, sgs/buybox, sgs/gallery, sgs/google-reviews, sgs/post-grid,
-sgs/trustpilot-reviews) — meaning removing that one category (the same shape
-of edit that caused this bug) would zero their panel entirely, same as
-`sgs/decorative-image` before this fix, UNLESS they also come to declare
-`motionSurface` or gain a second provision first. This is NOT a defect to
-pre-emptively patch for all 19 — most of them (all 13 'text' blocks) have a
-provision that is extremely unlikely to be removed the way `svg` was here
-(RichText is core to what those blocks ARE), so treating this as 19 open
-bugs would be over-fixing an unproven risk. Read it as "which blocks are
-currently a single provision-removal away from this same class of
-regression" — a fact worth knowing, not a queue of 19 follow-up tickets.
-
-STRUCTURAL SCOPE GATE (the task's Hard Constraint)
-----------------------------------------------------------------------------
-Only `fx_effects` rows with scope IN ('block', 'element') are even considered
-for this map — 'site' (ScrollSmoother, page-transitions), 'paired' (Flip),
-and 'flavour' rows are excluded at the SQL/filter level, before any
-block-provision check runs. This is what makes "ScrollSmoother can never
-reach a block inspector" a property of the generator's control flow, not a
-comment someone could forget to keep true.
-
-A KNOWN DB-VS-BLOCK.JSON GAP (flagged, not silently patched over)
-----------------------------------------------------------------------------
-`block_composition.container_kind` (DB) has MORE 'section'/'layout' rows than
-block.json's `containerKind` support declares (a section block can have
-container_kind='section' in the DB and `is_section_root: true` in block.json
-but NO `containerKind` key at all — the gap hero/trust-bar do NOT have).
-NOT fixed for the ~12 other DB-only 'layout'
-blocks (card-grid, gallery, accordion, tabs, pricing-table, google-reviews,
-post-grid, multi-button, form-field-tiles, trustpilot-reviews,
-content-collection, adaptive-nav) — none of the current 'block'/'element'-
-scope effects require 'item-set' (only Flip does, and Flip is scope='paired',
-excluded above), so this gap has ZERO effect on the current output. Flagged
-here so it is not silently rediscovered as a "mystery gap" later: if a future
-wave adds a 'block'-scope effect with requires='item-set', these block.json
-files need their containerKind declared first, or they will wrongly appear
-absent from that effect's roster despite being DB-registered layout
-composites.
-
-This script reads block.json + edit.js FILES directly (never the SQLite DB)
-for block-provision facts — those files are what ships (block.json IS
-deployed and readable at runtime; the DB is not, verified: no PHP in this
-project opens SQLite). It reads the DB ONLY for `fx_effects.scope`/`requires`
-(the effect side), since that table has no block.json equivalent.
-
-OUTPUT (ONE file, deterministic, no timestamps)
-----------------------------------------------------------------------------
-src/blocks/extensions/generated-fx-qualifying-blocks.json — plain JSON,
-`{ "sgs/heading": ["scrub", "split-reveal"], ... }`, imported directly by
-the motion editor (webpack bundles .json imports natively — no codegen step needed).
-No timestamp is emitted: a dirty-always file makes the deploy-gate's dirty
-check meaningless.
-
-⛔ Do NOT reinstate a PHP mirror of this map. A previous
-includes/generated-fx-qualifying-blocks.php emitted the same data behind
-`sgs_get_fx_qualifying_blocks()`; nothing ever required the file and the
-function had zero callers, so it regenerated on every run purely to be dead.
-Spec 38 recommends deletion. The JSON is the single consumer-facing artefact.
-
-Run: python plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py
+Modes
+- No flag: write the JSON.
+- `--check`: compute in memory, exit 1 naming the file when the committed JSON differs.
+- `--self-test`: `self_test` asserts every marquee-hook block is offered `marquee` and no other block is; that blocks with only paint provisions are not hosts; and, by mutating `EXTENDS_ONLY_REQUIREMENTS` to empty, that the paint-only control can go red.
 """
 from __future__ import annotations
 
