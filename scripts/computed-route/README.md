@@ -13,8 +13,27 @@ Measures a rendered design draft and writes block settings through the framework
 | File | Job |
 |---|---|
 | `README.md` | This index. |
-| `package.json` | The route's own third-party packages at exact versions (FR-48-75): `playwright`, `ajv`, `ajv-formats`, `saxes`, `@babel/parser`. Route code imports them from `scripts/computed-route/node_modules` only (`npm ci` here installs them). |
+| `package.json` | The route's own third-party packages at exact versions (FR-48-75): `playwright`, `ajv`, `ajv-formats`, `saxes`, `@babel/parser`, `html-tag-names`, `html-element-attributes`, `mdn-data`, `@mdn/browser-compat-data`, `oembed-providers` and `aria-query` (the web platform's lists for the capability inventory's draft side), and `css-tree` (the CSS parser intake's usage read uses). Route code imports them from `scripts/computed-route/node_modules` only (`npm ci` here installs them). |
 | `package-lock.json` | The lock file for `package.json`. |
+| `capabilities.mjs` | Clone coverage plan Phase 1: `--write` regenerates `data/capabilities.json` (DB sections need the framework DB; without it they keep the committed entries), `--check` fails when it is out of date (skips without the DB), `--seed` adds an `unassigned` gap stub for every inventory ID with no coverage entry (never changes an existing one), `--gaps` prints the gap list as Markdown, `--gate` prints every coverage problem and exits 1 on any. |
+| `data/capabilities.json` | The capability inventory: sections of stable IDs, each with its status (`ok` or `absent`) and, where its data package says so, `deprecated: true`. Framework: `block-setting`, `fx`, `motion-preset` from the DB; `sgs-support`, `extension`, `template`, `part`, `pattern`, `post-type`, `plugin`, `snapshot-key` from the code. Draft: `html`, `html-attr`, `input-type`, `svg`, `embed`, `css-at`, `css-media-feature`, `css-group`, `css-property` (vendor and legacy properties mdn-data's groups do not hold), `css-pseudo-class`, `css-pseudo-element`, `css-function`, `css-unit`, `aria-role`, `aria-attr` from the web platform packages, `construct` from the construct registry. Generated; never hand-edited. |
+| `data/clone-coverage.json` | The clone coverage map: per capability ID its `recognise`, `write` and `check` references (`construct:<kind>` or a repo path with `#symbol`), a gap's `wave` and `waiting: "phase-0"` for motion, or Bean's signed `excluded`. |
+| `data/clone-coverage.schema.json` | The coverage map's schema. |
+| `lib/capabilities.mjs` | Builds the capability inventory from its sources, never a hand-written list (R-31-1). |
+| `lib/clone-coverage.mjs` | Loads the coverage map and gates it against the inventory. |
+| `tools/presentational-hints.mjs` | Derives `data/presentational-hints.json` from a saved copy of the WHATWG HTML Rendering section: every attribute the browser turns into CSS (its presentational hints and its style sheet's attribute rules), with the properties; `node scripts/computed-route/tools/presentational-hints.mjs <rendering.html> [--write]`. |
+| `data/presentational-hints.json` | `{ source, read, entries: [ { attribute, element, css } ] }`: what each presentational attribute renders as (`td` `align` → `text-align`). The inventory lists these attributes, intake's usage read counts their CSS, and the coverage map covers them by the properties Fill reads instead of excluding them as deprecated. Generated; never hand-edited. |
+| `tests/presentational-hints.test.mjs` | The extractor over a spec fixture in the spec's own markup (each form a hint is written in), and the committed data against the inventory and mdn-data; MUST FAIL: a condition attribute, a quoted value, a quirks note or a heading is never a hint, and no attribute the spec renders is excluded as dead. |
+| `lib/intake-usage.mjs` | Clone coverage step 1.6: what a draft uses, as capability IDs. The file read (the method) reads the census's stamped template, `<style>` bodies, linked stylesheets, the CSS, markup and elements its logic and helmet scripts write (syntax trees), and the SVG and CSS assets its files name; the runtime read (the check) reads what the running page shows that the draft owns, and every capability only it showed is reported. |
+| `tests/intake-usage.test.mjs` | Step 1.6's usage read: each mapper (CSS, elements, the runtime's encodings, code strings and calls, bound values, assets), the runtime check in a real browser (an @import sheet, a script-set inline style, a shadow root, the runtime shell and markers excluded), and the done-when row for each listed capability; MUST FAIL: prose never read as CSS, an unknown property kept as itself, an asset the draft never names not read, the runtime's own shell and markers not counted. |
+| `tests/capabilities.test.mjs` | Phase 1 steps 1.1 and 1.2: sections derived from a fixture DB and the code; MUST FAIL: a planted block setting and a planted draft tag each become a new entry. |
+| `tests/clone-coverage.test.mjs` | Phase 1 step 1.4, the gate over the committed inventory and map; MUST FAIL controls 1 to 4: a planted setting, a planted tag, a missing writer or reader, an unsigned exclusion, a wave-less gap, a motion gap not waiting on Phase 0, an unknown ID. |
+| `tests/intake-coverage-rows.test.mjs` | `lib/intake-missing.mjs` rule 3: one seen-but-unsupported row per uncovered capability; MUST FAIL: an uncovered element is never dropped. |
+| `tests/fixtures/framework-db.mjs` | A temp framework DB built from `plugins/sgs-blocks/scripts/dbschema/schema.sql` for tests that cannot use the real one. |
+| `lib/motion-validate.mjs` | Spec 38A FR-38A-5 and FR-38A-2: the cloning writer's gate for an `sgsMotion` document, run before any write: the shared schema check (`lib/motion-schema.mjs`), then the custom-target rules mirroring `Sgs_Motion_Custom_Target` (a review row on every `custom:<n>` target; one selector that stays inside the block root). |
+| `tests/motion-validate.test.mjs` | Spec 38A FR-38A-5 and FR-38A-2: a custom target with its review row and scoped selectors (a leading child combinator included) pass; refused: a custom target with no or a blank review row, a planted unknown key, an out-of-range value, selectors that could leave the block root or break the style block, and any character outside the allow-list (it fails closed). |
+| `tests/wp-build-page-inserter-defaults.test.mjs` | Spec 38A (Bean, 2026-10-15): a block's default entrance lives in the inserter-default channels, never block.json, so `scripts/wp-build-page.js` builds a no-motion tree with no `sgsMotion` while the inserter's default variation in the same editor carries the entrance (the control). Live: needs `.claude/secrets/sandybrown.env` and the canary's serial-queue slot; skipped without them. |
+| `tests/fixtures/bg-zoom-helper.php.txt` | A background-zoom helper's PHP source, kept as a fixture since M6.6-G1 deleted the real helper, so `tests/triage.test.mjs` (R1) has a real helper whose emitted selector it reads. |
 | `lint.mjs` | The route's gate: README index, plugins/sgs-blocks/scripts import ban, `plugins/sgs-blocks/node_modules` ban (FR-48-75), no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, resolves each fixture's site references from the target's `refs` and checks each referenced object exists on the site (a block with an unsupplied or missing reference is reported and not built), builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes two files, each only when due (`cache/<block>.json`, the site-independent slot map: kept when its key is current or another site measured it, unless `--recalibrate`; `cache/<site>/<block>.paint.json`, that site's default paint: kept only when its own file carries the current `paintKey`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
@@ -1079,7 +1098,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/intake-census-runtime.mjs`
 - `TRACED_KINDS`: the kinds the runtime pass decides. `groupVisits(visits, entry)` → page groups from `file`, `file#hash` or `{ file, hash }`.
-- `runtimeCensus({ folder, entry, harPath, visits, widths, census, timeout, harness })` → `{ sightings, perVisit, gaps, traceGaps, runtimeOnly, kinds, wallMs }`.
+- `runtimeCensus({ folder, entry, harPath, visits, widths, census, timeout, harness })` → `{ sightings, perVisit, gaps, traceGaps, runtimeOnly, kinds, wallMs, blocked, usage }` (`usage`: every visit's `lib/intake-usage.mjs::collectUsage`, merged, the check on the file read).
 
 ### `lib/intake-census-trace.mjs`
 - `traceInit()`: the in-page call wrappers and motion listeners; `collect(arg)` → one visit's evidence.
@@ -1090,11 +1109,32 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/intake-census-template.mjs`
 - `KNOWN_SC_TAGS`: the runtime's `sc-*` tags. `cutDraft(text)` → `{ template, logic, logicLine, logicColumn }`. `holes(s)` → the expressions in a string's `{{ }}` holes.
 - `draftSources({ folder, entry, harPath?, sandbox?, timeout? })` → every reachable draft with its cut, its stamped template (each element with its `parent`, the nearest enclosing element's `data-dc-tpl`), how it was read (`entry`, `bridge`, `standalone`) and its helmet scripts; an import's component name is paired from `__dcTemplateSource` and checked against the rendered hosts (the runtime strips it from the annotated text). The list carries `blocked`, the aborted requests of a sandbox it opened itself (empty when the caller passed one).
-- `templateRows(source, { handlerOf })` → the template rows of one draft.
+- `templateRows(source, { handlerOf })` → the template rows of one draft. `decode(name)` → the real attribute name of a stamped one (`sc-camel-*`); `realTag(tag)` → the real tag (`sc-raw-*`). A stamped SVG element carries `svg`, its own-case name.
 
 ### `lib/intake-census-logic.mjs`
 - `parseLogic(text, { startLine, startColumn, sourceType })` → the Babel tree; `walkAst(node, visit)`; `cssDecls(css)` (split as the runtime's `cssToObj` does); `motionKind(prop)` → `transition`, `keyframes` or null.
 - `classMembers(cls)` → each member classified or `unknown`; `logicRows(source)` → `{ rows, gaps, model }`; `callSiteRows(ast, ctx)` → timers, observers, `.animate(` calls, listeners and motion written from code; `scriptRows({ component, text })` → the same for a helmet script file.
+
+### `lib/capabilities.mjs`
+- `REPO`, `CAPABILITIES_FILE`, `HINTS_FILE`, `groupSlug(group)` (an mdn-data property group's ID slug), `grammarFunctions(css)` (every function mdn-data's CSS grammar names); `buildInventory({ root?, dbFile?, registry?, css?, tags?, bcd?, oembed?, aria?, attributes?, hints? })` → `{ sections: { <name>: { side, source, status, entries: [{ id, label, count, examples, motion }] } } }`.
+- `settingKind(row)` → `motion`, `styling`, `mode` or the attribute type; `dbSections(db)`, `codeSections(root?)`, `draftSections({ registry?, css?, tags?, bcd?, oembed?, aria?, attributes?, hints? })`; `snapshotKeyPaths(snapshots)`.
+- `sectionOf(id)`, `allEntries(inventory)`, `mergeInventory(fresh, committed)` (an absent section keeps the committed one), `readInventoryFile(file?)`.
+
+### `tools/presentational-hints.mjs`
+- `HINTS_FILE`, `SOURCE`; `cssBlockHints(html)`, `proseHints(html)`, `bodyMarginHints(html)` → `[{ attribute, element, css }]` from each form the section writes hints in; `presentationalHints(html)` → one entry per attribute and element.
+
+### `lib/intake-usage.mjs`
+- `tally()` → a usage tally (id → `{ count, draftId }`). `cssUsage(text, tally, draftId, known?, context?)`, `declarationsUsage(text, …)` (a bound declaration names its property only), `elementUsage({ tag, attrs, svg }, …)`, `markupUsage(text, …, { svgFile? })`, `codeUsage(ast, tally, at, known?)` → each returns its parse problems, each naming its draft ID.
+- `embedId(url, known?)` → `embed:<host>` (shortened to the closest inventory host) or null; `cssInString(s)` → the CSS a string in code holds, or null; `cssValue(s, known?)` → whether a string is a bare CSS value.
+- `draftUsage({ sources, folder, known })` → `{ usage, problems }`: the file read. `collectUsage()` (in-page, async) → `{ css, inline, elements, blockedSheets, foreignSheets, foreignElements }`; `mergeRuntimeUsage(acc, raw, visit)`; `runtimeUsage(raw, known?)` → the runtime read as a tally; `usageCheck(fileUsage, runtime)` → `[{ id, draftId }]` only the running page showed.
+
+### `lib/clone-coverage.mjs`
+- `COVERAGE_FILE`, `COVERAGE_SCHEMA`, `STEPS`; `loadCoverage(file?)` throws listing every schema problem.
+- `statusOf(entry)` → `covered`, `gap` or `excluded`; `referenceProblem(ref, { root?, registry? })` → a sentence or null.
+- `coverageProblems(inventory, coverage, { root?, registry? })` → every gate problem as a sentence; `gapList(inventory, coverage)`; `seedGaps(inventory, coverage, note)` → `{ coverage, added }`.
+
+### `tests/fixtures/framework-db.mjs`
+- `fixtureDb(rows)` → the path of a temp DB built from the committed schema and filled with `rows`; `BASE_ROWS`.
 
 ### `lib/intake-registry.mjs`
 - `REGISTRY_FILE`, `REGISTRY_SCHEMA`; `loadRegistry(file?)` throws listing every schema problem; `readerFor(entry, { root })` → the reader function, throwing on a missing module or function.
@@ -1189,7 +1229,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/intake-missing.mjs`
 - `INSTRUMENT_DEBT`, `BEHAVIOURS`; `mainFlowOf(...)`, `draftIdOfKey(key)`, `skeletonMissing(...)`, `bodyEvidence(...)`, `behaviourOf(...)`, `heldBy(...)`, `censusMissing(...)`.
-- `proposeMissingFeatures({ skeletonRows, census, facts, registry? })` → `{ rows: [{ rowId: 'missing:<…>', draftId, construct, line, mainFlow, why }], held }`.
+- `coverageMissing({ skeletonRows, census, coverage, usage? })` → rule 3's rows: one per capability ID the draft uses (`html:<tag>`, `construct:<kind>`, and every ID in `usage`) that the coverage map does not cover (`from: 'coverage'`, with `count`; an ID marked `runtimeOnly` says the file read missed it).
+- `proposeMissingFeatures({ skeletonRows, census, facts, registry?, coverage?, usage? })` → `{ rows: [{ rowId: 'missing:<…>', draftId, construct, line, mainFlow, why }], held }`; rule 3 runs only when `coverage` is passed.
 
 ### `lib/intake-state.mjs`
 - `setDraftState(page, { component, keys })` → instances set (0 = not mounted); `snapshotDraftState(page, slot?)`, `restoreDraftState(page, slot?)`, `draftStateChanged(page, slot?)` → counts (`slot` names a separate snapshot).
@@ -1268,8 +1309,12 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `motionValidator(schema?)` → the compiled ajv validator (cached per schema). `formatError(e)` → one ajv error as `path: message`. `schemaErrors(doc, schema?)` → every schema error. `checkMotion(doc, schema?)` → `{ valid, errors, refusals }`.
 - `enumerateFields(schema?)` → every field with its `x-sgs-field` annotation (panel, field type, CSS property, state, per-device), the list the DB motion-field rows are seeded from. Re-exports `motionRefusals`, `elementRefusals` and `elementLayers`.
 
+### `lib/motion-validate.mjs`
+- `SELECTOR_MAX_LENGTH`, `SELECTOR_ALLOWED`, `SELECTOR_DENIED`; `selectorProblem(selector)` → the reason a custom-target selector is not scoped to the block root, or null.
+- `customTargetErrors(doc)` → the custom-target rule failures; `validateMotionWrite(doc, schema)` → `{ valid, errors, refusals }` (the schema's errors and refusals plus the custom-target errors); `assertMotionWritable(doc, schema)` throws one Error listing every problem and returns the document when it is writable.
+
 ### `lib/motion-refusals.mjs`
-- `elementLayers(element)` → `[{ list, path, effect, layer }]` in paint order. `layerLabel(schema, entry)` → the layer's display label. `slotClaims(schema, entry)` → the paint slots a layer claims. `matches(schema, entry, m)` → whether a layer meets one side of a refusal rule.
+- `elementLayers(element)` → `[{ list, path, effect, layer }]` in paint order. `layerLabel(schema, entry)` → the layer's display label. `slotClaims(schema, entry)` → the paint slots a layer claims. `matchedValues(entry, m)` → the rule side's value paths this layer sets (in values or a device override; with `nonZero`, a zero amount is unset). `sideLabel(schema, entry, m)` → the label a refusal names the layer by for that side (a `valueLabels` label when every matched value maps to one). `matches(schema, entry, m)` → whether a layer meets one side of a refusal rule.
 - `elementRefusals(schema, element)` → the refusal texts for one element. `motionRefusals(schema, doc)` → `{ <target>: [texts] }` for every element of a document.
 
 ### `handoff-repackage.mjs`

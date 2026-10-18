@@ -213,11 +213,30 @@ export const STAGES = [
 	[ 'missing features', async ( job, ctx ) => {
 		const { proposeMissingFeatures } = await import( './intake-missing.mjs' );
 		const fw = frameworkFacts( job );
+		const { loadCoverage } = await import( './clone-coverage.mjs' );
+		const { readInventoryFile, allEntries } = await import( './capabilities.mjs' );
+		const { draftUsage, runtimeUsage, usageCheck } = await import( './intake-usage.mjs' );
 		const gaps = fw.error ? [ gap( 'missing-features', 'framework DB', `${ fw.error }; held features are not checked` ) ] : [];
+		let coverage = null;
 		try {
-			const m = proposeMissingFeatures( { skeletonRows: ctx.skeletonRows || [], census: { rows: ctx.censusFull.rows, sources: ctx.censusFull.sources }, facts: fw.facts ?? null } );
+			coverage = loadCoverage();
+		} catch ( e ) {
+			gaps.push( gap( 'missing-features', 'clone coverage map', `${ e.message }; seen-but-unsupported rows are not listed` ) );
+		}
+		// The usage read (clone coverage step 1.6): the files are the method, the running page the check.
+		const known = new Set( allEntries( readInventoryFile() || { sections: {} } ).map( ( e ) => e.id ) );
+		const file = draftUsage( { sources: ctx.censusFull.sources, folder: job.folder, known } );
+		file.problems.forEach( ( p ) => gaps.push( gap( 'usage-read', job.entry, p ) ) );
+		const usage = new Map( file.usage );
+		const missed = ctx.censusFull.runtime ? usageCheck( file.usage, runtimeUsage( ctx.censusFull.runtime.usage, known ) ) : [];
+		missed.forEach( ( m ) => {
+			usage.set( m.id, { count: 1, draftId: m.draftId, runtimeOnly: true } );
+			gaps.push( gap( 'usage-check', m.draftId, `${ m.id }: the running page used it and the file read did not find it` ) );
+		} );
+		try {
+			const m = proposeMissingFeatures( { skeletonRows: ctx.skeletonRows || [], census: { rows: ctx.censusFull.rows, sources: ctx.censusFull.sources }, facts: fw.facts ?? null, coverage, usage } );
 			const c = collapseMissing( m.rows );
-			return { missingFeatures: c.rows, held: m.held.length, collapse: { missing: [ c.before, c.after ] }, gaps, note: `${ c.before } missing, ${ c.after } after collapsing, ${ m.held.length } held by SGS` };
+			return { missingFeatures: c.rows, held: m.held.length, collapse: { missing: [ c.before, c.after ] }, gaps, note: `${ c.before } missing, ${ c.after } after collapsing, ${ m.held.length } held by SGS; usage read ${ file.usage.size } capabilities from the files, ${ missed.length } more only at runtime${ ctx.censusFull.runtime ? '' : ' (no runtime pass: unchecked)' }` };
 		} finally {
 			fw.db.close();
 		}

@@ -12,9 +12,16 @@
 //         by that behaviour's keywords. A matching capability or effect puts the row in `held` (with the candidates),
 //         never in the list. Click, change and submit handlers are never listed here: menus, forms and toggles are
 //         held by SGS blocks and reach this list only through rule 1.
+//   3. Seen but unsupported (clone coverage plan Phase 1, steps 1.2 and 1.6): every HTML element (from the skeleton
+//      rows), every construct kind (from the census) and every capability the usage read found (lib/intake-usage.mjs:
+//      attributes, input types, SVG, embeds, ARIA, and the CSS a draft uses: at-rules, media features, property
+//      groups, selectors, functions, units) whose capability ID the clone coverage map does not cover, one row per ID
+//      with its count, so nothing the draft holds is dropped silently. A gap names its wave, an exclusion Bean's reason;
+//      an ID the map does not hold at all says so; an ID only the running page showed says the file read missed it.
 import { loadRegistry } from './intake-registry.mjs';
 import { walkAst } from './intake-census-logic.mjs';
 import { buildModel, codeTarget } from './intake-census-map.mjs';
+import { statusOf } from './clone-coverage.mjs';
 
 // A registry gap reason that is instrument debt (a reader to be built), not a feature SGS lacks.
 export const INSTRUMENT_DEBT = /\b(?:lands with|not built|reader|Appendix B|FR-\d)/i;
@@ -165,12 +172,46 @@ export function censusMissing( census, { facts = null, registry = loadRegistry()
 	return { rows, held };
 }
 
-// The missing-features proposal: { rows: [ { rowId, draftId, construct, line, mainFlow, why } ], held }. Row IDs
-// are unique (a repeat gets `~2`, `~3`).
-export function proposeMissingFeatures( { skeletonRows = [], census = { rows: [], sources: [] }, facts = null, registry } ) {
+// Rule 3: the capabilities the draft uses that the coverage map does not cover (`coverage`: the loaded
+// data/clone-coverage.json; `usage`: lib/intake-usage.mjs's tally, an entry marked `runtimeOnly` when only the running
+// page showed it). One row per capability ID, in first-seen order.
+export function coverageMissing( { skeletonRows = [], census = { rows: [] }, coverage, usage = null } ) {
+	const seen = new Map();
+	const note = ( id, draftId ) => {
+		const s = seen.get( id ) || { id, draftId, count: 0 };
+		s.count++;
+		seen.set( id, s );
+	};
+	skeletonRows.filter( ( r ) => r.tag && ! [ 'remove', 'absorbed' ].includes( r.action ) ).forEach( ( r ) => note( `html:${ String( r.tag ).toLowerCase() }`, r.draftId || draftIdOfKey( r.key ) || r.key ) );
+	census.rows.forEach( ( r ) => note( `construct:${ r.kind }`, r.draftId || r.id ) );
+	for ( const [ id, u ] of usage || [] ) {
+		if ( ! seen.has( id ) ) {
+			seen.set( id, { id, draftId: u.draftId, count: u.count, runtimeOnly: u.runtimeOnly } );
+		}
+	}
+	const rows = [];
+	for ( const { id, draftId, count, runtimeOnly } of seen.values() ) {
+		const e = coverage.entries?.[ id ];
+		const status = statusOf( e );
+		if ( 'covered' === status ) {
+			continue;
+		}
+		const why = ! e ? `${ id } is not in the clone coverage map: the capability inventory does not list it`
+			: 'excluded' === status ? `${ id } is excluded from cloning (Bean, ${ e.excluded.date }: ${ e.excluded.reason })`
+				: `${ id } has no clone path yet (has ${ [ 'recognise', 'write', 'check' ].filter( ( k ) => e[ k ] ).join( ', ' ) || 'nothing' }; wave ${ e.wave })`;
+		const missed = runtimeOnly ? '; seen only when the page ran: the file read missed it' : '';
+		rows.push( { rowId: `missing:coverage:${ id }`, draftId: String( draftId ), construct: id, from: 'coverage', line: `${ id } seen ${ count } time${ 1 === count ? '' : 's' } in the draft: seen but unsupported`, mainFlow: null, count, why: `${ why }${ missed }` } );
+	}
+	return rows;
+}
+
+// The missing-features proposal: { rows: [ { rowId, draftId, construct, line, mainFlow, why } ], held }. Rule 3 runs
+// only when `coverage` is passed (the intake stage passes the committed map). Row IDs are unique (a repeat gets `~2`, `~3`).
+export function proposeMissingFeatures( { skeletonRows = [], census = { rows: [], sources: [] }, facts = null, registry, coverage = null, usage = null } ) {
 	const c = censusMissing( census, { facts, ...( registry ? { registry } : {} ) } );
 	const seen = new Map();
-	const rows = [ ...skeletonMissing( skeletonRows ), ...c.rows ].map( ( r ) => {
+	const cov = coverage ? coverageMissing( { skeletonRows, census, coverage, usage } ) : [];
+	const rows = [ ...skeletonMissing( skeletonRows ), ...c.rows, ...cov ].map( ( r ) => {
 		const n = ( seen.get( r.rowId ) || 0 ) + 1;
 		seen.set( r.rowId, n );
 		return 1 === n ? r : { ...r, rowId: `${ r.rowId }~${ n }` };
