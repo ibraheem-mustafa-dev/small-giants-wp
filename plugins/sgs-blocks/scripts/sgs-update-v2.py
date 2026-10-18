@@ -5607,7 +5607,8 @@ def _prune_orphans_on_conn(
 
     (a) BLOCK-LEVEL ORPHANS — block_slug absent from `blocks` table (block retired/renamed).
         All child rows (block_supports, block_capabilities, block_attributes, including the
-        sgs-ext and sgs-fx attribute rows of an sgs/* block) are always deleted.
+        sgs-ext attribute rows of an sgs/* block) are always deleted, and so is every sgs-fx
+        attribute row (that source has no seeder since Spec 38A M6.6-G0).
 
     (b) STALE SUPPORTS — block exists but support_name removed from block.json.
         aggressive   → DELETE the row.
@@ -5676,14 +5677,17 @@ def _prune_orphans_on_conn(
         SELECT id FROM block_capabilities
         WHERE block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')
     """
-    # The extension (sgs-ext) and effect (sgs-fx) seeders only ever INSERT, so a retired
-    # sgs/* block's rows from those sources would otherwise outlive it for ever. Native
-    # core/* rows (source native_wp) belong to Stage 2 and are never touched here.
+    # The extension (sgs-ext) seeder only ever INSERTs, so a retired sgs/* block's rows
+    # from it would otherwise outlive the block for ever. The effect source (sgs-fx) has no
+    # seeder at all since Spec 38A M6.6-G0 removed the flat fx attributes, so every sgs-fx
+    # row is stale. Native core/* rows (source native_wp) belong to Stage 2 and are never
+    # touched here.
     orphan_attrs_block_level_q = """
         SELECT id FROM block_attributes
-        WHERE (source = 'sgs'
-               OR (source IN ('sgs-ext', 'sgs-fx') AND block_slug LIKE 'sgs/%'))
-          AND block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')
+        WHERE source = 'sgs-fx'
+           OR ((source = 'sgs'
+                OR (source = 'sgs-ext' AND block_slug LIKE 'sgs/%'))
+               AND block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs'))
     """
 
     orphan_support_ids      = [r[0] for r in c.execute(orphan_supports_q).fetchall()]
