@@ -8,7 +8,7 @@ last_updated: 2026-10-17
 
 ## Summary for Bean
 
-- **Motion model (Spec 38A, Front M):** sessions S1 to S5 are done; S6 (remove the old motion code, re-migrate the active header and drawer) is next, then S7 (literals sweep, final acceptance).
+- **Motion model (Spec 38A, Front M):** sessions S1 to S6 are done (the old motion code is removed on all four sites); S7 (literals sweep, final acceptance, Gate 9) is next.
 - **Cloning (Spec 48, Front H):** the Indus clone is paused at your intake review (plan step 15) until Spec 38A is finished, so the draft's motion transfers to the clone too.
 - **Eye Care (Front F):** built by hand and live on eye-care-test; it is the cloning system's answer key. Next: run Spec 48's intake on it and close the fix register's open rows.
 - **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
@@ -22,9 +22,9 @@ last_updated: 2026-10-17
 
 ### Front M: Motion model (Spec 38A) and clone coverage
 
-**State:** `plans/2026-10-12-spec38a-motion-build.md` S1 to S5 are done (Gate 7 passed, the M6.5 sweep left zero old-motion blocks on every target except the canary's active header 3777 and drawer 3778). Each S4 track's open items are in its plan bullet. The M6.6C removal census is built (`reports/2026-10-17-motion-removal-census.md`).
+**State:** `plans/2026-10-12-spec38a-motion-build.md` S1 to S6 are done. S6 (2026-10-17/18) removed the old motion code in groups G0 to G5 and Gate 8 passed: all four sites run `80fb73e19` with the canary's full live motion QA `[motion-qa] PASS`, `migrate_motion.py --check --target <site>` reports no old motion attribute on any site, `--consumers` exits 0, and FR-38A-22, 32, 43 and 52 read built. The plan's "M6.6 (S6" bullet lists the commits, the decision B fixture migrations, the stylesheet-order fix, the retired-attribute strip tool and the parked decorative SVG draw feature.
 
-**Next: S6** (plan "Session plan", M6.6 G0 to G5, Gate 8). It first fixes the `no-motion-assets` check to compare against a header-only baseline (3777 carries real nav motion: submenu, burger morph, stagger), then re-migrates 3777 and 3778. **Then S7:** M5.18 (includes Track I item 4, the Fade Bold travel) and M6.7.
+**Next: S7** (M5.18 literals sweep, M6.7 acceptance, Gate 9). Its open S6 carry-overs: FR-38A-51 clause (b) and FR-38A-54's per-atom live check still read partly built; the golden masters (`scripts/consistency/goldens/behaviour.json`, `golden-controls.json`, `setting-registry*.json`) still describe the deleted animation and hover controls (assigned `keep` in `consumer-groups.json`) and need the M6.7 registry rewrite; three live settings the census lists as unrecognised (`opacityHover` on responsive-logo, the transition pair on brand-strip and card-grid) need a ruling: motion or not.
 
 **Clone coverage** (`plans/2026-10-12-clone-coverage-foundation.md`): approved, not started; Spec 38A is its Phase 0.
 
