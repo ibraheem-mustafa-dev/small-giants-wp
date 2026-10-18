@@ -2280,25 +2280,10 @@
     },
     {
       "slug": "sgs/button",
-      "attr": "opacityHover",
-      "fields": {
-        "css_property": "opacity",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/button",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "scaleHover",
-      "fields": {
-        "css_property": "transform"
       }
     },
     {
@@ -2339,20 +2324,6 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "transitionDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "transitionEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
       }
     },
     {
@@ -11523,13 +11494,6 @@
     },
     {
       "slug": "sgs/heading",
-      "attr": "scaleHover",
-      "fields": {
-        "css_property": "transform"
-      }
-    },
-    {
-      "slug": "sgs/heading",
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
@@ -11583,22 +11547,6 @@
       "attr": "textWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "transitionDuration",
-      "fields": {
-        "css_property": "transition-duration",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "transitionEasing",
-      "fields": {
-        "css_property": "transition-timing-function",
         "css_element": "wrapper"
       }
     },
@@ -21132,33 +21080,12 @@
     },
     {
       "slug": "sgs/quote",
-      "attr": "scaleHover",
-      "fields": {
-        "css_property": "transform"
-      }
-    },
-    {
-      "slug": "sgs/quote",
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "transitionDuration",
-      "fields": {
-        "css_property": "transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "transitionEasing",
-      "fields": {
-        "css_property": "transition-timing-function"
       }
     },
     {
@@ -24507,13 +24434,6 @@
     },
     {
       "slug": "sgs/text",
-      "attr": "scaleHover",
-      "fields": {
-        "css_property": "transform"
-      }
-    },
-    {
-      "slug": "sgs/text",
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
@@ -24576,22 +24496,6 @@
       "attr": "textWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "transitionDuration",
-      "fields": {
-        "css_property": "transition-duration",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "transitionEasing",
-      "fields": {
-        "css_property": "transition-timing-function",
         "css_element": "wrapper"
       }
     },
