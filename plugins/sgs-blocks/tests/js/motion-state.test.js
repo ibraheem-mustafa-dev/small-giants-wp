@@ -217,3 +217,48 @@ describe( 'motionSettled', () => {
 		await expect( mod.motionSettled( {} ) ).resolves.toBeUndefined();
 	} );
 } );
+
+describe( 'leaving a named state and resting in one (FR-38A-53 close values)', () => {
+	it( 'leaveMotionState swaps the token for <name>-out, so the state entrance can play its close', () => {
+		const { mod } = load();
+		const { el } = host( '' );
+		mod.setMotionState( el, 'expanded', true );
+		mod.leaveMotionState( el, 'expanded' );
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded-out' );
+		mod.setMotionState( el, 'expanded', true );
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded' );
+	} );
+
+	it( 'leaveMotionState on a state that was never on adds nothing (no close to play)', () => {
+		const { mod } = load();
+		const { el } = host( 'invalid' );
+		mod.leaveMotionState( el, 'expanded' );
+		expect( el.getAttribute( ATTR ) ).toBe( 'invalid' );
+	} );
+
+	it( 'restMotionState holds the state with <name>-rest so it does not animate on first paint', () => {
+		const { mod } = load();
+		const { el } = host( '' );
+		mod.restMotionState( el, 'expanded' );
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded expanded-rest' );
+	} );
+
+	it( 'leaving a rested state drops -rest and plays the close; turning it on again drops -out', () => {
+		const { mod } = load();
+		const { el } = host( '' );
+		mod.restMotionState( el, 'expanded' );
+		mod.leaveMotionState( el, 'expanded' );
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded-out' );
+		mod.setMotionState( el, 'expanded', true );
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded' );
+	} );
+
+	it( 'ignores open, close and an invalid name', () => {
+		const { mod } = load();
+		const { el } = host( '' );
+		mod.restMotionState( el, 'open' );
+		mod.leaveMotionState( el, 'close' );
+		mod.restMotionState( el, 'Bad Name' );
+		expect( el.getAttribute( ATTR ) ).toBe( '' );
+	} );
+} );
