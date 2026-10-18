@@ -211,8 +211,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
-		transitionDuration,
-		transitionEasing,
 		nameColourHover,
 	} = attributes;
 	// A marquee effect layer on the root makes the strip one marquee row.
@@ -658,8 +656,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							itemBackgroundColourHover: '',
 							itemBorderColourHover: '',
 							itemBorderColourHoverGradient: '',
-							transitionDuration: '300',
-							transitionEasing: 'ease-in-out',
 						} )
 					}
 				>
@@ -785,46 +781,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 
-					{ /* Hover timing (applies on hover regardless of the colour states above). */ }
-					<ToolsPanelItem
-						label={ __( 'Transition duration', 'sgs-blocks' ) }
-						hasValue={ () => transitionDuration !== '300' }
-						onDeselect={ () => setAttributes( { transitionDuration: '300' } ) }
-					>
-						<TextControl
-							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-							value={ transitionDuration }
-							onChange={ ( val ) =>
-								setAttributes( { transitionDuration: val } )
-							}
-							help={ __( 'Speed of the hover colour/greyscale transition. Default: 300.', 'sgs-blocks' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						hasValue={ () => transitionEasing !== 'ease-in-out' }
-						onDeselect={ () => setAttributes( { transitionEasing: 'ease-in-out' } ) }
-					>
-						<SelectControl
-							label={ __( 'Transition easing', 'sgs-blocks' ) }
-							value={ transitionEasing }
-							options={ [
-								{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-								{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-								{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-								{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
-								{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-							] }
-							onChange={ ( val ) =>
-								setAttributes( { transitionEasing: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
 				</ToolsPanel>
 
 				<PanelBody

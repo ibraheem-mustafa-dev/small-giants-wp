@@ -178,8 +178,8 @@
 	overflow: hidden;
 	border: 2px solid transparent;
 	transition-property: border-color;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-duration: var(--wp--custom--duration--medium, 300ms);
+	transition-timing-function: var(--wp--custom--easing--ease-in-out, ease-in-out);
 }
 
 /* A tile link is the whole tile, not a link inside running text, so it carries
@@ -308,7 +308,7 @@
 	border-radius: 0;
 	box-shadow: none;
 	opacity: var(--sgs-logo-opacity, 1);
-	transition: opacity var(--sgs-transition-duration, 250ms) var(--sgs-transition-easing, ease);
+	transition: opacity var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-brand-strip--layout-row .sgs-brand-strip__item:hover,
@@ -354,8 +354,8 @@
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__logo,
 .sgs-brand-strip--effect-sepia .sgs-brand-strip__item .sgs-media--sgs-brand-strip {
 	opacity: 0.6;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-duration: var(--wp--custom--duration--medium, 300ms);
+	transition-timing-function: var(--wp--custom--easing--ease-in-out, ease-in-out);
 	transition-property: filter, opacity;
 }
 

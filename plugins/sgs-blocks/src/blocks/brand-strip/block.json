@@ -636,14 +636,6 @@
 			"default": "",
 			"description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-within."
 		},
-		"transitionDuration": {
-			"type": "string",
-			"default": "300"
-		},
-		"transitionEasing": {
-			"type": "string",
-			"default": "ease-in-out"
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}

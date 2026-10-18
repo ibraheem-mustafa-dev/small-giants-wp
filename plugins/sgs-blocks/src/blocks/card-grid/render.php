@@ -93,8 +93,6 @@ $hover_border             = $attributes['borderColourHover'] ?? '';
 // never legally hold a gradient value, so these never feed the flat
 // border-colour paint above.
 $hover_border_gradient    = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
-$transition_dur           = $attributes['transitionDuration'] ?? '300';
-$transition_ease          = $attributes['transitionEasing'] ?? 'ease-in-out';
 $hover_scale              = $attributes['scaleHover'] ?? '';
 $hover_shadow             = $attributes['cardShadowHover'] ?? '';
 $hover_shadow_colour      = $attributes['cardShadowColourHover'] ?? '';
@@ -355,12 +353,6 @@ $grid_style_parts = array(
 	'--sgs-card-grid-aspect: ' . esc_attr( $aspect_ratio ),
 );
 
-if ( $transition_dur ) {
-	$grid_style_parts[] = '--sgs-transition-duration: ' . absint( $transition_dur ) . 'ms';
-}
-if ( $transition_ease ) {
-	$grid_style_parts[] = '--sgs-transition-easing: ' . esc_attr( $transition_ease );
-}
 if ( $hover_scale ) {
 	$grid_style_parts[] = '--sgs-hover-scale: ' . esc_attr( $hover_scale );
 }

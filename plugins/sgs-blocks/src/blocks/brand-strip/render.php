@@ -150,9 +150,6 @@ $root_text_colour          = $attributes['textColour'] ?? '';
 $root_text_colour_gradient = $attributes['textColourGradient'] ?? '';
 $root_text_hover_colour    = $attributes['textColourHover'] ?? '';
 $root_text_hover_gradient  = $attributes['textColourHoverGradient'] ?? '';
-// transitionDuration/transitionEasing are read directly by sgs_transition_vars()
-// below — no local variable needed here (dead-assignment cleanup).
-
 // Sanitise values.
 $allowed_img_effects = array( 'none', 'grayscale', 'sepia' );
 $safe_image_effect   = in_array( $image_effect, $allowed_img_effects, true ) ? $image_effect : 'none';
@@ -230,7 +227,6 @@ if ( $has_background ) {
 // ---------------------------------------------------------------------------
 
 $css_vars = array_merge(
-	sgs_transition_vars( $attributes ),
 	array(
 		'--sgs-logo-max-height:' . absint( $max_height ) . 'px',
 		// Columns-per-device: tile width = strip-width / columns (container-query

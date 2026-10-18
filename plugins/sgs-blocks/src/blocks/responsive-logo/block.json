@@ -99,6 +99,11 @@
 						"css:max-width": "maxWidth"
 					},
 					"_note": "The <img> element. Declaring it gives the slot its true owner via the manifest-first precedence (css_property = manifest_css_property or emission_css_property); without it, its attrs fall to the classifier's emission heuristic and FOUR of them (width, alt, logoSwitchCustomPx, logoDecorative) are each assigned css_property='max-width' — two of which are not CSS at all (`alt` is a string, `logoDecorative` a boolean). The only real owner of max-width is the `maxWidth` tier object (render.php). The empty-string prefix is not the cause of that over-match: the over-assignment is in the classifier's emission heuristic, not this manifest."
+				},
+				"link": {
+					"label": "Home link",
+					"order": 3,
+					"selector": ".sgs-responsive-logo__link"
 				}
 			}
 		},
@@ -275,11 +280,6 @@
 			"default": {
 				"desktop": {}
 			}
-		},
-		"opacityHover": {
-			"type": "number",
-			"default": 0.85,
-			"description": "Fades the home link to this opacity on hover/focus (0-1; 1 = no visible change). Default 0.85: a subtle dip is the standard affordance signalling a linked logo is interactive, independent of whatever look shipped before this control existed. 0 disables the fade entirely."
 		}
 	},
 	"render": "file:./render.php",

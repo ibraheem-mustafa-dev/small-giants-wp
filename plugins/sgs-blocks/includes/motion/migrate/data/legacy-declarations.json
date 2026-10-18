@@ -47,6 +47,14 @@
 			"effectHover": {
 				"type": "string",
 				"default": "none"
+			},
+			"transitionDuration": {
+				"type": "string",
+				"default": "300"
+			},
+			"transitionEasing": {
+				"type": "string",
+				"default": "ease-in-out"
 			}
 		},
 		"sgs/button": {
@@ -118,6 +126,14 @@
 			"sgsAnimationEasing": {
 				"type": "string",
 				"default": "default"
+			},
+			"transitionDuration": {
+				"type": "string",
+				"default": "300"
+			},
+			"transitionEasing": {
+				"type": "string",
+				"default": "ease-in-out"
 			}
 		},
 		"sgs/cart": {
@@ -1033,6 +1049,11 @@
 			"lottieSpeed": {
 				"type": "number",
 				"default": 1
+			},
+			"opacityHover": {
+				"type": "number",
+				"default": 0.85,
+				"description": "Fades the home link to this opacity on hover/focus (0-1; 1 = no visible change). Default 0.85: a subtle dip is the standard affordance signalling a linked logo is interactive, independent of whatever look shipped before this control existed. 0 disables the fade entirely."
 			}
 		},
 		"sgs/site-footer": {

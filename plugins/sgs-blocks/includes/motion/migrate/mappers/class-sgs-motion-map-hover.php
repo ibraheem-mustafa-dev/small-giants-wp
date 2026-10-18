@@ -28,6 +28,9 @@
  * - `transitionDuration`, `transitionEasing`, `transitionEasingCustom` and `scaleHover` (a number) are mapped on the
  *   blocks where they time and size the block's own hover (`sgs/heading`, `sgs/text`, `sgs/quote`, `sgs/button`); on
  *   every other block they time unrelated transitions (sliders, tabs, overlays) and are left alone.
+ * - `transitionDuration` and `transitionEasing` of `sgs/brand-strip` and `sgs/card-grid` time the hover of each repeated item
+ *   and become the `item` part's hover timing; `opacityHover` of `sgs/responsive-logo` becomes the `link` part's hover opacity
+ *   (a value equal to the block's default, 0 and 1 map to nothing).
  * - `shadowHoverColour` is renamed `shadowColourHover` (`attrs`); its value stays in its colour control.
  *
  * The block's registered defaults and `supports.sgs` come from the block registry; a test installs a provider.
@@ -78,6 +81,17 @@ final class Sgs_Motion_Map_Hover implements Sgs_Motion_Mapper_Interface {
 
 	/** Blocks whose `scaleHover` is a number, `transitionDuration` and `transitionEasing` time their own hover. */
 	const OWN_HOVER_BLOCKS = array( 'sgs/heading', 'sgs/text', 'sgs/quote', 'sgs/button' );
+
+	/** Blocks whose `transitionDuration` and `transitionEasing` time the hover of their repeated item: block => the part that takes the timing. */
+	const ITEM_TIMING_PARTS = array(
+		'sgs/brand-strip' => 'item',
+		'sgs/card-grid'   => 'item',
+	);
+
+	/** Blocks whose `opacityHover` fades one inner part on hover: block => the part that takes the hover opacity. */
+	const PART_OPACITY_PARTS = array(
+		'sgs/responsive-logo' => 'link',
+	);
 
 	/** Card blocks: a per-item hover class (`effectHover`) and a string `scaleHover`. */
 	const CARD_BLOCKS = array( 'sgs/card-grid', 'sgs/gallery', 'sgs/info-box', 'sgs/post-grid', 'sgs/team-member', 'sgs/testimonial' );
@@ -140,6 +154,8 @@ final class Sgs_Motion_Map_Hover implements Sgs_Motion_Mapper_Interface {
 		$owned = array_merge(
 			self::GENERIC,
 			$own ? array( 'scaleHover', 'transitionDuration', 'transitionEasing' ) : array(),
+			isset( self::ITEM_TIMING_PARTS[ $block_name ] ) ? array( 'transitionDuration', 'transitionEasing' ) : array(),
+			isset( self::PART_OPACITY_PARTS[ $block_name ] ) ? array( 'opacityHover' ) : array(),
 			'sgs/button' === $block_name ? array( 'transitionEasingCustom', 'scaleHoverTarget', 'opacityHover', 'liftHover' ) : array(),
 			in_array( $block_name, self::CARD_BLOCKS, true ) ? array( 'scaleHover', 'effectHover' ) : array(),
 			in_array( $block_name, self::EFFECT_BLOCKS, true ) ? array( 'effectHover' ) : array(),
@@ -175,6 +191,7 @@ final class Sgs_Motion_Map_Hover implements Sgs_Motion_Mapper_Interface {
 			'consumed' => array(),
 			'reported' => array(),
 			'attrs'    => array(),
+			'parts'    => array(),
 		);
 		$a = array_intersect_key( $attrs, array_flip( self::owned( $block_name ) ) );
 		self::rename_and_shadows( $a, $o );
@@ -319,6 +336,12 @@ final class Sgs_Motion_Map_Hover implements Sgs_Motion_Mapper_Interface {
 		if ( 'sgs/button' === $block_name ) {
 			Sgs_Motion_Legacy_Hover_Value::button_extras( $a, $o );
 		}
+		if ( isset( self::ITEM_TIMING_PARTS[ $block_name ] ) ) {
+			Sgs_Motion_Legacy_Hover_Value::part_transition( $block_name, self::ITEM_TIMING_PARTS[ $block_name ], $a, $o );
+		}
+		if ( isset( self::PART_OPACITY_PARTS[ $block_name ] ) ) {
+			Sgs_Motion_Legacy_Hover_Value::part_opacity( $block_name, self::PART_OPACITY_PARTS[ $block_name ], $a, $o );
+		}
 		if ( in_array( $block_name, self::CARD_BLOCKS, true ) && array_key_exists( 'scaleHover', $a ) ) {
 			if ( '' === $a['scaleHover'] ) {
 				$o['consumed'][] = 'scaleHover';
@@ -389,6 +412,11 @@ final class Sgs_Motion_Map_Hover implements Sgs_Motion_Mapper_Interface {
 				);
 			}
 			$elements['root'] = array( 'hover' => array( 'state' => $state ) );
+		}
+		foreach ( $o['parts'] as $part => $part_values ) {
+			if ( array() !== $part_values && ! isset( $elements[ $part ] ) ) {
+				$elements[ $part ] = array( 'hover' => array( 'state' => array( 'values' => $part_values ) ) );
+			}
 		}
 		if ( array() !== $o['media'] ) {
 			$media_values = array( 'scale' => $o['media']['scale'] );

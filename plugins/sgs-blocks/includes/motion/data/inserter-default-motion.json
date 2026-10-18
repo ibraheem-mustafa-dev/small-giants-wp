@@ -273,6 +273,22 @@
             }
         }
     },
+    "sgs/responsive-logo": {
+        "sgsMotion": {
+            "v": 1,
+            "elements": {
+                "link": {
+                    "hover": {
+                        "state": {
+                            "values": {
+                                "opacity": 0.85
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "sgs/team-member": {
         "sgsMotion": {
             "v": 1,

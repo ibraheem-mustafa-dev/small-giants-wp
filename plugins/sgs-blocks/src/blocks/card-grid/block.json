@@ -594,14 +594,6 @@
       "default": "",
       "description": "Hover-state sibling of cardBorderColourGradient. Non-empty wins over borderColourHover on :hover."
     },
-    "transitionDuration": {
-      "type": "string",
-      "default": "300"
-    },
-    "transitionEasing": {
-      "type": "string",
-      "default": "ease-in-out"
-    },
     "scaleHover": {
       "type": "string",
       "default": ""

@@ -203,9 +203,11 @@ namespace SGS\Blocks\Motion {
 					'sgs'        => array( 'elements' => array( 'card' => array(), 'image' => array( 'selector' => '.sgs-team-member__photo' ) ) ),
 				),
 				'sgs/card-grid'    => array(
-					'attributes' => array( 'effectHover' => 'zoom', 'imageZoomHover' => false, 'scaleHover' => '' ),
+					'attributes' => array( 'effectHover' => 'zoom', 'imageZoomHover' => false, 'scaleHover' => '', 'transitionDuration' => '300', 'transitionEasing' => 'ease-in-out' ),
 					'sgs'        => array( 'elements' => array( 'item' => array(), 'image' => array() ) ),
 				),
+				'sgs/brand-strip'  => array( 'attributes' => array( 'transitionDuration' => '300', 'transitionEasing' => 'ease-in-out' ), 'sgs' => array( 'elements' => array( 'root' => array(), 'item' => array() ) ) ),
+				'sgs/responsive-logo' => array( 'attributes' => array( 'opacityHover' => 0.85 ), 'sgs' => array( 'elements' => array( 'wrapper' => array(), 'image' => array(), 'link' => array( 'selector' => '.sgs-responsive-logo__link' ) ) ) ),
 				'sgs/container'    => array( 'attributes' => array( 'shadowLiftOnHover' => true, 'bgHoverZoom' => false ), 'sgs' => array( 'elements' => array( 'wrapper' => array(), 'inner' => array() ) ) ),
 				'sgs/lifty'        => array( 'attributes' => array( 'shadowLiftOnHover' => false ), 'sgs' => array( 'elements' => array( 'box' => array() ) ) ),
 				'sgs/product-card' => array( 'attributes' => array(), 'sgs' => array( 'hoverDefaults' => array( 'lift' => 4 ), 'elements' => array( 'box' => array(), 'image' => array() ) ) ),
@@ -324,6 +326,22 @@ namespace SGS\Blocks\Motion {
 	ok( array() === $text['motion'] && 2 === count( $text['consumed'] ), 'sgs/text transition values equal to its defaults create no state and are consumed' );
 	$button = $mapper->map( 'sgs/button', array( 'scaleHover' => 1.08, 'scaleHoverTarget' => 'whole', 'opacityHover' => 0.9, 'transitionDuration' => 250, 'transitionEasing' => 'quart-out' ) );
 	ok( array( 'scale' => 1.08, 'opacity' => 0.9, 'duration' => 250, 'easing' => 'cubic-bezier(0.165, 0.84, 0.44, 1)' ) === ( state( $button )['values'] ?? null ) && 5 === count( $button['consumed'] ) && valid( $button['motion'] ), 'sgs/button maps scale, opacity, duration and a named easing from the shared list', js( $button ) );
+	// 6b. Item timing (brand-strip, card-grid) and the logo link's hover opacity.
+	ok( $mapper->handles( 'sgs/brand-strip', array( 'transitionDuration' => '500' ) ) && $mapper->handles( 'sgs/card-grid', array( 'transitionEasing' => 'linear' ) ) && $mapper->handles( 'sgs/responsive-logo', array( 'opacityHover' => 0.5 ) ) && ! $mapper->handles( 'sgs/responsive-logo', array( 'transitionDuration' => '500' ) ), 'the new owners are handled on their blocks only' );
+	$strip = $mapper->map( 'sgs/brand-strip', array( 'transitionDuration' => '500', 'transitionEasing' => 'linear' ) );
+	ok( array( 'duration' => 500, 'easing' => 'linear' ) === ( state( $strip, 'item' )['values'] ?? null ) && array() === ( $strip['motion']['elements']['root'] ?? array() ) && array( 'transitionDuration', 'transitionEasing' ) === $strip['consumed'] && valid( $strip['motion'] ), 'sgs/brand-strip timing is the item part hover timing', js( $strip ) );
+	$grid_t = $mapper->map( 'sgs/card-grid', array( 'transitionDuration' => '300', 'transitionEasing' => 'ease-in-out', 'scaleHover' => '' ) );
+	ok( array() === $grid_t['motion'] && array( 'scaleHover', 'transitionDuration', 'transitionEasing' ) === (array) ksort_copy( $grid_t['consumed'] ), 'sgs/card-grid timing equal to its default maps to nothing and is consumed', js( $grid_t ) );
+	$grid_d = $mapper->map( 'sgs/card-grid', array( 'transitionDuration' => '600' ) );
+	ok( array( 'duration' => 600 ) === ( state( $grid_d, 'item' )['values'] ?? null ) && valid( $grid_d['motion'] ), 'sgs/card-grid duration is the item part hover duration', js( $grid_d ) );
+	$strip_bad = $mapper->map( 'sgs/brand-strip', array( 'transitionDuration' => '0.5s' ) );
+	ok( array() === $strip_bad['consumed'] && array( 'transitionDuration' ) === reported_attrs( $strip_bad ), 'a duration that is not whole milliseconds is reported and stays' );
+	$logo = $mapper->map( 'sgs/responsive-logo', array( 'opacityHover' => 0.7 ) );
+	ok( array( 'opacity' => 0.7 ) === ( state( $logo, 'link' )['values'] ?? null ) && array( 'opacityHover' ) === $logo['consumed'] && valid( $logo['motion'] ), 'sgs/responsive-logo opacityHover is the link part hover opacity', js( $logo ) );
+	foreach ( array( 0.85, 0, 1 ) as $same ) {
+		$logo_same = $mapper->map( 'sgs/responsive-logo', array( 'opacityHover' => $same ) );
+		ok( array() === $logo_same['motion'] && array( 'opacityHover' ) === $logo_same['consumed'], 'sgs/responsive-logo opacityHover ' . $same . ' (the default, off, or no change) maps to nothing and is consumed' );
+	}
 	$face = $mapper->map( 'sgs/button', array( 'scaleHover' => 1.08, 'scaleHoverTarget' => 'face' ) );
 	ok( array() === $face['motion'] && array() === $face['consumed'] && array( 'scaleHover' ) === reported_attrs( $face ), 'a button scaling its face only is reported' );
 

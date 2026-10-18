@@ -73,9 +73,9 @@ namespace {
 		return is_array( $out ) ? $out : array();
 	};
 
-	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'icon', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'product-card', 'team-member', 'testimonial', 'timeline', 'trustpilot-reviews' );
+	$blocks = array( 'card-grid', 'gallery', 'google-reviews', 'icon', 'info-box', 'post-grid', 'pricing-table', 'process-steps', 'product-card', 'responsive-logo', 'team-member', 'testimonial', 'timeline', 'trustpilot-reviews' );
 	$shipped = SGS\Blocks\Shipped_Block_Defaults::all();
-	$check( 'data file names exactly the thirteen blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
+	$check( 'data file names exactly the fourteen blocks', array_keys( $shipped ) === array_map( static fn( $b ) => 'sgs/' . $b, $blocks ) );
 
 	// (a) no saved defaults.
 	$GLOBALS['t_option'] = array();

@@ -21,8 +21,8 @@
 	/* height: 100% combined with the grid's align-items: stretch (default)
 	   ensures all cards in a row grow to match the tallest sibling. */
 	height: 100%;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-duration: var(--wp--custom--duration--medium, 300ms);
+	transition-timing-function: var(--wp--custom--easing--ease-in-out, ease-in-out);
 	transition-property: background-color, color, border-color, transform, box-shadow;
 	/* The tile border (cardBorderWidth / cardBorderColour) paints on every
 	   variant, not only "card": an overlay or image tile offers the same
@@ -71,8 +71,8 @@
 	width: 100%;
 	height: 100%;
 	display: block;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-duration: var(--wp--custom--duration--medium, 300ms);
+	transition-timing-function: var(--wp--custom--easing--ease-in-out, ease-in-out);
 	transition-property: transform;
 }
 
@@ -345,8 +345,8 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item {
-		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
-		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+		transition: transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease-in-out, ease-in-out),
+		            box-shadow var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease-in-out, ease-in-out);
 	}
 
 	/* ⛔ THIS BLOCK OWNS ITS HOVER TARGET — the generic ROOT rule must stand down.
@@ -376,7 +376,7 @@
 	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image,
 	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image-wrap .sgs-media-el {
 		filter: grayscale(100%);
-		transition: filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+		transition: filter var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease-in-out, ease-in-out);
 	}
 
 	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__item:hover .sgs-card-grid__image,

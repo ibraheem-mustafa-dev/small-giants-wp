@@ -82,7 +82,8 @@ CATALOGUE = [
     (re.compile(r'^(bgHoverZoom|sgsHoverZoom|sgsHoverScale)'), 'hover', None),
     # Where the transition pair times the block's own hover (the hover mapper's OWN_HOVER_BLOCKS); on every other block it
     # times unrelated transitions (sliders, tabs, overlays) and stays.
-    (('transitionDuration', 'transitionEasing'), 'hover', _OWN_HOVER),
+    (('transitionDuration', 'transitionEasing'), 'hover', _OWN_HOVER + ('sgs/brand-strip', 'sgs/card-grid')),
+    (('opacityHover',), 'hover', ('sgs/responsive-logo',)),
     (('transitionEasingCustom', 'scaleHoverTarget', 'opacityHover', 'liftHover'), 'hover', ('sgs/button',)),
     (('imageZoomHover',), 'hover', ('sgs/card-grid', 'sgs/gallery', 'sgs/post-grid', 'sgs/team-member')),
     (('sgsHoverTilt3D',), 'tilt', None),

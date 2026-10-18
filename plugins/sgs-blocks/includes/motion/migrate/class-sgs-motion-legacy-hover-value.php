@@ -224,6 +224,53 @@ final class Sgs_Motion_Legacy_Hover_Value {
 	}
 
 	/**
+	 * `transitionDuration` and `transitionEasing` on a block whose repeated item they time: the timing lands on that part.
+	 *
+	 * @param string              $block_name Block name.
+	 * @param string              $part       The part that takes the timing.
+	 * @param array<string,mixed> $a          Owned stored attributes.
+	 * @param array<string,mixed> $o          Accumulator.
+	 */
+	public static function part_transition( string $block_name, string $part, array $a, array &$o ): void {
+		$sub = array(
+			'timing'   => array(),
+			'consumed' => array(),
+			'reported' => array(),
+		);
+		self::own_transition( $block_name, $a, $sub );
+		$o['consumed'] = array_merge( $o['consumed'], $sub['consumed'] );
+		$o['reported'] = array_merge( $o['reported'], $sub['reported'] );
+		if ( array() !== $sub['timing'] ) {
+			$o['parts'][ $part ] = array_merge( $o['parts'][ $part ] ?? array(), $sub['timing'] );
+		}
+	}
+
+	/**
+	 * `opacityHover` (0 to 1; 0 = off) on a block whose hover fades one inner part.
+	 *
+	 * @param string              $block_name Block name.
+	 * @param string              $part       The part that takes the opacity.
+	 * @param array<string,mixed> $a          Owned stored attributes.
+	 * @param array<string,mixed> $o          Accumulator.
+	 */
+	public static function part_opacity( string $block_name, string $part, array $a, array &$o ): void {
+		if ( ! array_key_exists( 'opacityHover', $a ) ) {
+			return;
+		}
+		$opacity = self::num( $a['opacityHover'] );
+		if ( null === $opacity ) {
+			self::report( $o, 'opacityHover', $a['opacityHover'], 'not a number from 0 to 1', false );
+			return;
+		}
+		$default = self::num( Sgs_Motion_Map_Hover::default_of( $block_name, 'opacityHover' ) );
+		$clamped = min( 1.0, max( 0.0, $opacity ) );
+		if ( $clamped > 0 && $clamped < 1.0 && abs( $clamped - (float) $default ) > 0.0001 ) {
+			$o['parts'][ $part ]['opacity'] = self::tidy( round( $clamped, 2 ) );
+		}
+		$o['consumed'][] = 'opacityHover';
+	}
+
+	/**
 	 * Consume attributes the block holds.
 	 *
 	 * @param array<string,mixed> $o    Accumulator.
