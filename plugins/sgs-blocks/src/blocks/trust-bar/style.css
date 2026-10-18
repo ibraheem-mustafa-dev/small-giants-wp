@@ -292,7 +292,7 @@
  * count, which would otherwise give the title and the strip one equal column each and leave the rest empty. */
 .sgs-trust-bar.sgs-trust-bar[data-sgs-marquee="on"]:has(> .sgs-trust-bar__title):has(> .sgs-trust-bar__lane) {
 	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
+	grid-template-columns: var(--sgs-trust-bar-titled-columns, auto minmax(0, 1fr));
 	align-items: center;
 }
 
