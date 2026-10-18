@@ -121,7 +121,10 @@ test( 'UNMAPPED holds what no setting can paint, the declared handover is listed
 	assert.deepEqual( result.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence.draft ] ), [ [ 'content-page', 'link', 'cr-ref-home-3', '.sgs-text__a', '/shop/' ] ] );
 	const e = result.entrances.find( ( x ) => 'cr-ref-home-2' === x.node );
 	assert.ok( Math.abs( e.measured.delayMs - 100 ) <= 80 && Math.abs( e.measured.durationMs - 500 ) <= 100 && Math.abs( e.measured.distancePx - 18 ) <= 1, JSON.stringify( e.measured ) );
-	assert.ok( result.unmapped.some( ( u ) => 'entrance animation-duration' === u.property && 'cr-ref-home-2' === u.node ) );
+	// The fixture client has no intake inventory, so the motion writer (lib/fill-motion.mjs) has no code record for the
+	// entrance: the measurement is listed, and nothing is written from the render alone (R-47-4).
+	assert.ok( ! result.writes.some( ( w ) => 'motion' === w.how ), 'no code record, no sgsMotion' );
+	assert.equal( find( 0, 1 ).attributes.sgsMotion, undefined );
 } );
 
 test( 'the 16px sweep logs the card margin step at the tablet boundary for a human, and writes no ledger entry', () => {

@@ -160,7 +160,11 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/brand-registry.mjs` | Reads the one brand and contact registry (`plugins/sgs-blocks/includes/data/brand-registry.json`) and derives which addresses belong to which brand (scheme for phone and email, domain for socials); no platform table of its own. |
 | `lib/fill-handover.mjs` | The handover entry shape Fill declares, validated against the five shared owners and four kinds. |
 | `lib/fill-page.mjs` | The page baseline for inherited properties from the theme snapshot (root typography and colour, heading and element styles, CSS initial values), which calibration deliberately does not record. |
-| `lib/fill-entrance.mjs` | Samples a draft's entrances (delay, duration, first-frame pose) and writes them through the resolver. |
+| `lib/fill-entrance.mjs` | Samples a draft's entrances at 375, 768 and 1440 (delay, duration, first-frame pose, load or scroll trigger), sweeping down the page so scroll reveals play: the motion writer's render check. |
+| `lib/fill-motion.mjs` | The motion cloning writer (Spec 48 FR-48-78): each skeleton node's inventory motion records as its `sgsMotion`, on the root or the declared part a slot names, render-checked, token-snapped and validated before it is written. |
+| `lib/motion-layers.mjs` | One element's motion records as `entrance.base` and `hover.state` layers (transform lists split into the schema's channels), and the match of a run-time-picked entrance to a measured pose. |
+| `lib/motion-db.mjs` | The framework DB's motion facts, read-only: targets per block, fields per layer, presets, the effect registry. |
+| `lib/motion-tokens.mjs` | Token references (the field types' token patterns read from the schema, the values from the client's snapshot) and the preset match. |
 | `lib/fill-config.mjs` | Generates the walker config: one pair per node with a `draftRef`, `refPrefix: 'cr-ref-'` and the ledger path, via `pairs.mjs::configText`. |
 | `lib/fill-report.mjs` | `fill-report.md` and `fill-report.json`: UNMAPPED, handover, writes, spacing, fluid, breakpoints, entrances, ledger, snaps. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, the state-conflict refusal, content rows (text, presence, link) and their resolution, the handover list, classification. |
@@ -286,7 +290,8 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-values.test.mjs` | FR-47-4: a stepped value is never fluid and a step at 800px is logged against 768 (MUST FAIL); clamp shapes and the sweep log. |
 | `tests/fill-presence.test.mjs` | FR-47-4: a draft showing the badge flips its visibility setting on and a draft without it leaves the default (MUST FAIL); variant, words and links, against fixture calibration keys. |
 | `tests/fill-page.test.mjs` | FR-47-4: the theme baseline for the inherited properties calibration does not record. |
-| `tests/fill-entrance.test.mjs` | FR-47-4: entrance timing and distance, a loop is not an entrance (MUST FAIL), and the resolver writes. |
+| `tests/fill-entrance.test.mjs` | FR-48-47: entrance timing, distance and scale, a loop is not an entrance, a scroll reveal is timed from when it meets the viewport and a held backwards fill from its second change (MUST FAIL each), in a real browser with the page sweep and a no-sweep negative control. |
+| `tests/fill-motion.test.mjs` | FR-48-78: the motion writer's layers, tokens, presets, run-time pose match, render check and refusals (MUST FAIL each). |
 | `tests/fill-site-info.test.mjs` | A link setting bound to Site Info keeps the draft address as its fallback and yields one `site-info` handover entry (MUST FAIL without it); an unbound node, a bound node with no draft link and a non-Site-Info binding yield none. |
 | `tests/fill-site-rows.test.mjs` | A `sgs/social-icons` skeleton node with `siteInfoRow` expands to the Site Info-bound icons the committed Eye Care footer and drawer trees hold; the Fill-only keys are stripped; an unknown slug is a skeleton problem. |
 | `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
@@ -826,10 +831,25 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `pageBaseline(raw, tag)` → `{ value(prop, width, ownFontPx), own(prop) }`, the inherited baseline from the theme snapshot.
 
 ### `lib/fill-entrance.mjs` (Playwright)
-- `STEP_MS`, `JITTER_MS`: 50 and 40, the probe's polling step and tolerance.
-- `sampleEntrances(options)` → the raw probe results by job id.
-- `translationOf(pose)` → `{ x, y }` in px. `shapeEntrance(raw)` → `{ delayMs, durationMs, distancePx, … }` or null.
-- `entranceValues(e)` → `[ prop, value ]` pairs for the resolver. `entranceWrites(options)` → `{ writes, unmapped }`.
+- `STEP_MS`, `JITTER_MS`, `FRAME_MS`: 50, 40 and 16, the probe's rounding step, jitter tolerance and one frame.
+- `SWEEP`: the page sweep (first scroll after 1.5s, 0.7 of the viewport every 700ms, 2.5s settle).
+- `sampleEntrances(options)` → the raw probe results by job id (`sweep: null` keeps the page still). `sampleWidths(options)` → `{ id: { 375, 768, 1440: shaped entrance or null } }`.
+- `translationOf(pose)` → `{ x, y }` in px. `scaleOf(pose)` → the uniform scale. `shapeEntrance(raw)` → `{ trigger, delayMs, durationMs, delayRawMs, durationRawMs, distancePx, scale, … }` or null.
+
+### `lib/fill-motion.mjs`
+- `motionWrites(options)` → `{ writes, unmapped, notes }`: every node's `sgsMotion`, validated by `lib/motion-validate.mjs`.
+- `elementMotion(records, options)` → one target's layers. `entranceCheck(layer, record, sampled)` → `{ devices, differences }`; `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
+- `elementKey(finder, rootComponent)`, `recordsByElement(records)`, `partForSlot(block, slot, targets)`; `WIDTH_TIER`: 375 mobile, 768 tablet, 1440 desktop.
+
+### `lib/motion-layers.mjs`
+- `classify(record)` → `entrance`, `hover` or `skip` with the owning wave. `entranceLayer`, `hoverLayer` → layers.
+- `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf`; `poseDistance`, `matchByPose`, `delaySteps` (a per-item delay's offset and step), `delayOf`.
+
+### `lib/motion-db.mjs`
+- `motionDb(db)` → `{ targetsOf(block), field(layer, path, effect), presets(panel), effect(slug), effects() }`. `fieldKey(layer, fieldPath)`.
+
+### `lib/motion-tokens.mjs`
+- `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)`; `msOf`, `pxOf`, `easingOf`.
 
 ### `lib/fill-config.mjs`
 - `walkerPairs(nodes, tree)` → `{ ref, draft }` per node carrying a `draftRef`.

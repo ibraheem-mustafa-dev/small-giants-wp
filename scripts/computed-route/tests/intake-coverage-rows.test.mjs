@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { coverageMissing, proposeMissingFeatures, longhands, unreadProperties } from '../lib/intake-missing.mjs';
 
 const COVERAGE = { _meta: {}, entries: {
-	'html:div': { recognise: 'construct:handler', write: 'scripts/computed-route/lib/fill-entrance.mjs#entranceWrites', check: 'scripts/computed-route/lib/answer-sheet.mjs#scoreSurface' },
+	'html:div': { recognise: 'construct:handler', write: 'scripts/computed-route/lib/fill-motion.mjs#motionWrites', check: 'scripts/computed-route/lib/answer-sheet.mjs#scoreSurface' },
 	'html:video': { recognise: null, write: null, check: null, wave: 'media' },
 	'html:canvas': { excluded: { reason: 'drawn by script', signedBy: 'Bean', date: '2026-10-17' } },
 	'construct:timer': { recognise: 'construct:timer', write: null, check: null, wave: 'behaviour recognisers' },

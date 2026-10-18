@@ -6,10 +6,11 @@
 // against the census and names a trigger kind the mapping linked none of.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { codeModel } from '../lib/intake-inventory-code.mjs';
+import { codeModel, triggerOf } from '../lib/intake-inventory-code.mjs';
 import { routeKeys } from '../lib/intake-inventory-keys.mjs';
 import { surfaceRecords } from '../lib/intake-inventory-surfaces.mjs';
 import { readInventory, reconcile, CONTEXT_ONLY_MIN } from '../lib/intake-inventory.mjs';
+import { waapiEffect } from '../lib/intake-inventory-target.mjs';
 
 // A component whose `go` method declares n chained locals and writes each to state, one of them read from `location`,
 // and whose renderVals list `items` builds its one item's `open` field from n chained locals that each read state; an
@@ -87,4 +88,47 @@ test( 'MUST FAIL (FR-48-25): reconcile names a trigger kind whose three or more 
 	assert.deepEqual( reconcile( empty, { census: failed.census, jsWriters: 0 } ), [
 		'census row timer@App:js:0:0 (timer) has no occurrence', 'census row timer@App:js:1:0 (timer) has no occurrence', 'census row timer@App:js:2:0 (timer) has no occurrence',
 		'census row handler@App:js:3:0 (handler) has no occurrence', '0 occurrences against 4 counted census rows and 0 JS writer sites' ] );
+} );
+
+// A draft names its easing in a local constant, and another function declares the same name for something else (the
+// Indus draft's `setupReveal` holds `const E = 'cubic-bezier(.16,.84,.32,1)'` while a drawing helper declares `const E`
+// as a function), so a program-wide "one literal for every declaration" rule leaves the easing unresolved.
+test( 'MUST FAIL (FR-48-25): a Web Animation\'s easing constant resolves in its own scope, beside a same-named declaration elsewhere', () => {
+	const logic = `class Component extends DCComponent {
+reveal( el ) {
+const E = 'cubic-bezier(.16,.84,.32,1)';
+el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 850, easing: E } );
+}
+draw() {
+const E = ( a ) => a;
+return E( 1 );
+}
+shadow( el ) {
+const E = 'ease-in';
+{ const E = window.curve; el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300, easing: E } ); }
+}
+}`;
+	const model = codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ], rows: [] } );
+	const p = model.progs.get( 'App' );
+	const calls = p.nodes.filter( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name );
+	assert.equal( calls.length, 2 );
+	assert.equal( waapiEffect( p, calls[ 0 ] ).timing.easing, 'cubic-bezier(.16,.84,.32,1)', 'the declaration in the call\'s own function' );
+	assert.equal( waapiEffect( p, calls[ 1 ] ).timing.easing, 'E', 'an inner declaration with no literal shadows the outer literal: unknown, kept as its source text' );
+} );
+
+// A draft defers its hero entrance by one animation frame from componentDidMount (`requestAnimationFrame(() => {
+// this.safe(() => this.animateEntrance()); })`); inside a class method the callback's name is the method's, so comparing
+// names called every such deferral a frame loop and the entrance never reached the motion writer.
+test( 'MUST FAIL (FR-48-25): an animation frame callback that runs work once is a deferral; one that runs its own method again is a frame loop', () => {
+	const logic = `class Component extends DCComponent {
+componentDidMount() { requestAnimationFrame( () => { this.safe( () => this.entrance() ); } ); }
+safe( f ) { f(); }
+entrance() { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 900 } ); }
+spin() { requestAnimationFrame( () => { this._dot.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 50 } ); this.spin(); } ); }
+}`;
+	const model = codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ], rows: [] } );
+	const p = model.progs.get( 'App' );
+	const [ entrance, spin ] = p.nodes.filter( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name );
+	assert.notEqual( triggerOf( model, 'App', entrance ).type, 'loop', 'the deferred entrance' );
+	assert.equal( triggerOf( model, 'App', spin ).type, 'loop', 'the control: a callback that runs spin() again' );
 } );

@@ -37,7 +37,7 @@ test( 'MUST FAIL (control 3): a reference to a writer, file or construct reader 
 	assert.match( referenceProblem( 'scripts/computed-route/lib/no-such-file.mjs#x' ), /does not exist/ );
 	assert.match( referenceProblem( 'construct:sc-for' ), /no reader/ );
 	assert.match( referenceProblem( 'construct:not-a-kind' ), /no such construct kind/ );
-	assert.equal( referenceProblem( 'scripts/computed-route/lib/fill-entrance.mjs#entranceWrites' ), null );
+	assert.equal( referenceProblem( 'scripts/computed-route/lib/fill-motion.mjs#motionWrites' ), null );
 	assert.equal( referenceProblem( 'construct:handler' ), null );
 	const cov = clone( committed.coverage );
 	cov.entries[ 'html:div' ].write = 'scripts/computed-route/lib/fill-entrance.mjs#noSuchWriter';

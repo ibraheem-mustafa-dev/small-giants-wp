@@ -4,7 +4,7 @@
 // timing, and every JS style, text, scroll and playback writer site.
 import { walkAst } from './intake-census-logic.mjs';
 import { matchSelector } from './intake-inventory-css.mjs';
-import { isFn, isThis, prop, globalName, textOf, ancestors, memberOf, functionName, literalOf } from './intake-inventory-code.mjs';
+import { isFn, isThis, prop, globalName, textOf, ancestors, memberOf, functionName, literalOf, declaratorsOf } from './intake-inventory-code.mjs';
 
 // The template elements a ref field is bound to: Map(field → [{ comp, n, ref }]) for one component, from each `ref`
 // census row → its renderVals key's method (or a member of that name) → `this.<field> = <param>` in that method.
@@ -113,10 +113,24 @@ export function targetOf( model, comp, expr, depth = 0 ) {
 	return none( 'resolved at runtime' );
 }
 
-// A constant's literal value: an identifier every declaration of which in the program initialises to one literal, or a
-// `this.<field>` class field with a literal value; else undefined.
+const isScope = ( x ) => isFn( x ) || 'BlockStatement' === x.type || 'Program' === x.type;
+
+// A constant's literal value: for an identifier, the declaration of that name in the nearest enclosing scope that
+// declares it before the use (a function, block or program; a declaration with no literal there shadows every outer
+// one, so the value is unknown), else, when no enclosing scope declares it, the one literal every declaration of the
+// name in the program initialises to; for a `this.<field>` class field, its literal value; else undefined.
 export function constValue( p, n ) {
 	if ( 'Identifier' === n?.type ) {
+		const decls = declaratorsOf( p ).get( n.name ) || [];
+		if ( decls.length && p.parents ) {
+			const scopeOf = ( d ) => ancestors( p, d ).find( isScope ) ?? null;
+			for ( const a of ancestors( p, n ).filter( isScope ) ) {
+				const own = decls.filter( ( d ) => d.start < n.start && scopeOf( d ) === a );
+				if ( own.length ) {
+					return literalOf( own[ own.length - 1 ].init );
+				}
+			}
+		}
 		const vals = p.nodes.filter( ( d ) => 'VariableDeclarator' === d.type && 'Identifier' === d.id.type && d.id.name === n.name ).map( ( d ) => literalOf( d.init ) );
 		return vals.length && vals.every( ( v ) => undefined !== v && v === vals[ 0 ] ) ? vals[ 0 ] : undefined;
 	}

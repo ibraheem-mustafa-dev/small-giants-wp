@@ -1,14 +1,13 @@
-// L9.7 entrances (lib/fill-entrance.mjs): duration and delay from sampled frames, distance from the transform at the first
-// sampled frame, a looping element is not an entrance, and the values are written only through the resolver to the settings
-// calibration ties to opacity and transform on that block.
+// Entrances (lib/fill-entrance.mjs, the motion writer's render check): duration and delay from sampled frames, distance
+// and scale from the pose at the first sampled frame, a looping element is not an entrance, and an element below the fold
+// that starts moving once it scrolls into view is a scroll entrance timed from that moment.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { serveDraft } from '../lib/draft.mjs';
-import { sampleEntrances, shapeEntrance, translationOf, entranceValues, entranceWrites, STEP_MS, JITTER_MS } from '../lib/fill-entrance.mjs';
-import { openDb } from '../lib/db.mjs';
+import { sampleEntrances, shapeEntrance, translationOf, scaleOf, STEP_MS, JITTER_MS } from '../lib/fill-entrance.mjs';
 
 const pose = ( opacity, transform = 'none', translate = 'none' ) => ( { opacity, transform, translate, scale: 'none', rotate: 'none' } );
 const RISE = pose( 0, 'matrix(1, 0, 0, 1, 0, 18)' );
@@ -24,7 +23,7 @@ test( 'delay is first change minus first sight, duration is last change minus fi
 	assert.equal( STEP_MS, 50 );
 	const e = shapeEntrance( { seenAt: 1000, first: RISE, firstChange: pose( 0.1, 'matrix(1, 0, 0, 1, 0, 17)' ), start: 1203, end: 1809, loop: false } );
 	assert.deepEqual( [ e.delayMs, e.durationMs, e.distancePx, e.x, e.y, e.opacityFrom, e.fromFirstChange ], [ 200, 600, 18, 0, 18, 0, false ] );
-	assert.deepEqual( entranceValues( e ), [ [ 'opacity', '0' ], [ 'transform', 'matrix(1, 0, 0, 1, 0, 18)' ], [ 'animation-duration', '0.6s' ], [ 'animation-delay', '0.2s' ] ] );
+	assert.equal( e.trigger, 'load' );
 	// 580 and 780 measured are the 600 and 800 an author set: a frame is read late at each end.
 	assert.equal( shapeEntrance( { seenAt: 0, first: RISE, firstChange: RISE, start: 10, end: 590, loop: false } ).durationMs, 600 );
 	assert.equal( shapeEntrance( { seenAt: 0, first: RISE, firstChange: RISE, start: 10, end: 790, loop: false } ).durationMs, 800 );
@@ -34,7 +33,6 @@ test( 'a delay of two frames or less is jitter: it measures as 0 and no delay va
 	assert.equal( JITTER_MS, 40 );
 	const e = shapeEntrance( { seenAt: 1000, first: RISE, firstChange: RISE, start: 1034, end: 1634, loop: false } );
 	assert.equal( e.delayMs, 0 );
-	assert.deepEqual( entranceValues( e ).map( ( [ p ] ) => p ), [ 'opacity', 'transform', 'animation-duration' ] );
 	assert.equal( shapeEntrance( { seenAt: 1000, first: RISE, firstChange: RISE, start: 1100, end: 1700, loop: false } ).delayMs, 100 );
 } );
 
@@ -89,14 +87,55 @@ test( 'in a real browser: a keyframe entrance is sampled for delay, duration, di
 	}
 } );
 
-const db = openDb();
-const snapshot = { palette: [], spacing: [], fontSizes: [] };
-const ENTRANCE = shapeEntrance( { seenAt: 0, first: RISE, firstChange: RISE, start: 200, end: 800, loop: false } );
+test( 'MUST FAIL: an element off-screen when first seen that moves once it meets the viewport is a scroll entrance timed from then; one that played off-screen is a load entrance', () => {
+	const scroll = shapeEntrance( { seenAt: 100, visibleAt: 2400, first: pose( 1 ), firstChange: pose( 0.05, 'matrix(0.96, 0, 0, 0.96, 0, 39)' ), start: 2416, end: 3216, loop: false } );
+	assert.deepEqual( [ scroll.trigger, scroll.delayMs, scroll.durationMs, scroll.delayRawMs, scroll.scale, scroll.y ], [ 'scroll', 0, 800, 16, 0.96, 39 ] );
+	const staggered = shapeEntrance( { seenAt: 100, visibleAt: 2400, first: pose( 1 ), firstChange: RISE, start: 2560, end: 3360, loop: false } );
+	assert.deepEqual( [ staggered.trigger, staggered.delayRawMs ], [ 'scroll', 160 ] );
+	const offscreenLoad = shapeEntrance( { seenAt: 100, visibleAt: 2400, first: RISE, firstChange: RISE, start: 300, end: 900, loop: false } );
+	assert.deepEqual( [ offscreenLoad.trigger, offscreenLoad.delayMs ], [ 'load', 200 ] );
+	const inView = shapeEntrance( { seenAt: 100, visibleAt: 100, first: RISE, firstChange: RISE, start: 300, end: 900, loop: false } );
+	assert.equal( inView.trigger, 'load' );
+} );
 
-test( 'entranceWrites with a calibration that ties nothing writes nothing and lists every measured entrance value', () => {
-	const node = { name: 'sgs/text', attributes: {} };
-	const r = entranceWrites( { entrance: ENTRANCE, node, ref: 'cr-ref-x-3', block: 'sgs/text', calibration: { block: 'sgs/text', elements: { '': {} }, settings: {}, discovered: {} }, db, snapshot, log: [] } );
-	assert.deepEqual( r.writes, [] );
-	assert.deepEqual( node.attributes, {} );
-	assert.deepEqual( r.unmapped.map( ( u ) => u.property ), [ 'entrance opacity', 'entrance transform', 'entrance animation-duration', 'entrance animation-delay' ] );
+test( 'scaleOf reads the matrix x scale and the scale property', () => {
+	assert.equal( scaleOf( pose( 1, 'matrix(0.96, 0, 0, 0.96, 0, 40)' ) ), 0.96 );
+	assert.equal( scaleOf( { ...pose( 1 ), scale: '1.2' } ), 1.2 );
+	assert.equal( scaleOf( pose( 1 ) ), 1 );
+} );
+
+const SCROLL_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
+body { margin: 0 } .gap { height: 2000px } .rv { height: 80px }
+</style></head><body><div class="gap"></div><p class="rv">Reveals</p><div class="gap"></div>
+<script>
+const io = new IntersectionObserver( ( es ) => es.forEach( ( en ) => { if ( ! en.isIntersecting ) return; io.unobserve( en.target );
+	en.target.animate( [ { opacity: 0, transform: 'translateY(40px) scale(.96)' }, { opacity: 1, transform: 'none' } ], { duration: 800, delay: 160, easing: 'linear', fill: 'backwards' } ); } ) );
+io.observe( document.querySelector( '.rv' ) );
+</script></body></html>`;
+
+test( 'in a real browser: the sweep scrolls a below-the-fold reveal into view and samples it as a scroll entrance with its own delay', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-entrance-scroll-' ) );
+	fs.writeFileSync( path.join( dir, 'index.html' ), SCROLL_HTML );
+	const served = await serveDraft( dir );
+	try {
+		const raw = await sampleEntrances( { url: served.url, jobs: [ { id: 'rv', finder: '.rv' } ], windowMs: 1000 } );
+		const e = shapeEntrance( raw.rv );
+		assert.ok( e, 'the reveal played inside the window' );
+		assert.equal( e.trigger, 'scroll' );
+		assert.ok( Math.abs( e.delayRawMs - 160 ) <= 34, `raw delay ${ e.delayRawMs }` );
+		assert.ok( Math.abs( e.durationRawMs - 800 ) <= 34, `raw duration ${ e.durationRawMs }` );
+		assert.equal( e.scale, 0.96 );
+		const still = await sampleEntrances( { url: served.url, jobs: [ { id: 'rv', finder: '.rv' } ], windowMs: 1000, sweep: null } );
+		assert.equal( shapeEntrance( still.rv ), null, 'negative control: with no sweep the reveal never plays' );
+	} finally {
+		await served.close();
+	}
+} );
+
+test( 'MUST FAIL: a backwards fill that jumps to the from-pose and holds through its delay: the jump is the trigger and the hold, to its second change, is the exact delay', () => {
+	const held = shapeEntrance( { seenAt: 0, visibleAt: 2000, first: pose( 1 ), firstChange: RISE, start: 2004, secondAt: 2180, end: 2980, loop: false } );
+	assert.deepEqual( [ held.trigger, held.delayRawMs, held.durationRawMs, held.exactDelay ], [ 'scroll', 160, 816, true ] );
+	const moving = shapeEntrance( { seenAt: 0, visibleAt: 2000, first: pose( 1 ), firstChange: RISE, start: 2004, secondAt: 2020, end: 2804, loop: false } );
+	assert.equal( moving.delayRawMs, 4, 'the control: a second change one frame later is movement, not a hold' );
+	assert.equal( moving.exactDelay, false, 'a scroll entrance with no hold is timed from first sight in view: an upper bound' );
 } );

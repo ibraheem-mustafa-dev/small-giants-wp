@@ -22,7 +22,10 @@ import { serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
-import { sampleEntrances, shapeEntrance, entranceWrites } from './lib/fill-entrance.mjs';
+import { sampleWidths } from './lib/fill-entrance.mjs';
+import { motionWrites } from './lib/fill-motion.mjs';
+import { motionDb } from './lib/motion-db.mjs';
+import { loadMotionSchema } from './lib/motion-schema.mjs';
 import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList } from './lib/fill-report.mjs';
@@ -52,6 +55,21 @@ export function parseMirrors( argv ) {
 }
 
 const stamp = () => new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 );
+
+// The re-derived animation inventory (Spec 48 FR-48-25) from the client's intake: { records, rootComponent }, where
+// rootComponent is the served index draft's component (else the inventory's first, entry, draft); no records when
+// intake has not run.
+function animationInventory( buildDir, draftIndex, log ) {
+	const file = path.join( buildDir, 'intake', 'intake.json' );
+	if ( ! fs.existsSync( file ) ) {
+		log( `no ${ path.relative( REPO, file ) }: motion is not written` );
+		return { records: [], rootComponent: null };
+	}
+	const inv = JSON.parse( fs.readFileSync( file, 'utf8' ) ).inventory?.animations || {};
+	const drafts = inv.drafts || [];
+	const entry = drafts.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || drafts[ 0 ];
+	return { records: inv.records || [], rootComponent: entry?.dc ?? null };
+}
 
 // Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
 // out, open, cache, sweep (default true), headless (default true), external, mirror ({ url: local file } answered
@@ -114,21 +132,15 @@ export async function fillSurface( o ) {
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		} );
-		// Entrances: sampled once, at 1440, for every node with a draftRef; written through the resolver.
-		const jobs = nodes.filter( ( n ) => n.targets.length ).map( ( n ) => ( { id: n.targets[ 0 ].id, finder: n.targets[ 0 ].finder } ) );
-		const raw = await sampleEntrances( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
-		const entrances = [];
-		for ( const n of nodes.filter( ( x ) => x.targets.length ) ) {
-			const measured = shapeEntrance( raw[ n.targets[ 0 ].id ] );
-			const ref = refOf( flat[ n.index ] );
-			entrances.push( { node: ref, block: n.name, measured } );
-			const cal = calFor( n.name );
-			if ( measured && cal ) {
-				const w = entranceWrites( { entrance: measured, node: flat[ n.index ], ref, block: n.name, calibration: cal, db, snapshot, log: result.snaps } );
-				result.writes.push( ...w.writes );
-				result.unmapped.push( ...w.unmapped );
-			}
-		}
+		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each
+		// node's sgsMotion, with every target's entrance sampled at 375, 768 and 1440 as the render check.
+		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
+		const sampled = await sampleWidths( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
+		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
+		const motion = motionWrites( { nodes, flat, refOf, ...animationInventory( buildDir, o.draftIndex, log ), sampled, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot } );
+		result.writes.push( ...motion.writes );
+		result.unmapped.push( ...motion.unmapped );
+		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;

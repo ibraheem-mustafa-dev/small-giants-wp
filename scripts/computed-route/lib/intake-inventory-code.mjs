@@ -199,7 +199,8 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 			}
 			if ( 'requestAnimationFrame' === g ) {
 				via.push( up.start );
-				const loop = functionName( p, up ) === functionName( p, a ) || selfScheduling( p, a );
+				const owner = memberOf( p, up )?.name;
+				const loop = selfScheduling( p, a ) || ( !! owner && callsMember( p, a, owner ) );
 				if ( loop ) {
 					return done( { type: 'loop', detail: 'requestAnimationFrame frame loop' } );
 				}
@@ -270,6 +271,16 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 		}
 	}
 	return done( { type: 'state', detail: `in ${ m.name }, which nothing calls, wires or references`, called: false } );
+}
+
+// True when a function calls or references `this.<name>` (an animation frame callback that runs its scheduling method
+// again is a frame loop; one that runs other work once is a deferral).
+function callsMember( p, fn, name ) {
+	let hit = false;
+	walkAst( fn.body, ( n ) => {
+		hit ||= isThis( n ) && prop( n ) === name;
+	} );
+	return hit;
 }
 
 // True when a function schedules itself again with requestAnimationFrame (a frame loop).

@@ -20,7 +20,7 @@ export function fillReport( r ) {
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
-		`Client ${ r.client }. Draft: ${ r.draft }. ${ r.nodes } nodes, ${ r.targets } measured elements (draftRef and draftSlots). Fill writes rest-state styles, spacing, presence, words, links and entrances in one root-down pass; hover, focus and active states are Solve's.`, '',
+		`Client ${ r.client }. Draft: ${ r.draft }. ${ r.nodes } nodes, ${ r.targets } measured elements (draftRef and draftSlots). Fill writes rest-state styles, spacing, presence, words, links and motion (each node's sgsMotion: entrances and hover moves) in one root-down pass; hover, focus and active colour states are Solve's.`, '',
 		'| What | Count |', '|---|---|',
 		`| Settings written | ${ r.writes.length } |`,
 		`| UNMAPPED (framework work, known before the first build) | ${ r.unmapped.length } |`,
@@ -48,7 +48,7 @@ export function fillReport( r ) {
 		r.sweepSkipped ? 'The 16px sweep was not run (--no-sweep).' : 'Each element swept every 16px from 320 to 1920. A step is where a value changes against its neighbour; the nearest SGS boundary (768, 1024) is named, and `on boundary` says the step lands on it. For a human to decide against `divergences.json`: Fill writes no ledger entry.', '',
 		...( r.sweepSkipped ? [] : table( [ 'Node', 'Element', 'Property', 'From', 'To', 'At', 'Nearest boundary', 'Offset', 'On boundary' ], r.steps.map( ( s ) => [ s.node, s.slot, s.prop, s.from, s.to, s.at, s.boundary, s.offset, s.onBoundary ? 'yes' : 'no' ] ) ) ),
 		'## Entrances', '',
-		...table( [ 'Node', 'Block', 'Delay ms', 'Duration ms', 'Distance px', 'Opacity from', 'Settings written' ], r.entrances.filter( ( e ) => e.measured ).map( ( e ) => [ e.node, e.block, e.measured.delayMs, e.measured.durationMs, e.measured.distancePx, e.measured.opacityFrom, r.writes.filter( ( w ) => w.node === e.node && 'entrance' === w.how ).map( ( w ) => w.attr ).join( ', ' ) ] ) ),
+		...table( [ 'Node', 'Block', 'Delay ms', 'Duration ms', 'Distance px', 'Opacity from', 'Settings written' ], r.entrances.filter( ( e ) => e.measured ).map( ( e ) => [ e.node, e.block, e.measured.delayMs, e.measured.durationMs, e.measured.distancePx, e.measured.opacityFrom, r.writes.filter( ( w ) => w.node === e.node && 'motion' === w.how ).map( ( w ) => w.attr ).join( ', ' ) ] ) ),
 		'## Divergence ledger', '',
 		...table( [ 'Entry', 'Node', 'Property', 'Width', 'Effect' ], r.held.map( ( h ) => [ h.id, h.node, h.prop, h.width, h.rule ? `rule ${ h.rule }: nothing written` : ( false === h.applied ? 'not applied: a hover-capable property, judged on hover rows (Solve)' : 'decided value written' ) ] ) ),
 		'## Token snaps', '',
