@@ -33,6 +33,9 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tls_urlopen import urlopen_tls  # noqa: E402
+
 sys.stdout.reconfigure(encoding="utf-8")
 PLUGIN = Path(__file__).resolve().parents[1]
 REPO = PLUGIN.parents[1]
@@ -320,7 +323,7 @@ def site_credentials(site: str) -> tuple[str, str, str]:
 def rest_get(base: str, route: str, auth: str, page: int) -> tuple[list, int]:
     query = urllib.parse.urlencode({"context": "edit", "per_page": 100, "page": page, "_fields": "id,slug,title,content"})
     request = urllib.request.Request(f"{base}/wp-json/wp/v2/{route}?{query}", headers={"Authorization": f"Basic {auth}", "User-Agent": "sgs-stagger-drift/1.0"}, method="GET")
-    with urllib.request.urlopen(request, timeout=60) as response:
+    with urlopen_tls(request, "stagger-drift", timeout=60, log=lambda _line: None) as response:
         return json.loads(response.read().decode("utf-8")), int(response.headers.get("X-WP-TotalPages", "1"))
 
 
@@ -348,6 +351,9 @@ def run_site(site: str) -> int:
                     failed += 1
             page += 1
     print(f"check-motion-stagger-drift --site {site}: {scanned} documents read, {failed} drifted delays")
+    if not scanned:
+        print("check-motion-stagger-drift: no document was read, so nothing was checked")
+        return 1
     return 1 if failed else 0
 
 
