@@ -1,0 +1,473 @@
+[
+  {
+    "route": "Account.dc.html",
+    "slug": "account",
+    "title": "My account",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Basket.dc.html",
+    "slug": "basket",
+    "title": "Your basket",
+    "parent": null,
+    "template": "cart",
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Checkout.dc.html",
+    "slug": "checkout",
+    "title": "Checkout",
+    "parent": null,
+    "template": "checkout",
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Confirmation.dc.html",
+    "slug": "confirmation",
+    "title": "Order confirmed",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Contact.dc.html",
+    "slug": "contact",
+    "title": "Contact",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "footer-help",
+        "position": 4,
+        "parentItem": null
+      },
+      {
+        "menu": "header",
+        "position": 5,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer-menu-links",
+        "position": 7,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Gifts.dc.html",
+    "slug": "gifts",
+    "title": "Gifts for new mums",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "footer-shop",
+        "position": 4,
+        "parentItem": null
+      },
+      {
+        "menu": "header",
+        "position": 2,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer-menu-links",
+        "position": 4,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Help.dc.html",
+    "slug": "help",
+    "title": "Help & FAQs",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "footer-help",
+        "position": 1,
+        "parentItem": null
+      },
+      {
+        "menu": "header",
+        "position": 4,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer-menu-links",
+        "position": 6,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Home.dc.html",
+    "slug": "home",
+    "title": "Handmade lactation cookies",
+    "parent": null,
+    "template": null,
+    "menus": [
+      {
+        "menu": "footer-shop",
+        "position": 2,
+        "parentItem": null
+      }
+    ],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Product.dc.html",
+    "slug": "product",
+    "title": "Product",
+    "parent": null,
+    "template": "single-product",
+    "menus": [
+      {
+        "menu": "footer-shop",
+        "position": 3,
+        "parentItem": null
+      },
+      {
+        "menu": "header",
+        "position": 3,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer-menu-links",
+        "position": 2,
+        "parentItem": null
+      }
+    ],
+    "postType": "product",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "Shop.dc.html",
+    "slug": "shop",
+    "title": "Shop",
+    "parent": null,
+    "template": "archive-product",
+    "menus": [
+      {
+        "menu": "footer-shop",
+        "position": 1,
+        "parentItem": null
+      },
+      {
+        "menu": "header",
+        "position": 1,
+        "parentItem": null
+      },
+      {
+        "menu": "drawer-menu-links",
+        "position": 1,
+        "parentItem": null
+      }
+    ],
+    "postType": "shop",
+    "collection": "live",
+    "flags": [],
+    "id": null
+  },
+  {
+    "route": "SignIn.dc.html",
+    "slug": "sign-in",
+    "title": "Sign in",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "page",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-save-address",
+    "title": "saveAddress",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-save-details",
+    "title": "saveDetails",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-save-pw",
+    "title": "savePw",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-pay",
+    "title": "pay",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "header-checkout",
+    "title": "Header",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_header",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-send",
+    "title": "send",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-do-signin",
+    "title": "doSignin",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-do-register",
+    "title": "doRegister",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-do-forgot",
+    "title": "doForgot",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-do-reset",
+    "title": "doReset",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "footer",
+    "title": "Footer",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_footer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "header-site-header",
+    "title": "Header",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_header",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "drawer-menu",
+    "title": "Menu",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_drawer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "drawer-basket",
+    "title": "Basket",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_drawer",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-build-your-zookie",
+    "title": "Build your Zookie",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-shop-filter-sort",
+    "title": "Shop filter + sort",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-product-buy-box",
+    "title": "Product buy box",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-product-gift-note",
+    "title": "Product gift note",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-gift-finder",
+    "title": "Gift finder",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-gift-note-preview",
+    "title": "Gift note preview",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-basket-gift-note-upsell",
+    "title": "Basket gift note + upsell",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "form-help-search-category-chips",
+    "title": "Help search + category chips",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_form",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
+    "slug": "modal-cancel-subscription-confirm",
+    "title": "Cancel subscription confirm",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_modal",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  }
+]
