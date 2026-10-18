@@ -79,9 +79,6 @@
 				"open": " [data-sgs-mega-trigger][aria-expanded=\"true\"]"
 			},
 			"headerEssential": true,
-			"hideExtensions": [
-				"spacing"
-			],
 			"elements": {
 				"scrim": {
 					"motion": false,

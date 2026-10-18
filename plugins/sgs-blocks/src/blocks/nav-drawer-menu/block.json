@@ -84,9 +84,6 @@
 			},
 			"collection": true,
 			"headerEssential": true,
-			"hideExtensions": [
-				"spacing"
-			],
 			"elements": {
 				"wrapper": {
 					"label": "Nav wrapper",
