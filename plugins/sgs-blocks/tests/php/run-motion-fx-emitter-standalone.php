@@ -34,6 +34,9 @@ namespace {
 	/** The theme's `settings.custom`, as WordPress merges it (the real theme.json; no client snapshot here). */
 	function wp_get_global_settings( $path = array() ) {
 		$theme  = json_decode( (string) file_get_contents( dirname( __DIR__, 4 ) . '/theme/sgs-theme/theme.json' ), true );
+		if ( array( 'color', 'palette' ) === $path ) {
+			return array( 'theme' => $theme['settings']['color']['palette'] ?? array() );
+		}
 		$custom = $theme['settings']['custom'] ?? array();
 		return array( 'custom' ) === $path ? $custom : array( 'custom' => $custom );
 	}
@@ -187,7 +190,7 @@ namespace {
 	// 5. A root-target layer emits on the root; the default shape is left out.
 	$out  = fx_render( 'sgs/team-member', fx_doc( 'root', array( 'effects' => array( array( 'id' => 'cursor-field', 'effect' => 'cursor-field', 'values' => array( 'field' => 'hue-shift', 'colour' => 'primary', 'radius' => '32px', 'shape' => 'circle' ) ) ) ) ), $card );
 	$root = fx_attrs( fx_tag( $out, 'wp-block-sgs-team-member' ) );
-	fx_check( array( 'data-sgs-fx' => 'cursor-field', 'data-sgs-fx-field' => 'hue-shift', 'data-sgs-fx-field-colour' => 'primary', 'data-sgs-fx-field-radius' => '32' ) === $root, 'cursor-field on the root (a 32px radius as the number 32, circle left out): ' . json_encode( $root ) );
+	fx_check( array( 'data-sgs-fx' => 'cursor-field', 'data-sgs-fx-field' => 'hue-shift', 'data-sgs-fx-field-colour' => '#1F7A7A', 'data-sgs-fx-field-radius' => '32' ) === $root, 'cursor-field on the root (a 32px radius as the number 32, circle left out): ' . json_encode( $root ) );
 
 	fx_check( 32.0 === Grammar::plain_number( '2rem', 'px' ) && null === Grammar::plain_number( '2em', 'px' ) && 360.0 === Grammar::plain_number( '1turn', 'deg' ), 'a rem length converts at the 16px root; em has no pixel value outside the page' );
 
@@ -229,7 +232,7 @@ namespace {
 	fx_check( '-18px' === ( $tok['data-sgs-fx-ambient-float-travel'] ?? null ), 'a negated distance token resolves to -18px: ' . json_encode( $tok ) );
 	fx_check( array() === Emitter::layer_attrs( array( 'effect' => 'tilt' ) ) && array() === Emitter::layer_attrs( array( 'effect' => 'Bad"slug' ) ), 'an effect slug outside x-sgs-effects writes nothing' );
 	$glare = Emitter::layer_attrs( array( 'effect' => 'glare', 'values' => array( 'glareColour' => 'accent' ) ) );
-	fx_check( 'accent' === ( $glare['data-sgs-fx-glare-colour'] ?? null ), 'glare writes data-sgs-fx-glare-colour (no doubled name)' );
+	fx_check( '#F59E0B' === ( $glare['data-sgs-fx-glare-colour'] ?? null ), 'glare writes data-sgs-fx-glare-colour (no doubled name)' );
 
 	// 11. Effect custom properties: per-device scoped rules, including a choice and an easing value.
 	$float = array( 'id' => 'ambient-float', 'effect' => 'ambient-float', 'values' => array( 'travel' => 12, 'period' => 4000, 'direction' => 'alternate', 'easing' => 'ease-in-out' ), 'devices' => array( 'tablet' => array( 'travel' => 8 ), 'mobile' => array( 'period' => 'token:duration.slow' ) ) );

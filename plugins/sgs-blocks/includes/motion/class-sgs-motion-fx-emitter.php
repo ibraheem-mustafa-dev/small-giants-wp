@@ -247,6 +247,13 @@ final class Sgs_Motion_Fx_Emitter {
 			self::report( $block, $target, 'fx-token-unresolved', $label . ': the token ' . $raw . ' has no theme value here, so it is not written.' );
 			return null;
 		}
+		if ( 'colourReference' === $field['type'] && is_string( $value ) ) {
+			$value = self::palette_colour( $value );
+			if ( null === $value ) {
+				self::report( $block, $target, 'fx-colour-unresolved', $label . ': the palette has no colour "' . $raw . '", so it is not written.' );
+				return null;
+			}
+		}
 		switch ( $field['form'] ) {
 			case 'position':
 				return self::position( $index, $value, $fields, $clean );
@@ -271,6 +278,30 @@ final class Sgs_Motion_Fx_Emitter {
 				return $field['omit'] === $value ? null : self::plain( $value, $field['type'] );
 		}
 		return self::in_unit( $value, $field );
+	}
+
+	/**
+	 * A colour reference as a value every runtime can paint with: a palette slug becomes the active palette's colour
+	 * (a client snapshot's override wins, through `sgs_colour_resolve_hex_alpha`; a palette alpha is kept as an 8-digit hex), because a canvas `fillStyle` and a
+	 * custom property that is later used as a colour cannot read a bare slug; a hex (alpha kept) or any other
+	 * non-slug colour is returned as written.
+	 *
+	 * @param string $value A schema-valid colour reference, token resolved.
+	 * @return string|null Null for a slug the palette does not hold.
+	 */
+	private static function palette_colour( string $value ): ?string {
+		if ( 1 !== preg_match( '/^[a-z0-9][a-z0-9-]*$/D', $value ) ) {
+			return $value;
+		}
+		require_once dirname( __DIR__ ) . '/helpers-colour-wcag.php';
+		if ( ! function_exists( 'sgs_resolve_palette_hex' ) || ! function_exists( 'wp_get_global_settings' ) ) {
+			return $value;
+		}
+		$resolved = \sgs_colour_resolve_hex_alpha( $value );
+		if ( '' === $resolved['hex'] ) {
+			return null;
+		}
+		return $resolved['alpha'] < 1 ? $resolved['hex'] . sprintf( '%02x', (int) round( $resolved['alpha'] * 255 ) ) : $resolved['hex'];
 	}
 
 	/**
