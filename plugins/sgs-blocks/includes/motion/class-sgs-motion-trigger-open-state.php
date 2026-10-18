@@ -25,7 +25,8 @@
  *     duration, easing and delay. Without close values leaving the state snaps back, as before.
  *     The colour to-values (`backgroundColour`, `textColour`, `borderColour`) are painted by the same rules: the state
  *     rule's declarations (and, for `open`, one rule keyed to an open host) read the scoped properties `--sgs-me-to-bg`,
- *     `-fg` and `-bd` the emitter wrote. The colour changes at once; an animated colour change is not built.
+ *     `-fg` and `-bd` the emitter wrote. The colours transition on the entrance's duration and easing (the close duration
+ *     and easing on leaving) under `prefers-reduced-motion: no-preference`; under reduce they change at once.
  * - `init` (priority 20): a block that declares named states gets `@sgs/motion-state` as a dynamic dependency of its
  *   view script module, so the import map lists it and the block's `import()` of it resolves.
  *
@@ -194,12 +195,14 @@ final class Sgs_Motion_Trigger_Open_State {
 		$tokens  = preg_split( '/\s+/', trim( (string) ( $attrs['data-sgs-me'] ?? '' ) ) );
 		$trigger = is_array( $tokens ) ? (string) ( $tokens[0] ?? '' ) : '';
 		if ( 'open' === $trigger ) {
-			return $css . self::close_rules( $base, $selector ) . self::open_paint_rule( $base, $selector );
+			return $css . self::close_rules( $base, $selector ) . self::open_paint_rule( $base, $selector ) . self::paint_transition( $base, $selector, self::has_close( $base ) ? 'close' : '' );
 		}
 		if ( 'state' === $trigger ) {
 			$keyframes = isset( $attrs['data-sgs-me-keyframes'] );
 			$close     = ! $keyframes && self::has_close( $base ) ? self::close_rules( $base, $selector ) : '';
-			return $css . $close . self::state_rule( $base, $selector, $keyframes );
+			$state = isset( $base['state'] ) && is_string( $base['state'] ) ? $base['state'] : '';
+			$leave = ! $keyframes && '' !== $state && strlen( $state ) <= self::STATE_SUFFIX_MAX && self::has_close( $base ) ? $state . self::OUT_SUFFIX : '';
+			return $css . $close . self::state_rule( $base, $selector, $keyframes ) . self::paint_transition( $base, $selector, $leave );
 		}
 		return $css;
 	}
@@ -220,6 +223,46 @@ final class Sgs_Motion_Trigger_Open_State {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * The colour transition: the painted properties change on the entrance's own duration and easing (`--sgs-me-dur`,
+	 * `--sgs-me-ease`), and on leaving (a host token `close` for an open entrance, `<name>-out` for a state) on the close
+	 * duration and easing. Printed only under `prefers-reduced-motion: no-preference`, so reduced motion changes the colour
+	 * at once. The colour properties are the only ones in the list.
+	 *
+	 * @param array<string,mixed> $base     The entrance base layer.
+	 * @param string              $selector Scoped selector.
+	 * @param string              $leave    Host token that marks leaving, or '' for none.
+	 * @return string
+	 */
+	private static function paint_transition( array $base, string $selector, string $leave ): string {
+		$props = array_keys( self::paint( $base ) );
+		if ( array() === $props ) {
+			return '';
+		}
+		$list = array();
+		foreach ( $props as $prop ) {
+			$list[] = $prop . ' var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)) var(--sgs-me-ease,var(--wp--custom--easing--default,ease))';
+		}
+		$none = array(
+			'tablet' => array(),
+			'mobile' => array(),
+		);
+		$css  = Sgs_Motion_Emitter::rules( $selector, array( 'desktop' => array( 'transition' => implode( ',', $list ) ) ) + $none );
+		if ( '' !== $leave ) {
+			$host = '[' . self::STATE_ATTR . '~="' . $leave . '"]';
+			$css .= Sgs_Motion_Emitter::rules(
+				$selector . ':is(' . $host . ',' . $host . ' *)',
+				array(
+					'desktop' => array(
+						'transition-duration'        => 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
+						'transition-timing-function' => 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
+					),
+				) + $none
+			);
+		}
+		return '@media (prefers-reduced-motion: no-preference){' . $css . '}';
 	}
 
 	/**

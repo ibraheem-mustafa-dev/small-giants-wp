@@ -104,6 +104,32 @@ function paint( base ) {
 	);
 }
 
+// The colour transition (twin of Sgs_Motion_Trigger_Open_State::paint_transition): the entrance's own duration and easing,
+// the close pair on the leaving host, only under no-preference.
+function paintTransition( base, selector, leave ) {
+	const props = Object.keys( paint( base ) );
+	if ( props.length === 0 ) {
+		return '';
+	}
+	const list = props.map(
+		( prop ) =>
+			`${ prop } var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)) var(--sgs-me-ease,var(--wp--custom--easing--default,ease))`
+	);
+	let css = rules( selector, { desktop: { transition: list.join( ',' ) }, tablet: {}, mobile: {} } );
+	if ( leave !== '' ) {
+		const host = `[${ STATE_ATTR }~="${ leave }"]`;
+		css += rules( `${ selector }:is(${ host },${ host } *)`, {
+			desktop: {
+				'transition-duration': 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
+				'transition-timing-function': 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
+			},
+			tablet: {},
+			mobile: {},
+		} );
+	}
+	return `@media (prefers-reduced-motion: no-preference){${ css }}`;
+}
+
 function openPaintRule( base, selector ) {
 	const declarations = paint( base );
 	if ( Object.keys( declarations ).length === 0 ) {
@@ -177,12 +203,21 @@ function stateRule( base, selector, keyframes ) {
 export function triggerCss( base, selector, attrs ) {
 	const trigger = String( attrs[ 'data-sgs-me' ] ?? '' ).trim().split( /\s+/ )[ 0 ] ?? '';
 	if ( trigger === 'open' ) {
-		return closeRules( base, selector ) + openPaintRule( base, selector );
+		return (
+			closeRules( base, selector ) +
+			openPaintRule( base, selector ) +
+			paintTransition( base, selector, hasClose( base ) ? 'close' : '' )
+		);
 	}
 	if ( trigger === 'state' ) {
 		const keyframes = attrs[ 'data-sgs-me-keyframes' ] !== undefined;
 		const close = ! keyframes && hasClose( base ) ? closeRules( base, selector ) : '';
-		return close + stateRule( base, selector, keyframes );
+		const state = typeof base.state === 'string' ? base.state : '';
+		const leave =
+			! keyframes && state !== '' && state.length <= STATE_SUFFIX_MAX && hasClose( base )
+				? state + OUT_SUFFIX
+				: '';
+		return close + stateRule( base, selector, keyframes ) + paintTransition( base, selector, leave );
 	}
 	return '';
 }
