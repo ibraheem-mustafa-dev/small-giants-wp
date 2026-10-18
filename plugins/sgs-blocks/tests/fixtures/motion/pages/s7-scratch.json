@@ -1,0 +1,300 @@
+[
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "className": "s7-a",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "tablet": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "mobile": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/accordion",
+    "attributes": {
+     "className": "s7-acc",
+     "sgsMotion": {
+      "v": 1,
+      "elements": {
+       "turning-icon": {
+        "entrance": {
+         "base": {
+          "trigger": "state",
+          "state": "expanded",
+          "values": {
+           "to": {
+            "rotate": 180,
+            "backgroundColour": "#ff0000"
+           },
+           "duration": 800,
+           "easing": "token:easing.default"
+          },
+          "close": {
+           "closeDuration": 800,
+           "closeEasing": "token:easing.default"
+          }
+         }
+        },
+        "hover": {
+         "state": {
+          "values": {
+           "scale": 1.2,
+           "duration": 200,
+           "easing": "ease"
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/accordion-item",
+      "attributes": {
+       "title": "Closed item A",
+       "isOpen": false,
+       "className": "s7-item-a"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/text",
+        "attributes": {
+         "text": "Answer A"
+        }
+       }
+      ]
+     },
+     {
+      "name": "sgs/accordion-item",
+      "attributes": {
+       "title": "Open item B",
+       "isOpen": true,
+       "className": "s7-item-b"
+      },
+      "innerBlocks": [
+       {
+        "name": "sgs/text",
+        "attributes": {
+         "text": "Answer B"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "className": "s7-b",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "tablet": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "mobile": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "layout": "stack",
+     "className": "s7-cf",
+     "minHeight": {
+      "desktop": "260px"
+     },
+     "sgsMotion": {
+      "v": 1,
+      "elements": {
+       "root": {
+        "effects": [
+         {
+          "id": "cf1",
+          "effect": "cursor-field",
+          "values": {
+           "field": "glow",
+           "colour": "accent",
+           "radius": 320,
+           "restX": 25,
+           "restY": 10,
+           "falloff": 40,
+           "layerOpacity": 0.5
+          }
+         }
+        ]
+       }
+      }
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Cursor field rest 25vw 10vh, falloff 40, opacity 0.5"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "className": "s7-c",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "tablet": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "mobile": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Preset ripple",
+     "url": "https://example.com/",
+     "className": "s7-rip",
+     "sgsMotion": {
+      "v": 1,
+      "elements": {
+       "root": {
+        "effects": [
+         {
+          "id": "r1",
+          "effect": "ripple",
+          "trigger": "pointerdown",
+          "values": {
+           "sizeFactor": 2.2
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "sgs/button",
+    "attributes": {
+     "label": "Plain button",
+     "url": "https://example.com/",
+     "className": "s7-btn"
+    }
+   },
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Fade up bold",
+     "level": "h2",
+     "className": "s7-bold",
+     "sgsMotion": {
+      "v": 1,
+      "elements": {
+       "root": {
+        "entrance": {
+         "base": {
+          "trigger": "load",
+          "values": {
+           "from": {
+            "opacity": 0,
+            "translateY": "token:distance.2xl"
+           },
+           "duration": 2000
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "stack",
+   "className": "s7-d",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "tablet": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    },
+    "mobile": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/nav-bar-menu",
+    "attributes": {
+     "ref": 1467,
+     "className": "s7-nav",
+     "itemMagnetEnabled": true
+    }
+   }
+  ]
+ }
+]

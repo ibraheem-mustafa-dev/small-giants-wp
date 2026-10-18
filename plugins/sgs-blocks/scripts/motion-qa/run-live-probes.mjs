@@ -117,6 +117,12 @@ const REAL_PROBES = [
 		args: [ '--page', '5436', '--item-selector', '.m43-products [data-sgs-loop-i]', '--expect', '0,80,160,0,80,160', '--expect-tablet', '0,80,160,0,80,160', '--expect-mobile', '0,80,160,0,80,160' ],
 	},
 	{
+		file: 'probe-motion-loop-delays.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-26 server-written loop delays on sgs/post-grid (fixture page 5442): delays at 1440/768/375, one rule per item, no nth-child ladder',
+		args: [ '--page', '5442', '--item-selector', '.m43-grid [data-sgs-loop-i]', '--expect', '0,80,160,0,80,160', '--expect-tablet', '0,80,0,80,0,80', '--expect-mobile', '0,80,160,240,320,400' ],
+	},
+	{
 		file: 'probe-motion-form-states.mjs',
 		tiers: [ 'smoke', 'full' ],
 		what: 'Spec 38A FR-38A-53 form and choice-flow states on fixture page 5451: invalid shake per submit, step-changed slide forward and back, none under reduced motion',

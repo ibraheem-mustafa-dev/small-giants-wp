@@ -8,8 +8,8 @@ paths:
 # Motion QA
 
 ```bash
-npm run qa:motion                    # all standing live probes, the full set (18 probes, about 950s serial)
-npm run qa:motion -- --tier smoke    # the 14 probes the deploy runs by default (about 350s); --list prints the selection without running anything
+npm run qa:motion                    # all standing live probes, the full set (19 probes, about 950s serial)
+npm run qa:motion -- --tier smoke    # the 15 probes the deploy runs by default (about 350s); --list prints the selection without running anything
 npm run qa:motion:morph              # fx-morph changes SVG geometry (page 2113)
 npm run qa:motion:motion-path        # motion-path re-animates on pass 2 (page 2109)
 npm run qa:motion:good-by-default    # scrub/scramble/split-reveal/pin-scrub (pages 2103, 2603)
@@ -61,7 +61,7 @@ The runner registers only the probes that are standing checks with negative cont
 | 5346 | Spec 38A FR-38A-23 per-effect off: three horizontal timelines with split-reveal alone on the root; `.mlo-a` off on mobile, `.mlo-c` off on tablet, `.mlo-b` control (`probe-layer-off-per-effect.mjs --page 5346`, tree `tests/fixtures/motion/pages/layer-off-per-effect.json`) |
 | 5358 | Spec 38A FR-38A-23 vanilla off per tier: three pointerdown-ripple buttons (`.vro-a` off on mobile, `.vro-b` control, `.vro-c` off on tablet) and three hover-sheen cards (`.vso-a`, `.vso-b`, `.vso-c`), read at 375/768/1440 and across a resize (`probe-vanilla-off-per-tier.mjs --page 5358`, tree `tests/fixtures/motion/pages/vanilla-off-per-tier.json`) |
 | 5436 | Spec 38A FR-38A-26 loop delays: a core `query` with a grid `post-template` and a `woocommerce/product-collection`, each with a stored stagger of 80ms; the stagger is injected into the stored block comments after every build, because core blocks register no `sgsMotion` (`probe-motion-loop-delays.mjs --page 5436 --item-selector ".m43-query [data-sgs-loop-i]"` and again with `.m43-products`, tree `tests/fixtures/motion/pages/loop-delays.json`, injector `loop-delays-inject.php`) |
-| 5442 | Spec 38A FR-38A-26 loop delays for `sgs/post-grid`: six cards on 3, 2 and 1 columns at step 80ms (`probe-motion-loop-delays.mjs --page 5442 --item-selector ".m43-grid [data-sgs-loop-i]"`, tree `tests/fixtures/motion/pages/loop-delays-post-grid.json`); its own page because `post-grid/style.css` carries an `nth-child` delay ladder that fails `no-nth-delay-rule` |
+| 5442 | Spec 38A FR-38A-26 loop delays for `sgs/post-grid`: six cards on 3, 2 and 1 columns at step 80ms (`probe-motion-loop-delays.mjs --page 5442 --item-selector ".m43-grid [data-sgs-loop-i]"`, tree `tests/fixtures/motion/pages/loop-delays-post-grid.json`); its own page so the `sgs/post-grid` loop-delay writer is judged apart from the core loops; it passes live (sandybrown 3a694a39b: 18 checks, 6 controls red, no `nth-child` delay rule) and is a standing probe in `PROBES` |
 | 5451 | Spec 38A FR-38A-53 form and choice-flow states: links the saved `sgs_form` 5447 (invalid shake, step-changed slide, success fade) and the saved `sgs_choice_flow` 5449 (step-changed slide) (`probe-motion-form-states.mjs --form-url "/?p=5451" --flow-url "/?p=5451"`, trees `form-states-form.json`, `form-states-flow.json` and `form-states-page.json` in `tests/fixtures/motion/pages/`) |
 | 2120 | Spec 38 FR-38-25 cursor-field glow: a glow container with an opaque child (`probe-cursor-field.mjs`, tree `tests/fixtures/motion/pages/cursor-field-glow.json`, rebuilt in place with `--post-id 2120`) |
 

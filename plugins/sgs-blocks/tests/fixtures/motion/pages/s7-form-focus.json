@@ -1,0 +1,152 @@
+[
+ {
+  "name": "sgs/form",
+  "attributes": {
+   "formId": "s7-form",
+   "formName": "Motion form states",
+   "submitLabel": "Send",
+   "successMessage": "Thanks, received.",
+   "className": "s7-form",
+   "sgsMotion": {
+    "v": 1,
+    "elements": {
+     "inner": {
+      "entrance": {
+       "base": {
+        "trigger": "state",
+        "state": "invalid",
+        "values": {
+         "from": {
+          "translateX": 0
+         },
+         "duration": 320,
+         "easing": "linear",
+         "keyframes": [
+          {
+           "offset": 0,
+           "translateX": 0
+          },
+          {
+           "offset": 0.33,
+           "translateX": -8
+          },
+          {
+           "offset": 0.66,
+           "translateX": 8
+          },
+          {
+           "offset": 1,
+           "translateX": 0
+          }
+         ]
+        }
+       }
+      }
+     },
+     "wrapper": {
+      "entrance": {
+       "base": {
+        "trigger": "state",
+        "state": "step-changed",
+        "values": {
+         "from": {
+          "translateX": 36
+         },
+         "duration": 480,
+         "easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+        }
+       }
+      }
+     },
+     "submit-actions": {
+      "entrance": {
+       "base": {
+        "trigger": "state",
+        "state": "success",
+        "values": {
+         "from": {
+          "opacity": 0
+         },
+         "duration": 320,
+         "easing": "ease-out"
+        }
+       }
+      }
+     },
+     "root": {
+      "hover": {
+       "focus": {
+        "values": {
+         "borderColour": "#0000ff",
+         "backgroundColour": "#ffffcc",
+         "duration": 300,
+         "easing": "ease"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "About you"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/form-field-text",
+      "attributes": {
+       "fieldName": "your_name",
+       "label": "Your name",
+       "required": true
+      }
+     },
+     {
+      "name": "sgs/form-field-email",
+      "attributes": {
+       "fieldName": "email",
+       "label": "Email",
+       "required": true
+      }
+     },
+     {
+      "name": "sgs/form-field-select",
+      "attributes": {
+       "fieldName": "topic",
+       "label": "Topic",
+       "required": false,
+       "options": [
+        {
+         "value": "a",
+         "label": "A"
+        },
+        {
+         "value": "b",
+         "label": "B"
+        }
+       ]
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/form-step",
+    "attributes": {
+     "label": "Your message"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/form-field-textarea",
+      "attributes": {
+       "fieldName": "message",
+       "label": "Message",
+       "required": false
+      }
+     }
+    ]
+   }
+  ]
+ }
+]
