@@ -1058,7 +1058,7 @@ Status: not built (Bean, 2026-10-12: before Appendix B step 21; sequenced by the
 
 *Done when:* `node scripts/computed-route/capabilities.mjs --gaps` lists no capability in the wave "motion writer (4.0)" (each is covered, with recognise, write and check references that resolve, or excluded by Bean) and `--gate` exits 0; a planted draft using one of the wave's capabilities raises no seen-but-unsupported row (FR-48-34) and its live page pairs with the draft at 375, 768 and 1440 for that capability; and with the writer removed the same draft raises the row again.
 
-Status: not built. Needs the Spec 38A build's M6.7 (Spec 38A session S7, `.claude/plans/2026-10-12-spec38a-motion-build.md`).
+Status: not built. Its motion writer is clone coverage step 4.0 (Spec 38A FR-38A-33, `.claude/plans/2026-10-12-clone-coverage-foundation.md`), unblocked now that the Spec 38A build is done.
 
 ### FR-48-79 — Modes and values with no CSS property
 **Read:** layout and variant modes, enum and boolean modes, fluid values (`clamp()`, `min()`, `max()`, `calc()`, viewport units), breakpoints (CSS `@media` thresholds as well as the logic's width comparisons, which are all `lib/intake-breakpoints.mjs` reads today), conditional styling (screen-kind media features, scrollbar parts) and presentational attributes whose CSS Fill does not read (`data/presentational-hints.json`). **Write:** the block setting whose meaning the framework DB records, by query; a threshold by FR-48-50. **Check:** the setting's rendered effect at each width. Existing requirements that own part of it: FR-48-42, FR-48-44, FR-48-45, FR-48-49, FR-48-50.
