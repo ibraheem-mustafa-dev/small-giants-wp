@@ -34,6 +34,8 @@ jest.mock(
 			setMotionState: wrap( 'setMotionState' ),
 			pulseMotionState: wrap( 'pulseMotionState' ),
 			clearMotionState: wrap( 'clearMotionState' ),
+			leaveMotionState: wrap( 'leaveMotionState' ),
+			restMotionState: wrap( 'restMotionState' ),
 		};
 	},
 	{ virtual: true }
@@ -249,17 +251,38 @@ describe( 'sgs/accordion expanded', () => {
 		el.open = false;
 		el.dispatchEvent( new Event( 'toggle' ) );
 		await settle();
-		expect( el.getAttribute( ATTR ) ).toBe( '' );
+		// Leaving the state plays the stored close (`expanded-out`) instead of snapping back.
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded-out' );
 		expect( sequence( 'expanded' ) ).toEqual( [
 			'clearMotionState',
 			'setMotionState',
-			'clearMotionState',
+			'leaveMotionState',
 		] );
 	} );
 
 	it( 'publishes expanded for an item that is open when the page loads', async () => {
 		const el = accordion( { open: true } );
 		load();
+		await settle();
+		// First paint: the state is held at rest, so the icon shows turned with no animation.
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded expanded-rest' );
+		// The browser's own start-up `toggle` for an item that began open sets the state again; it must keep `-rest`.
+		expect( sequence( 'expanded' ) ).toEqual( [
+			'restMotionState',
+			'setMotionState',
+		] );
+	} );
+
+	it( 'plays the close when an item that started open is closed, and the turn again when it reopens', async () => {
+		const el = accordion( { open: true } );
+		load();
+		await settle();
+		el.open = false;
+		el.dispatchEvent( new Event( 'toggle' ) );
+		await settle();
+		expect( el.getAttribute( ATTR ) ).toBe( 'expanded-out' );
+		el.open = true;
+		el.dispatchEvent( new Event( 'toggle' ) );
 		await settle();
 		expect( el.getAttribute( ATTR ) ).toBe( 'expanded' );
 	} );

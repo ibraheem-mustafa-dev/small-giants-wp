@@ -92,6 +92,18 @@ const ROW_PROPERTY = Object.freeze( {
 	clip: 'clip',
 } );
 
+/**
+ * The colour fields of the entrance's to-values (background, text and border colour), in schema order. A colour has no
+ * from-value and no Tablet or Mobile override: the schema stores it once, on Desktop.
+ */
+export const COLOUR_KEYS = Object.freeze(
+	Object.keys( DEFS.EntranceTo.properties ).filter(
+		( key ) =>
+			DEFS.EntranceTo.properties[ key ][ 'x-sgs-field' ]?.fieldType ===
+			'colourReference'
+	)
+);
+
 export const MOVE_LABELS = Object.freeze( {
 	opacity: __( 'Opacity', 'sgs-blocks' ),
 	translateX: __( 'Move across (x)', 'sgs-blocks' ),
