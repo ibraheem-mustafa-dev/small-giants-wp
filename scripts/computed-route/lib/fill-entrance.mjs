@@ -75,10 +75,24 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 				requestAnimationFrame( tick );
 				return;
 			}
+			// The element's endless animations as the draft's code made them (timing and keyframes, read from the
+			// Animation objects), its box, a <marquee>'s attributes and the SVG animation elements inside it.
+			const KF = [ 'transform', 'translate', 'scale', 'rotate', 'opacity', 'filter', 'boxShadow' ];
+			const loopsOf = ( el ) => ( el.getAnimations ? el.getAnimations() : [] ).filter( ( a ) => Infinity === a.effect?.getComputedTiming?.().iterations ).map( ( a ) => {
+				const t = a.effect.getTiming();
+				const frames = a.effect.getKeyframes().map( ( k ) => Object.fromEntries( [ [ 'offset', k.computedOffset ], ...KF.filter( ( p ) => undefined !== k[ p ] ).map( ( p ) => [ p, String( k[ p ] ) ] ) ] ) );
+				return { css: 'string' === typeof a.animationName, name: a.animationName ?? null, duration: 'number' === typeof t.duration ? t.duration : null, delay: t.delay || 0, direction: t.direction, easing: t.easing, playbackRate: a.playbackRate, frames };
+			} );
+			const ATTRS = [ 'attributeName', 'type', 'values', 'from', 'to', 'by', 'dur', 'repeatCount', 'keyTimes', 'calcMode' ];
+			const mediaOf = ( el ) => ( {
+				box: { width: el.offsetWidth, height: el.offsetHeight, surface: 'IMG' === el.tagName || 'none' !== getComputedStyle( el ).backgroundImage },
+				marquee: 'MARQUEE' === el.tagName ? Object.fromEntries( [ 'direction', 'scrollamount', 'scrolldelay', 'truespeed', 'behavior' ].map( ( k ) => [ k, el.getAttribute( k ) ] ) ) : null,
+				smil: [ ...el.querySelectorAll( 'animate, animateTransform' ) ].map( ( a ) => Object.fromEntries( [ [ 'tag', a.localName ], ...ATTRS.map( ( k ) => [ k, a.getAttribute( k ) ] ) ] ) ),
+			} );
 			const out = {};
 			for ( const [ id, s ] of seen ) {
 				const strip = ( p ) => p && { opacity: p.opacity, transform: p.transform, translate: p.translate, scale: p.scale, rotate: p.rotate, filter: p.filter, clipPath: p.clipPath };
-				out[ id ] = { seenAt: s.seenAt, visibleAt: s.visibleAt, first: strip( s.first ), firstChange: strip( s.firstChange ), start: s.start, secondAt: s.secondAt, end: s.end, loop: null !== s.end && now - s.end < 120 };
+				out[ id ] = { seenAt: s.seenAt, visibleAt: s.visibleAt, first: strip( s.first ), firstChange: strip( s.firstChange ), start: s.start, secondAt: s.secondAt, end: s.end, loop: null !== s.end && now - s.end < 120, loops: loopsOf( s.el ), ...mediaOf( s.el ) };
 			}
 			done( out );
 		};
@@ -121,16 +135,29 @@ export async function sampleEntrances( { url, jobs, open = null, width = 1440, w
 // element was not found has no key.
 export const SAMPLE_WIDTHS = [ 375, 768, 1440 ];
 export async function sampleWidths( { jobs, ...opts } ) {
-	const out = Object.fromEntries( jobs.map( ( j ) => [ j.id, {} ] ) );
+	return ( await sampleMotion( { jobs, ...opts } ) ).entrances;
+}
+
+// Entrances and loops from the same page loads: { entrances (as sampleWidths), loops: { '<job id>': { 375, 768, 1440:
+// { loops, box, marquee, smil } } } }, a job and width present in `loops` only when the element runs an endless
+// animation, is a <marquee> or holds SVG animation elements there.
+export async function sampleMotion( { jobs, ...opts } ) {
+	const entrances = Object.fromEntries( jobs.map( ( j ) => [ j.id, {} ] ) );
+	const loops = {};
 	for ( const width of SAMPLE_WIDTHS ) {
 		const raw = await sampleEntrances( { ...opts, jobs, width } );
 		for ( const j of jobs ) {
-			if ( raw[ j.id ] ) {
-				out[ j.id ][ width ] = shapeEntrance( raw[ j.id ] );
+			const r = raw[ j.id ];
+			if ( ! r ) {
+				continue;
+			}
+			entrances[ j.id ][ width ] = shapeEntrance( r );
+			if ( r.loops?.length || r.marquee || r.smil?.length ) {
+				loops[ j.id ] = { ...( loops[ j.id ] || {} ), [ width ]: { loops: r.loops || [], box: r.box, marquee: r.marquee, smil: r.smil || [] } };
 			}
 		}
 	}
-	return out;
+	return { entrances, loops };
 }
 
 // Sampling every frame resolves a time to about +-17ms at 60Hz, so a duration or delay is rounded to the 50ms an

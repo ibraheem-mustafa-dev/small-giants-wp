@@ -22,7 +22,7 @@ import { serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
-import { sampleWidths } from './lib/fill-entrance.mjs';
+import { sampleMotion } from './lib/fill-entrance.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
@@ -133,11 +133,12 @@ export async function fillSurface( o ) {
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		} );
 		// Motion (Spec 48 FR-48-78): the draft's motion records from intake's re-derived inventory, written as each
-		// node's sgsMotion, with every target's entrance sampled at 375, 768 and 1440 as the render check.
+		// node's sgsMotion, with every target's entrance and endless animations sampled at 375, 768 and 1440 as the render
+		// check (and the source of the values the code computes at run time).
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
-		const sampled = await sampleWidths( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
+		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, ...animationInventory( buildDir, o.draftIndex, log ), sampled, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot } );
+		const motion = motionWrites( { nodes, flat, refOf, ...animationInventory( buildDir, o.draftIndex, log ), sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );

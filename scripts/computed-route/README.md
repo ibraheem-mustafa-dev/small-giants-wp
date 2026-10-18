@@ -160,9 +160,11 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/brand-registry.mjs` | Reads the one brand and contact registry (`plugins/sgs-blocks/includes/data/brand-registry.json`) and derives which addresses belong to which brand (scheme for phone and email, domain for socials); no platform table of its own. |
 | `lib/fill-handover.mjs` | The handover entry shape Fill declares, validated against the five shared owners and four kinds. |
 | `lib/fill-page.mjs` | The page baseline for inherited properties from the theme snapshot (root typography and colour, heading and element styles, CSS initial values), which calibration deliberately does not record. |
-| `lib/fill-entrance.mjs` | Samples a draft's entrances at 375, 768 and 1440 (delay, duration, first-frame pose, load or scroll trigger), sweeping down the page so scroll reveals play: the motion writer's render check. |
+| `lib/fill-entrance.mjs` | Samples a draft's entrances at 375, 768 and 1440 (delay, duration, first-frame pose, load or scroll trigger), sweeping down the page so scroll reveals play, and each element's endless animations as the code made them (timing, keyframes, box, `<marquee>` attributes, SVG animation elements): the motion writer's render check and the source of the values the code computes at run time. |
 | `lib/fill-motion.mjs` | The motion cloning writer (Spec 48 FR-48-78): each skeleton node's inventory motion records as its `sgsMotion`, on the root or the declared part a slot names, render-checked, token-snapped and validated before it is written. |
 | `lib/motion-layers.mjs` | One element's motion records as `entrance.base` and `hover.state` layers (transform lists split into the schema's channels), and the match of a run-time-picked entrance to a measured pose. |
+| `lib/motion-effects.mjs` | The one effect writer (`writeEffect`): an effect slug and values as a layer of its panel's list, placed where the editor's Effects panel offers it (qualifying blocks, target level, part kind), every value checked against the DB's fields; FR-48-77's recognisers call it too. |
+| `lib/motion-loops.mjs` | A draft's endless animations as effects: the smallest effect whose owned channels cover the loop and whose values reproduce it (marquee px/s from travel over loop time, ambient float, SVG pulse, Ken Burns), a `<marquee>` and SVG `<animate>` as loops, and a named Spec 38 gap for a loop no effect draws. |
 | `lib/motion-db.mjs` | The framework DB's motion facts, read-only: targets per block, fields per layer, presets, the effect registry. |
 | `lib/motion-tokens.mjs` | Token references (the field types' token patterns read from the schema, the values from the client's snapshot) and the preset match. |
 | `lib/fill-config.mjs` | Generates the walker config: one pair per node with a `draftRef`, `refPrefix: 'cr-ref-'` and the ledger path, via `pairs.mjs::configText`. |
@@ -292,6 +294,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-page.test.mjs` | FR-47-4: the theme baseline for the inherited properties calibration does not record. |
 | `tests/fill-entrance.test.mjs` | FR-48-47: entrance timing, distance and scale, a loop is not an entrance, a scroll reveal is timed from when it meets the viewport and a held backwards fill from its second change (MUST FAIL each), in a real browser with the page sweep and a no-sweep negative control. |
 | `tests/fill-motion.test.mjs` | FR-48-78: the motion writer's layers, tokens, presets, run-time pose match, render check and refusals (MUST FAIL each). |
+| `tests/motion-effects.test.mjs` | FR-48-78, FR-38A-44: loops as effects (marquee px/s, per-width track, float phase, pulse, gaps), the effect writer's placement and field checks, run-time loop match, `<marquee>` and SVG animation, intensity presets (MUST FAIL each). |
 | `tests/fill-site-info.test.mjs` | A link setting bound to Site Info keeps the draft address as its fallback and yields one `site-info` handover entry (MUST FAIL without it); an unbound node, a bound node with no draft link and a non-Site-Info binding yield none. |
 | `tests/fill-site-rows.test.mjs` | A `sgs/social-icons` skeleton node with `siteInfoRow` expands to the Site Info-bound icons the committed Eye Care footer and drawer trees hold; the Fill-only keys are stripped; an unknown slug is a skeleton problem. |
 | `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
@@ -833,23 +836,31 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/fill-entrance.mjs` (Playwright)
 - `STEP_MS`, `JITTER_MS`, `FRAME_MS`: 50, 40 and 16, the probe's rounding step, jitter tolerance and one frame.
 - `SWEEP`: the page sweep (first scroll after 1.5s, 0.7 of the viewport every 700ms, 2.5s settle).
-- `sampleEntrances(options)` → the raw probe results by job id (`sweep: null` keeps the page still). `sampleWidths(options)` → `{ id: { 375, 768, 1440: shaped entrance or null } }`.
+- `sampleEntrances(options)` → the raw probe results by job id (`sweep: null` keeps the page still). `sampleWidths(options)` → `{ id: { 375, 768, 1440: shaped entrance or null } }`. `sampleMotion(options)` → `{ entrances, loops: { id: { width: { loops, box, marquee, smil } } } }` from the same page loads.
 - `translationOf(pose)` → `{ x, y }` in px. `scaleOf(pose)` → the uniform scale. `shapeEntrance(raw)` → `{ trigger, delayMs, durationMs, delayRawMs, durationRawMs, distancePx, scale, … }` or null.
 
 ### `lib/fill-motion.mjs`
 - `motionWrites(options)` → `{ writes, unmapped, notes }`: every node's `sgsMotion`, validated by `lib/motion-validate.mjs`.
-- `elementMotion(records, options)` → one target's layers. `entranceCheck(layer, record, sampled)` → `{ devices, differences }`; `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
+- `elementMotion(records, options)` → one target's entrance and hover layers. `elementEffects(records, options)` → one target's effects from its loop records, the run-time loop records its measured animation is, its `<marquee>` and its SVG animation elements. `entranceCheck(layer, record, sampled)` → `{ devices, differences }`; `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
 - `elementKey(finder, rootComponent)`, `recordsByElement(records)`, `partForSlot(block, slot, targets)`; `WIDTH_TIER`: 375 mobile, 768 tablet, 1440 desktop.
 
 ### `lib/motion-layers.mjs`
-- `classify(record)` → `entrance`, `hover` or `skip` with the owning wave. `entranceLayer`, `hoverLayer` → layers.
+- `classify(record)` → `entrance`, `hover`, `effect` (an endless or repeating animation) or `skip` with the owning wave. `entranceLayer`, `hoverLayer` → layers.
 - `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf`; `poseDistance`, `matchByPose`, `delaySteps` (a per-item delay's offset and step), `delayOf`.
+
+### `lib/motion-effects.mjs`
+- `writeEffect(effect, { mdb, schema, offers })` → `{ target, list, layer, dropped }` or `{ refused }`. `placeEffect(effect, { schema, offers })` → `{ target }` (a block-level effect found on a part goes on the root) or `{ refused }`.
+- `loadEffectOffers()` → `{ qualifying, elementsOf(block) }` from `generated-fx-qualifying-blocks.json` and each block.json; `levelsForTarget(target, elements)`, `kindsFit(meta, target, elements)` (the editor's `refusal-match.js` rules); `PANEL_LISTS`: each panel's list, DB layer and schema layer.
+
+### `lib/motion-loops.mjs`
+- `loopEffect(record, measuredByWidth, { mdb })`, `chooseEffect(loop, narrow, { mdb })` → `{ effect, values, devices, trigger, notes }` or `{ unmapped }`; `LOOP_BUILDERS`: marquee, ambient-float, svg-loop, ken-burns.
+- `resolvedLoop(record, measured)` (values from the code, else the measured animation; random values refused), `measuredLoopOf(record, measured)`, `loopFamilies(loop)`, `runtimeLoopsFor(candidates, measured)`; `smilLoop(animate, box)`, `marqueeTag(attrs)`.
 
 ### `lib/motion-db.mjs`
 - `motionDb(db)` → `{ targetsOf(block), field(layer, path, effect), presets(panel), effect(slug), effects() }`. `fieldKey(layer, fieldPath)`.
 
 ### `lib/motion-tokens.mjs`
-- `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)`; `msOf`, `pxOf`, `easingOf`.
+- `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)`, `effectPresetFor(layer, presets)` (an intensity preset whose stamped values the effect layer holds); `msOf`, `pxOf`, `easingOf`.
 
 ### `lib/fill-config.mjs`
 - `walkerPairs(nodes, tree)` → `{ ref, draft }` per node carrying a `draftRef`.

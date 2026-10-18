@@ -7,7 +7,9 @@
 // than one sampling step writes that tier's value, and the difference is reported.
 import { validateMotionWrite } from './motion-validate.mjs';
 import { classify, entranceLayer, hoverLayer, matchByPose, delayOf } from './motion-layers.mjs';
-import { snapToken, presetFor, tokenTypes, clientTokens, tokenises } from './motion-tokens.mjs';
+import { snapToken, presetFor, effectPresetFor, tokenTypes, clientTokens, tokenises } from './motion-tokens.mjs';
+import { writeEffect, loadEffectOffers } from './motion-effects.mjs';
+import { loopEffect, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag } from './motion-loops.mjs';
 import { STEP_MS } from './fill-entrance.mjs';
 import { setAttr } from './tree.mjs';
 
@@ -227,6 +229,55 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [] } ) {
 	return { element, notes, unmapped };
 }
 
+// The effects one draft element's endless animations make: its own loop records, else the run-time loop records the
+// animation measured on it is (runtimeLoopsFor), plus a <marquee>'s attributes and its SVG animation elements.
+// `loops` is the element's sampleMotion() loops by width. Returns { effects: [{ record, effect, values, devices,
+// trigger, notes }], unmapped: [{ record, reason }], notes }.
+export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] } ) {
+	const out = { effects: [], unmapped: [], notes: [] };
+	const wide = loops?.[ 1440 ] || null;
+	let own = records.filter( ( r ) => 'effect' === classify( r ).kind );
+	if ( ! own.length && wide?.loops?.length ) {
+		own = wide.loops.flatMap( ( l ) => runtimeLoopsFor( runtimeLoops, { ...wide, loops: [ l ] } ).slice( 0, 1 ) );
+		out.notes.push( ...own.map( ( r ) => `${ r.id }: the code picks this element at run time, and the endless animation on it matched` ) );
+	}
+	const keep = ( record, e ) => ( e.unmapped ? out.unmapped.push( { record, reason: e.unmapped } ) : out.effects.push( { record, ...e } ) );
+	for ( const r of own ) {
+		keep( r.id, loopEffect( r, loops, { mdb } ) );
+	}
+	if ( wide?.marquee ) {
+		const values = marqueeTag( wide.marquee );
+		keep( '<marquee>', values ? { effect: 'marquee', values, devices: {}, trigger: 'load', notes: [] } : { unmapped: `a <marquee behavior="${ wide.marquee.behavior }">: the marquee effect only scrolls, a Spec 38 gap` } );
+	}
+	( wide?.smil || [] ).forEach( ( a, i ) => {
+		const loop = smilLoop( a, wide.box );
+		if ( loop ) {
+			const at = ( w ) => ( loops?.[ w ]?.smil?.[ i ] ? smilLoop( loops[ w ].smil[ i ], loops[ w ].box ) : null );
+			keep( `<${ a.tag } ${ a.attributeName || a.type || '' }>`, chooseEffect( loop, { tablet: at( 768 ), mobile: at( 375 ) }, { mdb } ) );
+		}
+	} );
+	if ( wide?.loops?.length && ! own.length ) {
+		out.notes.push( `the render shows an endless animation on this element that no code record explains, so nothing is written (R-47-4)` );
+	}
+	return out;
+}
+
+// One effect as a validated layer of its block: placed and checked by lib/motion-effects.mjs::writeEffect, its
+// intensity preset named before token snapping (a preset stamps literal values), then durations, curves and travel
+// snapped to the client's tokens. Returns { target, list, layer, dropped } or { refused }.
+function finishedEffect( e, { block, target, mdb, schema, offers, ctx, id } ) {
+	const w = writeEffect( { block, target, effect: e.effect, trigger: e.trigger, values: e.values, devices: e.devices, id }, { mdb, schema, offers } );
+	if ( w.refused ) {
+		return w;
+	}
+	const preset = effectPresetFor( w.layer, mdb.presets( 'effects' ) );
+	if ( preset ) {
+		w.layer.preset = preset;
+	}
+	snapLayer( w.layer, ( p ) => mdb.field( 'effects', p, e.effect ), ctx, [ 'duration', 'easing', 'distance' ] );
+	return w;
+}
+
 // The motion target a skeleton target is: the block's root for the node's own element, the declared part a slot names.
 function targetName( n, t, targets ) {
 	return t.slot ? partForSlot( n.name, t.slot, targets ) : targets.find( ( x ) => 'root' === x.target )?.target || null;
@@ -246,12 +297,14 @@ function writeNode( n, doc, pending, { flat, ref, schema, out } ) {
 // Writes every node's sgsMotion. nodes: skeletonNodes() records; flat: tree nodes by index; refOf: tree node to ref;
 // records: the inventory's animation records; sampled: { '<target id>': { 375, 768, 1440: shapeEntrance() result } };
 // mdb: lib/motion-db.mjs::motionDb; schema: the motion schema; rawSnapshot: the client's theme snapshot; rootComponent:
-// the entry draft's component (lib/fill-motion.mjs::elementKey). Returns { writes, unmapped, notes } in the shapes
-// fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records, sampled = {}, mdb, schema, rawSnapshot, rootComponent = null } ) {
+// the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
+// lib/motion-effects.mjs::loadEffectOffers. Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
+export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers() } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	const byElement = recordsByElement( records );
-	const runtime = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) && 'entrance' === classify( r ).kind );
+	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
+	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r ).kind );
+	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r ).kind );
 	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ) };
 	for ( const n of nodes ) {
 		const ref = refOf( flat[ n.index ] );
@@ -260,7 +313,7 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, mdb, 
 		const pending = [];
 		for ( const t of n.targets ) {
 			const own = byElement.get( elementKey( t.finder, rootComponent ) ) || [];
-			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] ) {
+			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] ) {
 				continue;
 			}
 			const where = { node: ref, block: n.name, slot: t.slot };
@@ -277,9 +330,24 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, mdb, 
 				doc.elements[ target ] = { ...( doc.elements[ target ] || {} ), ...m.element };
 				pending.push( target );
 			}
+			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops } );
+			out.notes.push( ...fx.notes.map( ( text ) => ( { ...where, text } ) ) );
+			out.unmapped.push( ...fx.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
+			for ( const e of fx.effects ) {
+				const list = ( at ) => doc.elements[ at ]?.effects || [];
+				const id = `${ e.effect }-${ [ 'root', target ].reduce( ( k, at ) => Math.max( k, list( at ).filter( ( l ) => l.effect === e.effect ).length ), 0 ) + 1 }`;
+				const w = finishedEffect( e, { block: n.name, target, mdb, schema, offers, ctx, id } );
+				if ( w.refused ) {
+					out.unmapped.push( { ...where, property: 'motion', value: e.record, reason: `${ e.effect }: ${ w.refused }` } );
+					continue;
+				}
+				doc.elements[ w.target ] = { ...( doc.elements[ w.target ] || {} ), effects: [ ...list( w.target ), w.layer ] };
+				pending.push( w.target );
+				out.notes.push( ...[ ...e.notes, ...( w.dropped.length ? [ `no ${ e.effect } field for ${ w.dropped.join( ', ' ) }` ] : [] ), ...( w.target !== target ? [ `${ e.effect } sits on the block, so the ${ target } loop is written on root` ] : [] ) ].map( ( text ) => ( { ...where, text: `${ e.record }: ${ text }` } ) ) );
+			}
 		}
 		if ( pending.length ) {
-			writeNode( n, doc, pending, { flat, ref, schema, out } );
+			writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out } );
 		}
 	}
 	return out;

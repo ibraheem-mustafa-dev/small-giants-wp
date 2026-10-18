@@ -177,7 +177,8 @@ function keepFields( mdb, layer, base, obj, dropped ) {
 	return out;
 }
 
-// How a record is handled: { kind: 'entrance' | 'hover' | 'skip', reason }. `reason` names who owns a skipped record.
+// How a record is handled: { kind: 'entrance' | 'hover' | 'effect' | 'skip', reason }; an endless or repeating
+// animation is an effect (lib/motion-effects.mjs::loopEffect). `reason` names who owns a skipped record.
 export function classify( record ) {
 	const t = record.trigger?.type;
 	if ( 'active' !== record.status ) {
@@ -197,7 +198,7 @@ export function classify( record ) {
 	}
 	const loops = 'infinite' === record.iterations || ( 'number' === typeof record.iterations && record.iterations > 1 ) || /alternate/.test( record.direction || '' );
 	if ( loops ) {
-		return { kind: 'skip', reason: 'a looping animation: written as an effects layer, not an entrance' };
+		return { kind: 'effect' };
 	}
 	if ( 'mount' === t || 'load' === t || 'scroll-into-view' === t ) {
 		return { kind: 'entrance' };

@@ -77,16 +77,23 @@ export function clientTokens( rawSnapshot ) {
 }
 
 // Whether a field holds what its token family names (Spec 38A §7): a duration token is a duration (never a delay or a
-// phase offset), a distance token is travel (a translate: lifts and entrance travel, never a blur or a ring), and every
-// easing is a curve. A value of another field that happens to equal a token stays literal.
+// phase offset), a distance token is travel (a translate or a float's travel: lifts and entrance travel, never a blur
+// or a ring), and every easing is a curve. A value of another field that happens to equal a token stays literal.
 export function tokenises( field, fieldType ) {
 	if ( 'duration' === fieldType ) {
 		return ! /delay|phase/i.test( field );
 	}
 	if ( 'distance' === fieldType ) {
-		return /^translate/.test( field );
+		return /^(?:translate|travel)/.test( field );
 	}
 	return 'easing' === fieldType;
+}
+
+// The intensity preset of an effect layer: the preset of the same effect and panel whose stamped values (a preset
+// stamps only some of an effect's values) the layer holds unchanged; null when none does.
+export function effectPresetFor( layer, presets ) {
+	const hit = presets.find( ( p ) => p.effect === layer.effect && ( ! p.trigger || ! layer.trigger || p.trigger === layer.trigger ) && Object.keys( p.values ).length && Object.entries( p.values ).every( ( [ k, v ] ) => JSON.stringify( layer.values[ k ] ) === JSON.stringify( v ) ) );
+	return hit ? hit.slug : null;
 }
 
 // The token reference for one value of a field type, or the value itself. `prefer` lists families tried first (an

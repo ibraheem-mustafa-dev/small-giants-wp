@@ -94,7 +94,7 @@ test( 'MUST FAIL: classify names the wave that owns each record no layer of this
 	assert.equal( classify( rec( 'a', { mechanism: 'css-transition', trigger: { type: 'hover' } } ) ).kind, 'hover' );
 	assert.match( classify( rec( 'a', { status: 'dead-code' } ) ).reason, /never runs/ );
 	assert.match( classify( rec( 'a', { mechanism: 'js-style-write' } ) ).reason, /FR-48-77/ );
-	assert.match( classify( rec( 'a', { iterations: 'infinite' } ) ).reason, /looping/ );
+	assert.equal( classify( rec( 'a', { iterations: 'infinite' } ) ).kind, 'effect' );
 	assert.match( classify( rec( 'a', { trigger: { type: 'state' } } ) ).reason, /FR-48-80/ );
 	assert.match( classify( rec( 'a', { mechanism: 'css-transition', trigger: { type: 'focus' } } ) ).reason, /FR-48-81/ );
 } );

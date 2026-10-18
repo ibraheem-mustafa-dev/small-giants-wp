@@ -7,7 +7,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { serveDraft } from '../lib/draft.mjs';
-import { sampleEntrances, shapeEntrance, translationOf, scaleOf, STEP_MS, JITTER_MS } from '../lib/fill-entrance.mjs';
+import { sampleEntrances, sampleMotion, shapeEntrance, translationOf, scaleOf, STEP_MS, JITTER_MS } from '../lib/fill-entrance.mjs';
 
 const pose = ( opacity, transform = 'none', translate = 'none' ) => ( { opacity, transform, translate, scale: 'none', rotate: 'none' } );
 const RISE = pose( 0, 'matrix(1, 0, 0, 1, 0, 18)' );
@@ -138,4 +138,32 @@ test( 'MUST FAIL: a backwards fill that jumps to the from-pose and holds through
 	const moving = shapeEntrance( { seenAt: 0, visibleAt: 2000, first: pose( 1 ), firstChange: RISE, start: 2004, secondAt: 2020, end: 2804, loop: false } );
 	assert.equal( moving.delayRawMs, 4, 'the control: a second change one frame later is movement, not a hold' );
 	assert.equal( moving.exactDelay, false, 'a scroll entrance with no hold is timed from first sight in view: an upper bound' );
+} );
+
+const LOOP_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
+body { margin: 0; } .track { width: 3000px; height: 40px; } .ring { width: 40px; height: 40px; animation: pulse 2s linear infinite; }
+@keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } } .still { width: 40px; height: 40px; }
+</style></head><body><div class="track"></div><div class="ring"></div><div class="still"><svg width="20" height="20"><circle r="5" cx="10" cy="10"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/></circle></svg></div>
+<script>const t = document.querySelector( '.track' ); const dist = 1700; t.animate( [ { transform: 'translateX(0)' }, { transform: 'translateX(-' + dist + 'px)' } ], { duration: dist / 0.045, iterations: Infinity } );</script></body></html>`;
+
+test( 'in a real browser: sampleMotion reads each element\'s endless animations as the code made them, its box and its SVG animation elements', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-entrance-loops-' ) );
+	fs.writeFileSync( path.join( dir, 'index.html' ), LOOP_HTML );
+	const served = await serveDraft( dir );
+	try {
+		const jobs = [ { id: 'track', finder: '.track' }, { id: 'ring', finder: '.ring' }, { id: 'still', finder: '.still' } ];
+		const { entrances, loops } = await sampleMotion( { url: served.url, jobs, windowMs: 800, sweep: null } );
+		const track = loops.track[ 1440 ];
+		assert.equal( track.loops.length, 1 );
+		assert.ok( Math.abs( track.loops[ 0 ].duration - 1700 / 0.045 ) < 1, `duration ${ track.loops[ 0 ].duration }` );
+		assert.match( track.loops[ 0 ].frames[ 1 ].transform, /translateX\(-1700px\)/ );
+		assert.equal( track.box.width, 3000 );
+		const ring = loops.ring[ 375 ].loops[ 0 ];
+		assert.deepEqual( [ ring.css, ring.name, ring.duration, ring.frames.map( ( f ) => f.opacity ) ], [ true, 'pulse', 2000, [ '1', '0.4' ] ] );
+		assert.deepEqual( loops.still[ 768 ].loops, [], 'negative control: an element holding an SVG animation runs no endless animation itself' );
+		assert.equal( loops.still[ 768 ].smil[ 0 ].values, '1;0.4;1' );
+		assert.equal( entrances.track[ 1440 ], null, 'a loop is not an entrance' );
+	} finally {
+		await served.close();
+	}
 } );
