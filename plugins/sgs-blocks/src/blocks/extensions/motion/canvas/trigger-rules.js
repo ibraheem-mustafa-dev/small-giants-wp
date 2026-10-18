@@ -104,30 +104,28 @@ function paint( base ) {
 	);
 }
 
-// The colour transition (twin of Sgs_Motion_Trigger_Open_State::paint_transition): the entrance's own duration and easing,
-// the close pair on the leaving host, only under no-preference.
+// The colour entries of the element's one `transition` list (twin of Sgs_Motion_Trigger_Open_State::transition_entries).
+export function paintTransitionEntries( base ) {
+	return Object.keys( paint( base ) ).map(
+		( prop ) =>
+			`${ prop } var(--sgs-mt-paint-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms))) var(--sgs-mt-paint-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))`
+	);
+}
+
+// The leave rule: on a leaving host the colour entries read the close pair through two custom properties only.
 function paintTransition( base, selector, leave ) {
-	const props = Object.keys( paint( base ) );
-	if ( props.length === 0 ) {
+	if ( leave === '' || Object.keys( paint( base ) ).length === 0 ) {
 		return '';
 	}
-	const list = props.map(
-		( prop ) =>
-			`${ prop } var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)) var(--sgs-me-ease,var(--wp--custom--easing--default,ease))`
-	);
-	let css = rules( selector, { desktop: { transition: list.join( ',' ) }, tablet: {}, mobile: {} } );
-	if ( leave !== '' ) {
-		const host = `[${ STATE_ATTR }~="${ leave }"]`;
-		css += rules( `${ selector }:is(${ host },${ host } *)`, {
-			desktop: {
-				'transition-duration': 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
-				'transition-timing-function': 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
-			},
-			tablet: {},
-			mobile: {},
-		} );
-	}
-	return `@media (prefers-reduced-motion: no-preference){${ css }}`;
+	const host = `[${ STATE_ATTR }~="${ leave }"]`;
+	return rules( `${ selector }:is(${ host },${ host } *)`, {
+		desktop: {
+			'--sgs-mt-paint-dur': 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
+			'--sgs-mt-paint-ease': 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
+		},
+		tablet: {},
+		mobile: {},
+	} );
 }
 
 function openPaintRule( base, selector ) {

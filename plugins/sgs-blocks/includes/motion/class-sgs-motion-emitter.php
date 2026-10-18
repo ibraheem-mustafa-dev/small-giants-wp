@@ -113,6 +113,17 @@ final class Sgs_Motion_Emitter {
 		if ( array() !== $channels ) {
 			$attrs['data-sgs-mc'] = implode( ' ', self::ordered_channels( $channels ) );
 		}
+		$entry_trigger = explode( ' ', $attrs['data-sgs-me'] ?? '' )[0];
+		if ( $entrance && in_array( $entry_trigger, array( 'open', 'state' ), true ) ) {
+			// The colour to-values join the one per-element list (each owner's own timing); a tier with its own hover list
+			// carries them too, because its `transition` replaces the Desktop one.
+			$colours = class_exists( __NAMESPACE__ . '\Sgs_Motion_Trigger_Open_State' ) ? Sgs_Motion_Trigger_Open_State::transition_entries( $base ) : array();
+			foreach ( self::TIERS as $tier ) {
+				if ( array() !== $colours && ( 'desktop' === $tier || array() !== $trans[ $tier ] ) ) {
+					$trans[ $tier ] = array_merge( $trans[ $tier ], $colours );
+				}
+			}
+		}
 		foreach ( self::TIERS as $tier ) {
 			if ( array() !== $trans[ $tier ] && empty( $context['no_transition'] ) ) {
 				$decls[ $tier ]['transition'] = implode( ', ', $trans[ $tier ] );

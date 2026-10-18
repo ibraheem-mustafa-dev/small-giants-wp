@@ -25,8 +25,8 @@
  *     duration, easing and delay. Without close values leaving the state snaps back, as before.
  *     The colour to-values (`backgroundColour`, `textColour`, `borderColour`) are painted by the same rules: the state
  *     rule's declarations (and, for `open`, one rule keyed to an open host) read the scoped properties `--sgs-me-to-bg`,
- *     `-fg` and `-bd` the emitter wrote. The colours transition on the entrance's duration and easing (the close duration
- *     and easing on leaving) under `prefers-reduced-motion: no-preference`; under reduce they change at once.
+ *     `-fg` and `-bd` the emitter wrote. The colours join the element's transition list (`transition_entries`) on the
+ *     entrance's duration and easing, the close pair on leaving; reduced motion makes them instant.
  * - `init` (priority 20): a block that declares named states gets `@sgs/motion-state` as a dynamic dependency of its
  *   view script module, so the import map lists it and the block's `import()` of it resolves.
  *
@@ -226,10 +226,26 @@ final class Sgs_Motion_Trigger_Open_State {
 	}
 
 	/**
-	 * The colour transition: the painted properties change on the entrance's own duration and easing (`--sgs-me-dur`,
-	 * `--sgs-me-ease`), and on leaving (a host token `close` for an open entrance, `<name>-out` for a state) on the close
-	 * duration and easing. Printed only under `prefers-reduced-motion: no-preference`, so reduced motion changes the colour
-	 * at once. The colour properties are the only ones in the list.
+	 * The colour entries of the element's `transition` list (`Sgs_Motion_Emitter::emit` adds them to the list it builds from
+	 * the hover state and hover effects, so an element with both keeps its hover timing): each painted property on the
+	 * entrance's duration and easing, or the leaving pair `--sgs-mt-paint-dur` and `-ease` where the leave rule sets them.
+	 * Reduced motion forces every transition instant (`motion.css`), so the colour then changes at once.
+	 *
+	 * @param array<string,mixed> $base The entrance base layer.
+	 * @return array<int,string>
+	 */
+	public static function transition_entries( array $base ): array {
+		$list = array();
+		foreach ( array_keys( self::paint( $base ) ) as $prop ) {
+			$list[] = $prop . ' var(--sgs-mt-paint-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms))) var(--sgs-mt-paint-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))';
+		}
+		return $list;
+	}
+
+	/**
+	 * The leave rule: on a host that is leaving (a token `close` for an open entrance, `<name>-out` for a state) the colour
+	 * entries read the close duration and easing. It sets two custom properties only, so every other entry of the
+	 * element's transition list keeps its own timing.
 	 *
 	 * @param array<string,mixed> $base     The entrance base layer.
 	 * @param string              $selector Scoped selector.
@@ -237,32 +253,21 @@ final class Sgs_Motion_Trigger_Open_State {
 	 * @return string
 	 */
 	private static function paint_transition( array $base, string $selector, string $leave ): string {
-		$props = array_keys( self::paint( $base ) );
-		if ( array() === $props ) {
+		if ( '' === $leave || array() === self::paint( $base ) ) {
 			return '';
 		}
-		$list = array();
-		foreach ( $props as $prop ) {
-			$list[] = $prop . ' var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)) var(--sgs-me-ease,var(--wp--custom--easing--default,ease))';
-		}
-		$none = array(
-			'tablet' => array(),
-			'mobile' => array(),
+		$host = '[' . self::STATE_ATTR . '~="' . $leave . '"]';
+		return Sgs_Motion_Emitter::rules(
+			$selector . ':is(' . $host . ',' . $host . ' *)',
+			array(
+				'desktop' => array(
+					'--sgs-mt-paint-dur'  => 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
+					'--sgs-mt-paint-ease' => 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
+				),
+				'tablet'  => array(),
+				'mobile'  => array(),
+			)
 		);
-		$css  = Sgs_Motion_Emitter::rules( $selector, array( 'desktop' => array( 'transition' => implode( ',', $list ) ) ) + $none );
-		if ( '' !== $leave ) {
-			$host = '[' . self::STATE_ATTR . '~="' . $leave . '"]';
-			$css .= Sgs_Motion_Emitter::rules(
-				$selector . ':is(' . $host . ',' . $host . ' *)',
-				array(
-					'desktop' => array(
-						'transition-duration'        => 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
-						'transition-timing-function' => 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
-					),
-				) + $none
-			);
-		}
-		return '@media (prefers-reduced-motion: no-preference){' . $css . '}';
 	}
 
 	/**

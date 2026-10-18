@@ -2604,6 +2604,44 @@
 			},
 			"root": ".sgs-m-0123456789",
 			"context": {}
+		},
+		{
+			"name": "state colours join the hover transition list",
+			"block": "sgs/accordion",
+			"context": {},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"turning-icon": {
+						"entrance": {
+							"base": {
+								"trigger": "state",
+								"state": "expanded",
+								"values": {
+									"to": {
+										"rotate": 180,
+										"backgroundColour": "primary",
+										"textColour": "#112233"
+									},
+									"duration": "token:duration.medium",
+									"easing": "token:easing.default"
+								},
+								"close": {
+									"closeDuration": 200
+								}
+							}
+						},
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.05
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
 		}
 	]
 }

@@ -47,7 +47,7 @@ $has = static function ( string $haystack, string $needle ): bool {
 };
 
 /** Render the accordion's turning-icon part with one entrance layer. */
-$render = static function ( array $layer ): array {
+$render = static function ( array $layer, array $hover = array() ): array {
 	Sgs_Motion_Renderer::reset();
 	Sgs_Motion_Trigger_Open_State::reset();
 	$GLOBALS['sgs_collected_css']        = array();
@@ -63,7 +63,7 @@ $render = static function ( array $layer ): array {
 			'attrs'     => array(
 				'sgsMotion' => array(
 					'v'        => 1,
-					'elements' => array( 'turning-icon' => array( 'entrance' => array( 'base' => $layer ) ) ),
+					'elements' => array( 'turning-icon' => array( 'entrance' => array( 'base' => $layer ) ) + ( array() === $hover ? array() : array( 'hover' => array( 'state' => $hover ) ) ) ),
 				),
 			),
 		),
@@ -177,16 +177,25 @@ $open = array(
 list( $html, $css ) = $render( $open );
 $check( $has( $css, '--sgs-me-to-bg:var(--wp--preset--color--surface, currentColor);' ), 'colour: an open entrance takes the colour to-value too: ' . $css );
 $check( 1 === preg_match( '/is\(\[data-sgs-motion-state~="open"\],\[data-sgs-motion-state~="open"\] \*\):not\([^{]*\)\{background-color:var\(--sgs-me-to-bg\);\}/', $css ), 'colour: an open entrance paints while its host is open and no closed host shields it: ' . $css );
-// 4c. The colours animate: the target transitions the painted properties on the entrance's own duration and easing, and a
-// state with close values leaves on the close duration and easing; reduced motion gets no transition (an instant change).
-list( $html, $css ) = $render( $coloured + array( 'close' => array( 'closeDuration' => 200, 'closeEasing' => 'token:easing.default' ) ) );
-$scope = $scope_of( $html );
-$check( 1 === preg_match( '/@media \(prefers-reduced-motion: no-preference\)\{\.' . $scope . ' ' . preg_quote( $part, '/' ) . '\{transition:background-color var\(--sgs-me-dur,[^;]*\) var\(--sgs-me-ease,[^;]*\),color var\(--sgs-me-dur,[^;]*\) var\(--sgs-me-ease,[^;]*\),border-color var\(--sgs-me-dur,[^;]*\) var\(--sgs-me-ease,[^;]*\);\}/', $css ), 'colour: the target transitions background-color, color and border-color on the entrance duration and easing, only under no-preference: ' . $css );
-$check( 1 === preg_match( '/@media \(prefers-reduced-motion: no-preference\).*expanded-out.*\{transition-duration:var\(--sgs-me-close-dur,[^;]*\);transition-timing-function:var\(--sgs-me-close-ease,/', $css ), 'colour: leaving the state transitions on the close duration and easing: ' . $css );
-list( $html, $css ) = $render( $turn );
-$check( ! $has( $css, 'transition:' ), 'colour: no colour stored, no transition printed: ' . $css );
+// 4c. The colours animate: they are entries of the element's one `transition` list (each owner's own timing), so an element
+// that also has a hover state keeps its hover entry; leaving reads the close pair through two custom properties only.
+$hover = array( 'values' => array( 'scale' => 1.05 ) );
+$entry = static fn( string $prop ): string => $prop . ' var(--sgs-mt-paint-dur,var(--sgs-me-dur,';
+list( $html, $css ) = $render( $coloured + array( 'close' => array( 'closeDuration' => 200, 'closeEasing' => 'token:easing.default' ) ), $hover );
+$check( 1 === preg_match_all( '/transition:([^;]*);/', $css, $lists ), 'colour: the element prints ONE transition declaration: ' . $css );
+$list = $lists[1][0] ?? '';
+$check( $has( $list, $entry( 'background-color' ) ) && $has( $list, $entry( 'color' ) ) && $has( $list, $entry( 'border-color' ) ), 'colour: the list holds the three colour entries: ' . $list );
+$hover_only = '';
+list( , $css_h ) = $render( $turn, $hover );
+preg_match( '/transition:([^;]*);/', $css_h, $mh );
+$hover_only = (string) ( $mh[1] ?? '' );
+$check( '' !== $hover_only && $has( $list, $hover_only ), 'colour: the hover entries (' . $hover_only . ') stay in the list beside the colour entries: ' . $list );
+$check( 1 === preg_match( '/expanded-out"\],[^{]*\{--sgs-mt-paint-dur:var\(--sgs-me-close-dur,[^;]*;--sgs-mt-paint-ease:var\(--sgs-me-close-ease,/', $css ) && ! $has( $css, 'transition-duration' ), 'colour: leaving sets the colour entries\' close timing through custom properties and never overrides the whole list: ' . $css );
+$check( ! $has( $css_h, 'paint-dur' ), 'colour: no colour stored, no colour entry and no leave rule: ' . $css_h );
 list( $html, $css ) = $render( $coloured );
-$check( ! $has( $css, 'expanded-out' ) || ! $has( $css, 'transition-duration:var(--sgs-me-close-dur' ), 'colour: no close stored, the close transition is not printed' );
+$check( $has( $css, 'transition:background-color' ) && ! $has( $css, 'expanded-out' ), 'colour: with no hover state and no close the list is the colour entries alone, with no leave rule' );
+$motion_css = (string) file_get_contents( $root . '/assets/css/motion.css' );
+$check( 1 === preg_match( '/:is\(\[data-sgs-mh\], \[data-sgs-me\], \[data-sgs-mc\]\) \{\s*transition-duration: var\(--wp--custom--duration--instant, 0ms\) !important;/', $motion_css ), 'reduced motion: motion.css forces every transition on a data-sgs-me element instant, so the colour change is instant' );
 list( , $css ) = $render( $turn );
 $check( ! $has( $css, 'background-color:' ) && ! $has( $css, 'border-color:' ), 'colour: no colour stored, nothing painted: ' . $css );
 

@@ -44,7 +44,7 @@ import {
 	isAngle,
 } from './emit-rotation';
 import { emitEntrance } from './emit-entrance';
-import { triggerCss } from './trigger-rules';
+import { triggerCss, paintTransitionEntries } from './trigger-rules';
 import { itemMatches, resolveTarget } from './resolve-target';
 import { sanitiseDocument } from './document-sanitise';
 import { resolveLayerDrops } from './layer-drops';
@@ -250,6 +250,16 @@ export function emitTarget( element, selector, context = {} ) {
 	defaultPerspective( decls, Boolean( channels.transform ) || meChannels.includes( 'transform' ) );
 	if ( Object.keys( channels ).length > 0 ) {
 		attrs[ 'data-sgs-mc' ] = orderedChannels( channels ).join( ' ' );
+	}
+	const entryTrigger = ( attrs[ 'data-sgs-me' ] ?? '' ).split( ' ' )[ 0 ];
+	if ( played && [ 'open', 'state' ].includes( entryTrigger ) ) {
+		// The colour to-values join the one per-element list; a tier with its own hover list carries them too.
+		const colours = paintTransitionEntries( base );
+		TIERS.forEach( ( tier ) => {
+			if ( colours.length > 0 && ( tier === 'desktop' || trans[ tier ].length > 0 ) ) {
+				trans[ tier ] = [ ...trans[ tier ], ...colours ];
+			}
+		} );
 	}
 	TIERS.forEach( ( tier ) => {
 		if ( trans[ tier ].length > 0 && ! context.noTransition ) {
