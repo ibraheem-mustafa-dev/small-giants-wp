@@ -1117,7 +1117,7 @@ Not built: P-TIMELINE-ADVANCED-VISUAL-EFFECTS — textured/themed connector (vin
 
 ### Universal-extension gating
 
-Universal extensions ship globally via an `addFilter` on `editor.BlockEdit` in `plugins/sgs-blocks/src/blocks/extensions/index.js`, so every block gets them in the inspector. Gating follows Spec 35 A7: most extensions are opt-OUT (`supports.sgs.hideExtensions`, read by `plugins/sgs-blocks/src/blocks/extensions/hide-extensions.js`); `hover` and `blockLink` are opt-IN (`supports.sgs.enabledExtensions`); `imageControls` is its own `supports.sgs` flag. The roster is `plugins/sgs-blocks/src/blocks/extensions/extension-roster.json`.
+Universal extensions ship globally via an `addFilter` on `editor.BlockEdit` in `plugins/sgs-blocks/src/blocks/extensions/index.js`, so every block gets them in the inspector. Gating follows Spec 35 A7: an extension reaches a block only when the block opts in through `supports.sgs.enabledExtensions` (`blockLink`, `childSizing`; `plugins/sgs-blocks/src/blocks/extensions/hide-extensions.js::isExtensionEnabled`); `imageControls` is its own `supports.sgs` flag; motion is declared in `supports.sgs.motion` (Spec 38A). The roster is `plugins/sgs-blocks/src/blocks/extensions/extension-roster.json`.
 
 ---
 
