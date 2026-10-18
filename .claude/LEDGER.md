@@ -1,16 +1,16 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-10-17
+last_updated: 2026-10-18
 ---
 
 # small-giants-wp: LEDGER (the one living status)
 
 ## Summary for Bean
 
-- **Motion model (Spec 38A, Front M):** sessions S1 to S6 are done (the old motion code is removed on all four sites); S7 (literals sweep, final acceptance, Gate 9) is next.
+- **Motion model (Spec 38A, Front M):** built (S1 to S7 done, all four sites on `57d936225`, live motion QA 19/19 green). Need you: a look at the canary, and one check of page 5465 in Safari on a Mac.
 - **Clone coverage (Front M):** Phases 1 and 2 are done (2026-10-18). Every framework capability and everything a draft can hold is listed, each covered, excluded by you or a gap in its wave; review.md's Accept all marks a seen-but-unsupported row as a tracked gap in its wave (your ruling); Spec 48 §10 now runs in both directions with one FR per Phase 4 wave (FR-48-78 to FR-48-85). Phase 3 (behaviour meanings in the framework DB) is next.
-- **Cloning (Spec 48, Front H):** the Indus clone is paused at your intake review (plan step 15) until Spec 38A is finished, so the draft's motion transfers to the clone too.
+- **Cloning (Spec 48, Front H):** the Indus clone is paused at your intake review (plan step 15) until motion cloning (clone coverage step 4.0) lands, so the draft's motion transfers to the clone too.
 - **Eye Care (Front F):** built by hand and live on eye-care-test; it is the cloning system's answer key. Next: run Spec 48's intake on it and close the fix register's open rows.
 - **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
 - **Need you:** the rulings under Parked, and the Spec 36 and Spec 38 choices under Front N.
@@ -23,11 +23,11 @@ last_updated: 2026-10-17
 
 ### Front M: Motion model (Spec 38A) and clone coverage
 
-**State:** `plans/2026-10-12-spec38a-motion-build.md` S1 to S6 are done. S6 (2026-10-17/18) removed the old motion code in groups G0 to G5 and Gate 8 passed: all four sites run `80fb73e19` with the canary's full live motion QA `[motion-qa] PASS`, `migrate_motion.py --check --target <site>` reports no old motion attribute on any site, `--consumers` exits 0, and FR-38A-22, 32, 43 and 52 read built. The plan's "M6.6 (S6" bullet lists the commits, the decision B fixture migrations, the stylesheet-order fix, the retired-attribute strip tool and the parked decorative SVG draw feature.
+**State:** `plans/2026-10-12-spec38a-motion-build.md` S1 to S7 are done (S7 2026-10-18: the motion literals gate and token sweep M5.18, final acceptance M6.7, Gate 9). All four sites run `57d936225`; the canary's full live motion QA printed `[motion-qa] PASS — all 19 live probe(s) green`; `migrate_motion.py --check --target <site>` is clean on every site; the stored-content audit passes on all four. Every FR-38A Status line reads built except FR-38A-33 (motion cloning, clone coverage step 4.0) and FR-38A-41 (parent perspective, built at `bec296833`, waiting only for Bean's real-Safari check of canary page 5465). Deploys now run no live motion probes unless asked (`--motion-qa-tier full` before any release that touches motion, shared effects or the theme tokens). The plan's "M6.7 (S7" bullet lists what S7 built and its open items.
 
-**Next: S7** (M5.18 literals sweep, M6.7 acceptance, Gate 9). Its open S6 carry-overs: FR-38A-51 clause (b) and FR-38A-54's per-atom live check still read partly built; the golden masters (`scripts/consistency/goldens/behaviour.json`, `golden-controls.json`, `setting-registry*.json`) still describe the deleted animation and hover controls (assigned `keep` in `consumer-groups.json`) and need the M6.7 registry rewrite; three live settings the census lists as unrecognised (`opacityHover` on responsive-logo, the transition pair on brand-strip and card-grid) need a motion-or-not ruling in S7's M6.7 (motion: catalogue and map them; not motion: add them to `migrate_motion.py::KEPT`).
+**Open:** Bean's look at the canary and the Safari check of page 5465 (Gate 9 sign-off; FR-38A-41 flips to built after it); the seeder flips `sgs/hero::splitMediaType` between two roles depending on which run regenerates `attr-role-map.json` (pre-existing; the file shows as modified after local gate runs, restore it before a pull).
 
-**Clone coverage** (`plans/2026-10-12-clone-coverage-foundation.md`): Spec 38A is its Phase 0. Phase 1 is done (2026-10-18; Bean signed the exclusions and re-opened the WebKit CSS group and the obsolete elements that still render; DB sections refreshed after the S6 reseed). Step 1.6's bulk acceptance is settled (Bean, 2026-10-18): a usage-read run on the Indus and Mama's redesign drafts found false group rows and IDs no list held, fixed first, then Accept all marks a seen-but-unsupported row `gap:<wave>` (or `difference` when excluded). Phase 2 is done: Spec 48 §10 runs in both directions, §10.1 holds the recogniser framework (FR-48-77) and FR-48-78 to FR-48-85, one per Phase 4 wave. Gate: `node scripts/computed-route/capabilities.mjs --gate`; gap list by wave: `--gaps`. Next: Phase 3 (each behaviour and content setting's meaning seeded into the framework DB by `sgs-update-v2.py`), a framework-lane job on Bean's PC; the motion families wait on S7. `intake-finalise.test.mjs` passes on Bean's PC with the DB; `intake-missing.test.mjs` needs `npm ci` in `scripts/computed-route` there first (its `node_modules` predates the Phase 1 packages).
+**Clone coverage** (`plans/2026-10-12-clone-coverage-foundation.md`): Spec 38A is its Phase 0. Phase 1 is done (2026-10-18; Bean signed the exclusions and re-opened the WebKit CSS group and the obsolete elements that still render; DB sections refreshed after the S6 reseed). Step 1.6's bulk acceptance is settled (Bean, 2026-10-18): a usage-read run on the Indus and Mama's redesign drafts found false group rows and IDs no list held, fixed first, then Accept all marks a seen-but-unsupported row `gap:<wave>` (or `difference` when excluded). Phase 2 is done: Spec 48 §10 runs in both directions, §10.1 holds the recogniser framework (FR-48-77) and FR-48-78 to FR-48-85, one per Phase 4 wave. Gate: `node scripts/computed-route/capabilities.mjs --gate`; gap list by wave: `--gaps`. Next: Phase 3 (each behaviour and content setting's meaning seeded into the framework DB by `sgs-update-v2.py`), a framework-lane job on Bean's PC; the motion families are unblocked (Spec 38A is built) and go to step 4.0. `intake-finalise.test.mjs` passes on Bean's PC with the DB; `intake-missing.test.mjs` needs `npm ci` in `scripts/computed-route` there first (its `node_modules` predates the Phase 1 packages).
 
 ### Front H: Cloning system (Spec 48) and the Claude Design handover
 
