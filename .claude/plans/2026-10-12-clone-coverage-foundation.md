@@ -3,7 +3,7 @@ doc_type: plan
 title: "Clone coverage foundation: every framework capability recognised and cloned, proved by a failing test"
 spec: .claude/specs/48-CLONING-SYSTEM.md (§10 value matrix, FR-48-47, FR-48-48, FR-48-77) and .claude/specs/38-SGS-MOTION-SYSTEM.md
 created: 2026-10-12
-status: approved (Bean, 2026-10-12: option A); Phase 0 in its last session (S7); Phase 1 done 2026-10-18; Phase 2 next
+status: approved (Bean, 2026-10-12: option A); Phase 0 in its last session (S7); Phase 1 and Phase 2 done 2026-10-18; Phase 3 next
 ---
 
 # Clone coverage foundation
@@ -49,7 +49,7 @@ status: approved (Bean, 2026-10-12: option A); Phase 0 in its last session (S7);
 **Phase 4 waves (named by the step 1.5 and 1.6 triage; Phase 4 orders them by the Indus gap list):** motion writer (4.0, waits on Phase 0); modes and values with no CSS property (fluid values and breakpoints included; `lib/intake-breakpoints.mjs` reads thresholds only from the logic's width comparisons, so a draft's CSS `@media` thresholds are seen by the usage read but not yet written per block); behaviour recognisers; states (hover, focus, open, checked and the other pseudo-class and ARIA states); content, media and icons (embeds, SVG and ARIA semantics included); shop, forms and data; site and surfaces (dark mode included); draft reading (container queries, selectors, unread CSS property groups and functions, construct kinds with no reader).
 
 ### Phase 2. Spec 48 in both directions (one session, needs Phase 1)
-- [ ] Rewrite §10 so the value matrix has the framework-out direction; replace rows 11 and 12 with the generated coverage map; fold FR-48-77 into a recogniser FR family; add an FR per uncovered family with a done-when, all sequenced in this plan.
+- [x] **Done 2026-10-18 (Bean approved after a QC pass; commit below).** Spec 48 §10 runs in both directions: its "Both directions" paragraph names the capability inventory, the coverage map and the gate; matrix rows 11 and 12 point at the coverage map's gaps for their wave (no copied list or count); §10.1 holds the recogniser framework with FR-48-77 as its first member and one FR per Phase 4 wave, FR-48-78 (motion writer, 4.0) to FR-48-85 (draft reading), each done when `capabilities.mjs --gaps` lists none of its wave and `--gate` exits 0, with a planted draft that raises the row again once its writer, recogniser or reader is removed. §4 lists the coverage files; FR-48-47's status names the writer S6 left unmapped.
 
 ### Phase 3. Behaviour semantics in the framework DB (framework lane, needs Phase 1)
 - [ ] Every behaviour and content setting gets a machine-readable meaning (what it does, its trigger, its parameters) seeded from `block.json` by `sgs-update-v2.py`, so recognisers map by query, never by a hand-written list (R-31-1).
