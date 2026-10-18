@@ -188,8 +188,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--skip-motion-qa", action="store_true",
                    help="skip the post-deploy live motion probes. Doing so is "
                         "the D338 mistake: it makes the probes unreachable again.")
-    p.add_argument("--motion-qa-tier", choices=["smoke", "full", "auto"], default="auto",
-                   help="live motion probes: smoke, full, or auto = full when marquee code changed or the last full pass is over 24h old (default auto).")
+    p.add_argument("--motion-qa-tier", choices=["none", "smoke", "full", "auto"], default="none",
+                   help="live motion probes on the canary: none (default: motion is finished, so a deploy runs no probes), smoke, full, "
+                        "or auto = full when a full-tier path changed or the last full pass is over 24h old. Run full before any "
+                        "release that touches motion, shared effects or the theme tokens.")
     p.add_argument("--motion-qa-parallel", type=int, choices=range(1, 9), default=1, metavar="N",
                    help="run N motion probes at once, 1 to 8 (default 1). Above 1 tripped the Hostinger canary CDN bot protection (2026-10-17): do not use.")
     p.add_argument("--skip-purge", action="store_true",
@@ -468,7 +470,7 @@ def main() -> int:
             return 1
 
     # Post-deploy LIVE motion gate, after the payload gate so a STALE payload is reported first; a dry run decides as a real run does.
-    qa_action = motion_qa_action(deploy_blocks, args.skip_motion_qa, target_key)
+    qa_action = motion_qa_action(deploy_blocks, args.skip_motion_qa, target_key, args.motion_qa_tier)
     if qa_action == "skip-target":
         log(f"[motion-qa] SKIPPED: the probes measure the sandybrown canary, not {target_key}")
     elif qa_action == "run":

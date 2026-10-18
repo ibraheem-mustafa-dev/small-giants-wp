@@ -186,12 +186,13 @@ def shipped_uncommitted(dirty: list[str], payload: list[str], repo_root: Path = 
     return sorted(set(out))
 
 
-def motion_qa_action(deploy_blocks: bool, skip_motion_qa: bool, target_key: str) -> str:
+def motion_qa_action(deploy_blocks: bool, skip_motion_qa: bool, target_key: str, tier: str = "auto") -> str:
     """What a run does about motion QA: 'none' (not asked for), 'skip-target' (the probes measure only the canary) or 'run'.
 
-    A dry run decides exactly as a real run does, so it never reports a command a real run would skip.
+    `tier` 'none' (the deploy default) asks for no probes. A dry run decides exactly as a real run does, so it never
+    reports a command a real run would skip.
     """
-    if not deploy_blocks or skip_motion_qa:
+    if not deploy_blocks or skip_motion_qa or tier == "none":
         return "none"
     return "run" if target_key == "sandybrown" else "skip-target"
 
@@ -418,14 +419,16 @@ def self_test() -> list[str]:
     # F4: a dry run decides motion QA exactly as a real run does.
     def check_action(fn) -> list[str]:
         want = [((True, False, "indus-test", True), "skip-target"), ((True, False, "indus-test", False), "skip-target"),
-                ((True, False, "sandybrown", True), "run"), ((True, True, "sandybrown", False), "none"), ((False, False, "sandybrown", False), "none")]
+                ((True, False, "sandybrown", True), "run"), ((True, True, "sandybrown", False), "none"), ((False, False, "sandybrown", False), "none"),
+                ((True, False, "sandybrown", False, "none"), "none"), ((True, False, "sandybrown", True, "none"), "none"),
+                ((True, False, "sandybrown", False, "full"), "run")]
         return [f"{args}: {fn(*args)} not {exp}" for args, exp in want if fn(*args) != exp]
 
-    def real_action(blocks: bool, skip: bool, target: str, dry: bool) -> str:
-        return motion_qa_action(blocks, skip, target)
+    def real_action(blocks: bool, skip: bool, target: str, dry: bool, tier: str = "auto") -> str:
+        return motion_qa_action(blocks, skip, target, tier)
 
-    def faulty_action(blocks: bool, skip: bool, target: str, dry: bool) -> str:
-        return "run" if dry and blocks and not skip else motion_qa_action(blocks, skip, target)
+    def faulty_action(blocks: bool, skip: bool, target: str, dry: bool, tier: str = "auto") -> str:
+        return "run" if dry and blocks and not skip else motion_qa_action(blocks, skip, target, tier)
 
     def faulty_match(glob: str, path: str) -> bool:
         return fnmatch.fnmatchcase(path, glob)  # `*` crosses `/`, and `**` means nothing special
