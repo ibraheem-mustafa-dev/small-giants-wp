@@ -210,6 +210,44 @@ export function defaultPerspective( decls, hasXy ) {
 }
 
 /**
+ * Whether a hover state puts the element's perspective on its parent.
+ *
+ * @param {?Object} state The hover state layer.
+ * @return {boolean} True for `perspectiveOn: parent`.
+ */
+export function onParent( state ) {
+	return state?.values?.perspectiveOn === 'parent';
+}
+
+/**
+ * Move the element's perspective to its parent (the twin of `Sgs_Motion_Rotation::parent_perspective`): the element's
+ * `--sgs-persp-self` becomes `none` and the values it held are returned as the parent's `perspective` declarations.
+ *
+ * @param {Object<string,Object<string,string>>} decls Per-tier declarations of the element (mutated).
+ * @param {?Object}                              state The hover state layer.
+ * @param {boolean}                              owned Whether the element is a block's root placed directly inside another SGS block.
+ * @return {Object<string,Object<string,string>>} The parent's per-tier declarations; empty when nothing moved.
+ */
+export function parentPerspective( decls, state, owned ) {
+	if ( ! owned || ! onParent( state ) ) {
+		return {};
+	}
+	const prop = String( fields( DEF ).perspective?.css || '' );
+	if ( prop === '' || decls.desktop?.[ prop ] === undefined ) {
+		return {};
+	}
+	const moved = {};
+	[ 'desktop', 'tablet', 'mobile' ].forEach( ( tier ) => {
+		if ( decls[ tier ]?.[ prop ] !== undefined ) {
+			moved[ tier ] = { perspective: decls[ tier ][ prop ] };
+			delete decls[ tier ][ prop ];
+		}
+	} );
+	decls.desktop = { [ prop ]: 'none', ...decls.desktop };
+	return moved;
+}
+
+/**
  * The channels Follow pointer writes.
  *
  * @param {Object<string,boolean>} channels Channel set (mutated).

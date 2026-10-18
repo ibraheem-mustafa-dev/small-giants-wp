@@ -42,6 +42,7 @@ import {
 	followTiming,
 	hoverAngles,
 	isAngle,
+	parentPerspective,
 } from './emit-rotation';
 import { emitEntrance } from './emit-entrance';
 import { triggerCss, paintTransitionEntries } from './trigger-rules';
@@ -266,7 +267,11 @@ export function emitTarget( element, selector, context = {} ) {
 			decls[ tier ].transition = trans[ tier ].join( ', ' );
 		}
 	} );
+	const parent = parentPerspective( decls, state, Boolean( context.parentOwned ) );
 	let css = rules( selector, decls );
+	if ( Object.keys( parent ).length > 0 ) {
+		css += rules( `:has(> ${ selector })`, { desktop: {}, tablet: {}, mobile: {}, ...parent } );
+	}
 	if ( played ) {
 		css += triggerCss( base, selector, attrs );
 	}
@@ -360,7 +365,8 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		if ( resolved === null ) {
 			return;
 		}
-		const result = resolveLayerDrops( stored || {} );
+		const owned = Boolean( context.parentOwned ) && target === 'root';
+		const result = resolveLayerDrops( stored || {}, { 'parent-owned': owned } );
 		result.dropped.forEach( ( drop ) => out.dropped.push( { target, ...drop } ) );
 		const loser = Object.prototype.hasOwnProperty.call( losers, target );
 		let element = loser ? stripShared( result.element ) : result.element;
@@ -391,7 +397,7 @@ export function emitScopedCss( motion, { blockName, elements, root, states = [],
 		}
 		const report = ( drop ) => out.dropped.push( { target, layer: 'entrance.base', ...drop } );
 		const suppressEntrance = Boolean( context.suppressEntrance ) || target === moved;
-		const emitted = emitTarget( element, resolved.selector, { ...context, suppressEntrance, states, noTransition: loser, report } );
+		const emitted = emitTarget( element, resolved.selector, { ...context, parentOwned: owned, suppressEntrance, states, noTransition: loser, report } );
 		out.css += emitted.css;
 		out.plans.push( { target, ...resolved, attrs: emitted.attrs, entrance: emitted.entrance } );
 	} );

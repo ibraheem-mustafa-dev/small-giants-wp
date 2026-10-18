@@ -260,9 +260,56 @@ final class Sgs_Motion_Renderer {
 			'first'   => (bool) apply_filters( 'sgs_motion_is_first_section', $first, $block ),
 			'group'   => $group,
 			'dropped' => $dropped,
+			'parent'  => is_object( $parent_block ) && isset( $parent_block->name ) && is_string( $parent_block->name ) ? $parent_block->name : '',
 		);
 		$GLOBALS['sgs_hover_group_active'] = $group;
 		return $parsed_block;
+	}
+
+	/**
+	 * Whether the block's root may carry its perspective on its parent: the block is placed directly inside another SGS
+	 * block, so the renderer prints the parent's markup and writes the parent's `perspective` property from the child's
+	 * scoped rule (`:has(> .scope)`). A block at the top level, or inside a core or third-party block, is not.
+	 *
+	 * @param string              $name  Block name.
+	 * @param array<string,mixed> $frame The block's frame.
+	 * @return bool
+	 */
+	private static function parent_owned( string $name, array $frame ): bool {
+		unset( $name );
+		return 0 === strpos( (string) ( $frame['parent'] ?? '' ), 'sgs/' );
+	}
+
+	/**
+	 * Register the perspective this block's root asks its parent to carry on the parent's frame, or, when a block already
+	 * registered a different one, clear the request (the block keeps its own perspective) and report the refusal. Two
+	 * owners on one parent never disagree (Spec 38A FR-38A-41).
+	 *
+	 * @param array{element:array<string,mixed>,dropped:array<int,array<string,string>>} $result The resolved root element.
+	 * @return array{element:array<string,mixed>,dropped:array<int,array<string,string>>}
+	 */
+	private static function claim_parent_perspective( array $result ): array {
+		$wanted = Sgs_Motion_Rotation::parent_signature( $result['element'] );
+		$index  = count( self::$stack ) - 2;
+		if ( null === $wanted || $index < 0 ) {
+			return $result;
+		}
+		$held = self::$stack[ $index ]['persp_owner'] ?? null;
+		if ( null === $held ) {
+			self::$stack[ $index ]['persp_owner'] = $wanted;
+			return $result;
+		}
+		if ( $held === $wanted ) {
+			return $result;
+		}
+		$rule                = array_column( Sgs_Motion_Field_Types::schema()['x-sgs-refusals']['crossElement'] ?? array(), null, 'id' )['perspective-parent-owners'] ?? array();
+		$result['element']   = Sgs_Motion_Layer_Drops::remove_value( $result['element'], 'hover.state', Sgs_Motion_Rotation::PERSPECTIVE_ON );
+		$result['dropped'][] = array(
+			'path' => 'hover.state.values.' . Sgs_Motion_Rotation::PERSPECTIVE_ON,
+			'id'   => 'perspective-parent-owners',
+			'text' => (string) ( $rule['text'] ?? '' ),
+		);
+		return $result;
 	}
 
 	/**
@@ -416,14 +463,19 @@ final class Sgs_Motion_Renderer {
 		$css           = '';
 		$losers        = Sgs_Motion_Shared_Element::losers( $block_content, $name, $scope, $doc['elements'] );
 		$moved         = self::moved( $block, $frame );
+		$parent_owned  = self::parent_owned( $name, $frame );
 		foreach ( $doc['elements'] as $target => $element ) {
 			$target   = (string) $target;
 			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, $target, (array) $element );
 			if ( null === $resolved ) {
 				continue;
 			}
+			$owned  = $parent_owned && 'root' === $target;
 			$fitted = Sgs_Motion_Layer_Drops::drop_level_misfits( (array) $element, Sgs_Motion_Layer_Drops::levels_for_target( $name, $target ) );
-			$result = Sgs_Motion_Layer_Drops::resolve( $fitted['element'] );
+			$result = Sgs_Motion_Layer_Drops::resolve( $fitted['element'], array( 'parent-owned' => $owned ) );
+			if ( $owned ) {
+				$result = self::claim_parent_perspective( $result );
+			}
 			$result['dropped'] = array_merge( $fitted['dropped'], $result['dropped'] );
 			foreach ( $result['dropped'] as $drop ) {
 				do_action( 'sgs_motion_layer_dropped', $name, $target, $drop );
@@ -447,6 +499,7 @@ final class Sgs_Motion_Renderer {
 					'block'             => $name,
 					'target'            => $target,
 					'attributes'        => $attrs,
+					'parent_owned'      => $owned,
 				)
 			);
 			$css      .= $emitted['css'];

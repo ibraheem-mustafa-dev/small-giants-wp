@@ -129,7 +129,11 @@ final class Sgs_Motion_Emitter {
 				$decls[ $tier ]['transition'] = implode( ', ', $trans[ $tier ] );
 			}
 		}
-		$css = self::rules( $selector, $decls );
+		$parent = Sgs_Motion_Rotation::parent_perspective( $decls, is_array( $state ) ? $state : null, ! empty( $context['parent_owned'] ) );
+		$css    = self::rules( $selector, $decls );
+		if ( array() !== $parent ) {
+			$css .= self::rules( ':has(> ' . $selector . ')', $parent + array_fill_keys( self::TIERS, array() ) );
+		}
 		if ( $entrance ) {
 			// A trigger's own rules beyond the entrance values: the `open` close values and the `state` rule
 			// (`Sgs_Motion_Trigger_Open_State`).

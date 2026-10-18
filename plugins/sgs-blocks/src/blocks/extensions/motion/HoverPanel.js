@@ -22,8 +22,9 @@ import TargetRow from './layers/TargetRow';
 import { RestampConfirm, useRestamp } from './layers/restamp';
 import { hoverActions } from './hover/hover-actions';
 import useDrivenBy, { hoverLayerRefs } from './hover/use-driven-by';
-import { HOVER_GROUPS, RING_KEYS } from './hover/hover-fields';
+import { HOVER_GROUPS, PARENT_KEYS, RING_KEYS } from './hover/hover-fields';
 import useRingRefused from './hover/use-ring-refused';
+import useParentOwned from './hover/use-parent-owned';
 import {
 	choiceFor,
 	familyOf,
@@ -56,6 +57,7 @@ const choicesFor = ( ringRefused ) =>
 export default function HoverPanel( { blockName, clientId, elements, motion, layers } ) {
 	const [ target, setTarget ] = useState( ROOT_TARGET );
 	const ringRefused = useRingRefused( clientId, blockName, elements, target );
+	const parentOwned = useParentOwned( clientId, target );
 	const hoverChoices = choicesFor( ringRefused );
 	const [ notice, setNotice ] = useState( null );
 	const flow = useRestamp( layers );
@@ -165,7 +167,10 @@ export default function HoverPanel( { blockName, clientId, elements, motion, lay
 							layer={ layer }
 							defName="HoverStateValues"
 							groups={ HOVER_GROUPS }
-							omitKeys={ ringRefused ? RING_KEYS : [] }
+							omitKeys={ [
+								...( ringRefused ? RING_KEYS : [] ),
+								...( parentOwned ? [] : PARENT_KEYS ),
+							] }
 							onLayer={ actions.editState }
 						/>
 						<Button

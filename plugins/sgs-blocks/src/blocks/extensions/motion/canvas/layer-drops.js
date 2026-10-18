@@ -120,13 +120,14 @@ function removeValue( element, path, valuePath ) {
  * Drop refused layers and values from one sanitised element, as the renderer does.
  *
  * @param {Object} element A sanitised element.
+ * @param {Object} [context] Facts about where the element sits (`parent-owned`).
  * @return {{element: Object, dropped: Array<{path: string, id: string, text: string}>}} The resolved element.
  */
-export function resolveLayerDrops( element ) {
+export function resolveLayerDrops( element, context = {} ) {
 	let current = element;
 	const dropped = [];
 	for ( let guard = 0; guard < 64; guard++ ) {
-		const refusals = elementRefusals( current );
+		const refusals = elementRefusals( current, undefined, context );
 		if ( refusals.length === 0 ) {
 			break;
 		}

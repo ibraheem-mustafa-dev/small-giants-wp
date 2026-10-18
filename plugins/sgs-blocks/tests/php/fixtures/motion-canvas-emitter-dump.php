@@ -96,7 +96,8 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 		if ( null === $sgs_resolved ) {
 			continue;
 		}
-		$sgs_element = Sgs_Motion_Layer_Drops::resolve( (array) $sgs_element )['element'];
+		$sgs_owned   = ! empty( $sgs_context['parent_owned'] ) && 'root' === $sgs_target;
+		$sgs_element = Sgs_Motion_Layer_Drops::resolve( (array) $sgs_element, array( 'parent-owned' => $sgs_owned ) )['element'];
 		if ( isset( $sgs_losers[ $sgs_target ] ) ) {
 			$sgs_element = Sgs_Motion_Shared_Element::strip( $sgs_element, $sgs_name, $sgs_target, $sgs_losers[ $sgs_target ] );
 		}
@@ -110,6 +111,7 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 				'block'             => $sgs_name,
 				'target'            => $sgs_target,
 				'attributes'        => is_array( $sgs_case['attributes'] ?? null ) ? $sgs_case['attributes'] : array(),
+				'parent_owned'      => $sgs_owned,
 			)
 		);
 		$sgs_result['css']    .= $sgs_emitted['css'];

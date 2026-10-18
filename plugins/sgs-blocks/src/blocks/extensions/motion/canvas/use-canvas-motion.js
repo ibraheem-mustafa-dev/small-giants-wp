@@ -66,7 +66,7 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 	);
 	// In a delegating mode the grid hands its stagger entrance to the cards unless its template card's root keeps an
 	// entrance of its own (`delegated-children.js`); a template card is mirrored by the grid's product previews.
-	const { delegation, mirrored } = useSelect(
+	const { delegation, mirrored, parentOwned } = useSelect(
 		( select ) => {
 			const store = select( 'core/block-editor' );
 			const active = activeDelegation( getBlockType( name )?.supports?.sgs, attributes );
@@ -86,6 +86,8 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 					  } )
 					: 'null',
 				mirrored: parentDelegation?.block === name,
+				// A block placed directly inside another SGS block may carry its perspective on that parent.
+				parentOwned: Boolean( parentName ) && parentName.startsWith( 'sgs/' ),
 			};
 		},
 		[ clientId, name, attributes ]
@@ -105,8 +107,9 @@ export function useCanvasMotion( { clientId, name, attributes } ) {
 			delegation: JSON.parse( delegation ),
 			hasInnerBlocks,
 			loopColumns: JSON.parse( loopColumns ),
+			context: { parentOwned },
 		};
-	}, [ name, clientId, shadows, delegation, mirrored, hasInnerBlocks, loopColumns ] );
+	}, [ name, clientId, shadows, delegation, mirrored, hasInnerBlocks, loopColumns, parentOwned ] );
 
 	useEffect( () => {
 		if ( preview || ( ! motion && ! linked ) ) {

@@ -1730,5 +1730,59 @@
 		],
 		"rootAttrs": {},
 		"losers": {}
+	},
+	{
+		"name": "perspective on the parent where the parent is an SGS block",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:none;--sgs-mh-to-s:1.04;--sgs-tilt-max:8deg;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-tilt-x calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}:has(> .sgs-m-0123456789){perspective:1100px;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale transform"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "perspective on the parent per device where the parent is an SGS block",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:none;--sgs-mh-to-s:1.04;--sgs-tilt-max:8deg;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-tilt-x calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}:has(> .sgs-m-0123456789){perspective:1100px;}@media (max-width:1023px){:has(> .sgs-m-0123456789){perspective:900px;}}@media (max-width:767px){:has(> .sgs-m-0123456789){perspective:600px;}}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale transform"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "perspective on the parent refused where the parent is not an SGS block",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-s:1.04;--sgs-tilt-max:8deg;--sgs-persp-self:1100px;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-tilt-x calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-mh": "self",
+					"data-sgs-mc": "scale transform"
+				},
+				"entrance": false
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
 	}
 ]

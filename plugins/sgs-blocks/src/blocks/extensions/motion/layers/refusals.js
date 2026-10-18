@@ -84,12 +84,16 @@ function firstSeenRefusals( limit, entries, keyOf, labelsOf ) {
 	return out;
 }
 
-function valueRefusals( limit, layers ) {
+function valueRefusals( limit, layers, context = {} ) {
 	const key = limit.value;
 	const holders = layers.filter( ( entry ) =>
 		limit.lists.includes( entry.list )
 	);
 	if ( limit.kind === 'refused-value' ) {
+		// A limit with an `unless` fact is lifted where that fact holds (a parent-owned block may set its parent's perspective).
+		if ( limit.unless && context[ limit.unless ] ) {
+			return [];
+		}
 		return holders
 			.filter( ( entry ) =>
 				tierSources( entry.layer ).some(
@@ -127,7 +131,7 @@ function valueRefusals( limit, layers ) {
 	return out;
 }
 
-function limitRefusals( limit, layers, focus ) {
+function limitRefusals( limit, layers, focus, context = {} ) {
 	if ( limit.kind === 'unique-effect' ) {
 		return limit.lists.flatMap( ( list ) =>
 			firstSeenRefusals(
@@ -185,7 +189,7 @@ function limitRefusals( limit, layers, focus ) {
 			.map( ( extra ) => named( claims, extra ) );
 	}
 	if ( limit.kind === 'same-value' || limit.kind === 'refused-value' ) {
-		return valueRefusals( limit, layers );
+		return valueRefusals( limit, layers, context );
 	}
 	throw new Error(
 		`motion refusals: unknown limit kind "${ limit.kind }" in ${ limit.id }`
@@ -197,14 +201,15 @@ function limitRefusals( limit, layers, focus ) {
  *
  * @param {Object} element One element of the motion value.
  * @param {string} [focus] The path of the layer being added or edited; a paint-slot refusal names it as the extra.
+ * @param {Object} [context] Facts about where the element sits; `parent-owned` lifts a limit marked `unless: "parent-owned"`.
  * @return {{id: string, text: string, layers: string[]}[]} The refusals, each naming the layer paths it involves.
  */
-export function elementRefusals( element, focus ) {
+export function elementRefusals( element, focus, context = {} ) {
 	const layers = elementLayers( element );
 	return [
 		...TABLE.pairs.flatMap( ( rule ) => pairRefusals( rule, layers ) ),
 		...TABLE.limits.flatMap( ( limit ) =>
-			limitRefusals( limit, layers, focus )
+			limitRefusals( limit, layers, focus, context )
 		),
 	];
 }

@@ -6,6 +6,7 @@
 const {
 	FIELD_LABELS,
 	HIDDEN_KEYS,
+	PARENT_KEYS,
 	HOVER_GROUPS,
 	fieldGroups,
 	undrawnKeys,
@@ -52,9 +53,14 @@ describe( 'fields the schema may or may not hold', () => {
 		);
 	} );
 
-	it( 'does not offer where perspective applies until the real-Safari check (FR-38A-41)', () => {
+	it( 'offers where perspective applies only where the parent is the renderer owns (FR-38A-41)', () => {
 		expect(
 			keysOf( fieldGroups( 'HoverStateValues', HOVER_GROUPS ) )
+		).toContain( 'perspectiveOn' );
+		expect(
+			keysOf(
+				fieldGroups( 'HoverStateValues', HOVER_GROUPS, undefined, PARENT_KEYS )
+			)
 		).not.toContain( 'perspectiveOn' );
 		expect( undrawnKeys( 'HoverStateValues', HOVER_GROUPS ) ).toEqual( [] );
 	} );
@@ -89,7 +95,8 @@ describe( 'fields the schema may or may not hold', () => {
 
 	it( 'draws the ring fields, and leaves them out of a shadowed element with the group kept to say why', () => {
 		const drawn = keysOf( fieldGroups( 'HoverStateValues', HOVER_GROUPS ) );
-		expect( HIDDEN_KEYS ).toEqual( [ 'perspectiveOn' ] );
+		expect( HIDDEN_KEYS ).toEqual( [] );
+		expect( PARENT_KEYS ).toEqual( [ 'perspectiveOn' ] );
 		expect( drawn ).toEqual( expect.arrayContaining( [ 'ringSpread', 'ringColour' ] ) );
 		const omitted = fieldGroups(
 			'HoverStateValues',

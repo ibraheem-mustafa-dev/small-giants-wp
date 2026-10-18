@@ -1,0 +1,13 @@
+<!doctype html><meta charset=utf-8><title>rotate fixture (parent perspective)</title>
+<link rel="stylesheet" href="../../../../assets/css/motion.css">
+<style>
+body{margin:0;background:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,200px);gap:24px;margin:40px}
+.box{width:200px;height:100px;background:#c33}
+/* The renderer's per-instance rules. */
+.sgs-m-0fc5ad7623{--sgs-persp-self:none;--sgs-mh-to-s:1.04;--sgs-mh-to-ty:-6px;--sgs-tilt-max:8deg;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}:has(> .sgs-m-0fc5ad7623){perspective:1100px;}.sgs-m-cfb435fa5e{--sgs-mh-to-s:1.04;--sgs-mh-to-ty:-6px;--sgs-tilt-max:8deg;--sgs-persp-self:1100px;transition:--sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, background-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, border-color var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, box-shadow var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}
+/* Engage the hover state and the pointer at a corner (the measurement reads the engaged state). */
+#parent-mode,#self-mode{--sgs-mh-on:1;--sgs-tilt-x:8deg;--sgs-tilt-y:8deg;transition:none}
+</style>
+<div class="grid" id="grid-parent"><div data-sgs-mc="translate scale transform" data-sgs-mh="self" data-sgs-fx="follow-pointer" class="wp-block-sgs-info-box box sgs-m-0fc5ad7623" id="parent-mode"></div><div class="box"></div><div class="box"></div></div>
+<div class="grid" id="grid-self"><div data-sgs-mc="translate scale transform" data-sgs-mh="self" data-sgs-fx="follow-pointer" class="wp-block-sgs-info-box box sgs-m-cfb435fa5e" id="self-mode"></div><div class="box"></div><div class="box"></div></div>

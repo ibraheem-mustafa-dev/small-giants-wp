@@ -4,7 +4,7 @@
 		"valid": false,
 		"errors": [],
 		"refusals": [
-			"Perspective on the parent is not available here; the card uses its own perspective."
+			"Perspective on the parent is only available on a block placed directly inside another SGS block, and only on the block itself; this element uses its own perspective."
 		]
 	},
 	"motion": {

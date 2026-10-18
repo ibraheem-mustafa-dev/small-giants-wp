@@ -93,12 +93,13 @@ final class Sgs_Motion_Layer_Drops {
 	 * Drop the later of each refused pair (and every layer past a limit) until the element has no refusal.
 	 *
 	 * @param array<string,mixed> $element A sanitised element.
+	 * @param array<string,bool>  $context Facts about where the element sits (`Sgs_Motion_Layers::element_refusals`).
 	 * @return array{element:array<string,mixed>,dropped:array<int,array{path:string,id:string,text:string}>}
 	 */
-	public static function resolve( array $element ): array {
+	public static function resolve( array $element, array $context = array() ): array {
 		$dropped = array();
 		for ( $guard = 0; $guard < 64; $guard++ ) {
-			$refusals = Sgs_Motion_Layers::element_refusals( $element );
+			$refusals = Sgs_Motion_Layers::element_refusals( $element, $context );
 			if ( array() === $refusals ) {
 				break;
 			}
