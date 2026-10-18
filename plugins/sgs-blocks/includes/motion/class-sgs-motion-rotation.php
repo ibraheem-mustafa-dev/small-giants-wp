@@ -40,6 +40,9 @@ final class Sgs_Motion_Rotation {
 	const FOLLOW_DURATION = 'resetDuration';
 	const FOLLOW_EASING   = 'resetEasing';
 
+	/** The hover state field that puts the perspective on the parent. */
+	const PERSPECTIVE_ON = 'perspectiveOn';
+
 	/** The `$defs` node the hover state's values live in. */
 	const DEF = 'HoverStateValues';
 
@@ -213,6 +216,68 @@ final class Sgs_Motion_Rotation {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Whether a hover state puts the element's perspective on its parent (`perspectiveOn: parent`).
+	 *
+	 * @param array<string,mixed> $state The hover state layer.
+	 * @return bool
+	 */
+	public static function on_parent( array $state ): bool {
+		return 'parent' === ( $state['values'][ self::PERSPECTIVE_ON ] ?? null );
+	}
+
+	/**
+	 * The perspective an element asks its parent to carry, as a comparable string: the hover state's perspective on each
+	 * device (the schema default when it sets none). Null when the element keeps its perspective on itself.
+	 *
+	 * @param array<string,mixed> $element A sanitised element.
+	 * @return string|null
+	 */
+	public static function parent_signature( array $element ): ?string {
+		$state = $element['hover']['state'] ?? null;
+		if ( ! is_array( $state ) || ! self::on_parent( $state ) ) {
+			return null;
+		}
+		$devices = is_array( $state['devices'] ?? null ) ? $state['devices'] : array();
+		return (string) wp_json_encode(
+			array(
+				$state['values']['perspective'] ?? 'default',
+				$devices['tablet']['perspective'] ?? null,
+				$devices['mobile']['perspective'] ?? null,
+			)
+		);
+	}
+
+	/**
+	 * Move the element's perspective to its parent: the element's `--sgs-persp-self` becomes `none` (so its `transform`
+	 * carries no `perspective()` and the card is not projected twice) and the values it held are returned as the
+	 * parent's `perspective` declarations, per device tier. Nothing moves unless the hover state asks for the parent and
+	 * the renderer owns it.
+	 *
+	 * @param array<string,array<string,string>> $decls Per-tier declarations of the element (by reference).
+	 * @param array<string,mixed>|null           $state The hover state layer.
+	 * @param bool                               $owned Whether the element is a block's root placed directly inside another SGS block.
+	 * @return array<string,array<string,string>> The parent's per-tier declarations; empty when nothing moved.
+	 */
+	public static function parent_perspective( array &$decls, ?array $state, bool $owned ): array {
+		if ( ! $owned || null === $state || ! self::on_parent( $state ) ) {
+			return array();
+		}
+		$prop = (string) ( Sgs_Motion_Emitter::fields( self::DEF )['perspective']['css'] ?? '' );
+		if ( '' === $prop || ! isset( $decls['desktop'][ $prop ] ) ) {
+			return array();
+		}
+		$moved = array();
+		foreach ( Sgs_Motion_Emitter::TIERS as $tier ) {
+			if ( isset( $decls[ $tier ][ $prop ] ) ) {
+				$moved[ $tier ] = array( 'perspective' => $decls[ $tier ][ $prop ] );
+				unset( $decls[ $tier ][ $prop ] );
+			}
+		}
+		$decls['desktop'] = array( $prop => 'none' ) + $decls['desktop'];
+		return $moved;
 	}
 
 	/**

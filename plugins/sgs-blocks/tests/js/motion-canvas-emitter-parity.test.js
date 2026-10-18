@@ -92,6 +92,7 @@ const jsResult = ( c ) => {
 		context: {
 			lcp: Boolean( c.context.lcp ),
 			suppressEntrance: Boolean( c.context.suppress_entrance ),
+			parentOwned: Boolean( c.context.parent_owned ),
 		},
 	} );
 	return {
@@ -163,6 +164,19 @@ describe( 'motion editor-canvas emitter parity', () => {
 		expect( plans.some( ( p ) => p.attrs[ 'data-sgs-me-keyframes' ] ) ).toBe( true );
 		expect( js.some( ( r ) => r.rootAttrs[ 'data-sgs-mroot' ] === '' ) ).toBe( true );
 		expect( js.some( ( r ) => Object.keys( r.losers ).length > 0 ) ).toBe( true );
+	} );
+
+	it( 'a parent-owned block puts its perspective on the parent and omits its own; elsewhere the card keeps it', () => {
+		const css = ( name ) => js.find( ( r ) => r.name === name ).css;
+		const owned = css( 'perspective on the parent where the parent is an SGS block' );
+		expect( owned ).toContain( '--sgs-persp-self:none;' );
+		expect( owned ).toContain( ':has(> .sgs-m-0123456789){perspective:1100px;}' );
+		expect( css( 'perspective on the parent per device where the parent is an SGS block' ) ).toMatch(
+			/@media \(max-width:1023px\)\{:has\(> \.sgs-m-0123456789\)\{perspective:900px;\}\}/
+		);
+		const refused = css( 'perspective on the parent refused where the parent is not an SGS block' );
+		expect( refused ).toContain( '--sgs-persp-self:1100px;' );
+		expect( refused ).not.toContain( ':has(>' );
 	} );
 
 	it( 'the hover ring: painted on an unshadowed block, dropped on a shadowed one, at a zero spread and with no colour', () => {

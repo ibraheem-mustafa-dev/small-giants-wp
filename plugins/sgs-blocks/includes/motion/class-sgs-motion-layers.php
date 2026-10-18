@@ -316,9 +316,12 @@ final class Sgs_Motion_Layers {
 	 * Every refusal on one element: pairs first in table order, then limits.
 	 *
 	 * @param array<string,mixed> $element An element.
+	 * @param array<string,bool>  $context Facts about where the element sits: `parent-owned` (the element is a block's
+	 *                                     root placed directly inside another SGS block, so its perspective may sit on
+	 *                                     that parent). A limit with an `unless` key is lifted when that fact is true.
 	 * @return array<int,array{id:string,text:string,layers:array<int,string>}>
 	 */
-	public static function element_refusals( array $element ): array {
+	public static function element_refusals( array $element, array $context = array() ): array {
 		$table  = self::schema()['x-sgs-refusals'] ?? array();
 		$layers = self::element_layers( $element );
 		$out    = array();
@@ -349,7 +352,7 @@ final class Sgs_Motion_Layers {
 			}
 		}
 		foreach ( $table['limits'] ?? array() as $limit ) {
-			$out = array_merge( $out, Sgs_Motion_Limits::refusals( $limit, $layers ) );
+			$out = array_merge( $out, Sgs_Motion_Limits::refusals( $limit, $layers, $context ) );
 		}
 		return $out;
 	}

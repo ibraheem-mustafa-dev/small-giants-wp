@@ -192,7 +192,7 @@ final class MotionRefusalsTest extends TestCase {
 		$root = array( 'hover' => array( 'state' => array( 'values' => array( 'followPointer' => true, 'perspective' => 1100, 'perspectiveOn' => 'parent' ) ) ) );
 		$res  = Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $root ) )['elements']['root'] );
 		$this->assertSame( 'perspective-parent', $res['dropped'][0]['id'] );
-		$this->assertSame( 'Perspective on the parent is not available here; the card uses its own perspective.', $res['dropped'][0]['text'] );
+		$this->assertSame( 'Perspective on the parent is only available on a block placed directly inside another SGS block, and only on the block itself; this element uses its own perspective.', $res['dropped'][0]['text'] );
 		$this->assertArrayNotHasKey( 'perspectiveOn', $res['element']['hover']['state']['values'] );
 		$this->assertSame( 1100, $res['element']['hover']['state']['values']['perspective'] );
 
@@ -202,5 +202,56 @@ final class MotionRefusalsTest extends TestCase {
 		$self = $root;
 		$self['hover']['state']['values']['perspectiveOn'] = 'self';
 		$this->assertSame( array(), Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $self ) )['elements']['root'] )['dropped'], 'negative control: self is allowed' );
+	}
+
+	private static function indus_root( int $perspective = 1100, string $on = 'parent' ): array {
+		return array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.04, 'followPointer' => true, 'maxAngle' => 8, 'perspective' => $perspective, 'perspectiveOn' => $on ) ) ) );
+	}
+
+	private static function child( array $root ): array {
+		return array( 'blockName' => 'sgs/info-box', 'attrs' => array( 'sgsMotion' => self::doc( $root ) ) );
+	}
+
+	public function test_a_block_inside_an_sgs_block_puts_its_perspective_on_the_parent(): void {
+		$root = self::indus_root();
+		$res  = Sgs_Motion_Layer_Drops::resolve( Sgs_Motion_Document::sanitise( self::doc( $root ) )['elements']['root'], array( 'parent-owned' => true ) );
+		$this->assertSame( array(), $res['dropped'], 'the refusal is lifted where the renderer owns the parent' );
+		$this->assertSame( 'parent', $res['element']['hover']['state']['values']['perspectiveOn'] );
+
+		$out = sgs_test_render_motion_block( self::child( $root ), self::CARD, (object) array( 'name' => 'sgs/container' ) );
+		$css = implode( '', $GLOBALS['sgs_collected_css'] );
+		$this->assertMatchesRegularExpression( '/:has\(> \.sgs-m-[0-9a-f]{10}\)\{perspective:1100px;\}/', $css, 'the parent carries the perspective in a scoped rule' );
+		$this->assertStringContainsString( '--sgs-persp-self:none;', $css, 'the card omits its own perspective' );
+		$this->assertStringNotContainsString( '--sgs-persp-self:1100px', $css );
+		$this->assertStringNotContainsString( 'style=', $out, 'no inline style' );
+	}
+
+	public function test_a_parent_perspective_is_refused_unless_the_parent_is_an_sgs_block(): void {
+		foreach ( array( 'core/group' => (object) array( 'name' => 'core/group' ), 'no parent' => null ) as $label => $parent ) {
+			Sgs_Motion_Renderer::reset();
+			$GLOBALS['sgs_collected_css'] = array();
+			$GLOBALS['sgs_test_actions']  = array();
+			sgs_test_render_motion_block( self::child( self::indus_root() ), self::CARD, $parent );
+			$css = implode( '', $GLOBALS['sgs_collected_css'] );
+			$this->assertStringContainsString( '--sgs-persp-self:1100px;', $css, $label . ': the card keeps its own perspective' );
+			$this->assertStringNotContainsString( ':has(>', $css, $label . ': nothing is written on the parent' );
+			$this->assertStringContainsString( 'only available on a block placed directly inside another SGS block', json_encode( $GLOBALS['sgs_test_actions'] ), $label );
+		}
+	}
+
+	public function test_two_blocks_asking_one_parent_for_different_perspectives_are_refused(): void {
+		$renderer = Sgs_Motion_Renderer::class;
+		$parent   = array( 'blockName' => 'sgs/container', 'attrs' => array() );
+		$renderer::open_frame( $parent, $parent, null );
+		$holder = (object) array( 'name' => 'sgs/container' );
+		sgs_test_render_motion_block( self::child( self::indus_root( 1100 ) ), self::CARD, $holder );
+		$this->assertSame( array(), $GLOBALS['sgs_test_actions'], 'the first owner is not refused' );
+		sgs_test_render_motion_block( self::child( self::indus_root( 1100 ) ), self::CARD, $holder );
+		$this->assertSame( array(), $GLOBALS['sgs_test_actions'], 'negative control: a second owner of the same perspective is not refused' );
+		sgs_test_render_motion_block( self::child( self::indus_root( 900 ) ), self::CARD, $holder );
+		$css = implode( '', $GLOBALS['sgs_collected_css'] );
+		$this->assertStringContainsString( 'Another block already sets a different perspective on this parent', json_encode( $GLOBALS['sgs_test_actions'] ) );
+		$this->assertStringContainsString( '--sgs-persp-self:900px;', $css, 'the refused block keeps its own perspective' );
+		$this->assertStringNotContainsString( 'perspective:900px;}', $css, 'and writes nothing on the parent' );
 	}
 }

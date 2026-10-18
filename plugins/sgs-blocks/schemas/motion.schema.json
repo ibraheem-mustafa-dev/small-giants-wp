@@ -2017,7 +2017,18 @@
 				],
 				"value": "perspectiveOn",
 				"equals": "parent",
-				"text": "Perspective on the parent is not available here; the card uses its own perspective.",
+				"unless": "parent-owned",
+				"textSource": "schema",
+				"text": "Perspective on the parent is only available on a block placed directly inside another SGS block, and only on the block itself; this element uses its own perspective.",
+				"placeholders": {}
+			}
+		],
+		"crossElement": [
+			{
+				"id": "perspective-parent-owners",
+				"source": "§10 transform",
+				"textSource": "schema",
+				"text": "Another block already sets a different perspective on this parent; this element uses its own perspective.",
 				"placeholders": {}
 			}
 		],
@@ -2622,7 +2633,7 @@
 				},
 				"perspectiveOn": {
 					"$ref": "#/$defs/choice",
-					"description": "Where the perspective sits. Parent is refused until a real-Safari check (Spec 38A §10), so the element uses its own.",
+					"description": "Where the perspective sits. Parent is honoured only for a block placed directly inside another SGS block (the renderer writes the parent's perspective property and the element omits its own); anywhere else it is refused and the element uses its own (Spec 38A §10).",
 					"enum": [
 						"self",
 						"parent"

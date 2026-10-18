@@ -1,0 +1,356 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "grid",
+			"columns": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			},
+			"gap": {
+				"desktop": "24px",
+				"tablet": "24px",
+				"mobile": "16px"
+			},
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m41p-grid-parent"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Parent perspective card 1",
+					"description": "Follow pointer at 8deg, perspective 1100px on the grid, hover scale 1.04 and a 6px lift.",
+					"className": "m41p-parent-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "parent",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "token:easing.spring"
+										}
+									},
+									"effects": [
+										{
+											"id": "glare1",
+											"effect": "glare",
+											"trigger": "hover",
+											"values": {
+												"glareColour": "#ffffff",
+												"glareOpacity": 0.42,
+												"glareSize": 55
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"shadowLiftOnHover": false
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Parent perspective card 2",
+					"description": "Follow pointer at 8deg, perspective 1100px on the grid, hover scale 1.04 and a 6px lift.",
+					"className": "m41p-parent-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "parent",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "token:easing.spring"
+										}
+									},
+									"effects": [
+										{
+											"id": "glare1",
+											"effect": "glare",
+											"trigger": "hover",
+											"values": {
+												"glareColour": "#ffffff",
+												"glareOpacity": 0.42,
+												"glareSize": 55
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"shadowLiftOnHover": false
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Parent perspective card 3",
+					"description": "Follow pointer at 8deg, perspective 1100px on the grid, hover scale 1.04 and a 6px lift.",
+					"className": "m41p-parent-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "parent",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "token:easing.spring"
+										}
+									},
+									"effects": [
+										{
+											"id": "glare1",
+											"effect": "glare",
+											"trigger": "hover",
+											"values": {
+												"glareColour": "#ffffff",
+												"glareOpacity": 0.42,
+												"glareSize": 55
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"shadowLiftOnHover": false
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "grid",
+			"columns": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			},
+			"gap": {
+				"desktop": "24px",
+				"tablet": "24px",
+				"mobile": "16px"
+			},
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m41p-grid-self"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Self perspective card 1",
+					"description": "Follow pointer at 8deg, perspective 1100px on the card itself, hover scale 1.04 and a 6px lift.",
+					"className": "m41p-self-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "self",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "token:easing.spring"
+										}
+									},
+									"effects": [
+										{
+											"id": "glare1",
+											"effect": "glare",
+											"trigger": "hover",
+											"values": {
+												"glareColour": "#ffffff",
+												"glareOpacity": 0.42,
+												"glareSize": 55
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"shadowLiftOnHover": false
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Self perspective card 2",
+					"description": "Follow pointer at 8deg, perspective 1100px on the card itself, hover scale 1.04 and a 6px lift.",
+					"className": "m41p-self-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "self",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "token:easing.spring"
+										}
+									},
+									"effects": [
+										{
+											"id": "glare1",
+											"effect": "glare",
+											"trigger": "hover",
+											"values": {
+												"glareColour": "#ffffff",
+												"glareOpacity": 0.42,
+												"glareSize": 55
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"shadowLiftOnHover": false
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Self perspective card 3",
+					"description": "Follow pointer at 8deg, perspective 1100px on the card itself, hover scale 1.04 and a 6px lift.",
+					"className": "m41p-self-card",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"hover": {
+									"state": {
+										"source": "self",
+										"trigger": "hover",
+										"values": {
+											"scale": 1.04,
+											"translateY": -6,
+											"duration": 150,
+											"perspective": 1100,
+											"perspectiveOn": "self",
+											"followPointer": true,
+											"maxAngle": 8,
+											"axisLock": "none",
+											"resetDuration": 600,
+											"resetEasing": "token:easing.spring"
+										}
+									},
+									"effects": [
+										{
+											"id": "glare1",
+											"effect": "glare",
+											"trigger": "hover",
+											"values": {
+												"glareColour": "#ffffff",
+												"glareOpacity": 0.42,
+												"glareSize": 55
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"shadowLiftOnHover": false
+				}
+			}
+		]
+	}
+]

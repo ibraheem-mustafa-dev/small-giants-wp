@@ -2642,6 +2642,90 @@
 				}
 			},
 			"root": ".sgs-m-0123456789"
+		},
+		{
+			"name": "perspective on the parent where the parent is an SGS block",
+			"block": "sgs/info-box",
+			"context": {
+				"parent_owned": true
+			},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.04,
+									"followPointer": true,
+									"maxAngle": 8,
+									"perspective": 1100,
+									"perspectiveOn": "parent"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
+		},
+		{
+			"name": "perspective on the parent per device where the parent is an SGS block",
+			"block": "sgs/info-box",
+			"context": {
+				"parent_owned": true
+			},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.04,
+									"followPointer": true,
+									"maxAngle": 8,
+									"perspective": 1100,
+									"perspectiveOn": "parent"
+								},
+								"devices": {
+									"tablet": {
+										"perspective": 900
+									},
+									"mobile": {
+										"perspective": 600
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
+		},
+		{
+			"name": "perspective on the parent refused where the parent is not an SGS block",
+			"block": "sgs/info-box",
+			"context": {},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"hover": {
+							"state": {
+								"values": {
+									"scale": 1.04,
+									"followPointer": true,
+									"maxAngle": 8,
+									"perspective": 1100,
+									"perspectiveOn": "parent"
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
 		}
 	]
 }

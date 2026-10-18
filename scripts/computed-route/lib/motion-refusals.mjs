@@ -169,11 +169,14 @@ function effectiveTiers( layer, key ) {
 
 // A `same-value` limit's refusals (two layers in its lists set its value differently at one tier position) or a
 // `refused-value` limit's (a layer in its lists sets its value to `equals`).
-function valueRefusals( schema, limit, layers ) {
+function valueRefusals( schema, limit, layers, context = {} ) {
 	const key = limit.value;
 	const holders = layers.filter( ( l ) => limit.lists.includes( l.list ) );
 	const out = [];
 	if ( limit.kind === 'refused-value' ) {
+		if ( limit.unless && context[ limit.unless ] ) {
+			return out;
+		}
 		for ( const entry of holders ) {
 			if ( tierSources( entry.layer ).some( ( src ) => src && src[ key ] === limit.equals ) ) {
 				out.push( { id: limit.id, text: fill( limit.text, limit.placeholders, {} ), layers: [ entry.path ] } );
@@ -196,7 +199,7 @@ function valueRefusals( schema, limit, layers ) {
 }
 
 // Every refusal on one element: [{ id, text, layers }], pairs first in table order, then limits.
-export function elementRefusals( schema, element ) {
+export function elementRefusals( schema, element, context = {} ) {
 	const table = schema[ 'x-sgs-refusals' ];
 	const layers = elementLayers( element );
 	const out = [];
@@ -249,7 +252,7 @@ export function elementRefusals( schema, element ) {
 				out.push( { id: limit.id, text: fill( limit.text, limit.placeholders, labels ), layers: [ claims[ 0 ].path, claims[ 1 ].path, claims[ i ].path ] } );
 			}
 		} else if ( limit.kind === 'same-value' || limit.kind === 'refused-value' ) {
-			out.push( ...valueRefusals( schema, limit, layers ) );
+			out.push( ...valueRefusals( schema, limit, layers, context ) );
 		} else {
 			throw new Error( `motion refusals: unknown limit kind "${ limit.kind }" in ${ limit.id }` );
 		}

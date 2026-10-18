@@ -64,11 +64,14 @@ export const FIELD_LABELS = Object.freeze( {
 	backgroundColour: { label: __( 'Background colour', 'sgs-blocks' ) },
 } );
 
+/** Fields the schema holds that the panel never offers (none: every field of the hover state is drawn). */
+export const HIDDEN_KEYS = Object.freeze( [] );
+
 /**
- * Fields the schema holds that the panel does not offer. `perspectiveOn` is hidden, so perspective always applies to
- * the element itself, until FR-38A-41's real-Safari check shows that putting it on the parent works.
+ * The key the panel leaves out unless the target may carry its perspective on its parent (a block's root placed directly
+ * inside another SGS block, FR-38A-41); elsewhere the perspective always applies to the element itself.
  */
-export const HIDDEN_KEYS = Object.freeze( [ 'perspectiveOn' ] );
+export const PARENT_KEYS = Object.freeze( [ 'perspectiveOn' ] );
 
 /** The Hover panel's message in place of the ring and accent line fields on an element whose block sets a shadow (FR-38A-42). */
 export const RING_REFUSAL_MESSAGE = __(
@@ -100,6 +103,7 @@ export const HOVER_GROUPS = Object.freeze( [
 			'restRotateX',
 			'restRotateY',
 			'perspective',
+			'perspectiveOn',
 		],
 		// The one modular Rotate (§5.1, FR-38A-41): a driver switch picks the hover X and Y angles or Follow pointer.
 		driver: {

@@ -23,11 +23,12 @@ final class Sgs_Motion_Limits {
 	/**
 	 * One limit's refusals.
 	 *
-	 * @param array<string,mixed>            $limit  A limit row.
-	 * @param array<int,array<string,mixed>> $layers The element's layers.
+	 * @param array<string,mixed>            $limit   A limit row.
+	 * @param array<int,array<string,mixed>> $layers  The element's layers.
+	 * @param array<string,bool>             $context Facts about where the element sits (`Sgs_Motion_Layers::element_refusals`).
 	 * @return array<int,array{id:string,text:string,layers:array<int,string>}>
 	 */
-	public static function refusals( array $limit, array $layers ): array {
+	public static function refusals( array $limit, array $layers, array $context = array() ): array {
 		$out  = array();
 		$id   = (string) $limit['id'];
 		$kind = $limit['kind'] ?? '';
@@ -67,7 +68,7 @@ final class Sgs_Motion_Limits {
 				}
 			}
 		} elseif ( 'same-value' === $kind || 'refused-value' === $kind ) {
-			$out = array_merge( $out, self::value_refusals( $limit, $layers ) );
+			$out = array_merge( $out, self::value_refusals( $limit, $layers, $context ) );
 		} elseif ( 'slot-max' === $kind ) {
 			$claims = Sgs_Motion_Layers::claims_for_slot( $layers, (string) $limit['slot'] );
 			$max    = (int) $limit['max'];
@@ -144,11 +145,12 @@ final class Sgs_Motion_Limits {
 	 * A `same-value` limit's refusals (two layers in its lists set its value differently on one device tier) or a
 	 * `refused-value` limit's (a layer in its lists sets its value to `equals`).
 	 *
-	 * @param array<string,mixed>            $limit  A limit row.
-	 * @param array<int,array<string,mixed>> $layers The element's layers.
+	 * @param array<string,mixed>            $limit   A limit row.
+	 * @param array<int,array<string,mixed>> $layers  The element's layers.
+	 * @param array<string,bool>             $context Facts about where the element sits.
 	 * @return array<int,array{id:string,text:string,layers:array<int,string>}>
 	 */
-	private static function value_refusals( array $limit, array $layers ): array {
+	private static function value_refusals( array $limit, array $layers, array $context ): array {
 		$key     = (string) $limit['value'];
 		$holders = array();
 		foreach ( $layers as $entry ) {
@@ -158,6 +160,9 @@ final class Sgs_Motion_Limits {
 		}
 		$out = array();
 		if ( 'refused-value' === $limit['kind'] ) {
+			if ( isset( $limit['unless'] ) && ! empty( $context[ $limit['unless'] ] ) ) {
+				return $out;
+			}
 			foreach ( $holders as $entry ) {
 				foreach ( self::tier_sources( $entry['layer'] ) as $src ) {
 					if ( null !== $src && ( $src[ $key ] ?? null ) === $limit['equals'] ) {
