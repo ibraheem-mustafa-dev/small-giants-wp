@@ -60,12 +60,14 @@
           "values": {
            "from": {
             "opacity": 0,
-            "translateY": "token:distance.2xl"
+            "translateY": 64
            },
            "to": {
             "opacity": 1,
             "translateY": 0
-           }
+           },
+           "duration": "token:duration.extra-slow",
+           "easing": "token:easing.default"
           }
          }
         }
@@ -74,10 +76,9 @@
       "stagger": {
        "apply": true,
        "offset": 0,
-       "step": 80,
+       "step": 140,
        "order": "row-first",
-       "perRow": true,
-       "closeOrder": "same"
+       "perRow": false
       }
      }
     }

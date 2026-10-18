@@ -14,6 +14,10 @@
  *   marquee-pause        the one pause-control bar has a pause button; pressing it holds the row still, pressing again lets it run
  *   marquee-pause-visible the button sits inside the block's visible box and focusing it does not scroll the row (a
  *                        click would scroll a clipped button into view, so the press alone cannot show this)
+ *   marquee-pause-corner the button sits in the block root's bottom-right corner (bottom and right edges within 2px)
+ *   marquee-touch-real   real touch input (Chromium with hasTouch and isMobile, 390x844, Input.dispatchTouchEvent): a held
+ *                        press holds the row still and lifting runs it within 500ms; a quick tap never pauses in hold mode;
+ *                        in tap mode one tap pauses and a second resumes (UNANSWERED outside Chromium)
  *   marquee-pause-unmasked the button computes mask-image none and no ancestor of it carries a mask
  *   marquee-reduced      under prefers-reduced-motion: reduce nothing is cloned or moves
  *
@@ -24,6 +28,9 @@
  *     must fail the rate check.
  *   - hover: the rate before the pointer arrives must not pass as the hover rate.
  *   - touch / pause: the held-still judge on the running row must fail; a quick tap in hold mode must not pause.
+ *   - pause-corner: the same button planted at the root's vertical middle must be rejected.
+ *   - touch-real: each reading is also judged against the opposite expectation (held judged as running, released and quick-tap
+ *     readings judged as held still) and must be rejected.
  *   - pause-unmasked: the same ancestor walk started from a child of the lane must find the lane's mask.
  *   - fade: the control trust bar must have no mask, and a fade width planted as 12 (applied by a breakpoint
  *     crossing, which makes the runtime re-read its settings) must fail the check.
@@ -112,6 +119,19 @@ export function judgeRate( draft, reading ) {
 
 /** True when no element from the button up to the document root carries a mask (`chain` lists the masked ones). */
 export const judgeUnmasked = ( chain ) => Array.isArray( chain ) && 0 === chain.length;
+
+/**
+ * True when the pause button sits in the block root's bottom-right corner: its bottom edge within `tol` px of the root's
+ * bottom and its right edge within `tol` px of the root's right.
+ *
+ * @param {{left: number, top: number, right: number, bottom: number}} button The button's rect.
+ * @param {{left: number, top: number, right: number, bottom: number}} root The block root's rect.
+ * @param {number} tol Allowed gap in px.
+ */
+export function judgeCornerButton( button, root, tol = 2 ) {
+	if ( ! button || ! root ) return false;
+	return Math.abs( root.bottom - button.bottom ) <= tol && Math.abs( root.right - button.right ) <= tol;
+}
 
 /** True when the hovered speed is the draft's hover rate times the free speed. */
 export function judgeHover( draft, free, hovered ) {
@@ -405,6 +425,24 @@ async function liveChecks( ctx ) {
 		}, sel ) : null;
 		rep.check( 'marquee-pause-visible', { selector: sel, property: 'the pause button sits inside the visible box, and focus does not scroll the row', measured: place, expected: 'inside, not scrolled', pass: Boolean( place ) && place.inside && ! place.scrolled } );
 		if ( present ) {
+			const rects = await page.evaluate( ( s ) => {
+				const root = document.querySelector( s );
+				const btn = root.querySelector( '.sgs-motion-pause' ) || root.nextElementSibling;
+				const pick = ( el ) => {
+					const r = el.getBoundingClientRect();
+					return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+				};
+				return { button: pick( btn ), root: pick( root ) };
+			}, sel );
+			const roundRect = ( r ) => Object.fromEntries( Object.entries( r ).map( ( [ k, v ] ) => [ k, Math.round( v * 10 ) / 10 ] ) );
+			rep.check( 'marquee-pause-corner', { selector: sel, property: 'the pause button against the block root: bottom and right edges', measured: { button: roundRect( rects.button ), root: roundRect( rects.root ) }, expected: 'bottom-right corner, both edges within 2px', pass: judgeCornerButton( rects.button, rects.root ) } );
+			const bh = rects.button.bottom - rects.button.top;
+			const rh = rects.root.bottom - rects.root.top;
+			const midTop = rects.root.top + ( rh - bh ) / 2;
+			const planted = { ...rects.button, top: midTop, bottom: midTop + bh };
+			rep.control( 'marquee-pause-corner', { selector: sel, property: 'the same button planted at the vertical middle of the root', measured: roundRect( planted ), expected: 'rejected', red: ! judgeCornerButton( planted, rects.root ) } );
+		}
+		if ( present ) {
 			await button.click();
 			await page.mouse.move( 2, 2 );
 			await page.evaluate( () => document.activeElement && document.activeElement.blur() );
@@ -536,6 +574,81 @@ async function reducedChecks( ctx ) {
 	rep.control( 'marquee-reduced', { selector: sels.join( ', ' ), property: 'the same judge with no preference', measured: moving.map( ( r ) => r.on ), expected: 'rejected (at least one row runs)', red: ! still( moving ) } );
 }
 
+/**
+ * Real touch input: a Chromium context with touch and a phone viewport, driven through the DevTools protocol so the browser
+ * runs its own touch handling (emulated mouse events after a tap, long-press handling) which synthetic PointerEvents skip.
+ */
+async function realTouchChecks( ctx ) {
+	const { rep, engine } = ctx;
+	const id = 'marquee-touch-real';
+	if ( 'chromium' !== engine ) {
+		rep.check( id, { pass: null, why: `real touch input needs a Chromium DevTools session; this engine is ${ engine }` } );
+		return;
+	}
+	const live = await open( ctx, { hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } } );
+	try {
+		const { page } = live;
+		let cdp;
+		try {
+			cdp = await page.context().newCDPSession( page );
+		} catch ( e ) {
+			rep.check( id, { pass: null, why: `no DevTools session: ${ e && e.message ? e.message : e }` } );
+			return;
+		}
+		const touches = await page.evaluate( () => navigator.maxTouchPoints );
+		if ( ! ( touches > 0 ) ) {
+			rep.check( id, { pass: null, why: 'the context reports no touch points' } );
+			return;
+		}
+		const send = ( type, x, y ) => cdp.send( 'Input.dispatchTouchEvent', { type, touchPoints: 'touchStart' === type || 'touchMove' === type ? [ { x, y, id: 0 } ] : [] } );
+		const centre = async ( sel ) => {
+			await bringIntoView( page, sel );
+			const box = await page.locator( sel ).boundingBox();
+			return { x: box.x + box.width / 4, y: box.y + box.height / 2 };
+		};
+		const running = ( speed ) => speed > 0.5;
+
+		// Hold mode: a press held 700ms holds the row still; lifting lets it run within 500ms.
+		let at = await centre( '.m515-pause' );
+		await send( 'touchStart', at.x, at.y );
+		await page.waitForTimeout( 700 );
+		const held = await measure( page, '.m515-pause', 600 );
+		await send( 'touchEnd' );
+		const released = await measure( page, '.m515-pause', 500 );
+		rep.check( id, { selector: '.m515-pause', property: 'speed while a real touch is held 700ms, then in the 500ms after lifting', measured: { held: held.speed, released: released.speed }, expected: 'still, then running', pass: judgeStill( held.speed ) && running( released.speed ) } );
+		rep.control( id, { selector: '.m515-pause', property: 'the held reading judged as a running row, and the released reading judged as held still', measured: { held: held.speed, released: released.speed }, expected: 'both rejected', red: ! running( held.speed ) && ! judgeStill( released.speed ) } );
+
+		// Hold mode: a quick tap never pauses, even when the browser emulates mouse events afterwards.
+		at = await centre( '.m515-pause' );
+		await send( 'touchStart', at.x, at.y );
+		await page.waitForTimeout( 40 );
+		await send( 'touchEnd' );
+		await page.waitForTimeout( 600 );
+		const quick = await measure( page, '.m515-pause', 800 );
+		rep.check( id, { selector: '.m515-pause', property: 'speed 600ms after a real quick tap (start and end within 40ms)', measured: { quick: quick.speed }, expected: 'running (a tap never pauses in hold mode)', pass: running( quick.speed ) } );
+		rep.control( id, { selector: '.m515-pause', property: 'the quick-tap reading judged as held still', measured: quick.speed, expected: 'rejected', red: ! judgeStill( quick.speed ) } );
+
+		// Tap mode: one tap pauses, a second resumes.
+		if ( shouldRun( DRAFTS[ '.m515-tap' ], 390 ) ) {
+			at = await centre( '.m515-tap' );
+			const tap = async () => {
+				await send( 'touchStart', at.x, at.y );
+				await page.waitForTimeout( 60 );
+				await send( 'touchEnd' );
+				await page.waitForTimeout( 250 );
+			};
+			await tap();
+			const paused = await measure( page, '.m515-tap', 1000 );
+			await tap();
+			const again = await measure( page, '.m515-tap', 1000 );
+			rep.check( id, { selector: '.m515-tap', property: 'speed after one real tap, then after a second', measured: { paused: paused.speed, again: again.speed }, expected: 'still, then running', pass: judgeStill( paused.speed ) && running( again.speed ) } );
+			rep.control( id, { selector: '.m515-tap', property: 'the paused reading judged as a running row, and the resumed reading judged as held still', measured: { paused: paused.speed, again: again.speed }, expected: 'both rejected', red: ! running( paused.speed ) && ! judgeStill( again.speed ) } );
+		}
+	} finally {
+		await live.close();
+	}
+}
+
 // ---- Entry -----------------------------------------------------------------------------------------------------
 
 function selfTest() {
@@ -553,6 +666,11 @@ function selfTest() {
 	need( 'rate rejects still', ! judgeRate( { speed: 60 }, { speed: 0, pitch: 0 } ) );
 	need( 'rate rejects a loop-time draft', ! judgeRate( { loopSeconds: 24 }, { speed: 50, pitch: 1200 } ) );
 	need( 'unmasked', judgeUnmasked( [] ) && ! judgeUnmasked( [ 'sgs-brand-strip__track' ] ) && ! judgeUnmasked( null ) );
+	const rootBox = { left: 0, top: 0, right: 1000, bottom: 120 };
+	const corner = { left: 950, top: 80, right: 998.5, bottom: 119 };
+	need( 'corner button passes', judgeCornerButton( corner, rootBox ) );
+	need( 'corner button rejects the vertical middle', ! judgeCornerButton( { ...corner, top: 40.5, bottom: 79.5 }, rootBox ) );
+	need( 'corner button rejects the wrong side and a missing rect', ! judgeCornerButton( { ...corner, left: 0, right: 48.5 }, rootBox ) && ! judgeCornerButton( null, rootBox ) );
 	need( 'hover slow', judgeHover( { hoverRate: 0.15 }, 45, 6.75 ) && ! judgeHover( { hoverRate: 0.15 }, 45, 45 ) );
 	need( 'hover stop', judgeHover( { hoverRate: 0 }, 45, 0 ) && ! judgeHover( { hoverRate: 0 }, 45, 40 ) );
 	need( 'fade', judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 5%, rgb(0, 0, 0) calc(95%), transparent 100%)', 5 ) && ! judgeFade( 'none', 5 ) );
@@ -595,14 +713,15 @@ async function main() {
 		const browser = await BROWSERS[ engine ].launch( launchOptions( engine ) );
 		for ( const width of args.widths ) {
 			const rep = new Reporter( { engine, width, site: args.site } );
-			const ctx = { browser, width, url, rep };
+			const ctx = { browser, width, url, rep, engine };
 			const probe = await open( ctx );
 			const missing = await probe.page.evaluate( ( sels ) => sels.filter( ( s ) => ! document.querySelector( s ) ), [ ...Object.keys( DRAFTS ), CONTROL, TITLED, ENTRANCE ] );
 			await probe.close();
 			if ( missing.length ) {
 				rep.check( 'marquee-fixture', { selector: url, measured: missing, expected: 'every marker present', pass: null, why: `markers missing from page ${ pageId }: ${ missing.join( ', ' ) }` } );
 			} else {
-				for ( const run of [ liveChecks, reducedChecks ] ) {
+				// Real touch uses its own 390px phone context, so it runs once per engine.
+				for ( const run of [ liveChecks, reducedChecks, ...( width === args.widths[ 0 ] ? [ realTouchChecks ] : [] ) ] ) {
 					try {
 						await run( ctx );
 					} catch ( e ) {

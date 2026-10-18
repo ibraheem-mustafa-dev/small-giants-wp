@@ -345,27 +345,6 @@ footer .wp-block-list a:focus-visible {
 	display: flex;
 }
 
-/*  BRAND STRIP UNIFORMITY  */
-.sgs-brand-strip__logo {
-	display: flex !important;
-	align-items: center;
-	justify-content: center;
-	padding: 10px;
-	height: 80px;
-}
-
-.sgs-brand-strip__logo img {
-	max-height: 60px !important;
-	width: auto !important;
-	max-width: 120px !important;
-	object-fit: contain;
-	transition: transform 0.3s ease;
-}
-
-.sgs-brand-strip__logo:hover img {
-	transform: scale(1.1);
-}
-
 /* SERVICE CARDS: 2×2 GRID ON TABLET - H23 */
 /*
  * WordPress core stacks wp:columns below 782px (flex-basis: 100% on each column).

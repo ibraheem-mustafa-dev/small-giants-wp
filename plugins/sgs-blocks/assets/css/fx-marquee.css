@@ -71,17 +71,17 @@
 	);
 }
 
-/* The pause button floats over the end of the root, above the lane. Content passing behind it is fine; the button is a
- * sibling of the lane, so the lane's edge-fade mask never touches it. */
+/* The pause button floats over the bottom end of the root, above the lane, so on a tall strip of logos it sits in the
+ * corner and leaves the logos clear. Content passing behind it is fine; the button is a sibling of the lane, so the
+ * lane's edge-fade mask never touches it. */
 [data-sgs-fx~="marquee"] .sgs-motion-pause {
 	z-index: 3;
 }
 
 [data-sgs-fx~="marquee"][data-sgs-marquee="on"] > .sgs-motion-pause {
 	position: absolute;
-	inset-block-start: 50%;
+	inset-block-end: 0;
 	inset-inline-end: 0;
-	transform: translateY(-50%);
 }
 
 @media (prefers-reduced-motion: reduce) {

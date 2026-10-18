@@ -16,6 +16,10 @@
  *   ring                 the ring layer is aria-hidden, a 180px circle, scales 0 to 1 on hover, and follows the pointer
  *                        with a 0.4s lag (a jump of the pointer moves the ring through intermediate positions and it
  *                        arrives in 250 to 520ms). Control: a series that jumps in one frame fails the lag judge.
+ *   reveal-exit-glides   the pointer leaves the card: the `::before` clip circle centre, sampled every frame for 600ms, passes
+ *                        through at least four intermediate positions with no single-frame jump over 70% of the travel
+ *                        (the position transition keeps running while the radius shrinks). UNANSWERED when the card stores
+ *                        no `--sgs-cursor-field-ring-lag`. Control: a series that jumps in one frame fails the judge.
  *   reduced-motion       under reduced motion the radius transition is 0s, the ring is not displayed and no ring position is
  *                        written. Control: the same card under no preference has a 0.4s transition.
  *   ripple-with-reveal   a pointer press on the card, which carries both effects, sets the ripple's play state and its
@@ -87,6 +91,26 @@ export function parseCircle( value ) {
 	return m ? { r: parseFloat( m[ 1 ] ), x: parseFloat( m[ 2 ] ), y: parseFloat( m[ 3 ] ) } : null;
 }
 
+/**
+ * A point that travels glides: from its first to its last position it passes through at least `minFrames` distinct
+ * intermediate positions and no single frame covers more than 70% of the travel; a total travel under 3px counts as
+ * gliding (nothing to glide over).
+ *
+ * @param {{x: number, y: number}[]} series Positions, one per frame.
+ * @param {number} minFrames The fewest distinct intermediate positions.
+ */
+export function glides( series, minFrames = 4 ) {
+	if ( ! Array.isArray( series ) || series.length < 2 ) return false;
+	const first = series[ 0 ];
+	const last = series[ series.length - 1 ];
+	const travel = Math.hypot( last.x - first.x, last.y - first.y );
+	if ( travel < 3 ) return true;
+	let biggest = 0;
+	for ( let i = 1; i < series.length; i++ ) biggest = Math.max( biggest, Math.hypot( series[ i ].x - series[ i - 1 ].x, series[ i ].y - series[ i - 1 ].y ) );
+	const inBetween = new Set( series.filter( ( p ) => Math.hypot( p.x - first.x, p.y - first.y ) > 0.5 && Math.hypot( last.x - p.x, last.y - p.y ) > 0.5 ).map( ( p ) => `${ Math.round( p.x * 2 ) },${ Math.round( p.y * 2 ) }` ) );
+	return inBetween.size >= minFrames && biggest <= travel * 0.7;
+}
+
 /** Euclidean distance between two [r, g, b] pixels. */
 export const rgbDistance = ( a, b ) => Math.hypot( a[ 0 ] - b[ 0 ], a[ 1 ] - b[ 1 ], a[ 2 ] - b[ 2 ] );
 
@@ -121,6 +145,11 @@ function selfTest() {
 	want( inSync( frames ), 'a circle on the ring is in sync' );
 	want( ! inSync( frames.map( ( f ) => ( { ...f, x: f.x + 60 } ) ) ) && ! inSync( [] ), 'a circle off the ring is not in sync' );
 	want( ! lagged( ramp( 100, 250, 90 ).map( ( s ) => ( { t: s.t * 3, x: s.v } ) ), 'x' ), 'a 1.2s follower is too slow' );
+	const glide = Array.from( { length: 30 }, ( _, i ) => ( { x: 100 + 200 * ( 1 - Math.pow( 1 - i / 29, 3 ) ), y: 60 + 20 * ( i / 29 ) } ) );
+	want( glides( glide ), 'a centre that eases to the exit point glides' );
+	want( ! glides( [ { x: 100, y: 60 }, { x: 100, y: 60 }, { x: 300, y: 80 }, { x: 300, y: 80 } ] ), 'a centre that jumps in one frame does not glide' );
+	want( glides( [ { x: 100, y: 60 }, { x: 101, y: 60 }, { x: 101, y: 61 } ] ), 'a travel under 3px counts as gliding' );
+	want( ! glides( [ { x: 100, y: 60 } ] ), 'a single sample is not a glide' );
 	want( parseCircle( 'circle(90px at 120px 60px)' ).x === 120, 'circle parse reads the centre' );
 	want( parseCircle( 'none' ) === null, 'no circle parses to null' );
 	want( ! /@property\s+--sgs-cursor-field-radius/.test( stripRadiusProperty( '@property --sgs-cursor-field-radius { syntax: "<length>"; }\n.a{}' ) ), 'the strip removes the registration' );
@@ -348,6 +377,38 @@ async function ringChecks( page, rep ) {
 	} );
 }
 
+/** The pointer leaves the card: the revealed circle's centre glides to the exit point while its radius shrinks. */
+async function revealExit( page, rep ) {
+	await park( page );
+	const box = await settleInView( page, REVEAL );
+	const lag = await page.evaluate( ( s ) => getComputedStyle( document.querySelector( s ) ).getPropertyValue( '--sgs-cursor-field-ring-lag' ).trim(), REVEAL );
+	const lagMs = /ms$/.test( lag ) ? parseFloat( lag ) : /s$/.test( lag ) ? parseFloat( lag ) * 1000 : NaN;
+	if ( ! ( lagMs > 0 ) ) {
+		rep.check( 'reveal-exit-glides', { selector: REVEAL, property: '--sgs-cursor-field-ring-lag on the card', measured: lag, expected: 'a stored lag above 0ms', pass: null, why: 'no lag stored: the circle follows the pointer immediately by design, so there is no glide to judge' } );
+		return;
+	}
+	await page.mouse.move( box.x + box.width * 0.5, box.y + box.height * 0.5, { steps: 2 } );
+	await page.waitForTimeout( 1000 );
+	const pending = page.evaluate( sampleSeries, { sel: REVEAL, ms: 600, ring: false } );
+	await page.waitForTimeout( 40 );
+	await page.mouse.move( box.x + box.width + 60, box.y + box.height * 0.5 );
+	const rows = ( await pending ).map( ( r ) => parseCircle( r.clip ) ).filter( Boolean );
+	const centres = rows.map( ( c ) => ( { x: c.x, y: c.y } ) );
+	const first = centres[ 0 ] || { x: 0, y: 0 };
+	const last = centres[ centres.length - 1 ] || first;
+	rep.check( 'reveal-exit-glides', {
+		selector: REVEAL, property: '::before clip circle centre, sampled every frame for 600ms after the pointer leaves the card',
+		measured: { lag, frames: centres.length, travel: Math.round( Math.hypot( last.x - first.x, last.y - first.y ) ), first, last },
+		expected: 'at least 4 intermediate positions and no single-frame jump over 70% of the travel', pass: centres.length > 5 && glides( centres ),
+	} );
+	const jumped = centres.map( ( _, i ) => ( 0 === i ? first : last ) );
+	rep.control( 'reveal-exit-glides', {
+		selector: REVEAL, property: 'the measured start and end joined by a one-frame jump', measured: { from: first, to: last },
+		expected: 'the glide judge rejects it (a synthetic far jump stands in when the real travel is under 3px)',
+		red: Math.hypot( last.x - first.x, last.y - first.y ) < 3 ? ! glides( [ { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 200, y: 20 }, { x: 200, y: 20 } ] ) : ! glides( jumped ),
+	} );
+}
+
 async function reducedMotion( page, rep ) {
 	await park( page );
 	const normal = await page.evaluate( readFacts, REVEAL );
@@ -504,6 +565,7 @@ export async function main( argv ) {
 					await radiusAndWash( page, rep, false );
 					await revealPicture( page, rep );
 					await ringChecks( page, rep );
+					await revealExit( page, rep );
 					await reducedMotion( page, rep );
 					await rippleWithReveal( page, rep );
 				}

@@ -490,11 +490,13 @@ describe( 'marquee touch pause', () => {
 		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
 	} );
 
-	test( 'tap is the default when the attribute is absent', async () => {
+	test( 'hold is the default when the attribute is absent: a plain tap pauses nothing', async () => {
 		const { root } = mount();
 		await boot();
 		pointer( root, 'pointerdown', 'touch' );
-		live().forEach( ( a ) => expect( a.playState ).toBe( 'paused' ) );
+		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+		pointer( root, 'pointerup', 'touch' );
+		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
 	} );
 
 	test( 'NEGATIVE CONTROL: a mouse press never pauses, and with touch pause off a tap does nothing', async () => {

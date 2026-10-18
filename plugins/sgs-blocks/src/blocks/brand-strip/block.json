@@ -506,7 +506,7 @@
 		},
 		"logoGap": {
 			"type": "string",
-			"default": "0px",
+			"default": "10px",
 			"description": "Gap between logos: a spacing preset slug (\"50\") or a custom length (\"12px\"), validated by sgs_css_length_value()."
 		},
 		"tilePadding": {

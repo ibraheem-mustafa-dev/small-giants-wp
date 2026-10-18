@@ -17,7 +17,7 @@
  *                  set or root resizes.
  *   direction      left, right, up or down.
  *   hoverRate      playback rate while a mouse or pen is over the block: 1 no change, 0 pauses.
- *   touchPause     off, tap (a tap pauses, the next tap resumes; the default) or hold (paused while a finger rests on it).
+ *   touchPause     off, tap (a tap pauses, the next tap resumes) or hold (paused while a finger rests on it; the default).
  *   edgeFade       fade the two ends; edgeFadeWidth is the fade's size as a percentage of the root.
  *   belowBreakpoint always, tablet (1023px and below) or mobile (767px and below); static outside the range.
  *   pauseControl   the pause button; off by default. Hover and keyboard-focus pause do not depend on it.
@@ -45,7 +45,7 @@ const IMAGE_WAIT_MS = 1500;
 const DEFAULT_SPEED = 40;
 const DEFAULT_FADE = 5;
 const TOUCH_MODES = [ 'off', 'tap', 'hold' ];
-const DEFAULT_TOUCH_PAUSE = 'tap';
+const DEFAULT_TOUCH_PAUSE = 'hold';
 const BELOW = { tablet: '(max-width: 1023px)', mobile: '(max-width: 767px)' };
 const VERTICAL = [ 'up', 'down' ];
 const REVERSED = [ 'right', 'down' ];

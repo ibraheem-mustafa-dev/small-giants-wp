@@ -21,6 +21,16 @@
 	 * falls into the inter-tile gap instead. */
 	--sgs-tile-cap: calc(var(--sgs-logo-max-height, 180px) + var(--sgs-tile-padding, 0px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
 
+	/* THE gap between logos, owned here and nowhere else. The logoGap control overrides it through the block's scoped
+	 * `.uid` rule; the track (between marquee sets), the set (between logos), the tile-size sum, the root max-width and
+	 * the separators all read this one property. */
+	--sgs-logo-gap: 10px;
+
+	/* Square tile = strip width / columns, capped at --sgs-tile-cap. Declared on the root so the tile and the caption
+	 * (which sits outside the tile) read the same value; `100cqw` resolves against this root, the query container,
+	 * wherever the property is read inside it. */
+	--sgs-tile-size: min(calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap)) / var(--sgs-columns, 8)), var(--sgs-tile-cap));
+
 	/* Reserve the cap height to prevent CLS before images load (cap ≈ the
 	 * actual tile size at the common desktop width, so negligible over-reserve). */
 	min-height: var(--sgs-tile-cap);
@@ -30,7 +40,7 @@
 	 * in the band — the extra width becomes empty band, NEVER more columns
 	 * (Bean 2026-07-17: "cap the width when the logos reach max size"). Below
 	 * that width the strip fills the band normally (100% < this max). */
-	max-width: calc(var(--sgs-columns) * var(--sgs-tile-cap) + (var(--sgs-columns) - 1) * var(--sgs-logo-gap, 0px));
+	max-width: calc(var(--sgs-columns) * var(--sgs-tile-cap) + (var(--sgs-columns) - 1) * var(--sgs-logo-gap));
 	margin-inline: auto;
 }
 
@@ -55,8 +65,7 @@
 /* ===== Track — flex container for sets ===== */
 .sgs-brand-strip__track {
 	display: flex;
-	align-items: center;
-	gap: var(--sgs-logo-gap, var(--wp--preset--spacing--50));
+	gap: var(--sgs-logo-gap);
 }
 
 /* Static (no marquee) mode: wrap and centre.
@@ -70,31 +79,25 @@
  * negative-margin breakout was REMOVED: `50vw` includes the scrollbar width,
  * so it pushed the track ~8px past clientWidth (real horizontal overflow,
  * confirmed live 1433 vs 1425 at 1440 — the scrollbar-inclusion trap). The
- * inset padding below reproduces the reference's ~20px side margins within
- * the aligned width. Scrolling mode keeps its own marquee mechanism. */
+ * track carries no padding of its own: the block's padding control (on the
+ * root) is the only inset, so the tile-size sum (100cqw of the root) fits
+ * the columns exactly. Scrolling mode keeps its own marquee mechanism. */
 .sgs-brand-strip:not([data-sgs-marquee="on"]) .sgs-brand-strip__track {
 	flex-wrap: wrap;
 	justify-content: center;
-	padding-left: var(--sgs-static-row-inset, 20px);
-	padding-right: var(--sgs-static-row-inset, 20px);
-	box-sizing: border-box;
 }
 
 /* ===== Set — one complete group of logos ===== */
 .sgs-brand-strip__set {
 	display: flex;
 	align-items: center;
-	gap: var(--sgs-logo-gap, var(--wp--preset--spacing--50));
+	gap: var(--sgs-logo-gap);
 	flex-shrink: 0;
 }
 
 /* Static mode: allow the set's own children (the items) to wrap onto a
- * second row rather than being clipped, and use a tighter gap so 8
- * uniform tiles can share one row on wide viewports (matches the
- * reference's own tight, near-zero-gap packing — see the measurement note
- * in the visual-diff report). Scoped to static mode only so the
- * marquee's spacing (`--wp--preset--spacing--50`) is unaffected, per the
- * coordinator's explicit instruction.
+ * second row rather than being clipped. The gap is the base rule's
+ * --sgs-logo-gap, the same value as in the marquee.
  *
  * `width: 100%` + `flex-shrink: 1` (overriding the base rule's
  * `flex-shrink: 0`, which the marquee needs so cloned sets keep
@@ -109,7 +112,6 @@
 .sgs-brand-strip:not([data-sgs-marquee="on"]) .sgs-brand-strip__set {
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: var(--sgs-static-row-gap, 8px);
 	flex-shrink: 1;
 	width: 100%;
 }
@@ -149,7 +151,6 @@
 	 * (maxHeight-derived) so tiles stop growing on wide screens instead of
 	 * ballooning. Once capped, the extra strip width falls into the inter-tile
 	 * gap (--sgs-logo-gap). */
-	--sgs-tile-size: min(calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap, 0px)) / var(--sgs-columns, 8)), var(--sgs-tile-cap));
 	width: var(--sgs-tile-size);
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 0px);
@@ -241,27 +242,30 @@
  * shadow/radius) is switched off here too: a text label reads as a label,
  * not a card. `.sgs-brand-strip__brand-text`'s own typography is emitted
  * scoped by render.php (prefix `brandText`; see brand-display-render.php). */
-.sgs-brand-strip__item--text {
+.sgs-brand-strip__item--text,
+.sgs-brand-strip--layout-row .sgs-brand-strip__item {
+	/* Sized by its content (a text brand, or any brand in the row layout): 44px
+	 * is the WCAG touch-target floor. Width floor is the brandTextMinWidth
+	 * setting (0 = content width). Vertical padding is 0 so the height is the
+	 * floor, not the tile padding. */
 	width: auto;
-	/* Sized by its text: 44px is the WCAG touch-target floor. Width floor is
-	 * the brandTextMinWidth setting (0 = content width). Vertical padding is 0
-	 * so the height is the floor, not the tile padding. */
 	height: auto;
 	min-height: 44px;
 	min-width: var(--sgs-brand-text-min-width, 0px);
 	padding-block: 0;
-	padding-left: var(--sgs-tile-padding, 0px);
-	padding-right: var(--sgs-tile-padding, 0px);
-	background-color: transparent;
-	background-image: none;
+	padding-inline: var(--sgs-tile-padding, 0px);
 	/* No tile frame around a name: the tile's transparent border would still
 	 * offset the text. The brandTextSeparator settings draw its own right-edge line. */
+	background-color: transparent;
+	background-image: none;
 	border-width: 0;
 	border-color: transparent;
+	border-radius: 0;
 	box-shadow: none;
 }
 
-.sgs-brand-strip__item--text a {
+.sgs-brand-strip__item--text a,
+.sgs-brand-strip--layout-row .sgs-brand-strip__item a {
 	/* The item is auto-height, so the base `height: 100%` would collapse to the
 	 * text line; stretch the link across the item's cross size instead so the
 	 * whole 44px is the tap target and the text stays vertically centred. */
@@ -269,9 +273,11 @@
 	align-self: stretch;
 }
 
-/* Text-only strip (Display: Text only): no logo tile to reserve or cap, so the
- * tile-cap CLS reserve and the columns x tile-cap width cap do not apply. */
-.sgs-brand-strip--text {
+/* Text-only strip (Display: Text only) and the row layout: no logo tile to
+ * reserve or cap, so the tile-cap CLS reserve and the columns x tile-cap width
+ * cap do not apply. */
+.sgs-brand-strip--text,
+.sgs-brand-strip--layout-row {
 	min-height: 0;
 	max-width: none;
 }
@@ -288,31 +294,8 @@
 	color: currentColor;
 }
 
-/* ===== Row layout (logoLayout: row) =====
- * Every brand, logo or name, sits in the same slot a text brand uses: sized by
- * its content, at least the brandTextMinWidth wide, 44px tall (the touch-target
- * floor), padded by tilePadding, divided by the brandTextSeparator line. A logo
- * is capped at maxHeight tall and logoMaxWidth wide rather than filling a
- * square tile, and each brand rests at logoOpacity, full on hover or focus. */
-.sgs-brand-strip--layout-row {
-	min-height: 0;
-	max-width: none;
-}
-
+/* Row layout (logoLayout: row): each brand rests at logoOpacity, full on hover or focus. */
 .sgs-brand-strip--layout-row .sgs-brand-strip__item {
-	width: auto;
-	height: auto;
-	min-height: 44px;
-	min-width: var(--sgs-brand-text-min-width, 0px);
-	padding-block: 0;
-	padding-left: var(--sgs-tile-padding, 0px);
-	padding-right: var(--sgs-tile-padding, 0px);
-	background-color: transparent;
-	background-image: none;
-	border-width: 0;
-	border-color: transparent;
-	border-radius: 0;
-	box-shadow: none;
 	opacity: var(--sgs-logo-opacity, 1);
 	transition: opacity var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);
 }
@@ -320,11 +303,6 @@
 .sgs-brand-strip--layout-row .sgs-brand-strip__item:hover,
 .sgs-brand-strip--layout-row .sgs-brand-strip__item:focus-within {
 	opacity: 1;
-}
-
-.sgs-brand-strip--layout-row .sgs-brand-strip__item a {
-	height: auto;
-	align-self: stretch;
 }
 
 .sgs-brand-strip--layout-row .sgs-brand-strip__logo,

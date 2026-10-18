@@ -664,7 +664,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							tilePadding: '0px',
 							tileRadius: 16,
 							tileShadow: '',
-							logoGap: '0px',
+							logoGap: '10px',
 							tileBackgroundColour: '',
 							tileBorderWidth: 0,
 							tileBorderColour: '',
@@ -758,8 +758,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Gap between logos', 'sgs-blocks' ) }
-						hasValue={ () => '0px' !== logoGap }
-						onDeselect={ () => setAttributes( { logoGap: '0px' } ) }
+						hasValue={ () => '10px' !== logoGap }
+						onDeselect={ () => setAttributes( { logoGap: '10px' } ) }
 					>
 						<SpacingControl
 							custom

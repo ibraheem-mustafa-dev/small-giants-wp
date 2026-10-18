@@ -96,7 +96,7 @@ $name_colour_gradient = $attributes['nameColourGradient'] ?? '';
 // logoGap and tilePadding are a spacing preset slug ("50") or a custom length ("12px"),
 // validated by sgs_css_length_value(); empty or unsafe falls back to the default.
 $logo_gap            = sgs_css_length_value( $attributes['logoGap'] ?? '' );
-$logo_gap            = '' !== $logo_gap ? $logo_gap : '0px';
+$logo_gap            = '' !== $logo_gap ? $logo_gap : '10px';
 $tile_padding        = sgs_css_length_value( $attributes['tilePadding'] ?? '' );
 $tile_padding        = '' !== $tile_padding ? $tile_padding : '0px';
 $tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
@@ -277,11 +277,10 @@ $css_vars = array_merge(
 		(string) ( $attributes['tileBackgroundColourGradient'] ?? '' )
 	)
 );
-// Emit ALWAYS (not only when > 0) so an explicit 0 is honoured — otherwise a 0
-// value falls through to the CSS `var(--sgs-logo-gap, spacing|50)` default and
-// the gap can never be closed (a reference strip with adjacent, border-separated
-// tiles needs gap:0). block.json default stays 0 = tiles adjacent; raise logoGap
-// to add space.
+// Emit ALWAYS so an explicit 0 is honoured and overrides the stylesheet's
+// `.sgs-brand-strip { --sgs-logo-gap }` default (a strip with adjacent,
+// border-separated tiles needs gap:0). This is the only gap value: the track,
+// the set, the tile-size sum, the root max-width and the separators read it.
 $css_vars[] = '--sgs-logo-gap:' . $logo_gap;
 
 // ---------------------------------------------------------------------------
@@ -593,7 +592,7 @@ if ( $sgs_bs_sep_active && $is_marquee ) {
 			'layout'    => 'line',
 			'item'      => $root_sel . ' .sgs-brand-strip__set > *',
 			'direction' => 'row',
-			'gap_expr'  => array( 'column' => 'var(--sgs-logo-gap, 0px)' ),
+			'gap_expr'  => array( 'column' => 'var(--sgs-logo-gap)' ),
 		),
 		$sgs_bs_sep_caps
 	);

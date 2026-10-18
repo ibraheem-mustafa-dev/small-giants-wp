@@ -4,7 +4,8 @@
  * The `image-reveal` field type can carry a ring: the renderer's injected `span.sgs-motion-layer` with
  * `data-sgs-layer="cursor-field-ring"` (aria-hidden). This module writes the pointer's position inside the element, in
  * pixels, to `--sgs-ring-x` and `--sgs-ring-y` on that layer and nothing else (it also marks the emitter element with the same
- * `data-sgs-ring-live` flag, which switches on the lag of the revealed circle in `assets/css/fx-cursor-field.css`); `assets/css/fx-cursor-field.css` paints the
+ * `data-sgs-ring-live` flag, which switches on the lag of the revealed circle in `assets/css/fx-cursor-field.css`; on leaving, the
+ * element keeps the flag until the circle has shrunk, so the circle glides to the exit point instead of jumping); `assets/css/fx-cursor-field.css` paints the
  * ring, scales it 0 to 1 while the element is hovered, and makes the position lag by transitioning the two registered
  * properties over the ring's lag.
  *
@@ -22,6 +23,23 @@ const LAYER = ':scope > .sgs-motion-layer[data-sgs-layer="cursor-field-ring"]';
 const PROP_X = '--sgs-ring-x';
 const PROP_Y = '--sgs-ring-y';
 const LIVE = 'data-sgs-ring-live';
+const RADIUS_DURATION_ATTR = 'data-sgs-fx-cursor-field-radius-duration';
+const LAG_ATTR = 'data-sgs-fx-cursor-field-ring-lag';
+const DEFAULT_RADIUS_MS = 400;
+const DEFAULT_LAG_MS = 400;
+
+/**
+ * A stored millisecond attribute, or the fallback when it is absent or not a number.
+ *
+ * @param {HTMLElement} el       Emitter element.
+ * @param {string}      name     Attribute name.
+ * @param {number}      fallback Value in ms.
+ * @return {number} Milliseconds.
+ */
+function readMs( el, name, fallback ) {
+	const value = parseFloat( el.getAttribute( name ) );
+	return Number.isFinite( value ) && value >= 0 ? value : fallback;
+}
 
 /**
  * One element's ring tracker, or null when it has no ring layer.
@@ -35,6 +53,13 @@ function bindElement( el ) {
 		return { start() {}, stop() {} };
 	}
 	let liveFrame = null;
+	let settleTimer = null;
+	const cancelSettle = () => {
+		if ( null !== settleTimer ) {
+			window.clearTimeout( settleTimer );
+			settleTimer = null;
+		}
+	};
 	const cancelLive = () => {
 		if ( null !== liveFrame ) {
 			window.cancelAnimationFrame( liveFrame );
@@ -43,6 +68,7 @@ function bindElement( el ) {
 	};
 	return trackPointer( el, {
 		move( nx, ny ) {
+			cancelSettle();
 			const rect = el.getBoundingClientRect();
 			const width = el.offsetWidth || rect.width;
 			const height = el.offsetHeight || rect.height;
@@ -59,7 +85,13 @@ function bindElement( el ) {
 		reset() {
 			cancelLive();
 			layer.removeAttribute( LIVE );
-			el.removeAttribute( LIVE );
+			// The revealed circle keeps gliding to the exit point while its radius shrinks; the flag drops once that has
+			// finished, so the next entry seeds the position at once (the circle is invisible by then).
+			cancelSettle();
+			settleTimer = window.setTimeout( () => {
+				settleTimer = null;
+				el.removeAttribute( LIVE );
+			}, readMs( el, RADIUS_DURATION_ATTR, DEFAULT_RADIUS_MS ) + readMs( el, LAG_ATTR, DEFAULT_LAG_MS ) );
 		},
 	} );
 }
