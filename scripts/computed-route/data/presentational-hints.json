@@ -1,0 +1,1123 @@
+{
+	"source": "https://html.spec.whatwg.org/multipage/rendering.html",
+	"read": "2026-10-18",
+	"entries": [
+		{
+			"attribute": "dir",
+			"element": "*",
+			"css": [
+				"direction",
+				"unicode-bidi"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "*",
+			"css": [
+				"display"
+			]
+		},
+		{
+			"attribute": "open",
+			"element": "*",
+			"css": [
+				"display",
+				"list-style-type"
+			]
+		},
+		{
+			"attribute": "popover",
+			"element": "*",
+			"css": [
+				"background-color",
+				"border",
+				"color",
+				"height",
+				"inset",
+				"margin",
+				"overflow",
+				"padding",
+				"position",
+				"width"
+			]
+		},
+		{
+			"attribute": "sizes",
+			"element": "*",
+			"css": [
+				"contain",
+				"contain-intrinsic-size"
+			]
+		},
+		{
+			"attribute": "type",
+			"element": "*",
+			"css": [
+				"align-content",
+				"box-sizing",
+				"overflow",
+				"overflow-clip-margin",
+				"text-align",
+				"unicode-bidi"
+			]
+		},
+		{
+			"attribute": "title",
+			"element": "abbr",
+			"css": [
+				"text-decoration"
+			]
+		},
+		{
+			"attribute": "title",
+			"element": "acronym",
+			"css": [
+				"text-decoration"
+			]
+		},
+		{
+			"attribute": "dir",
+			"element": "bdo",
+			"css": [
+				"unicode-bidi"
+			]
+		},
+		{
+			"attribute": "alink",
+			"element": "body",
+			"css": [
+				"color"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "body",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "body",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "leftmargin",
+			"element": "body",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "link",
+			"element": "body",
+			"css": [
+				"color"
+			]
+		},
+		{
+			"attribute": "marginheight",
+			"element": "body",
+			"css": [
+				"margin-bottom",
+				"margin-top"
+			]
+		},
+		{
+			"attribute": "marginwidth",
+			"element": "body",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "text",
+			"element": "body",
+			"css": [
+				"color"
+			]
+		},
+		{
+			"attribute": "topmargin",
+			"element": "body",
+			"css": [
+				"margin-bottom",
+				"margin-top"
+			]
+		},
+		{
+			"attribute": "vlink",
+			"element": "body",
+			"css": [
+				"color"
+			]
+		},
+		{
+			"attribute": "clear",
+			"element": "br",
+			"css": [
+				"clear"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "canvas",
+			"css": [
+				"aspect-ratio"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "canvas",
+			"css": [
+				"aspect-ratio"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "caption",
+			"css": [
+				"caption-side"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "center",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "col",
+			"css": [
+				"display",
+				"visibility"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "col",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "colgroup",
+			"css": [
+				"display",
+				"visibility"
+			]
+		},
+		{
+			"attribute": "open",
+			"element": "details",
+			"css": [
+				"list-style-type"
+			]
+		},
+		{
+			"attribute": "open",
+			"element": "dialog",
+			"css": [
+				"display"
+			]
+		},
+		{
+			"attribute": "popover",
+			"element": "dialog",
+			"css": [
+				"display"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "div",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "embed",
+			"css": [
+				"float",
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "embed",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "embed",
+			"css": [
+				"content-visibility",
+				"display",
+				"height",
+				"width"
+			]
+		},
+		{
+			"attribute": "hspace",
+			"element": "embed",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "vspace",
+			"element": "embed",
+			"css": [
+				"margin-bottom",
+				"margin-top"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "embed",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "color",
+			"element": "font",
+			"css": [
+				"color"
+			]
+		},
+		{
+			"attribute": "face",
+			"element": "font",
+			"css": [
+				"font-family"
+			]
+		},
+		{
+			"attribute": "size",
+			"element": "font",
+			"css": [
+				"font-size"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "h1",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "h2",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "h3",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "h4",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "h5",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "h6",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "hr",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "color",
+			"element": "hr",
+			"css": [
+				"border-bottom-width",
+				"border-left-width",
+				"border-right-width",
+				"border-style",
+				"border-top-width",
+				"color",
+				"height"
+			]
+		},
+		{
+			"attribute": "noshade",
+			"element": "hr",
+			"css": [
+				"border-bottom-width",
+				"border-left-width",
+				"border-right-width",
+				"border-style",
+				"border-top-width",
+				"height"
+			]
+		},
+		{
+			"attribute": "size",
+			"element": "hr",
+			"css": [
+				"border-bottom-width",
+				"border-left-width",
+				"border-right-width",
+				"border-top-width",
+				"height"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "hr",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "iframe",
+			"css": [
+				"float",
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "frameborder",
+			"element": "iframe",
+			"css": [
+				"border-bottom-width",
+				"border-left-width",
+				"border-right-width",
+				"border-top-width"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "iframe",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "iframe",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "img",
+			"css": [
+				"float",
+				"margin-left",
+				"margin-right",
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "border",
+			"element": "img",
+			"css": [
+				"border-bottom-style",
+				"border-bottom-width",
+				"border-left-style",
+				"border-left-width",
+				"border-right-style",
+				"border-right-width",
+				"border-top-style",
+				"border-top-width"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "img",
+			"css": [
+				"aspect-ratio",
+				"height"
+			]
+		},
+		{
+			"attribute": "hspace",
+			"element": "img",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "vspace",
+			"element": "img",
+			"css": [
+				"margin-bottom",
+				"margin-top"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "img",
+			"css": [
+				"aspect-ratio",
+				"width"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "input",
+			"css": [
+				"float",
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "border",
+			"element": "input",
+			"css": [
+				"border-bottom-style",
+				"border-bottom-width",
+				"border-left-style",
+				"border-left-width",
+				"border-right-style",
+				"border-right-width",
+				"border-top-style",
+				"border-top-width"
+			]
+		},
+		{
+			"attribute": "dir",
+			"element": "input",
+			"css": [
+				"unicode-bidi"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "input",
+			"css": [
+				"aspect-ratio",
+				"height"
+			]
+		},
+		{
+			"attribute": "hspace",
+			"element": "input",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "type",
+			"element": "input",
+			"css": [
+				"appearance",
+				"direction",
+				"display",
+				"overflow-clip-margin"
+			]
+		},
+		{
+			"attribute": "vspace",
+			"element": "input",
+			"css": [
+				"margin-bottom",
+				"margin-top"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "input",
+			"css": [
+				"aspect-ratio",
+				"width"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "legend",
+			"css": [
+				"justify-self"
+			]
+		},
+		{
+			"attribute": "type",
+			"element": "li",
+			"css": [
+				"list-style-type"
+			]
+		},
+		{
+			"attribute": "value",
+			"element": "li",
+			"css": [
+				"counter-set"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "marquee",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "marquee",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "hspace",
+			"element": "marquee",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "vspace",
+			"element": "marquee",
+			"css": [
+				"margin-bottom",
+				"margin-top"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "marquee",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "object",
+			"css": [
+				"float",
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "border",
+			"element": "object",
+			"css": [
+				"border-bottom-style",
+				"border-bottom-width",
+				"border-left-style",
+				"border-left-width",
+				"border-right-style",
+				"border-right-width",
+				"border-top-style",
+				"border-top-width"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "object",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "hspace",
+			"element": "object",
+			"css": [
+				"margin-left",
+				"margin-right"
+			]
+		},
+		{
+			"attribute": "vspace",
+			"element": "object",
+			"css": [
+				"margin-bottom",
+				"margin-top"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "object",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "reversed",
+			"element": "ol",
+			"css": [
+				"counter-reset"
+			]
+		},
+		{
+			"attribute": "start",
+			"element": "ol",
+			"css": [
+				"counter-reset"
+			]
+		},
+		{
+			"attribute": "type",
+			"element": "ol",
+			"css": [
+				"list-style-type"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "p",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "dir",
+			"element": "pre",
+			"css": [
+				"unicode-bidi"
+			]
+		},
+		{
+			"attribute": "wrap",
+			"element": "pre",
+			"css": [
+				"white-space"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "table",
+			"css": [
+				"float",
+				"margin-inline"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "table",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "table",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "border",
+			"element": "table",
+			"css": [
+				"border-bottom-width",
+				"border-left-width",
+				"border-right-width",
+				"border-style",
+				"border-top-width",
+				"border-width"
+			]
+		},
+		{
+			"attribute": "bordercolor",
+			"element": "table",
+			"css": [
+				"border-bottom-color",
+				"border-left-color",
+				"border-right-color",
+				"border-top-color"
+			]
+		},
+		{
+			"attribute": "cellpadding",
+			"element": "table",
+			"css": [
+				"padding-bottom",
+				"padding-left",
+				"padding-right",
+				"padding-top"
+			]
+		},
+		{
+			"attribute": "cellspacing",
+			"element": "table",
+			"css": [
+				"border-spacing"
+			]
+		},
+		{
+			"attribute": "frame",
+			"element": "table",
+			"css": [
+				"border-color",
+				"border-style"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "table",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "rules",
+			"element": "table",
+			"css": [
+				"border-block-style",
+				"border-block-width",
+				"border-collapse",
+				"border-color",
+				"border-inline-style",
+				"border-inline-width",
+				"border-style",
+				"border-width"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "table",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "tbody",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "tbody",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "tbody",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "tbody",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "tbody",
+			"css": [
+				"display",
+				"visibility"
+			]
+		},
+		{
+			"attribute": "valign",
+			"element": "tbody",
+			"css": [
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "td",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "td",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "td",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "td",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "nowrap",
+			"element": "td",
+			"css": [
+				"white-space"
+			]
+		},
+		{
+			"attribute": "valign",
+			"element": "td",
+			"css": [
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "td",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "dir",
+			"element": "textarea",
+			"css": [
+				"unicode-bidi"
+			]
+		},
+		{
+			"attribute": "wrap",
+			"element": "textarea",
+			"css": [
+				"white-space"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "tfoot",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "tfoot",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "tfoot",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "tfoot",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "tfoot",
+			"css": [
+				"display",
+				"visibility"
+			]
+		},
+		{
+			"attribute": "valign",
+			"element": "tfoot",
+			"css": [
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "th",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "th",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "th",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "th",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "nowrap",
+			"element": "th",
+			"css": [
+				"white-space"
+			]
+		},
+		{
+			"attribute": "valign",
+			"element": "th",
+			"css": [
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "th",
+			"css": [
+				"width"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "thead",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "thead",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "thead",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "thead",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "thead",
+			"css": [
+				"display",
+				"visibility"
+			]
+		},
+		{
+			"attribute": "valign",
+			"element": "thead",
+			"css": [
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "align",
+			"element": "tr",
+			"css": [
+				"text-align"
+			]
+		},
+		{
+			"attribute": "background",
+			"element": "tr",
+			"css": [
+				"background-image"
+			]
+		},
+		{
+			"attribute": "bgcolor",
+			"element": "tr",
+			"css": [
+				"background-color"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "tr",
+			"css": [
+				"height"
+			]
+		},
+		{
+			"attribute": "hidden",
+			"element": "tr",
+			"css": [
+				"display",
+				"visibility"
+			]
+		},
+		{
+			"attribute": "valign",
+			"element": "tr",
+			"css": [
+				"vertical-align"
+			]
+		},
+		{
+			"attribute": "type",
+			"element": "ul",
+			"css": [
+				"list-style-type"
+			]
+		},
+		{
+			"attribute": "height",
+			"element": "video",
+			"css": [
+				"aspect-ratio",
+				"height"
+			]
+		},
+		{
+			"attribute": "width",
+			"element": "video",
+			"css": [
+				"aspect-ratio",
+				"width"
+			]
+		}
+	]
+}
