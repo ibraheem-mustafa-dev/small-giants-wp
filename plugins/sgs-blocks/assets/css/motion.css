@@ -100,6 +100,8 @@
 @property --sgs-ring-x { syntax: '<length>'; inherits: true; initial-value: 0px; }
 @property --sgs-ring-y { syntax: '<length>'; inherits: true; initial-value: 0px; }
 @property --sgs-ring-s { syntax: '<number>'; inherits: true; initial-value: 0; }
+@property --sgs-reveal-x { syntax: '<length-percentage>'; inherits: false; initial-value: 50%; }
+@property --sgs-reveal-y { syntax: '<length-percentage>'; inherits: false; initial-value: 40%; }
 
 /* ── Per-element inputs (§10): the renderer writes each element's entrance from, to and timing values, its reveal start
    line, its hover to-values and its resting indent on that element's own scoped selector. They never inherit, so a

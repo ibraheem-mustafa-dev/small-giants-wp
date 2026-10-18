@@ -557,7 +557,9 @@
 	background-size: cover;
 	background-repeat: no-repeat;
 	opacity: 1;
-	clip-path: circle(var(--sgs-cursor-field-radius) at var(--sgs-cursor-local-x, 50%) var(--sgs-cursor-local-y, 50%));
+	--sgs-reveal-x: var(--sgs-cursor-local-x, 50%);
+	--sgs-reveal-y: var(--sgs-cursor-local-y, 40%);
+	clip-path: circle(var(--sgs-cursor-field-radius) at var(--sgs-reveal-x) var(--sgs-reveal-y));
 	transition:
 		--sgs-cursor-field-radius var(--sgs-cursor-field-radius-duration, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1)),
 		--sgs-cursor-field-wash var(--sgs-cursor-field-radius-duration, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1));
@@ -565,7 +567,7 @@
 
 [data-sgs-cursor-field="image-reveal"][data-sgs-cursor-field-feather]::before {
 	--sgs-cursor-field-mask: radial-gradient(
-		circle max(1px, var(--sgs-cursor-field-radius)) at var(--sgs-cursor-local-x, 50%) var(--sgs-cursor-local-y, 50%),
+		circle max(1px, var(--sgs-cursor-field-radius)) at var(--sgs-reveal-x) var(--sgs-reveal-y),
 		#000 max(0px, calc(var(--sgs-cursor-field-radius) - var(--sgs-cursor-field-edge, 0px))),
 		transparent max(1px, var(--sgs-cursor-field-radius))
 	);
@@ -575,6 +577,17 @@
 [data-sgs-cursor-field="image-reveal"]:hover::before {
 	--sgs-cursor-field-radius: 90px;
 	--sgs-cursor-field-wash: 0.3;
+}
+
+/* The revealed circle follows the pointer with the ring's own lag and easing, so the ring and the image inside the circle stay
+ * together. Without a ring there is no lag value, so the circle centres on the pointer exactly. The transition starts once the
+ * first pointer position has been seeded (`data-sgs-ring-live`, set by cursor-field-ring.js), so the circle never slides in from the rest point. */
+[data-sgs-cursor-field="image-reveal"][data-sgs-ring-live]::before {
+	transition:
+		--sgs-cursor-field-radius var(--sgs-cursor-field-radius-duration, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1)),
+		--sgs-cursor-field-wash var(--sgs-cursor-field-radius-duration, 400ms) var(--sgs-cursor-field-radius-easing, cubic-bezier(0.16, 0.84, 0.32, 1)),
+		--sgs-reveal-x var(--sgs-cursor-field-ring-lag, 0ms) var(--wp--custom--easing--ease-out, ease-out),
+		--sgs-reveal-y var(--sgs-cursor-field-ring-lag, 0ms) var(--wp--custom--easing--ease-out, ease-out);
 }
 
 /* The ring: its position and scale are registered properties (motion.css) set on the layer, where the lag is a transition. */
@@ -619,7 +632,8 @@
 
 /* Reduced motion keeps the painted rest state and animates nothing: no transition, no ring. */
 @media (prefers-reduced-motion: reduce) {
-	[data-sgs-cursor-field="image-reveal"]::before {
+	[data-sgs-cursor-field="image-reveal"]::before,
+	[data-sgs-cursor-field="image-reveal"][data-sgs-ring-live]::before {
 		transition: none;
 	}
 

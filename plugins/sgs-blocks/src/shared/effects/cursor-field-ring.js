@@ -3,7 +3,8 @@
  *
  * The `image-reveal` field type can carry a ring: the renderer's injected `span.sgs-motion-layer` with
  * `data-sgs-layer="cursor-field-ring"` (aria-hidden). This module writes the pointer's position inside the element, in
- * pixels, to `--sgs-ring-x` and `--sgs-ring-y` on that layer and nothing else; `assets/css/fx-cursor-field.css` paints the
+ * pixels, to `--sgs-ring-x` and `--sgs-ring-y` on that layer and nothing else (it also marks the emitter element with the same
+ * `data-sgs-ring-live` flag, which switches on the lag of the revealed circle in `assets/css/fx-cursor-field.css`); `assets/css/fx-cursor-field.css` paints the
  * ring, scales it 0 to 1 while the element is hovered, and makes the position lag by transitioning the two registered
  * properties over the ring's lag.
  *
@@ -51,12 +52,14 @@ function bindElement( el ) {
 				liveFrame = window.requestAnimationFrame( () => {
 					liveFrame = null;
 					layer.setAttribute( LIVE, '' );
+					el.setAttribute( LIVE, '' );
 				} );
 			}
 		},
 		reset() {
 			cancelLive();
 			layer.removeAttribute( LIVE );
+			el.removeAttribute( LIVE );
 		},
 	} );
 }

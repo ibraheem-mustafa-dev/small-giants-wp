@@ -265,9 +265,7 @@ function sgs_fx_cursor_field_reveal( \WP_HTML_Tag_Processor $p ): array {
 		if ( '' !== $ring ) {
 			$out['root'][] = '--sgs-ring-colour:' . $ring;
 		}
-		if ( null !== $lag ) {
-			$out['root'][] = '--sgs-cursor-field-ring-lag:' . $lag . 'ms';
-		}
+		$out['root'][] = '--sgs-cursor-field-ring-lag:' . ( null !== $lag ? $lag : 400 ) . 'ms';
 		if ( 'false' === $attr( 'data-sgs-fx-cursor-field-ring-shadow' ) ) {
 			$out['root'][] = '--sgs-ring-shadow:none';
 		}

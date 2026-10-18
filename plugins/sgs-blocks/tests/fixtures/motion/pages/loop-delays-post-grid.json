@@ -60,7 +60,7 @@
           "values": {
            "from": {
             "opacity": 0,
-            "translateY": "token:entrance.distance"
+            "translateY": "token:distance.2xl"
            },
            "to": {
             "opacity": 1,

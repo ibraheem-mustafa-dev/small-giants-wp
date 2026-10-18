@@ -67,6 +67,12 @@ export function settleMs( series, key, tol = 1 ) {
 	return first < 0 || done < 0 ? null : series[ done ].t - series[ first ].t;
 }
 
+/** The revealed circle's centre and the ring's centre agree on every frame (within `tol` px), so the lag applies to both. */
+export function inSync( series, tol = 4 ) {
+	const rows = series.filter( ( row ) => Number.isFinite( row.x ) && parseCircle( row.clip ) );
+	return rows.length > 5 && rows.every( ( row ) => Math.abs( row.x - parseCircle( row.clip ).x ) <= tol );
+}
+
 /** A follower with a lag: it changed through intermediate positions and arrived within the window. */
 export function lagged( series, key, lo = 250, hi = 520 ) {
 	const ms = settleMs( series, key );
@@ -111,6 +117,9 @@ function selfTest() {
 	want( ! animates( [ 0, 20, 60, 40, 90 ], 0, 90 ), 'a radius that reverses is rejected' );
 	want( lagged( ramp( 100, 250, 26 ).map( ( s ) => ( { t: s.t, x: s.v } ) ), 'x' ), 'a 0.4s follower is lagged' );
 	want( ! lagged( [ { t: 0, x: 100 }, { t: 16, x: 250 }, { t: 32, x: 250 } ], 'x' ), 'a one-frame jump is not a lag' );
+	const frames = Array.from( { length: 12 }, ( _, i ) => ( { x: 100 + i * 10, clip: `circle(90px at ${ 100 + i * 10 }px 60px)` } ) );
+	want( inSync( frames ), 'a circle on the ring is in sync' );
+	want( ! inSync( frames.map( ( f ) => ( { ...f, x: f.x + 60 } ) ) ) && ! inSync( [] ), 'a circle off the ring is not in sync' );
 	want( ! lagged( ramp( 100, 250, 90 ).map( ( s ) => ( { t: s.t * 3, x: s.v } ) ), 'x' ), 'a 1.2s follower is too slow' );
 	want( parseCircle( 'circle(90px at 120px 60px)' ).x === 120, 'circle parse reads the centre' );
 	want( parseCircle( 'none' ) === null, 'no circle parses to null' );
@@ -304,6 +313,7 @@ async function ringChecks( page, rep ) {
 
 	// Lag: settle on one position, then jump to another and sample the ring while it follows.
 	const lags = [];
+	const syncs = [];
 	for ( let i = 0; i < POSITIONS.length; i++ ) {
 		const a = POSITIONS[ i ];
 		const b = POSITIONS[ ( i + 1 ) % POSITIONS.length ];
@@ -318,11 +328,19 @@ async function ringChecks( page, rep ) {
 		await page.waitForTimeout( 40 );
 		await page.mouse.move( size.x + size.w * b[ 0 ], size.y + size.h * b[ 1 ] );
 		const series = await pending;
+		syncs.push( { move: `${ a } to ${ b }`, ok: inSync( series ), skewed: ! inSync( series.map( ( row ) => ( { ...row, x: row.x + 60 } ) ) ) } );
 		lags.push( { move: `${ a } to ${ b }`, ms: settleMs( series, 'x' ), ok: lagged( series, 'x' ), distinct: between( series.map( ( s ) => s.x ), Math.min( series[ 0 ].x, series[ series.length - 1 ].x ), Math.max( series[ 0 ].x, series[ series.length - 1 ].x ), 1 ).length } );
 	}
 	rep.check( 'ring-lag', {
 		selector: `${ REVEAL } .sgs-motion-layer`, property: 'ring centre x after the pointer jumps, sampled every frame',
 		measured: lags, expected: 'a follower: intermediate positions, arriving 250 to 520ms after it starts (0.4s lag)', pass: lags.every( ( l ) => l.ok ),
+	} );
+	rep.check( 'reveal-in-sync-with-ring', {
+		selector: REVEAL, property: 'the revealed circle centre against the ring centre on every frame while the pointer jumps',
+		measured: syncs, expected: 'within 4px on every frame: the lag applies to the revealed image as well as the ring', pass: syncs.every( ( o ) => o.ok ),
+	} );
+	rep.control( 'reveal-in-sync-with-ring', {
+		selector: REVEAL, property: 'the same series with the ring shifted 60px', measured: syncs.map( ( o ) => o.skewed ), expected: 'the sync judge rejects it', red: syncs.every( ( o ) => o.skewed ),
 	} );
 	rep.control( 'ring-lag', {
 		selector: `${ REVEAL } .sgs-motion-layer`, property: 'a synthetic series that jumps in one frame', measured: [ { t: 0, x: 100 }, { t: 16, x: 250 }, { t: 32, x: 250 } ],
