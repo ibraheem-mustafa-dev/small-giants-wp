@@ -5,7 +5,7 @@
  * temp folder, points the runner at them with SGS_MOTION_QA_PROBES_JSON, and checks the runner as a user would see it:
  * serial order and exit codes, tier selection, the parallel saving, one contiguous block per probe, `serial: true`
  * isolation, option refusal and the headed fallback. It also lists the REAL roster per tier with `--list` (no probe runs)
- * to prove marquee and looping-media are the only full-only probes, and that `--parallel` above 1 prints the canary warning.
+ * to prove marquee, looping-media, motion-a11y and motion-per-device are the only full-only probes, and that `--parallel` above 1 prints the canary warning.
  *
  * Every assertion is proven twice: green on the real code, and red on a planted fault (a transcript with two probes
  * swapped, the same check applied to the wrong run, or a scheduler copy that ignores `serial`). A check whose planted
@@ -171,7 +171,7 @@ const listReal = ( tier ) =>
 		child.stdout.on( 'data', ( d ) => ( out += d ) );
 		child.on( 'close', ( code ) => resolve( { code, out, files: [ ...out.matchAll( /^ {2}(\S+\.mjs)$/gm ) ].map( ( m ) => m[ 1 ] ) } ) );
 	} );
-const REAL_FULL_ONLY = [ 'probe-looping-media.mjs', 'probe-marquee.mjs' ];
+const REAL_FULL_ONLY = [ 'probe-looping-media.mjs', 'probe-marquee.mjs', 'probe-motion-a11y.mjs', 'probe-motion-per-device.mjs' ];
 const fullOnlyOf = ( smokeList, fullList ) => fullList.filter( ( f ) => ! smokeList.includes( f ) ).sort();
 
 const results = [];
@@ -219,7 +219,7 @@ try {
 	const realSmoke = await listReal( 'smoke' );
 	const realFull = await listReal( 'full' );
 	const listStub = await runRunner( [ '--list', '--tier', 'smoke' ] );
-	record( 'the real roster has exactly marquee and looping-media as full-only (read with --list, no probe runs)', checks.realFullOnly( realSmoke, realFull ), checks.realFullOnly( realFull, realFull ) );
+	record( 'the real roster has exactly marquee, looping-media, motion-a11y and motion-per-device as full-only (read with --list, no probe runs)', checks.realFullOnly( realSmoke, realFull ), checks.realFullOnly( realFull, realFull ) );
 	record( '--list prints the selected probes for the tier and exits 0 without running any', checks.listRunsNothing( listStub ), checks.listRunsNothing( serial ) );
 	record( '--parallel above 1 prints the canary CDN warning, a serial run does not', checks.parallelWarning( par ), checks.parallelWarning( serial ) );
 } finally {

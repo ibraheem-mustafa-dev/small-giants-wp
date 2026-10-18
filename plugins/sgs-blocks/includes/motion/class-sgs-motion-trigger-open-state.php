@@ -17,6 +17,16 @@
  *     `<target>:is([data-sgs-motion-state~="<name>"],[data-sgs-motion-state~="<name>"] *){--sgs-mt-on:1;animation-name:var(--sgs-mt-in,none);}`.
  *     A multi-keyframe entrance gets only the on flag, because the WAAPI module plays it, not a CSS animation, plus
  *     `<target>{--sgs-mt-kf:<name>}`, which tells that module (`assets/js/motion-keyframes.js`) the state it replays on.
+ *     A CSS state entrance also gets (a) a rest rule keyed to `<name>-rest` (set by `restMotionState` at first paint) that
+ *     gives the entrance a zero duration and delay (`--sgs-mt-rest` is never defined, so its fallback applies), so a
+ *     state already true at load jumps to its held values with no visible animation, and
+ *     (b) when the layer stores `close` values, the same `--sgs-me-close-*` properties as `open` plus an out rule keyed to
+ *     `<name>-out` (set by `leaveMotionState` when the state is left) that plays the close keyframes on the close
+ *     duration, easing and delay. Without close values leaving the state snaps back, as before.
+ *     The colour to-values (`backgroundColour`, `textColour`, `borderColour`) are painted by the same rules: the state
+ *     rule's declarations (and, for `open`, one rule keyed to an open host) read the scoped properties `--sgs-me-to-bg`,
+ *     `-fg` and `-bd` the emitter wrote. The colours transition on the entrance's duration and easing (the close duration
+ *     and easing on leaving) under `prefers-reduced-motion: no-preference`; under reduce they change at once.
  * - `init` (priority 20): a block that declares named states gets `@sgs/motion-state` as a dynamic dependency of its
  *   view script module, so the import map lists it and the block's `import()` of it resolves.
  *
@@ -48,6 +58,20 @@ final class Sgs_Motion_Trigger_Open_State {
 	const STATE_PATTERN = '/^[a-z][a-z0-9-]{0,63}$/';
 
 	const CLOSE_PREFIX = '--sgs-me-close-';
+
+	/** The tokens `@sgs/motion-state` adds beside a named state: left (`-out`) and held at first paint (`-rest`). */
+	const OUT_SUFFIX  = '-out';
+	const REST_SUFFIX = '-rest';
+
+	/** The colour to-values (`EntranceTo` key => the CSS property it paints) and the scoped property each is written to. */
+	const PAINT = array(
+		'backgroundColour' => array( 'background-color', '--sgs-me-to-bg' ),
+		'textColour'       => array( 'color', '--sgs-me-to-fg' ),
+		'borderColour'     => array( 'border-color', '--sgs-me-to-bd' ),
+	);
+
+	/** The longest state name that still fits the schema's 64-character pattern with a four-character suffix. */
+	const STATE_SUFFIX_MAX = 59;
 
 	/** The state helper's script module (`src/shared/effects/motion-state.js`). */
 	const STATE_MODULE = '@sgs/motion-state';
@@ -171,12 +195,113 @@ final class Sgs_Motion_Trigger_Open_State {
 		$tokens  = preg_split( '/\s+/', trim( (string) ( $attrs['data-sgs-me'] ?? '' ) ) );
 		$trigger = is_array( $tokens ) ? (string) ( $tokens[0] ?? '' ) : '';
 		if ( 'open' === $trigger ) {
-			return $css . self::close_rules( $base, $selector );
+			return $css . self::close_rules( $base, $selector ) . self::open_paint_rule( $base, $selector ) . self::paint_transition( $base, $selector, self::has_close( $base ) ? 'close' : '' );
 		}
 		if ( 'state' === $trigger ) {
-			return $css . self::state_rule( $base, $selector, isset( $attrs['data-sgs-me-keyframes'] ) );
+			$keyframes = isset( $attrs['data-sgs-me-keyframes'] );
+			$close     = ! $keyframes && self::has_close( $base ) ? self::close_rules( $base, $selector ) : '';
+			$state = isset( $base['state'] ) && is_string( $base['state'] ) ? $base['state'] : '';
+			$leave = ! $keyframes && '' !== $state && strlen( $state ) <= self::STATE_SUFFIX_MAX && self::has_close( $base ) ? $state . self::OUT_SUFFIX : '';
+			return $css . $close . self::state_rule( $base, $selector, $keyframes ) . self::paint_transition( $base, $selector, $leave );
 		}
 		return $css;
+	}
+
+	/**
+	 * The paint declarations of the colour to-values: each stored colour (`--sgs-me-to-bg|fg|bd`, written by the emitter on
+	 * the target) read into its CSS property. Colours are stored once, for every device.
+	 *
+	 * @param array<string,mixed> $base The entrance base layer.
+	 * @return array<string,string>
+	 */
+	private static function paint( array $base ): array {
+		$to  = is_array( $base['values']['to'] ?? null ) ? $base['values']['to'] : array();
+		$out = array();
+		foreach ( self::PAINT as $key => $paint ) {
+			if ( isset( $to[ $key ] ) && is_string( $to[ $key ] ) && '' !== $to[ $key ] ) {
+				$out[ $paint[0] ] = 'var(' . $paint[1] . ')';
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The colour transition: the painted properties change on the entrance's own duration and easing (`--sgs-me-dur`,
+	 * `--sgs-me-ease`), and on leaving (a host token `close` for an open entrance, `<name>-out` for a state) on the close
+	 * duration and easing. Printed only under `prefers-reduced-motion: no-preference`, so reduced motion changes the colour
+	 * at once. The colour properties are the only ones in the list.
+	 *
+	 * @param array<string,mixed> $base     The entrance base layer.
+	 * @param string              $selector Scoped selector.
+	 * @param string              $leave    Host token that marks leaving, or '' for none.
+	 * @return string
+	 */
+	private static function paint_transition( array $base, string $selector, string $leave ): string {
+		$props = array_keys( self::paint( $base ) );
+		if ( array() === $props ) {
+			return '';
+		}
+		$list = array();
+		foreach ( $props as $prop ) {
+			$list[] = $prop . ' var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)) var(--sgs-me-ease,var(--wp--custom--easing--default,ease))';
+		}
+		$none = array(
+			'tablet' => array(),
+			'mobile' => array(),
+		);
+		$css  = Sgs_Motion_Emitter::rules( $selector, array( 'desktop' => array( 'transition' => implode( ',', $list ) ) ) + $none );
+		if ( '' !== $leave ) {
+			$host = '[' . self::STATE_ATTR . '~="' . $leave . '"]';
+			$css .= Sgs_Motion_Emitter::rules(
+				$selector . ':is(' . $host . ',' . $host . ' *)',
+				array(
+					'desktop' => array(
+						'transition-duration'        => 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--medium,300ms)))',
+						'transition-timing-function' => 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--easing--default,ease)))',
+					),
+				) + $none
+			);
+		}
+		return '@media (prefers-reduced-motion: no-preference){' . $css . '}';
+	}
+
+	/**
+	 * The colour paint while a part's host is open: an open host, and no host that is not open shielding it.
+	 *
+	 * @param array<string,mixed> $base     The entrance base layer.
+	 * @param string              $selector Scoped selector.
+	 * @return string
+	 */
+	private static function open_paint_rule( array $base, string $selector ): string {
+		$paint = self::paint( $base );
+		if ( array() === $paint ) {
+			return '';
+		}
+		$open   = '[' . self::STATE_ATTR . '~="open"]';
+		$closed = '[' . self::STATE_ATTR . ']:not(' . $open . ')';
+		return Sgs_Motion_Emitter::rules(
+			$selector . ':is(' . $open . ',' . $open . ' *):not(' . $closed . ',' . $closed . ' *)',
+			array(
+				'desktop' => $paint,
+				'tablet'  => array(),
+				'mobile'  => array(),
+			)
+		);
+	}
+
+	/**
+	 * Whether the layer stores any close value, on Desktop or a device tier.
+	 *
+	 * @param array<string,mixed> $base The entrance base layer.
+	 * @return bool
+	 */
+	private static function has_close( array $base ): bool {
+		foreach ( array( $base['close'] ?? null, $base['devices']['tablet']['close'] ?? null, $base['devices']['mobile']['close'] ?? null ) as $close ) {
+			if ( is_array( $close ) && array() !== $close ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -240,6 +365,7 @@ final class Sgs_Motion_Trigger_Open_State {
 		if ( ! $keyframes ) {
 			$decls['animation-name'] = 'var(--sgs-mt-in,none)';
 		}
+		$decls += self::paint( $base );
 		$css = Sgs_Motion_Emitter::rules(
 			$selector . ':is(' . $host . ',' . $host . ' *)',
 			array(
@@ -258,7 +384,37 @@ final class Sgs_Motion_Trigger_Open_State {
 				)
 			);
 		}
-		return $css;
+		if ( $keyframes || strlen( $state ) > self::STATE_SUFFIX_MAX ) {
+			return $css;
+		}
+		if ( self::has_close( $base ) ) {
+			$out_host = '[' . self::STATE_ATTR . '~="' . $state . self::OUT_SUFFIX . '"]';
+			$css     .= Sgs_Motion_Emitter::rules(
+				$selector . ':is(' . $out_host . ',' . $out_host . ' *)',
+				array(
+					'desktop' => array(
+						'--sgs-me-a-dur'   => 'var(--sgs-me-close-dur,var(--sgs-me-dur,var(--wp--custom--duration--slow,450ms)))',
+						'--sgs-me-a-ease'  => 'var(--sgs-me-close-ease,var(--sgs-me-ease,var(--wp--custom--entrance--easing,ease-out)))',
+						'--sgs-me-a-delay' => 'var(--sgs-me-close-delay,0ms)',
+						'animation-name'   => 'var(--sgs-mt-out,none)',
+					),
+					'tablet'  => array(),
+					'mobile'  => array(),
+				)
+			);
+		}
+		$rest_host = '[' . self::STATE_ATTR . '~="' . $state . self::REST_SUFFIX . '"]';
+		return $css . Sgs_Motion_Emitter::rules(
+			$selector . ':is(' . $rest_host . ',' . $rest_host . ' *)',
+			array(
+				'desktop' => array(
+					'--sgs-me-a-dur'   => 'var(--sgs-mt-rest,0ms)',
+					'--sgs-me-a-delay' => 'var(--sgs-mt-rest,0ms)',
+				),
+				'tablet'  => array(),
+				'mobile'  => array(),
+			)
+		);
 	}
 
 	/**
