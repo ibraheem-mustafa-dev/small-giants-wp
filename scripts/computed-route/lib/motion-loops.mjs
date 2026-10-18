@@ -3,7 +3,7 @@
 // when its values reproduce the loop's motion. A one-axis, linear, one-way translate is a marquee, its speed the
 // travel over the loop time in px/s. A <marquee> element and SVG animation elements are loops too. A loop no effect
 // reproduces is reported as a Spec 38 gap. The chosen effect is written through lib/motion-effects.mjs::writeEffect.
-import { propertyChannels, transformChannels, filterChannels } from './motion-layers.mjs';
+import { propertyChannels, transformChannels, filterChannels, keyframeStops } from './motion-channels.mjs';
 
 const RANDOM = /Math\.random|\brnd\(/;
 const camel = ( k ) => k.replace( /-([a-z])/g, ( _, c ) => c.toUpperCase() );
@@ -79,7 +79,8 @@ export function resolvedLoop( record, measured ) {
 			Object.assign( to, t.channels );
 			unsupported.push( ...f.unsupported, ...t.unsupported );
 		}
-		frames = [ from, to ];
+		const stops = keyframeStops( record.properties );
+		frames = stops && ! stops.computed.length ? stops.stops.map( ( s ) => s.channels ) : [ from, to ];
 	}
 	return {
 		loop: {
@@ -229,6 +230,31 @@ export function loopEffect( record, measuredByWidth, { mdb } ) {
 		return wide;
 	}
 	return chooseEffect( wide.loop, { tablet: at( 768 ).loop || null, mobile: at( 375 ).loop || null }, { mdb } );
+}
+
+// The render check of a loop the code states in full: the endless animation measured on the element at each width
+// against the code's duration and keyframes. Returns one line per width that differs (by more than 100ms or 10% in
+// duration, or in any keyframe channel), [] when every measured width agrees or nothing was measured.
+export function loopCheck( record, measuredByWidth ) {
+	const literal = ! ( record.properties || [] ).some( ( p ) => null !== ( p.formula ?? null ) || 'animation-name' === p.property ) && 'number' === typeof record.duration_ms;
+	if ( ! literal ) {
+		return [];
+	}
+	const own = resolvedLoop( record, null ).loop;
+	const out = [];
+	for ( const [ width, measured ] of Object.entries( measuredByWidth || {} ) ) {
+		const m = measured && measuredLoopOf( record, measured );
+		if ( ! m || ! own ) {
+			continue;
+		}
+		if ( Math.abs( m.duration - record.duration_ms ) > Math.max( 100, 0.1 * record.duration_ms ) ) {
+			out.push( `${ width }: the loop measured ${ Math.round( m.duration ) }ms, the code has ${ record.duration_ms }ms` );
+		}
+		if ( ! sameFrames( own.frames, m.frames.map( ( f ) => frameChannels( f ).channels ) ) ) {
+			out.push( `${ width }: the measured keyframes differ from the code's` );
+		}
+	}
+	return out;
 }
 
 const sameFrames = ( a, b ) => a.length === b.length && a.every( ( f, i ) => Object.keys( { ...f, ...b[ i ] } ).every( ( k ) => Math.abs( ( Number( f[ k ] ) || 0 ) - ( Number( b[ i ][ k ] ) || 0 ) ) < 0.01 ) );

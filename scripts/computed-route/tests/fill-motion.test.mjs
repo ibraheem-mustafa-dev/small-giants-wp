@@ -11,8 +11,10 @@ import { openDb } from '../lib/db.mjs';
 import { motionDb } from '../lib/motion-db.mjs';
 import { loadMotionSchema, enumerateFields } from '../lib/motion-schema.mjs';
 import { motionWrites, entranceCheck, partForSlot, elementKey, recordsByElement } from '../lib/fill-motion.mjs';
-import { transformChannels, classify, hoverLayer, delayOf, delaySteps, matchByPose } from '../lib/motion-layers.mjs';
+import { classify, hoverLayer, delayOf, delaySteps, matchByPose } from '../lib/motion-layers.mjs';
+import { transformChannels } from '../lib/motion-channels.mjs';
 import { snapToken, tokenTypes, clientTokens, presetFor, easingOf } from '../lib/motion-tokens.mjs';
+import { validateMotionWrite } from '../lib/motion-validate.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 
 const schema = loadMotionSchema();
@@ -22,7 +24,7 @@ const FIELDS = enumerateFields( schema ).filter( ( f ) => /^(entrance\.base|hove
 	panel: f.layer.split( '.' )[ 0 ],
 	layer: f.layer,
 	effect: f.effect,
-	field_path: `elements.<target>.${ f.layer }${ f.effect ? `[effect=${ f.effect }]` : '' }.${ f.path }`,
+	field_path: `elements.<target>.${ f.layer }${ f.effect ? `[effect=${ f.effect }]` : '' }.${ f.path.replace( '[]', '' ) }`,
 	field_type: f.fieldType,
 	css_property: f.cssProperty,
 	state: f.state,
@@ -39,6 +41,7 @@ const DB = fixtureDb( {
 	motion_fields: FIELDS,
 	motion_presets: [
 		preset( 'entrance-fade-up', 'entrance', 'scroll', { duration: 'token:entrance.duration', easing: 'token:entrance.easing', from: { opacity: 0, translateY: 'token:entrance.distance' }, to: { opacity: 1, translateY: 0 } } ),
+		preset( 'keyframe-bounce', 'entrance', 'scroll', { duration: 'token:entrance.duration', easing: 'ease-in-out', keyframes: [ { offset: 0, translateY: 0 }, { offset: 50, translateY: '-token:distance.sm' }, { offset: 100, translateY: 0 } ] } ),
 		preset( 'hover-lift', 'hover', 'hover', { duration: 'token:duration.fast', easing: 'token:easing.emphasised', translateY: '-token:distance.sm' } ),
 	],
 } );
@@ -66,6 +69,17 @@ test( 'a CSS transform list splits into the schema channels; a function no chann
 	assert.deepEqual( transformChannels( 'skewX(-18deg)' ).unsupported, [ 'skewx' ] );
 	assert.deepEqual( transformChannels( 'translate3d(0, 4px, 6px)' ).unsupported, [ 'translateZ' ] );
 	assert.deepEqual( transformChannels( 'none' ).channels, {} );
+} );
+
+test( 'MUST FAIL: a flat matrix is translate, scale and rotate; a skewing or 3D matrix and a depth scale are reported', () => {
+	assert.deepEqual( transformChannels( 'matrix(0.96, 0, 0, 0.96, 0, 39)' ), { channels: { translateX: 0, translateY: 39, scale: 0.96 }, unsupported: [] } );
+	assert.deepEqual( transformChannels( 'matrix(0, 1, -1, 0, 10, 0)' ).channels, { translateX: 10, translateY: 0, rotate: 90 } );
+	assert.deepEqual( transformChannels( 'matrix(2, 0, 0, 1, 0, 0)' ).channels, { translateX: 0, translateY: 0, scaleX: 2, scaleY: 1 } );
+	assert.deepEqual( transformChannels( 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 5, 6, 0, 1)' ).channels, { translateX: 5, translateY: 6 } );
+	assert.deepEqual( transformChannels( 'matrix(1, 0, 0.3, 1, 0, 0)' ).unsupported, [ 'skew' ] );
+	assert.deepEqual( transformChannels( 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.002, 0, 0, 0, 1)' ).unsupported, [ 'matrix3d' ] );
+	assert.deepEqual( transformChannels( 'scale3d(1.1, 1.1, 2)' ).unsupported, [ 'scaleZ' ] );
+	assert.deepEqual( transformChannels( 'scale3d(1.1, 1.1, 1)' ), { channels: { scale: 1.1 }, unsupported: [] } );
 } );
 
 test( 'MUST FAIL (FR-38A-33): a value equal to a client token is a token reference, an entrance prefers the entrance family, a negative distance takes a negated token; any other value stays literal', () => {
@@ -220,4 +234,93 @@ test( 'MUST FAIL: a scroll reveal already in view at load is timed from the page
 	const layer = { trigger: 'scroll', values: { duration: 850, delay: 0 } };
 	assert.deepEqual( entranceCheck( layer, { delay_ms: 0 }, { 1440: shaped( { trigger: 'load', durationRawMs: 850, delayRawMs: 200, exactDelay: true } ) } ).differences, [] );
 	assert.equal( entranceCheck( layer, { delay_ms: 0 }, { 375: shaped( { trigger: 'scroll', durationRawMs: 850, delayRawMs: 200, held: true } ) } ).devices.mobile.delay, 200 );
+} );
+
+// A bounce 0 -> middle -> 0 the draft's code plays on scroll (three Web Animations keyframes).
+const bounce = ( middle = 'translateY(-3px)', over = {} ) => rec( 'A-40', {
+	trigger: { type: 'scroll-into-view' },
+	properties: [ { property: 'transform', from: 'translateY(0px)', to: 'translateY(0px)', keyframes: [ { offset: 0, value: 'translateY(0px)' }, { offset: 0.5, value: middle }, { offset: 1, value: 'translateY(0px)' } ] } ],
+	duration_ms: 900, easing: 'ease-in-out', ...over,
+} );
+
+test( 'MUST FAIL (Spec 38A §6.2): an entrance with three keyframes is written as values.keyframes with its middle stop, not as a from and a to', () => {
+	const { flat, out } = run( [ node( 0, 'sgs/card', '10' ) ], [ bounce( 'translateY(-12px)' ) ] );
+	assert.equal( out.writes.length, 1, JSON.stringify( out.unmapped ) );
+	const base = flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base;
+	assert.deepEqual( base.values.keyframes, [ { offset: 0, translateY: 0 }, { offset: 50, translateY: -12 }, { offset: 100, translateY: 0 } ] );
+	assert.equal( 'from' in base.values || 'to' in base.values, false );
+	assert.equal( base.trigger, 'scroll' );
+	assert.equal( validateMotionWrite( flat[ 0 ].attributes.sgsMotion, schema ).valid, true );
+} );
+
+test( 'MUST FAIL (Spec 38A §6.2): a keyframe the code computes is never written: the record is unmapped and names it', () => {
+	const computed = bounce( 'this.lift', { properties: [ { property: 'transform', from: 'translateY(0px)', to: 'translateY(0px)', formula: 'this.lift', keyframes: [ { offset: 0, value: 'translateY(0px)' }, { offset: 0.5, value: 'this.lift' }, { offset: 1, value: 'translateY(0px)' } ] } ] } );
+	const { flat, out } = run( [ node( 0, 'sgs/card', '10' ) ], [ computed ] );
+	assert.equal( out.writes.length, 0 );
+	assert.equal( flat[ 0 ].attributes.sgsMotion, undefined );
+	assert.match( JSON.stringify( out.unmapped ), /transform at 50%: this\.lift is computed in the code/ );
+	const flagged = run( [ node( 0, 'sgs/card', '10' ) ], [ bounce( 'x', { properties: [ { property: 'transform', from: 'a', to: 'a', keyframes: [ { offset: 0, value: 'translateY(0px)' }, { offset: 0.5, value: 'translateY(var(--lift))', computed: true }, { offset: 1, value: 'translateY(0px)' } ] } ] } ) ] );
+	assert.equal( flagged.out.writes.length, 0, 'a stop flagged computed is unmapped even with no formula on the property' );
+} );
+
+test( 'a two-frame entrance still writes from and to, with no keyframes (control)', () => {
+	const two = rec( 'A-41', { trigger: { type: 'scroll-into-view' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 600 } );
+	const { flat } = run( [ node( 0, 'sgs/card', '10' ) ], [ two ] );
+	const base = flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base;
+	assert.deepEqual( base.values.from, { opacity: 0 } );
+	assert.deepEqual( base.values.to, { opacity: 1 } );
+	assert.equal( 'keyframes' in base.values, false );
+} );
+
+test( 'MUST FAIL (FR-38A-33): keyframe distances snap to a client token and a bounce equal to a framework preset names it', () => {
+	const { flat } = run( [ node( 0, 'sgs/card', '10' ) ], [ bounce( 'translateY(-3px)' ) ] );
+	const base = flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base;
+	assert.deepEqual( base.values.keyframes[ 1 ], { offset: 50, translateY: '-token:distance.sm' } );
+	assert.equal( base.preset, 'keyframe-bounce' );
+	const off = run( [ node( 0, 'sgs/card', '10' ) ], [ bounce( 'translateY(-9px)' ) ] );
+	assert.equal( off.flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base.preset, undefined, 'negative control: a different height names no preset' );
+} );
+
+test( 'MUST FAIL: keyframes of several properties merge by offset, a channel a property leaves out at a stop is omitted, and more stops than the schema holds are unmapped', () => {
+	const pop = rec( 'A-42', { trigger: { type: 'scroll-into-view' }, duration_ms: 500, properties: [
+		{ property: 'opacity', from: 0, to: 1 },
+		{ property: 'transform', from: 'scale(0.6)', to: 'scale(1)', keyframes: [ { offset: 0, value: 'scale(0.6)' }, { offset: 0.6, value: 'scale(1.15)' }, { offset: 1, value: 'scale(1)' } ] },
+	] } );
+	const { flat } = run( [ node( 0, 'sgs/card', '10' ) ], [ pop ] );
+	assert.deepEqual( flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base.values.keyframes, [ { offset: 0, opacity: 0, scale: 0.6 }, { offset: 60, scale: 1.15 }, { offset: 100, opacity: 1, scale: 1 } ] );
+	const many = rec( 'A-43', { trigger: { type: 'scroll-into-view' }, duration_ms: 500, properties: [ { property: 'opacity', from: 0, to: 1, keyframes: Array.from( { length: 9 }, ( _, i ) => ( { offset: i / 8, value: i % 2 } ) ) } ] } );
+	const r = run( [ node( 0, 'sgs/card', '10' ) ], [ many ] );
+	assert.equal( r.out.writes.length, 0 );
+	assert.match( JSON.stringify( r.out.unmapped ), /9 distinct keyframe offsets/ );
+} );
+
+test( 'MUST FAIL: a draft\'s perspective, a straight-axis rotate3d and a resting tilt reach the motion model; a slanted axis and a perspective out of range do not', () => {
+	assert.deepEqual( transformChannels( 'perspective(800px) rotate3d(0, -1, 0, 20deg)' ), { channels: { rotateY: -20 }, unsupported: [], perspective: 800 } );
+	assert.deepEqual( transformChannels( 'rotate3d(1, 0, 0, 0.25turn)' ).channels, { rotateX: 90 } );
+	assert.deepEqual( transformChannels( 'rotate3d(1, 1, 0, 30deg)' ).unsupported, [ 'rotate3d' ] );
+	const flip = rec( 'F', { properties: [ { property: 'transform', from: 'perspective(900px) rotateX(-70deg)', to: 'perspective(900px) rotateX(0deg)' }, { property: 'opacity', from: '0', to: '1' } ] } );
+	const { flat } = run( [ node( 0, 'sgs/card', '10' ) ], [ flip ] );
+	const base = flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base;
+	assert.equal( base.values.perspective, 900 );
+	assert.equal( base.values.from.rotateX, -70 );
+	assert.equal( validateMotionWrite( flat[ 0 ].attributes.sgsMotion, schema ).valid, true );
+	const far = run( [ node( 0, 'sgs/card', '10' ) ], [ { ...flip, properties: [ { property: 'transform', from: 'perspective(9000px) rotateX(-70deg)', to: 'none' } ] } ] );
+	assert.equal( far.flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base.values.perspective, undefined );
+	assert.match( far.out.notes.map( ( n ) => n.text ).join( ' ' ), /perspective 9000px is outside/ );
+	const tilt = hoverLayer( [ rec( 'H', { mechanism: 'css-transition', trigger: { type: 'hover' }, properties: [ { property: 'transform', from: 'perspective(800px) rotateX(10deg)', to: 'perspective(800px) rotateX(10deg) rotateY(5deg)' } ] } ) ], mdb ).layer.values;
+	assert.deepEqual( [ tilt.restRotateX, tilt.rotateY, tilt.perspective ], [ 10, 5, 800 ] );
+} );
+
+test( 'MUST FAIL: a ring or an accent-line hover is the hover state\'s ring or accent, its colour a palette slug when it equals one; any other shadow is the block\'s', () => {
+	const hover = ( from, to ) => rec( 'H', { mechanism: 'css-transition', trigger: { type: 'hover' }, duration_ms: 250, properties: [ { property: 'box-shadow', from, to } ] } );
+	assert.deepEqual( hoverLayer( [ hover( 'none', '0 0 0 8px rgba(216, 202, 80, 0.75)' ) ], mdb ).layer.values, { ringSpread: 8, ringColour: '#d8ca50bf', duration: 250, easing: 'ease' } );
+	assert.deepEqual( hoverLayer( [ hover( '0 0 0 0 transparent', 'inset 0 -3px 0 0 #D8CA50' ) ], mdb ).layer.values, { accentWidth: 3, accentColour: '#d8ca50', duration: 250, easing: 'ease' } );
+	assert.deepEqual( hoverLayer( [ hover( 'none', '0 0 0 4px currentColor' ) ], mdb ).layer.values, { ringSpread: 4, duration: 250, easing: 'ease' }, 'a colour with no plain value is left to the default' );
+	const soft = hoverLayer( [ hover( 'none', '0 8px 24px rgba(0, 0, 0, 0.2)' ) ], mdb );
+	assert.equal( soft.layer, null, 'a soft drop shadow is not a ring' );
+	assert.match( soft.notes.join( ' ' ), /shadow settings/ );
+	const flat = [ { name: 'sgs/card', attributes: {}, ref: 'r0' } ];
+	motionWrites( { nodes: [ node( 0, 'sgs/card', '10' ) ], flat, refOf: ( x ) => x.ref, records: [ hover( 'none', 'inset 0 -3px 0 0 #D8CA50' ) ], mdb, schema, rawSnapshot: { settings: { ...SNAPSHOT.settings, color: { palette: [ { slug: 'accent', color: '#D8CA50' } ] } } } } );
+	assert.equal( flat[ 0 ].attributes.sgsMotion.elements.root.hover.state.values.accentColour, 'accent' );
+	assert.equal( validateMotionWrite( flat[ 0 ].attributes.sgsMotion, schema ).valid, true );
 } );

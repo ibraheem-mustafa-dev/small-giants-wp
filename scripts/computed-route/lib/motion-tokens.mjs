@@ -61,6 +61,19 @@ export function easingOf( v ) {
 const COMPARE = { duration: msOf, distance: pxOf, easing: easingOf };
 
 // The client's motion token values: { '<family>.<key>': raw value } from the raw snapshot's settings.custom.
+// The client's palette as hex to slug (settings.color.palette of the theme snapshot), so a one-off colour stays hex and a
+// palette colour is written by its slug.
+export function clientPalette( rawSnapshot ) {
+	const out = new Map();
+	for ( const p of rawSnapshot?.settings?.color?.palette || [] ) {
+		const hex = /^#[0-9a-f]{6}$/i.test( p.color || '' ) ? p.color.toLowerCase() : null;
+		if ( hex && p.slug && ! out.has( hex ) ) {
+			out.set( hex, p.slug );
+		}
+	}
+	return out;
+}
+
 export function clientTokens( rawSnapshot ) {
 	const custom = rawSnapshot?.settings?.custom || {};
 	const out = {};
@@ -128,7 +141,12 @@ export function snapToken( value, fieldType, { types, tokens, prefer = [] } ) {
 	return value;
 }
 
-const canon = ( v ) => ( v && 'object' === typeof v && ! Array.isArray( v ) ? Object.fromEntries( Object.keys( v ).sort().map( ( k ) => [ k, canon( v[ k ] ) ] ) ) : v );
+const canon = ( v ) => {
+	if ( Array.isArray( v ) ) {
+		return v.map( canon );
+	}
+	return v && 'object' === typeof v ? Object.fromEntries( Object.keys( v ).sort().map( ( k ) => [ k, canon( v[ k ] ) ] ) ) : v;
+};
 
 // The slug of the preset (of `presets`, one panel's rows) whose trigger and values equal the layer's, or null.
 export function presetFor( layer, presets ) {

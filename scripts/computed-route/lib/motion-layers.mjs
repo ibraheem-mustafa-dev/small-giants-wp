@@ -4,165 +4,11 @@
 // (R-47-4); the render check in lib/fill-motion.mjs confirms them. Each record that no layer holds is returned with the
 // reason, naming the coverage wave that owns it.
 //
-// Field names are the schema's (`translateX`, `scale`, `rotate`, `blur`, ...): a CSS transform list is split into those
-// channels here because a list of functions is CSS grammar, not a framework fact. Whether a layer takes a field, and
-// its field type, is asked of the framework DB (lib/motion-db.mjs).
+// Field names are the schema's (`translateX`, `scale`, `rotate`, `blur`, ...); the CSS value parsing that produces them
+// is lib/motion-channels.mjs. Whether a layer takes a field, and its field type, is asked of the framework DB
+// (lib/motion-db.mjs).
 
-const num = ( s ) => ( /^-?(?:\d+(?:\.\d+)?|\.\d+)$/.test( String( s ).trim() ) ? Number( s ) : null );
-const round = ( n, p = 4 ) => Math.round( n * 10 ** p ) / 10 ** p;
-
-// A length: px as a number, another schema unit as its string, 0 unitless; null for anything else.
-export function lengthOf( s ) {
-	const t = String( s ?? '' ).trim();
-	if ( '0' === t ) {
-		return 0;
-	}
-	const m = /^(-?(?:\d+(?:\.\d+)?|\.\d+))(px|em|rem|%|vh|vw|svh|dvh)$/.exec( t );
-	if ( ! m ) {
-		return null;
-	}
-	return 'px' === m[ 2 ] ? round( Number( m[ 1 ] ), 2 ) : `${ Number( m[ 1 ] ) }${ m[ 2 ] }`;
-}
-
-const ANGLE = { deg: 1, turn: 360, rad: 180 / Math.PI, grad: 0.9 };
-
-// An angle in degrees; null when it is not one.
-export function angleOf( s ) {
-	const t = String( s ?? '' ).trim();
-	if ( '0' === t ) {
-		return 0;
-	}
-	const m = /^(-?(?:\d+(?:\.\d+)?|\.\d+))(deg|turn|rad|grad)$/.exec( t );
-	return m ? round( Number( m[ 1 ] ) * ANGLE[ m[ 2 ] ], 3 ) : null;
-}
-
-const args = ( s ) => s.split( /\s*,\s*|\s+/ ).filter( Boolean );
-
-// A CSS transform list as schema channels: { channels: { translateX, translateY, scale, scaleX, scaleY, rotate, rotateX,
-// rotateY }, unsupported: [function names no channel holds] }. `none` is no channels.
-export function transformChannels( value ) {
-	const out = { channels: {}, unsupported: [] };
-	const s = String( value ?? '' ).trim();
-	if ( '' === s || 'none' === s ) {
-		return out;
-	}
-	const set = ( k, v ) => {
-		if ( null === v ) {
-			out.unsupported.push( k );
-		} else {
-			out.channels[ k ] = v;
-		}
-	};
-	for ( const [ , fn, inner ] of s.matchAll( /([a-zA-Z0-9]+)\(([^)]*)\)/g ) ) {
-		const a = args( inner );
-		const f = fn.toLowerCase();
-		if ( 'translate' === f || 'translate3d' === f ) {
-			set( 'translateX', lengthOf( a[ 0 ] ) );
-			if ( a[ 1 ] !== undefined ) {
-				set( 'translateY', lengthOf( a[ 1 ] ) );
-			}
-			if ( 'translate3d' === f && 0 !== lengthOf( a[ 2 ] ?? '0' ) ) {
-				out.unsupported.push( 'translateZ' );
-			}
-		} else if ( 'translatex' === f ) {
-			set( 'translateX', lengthOf( a[ 0 ] ) );
-		} else if ( 'translatey' === f ) {
-			set( 'translateY', lengthOf( a[ 0 ] ) );
-		} else if ( 'scale' === f || 'scale3d' === f ) {
-			const x = num( a[ 0 ] );
-			const y = undefined === a[ 1 ] ? x : num( a[ 1 ] );
-			if ( x === y ) {
-				set( 'scale', x );
-			} else {
-				set( 'scaleX', x );
-				set( 'scaleY', y );
-			}
-		} else if ( 'scalex' === f ) {
-			set( 'scaleX', num( a[ 0 ] ) );
-		} else if ( 'scaley' === f ) {
-			set( 'scaleY', num( a[ 0 ] ) );
-		} else if ( 'rotate' === f || 'rotatez' === f ) {
-			set( 'rotate', angleOf( a[ 0 ] ) );
-		} else if ( 'rotatex' === f ) {
-			set( 'rotateX', angleOf( a[ 0 ] ) );
-		} else if ( 'rotatey' === f ) {
-			set( 'rotateY', angleOf( a[ 0 ] ) );
-		} else {
-			out.unsupported.push( f );
-		}
-	}
-	return out;
-}
-
-// A filter list as channels: blur (px), grayscale and brightness (ratios; 100% is 1).
-export function filterChannels( value ) {
-	const out = { channels: {}, unsupported: [] };
-	const ratio = ( x ) => ( /%$/.test( x ) ? round( Number( x.slice( 0, -1 ) ) / 100 ) : num( x ) );
-	for ( const [ , fn, inner ] of String( value ?? '' ).matchAll( /([a-z-]+)\(([^)]*)\)/g ) ) {
-		const v = inner.trim();
-		if ( 'blur' === fn && 'number' === typeof lengthOf( v ) ) {
-			out.channels.blur = lengthOf( v );
-		} else if ( 'grayscale' === fn || 'brightness' === fn ) {
-			out.channels[ fn ] = ratio( v );
-		} else {
-			out.unsupported.push( fn );
-		}
-	}
-	return out;
-}
-
-// One property's value (opacity, transform, translate, scale, rotate, filter) as channels; other properties are not
-// motion channels and come back as `other`.
-export function propertyChannels( property, value ) {
-	if ( null === value || undefined === value ) {
-		return { channels: {}, unsupported: [] };
-	}
-	switch ( property ) {
-		case 'opacity':
-			return { channels: { opacity: num( value ) ?? Number( value ) }, unsupported: [] };
-		case 'transform':
-			return transformChannels( value );
-		case 'translate': {
-			const [ x, y ] = args( String( value ) );
-			return transformChannels( `translate(${ x }, ${ y ?? '0' })` );
-		}
-		case 'scale': {
-			const [ x, y ] = args( String( value ) );
-			return transformChannels( `scale(${ x }, ${ y ?? x })` );
-		}
-		case 'rotate':
-			return transformChannels( `rotate(${ value })` );
-		case 'filter':
-			return filterChannels( value );
-		default:
-			return { other: property };
-	}
-}
-
-const IDENTITY = { opacity: 1, translateX: 0, translateY: 0, scale: 1, scaleX: 1, scaleY: 1, rotate: 0, rotateX: 0, rotateY: 0, blur: 0, grayscale: 0, brightness: 1 };
-
-// The from and to channels of a record's properties: { from, to, unsupported, other }. A channel the from side sets and
-// the to side leaves out (or sets to `none`) goes to its identity.
-export function poseOf( properties ) {
-	const out = { from: {}, to: {}, unsupported: [], other: [] };
-	for ( const p of properties || [] ) {
-		const f = propertyChannels( p.property, p.from );
-		const t = propertyChannels( p.property, p.to );
-		if ( f.other ) {
-			out.other.push( p.property );
-			continue;
-		}
-		Object.assign( out.from, f.channels );
-		Object.assign( out.to, t.channels );
-		out.unsupported.push( ...f.unsupported, ...t.unsupported );
-	}
-	for ( const k of Object.keys( out.from ) ) {
-		if ( ! ( k in out.to ) ) {
-			out.to[ k ] = IDENTITY[ k ];
-		}
-	}
-	return out;
-}
+import { round, lengthOf, propertyChannels, poseOf, keyframeStops, shadowParts, colourHex } from './motion-channels.mjs';
 
 // Each layer keeps only fields the framework DB lists for it; the rest are reported.
 function keepFields( mdb, layer, base, obj, dropped ) {
@@ -205,6 +51,9 @@ export function classify( record ) {
 	}
 	return { kind: 'skip', reason: `a one-shot animation on a ${ t } trigger: the draft's ${ t } drives it, recognised by the behaviour recognisers wave (FR-48-80)` };
 }
+
+// The most keyframes an entrance holds (schema $defs.EntranceKeyframeList).
+const MAX_KEYFRAMES = 8;
 
 const TRIGGER = { mount: 'load', load: 'load', 'scroll-into-view': 'scroll' };
 
@@ -268,26 +117,51 @@ export function delayOf( record, measured, step = 50 ) {
 	return k.offset + Math.max( 0, Math.round( ( measured.delayRawMs - k.offset ) / k.step ) ) * k.step;
 }
 
+// The element's one perspective (Spec 38A §10) as { perspective } when the layer takes it and the value is within the
+// model's 100 to 5000px; otherwise nothing, with a note for a value outside that range.
+const PERSPECTIVE = { min: 100, max: 5000 };
+function perspectiveOf( px, mdb, layer, notes ) {
+	if ( 'number' !== typeof px || ! mdb.field( layer, 'values.perspective' ) ) {
+		return {};
+	}
+	if ( px < PERSPECTIVE.min || px > PERSPECTIVE.max ) {
+		notes.push( `perspective ${ px }px is outside the ${ PERSPECTIVE.min } to ${ PERSPECTIVE.max }px the motion model holds, so the renderer's default is used` );
+		return {};
+	}
+	return { perspective: px };
+}
+
 // `entrance.base` from one entrance record: { layer, notes } or { unmapped }. `measured` (the sampled entrance at the
 // widest width) supplies a delay the code computes.
 export function entranceLayer( record, mdb, measured = null ) {
+	const kf = keyframeStops( record.properties );
 	const pose = poseOf( record.properties );
 	const notes = [];
-	if ( pose.unsupported.length ) {
-		return { unmapped: `${ pose.unsupported.join( ', ' ) } has no entrance channel` };
+	const unsupported = kf ? kf.unsupported : pose.unsupported;
+	const other = kf ? kf.other : pose.other;
+	if ( kf?.computed.length ) {
+		return { unmapped: `${ kf.computed.join( ', ' ) } is computed in the code, so its keyframe cannot be written` };
 	}
-	if ( ! Object.keys( pose.from ).length ) {
-		return { unmapped: `animates ${ pose.other.join( ', ' ) || 'nothing' }, which no entrance channel holds` };
+	if ( unsupported.length ) {
+		return { unmapped: `${ unsupported.join( ', ' ) } has no entrance channel` };
 	}
-	if ( pose.other.length ) {
-		notes.push( `${ pose.other.join( ', ' ) } is not an entrance channel and is left to the block's own settings` );
+	if ( kf ? ! kf.stops.some( ( s ) => Object.keys( s.channels ).length ) : ! Object.keys( pose.from ).length ) {
+		return { unmapped: `animates ${ other.join( ', ' ) || 'nothing' }, which no entrance channel holds` };
+	}
+	if ( kf && kf.stops.length > MAX_KEYFRAMES ) {
+		return { unmapped: `${ kf.stops.length } distinct keyframe offsets; an entrance holds ${ MAX_KEYFRAMES }` };
+	}
+	if ( other.length ) {
+		notes.push( `${ other.join( ', ' ) } is not an entrance channel and is left to the block's own settings` );
 	}
 	const dropped = [];
-	const values = {
-		from: keepFields( mdb, 'entrance.base', 'values.from', pose.from, dropped ),
-		to: keepFields( mdb, 'entrance.base', 'values.to', pose.to, dropped ),
-		duration: record.duration_ms,
-	};
+	const values = kf
+		? { keyframes: kf.stops.map( ( s ) => ( { offset: s.offset, ...keepFields( mdb, 'entrance.base', 'values.keyframes', s.channels, dropped ) } ) ), duration: record.duration_ms }
+		: {
+			from: keepFields( mdb, 'entrance.base', 'values.from', pose.from, dropped ),
+			to: keepFields( mdb, 'entrance.base', 'values.to', pose.to, dropped ),
+			duration: record.duration_ms,
+		};
 	if ( 'number' !== typeof record.duration_ms ) {
 		if ( ! measured ) {
 			return { unmapped: `duration "${ record.duration_ms }" is computed in the code and was not measured` };
@@ -305,6 +179,7 @@ export function entranceLayer( record, mdb, measured = null ) {
 	if ( easing ) {
 		values.easing = easing;
 	}
+	Object.assign( values, perspectiveOf( pose.perspective, mdb, 'entrance.base', notes ) );
 	if ( dropped.length ) {
 		notes.push( `no entrance field for ${ [ ...new Set( dropped ) ].join( ', ' ) }` );
 	}
@@ -327,6 +202,28 @@ function easingText( raw, notes ) {
 // The layout properties a hover may animate that Spec 38A §5.1 maps onto a motion channel instead.
 const INDENT = new Set( [ 'padding-left', 'padding-inline-start' ] );
 
+// A box-shadow hover the hover state draws itself (Spec 38A §5.1): a ring (a spread with no offset or blur) as
+// ringSpread and ringColour, an accent line (an inset shadow along the bottom edge) as accentWidth and accentColour,
+// each from nothing at rest; null for any other shadow, which belongs to the block's shadow settings. A colour is hex
+// here (one with no plain value, such as currentColor, leaves the colour out); the writer turns a hex equal to a
+// palette colour into its slug.
+function shadowHover( p ) {
+	const to = shadowParts( p.to );
+	const from = null === p.from || undefined === p.from ? null : shadowParts( p.from );
+	const atRest = 'none' === String( p.from ?? 'none' ).trim() || ( from && 0 === from.spread && 0 === from.x && 0 === from.y );
+	if ( ! to || ! atRest || 0 !== to.blur || 0 !== to.x ) {
+		return null;
+	}
+	const colour = colourHex( to.colour );
+	if ( ! to.inset && 0 === to.y && to.spread > 0 ) {
+		return { ringSpread: to.spread, ...( colour ? { ringColour: colour } : {} ) };
+	}
+	if ( to.inset && to.y < 0 && 0 === to.spread ) {
+		return { accentWidth: -to.y, ...( colour ? { accentColour: colour } : {} ) };
+	}
+	return null;
+}
+
 // `hover.state` from an element's hover records: { layer, notes, unmapped: [text] } (layer null when none moves).
 export function hoverLayer( records, mdb ) {
 	const notes = [];
@@ -338,7 +235,10 @@ export function hoverLayer( records, mdb ) {
 		for ( const p of r.properties || [] ) {
 			const t = propertyChannels( p.property, p.to );
 			if ( t.other ) {
-				if ( INDENT.has( p.property ) ) {
+				const glow = 'box-shadow' === p.property ? shadowHover( p ) : null;
+				if ( glow ) {
+					Object.assign( values, glow );
+				} else if ( INDENT.has( p.property ) ) {
 					const by = ( lengthOf( p.to ) ?? 0 ) - ( lengthOf( p.from ?? '0' ) ?? 0 );
 					values.indent = round( by, 2 );
 				} else if ( /^(?:width|gap|column-gap|row-gap|background-size|padding-.*|margin-.*)$/.test( p.property ) ) {
@@ -355,14 +255,17 @@ export function hoverLayer( records, mdb ) {
 				Object.assign( values, t.channels );
 				const f = propertyChannels( p.property, p.from );
 				Object.assign( rest, f.channels || {} );
+				Object.assign( values, perspectiveOf( t.perspective ?? f.perspective, mdb, 'hover.state', notes ) );
 			}
 			if ( ! timing && 'css-transition' === r.mechanism ) {
 				timing = { duration: p.duration_ms ?? r.duration_ms, delay: p.delay_ms ?? r.delay_ms, easing: p.easing ?? r.easing };
 			}
 		}
 	}
-	if ( 'rotate' in rest && 0 !== rest.rotate ) {
-		values.restRotate = rest.rotate;
+	for ( const [ k, restK ] of [ [ 'rotate', 'restRotate' ], [ 'rotateX', 'restRotateX' ], [ 'rotateY', 'restRotateY' ] ] ) {
+		if ( k in rest && 0 !== rest[ k ] ) {
+			values[ restK ] = rest[ k ];
+		}
 	}
 	if ( 'grayscale' in rest && 0 !== rest.grayscale ) {
 		values.restGrayscale = rest.grayscale;

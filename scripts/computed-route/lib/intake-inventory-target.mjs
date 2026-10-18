@@ -140,8 +140,31 @@ export function constValue( p, n ) {
 	return undefined;
 }
 
+// The offsets of a keyframe list as Web Animations computes them: a missing first offset is 0, a missing last one is 1,
+// and a run of missing ones between two given offsets is spaced evenly between them. `given` holds a number or
+// undefined per keyframe.
+function keyframeOffsets( given ) {
+	const out = given.map( ( o ) => ( 'number' === typeof o ? o : null ) );
+	if ( ! out.length ) {
+		return out;
+	}
+	out[ 0 ] ??= 0;
+	out[ out.length - 1 ] ??= 1;
+	let last = 0;
+	for ( let i = 1; i < out.length; i++ ) {
+		if ( null !== out[ i ] ) {
+			for ( let j = last + 1; j < i; j++ ) {
+				out[ j ] = out[ last ] + ( ( out[ i ] - out[ last ] ) * ( j - last ) ) / ( i - last );
+			}
+			last = i;
+		}
+	}
+	return out;
+}
+
 // A Web Animations call's effect (METHOD.md §5.4): { properties, timing } with keyframes and options copied
-// literally; a computed value is kept as its source text (`formula`).
+// literally; a computed value is kept as its source text (`formula`). A property with more than two keyframes also
+// carries `keyframes`: [ { offset (0 to 1), value } ] for every stop, in order.
 export function waapiEffect( p, call ) {
 	const [ kf, opt ] = call.arguments;
 	const val = ( n ) => {
@@ -149,15 +172,24 @@ export function waapiEffect( p, call ) {
 		return undefined === v ? { v: null, f: textOf( p, n ) } : { v };
 	};
 	const props = new Map();
+	const at = new Map();
 	let frames = null;
 	if ( 'ArrayExpression' === kf?.type && kf.elements.every( ( e ) => 'ObjectExpression' === e?.type ) ) {
 		frames = kf.elements.map( ( e ) => Object.fromEntries( e.properties.filter( ( x ) => 'ObjectProperty' === x.type && ! x.computed ).map( ( x ) => [ x.key.name ?? x.key.value, val( x.value ) ] ) ) );
-		frames.forEach( ( f ) => Object.entries( f ).filter( ( [ k ] ) => ! /^(offset|easing|composite)$/.test( k ) ).forEach( ( [ k, v ] ) => props.set( k, [ ...( props.get( k ) || [] ), v ] ) ) );
+		const offsets = keyframeOffsets( frames.map( ( f ) => f.offset?.v ) );
+		frames.forEach( ( f, i ) => Object.entries( f ).filter( ( [ k ] ) => ! /^(offset|easing|composite)$/.test( k ) ).forEach( ( [ k, v ] ) => {
+			props.set( k, [ ...( props.get( k ) || [] ), v ] );
+			at.set( k, [ ...( at.get( k ) || [] ), offsets[ i ] ] );
+		} ) );
 	} else if ( 'ObjectExpression' === kf?.type ) {
+		const own = kf.properties.find( ( y ) => 'ObjectProperty' === y.type && ! y.computed && 'offset' === ( y.key.name ?? y.key.value ) );
+		const given = 'ArrayExpression' === own?.value.type ? own.value.elements.map( ( e ) => literalOf( e ) ) : [];
 		for ( const x of kf.properties.filter( ( y ) => 'ObjectProperty' === y.type && ! y.computed ) ) {
 			const k = x.key.name ?? x.key.value;
 			if ( ! /^(offset|easing|composite)$/.test( k ) ) {
-				props.set( k, 'ArrayExpression' === x.value.type ? x.value.elements.map( val ) : [ val( x.value ) ] );
+				const list = 'ArrayExpression' === x.value.type ? x.value.elements.map( val ) : [ val( x.value ) ];
+				props.set( k, list );
+				at.set( k, keyframeOffsets( list.map( ( _, i ) => given[ i ] ) ) );
 			}
 		}
 	}
@@ -170,7 +202,7 @@ export function waapiEffect( p, call ) {
 			out.formula = f.join( ' … ' );
 		}
 		if ( vs.length > 2 ) {
-			out.keyframes = vs.map( ( x, i ) => ( { index: i, value: shown( x ) } ) );
+			out.keyframes = vs.map( ( x, i ) => ( { offset: Math.round( at.get( k )[ i ] * 10000 ) / 10000, value: shown( x ) } ) );
 		}
 		return out;
 	} );

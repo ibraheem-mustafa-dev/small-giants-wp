@@ -7,9 +7,9 @@
 // than one sampling step writes that tier's value, and the difference is reported.
 import { validateMotionWrite } from './motion-validate.mjs';
 import { classify, entranceLayer, hoverLayer, matchByPose, delayOf } from './motion-layers.mjs';
-import { snapToken, presetFor, effectPresetFor, tokenTypes, clientTokens, tokenises } from './motion-tokens.mjs';
+import { snapToken, presetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers } from './motion-effects.mjs';
-import { loopEffect, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag } from './motion-loops.mjs';
+import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag } from './motion-loops.mjs';
 import { STEP_MS } from './fill-entrance.mjs';
 import { setAttr } from './tree.mjs';
 
@@ -69,10 +69,14 @@ function snapLayer( layer, fieldOf, ctx, prefer ) {
 			const p = `${ base }.${ k }`;
 			if ( v && 'object' === typeof v && ! Array.isArray( v ) ) {
 				walkObj( v, p );
+			} else if ( Array.isArray( v ) ) {
+				v.filter( ( item ) => item && 'object' === typeof item ).forEach( ( item ) => walkObj( item, p ) );
 			} else {
 				const f = fieldOf( p );
 				if ( f && tokenises( k, f.fieldType ) ) {
 					obj[ k ] = snapToken( v, f.fieldType, { ...ctx, prefer } );
+				} else if ( f && 'colourReference' === f.fieldType && 'string' === typeof v ) {
+					obj[ k ] = ctx.palette?.get( v.toLowerCase() ) ?? v;
 				}
 			}
 		}
@@ -244,6 +248,7 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] 
 	const keep = ( record, e ) => ( e.unmapped ? out.unmapped.push( { record, reason: e.unmapped } ) : out.effects.push( { record, ...e } ) );
 	for ( const r of own ) {
 		keep( r.id, loopEffect( r, loops, { mdb } ) );
+		out.notes.push( ...loopCheck( r, loops ).map( ( d ) => `${ r.id }: render check ${ d }` ) );
 	}
 	if ( wide?.marquee ) {
 		const values = marqueeTag( wide.marquee );
@@ -305,7 +310,7 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r ).kind );
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r ).kind );
-	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ) };
+	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ) };
 	for ( const n of nodes ) {
 		const ref = refOf( flat[ n.index ] );
 		const targets = mdb.targetsOf( n.name );

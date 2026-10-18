@@ -132,3 +132,37 @@ spin() { requestAnimationFrame( () => { this._dot.animate( [ { opacity: 0 }, { o
 	assert.notEqual( triggerOf( model, 'App', entrance ).type, 'loop', 'the deferred entrance' );
 	assert.equal( triggerOf( model, 'App', spin ).type, 'loop', 'the control: a callback that runs spin() again' );
 } );
+
+const effectsOf = ( logic ) => {
+	const model = codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ], rows: [] } );
+	const p = model.progs.get( 'App' );
+	return p.nodes.filter( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name ).map( ( c ) => waapiEffect( p, c ) );
+};
+
+// The draft inventory recorded only a property's first and last value, so a bounce (0, -12px, 0) lost its middle
+// keyframe and the cloning writer could not write it.
+test( 'MUST FAIL (FR-48-25): a Web Animation with three keyframes keeps every stop with its offset; two keyframes carry no keyframes key', () => {
+	const [ bounce, fade, array ] = effectsOf( `class Component extends DCComponent {
+go( el ) {
+el.animate( [ { transform: 'translateY(0)' }, { transform: 'translateY(-12px)' }, { transform: 'translateY(0)' } ], { duration: 600 } );
+el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 600 } );
+el.animate( { opacity: [ 0, 1, 0.5 ] }, { duration: 600 } );
+}
+}` );
+	const t = bounce.properties[ 0 ];
+	assert.deepEqual( [ t.from, t.to ], [ 'translateY(0)', 'translateY(0)' ] );
+	assert.deepEqual( t.keyframes, [ { offset: 0, value: 'translateY(0)' }, { offset: 0.5, value: 'translateY(-12px)' }, { offset: 1, value: 'translateY(0)' } ] );
+	assert.equal( 'keyframes' in fade.properties[ 0 ], false, 'the control: two frames' );
+	assert.deepEqual( array.properties[ 0 ].keyframes, [ { offset: 0, value: 0 }, { offset: 0.5, value: 1 }, { offset: 1, value: 0.5 } ], 'the object-of-arrays form' );
+} );
+
+test( 'MUST FAIL (FR-48-25): explicit keyframe offsets are honoured, and an omitted one sits evenly between its neighbours', () => {
+	const [ pop, list ] = effectsOf( `class Component extends DCComponent {
+go( el ) {
+el.animate( [ { transform: 'scale(.6)', offset: 0 }, { transform: 'scale(1.15)', offset: 0.6 }, { transform: 'scale(1)', offset: 1 } ], { duration: 500 } );
+el.animate( [ { opacity: 0 }, { opacity: 0.4, offset: 0.2 }, { opacity: 0.8 }, { opacity: 1 } ], { duration: 500 } );
+}
+}` );
+	assert.deepEqual( pop.properties[ 0 ].keyframes.map( ( k ) => k.offset ), [ 0, 0.6, 1 ] );
+	assert.deepEqual( list.properties[ 0 ].keyframes.map( ( k ) => k.offset ), [ 0, 0.2, 0.6, 1 ], 'an omitted offset is spaced between the given ones' );
+} );

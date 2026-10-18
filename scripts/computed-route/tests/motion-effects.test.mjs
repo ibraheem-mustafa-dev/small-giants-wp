@@ -13,9 +13,9 @@ import { loadMotionSchema, enumerateFields } from '../lib/motion-schema.mjs';
 import { validateMotionWrite } from '../lib/motion-validate.mjs';
 import { motionWrites, elementEffects } from '../lib/fill-motion.mjs';
 import { classify } from '../lib/motion-layers.mjs';
-import { tokenises, effectPresetFor } from '../lib/motion-tokens.mjs';
+import { tokenises, effectPresetFor, presetFor } from '../lib/motion-tokens.mjs';
 import { writeEffect, placeEffect, levelsForTarget } from '../lib/motion-effects.mjs';
-import { loopEffect, resolvedLoop, runtimeLoopsFor, smilLoop, marqueeTag, chooseEffect } from '../lib/motion-loops.mjs';
+import { loopEffect, loopCheck, resolvedLoop, runtimeLoopsFor, smilLoop, marqueeTag, chooseEffect } from '../lib/motion-loops.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 
 const schema = loadMotionSchema();
@@ -166,4 +166,20 @@ test( 'MUST FAIL: a float\'s travel snaps to a distance token; a blur or a phase
 	assert.equal( effectPresetFor( { effect: 'ambient-float', trigger: 'load', values: { travel: 20 } }, presets ), null );
 	assert.equal( effectPresetFor( { effect: 'marquee', trigger: 'load', values: { travel: 12 } }, presets ), null, 'a preset names only its own effect' );
 	assert.equal( resolvedLoop( float(), null ).loop.frames[ 1 ].translateY, -12 );
+} );
+
+test( 'MUST FAIL: a loop the code states in full is checked against the animation measured on the page', () => {
+	const at = ( duration, to ) => ( { loops: [ { css: false, duration, delay: 0, direction: 'alternate', easing: 'ease-in-out', frames: [ { offset: 0, transform: 'translateY(0px)' }, { offset: 1, transform: `translateY(${ to }px)` } ] } ], box: { width: 80, height: 80 } } );
+	assert.deepEqual( loopCheck( float(), { 1440: at( 4200, -12 ), 375: at( 4250, -12 ) } ), [], 'within tolerance at every width' );
+	assert.deepEqual( loopCheck( float(), { 768: at( 6000, -12 ) } ), [ '768: the loop measured 6000ms, the code has 4200ms' ] );
+	assert.deepEqual( loopCheck( float(), { 375: at( 4200, -20 ) } ), [ '375: the measured keyframes differ from the code\'s' ] );
+	assert.deepEqual( loopCheck( MARQUEE, { 1440: measuredMarquee( 1700 ) } ), [], 'a loop the code computes is its measurement, so there is nothing to compare' );
+} );
+
+test( 'MUST FAIL: a loop the code writes with three stops is read with all three, and a keyframe preset matches whatever order its channels are written in', () => {
+	const pulse = rec( 'P3', { duration_ms: 3000, easing: 'ease', direction: 'normal', properties: [ { property: 'opacity', from: '1', to: '1', keyframes: [ { offset: 0, value: '1' }, { offset: 0.5, value: '0.5' }, { offset: 1, value: '1' } ] } ] } );
+	assert.deepEqual( loopEffect( pulse, {}, { mdb } ).values, { motion: 'pulse', duration: 3000, amplitude: 1 } );
+	const presets = [ { slug: 'pop', panel: 'entrance', trigger: 'state', values: { duration: 500, keyframes: [ { offset: 0, opacity: 0, scale: 0.6 }, { offset: 100, opacity: 1, scale: 1 } ] } } ];
+	assert.equal( presetFor( { trigger: 'state', values: { duration: 500, keyframes: [ { scale: 0.6, opacity: 0, offset: 0 }, { offset: 100, scale: 1, opacity: 1 } ] } }, presets ), 'pop' );
+	assert.equal( presetFor( { trigger: 'state', values: { duration: 500, keyframes: [ { offset: 100, opacity: 1, scale: 1 }, { offset: 0, opacity: 0, scale: 0.6 } ] } }, presets ), null, 'the order of the keyframes themselves still matters' );
 } );

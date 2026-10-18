@@ -162,7 +162,8 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-page.mjs` | The page baseline for inherited properties from the theme snapshot (root typography and colour, heading and element styles, CSS initial values), which calibration deliberately does not record. |
 | `lib/fill-entrance.mjs` | Samples a draft's entrances at 375, 768 and 1440 (delay, duration, first-frame pose, load or scroll trigger), sweeping down the page so scroll reveals play, and each element's endless animations as the code made them (timing, keyframes, box, `<marquee>` attributes, SVG animation elements): the motion writer's render check and the source of the values the code computes at run time. |
 | `lib/fill-motion.mjs` | The motion cloning writer (Spec 48 FR-48-78): each skeleton node's inventory motion records as its `sgsMotion`, on the root or the declared part a slot names, render-checked, token-snapped and validated before it is written. |
-| `lib/motion-layers.mjs` | One element's motion records as `entrance.base` and `hover.state` layers (transform lists split into the schema's channels), and the match of a run-time-picked entrance to a measured pose. |
+| `lib/motion-layers.mjs` | One element's motion records as `entrance.base` (from and to, or `values.keyframes` for a record with more than two keyframes) and `hover.state` layers, and the match of a run-time-picked entrance to a measured pose. |
+| `lib/motion-channels.mjs` | CSS values as the motion schema's channels: lengths, angles, transform and filter lists, a record's from and to poses, and the keyframe stops of a record that has more than two. |
 | `lib/motion-effects.mjs` | The one effect writer (`writeEffect`): an effect slug and values as a layer of its panel's list, placed where the editor's Effects panel offers it (qualifying blocks, target level, part kind), every value checked against the DB's fields; FR-48-77's recognisers call it too. |
 | `lib/motion-loops.mjs` | A draft's endless animations as effects: the smallest effect whose owned channels cover the loop and whose values reproduce it (marquee px/s from travel over loop time, ambient float, SVG pulse, Ken Burns), a `<marquee>` and SVG `<animate>` as loops, and a named Spec 38 gap for a loop no effect draws. |
 | `lib/motion-db.mjs` | The framework DB's motion facts, read-only: targets per block, fields per layer, presets, the effect registry. |
@@ -846,7 +847,12 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/motion-layers.mjs`
 - `classify(record)` → `entrance`, `hover`, `effect` (an endless or repeating animation) or `skip` with the owning wave. `entranceLayer`, `hoverLayer` → layers.
-- `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf`; `poseDistance`, `matchByPose`, `delaySteps` (a per-item delay's offset and step), `delayOf`.
+- `poseDistance`, `matchByPose`, `delaySteps` (a per-item delay's offset and step), `delayOf`. `entranceLayer` writes `values.keyframes` (one entry per distinct offset, offsets in percent, at most 8) when a property carries more than two keyframes, and refuses a record whose stop value the code computes.
+
+### `lib/motion-channels.mjs`
+- `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `round`; `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf` (the from and to channels of a record's properties).
+- `keyframeStops(properties)` → null when no property has more than two keyframes, else `{ stops: [{ offset (percent), channels }], unsupported, other, computed }`.
+- `transformChannels` also reads a flat `matrix()`/`matrix3d()` (translate, scale, rotate; a skew is reported), `rotate3d()` about one axis, and `perspective()` (returned as `perspective`). `shadowParts(value)` → `{ inset, x, y, blur, spread, colour }` of a single box-shadow; `colourHex(value)` → lowercase hex for a hex or `rgb()` colour.
 
 ### `lib/motion-effects.mjs`
 - `writeEffect(effect, { mdb, schema, offers })` → `{ target, list, layer, dropped }` or `{ refused }`. `placeEffect(effect, { schema, offers })` → `{ target }` (a block-level effect found on a part goes on the root) or `{ refused }`.
@@ -854,13 +860,14 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/motion-loops.mjs`
 - `loopEffect(record, measuredByWidth, { mdb })`, `chooseEffect(loop, narrow, { mdb })` → `{ effect, values, devices, trigger, notes }` or `{ unmapped }`; `LOOP_BUILDERS`: marquee, ambient-float, svg-loop, ken-burns.
+- `loopCheck(record, measuredByWidth)` → one line per width where the measured loop differs from the code's duration or keyframes, `[]` when every width agrees.
 - `resolvedLoop(record, measured)` (values from the code, else the measured animation; random values refused), `measuredLoopOf(record, measured)`, `loopFamilies(loop)`, `runtimeLoopsFor(candidates, measured)`; `smilLoop(animate, box)`, `marqueeTag(attrs)`.
 
 ### `lib/motion-db.mjs`
 - `motionDb(db)` → `{ targetsOf(block), field(layer, path, effect), presets(panel), effect(slug), effects() }`. `fieldKey(layer, fieldPath)`.
 
 ### `lib/motion-tokens.mjs`
-- `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)`, `effectPresetFor(layer, presets)` (an intensity preset whose stamped values the effect layer holds); `msOf`, `pxOf`, `easingOf`.
+- `tokenTypes(schema)`, `clientTokens(rawSnapshot)`, `clientPalette(rawSnapshot)` (palette hex to slug, so a palette colour is written by its slug and a one-off colour stays hex), `tokenises(field, fieldType)` (durations, curves and travel only), `snapToken(value, fieldType, ctx)`, `presetFor(layer, presets)`, `effectPresetFor(layer, presets)` (an intensity preset whose stamped values the effect layer holds); `msOf`, `pxOf`, `easingOf`.
 
 ### `lib/fill-config.mjs`
 - `walkerPairs(nodes, tree)` → `{ ref, draft }` per node carrying a `draftRef`.
