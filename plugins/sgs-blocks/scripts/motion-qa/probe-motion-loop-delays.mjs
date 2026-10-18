@@ -62,6 +62,11 @@ export function judgeDelays( measured, expected ) {
 	return measured.every( ( value, i ) => Number.isFinite( value ) && Math.abs( value - expected[ i ] ) <= 1 );
 }
 
+/** Every item still waiting for its entrance paints invisible (computed opacity 0), so the entrance fades as well as moves. */
+export function judgeWaitingHidden( opacities ) {
+	return Array.isArray( opacities ) && opacities.length > 0 && opacities.every( ( value ) => Number.isFinite( value ) && value === 0 );
+}
+
 /** Rules that write a delay and are keyed on a positional pseudo-class. `rules` rows: { selector, css }. */
 export function findNthDelayRules( rules ) {
 	return rules.filter( ( r ) => NTH.test( r.selector ) && /(--sgs-me-delay|animation-delay|transition-delay)\s*:/.test( r.css ) );
@@ -96,6 +101,8 @@ function selfTest() {
 	rules.push( { selector: '.a > *[data-sgs-loop-i="1"]', css: '--sgs-me-delay:0ms;', media: '(max-width:767px)' } );
 	ok( 'rulesPerIndex counts top-level rules only', rulesPerIndex( rules, 3 ).join() === '1,1,1' );
 	ok( 'control: rulesPerIndex sees a missing rule', rulesPerIndex( rules.slice( 1 ), 3 ).join() === '0,1,1' );
+	ok( 'judgeWaitingHidden passes hidden items', judgeWaitingHidden( [ 0, 0 ] ) );
+	ok( 'control: judgeWaitingHidden fails a visible item', ! judgeWaitingHidden( [ 0, 1 ] ) && ! judgeWaitingHidden( [] ) && ! judgeWaitingHidden( [ NaN ] ) );
 	for ( const row of out ) console.log( JSON.stringify( { check: row.label, verdict: row.pass ? 'PASS' : 'FAIL' } ) );
 	const failed = out.filter( ( r ) => ! r.pass ).length;
 	console.log( JSON.stringify( { summary: true, selfTest: true, pass: out.length - failed, fail: failed } ) );
@@ -118,6 +125,7 @@ function parseArgv( argv ) {
 		else if ( a === '--expect-tablet' ) last().expect.tablet = parseList( argv[ ++i ] );
 		else if ( a === '--expect-mobile' ) last().expect.mobile = parseList( argv[ ++i ] );
 		else if ( a === '--item-selector' ) args.itemSelector = argv[ ++i ];
+		else if ( a === '--expect-waiting-hidden' ) args.waitingHidden = true;
 		else if ( a === '--engine' ) args.engines.push( argv[ ++i ] );
 		else if ( a === '--width' ) args.widths.push( Number( argv[ ++i ] ) );
 		else if ( a === '--site' ) args.site = argv[ ++i ];
@@ -191,6 +199,12 @@ async function checkCase( rep, page, args, kase, width ) {
 	const where = { selector: args.itemSelector, url, width };
 	rep.check( 'items-found', { ...where, measured: items.length, expected: '>= 1', pass: items.length > 0 ? true : null, why: items.length ? '' : 'no loop item on the page' } );
 	if ( ! items.length ) return null;
+
+	if ( args.waitingHidden ) {
+		const waiting = await page.evaluate( ( sel ) => [ ...document.querySelectorAll( sel ) ].filter( ( el ) => ! el.hasAttribute( 'data-sgs-in' ) ).map( ( el ) => parseFloat( getComputedStyle( el ).opacity ) ), args.itemSelector );
+		rep.check( 'waiting-items-hidden', { ...where, property: 'opacity of items before their entrance has played', measured: waiting, expected: 'every waiting item 0', pass: waiting.length ? judgeWaitingHidden( waiting ) : null, why: waiting.length ? '' : 'every item was already in view, nothing was waiting' } );
+		rep.control( 'waiting-items-hidden', { ...where, measured: waiting.map( () => 1 ), expected: 'rejected (items painted visible)', red: ! judgeWaitingHidden( waiting.map( () => 1 ) ) } );
+	}
 
 	const measured = items.map( ( item ) => toMs( item.delay ) );
 	const expected = kase.expect[ tier ];

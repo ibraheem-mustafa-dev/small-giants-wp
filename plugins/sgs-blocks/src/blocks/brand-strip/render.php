@@ -98,7 +98,7 @@ $name_colour_gradient = $attributes['nameColourGradient'] ?? '';
 $logo_gap            = sgs_css_length_value( $attributes['logoGap'] ?? '' );
 $logo_gap            = '' !== $logo_gap ? $logo_gap : '0px';
 $tile_padding        = sgs_css_length_value( $attributes['tilePadding'] ?? '' );
-$tile_padding        = '' !== $tile_padding ? $tile_padding : '10px';
+$tile_padding        = '' !== $tile_padding ? $tile_padding : '0px';
 $tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
 $tile_shape_raw      = $attributes['tileShape'] ?? 'square';
 $tile_shape          = in_array( $tile_shape_raw, array( 'square', 'circle', 'none' ), true ) ? $tile_shape_raw : 'square';

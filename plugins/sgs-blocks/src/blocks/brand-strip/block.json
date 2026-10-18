@@ -511,7 +511,7 @@
 		},
 		"tilePadding": {
 			"type": "string",
-			"default": "10px",
+			"default": "0px",
 			"description": "Space between a logo and its tile edge: a spacing preset slug (\"30\") or a custom length (\"10px\"), validated by sgs_css_length_value()."
 		},
 		"tileRadius": {

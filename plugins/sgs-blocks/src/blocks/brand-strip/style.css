@@ -19,7 +19,7 @@
 	 * (fluid, below) but never exceed this, so logos never scale to pixelated
 	 * "stupid sizes" on ultra-wide screens — beyond the cap the extra width
 	 * falls into the inter-tile gap instead. */
-	--sgs-tile-cap: calc(var(--sgs-logo-max-height, 180px) + var(--sgs-tile-padding, 10px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
+	--sgs-tile-cap: calc(var(--sgs-logo-max-height, 180px) + var(--sgs-tile-padding, 0px) * 2 + var(--sgs-tile-border-thickness, 0px) * 2);
 
 	/* Reserve the cap height to prevent CLS before images load (cap ≈ the
 	 * actual tile size at the common desktop width, so negligible over-reserve). */
@@ -152,7 +152,7 @@
 	--sgs-tile-size: min(calc((100cqw - (var(--sgs-columns, 8) - 1) * var(--sgs-logo-gap, 0px)) / var(--sgs-columns, 8)), var(--sgs-tile-cap));
 	width: var(--sgs-tile-size);
 	height: var(--sgs-tile-size);
-	padding: var(--sgs-tile-padding, 10px);
+	padding: var(--sgs-tile-padding, 0px);
 	background-color: var(--sgs-tile-bg, transparent);
 	/* Gradient sibling (2026-09-04) — composites OVER background-color above;
 	 * unset falls back to "none" and paints nothing, leaving the flat colour
@@ -174,10 +174,10 @@
 	 * here is what CONTAINS the zoomed logo image inside the tile bounds —
 	 * without it the scaled image would visually escape the rounded card.
 	 * `border` starts transparent so the hover colour transition is smooth
-	 * (no layout shift, since a transparent border still reserves space).
+	 * (no layout shift: the border width is the tile border setting, 0 by default).
 	 */
 	overflow: hidden;
-	border: 2px solid transparent;
+	border: var(--sgs-tile-border-thickness, 0px) solid transparent;
 	transition-property: border-color;
 	transition-duration: var(--wp--custom--duration--medium, 300ms);
 	transition-timing-function: var(--wp--custom--easing--ease-in-out, ease-in-out);
@@ -226,7 +226,7 @@
 	 * the logo stops and auto-centres with margin (Bean: "an auto-margin that
 	 * holds it… it won't extend further since height and width are locked").
 	 * The cap is what prevents a low-res logo up-scaling into pixelation. */
-	--sgs-logo-box: min(calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 10px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2), var(--sgs-logo-max-height, 180px));
+	--sgs-logo-box: min(calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 0px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2), var(--sgs-logo-max-height, 180px));
 	height: var(--sgs-logo-box);
 	width: var(--sgs-logo-box);
 	max-width: 100%;
@@ -250,8 +250,8 @@
 	min-height: 44px;
 	min-width: var(--sgs-brand-text-min-width, 0px);
 	padding-block: 0;
-	padding-left: var(--sgs-tile-padding, 10px);
-	padding-right: var(--sgs-tile-padding, 10px);
+	padding-left: var(--sgs-tile-padding, 0px);
+	padding-right: var(--sgs-tile-padding, 0px);
 	background-color: transparent;
 	background-image: none;
 	/* No tile frame around a name: the tile's transparent border would still
@@ -305,8 +305,8 @@
 	min-height: 44px;
 	min-width: var(--sgs-brand-text-min-width, 0px);
 	padding-block: 0;
-	padding-left: var(--sgs-tile-padding, 10px);
-	padding-right: var(--sgs-tile-padding, 10px);
+	padding-left: var(--sgs-tile-padding, 0px);
+	padding-right: var(--sgs-tile-padding, 0px);
 	background-color: transparent;
 	background-image: none;
 	border-width: 0;

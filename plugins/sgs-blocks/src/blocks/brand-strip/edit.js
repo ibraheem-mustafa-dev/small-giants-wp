@@ -661,7 +661,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					resetAll={ () =>
 						setAttributes( {
 							tileShape: 'square',
-							tilePadding: '10px',
+							tilePadding: '0px',
 							tileRadius: 16,
 							tileShadow: '',
 							logoGap: '0px',
@@ -701,8 +701,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Tile padding', 'sgs-blocks' ) }
-						hasValue={ () => '10px' !== tilePadding }
-						onDeselect={ () => setAttributes( { tilePadding: '10px' } ) }
+						hasValue={ () => '0px' !== tilePadding }
+						onDeselect={ () => setAttributes( { tilePadding: '0px' } ) }
 					>
 						<SpacingControl
 							custom

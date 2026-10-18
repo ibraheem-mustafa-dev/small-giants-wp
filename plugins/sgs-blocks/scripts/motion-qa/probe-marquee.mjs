@@ -63,6 +63,7 @@ export const DRAFTS = {
 	'.m515-brands': { speed: 40, hoverRate: 0, below: Infinity },
 	'.m515-ticker': { speed: 70, hoverRate: 0, below: 767 },
 	'.m515-pause': { speed: 50, hoverRate: 0, touch: 'hold', fade: 6, pause: true, below: Infinity },
+	'.m515-pause-brands': { speed: 50, hoverRate: 0, fade: 6, pause: true, below: Infinity },
 };
 const CONTROL = '.m515-control';
 /** A trust bar with a title and a marquee at every width, edge fade 8%: the title must stay outside the moving strip. */
@@ -93,6 +94,17 @@ export function velocity( points ) {
 }
 
 /** True when a reading's px/s matches the stored speed within 2%. */
+/** A brand strip tile holds the logo with no padding, no border and no fill, and `contain` scales the whole logo until its longer side meets the tile. */
+export function judgeBrandTile( t ) {
+	if ( ! t || ! ( t.tileW > 0 ) || ! ( t.natW > 0 ) ) return false;
+	const flat = '0px' === t.padding && 0 === t.border && 'rgba(0, 0, 0, 0)' === t.background;
+	const boxFills = Math.abs( t.imgW - t.tileW ) <= 1 && Math.abs( t.imgH - t.tileH ) <= 1;
+	const scale = Math.min( t.imgW / t.natW, t.imgH / t.natH );
+	const longer = t.natW >= t.natH ? t.natW * scale : t.natH * scale;
+	const longSide = t.natW >= t.natH ? t.imgW : t.imgH;
+	return flat && boxFills && 'contain' === t.fit && Math.abs( longer - longSide ) <= 1;
+}
+
 export function judgeRate( draft, reading ) {
 	if ( ! reading || ! ( reading.speed > 0 ) || ! ( draft.speed > 0 ) ) return false;
 	return Math.abs( reading.speed - draft.speed ) <= draft.speed * TOLERANCE;
@@ -424,6 +436,21 @@ async function liveChecks( ctx ) {
 		rep.check( 'marquee-pause', { selector: sel, property: 'the pause button: press, then press again', measured: { present, pressed: pressed && pressed.speed, resumed: resumed && resumed.speed }, expected: 'present, still, then running', pass: present && judgeStill( pressed.speed ) && resumed.speed > 0.5 } );
 	}
 
+	for ( const sel of [ '.m515-speed', '.m515-brands' ] ) {
+		await bringIntoView( page, sel );
+		const tile = await page.evaluate( ( root ) => {
+			const item = document.querySelector( `${ root } .sgs-brand-strip__item` );
+			const img = item && item.querySelector( 'img' );
+			if ( ! img ) return null;
+			const i = item.getBoundingClientRect();
+			const m = img.getBoundingClientRect();
+			const cs = getComputedStyle( item );
+			return { tileW: i.width, tileH: i.height, imgW: m.width, imgH: m.height, natW: img.naturalWidth, natH: img.naturalHeight, padding: cs.paddingTop, border: parseFloat( cs.borderTopWidth ), background: cs.backgroundColor, fit: getComputedStyle( img ).objectFit };
+		}, sel );
+		rep.check( 'brand-tile-fills', { selector: sel, property: 'a logo tile: padding, border, fill, and the logo box against the tile', measured: tile, expected: 'padding 0, border 0, transparent, the logo box is the tile, contain fills the longer side', pass: tile ? judgeBrandTile( tile ) : null, why: tile ? '' : 'no logo in the strip' } );
+		rep.control( 'brand-tile-fills', { selector: sel, property: 'the same judge with 10px padding planted', measured: tile && { ...tile, padding: '10px' }, expected: 'rejected', red: !! tile && ! judgeBrandTile( { ...tile, padding: '10px' } ) } );
+	}
+
 	await bringIntoView( page, CONTROL );
 	const c = await measure( page, CONTROL );
 	rep.control( 'marquee-range', { selector: CONTROL, property: 'the trust bar with no marquee runs', measured: { on: c.on, clones: c.clones, speed: c.speed }, expected: 'never runs', red: ! c.on && 0 === c.clones } );
@@ -518,6 +545,9 @@ function selfTest() {
 	need( 'velocity', near( velocity( line( 45 ) ), 45, 1e-9 ) );
 	const wrapped = line( 45 ).map( ( p, i ) => ( i > 15 ? { ...p, x: p.x + 300 } : p ) );
 	need( 'velocity skips the wrap', near( velocity( wrapped ), 45, 0.5 ) );
+	const tileOk = { tileW: 150, tileH: 150, imgW: 150, imgH: 150, natW: 1920, natH: 1080, padding: '0px', border: 0, background: 'rgba(0, 0, 0, 0)', fit: 'contain' };
+	need( 'brand tile passes', judgeBrandTile( tileOk ) );
+	need( 'brand tile rejects padding, a border, a fill, and a shrunk logo box', ! judgeBrandTile( { ...tileOk, padding: '10px' } ) && ! judgeBrandTile( { ...tileOk, border: 2 } ) && ! judgeBrandTile( { ...tileOk, background: 'rgb(255, 255, 255)' } ) && ! judgeBrandTile( { ...tileOk, imgW: 130, imgH: 130 } ) );
 	need( 'still', judgeStill( velocity( line( 0 ) ) ) && ! judgeStill( 45 ) );
 	need( 'rate speed', judgeRate( { speed: 45 }, { speed: 45.5, pitch: 1 } ) && ! judgeRate( { speed: 45 }, { speed: 47, pitch: 1 } ) );
 	need( 'rate rejects still', ! judgeRate( { speed: 60 }, { speed: 0, pitch: 0 } ) );
