@@ -73,13 +73,13 @@ test( 'MUST FAIL TO MATCH: grid-template-columns:count keeps its stored string a
 // peer sessions added attributes and changed `sgs/cart::countPopAnimation` from a boolean to a string enum, which
 // JOINED it to the pool. An exact count conflates the two directions — a DECREASE means a discovery-pool setting
 // was routed (the real defect), while an INCREASE is ordinary schema growth and happens on every reseed. So the
-// floor is asserted instead (633 until Spec 38A M6.6 deleted the old motion attributes, whose enum rows left the pool: 615; deleting a setting is not routing one), plus named members that must stay unrouted, which tests the hazard rather than the
+// floor is asserted instead (633 until Spec 38A M6.6 deleted the old motion attributes, whose enum rows left the pool: 615 after groups G1 to G5, 455 after G0 removed the flat fx, entrance and hover enums from every block; deleting a setting is not routing one), plus named members that must stay unrouted, which tests the hazard rather than the
 // number. Never re-pin this to an exact count: the DB is the source of truth and a cached count in a test rots
 // exactly like a cached count in a doc.
 test( 'the enum discovery pool never shrinks and no candidate is ever a css_property NULL row', () => {
 	const blocks = db.prepare( 'SELECT slug FROM blocks' ).all().map( ( r ) => r.slug );
 	const pool = blocks.reduce( ( n, b ) => n + enumSettings( db, b ).length, 0 );
-	assert.ok( pool >= 600, `the discovery pool is ${ pool }, below the 600 floor R-47-10 was written at: a setting that used to reach calibration discovery has been given a css_property, which deletes that path` );
+	assert.ok( pool >= 455, `the discovery pool is ${ pool }, below the 455 floor R-47-10 was written at: a setting that used to reach calibration discovery has been given a css_property, which deletes that path` );
 	// Named members, so routing one is caught even if an unrelated addition keeps the total above the floor.
 	for ( const [ block, attr ] of [ [ 'sgs/cart', 'displayMode' ], [ 'sgs/cart', 'triggerStyle' ], [ 'sgs/cart', 'itemRemoveStyle' ] ] ) {
 		assert.ok( enumSettings( db, block ).some( ( r ) => r.attr_name === attr ),
