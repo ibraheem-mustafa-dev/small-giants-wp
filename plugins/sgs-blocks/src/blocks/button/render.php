@@ -335,19 +335,6 @@ $box_shadow_decls = sgs_shadow_decls(
 $box_shadow_decls['normal'] = sgs_focus_under_decls( $box_shadow_decls['normal'] );
 $box_shadow_decls['hover']  = sgs_focus_under_decls( $box_shadow_decls['hover'] );
 
-// Effects.
-$hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;
-
-// Hover opacity (0-1; 0 = off, the same sentinel every other numeric hover
-// control in the framework uses — see sgs/responsive-logo's opacityHover).
-// Sets the custom property style.css's `.sgs-button:hover,:focus-visible`
-// rule reads; that rule is a compiled-stylesheet consumer, so the touch guard
-// is applied at build time (scripts/hover-guard postbuild transform), not here.
-$hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
-$hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
-$transition_duration = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 0;
-// Shared motion easing names (and a validated custom curve), as every other SGS motion control.
-$transition_easing   = sgs_motion_easing_css( (string) ( $attributes['transitionEasing'] ?? 'ease' ), (string) ( $attributes['transitionEasingCustom'] ?? '' ), 'ease' );
 
 // ---------------------------------------------------------------------------
 // 2. Unique ID for scoped CSS.
@@ -398,9 +385,6 @@ if ( '' !== $colour_bg_hover_gradient_value ) {
 if ( $colour_border_hover ) {
 	$inline_styles[] = '--sgs-btn-border-hover:' . sgs_colour_value( $colour_border_hover );
 }
-if ( $hover_opacity > 0 ) {
-	$inline_styles[] = '--sgs-btn-opacity-hover:' . number_format( $hover_opacity, 2 );
-}
 
 // Non-responsive base declarations (border-width/style, font weight/style,
 // text-transform/decoration, box-shadow) go into the id-scoped <style> base rule
@@ -448,19 +432,6 @@ if ( $base_decls ) {
 	$scoped_css_parts[] = ".{$uid}.sgs-button{" . implode( ';', $base_decls ) . ';}';
 }
 
-// Transition — written only when this instance sets a duration; at 0 the
-// site's button-preset hover-transition custom property applies instead.
-if ( $transition_duration > 0 ) {
-	$scoped_css_parts[] = ".{$uid}.sgs-button{transition:all {$transition_duration}ms {$transition_easing};}";
-}
-
-// Hover scale (skip if exactly 1.0 — no-op). Touch-safe: guarded via
-// sgs_hover_state_rules() so a tap doesn't stick the scale on touchscreens.
-// Scales the button element itself: border, fill and label move together.
-if ( abs( $hover_scale - 1.0 ) > 0.001 ) {
-	$scale_val = round( $hover_scale, 3 );
-	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", "transform:scale({$scale_val})" );
-}
 // Content alignment + label-to-icon gap, per device. Both are flex properties
 // of the button root. Unset attrs emit nothing (the centred, gapless default
 // stands).

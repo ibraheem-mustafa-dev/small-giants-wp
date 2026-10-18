@@ -388,10 +388,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"scaleHover": {
-			"type": "number",
-			"default": 1
-		},
 		"contentAlign": {
 			"type": "object",
 			"default": {},
@@ -402,30 +398,11 @@
 			"default": {},
 			"description": "Per-device gap between the label and the icon (CSS length). Tier object {desktop,tablet,mobile}; empty adds no gap."
 		},
-		"opacityHover": {
-			"type": "number",
-			"default": 0,
-			"description": "Fades the button to this opacity on hover/focus (0-1; 1 = no visible change). 0 (default) disables the fade entirely, so an untouched button is unaffected."
-		},
-		"transitionDuration": {
-			"type": "number",
-			"default": 0
-		},
 		"focusStyle": {
 			"type": "string",
 			"enum": [ "", "duotone", "signature" ],
 			"default": "",
 			"description": "Keyboard focus look (focus system, theme focus.css). '' uses the site's focus style; 'duotone' adds sgs-focus--duotone (the dark-and-light ring, for photos or busy grounds); 'signature' adds sgs-focus--signature (a slowly turning border in the site's colours that stops turning under reduced motion). Signature is refused when a gradient border or a motion effect already owns the button's ::before (helpers-button-focus.php)."
-		},
-		"transitionEasing": {
-			"type": "string",
-			"default": "ease",
-			"description": "Hover transition easing: a shared motion easing name (sgs_motion_easing_css), or custom with transitionEasingCustom."
-		},
-		"transitionEasingCustom": {
-			"type": "string",
-			"default": "",
-			"description": "A cubic-bezier(x1, y1, x2, y2) curve, read when transitionEasing is custom. An invalid curve falls back to ease."
 		},
 		"icon": {
 			"type": "string",

@@ -126,15 +126,8 @@
 	/* Preset hover transform (FR-33-4 open-bag "transform-lift"): applied from the client's
 	   buttonPresets hover-transform token, then the site-wide buttonPresets.default
 	   hover-transform; `none` fallback = no lift when neither is set.
-	   A per-instance scaleHover attr emits a higher-specificity `.uid.sgs-button:hover` rule
-	   (render.php) that overrides this; reduced-motion forces transform:none !important. */
+	   Reduced-motion forces transform:none !important. */
 	transform: var(--sgs-btn-transform-hover, var(--wp--custom--button-presets--default--hover-transform, none));
-	/* Hover opacity (opacityHover attribute, render.php) — a real editor
-	   control, never a hardcoded literal here. Fallback 1 = no visible change
-	   when the attribute is unset (0, the off-sentinel). Touch-guarded at
-	   build time (scripts/hover-guard postbuild transform, same as every
-	   other compiled block stylesheet); source stays unguarded on purpose. */
-	opacity: var(--sgs-btn-opacity-hover, 1);
 }
 
 /*

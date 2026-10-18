@@ -11,10 +11,8 @@
 	margin-bottom: var(--wp--preset--spacing--20, 0.5rem);
 	/* Hover timing comes from the site's button-preset token, the same source
 	   sgs/button, sgs/buybox, sgs/option-picker and
-	   sgs/whatsapp-cta read. An instance that sets its own transitionDuration
-	   beats this from its scoped rule; an instance that sets none takes the
-	   site's timing rather than snapping. The reduced-motion block below
-	   zeroes it. Not a theme.json element default, so no silent override. */
+	   sgs/whatsapp-cta read, so a colour hover takes the site's timing rather
+	   than snapping. The reduced-motion block below zeroes it. Not a theme.json element default, so no silent override. */
 	transition: color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, background-image var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
 }
 

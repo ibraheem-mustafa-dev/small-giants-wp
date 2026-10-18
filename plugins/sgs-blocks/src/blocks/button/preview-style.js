@@ -6,7 +6,7 @@
  * @package SGS\Blocks
  */
 
-import { resolveColourToken, motionEasingCss } from '../../components';
+import { resolveColourToken } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import {
 	backgroundPaintPreview,
@@ -98,9 +98,6 @@ function tierMinHeight( attributes, tier ) {
  */
 export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	const {
-		transitionDuration,
-		transitionEasing,
-		transitionEasingCustom,
 		colourText,
 		colourTextGradient,
 		colourBackground,
@@ -133,9 +130,6 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	const size = tierValueOf( iconSize, tier );
 	if ( ! isUnset( size ) ) {
 		style[ '--sgs-btn-icon-size' ] = `${ Math.abs( parseInt( size, 10 ) ) || 0 }px`;
-	}
-	if ( transitionDuration > 0 ) {
-		style.transition = `all ${ transitionDuration }ms ${ motionEasingCss( transitionEasing || 'ease', transitionEasingCustom || '', 'ease' ) }`;
 	}
 
 	// A gradient TEXT colour needs background-clip:text on the root, which would

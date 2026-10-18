@@ -61,6 +61,26 @@
 					"whole",
 					"face"
 				]
+			},
+			"scaleHover": {
+				"type": "number",
+				"default": 1
+			},
+			"transitionDuration": {
+				"type": "number",
+				"default": 0
+			},
+			"transitionEasing": {
+				"type": "string",
+				"default": "ease"
+			},
+			"transitionEasingCustom": {
+				"type": "string",
+				"default": ""
+			},
+			"opacityHover": {
+				"type": "number",
+				"default": 0
 			}
 		},
 		"sgs/buybox": {
@@ -247,6 +267,26 @@
 			"sgsAnimationEasing": {
 				"type": "string",
 				"default": "ease-out"
+			}
+		},
+		"sgs/heading": {
+			"scaleHover": {
+				"type": "number"
+			},
+			"transitionDuration": {
+				"type": "number",
+				"default": 0
+			},
+			"transitionEasing": {
+				"type": "string",
+				"default": "ease",
+				"enum": [
+					"ease",
+					"ease-in",
+					"ease-out",
+					"ease-in-out",
+					"linear"
+				]
 			}
 		},
 		"sgs/hero": {
@@ -716,32 +756,6 @@
 				]
 			}
 		},
-		"sgs/nav-drawer-menu": {
-			"submenuItemStagger": {
-				"type": "number",
-				"default": 0
-			},
-			"submenuItemStaggerDistance": {
-				"type": "number",
-				"default": 8
-			},
-			"submenuItemStaggerDuration": {
-				"type": "number",
-				"default": 0
-			},
-			"submenuItemStaggerMax": {
-				"type": "number",
-				"default": 0
-			},
-			"submenuItemStaggerScope": {
-				"type": "string",
-				"default": "columns",
-				"enum": [
-					"columns",
-					"rows"
-				]
-			}
-		},
 		"sgs/nav-drawer": {
 			"entryAnimation": {
 				"type": "object",
@@ -823,6 +837,32 @@
 				"enum": [
 					"translate",
 					"clip"
+				]
+			}
+		},
+		"sgs/nav-drawer-menu": {
+			"submenuItemStagger": {
+				"type": "number",
+				"default": 0
+			},
+			"submenuItemStaggerDistance": {
+				"type": "number",
+				"default": 8
+			},
+			"submenuItemStaggerDuration": {
+				"type": "number",
+				"default": 0
+			},
+			"submenuItemStaggerMax": {
+				"type": "number",
+				"default": 0
+			},
+			"submenuItemStaggerScope": {
+				"type": "string",
+				"default": "columns",
+				"enum": [
+					"columns",
+					"rows"
 				]
 			}
 		},
@@ -937,6 +977,19 @@
 				"default": "ease-out"
 			}
 		},
+		"sgs/quote": {
+			"scaleHover": {
+				"type": "number"
+			},
+			"transitionDuration": {
+				"type": "string",
+				"default": "300"
+			},
+			"transitionEasing": {
+				"type": "string",
+				"default": "ease-in-out"
+			}
+		},
 		"sgs/responsive-logo": {
 			"svgAnimationSource": {
 				"type": "number"
@@ -980,6 +1033,94 @@
 			"lottieSpeed": {
 				"type": "number",
 				"default": 1
+			}
+		},
+		"sgs/site-footer": {
+			"bgAnimationDuration": {
+				"type": "number",
+				"default": 20
+			},
+			"bgHoverZoom": {
+				"type": "boolean",
+				"default": false
+			},
+			"bgHoverZoomScale": {
+				"type": "number",
+				"default": 105
+			},
+			"bgHoverZoomDuration": {
+				"type": "number",
+				"default": 600
+			},
+			"bgHoverZoomEasing": {
+				"type": "string",
+				"default": "ease"
+			},
+			"bgHoverZoomEasingCustom": {
+				"type": "string",
+				"default": ""
+			},
+			"bgKenBurns": {
+				"type": "boolean",
+				"default": false
+			},
+			"bgParallax": {
+				"type": "boolean",
+				"default": false
+			},
+			"bgSvgAnimation": {
+				"type": "string",
+				"default": "none",
+				"enum": [
+					"none",
+					"pulse",
+					"float",
+					"wave"
+				]
+			},
+			"bgSvgAnimationSpeed": {
+				"type": "string",
+				"default": "medium",
+				"enum": [
+					"slow",
+					"medium",
+					"fast"
+				]
+			},
+			"bgLottie": {
+				"type": "integer",
+				"default": 0
+			},
+			"bgLottieLoop": {
+				"type": "boolean",
+				"default": true
+			},
+			"fxTreatment": {
+				"type": "string",
+				"default": ""
+			},
+			"fxTreatmentShadow": {
+				"type": "string",
+				"default": ""
+			},
+			"fxTreatmentHighlight": {
+				"type": "string",
+				"default": ""
+			},
+			"fxTreatmentTint": {
+				"type": "string",
+				"default": ""
+			},
+			"fxTreatmentInk": {
+				"type": "string",
+				"default": ""
+			},
+			"fxTreatmentIntensity": {
+				"type": "number"
+			},
+			"fxTreatmentReveal": {
+				"type": "string",
+				"default": ""
 			}
 		},
 		"sgs/site-footer-row": {
@@ -1087,7 +1228,7 @@
 				"default": false
 			}
 		},
-		"sgs/site-footer": {
+		"sgs/site-header": {
 			"bgAnimationDuration": {
 				"type": "number",
 				"default": 20
@@ -1268,94 +1409,6 @@
 				"type": "number"
 			}
 		},
-		"sgs/site-header": {
-			"bgAnimationDuration": {
-				"type": "number",
-				"default": 20
-			},
-			"bgHoverZoom": {
-				"type": "boolean",
-				"default": false
-			},
-			"bgHoverZoomScale": {
-				"type": "number",
-				"default": 105
-			},
-			"bgHoverZoomDuration": {
-				"type": "number",
-				"default": 600
-			},
-			"bgHoverZoomEasing": {
-				"type": "string",
-				"default": "ease"
-			},
-			"bgHoverZoomEasingCustom": {
-				"type": "string",
-				"default": ""
-			},
-			"bgKenBurns": {
-				"type": "boolean",
-				"default": false
-			},
-			"bgParallax": {
-				"type": "boolean",
-				"default": false
-			},
-			"bgSvgAnimation": {
-				"type": "string",
-				"default": "none",
-				"enum": [
-					"none",
-					"pulse",
-					"float",
-					"wave"
-				]
-			},
-			"bgSvgAnimationSpeed": {
-				"type": "string",
-				"default": "medium",
-				"enum": [
-					"slow",
-					"medium",
-					"fast"
-				]
-			},
-			"bgLottie": {
-				"type": "integer",
-				"default": 0
-			},
-			"bgLottieLoop": {
-				"type": "boolean",
-				"default": true
-			},
-			"fxTreatment": {
-				"type": "string",
-				"default": ""
-			},
-			"fxTreatmentShadow": {
-				"type": "string",
-				"default": ""
-			},
-			"fxTreatmentHighlight": {
-				"type": "string",
-				"default": ""
-			},
-			"fxTreatmentTint": {
-				"type": "string",
-				"default": ""
-			},
-			"fxTreatmentInk": {
-				"type": "string",
-				"default": ""
-			},
-			"fxTreatmentIntensity": {
-				"type": "number"
-			},
-			"fxTreatmentReveal": {
-				"type": "string",
-				"default": ""
-			}
-		},
 		"sgs/social-icons": {
 			"childIconScaleHover": {
 				"type": "number",
@@ -1408,12 +1461,6 @@
 				"default": "default"
 			}
 		},
-		"sgs/testimonial-slider": {
-			"effectHover": {
-				"type": "string",
-				"default": "none"
-			}
-		},
 		"sgs/testimonial": {
 			"effectHover": {
 				"type": "string",
@@ -1437,6 +1484,32 @@
 			"sgsAnimationEasing": {
 				"type": "string",
 				"default": "default"
+			}
+		},
+		"sgs/testimonial-slider": {
+			"effectHover": {
+				"type": "string",
+				"default": "none"
+			}
+		},
+		"sgs/text": {
+			"scaleHover": {
+				"type": "number"
+			},
+			"transitionDuration": {
+				"type": "number",
+				"default": 300
+			},
+			"transitionEasing": {
+				"type": "string",
+				"default": "ease",
+				"enum": [
+					"ease",
+					"ease-in",
+					"ease-out",
+					"ease-in-out",
+					"linear"
+				]
 			}
 		},
 		"sgs/timeline": {

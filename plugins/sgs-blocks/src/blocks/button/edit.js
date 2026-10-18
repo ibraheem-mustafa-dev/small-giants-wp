@@ -21,7 +21,7 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, EasingAtom } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { usePreviewTier } from '../../utils';
@@ -134,13 +134,8 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
-		scaleHover,
 		contentAlign,
 		iconGap,
-		opacityHover,
-		transitionDuration,
-		transitionEasing,
-		transitionEasingCustom,
 		boxShadow,
 		boxShadowColour,
 		boxShadowHover,
@@ -927,47 +922,6 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 
 				{ /* Effects */ }
 				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
-					<RangeControl
-						label={ __( 'Hover scale', 'sgs-blocks' ) }
-						value={ scaleHover }
-						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
-						min={ 0.9 }
-						max={ 1.2 }
-						step={ 0.01 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Hover opacity', 'sgs-blocks' ) }
-						help={ __( 'Fades the button on hover/focus. 1 = no fade. 0 disables the fade entirely.', 'sgs-blocks' ) }
-						value={ opacityHover ?? 0 }
-						onChange={ ( val ) => setAttributes( { opacityHover: val ?? 0 } ) }
-						min={ 0 }
-						max={ 1 }
-						step={ 0.05 }
-						allowReset
-						resetFallbackValue={ 0 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
-						min={ 0 }
-						max={ 1000 }
-						step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<EasingAtom
-						vocab="nav"
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						custom={ transitionEasingCustom }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
-						onCustomChange={ ( val ) => setAttributes( { transitionEasingCustom: val } ) }
-					/>
 					{ /* Keyboard focus (focusStyle): the stored Default '' reads as "nothing selected", so it shows as 'default';
 					   Signature is disabled with its reason when ::before is taken (focus-style.js::signatureRefusal). */ }
 					<ToggleGroupControl

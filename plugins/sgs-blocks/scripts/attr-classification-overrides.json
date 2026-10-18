@@ -1129,14 +1129,6 @@
 			}
 		},
 		{
-			"slug": "sgs/button",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
 			"slug": "sgs/nav-drawer",
 			"attr": "closeHoverOpacity",
 			"fields": {
@@ -1159,25 +1151,9 @@
 			}
 		},
 		{
-			"slug": "sgs/heading",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
-				"css_state": "hover"
-			}
-		},
-		{
 			"slug": "sgs/info-box",
 			"attr": "scaleHover",
 			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/quote",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
 				"css_state": "hover"
 			}
 		},
@@ -1192,14 +1168,6 @@
 			"slug": "sgs/testimonial",
 			"attr": "scaleHover",
 			"fields": {
-				"css_state": "hover"
-			}
-		},
-		{
-			"slug": "sgs/text",
-			"attr": "scaleHover",
-			"fields": {
-				"css_property": "transform",
 				"css_state": "hover"
 			}
 		},
@@ -6192,14 +6160,6 @@
 			"_why": "2026-09-30 (Gate 3C wholesale-food client scrim). A hand-typed cubic-bezier() read only when scrimFadeEasing is custom; same role as burgerMorphEasingCustom."
 		},
 		{
-			"slug": "sgs/button",
-			"attr": "transitionEasingCustom",
-			"fields": {
-				"role": "technical"
-			},
-			"_why": "2026-09-30 (Gate 3C reference-site CTA). A hand-typed cubic-bezier() read only when transitionEasing is custom (the button now uses the shared sgs_motion_easing_css list); same role as sgs/nav-bar-menu burgerMorphEasingCustom. The classifier records no role for free-text curve strings."
-		},
-		{
 			"slug": "sgs/nav-bar-menu",
 			"attr": "itemMotionEasingCustom",
 			"fields": {
@@ -7082,6 +7042,15 @@
 				"css_layer": "OUTER"
 			},
 			"_reason": "2026-10-17 (Spec 38A M6.6-G4). The hover shadow's colour, renamed from shadowHoverColour; classified exactly as sgs/post-grid::shadowColourHover (box-shadow-color on hover), so it no longer shares the (box-shadow, OUTER, hover) slot with shadowHover, which paints the shadow itself."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "brandName",
+			"fields": {
+				"css_property": null,
+				"css_element": null
+			},
+			"_reason": "2026-10-18 (Spec 38A M6.6). brandName chooses WHICH brand the icon is; the brand's paint (glyph, ring, border, gradient) comes from the brand registry through sgs_brand_paint() and the icon's colour attributes, so the emission scanner's pairing of those declarations with brandName is wrong. Classified with no css_property, as identity, so a skeleton carrying a brand icon is not read as carrying a style value (scripts/computed-route/lint.mjs::lintSkeleton)."
 		}
 	]
 }

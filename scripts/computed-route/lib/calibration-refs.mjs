@@ -181,13 +181,13 @@ export function refGate( blocks, fixtures, refs, exists, site ) {
 	return { ready, blocked };
 }
 
-// The WordPress root of a hosted test site, relative to the SSH home: build-deploy.py's TARGETS[<site>].wp_content
+// The WordPress root of a hosted test site, relative to the SSH home: deploy_common.py's TARGETS[<site>].wp_content
 // without "/wp-content" (read as text; the route imports nothing from the converter's scripts).
 export function hostedRoot( site, repo ) {
-	const src = fs.readFileSync( path.join( repo, 'plugins', 'sgs-blocks', 'scripts', 'build-deploy.py' ), 'utf8' );
+	const src = fs.readFileSync( path.join( repo, 'plugins', 'sgs-blocks', 'scripts', 'deploy_common.py' ), 'utf8' );
 	const m = src.match( new RegExp( `"${ site.replace( /[-]/g, '\\-' ) }"\\s*:\\s*\\{[^}]*?"wp_content"\\s*:\\s*"([^"]+)"` ) );
 	if ( ! m ) {
-		throw new Error( `${ site } has no wp_content in build-deploy.py TARGETS` );
+		throw new Error( `${ site } has no wp_content in deploy_common.py TARGETS` );
 	}
 	return m[ 1 ].replace( /\/wp-content\/?$/, '' );
 }

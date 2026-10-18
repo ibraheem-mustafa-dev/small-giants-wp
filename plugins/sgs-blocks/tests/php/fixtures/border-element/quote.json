@@ -58,7 +58,7 @@
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
             "border-width:2px 2px 2px 2px",
-            "transition:transform 300ms ease-in-out,box-shadow 300ms ease-in-out,background-color 300ms ease-in-out,color 300ms ease-in-out"
+            "transition:box-shadow 300ms ease-in-out,background-color 300ms ease-in-out,color 300ms ease-in-out"
         ],
         " || .sgs-quote-UID.wp-block-sgs-quote:focus-within": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"

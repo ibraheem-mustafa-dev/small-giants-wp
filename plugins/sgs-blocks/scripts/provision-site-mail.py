@@ -57,10 +57,10 @@ SMTP_HOST, SMTP_PORT, SMTP_ENCRYPTION = "smtp.hostinger.com", 465, "ssl"
 
 
 def load_targets() -> dict:
-    spec = importlib.util.spec_from_file_location("build_deploy", SCRIPTS / "build-deploy.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)  # guarded by `if __name__ == "__main__"`
-    return module.TARGETS, module.SSH_FALLBACK, module.SSH_USER_HOST
+    # TARGETS and the SSH settings live in deploy_common.py, beside build-deploy.py.
+    sys.path.insert(0, str(SCRIPTS))
+    import deploy_common
+    return deploy_common.TARGETS, deploy_common.SSH_FALLBACK, deploy_common.SSH_USER_HOST
 
 
 def read_secret(path: Path, key: str) -> str:

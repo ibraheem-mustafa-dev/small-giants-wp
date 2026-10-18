@@ -136,6 +136,8 @@ def attribute_needles():
                               'kind': 'attribute', 'family': family, 'blocks': blocks})
             continue
         for name in names:
+            if migrate_motion.kept_everywhere(name):
+                continue
             if (name, family, blocks) not in seen:
                 seen.add((name, family, blocks))
                 needle = make_needle(name, name, 'attribute', family)
@@ -205,6 +207,13 @@ def walk_untracked(needles, repo=REPO):
     return rows, stats
 
 
+def attribute_kept(block, attr):
+    """True when migrate_motion.KEPT leaves this attribute on this block (the mapper reports it and it stays)."""
+    sys.path.insert(0, HERE)
+    import migrate_motion
+    return bool(migrate_motion.kept_reason(block, attr))
+
+
 def block_slug(path):
     m = re.match(r'^plugins/sgs-blocks/src/blocks/([^/]+)/', path)
     return m.group(1) if m else None
@@ -267,6 +276,9 @@ def classify(rows, needles, data):
             return
         scoped = needle['kind'] == 'attribute' and needle.get('blocks')
         slug = block_slug(name)
+        if needle['kind'] == 'attribute' and slug and attribute_kept('sgs/' + slug, needle['subject']):
+            dropped['kept'] = dropped.get('kept', 0) + 1
+            return
         if scoped and slug and 'sgs/' + slug not in needle['blocks']:
             dropped['scope'] += 1
             return

@@ -77,10 +77,9 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// `transform:scale()` exclusively through the hover-state rules — a `:hover` rule, and the editor canvas
 	// never renders a hover state, which is the SAME doctrine already applied
 	// to the client-set hover VALUES below.
-	// ⚠ NAME-KEYED, AND THIS NAME IS NOT UNIQUE: `scaleHover` is declared by 11
-	// blocks (button, card-grid, gallery, heading, icon, info-box, post-grid,
-	// quote, team-member, testimonial, text). Only `sgs/button` has a finding
-	// today, so this also pre-emptively suppresses the other 10. That is
+	// ⚠ NAME-KEYED, AND THIS NAME IS NOT UNIQUE: `scaleHover` is declared by 7
+	// blocks (card-grid, gallery, icon, info-box, post-grid, team-member,
+	// testimonial), so this pre-emptively suppresses all of them. That is
 	// intended — the attribute means the same thing on every one of them — but
 	// if any block ever uses `scaleHover` for a NON-hover transform, this
 	// exemption would hide a real desync there.

@@ -41,7 +41,6 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
-	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
@@ -220,7 +219,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		boxShadowHover,
 		boxShadowColour,
 		boxShadowColourHover,
-		scaleHover,
 		textColourHover,
 		textColourHoverGradient,
 		backgroundColourHover,
@@ -228,8 +226,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backgroundColourHoverGradient,
 		maxWidth,
 		inheritStyle,
-		transitionDuration,
-		transitionEasing,
 	} = attributes;
 
 	// Contrast check for border colour — warn if border fails WCAG AA contrast
@@ -618,51 +614,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</>
 					) }
 				</ToolsPanel>
-
-				{ /* ---- Hover ---- */ }
-				<PanelBody
-					title={ __( 'Hover', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<TextControl
-						label={ __( 'Scale on hover (e.g. 1.03)', 'sgs-blocks' ) }
-						value={ scaleHover }
-						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
-						placeholder="1.03"
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ /* Text colour on hover + Background on hover moved to the
-					   top-level SgsColourPanel (D618/D621) — "Text colour
-					   (hover)" and "Background colour" (hover state) rows. Box
-					   shadow hover moved into the single tabbed mount on the Styles
-					   tab's Wrapper panel (Wave A1 ShadowControl redesign,
-					   2026-09-07) — shape AND colour now live per-state in one
-					   control rather than split across two InspectorControls
-					   groups. */ }
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ parseInt( transitionDuration, 10 ) || 300 }
-						onChange={ ( val ) => setAttributes( { transitionDuration: String( val ) } ) }
-						min={ 0 } max={ 1000 } step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: 'ease-in-out', value: 'ease-in-out' },
-							{ label: 'ease', value: 'ease' },
-							{ label: 'ease-in', value: 'ease-in' },
-							{ label: 'ease-out', value: 'ease-out' },
-							{ label: 'linear', value: 'linear' },
-						] }
-						onChange={ ( val ) => setAttributes( { transitionEasing: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 			</InspectorControls>
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }

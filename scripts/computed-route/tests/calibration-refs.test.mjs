@@ -107,7 +107,7 @@ test( 'the fixtures carry no bare reference, and the detector\'s own cases pass'
 	assert.equal( checkFixtureRefs( broken ).length, 1 );
 } );
 
-test( 'a hosted site\'s WordPress root comes from build-deploy.py TARGETS', () => {
+test( 'a hosted site\'s WordPress root comes from deploy_common.py TARGETS', () => {
 	assert.equal( hostedRoot( 'indus-test', path.resolve( ROOT, '../..' ) ), 'domains/lavender-dinosaur-183533.hostingersite.com/public_html' );
 	assert.throws( () => hostedRoot( 'no-such-site', path.resolve( ROOT, '../..' ) ), /no wp_content/ );
 } );
