@@ -1649,20 +1649,6 @@
       }
     },
     {
-      "slug": "sgs/brand-strip",
-      "attr": "transitionDuration",
-      "fields": {
-        "css_property": "transition,transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
-      "attr": "transitionEasing",
-      "fields": {
-        "css_property": "transition,transition-timing-function"
-      }
-    },
-    {
       "slug": "sgs/breadcrumbs",
       "attr": "borderStyle",
       "fields": {
@@ -4381,20 +4367,6 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "title"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "transitionDuration",
-      "fields": {
-        "css_property": "transition,transition-duration"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "transitionEasing",
-      "fields": {
-        "css_property": "transition,transition-timing-function"
       }
     },
     {
@@ -21165,14 +21137,6 @@
       "fields": {
         "css_property": "max-width",
         "css_element": "image"
-      }
-    },
-    {
-      "slug": "sgs/responsive-logo",
-      "attr": "opacityHover",
-      "fields": {
-        "css_property": "opacity",
-        "css_element": "link"
       }
     },
     {

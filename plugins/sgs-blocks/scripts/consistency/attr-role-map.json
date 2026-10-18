@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 11823,
+    "row_count": 11818,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1211,8 +1211,6 @@
     "sgs/brand-strip::tileShadowColourHover": "color",
     "sgs/brand-strip::tileShadowHover": "visual",
     "sgs/brand-strip::tileShape": "enum-mode",
-    "sgs/brand-strip::transitionDuration": "motion",
-    "sgs/brand-strip::transitionEasing": "motion",
     "sgs/breadcrumbs::borderColour": "color",
     "sgs/breadcrumbs::borderColourGradient": "colour-gradient",
     "sgs/breadcrumbs::borderColourHover": "color",
@@ -2102,8 +2100,6 @@
     "sgs/card-grid::titleLineHeightUnit": "typography",
     "sgs/card-grid::titleMarginBottom": "layout",
     "sgs/card-grid::titleTextTransform": "typography",
-    "sgs/card-grid::transitionDuration": "motion",
-    "sgs/card-grid::transitionEasing": "motion",
     "sgs/card-grid::variant": "behaviour",
     "sgs/cart::ariaLabel": "a11y-text",
     "sgs/cart::autoOpenOnAdd": "boolean-visibility",
@@ -9375,7 +9371,6 @@
     "sgs/responsive-logo::maxHeightUnit": "layout",
     "sgs/responsive-logo::maxWidth": "layout",
     "sgs/responsive-logo::maxWidthUnit": "layout",
-    "sgs/responsive-logo::opacityHover": "visual",
     "sgs/responsive-logo::padding": "layout",
     "sgs/responsive-logo::sgsBlockLink": "behaviour",
     "sgs/responsive-logo::sgsBlockLinkAuto": "behaviour",
