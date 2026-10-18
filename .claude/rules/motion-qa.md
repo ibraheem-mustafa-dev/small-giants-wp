@@ -8,8 +8,8 @@ paths:
 # Motion QA
 
 ```bash
-npm run qa:motion                    # all standing live probes, the full set (about 735s serial)
-npm run qa:motion -- --tier smoke    # the 6 probes the deploy runs by default (about 242s); --list prints the selection without running anything
+npm run qa:motion                    # all standing live probes, the full set (18 probes, about 950s serial)
+npm run qa:motion -- --tier smoke    # the 14 probes the deploy runs by default (about 350s); --list prints the selection without running anything
 npm run qa:motion:morph              # fx-morph changes SVG geometry (page 2113)
 npm run qa:motion:motion-path        # motion-path re-animates on pass 2 (page 2109)
 npm run qa:motion:good-by-default    # scrub/scramble/split-reveal/pin-scrub (pages 2103, 2603)

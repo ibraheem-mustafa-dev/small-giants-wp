@@ -60,7 +60,8 @@ async function measure( browser, base, id ) {
 			return { opened: false, why: 'the host edge kept serving its browser check' };
 		}
 		const drawerSel = await page.evaluate( () => {
-			const d = document.querySelector( 'dialog[data-sgs-motion-state]' );
+			// The fixture's own drawer, not the site header's (also a motion-model dialog): the one holding the fixture items.
+			const d = [ ...document.querySelectorAll( 'dialog[data-sgs-motion-state]' ) ].find( ( el ) => el.querySelector( '.m1t-item, .m45-item, .m45-custom' ) );
 			return d ? `#${ d.id }` : null;
 		} );
 		if ( ! drawerSel ) {

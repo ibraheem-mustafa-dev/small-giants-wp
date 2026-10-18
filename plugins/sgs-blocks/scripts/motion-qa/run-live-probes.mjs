@@ -141,6 +141,18 @@ const REAL_PROBES = [
 		args: [ '--page', '5358' ],
 	},
 	{
+		file: 'probe-motion-drawer-close-together.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A FR-38A-51 close order together on fixture page 5316: every item closes with no delay and no hold, with page 5276 (reversed) as the red control',
+		args: [ '--page', '5316', '--engine', 'chromium', '--engine', 'firefox' ],
+	},
+	{
+		file: 'probe-parallax.mjs',
+		tiers: [ 'smoke', 'full' ],
+		what: 'Spec 38A M5.7 parallax on fixture page 5253: hero media ratio, root basis, still frame, clamp and control, compared across engines',
+		args: [ '--page', '5253', '--engine', 'chromium', '--engine', 'firefox' ],
+	},
+	{
 		file: 'probe-motion-per-device.mjs',
 		tiers: [ 'full' ],
 		what: 'Spec 38A M3.9 per-device entrance distances, custom easings, part isolation, tilted cards and the polaroid frame on fixture page 5244',
