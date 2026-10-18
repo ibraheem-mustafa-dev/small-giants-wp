@@ -72,7 +72,7 @@ def main():
     }
 
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
-    with open(OUT_PATH, 'w', encoding='utf-8') as f:
+    with open(OUT_PATH, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(out, f, indent=2, sort_keys=True)
         f.write('\n')
 

@@ -120,7 +120,7 @@ export default function DurationAtom( {
 					value={ field.draft }
 					min={ range.min ?? undefined }
 					max={ range.max ?? undefined }
-					step={ 10 }
+					step={ 1 }
 					onChange={ field.edit }
 					__next40pxDefaultSize
 				/>

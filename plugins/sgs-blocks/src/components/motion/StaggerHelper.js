@@ -74,7 +74,7 @@ function MillisecondsField( { label, help, fieldKey, value, onChange } ) {
 				value={ field.draft }
 				min={ range.min ?? undefined }
 				max={ range.max ?? undefined }
-				step={ 10 }
+				step={ 1 }
 				onChange={ field.edit }
 				__next40pxDefaultSize
 			/>

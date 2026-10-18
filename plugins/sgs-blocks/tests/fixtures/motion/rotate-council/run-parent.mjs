@@ -4,9 +4,9 @@ const pw = require('playwright');
 import path from 'path';
 import { pathToFileURL } from 'url';
 // Usage: node run-parent.mjs [page]   default render-parent-fixture.html (written by render-parent-fixture.php).
-// Reads, in Chromium and Firefox, the engaged Indus card (Follow pointer 8deg at a corner, hover scale 1.04, 6px lift):
-// the parent's computed perspective, the card's own transform and which element carries the perspective. WebKit is left
-// out: the Playwright WebKit build ignores a parent perspective (FR-38A-41; Bean checks real Safari).
+// Reads, in Chromium, Firefox and WebKit, the engaged Indus card (Follow pointer 8deg at a corner, hover scale 1.04, 6px
+// lift): the parent's computed perspective, the card's own transform and which element carries the perspective. These are
+// computed values: the Playwright Windows WebKit build computes a parent perspective but does not draw it (FR-38A-41).
 // Exit 1 when a check fails; the control is the self-mode card, which must keep its own perspective.
 const arg = process.argv[2] || 'render-parent-fixture.html';
 const url = /^(https?|file):/.test(arg) ? arg : pathToFileURL(path.resolve(import.meta.dirname, arg)).href;
@@ -15,7 +15,7 @@ const check = (browser, label, ok, detail) => {
   if (!ok) failed++;
   console.log(`${browser} ${ok ? 'PASS' : 'FAIL'} ${label}${ok ? '' : ' :: ' + detail}`);
 };
-for (const name of ['chromium', 'firefox']) {
+for (const name of ['chromium', 'firefox', 'webkit']) {
   const b = await pw[name].launch();
   const p = await b.newPage({ viewport: { width: 1100, height: 500 } });
   await p.goto(url);
