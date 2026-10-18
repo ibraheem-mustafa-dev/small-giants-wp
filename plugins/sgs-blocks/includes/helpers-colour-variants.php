@@ -567,7 +567,7 @@ function sgs_overlay_decls_for( array $attributes, array $map ): array {
  * ⛔ The colour rule is NOT `<base>HoverColour`: `sgs/button`'s
  * `boxShadowHoverColour` belongs to a SEPARATE family whose base IS
  * `boxShadowHover`, so it is `<base>Colour` there too. The guessed rule scores
- * **0/10** against the real corpus. This is why R-31-1 wants an enumeration
+ * **0/10** against the real corpus. This is why FP-1 wants an enumeration
  * before a rule replaces a list.
  *
  * @param string $base Base attribute name, e.g. 'boxShadow' or 'cardShadow'.

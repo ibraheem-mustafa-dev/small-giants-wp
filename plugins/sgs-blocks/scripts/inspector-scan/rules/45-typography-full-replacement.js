@@ -1,7 +1,7 @@
 'use strict';
 
 // GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard"
-// item 2 (Bean R-22-13, 2026-06-11) +
+// item 2 (Bean FP-13, 2026-06-11) +
 // scripts/consistency/cluster-member-sets.json `clusters.text.owningComponent`
 // ("TypographyControls + DesignTokenPicker") source=file evidence=live-read
 // 2026-09-05.

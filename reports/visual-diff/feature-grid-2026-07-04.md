@@ -13,7 +13,7 @@ feature-grid rendered 3-across on desktop when the draft declared 4 columns. Roo
   - 1440: `gridTemplateColumns: 222px 222px 222px 222px`, 4 distinct columns, 4 info-boxes, `--grid` class, auto-flex override GONE, `sgs-cols-tablet-2` GONE.
   - 768: `160.25px × 4` — 4 columns (base template now governs tablet).
   - mobile: `1fr 1fr` → 2×2 grid; no horizontal overflow (`docScrollWidth == viewport`).
-  - Visual screenshot confirms one row: Oats · Brewer's Yeast · Flaxseed · Fenugreek. Bean eye-confirmed (R-31-13).
+  - Visual screenshot confirms one row: Oats · Brewer's Yeast · Flaxseed · Fenugreek. Bean eye-confirmed (FP-13).
 - **Regression scan — all 6 grids on the page at desktop AND tablet, no regression:** hero 2/2, trust-bar 4/4, three sgs/container splits 2/2 each, feature-grid 4/4. Every block renders its expected column count via its own explicit template.
 - Independent adversarial code review of the render + wrapper diff: no blocking correctness/regression bug; all 6 render cases traced; the one authored edge case (base template + per-tier COUNT, no tier template) is unreachable by either converter engine and by every shipped pattern (tracked follow-up).
 

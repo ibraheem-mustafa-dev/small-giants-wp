@@ -54,14 +54,14 @@ from .models import Violation, css_property_reseed_key
 
 # Load ATTR_CLASSIFICATION_OVERRIDES from sgs-update-v2.py (the reseed-durable source of
 # truth). Import the REAL constant via importlib so this
-# check can never drift from the seeder (R-22-1). FAIL LOUD if unavailable.
+# check can never drift from the seeder (FP-1). FAIL LOUD if unavailable.
 _SEEDER_PATH = Path(__file__).resolve().parents[1] / "sgs-update-v2.py"
 
 if not _SEEDER_PATH.exists():
     raise ImportError(
         f"[check_css_property_reseed] Cannot find sgs-update-v2.py at {_SEEDER_PATH}.\n"
         "This check imports ATTR_CLASSIFICATION_OVERRIDES to verify the DB against the "
-        "reseed-durable source (R-22-1)."
+        "reseed-durable source (FP-1)."
     )
 
 _spec = importlib.util.spec_from_file_location("sgs_update_v2_seeder", str(_SEEDER_PATH))
@@ -76,20 +76,20 @@ except Exception as exc:  # noqa: BLE001
 if not hasattr(_seeder_mod, "ATTR_CLASSIFICATION_OVERRIDES"):
     raise ImportError(
         "[check_css_property_reseed] sgs-update-v2.py has no ATTR_CLASSIFICATION_OVERRIDES "
-        "symbol — cannot verify the css_property seeding (R-22-1)."
+        "symbol — cannot verify the css_property seeding (FP-1)."
     )
 
 ATTR_CLASSIFICATION_OVERRIDES: dict = _seeder_mod.ATTR_CLASSIFICATION_OVERRIDES
 
 # Reuse the REAL seeder function for the derived (classifier) layer too — same
-# anti-drift rationale as importing ATTR_CLASSIFICATION_OVERRIDES above (R-22-1):
+# anti-drift rationale as importing ATTR_CLASSIFICATION_OVERRIDES above (FP-1):
 # this check must never hand-roll a second reader of css-property-classifications.json
 # that could silently diverge from what the seeder actually applies.
 if not hasattr(_seeder_mod, "_load_css_property_classifications"):
     raise ImportError(
         "[check_css_property_reseed] sgs-update-v2.py has no "
         "_load_css_property_classifications symbol — cannot verify the derived-layer "
-        "channel (R-22-1)."
+        "channel (FP-1)."
     )
 _load_css_property_classifications = _seeder_mod._load_css_property_classifications
 
@@ -98,7 +98,7 @@ _load_css_property_classifications = _seeder_mod._load_css_property_classificati
 # `_apply_attr_classification_overrides` in sgs-update-v2.py: it derives
 # {(slug, attr): {"css_property": "fx:..."}} for every EXISTING
 # block_attributes row whose attr_name is in FX_ATTR_CSS_PROPERTY
-# (seed-motion-fx-registry.py). Imported the same R-22-1 way as the other two
+# (seed-motion-fx-registry.py). Imported the same FP-1 way as the other two
 # channels — never a hand-copied duplicate that could drift from the real
 # function. Without this, Check B below would flag every fx:* row as "rogue"
 # the moment the 7 hand-authored ATTR_CLASSIFICATION_OVERRIDES entries for
@@ -107,19 +107,19 @@ if not hasattr(_seeder_mod, "_collect_fx_attr_namespace_overrides"):
     raise ImportError(
         "[check_css_property_reseed] sgs-update-v2.py has no "
         "_collect_fx_attr_namespace_overrides symbol — cannot verify the fx:* "
-        "namespace channel (R-22-1)."
+        "namespace channel (FP-1)."
     )
 _collect_fx_attr_namespace_overrides = _seeder_mod._collect_fx_attr_namespace_overrides
 
 # Fourth reseed-durable channel: the editor-extension roster (layer 2.6 of
 # `_apply_attr_classification_overrides`). `_collect_extension_attr_overrides` derives
 # the routing fields of every EXISTING source='sgs-ext' row from
-# src/blocks/extensions/extension-roster.json. Imported, never re-implemented (R-22-1).
+# src/blocks/extensions/extension-roster.json. Imported, never re-implemented (FP-1).
 if not hasattr(_seeder_mod, "_collect_extension_attr_overrides"):
     raise ImportError(
         "[check_css_property_reseed] sgs-update-v2.py has no "
         "_collect_extension_attr_overrides symbol — cannot verify the "
-        "editor-extension channel (R-22-1)."
+        "editor-extension channel (FP-1)."
     )
 _collect_extension_attr_overrides = _seeder_mod._collect_extension_attr_overrides
 
@@ -341,7 +341,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
     # via a root custom-property, e.g. brand-strip.fadeWidth / icon.backgroundPadding):
     # those properties are NOT in the painted-on-a-specific-element set below, so they
     # never trip this. Fix = declare the element in the block's own
-    # `supports.sgs.elements.<el>.attrMap` (the R-31-1 declarative source, NOT an
+    # `supports.sgs.elements.<el>.attrMap` (the FP-1 declarative source, NOT an
     # attr-classification override), or unify a mode-exclusive duplicate (the way
     # sgs/separator's contentColour merged contentIconColour + contentTextColour). Then
     # reseed. Root cause + mechanism: extract-signatures.py::_load_element_manifest_reverse.

@@ -2,7 +2,7 @@
  * TypographyControls — shared, uniform typography UI for every SGS block.
  *
  * Extracted from the canonical sgs/text + sgs/heading pattern so that EVERY
- * block customises the SAME variables in the SAME way (Bean R-22-13, 2026-06-11).
+ * block customises the SAME variables in the SAME way (Bean FP-13, 2026-06-11).
  *
  * CANONICAL UI — WordPress's OWN native typography controls, rendered directly
  * (2026-09-06 rebuild). This panel is not "styled like" core's Typography panel;

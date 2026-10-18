@@ -6,7 +6,7 @@
 
 **Method:** Playwright computed-style (`getBoundingClientRect`) — `C:\tmp\gateB-verify.mjs`.
 
-## Result — PASS (live-DOM, R-22-11)
+## Result — PASS (live-DOM, FP-11)
 
 | Section | section width | inner (`__inner`) width | Expected | Verdict |
 |---|---|---|---|---|
@@ -19,5 +19,5 @@
 No regression on the WS-1 A1/A2 sections; A3 keeps the custom-width brand section centred at 1000; A4 gap passthrough shows no invalid-token regression. Matches the WS-1 acceptance gate.
 
 ## Not in this commit (deferred — honest status)
-- **#3 heading/label textAlign** — block capability added + build-clean, but the "Zookies" featured-product heading still computes `text-align:center` live (the converter does not yet EMIT `text-align:start` onto cloned headings → needs a converter-emit + re-clone to land the visible outcome). Capability is correct (R-22-9 parity); end-to-end outcome PENDING. Uncommitted.
+- **#3 heading/label textAlign** — block capability added + build-clean, but the "Zookies" featured-product heading still computes `text-align:center` live (the converter does not yet EMIT `text-align:start` onto cloned headings → needs a converter-emit + re-clone to land the visible outcome). Capability is correct (FP-9 parity); end-to-end outcome PENDING. Uncommitted.
 - **#8 testimonial-slider** — improved vs Bean's "half-width" report (3 cards + both arrows now show), but residual defects: pause button floats top-right outside `__controls`; lucide icons render as broken `?` (icon-sideload gap); track 627/960 not fully filling. NOT clean — HELD uncommitted; folds into the WS-4 LAYOUT remodel of testimonial-slider + a focused pass.

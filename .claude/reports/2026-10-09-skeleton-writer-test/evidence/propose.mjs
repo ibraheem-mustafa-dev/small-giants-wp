@@ -1,5 +1,5 @@
 // Deterministic skeleton writer prototype (FR-47-4 input): turns the footer inventory into a Fill skeleton.
-// Block knowledge comes from data only (R-31-1): the framework DB (read-only), the brand registry, the client's
+// Block knowledge comes from data only (FP-1): the framework DB (read-only), the brand registry, the client's
 // Site Info placeholder map, the calibration cache's element keys, and the 16 committed Eye Care trees other than
 // footer.tree.json (leave-one-out precedents). No block dict is written here; the only hand rules are structural
 // (an element with block children wraps them, svg descendants are parts of their icon) and three content detectors

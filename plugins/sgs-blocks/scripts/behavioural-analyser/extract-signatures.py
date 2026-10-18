@@ -48,7 +48,7 @@ from block_source_files import edit_source, render_source  # noqa: E402
 # every shape detector below — they only ever read `{block_dir}/render.php`.
 # Keyed by the literal call signature that PROVES a given block's OWN
 # render.php actually routes through the shared file — evidence-gated, never
-# a hardcoded per-block roster (R-31-9). See the widen-scan comment inside
+# a hardcoded per-block roster (FP-9). See the widen-scan comment inside
 # `extract_css_property_and_layer()` for how this is applied.
 _SHARED_RENDER_FILES: "dict[str, Path]" = {
     "SGS_Container_Wrapper::": INCLUDES_DIR / "class-sgs-container-wrapper.php",
@@ -708,7 +708,7 @@ _DECL_RE = re.compile(
 )
 
 # The vocabulary of REAL CSS property names this codebase already recognises
-# (property_suffixes.css_property, DB-sourced — R-31-1 no-hardcoded-dicts). A handful of
+# (property_suffixes.css_property, DB-sourced — FP-1 no-hardcoded-dicts). A handful of
 # rows carry annotated/dirty values ("color (on a)", "filter: blur()",
 # "padding/margin (preset)", "percentage") — excluded, they are not literal property
 # tokens a PHP string would emit.
@@ -789,7 +789,7 @@ def _strip_php_comments(src: str) -> str:
 # extension report), ALWAYS feeds only the colour slot of the shorthand, never the
 # width/style slots (those are hardcoded literals alongside the var, e.g.
 # `border: 1px solid var(--sgs-x)`). Longhand normalisation target below. This is NOT
-# a hardcoded classification dict (R-31-1) in the sense of guessing — it is the
+# a hardcoded classification dict (FP-1) in the sense of guessing — it is the
 # grammar fact that CSS `background`/`border`/`outline` shorthands each have exactly
 # one colour slot, confirmed empirically for every live occurrence in this codebase.
 _SHORTHAND_COLOUR_LONGHAND: dict[str, str] = {
@@ -995,7 +995,7 @@ def _bem_current_state(
     stylesheet, not the word "current" alone: a lone `current` -> state
     'current'; `current` plus any other modifier on the same element -> left
     unmapped (falls through exactly as before this fix — base element only, no
-    state — the correct behaviour for a variant). Universal (R-31-9): every
+    state — the correct behaviour for a variant). Universal (FP-9): every
     block with this shape is classified by the same rule, no per-block carve-out.
     """
     for m in _BEM_CURRENT_MODIFIER_RE.finditer(selector):
@@ -2669,7 +2669,7 @@ CSS_PROPERTY_CLASSIFICATIONS_PATH = Path(__file__).resolve().parent / "css-prope
 
 def _load_colour_terminal_props(conn: sqlite3.Connection) -> frozenset[str]:
     """CSS properties whose VALUE *is* a colour, derived by SET-DIFFERENCE over
-    `property_suffixes` — no hardcoded property dict (R-31-1).
+    `property_suffixes` — no hardcoded property dict (FP-1).
 
     A property qualifies when every suffix that declares it agrees on role='color'.
     `box-shadow` is the case that makes the set-difference load-bearing rather than
@@ -3239,7 +3239,7 @@ def extract_css_property_and_layer() -> dict:
         fields["_prop_source"] = "manifest" if manifest_css_property else "emission"
         classification_entries.append({"slug": slug, "attr": attr, "fields": fields})
 
-    # Manifest-only attrs (2026-07-23, Bean — declarative-first, R-31-1). An attr the block
+    # Manifest-only attrs (2026-07-23, Bean — declarative-first, FP-1). An attr the block
     # DECLARES in its `supports.sgs.elements.<el>.attrMap` but whose paint the emission
     # parser could NOT trace (e.g. a colour built through a $var + implode() indirection the
     # parser can't follow — sgs/separator `contentColour`, read into two vars) is absent from
@@ -3378,7 +3378,7 @@ def extract_css_property_and_layer() -> dict:
     # Unit attrs (Bean's ruling, 2026-07-21): NEVER enter css_property at all — no
     # entry means the merge/apply layer leaves that column NULL for them (and clears
     # any stale prior value, since the reseed-durable channel is authoritative).
-    # Classify them via the EXISTING inspector_control_type mechanism instead (R-31-8
+    # Classify them via the EXISTING inspector_control_type mechanism instead (FP-8
     # — enumerated the schema first: this column already carries a 'UnitControl'
     # value on sgs/hero.imageHeightUnit, proving it's the right existing channel, not
     # a new field). Gap-fill only — never overwrite a value Task B's own edit.js

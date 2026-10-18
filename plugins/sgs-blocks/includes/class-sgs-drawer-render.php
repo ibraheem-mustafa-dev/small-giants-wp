@@ -148,7 +148,7 @@ final class Sgs_Drawer_Render {
 	 * Shared validation point for both the picker's render-time resolution
 	 * ({@see self::drawer_ref_for()}) and the `wp_footer` print
 	 * ({@see self::render_active_drawer()}) — a single fail-closed check,
-	 * never two copies that could drift (R-31-9).
+	 * never two copies that could drift (FP-9).
 	 *
 	 * @param int $post_id Candidate `sgs_drawer` post id.
 	 * @return string Raw `post_content`, or ''.

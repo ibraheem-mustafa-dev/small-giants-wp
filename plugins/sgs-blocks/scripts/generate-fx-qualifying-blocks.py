@@ -149,7 +149,7 @@ EXTENDS_ONLY_REQUIREMENTS: frozenset[str] = frozenset({"surface", "image"})
 # effect->block map briefly lived at this exact spot as a follow-up fix for
 # the bug described at `_block_provisions()`'s `motionSurface` read (below)
 # and at `compute_map()`'s panel gate. It was correctly rejected: it was a
-# second hardcoded lookup a block author would never find (R-31-1), and it
+# second hardcoded lookup a block author would never find (FP-1), and it
 # directly contradicted the `providesNatively` precedent two paragraphs
 # below it in this same file — "a declaration the block OWNS", not a
 # per-block carve-out in the generator. The actual fix lives where every
@@ -572,7 +572,7 @@ def _block_provisions(
     # `motionSurface: true` itself, exactly the way `sgs/responsive-logo`
     # declares `providesNatively` for the OPPOSITE direction (excluding an
     # effect it already owns natively) — a fact the BLOCK owns, read here,
-    # never a slug carve-out in this script (R-31-1/R-31-9). A rejected
+    # never a slug carve-out in this script (FP-1/FP-9). A rejected
     # earlier attempt at this fix (`FORCED_PANEL_HOSTS`, a hardcoded
     # effect->block dict living in this script) is documented and removed at
     # the `EXACT_MATCH_BLOCKS` constant above — read that note before
@@ -606,7 +606,7 @@ def _block_provisions(
     # so that flag is the ground-truth signal for "this block has a real image
     # to shade" — the SAME idiom as 'section' above (read a supports.sgs.*
     # flag the block already carries), never a hardcoded block-name roster
-    # (R-31-1). Verified live before writing this: 15 of 83 blocks declare
+    # (FP-1). Verified live before writing this: 15 of 83 blocks declare
     # `imageControls`, 7 with it set `true` (consistency/golden-controls.json
     # note above) — before-after, card-grid, and others.
     # UNION, not the declaration alone — see `_raster_image_blocks()` for why
@@ -676,7 +676,7 @@ def compute_map() -> dict[str, list[str]]:
         # mega-panel), overlays (modal), form fields and inner child blocks are
         # all structurally section- or text-shaped while being meaningless
         # scroll-effect targets. Each declares the opt-out in its OWN block.json
-        # rather than appearing in a dict here (R-31-1), exactly as the
+        # rather than appearing in a dict here (FP-1), exactly as the
         # universal extensions do.
         hidden = (
             block_json.get("supports", {}).get("sgs", {}).get("hideExtensions") or []
@@ -737,7 +737,7 @@ def compute_map() -> dict[str, list[str]]:
             #
             # This is expressed as a DECLARATION THE BLOCK OWNS
             # (`supports.sgs.fx.providesNatively`), not a slug carve-out here —
-            # R-31-1 forbids a hardcoded per-block dict in a pipeline
+            # FP-1 forbids a hardcoded per-block dict in a pipeline
             # script. Any future block that natively owns an fx capability
             # declares it the same way and needs no change to this generator.
             natively_provided = set(

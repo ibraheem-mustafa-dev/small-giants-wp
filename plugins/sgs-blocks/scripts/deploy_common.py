@@ -31,7 +31,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 # `rm -rf $WP/plugins/sgs-blocks.bak` and moves directories around inside
 # `wp_content`, so a target pointing at a host that is gone (or, worse, at a
 # hostname someone else later owns) is a live hazard.
-# Adding a target is one dict entry, per R-22-9 above.
+# Adding a target is one dict entry, per FP-9 above.
 #
 # "client" names the `sites/<client>/` whose theme-snapshot.json IS that site's
 # theme.json (None = the framework theme.json). A theme deploy ships the snapshot as

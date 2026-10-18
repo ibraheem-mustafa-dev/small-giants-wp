@@ -11,7 +11,7 @@ It never edits block.json files. Container capabilities are opt-in per block at
 panel level: a block mounts the sgs/container editor panels it needs and declares the
 matching attributes.
 
-Criterion (D150 validated, 5 qc-council rounds — R-22-1 DB-first, no hardcoded
+Criterion (D150 validated, 5 qc-council rounds — FP-1 DB-first, no hardcoded
 block→kind dict):
   A block is container-bearing iff it WRAPS CHILDREN via ANY of:
   (a) a real InnerBlocks slot (save.js InnerBlocks.Content OR edit.js
@@ -25,7 +25,7 @@ block→kind dict):
   implemented in detection. Every block in the roster qualifies via (a)
   or (b), and no current block is container-bearing SOLELY via (c). A
   future block that is container-bearing ONLY via an array-of-objects
-  attr would not be detected by this script — tracked as a latent R-22-9
+  attr would not be detected by this script — tracked as a latent FP-9
   gap requiring a future detection extension.
   Excludes: sgs/container itself, chrome-only blocks (mobile-nav-toggle,
   mega-menu), pure-InnerBlocks blocks that have no layout surface (handled
@@ -56,7 +56,7 @@ Stage 1 reads this flag into block_composition.container_kind.
     scrim (`scrimColour`, `scrimOpacity`, which SECTION_ATTR_RE does not
     match), so containerKind:"section" is now what keeps it a section.
 
-R-22-1 (DB-first / no hardcoded dicts): block roster is derived from
+FP-1 (DB-first / no hardcoded dicts): block roster is derived from
 block.json source files. Attribute lists come from each block's block.json.
 
 Usage:
@@ -323,7 +323,7 @@ def main() -> int:
     if args.target_block:
         candidate_slugs = [args.target_block]
     else:
-        # Derive from src/blocks directory (R-22-1: roster from source, not hardcoded)
+        # Derive from src/blocks directory (FP-1: roster from source, not hardcoded)
         candidate_slugs = []
         for d in sorted(SRC_BLOCKS.iterdir()):
             if not d.is_dir():

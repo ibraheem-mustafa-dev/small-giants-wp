@@ -606,7 +606,7 @@ def evaluate(tree: Tree) -> list[Violation]:
         violations.append(Violation(
             "R3",
             "`EFFECT_STYLES` is back in the registry. A hand-written effect => file map "
-            "can drift from the files on disk (R-31-1); stylesheets resolve by naming "
+            "can drift from the files on disk (FP-1); stylesheets resolve by naming "
             "convention.",
             "Delete the map and name the stylesheet `assets/css/fx-<effect>.css`.",
         ))

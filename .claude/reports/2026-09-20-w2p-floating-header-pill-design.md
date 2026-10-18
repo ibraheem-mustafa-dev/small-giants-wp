@@ -291,4 +291,4 @@ Every row is a live check on the canary, per rule 5 (verify on the real page, no
 
 ### 6.3 What does not close the task
 
-Script output alone does not close it. Per R-31-13 this needs **Bean's eye on the real homepage** at 390 / 768 / 1440 with the pill on, and again with it off. A green harness with a pill that looks wrong is a failed build.
+Script output alone does not close it. Per FP-13 this needs **Bean's eye on the real homepage** at 390 / 768 / 1440 with the pill on, and again with it off. A green harness with a pill that looks wrong is a failed build.

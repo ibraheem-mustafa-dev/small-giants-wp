@@ -20,7 +20,7 @@ Governing docs:
     box (§E) documenting the exact false-negative/false-positive pair this
     script exists to survive.
   - plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" — Bean
-    R-22-13: shared TypographyControls is MANDATORY for any per-element
+    FP-13: shared TypographyControls is MANDATORY for any per-element
     typography; a hand-rolled font-size control is the divergence to find.
 
 CANONICAL COMPONENT: src/components/TypographyControls.js. It is a SHARED,
@@ -137,7 +137,7 @@ RESPONSIVE_TIER_SUFFIXES = ['Desktop', 'Tablet', 'Mobile']
 
 CANONICAL_PRIMITIVE = 'TypographyControls'
 
-# text-align has NO canonical component under TypographyControls/R-22-13 —
+# text-align has NO canonical component under TypographyControls/FP-13 —
 # any resolved control for it is reported but never flagged canonical.
 PROPERTIES_WITH_NO_CANONICAL_COMPONENT = {'text-align'}
 

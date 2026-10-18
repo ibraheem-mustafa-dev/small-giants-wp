@@ -45,7 +45,7 @@ This is the standard + fail-list + upgrade roadmap. It becomes an enforceable pe
 - **A5. Progressive disclosure with `ToolsPanel`/`ToolsPanelItem`** once a panel hits ~6+ controls: optional controls behind the "+" menu, 1–3 `isShownByDefault`, `resetAll`. THE anti-clutter tool.
   - ⛔ **NAMED EXCEPTION — COLOUR IS NEVER OPTIONAL.** A colour control must not sit behind the "+" menu and must not be hideable per instance. A client hunting a disclosure menu to find a colour is the very clutter defect A5 exists to prevent, arriving via A5's own mechanism. Colour's states (normal/hover/active) are reached **inside** the control's popover, never as sibling controls or a second panel — which is what removes the density pressure A5 would otherwise be solving for. Full control shape + the three binding clauses: **PART O** (this spec) §1 field 9.
   - ⛔ **A `ToolsPanel` nested inside a `PanelBody` must not repeat the same title twice to the client.** Deleting the outer `PanelBody` is not safe where it carries `initialOpen={false}`, because `ToolsPanel` has no collapse (the deletion turns a deliberately-tidy collapsed section into a permanently open one). Removing the INNER label is not available either: core's `ToolsPanelHeader` returns `null` when `label` is falsy, which would take the "+" menu and Reset all with it. Delete the outer wrapper only where it has no `initialOpen` and no other children; otherwise review the `isShownByDefault` set so the outer collapse stops being necessary — a well-configured `ToolsPanel` is already short.
-- **A6. Never duplicate a native `supports` panel** (inspector-UX form of R-31-9).
+- **A6. Never duplicate a native `supports` panel** (inspector-UX form of FP-9).
 - **A7. Per-block universal-extension gating — opt-IN.** An extension (`blockLink`, `childSizing`) is attached to NO block unless it declares `supports.sgs.enabledExtensions: [...]`, because its panel would otherwise paint the block root, not the element a client wanted. The declaration is read by `plugins/sgs-blocks/src/blocks/extensions/hide-extensions.js::isExtensionEnabled`. There is no denylist panel to hide: no extension in `extension-roster.json` declares a `hideSlug` (the click-effect, parallax and animation extensions are gone, Spec 38A; motion lives in `supports.sgs.motion` and the three motion panels). The one remaining reader of `supports.sgs.hideExtensions` is `generate-fx-qualifying-blocks.py`, where `"fx"` keeps a block out of the Effects panel's effect list.
 - **A8. Panel order — OPEN, do not build a rule from this line.** "Frequency-first, escape-hatches last + collapsed" is one candidate; "the element's declared `order`" (contract §THE PLACEMENT RULE) is another, and they do not agree. **CO-28's design gate stands: Bean picks the canonical order.** No competitor centralises panel order — Kadence, Spectra, Stackable, Otter and Essential Blocks all use authoring order — so this is genuinely new ground rather than a solved problem to copy.
 - **A9. In-row layout primitives** (`HStack`/`VStack`/`Flex`/`Grid`/`Spacer`/`Divider`) — lay related controls in a row, not one full-width field per line (density for non-technical clients).
@@ -270,7 +270,7 @@ A member resolving via none of the three is a **GAP** — reported, never silent
 
 ---
 
-### The scoping axes (machine-readable — never a hardcoded block list, per R-31-1)
+### The scoping axes (machine-readable — never a hardcoded block list, per FP-1)
 
 Denominator is always the live block count (`SELECT COUNT(*) FROM blocks WHERE slug LIKE 'sgs/%'`). Per-axis splits are not cached here: re-run each axis (`python scripts/surveys/survey-control-mounts.py .`) before quoting it.
 
@@ -419,7 +419,7 @@ Every link field also offers the shared link source (built 2026-10-13): a typed 
 
 ### 4. LENGTH / UNIT
 
-1. **Canonical** — `<ResponsiveControl>` wrapping `<UnitControl>` with a real `units` array (R-22-13). Object-cascade blocks use `<ResponsiveOverride>` instead. Do not blend the two.
+1. **Canonical** — `<ResponsiveControl>` wrapping `<UnitControl>` with a real `units` array (FP-13). Object-cascade blocks use `<ResponsiveOverride>` instead. Do not blend the two.
 2. **Required props** — real `units`, never px-only. Responsive wrapping REQUIRED when the attr family declares Tablet/Mobile siblings. **Label association REQUIRED** — see §10.
 3. **Banned lookalikes** — raw-px `RangeControl` (the only hits are the shadow builder's sliders, which are correct); `SelectControl` writing a `*Unit` attr (already gated); a `TextControl` standing in for `UnitControl` — see §14 field 6 for the raw-text census (0 remaining); `cardRadius` is not a violation.
 4. **Tab** — `typography` for font-size/line-height, `dimensions` for spacing, `layout` for grid geometry. All Styles. *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and lands in the pinned `Settings` panel. A control that has a real property family resolves to its TIER 2 family panel via `cluster-member-sets.json` instead. An element-scoped control goes in its element's panel (TIER 1) regardless of this field.)*
@@ -447,7 +447,7 @@ Every link field also offers the shared link source (built 2026-10-13): a typed 
 4. **Placement** — the state value sits **inside the same control group as its base value**. This is how `theme.json` nests pseudo-states under the element, and how the block's own PHP helpers already build `:hover` from the same `$prefix`.
 5. **Scope** — `attr_name LIKE '%Hover%' OR css_state IN ('hover','current','scrolled')`, excluding `sgs/mega-panel.accent` (a colour-scheme picker, mistagged). ⚠ Use `%Hover%`, not `%Hover` — the suffix form misses `business-info.linkHoverColour`. ⚠ `trust-bar.autoScrollPauseOnHover` and `team-member.overlayHover` are **behavioural flags, not state pairs** — a name-only rule false-positives on both. ⚠ `table-of-contents.activeLinkColour` is a genuine `current` state that **name-matching cannot find**. A new semantically-named state with `css_state` NULL would be invisible to every method here.
 6. **Conformance** — examples that use the `states`-prop route: `brand-strip`, `button`, `nav-bar-menu`.
-7. **Detection** — three separate rules, not one: `state-attr-no-toggle`, `state-attr-unreachable`, `state-attr-preset-only` (park the third — one instance cannot prove the shape, per R-31-9).
+7. **Detection** — three separate rules, not one: `state-attr-no-toggle`, `state-attr-unreachable`, `state-attr-preset-only` (park the third — one instance cannot prove the shape, per FP-9).
 8. **Migration needs ZERO schema change.** Every attr already exists with its current type; the `states`-prop route reads/writes the same keys. No version bump, no deprecation (pre-production).
 
 ### 7. MEDIA

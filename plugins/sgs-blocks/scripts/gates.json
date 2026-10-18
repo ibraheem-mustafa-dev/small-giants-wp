@@ -1310,6 +1310,24 @@
     "order": 146
   },
   {
+    "id": "check-rule-labels",
+    "cmd": "python ../../scripts/check-rule-labels.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 195
+  },
+  {
+    "id": "check-rule-labels-selftest",
+    "cmd": "python ../../scripts/check-rule-labels.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 300,
+    "order": 196
+  },
+  {
     "id": "check-extension-roster",
     "cmd": "node scripts/check-extension-roster.js",
     "tier": "fast",

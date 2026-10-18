@@ -18,7 +18,7 @@ So the mechanism a client would use already ships for site info, just not yet fo
 
 **(a) Extend the existing `sgs-product/field` source, add its missing JS half.** Add new keys to `Product_Bindings::get_value()` (brand, sku, material, plus the frame-measurement meta) and add a `registerBlockBindingsSource` call for `sgs-product/field` with a `getFieldsList()`, mirroring `src/bindings/index.js`. On a product page, the client opens the block sidebar's Attributes panel on an `sgs/text` block, clicks the binding icon, picks "SGS Product Field", then picks "Brand" (etc) from a dropdown, same gesture as picking a site-info field today. The editor canvas shows the live value straight away because SGS blocks render via `<ServerSideRender>`.
 
-**(b) A setting directly on `sgs/text` ("Show product field: …").** Works, but duplicates a mechanism that already exists for one block only; `sgs/heading` and any future block would need the same setting rebuilt separately. Breaks the "universal mechanism, no per-block carve-out" rule (R-31-9).
+**(b) A setting directly on `sgs/text` ("Show product field: …").** Works, but duplicates a mechanism that already exists for one block only; `sgs/heading` and any future block would need the same setting rebuilt separately. Breaks the "universal mechanism, no per-block carve-out" rule (FP-9).
 
 **(c) A small dedicated block per field or a "product field" block.** More building, and a client has to learn a new block instead of using the text/heading blocks they already know.
 

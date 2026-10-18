@@ -63,7 +63,7 @@ Probe page 2841 was deleted after capture.
 ## Scope of this verdict — what it does NOT cover
 
 - **Frontend: unchanged and untested, deliberately.** `editor.css` compiles to the editor-only bundle and is never enqueued on the frontend. The shared `extensions.css` DOES load on the frontend, but the marker classes are applied exclusively by `edit.js`; grep confirms no `render.php` or PHP anywhere emits them, so the selectors cannot match there.
-- **Aesthetic judgement is not claimed.** This report proves the layer paints, with the right source, size, position and stacking. Whether the result looks right remains Bean's eye (R-31-13).
+- **Aesthetic judgement is not claimed.** This report proves the layer paints, with the right source, size, position and stacking. Whether the result looks right remains Bean's eye (FP-13).
 - One instance of each adopting block was measured, not all five blocks. The remaining three (`physics-canvas`, `site-footer`, `site-header`) call the identical shared function and were confirmed to carry it in their deployed bundles, but were not separately captured.
 
 ## Debt cleared

@@ -1,7 +1,7 @@
 // The capability inventory (clone coverage plan Phase 1, steps 1.1 and 1.2): everything the SGS framework offers and
 // everything a draft can hold, as stable IDs grouped into sections. Every section is derived from a source (the
 // framework DB read-only, the code, the construct registry or the web platform's own data packages), never from a
-// hand-written list (R-31-1). A DB section reads `status: 'absent'` when the DB is not on this machine, so the code and
+// hand-written list (FP-1). A DB section reads `status: 'absent'` when the DB is not on this machine, so the code and
 // web sections still build anywhere; `capabilities.mjs --write` on a machine with the DB fills every section.
 import fs from 'fs';
 import path from 'path';

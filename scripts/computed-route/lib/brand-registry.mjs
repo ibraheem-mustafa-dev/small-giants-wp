@@ -1,4 +1,4 @@
-// The brand and contact registry (plugins/sgs-blocks/includes/data/brand-registry.json, R-31-1): read from the one file,
+// The brand and contact registry (plugins/sgs-blocks/includes/data/brand-registry.json, FP-1): read from the one file,
 // never copied into a table here. The registry holds no host data, so ownership of an address is derived:
 //   - a contact brand by scheme: `phone` owns tel:, `email` owns mailto: (the two schemes those entries stand for);
 //   - a social brand (a siteInfoKey `socials.<name>`) by domain: the address's host is `<name>.<tld>` or a subdomain of

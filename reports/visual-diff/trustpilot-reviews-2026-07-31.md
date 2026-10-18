@@ -36,4 +36,4 @@ Two instances, `mini-carousel` variant, momentum ON then OFF. Both render **1200
 
 - The drag GESTURE was not exercised on this block (the gallery block's gesture test covers the shared module; this capture proves attachment and structural fitness here).
 - Touch is unmeasured — the module gates itself behind `(pointer: fine)`.
-- No human eye has judged the feel (R-31-13 not yet given).
+- No human eye has judged the feel (FP-13 not yet given).

@@ -2,7 +2,7 @@
 
 > **STATUS: SHIPPED 2026-06-10 (same day) — D204.** Commits `eccc3fc7` (base) + `ec084e50` (final-form closures) + `72e973c3` (visual polish) + `8be3366a` (D204), all on main, all live-verified on canary page 1069 + 540 + homepage bridge; axe 0 violations; 2-rater judgement closed. Remaining handover items live in D204: `/sgs-update` when the shared DB is free; converter Stage-2 routing + Mama's clone-verify (cloning thread); option-picker roving-tabindex gated round; widthMode wide/full precedence design-gate.
 
-**Status:** DESIGN-GATE (pre-build). Both upstream dependencies are now GREEN — the Spec27-28 council wave is closed and the cloning converter Stage 1 is complete (`66c1bd5b`). Spec 28 P4 shipped today (`d5592d4b`, D203), so the whole product/pricing layer this rebuild sits on is in place. This doc states the architectural primitive + the per-element decision for Bean's approval. **No code until signed off (R-22-10).**
+**Status:** DESIGN-GATE (pre-build). Both upstream dependencies are now GREEN — the Spec27-28 council wave is closed and the cloning converter Stage 1 is complete (`66c1bd5b`). Spec 28 P4 shipped today (`d5592d4b`, D203), so the whole product/pricing layer this rebuild sits on is in place. This doc states the architectural primitive + the per-element decision for Bean's approval. **No code until signed off.**
 
 ---
 
@@ -78,7 +78,7 @@ For the cloning dispatch to route a drafted product section into the built-in ca
 4. **FP-E:** the chosen query approach + inspector controls + renders `sgs/product-card`; performance-gated; live editor + visitor a11y pass.
 5. Spec 27 updated with the FR IDs; SIGN-OFF-LEDGER FP-E/FP-H → VERIFIED.
 
-Each is gated (R-22-13 Bean eye + R-22-11 live DOM). FP-H + the converter routing are the shared-architecture pieces; FP-E is additive.
+Each is gated (FP-13 Bean eye + FP-11 live DOM). FP-H + the converter routing are the shared-architecture pieces; FP-E is additive.
 
 ---
 

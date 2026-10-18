@@ -59,4 +59,4 @@ Adding `cardPadding` exposed a genuine PRE-EXISTING latent bug in the shared res
 
 ## Disclosed limitation
 
-No live Playwright screenshots (editor or frontend, 1440/375) were captured — outside this dispatch's tool access. The main session should run the mandatory visual-diff (editor BoxControl renders + operates; frontend padding computed-style matches pre-migration 20px default AND a custom value) before treating cardPadding as closed per Spec 31 §7b / R-31-13.
+No live Playwright screenshots (editor or frontend, 1440/375) were captured — outside this dispatch's tool access. The main session should run the mandatory visual-diff (editor BoxControl renders + operates; frontend padding computed-style matches pre-migration 20px default AND a custom value) before treating cardPadding as closed per Spec 31 §7b / FP-13.

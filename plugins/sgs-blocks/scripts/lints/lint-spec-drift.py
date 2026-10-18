@@ -7,7 +7,7 @@ fix a false claim was ITSELF false. Four independent personas flagged the same l
 Three flagged an FR describing a block deleted two days earlier. The corrections had
 become the error source, and nothing could tell.
 
-The project rule is "a claim in a doc is a hypothesis" (R-31-6/R-31-11). That rule was
+The project rule is "a claim in a doc is a hypothesis" (FP-6/FP-11). That rule was
 being applied to everything EXCEPT the specs. This gate applies it to the specs:
 every checkable claim is checked against ground truth (filesystem + the framework DB).
 

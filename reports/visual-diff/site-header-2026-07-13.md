@@ -11,7 +11,7 @@ site: sandybrown canary (Mama's Munches homepage)
 
 ## What shipped
 Replaced the inline-CSS `core/group` site header with two new specialised container blocks:
-- **`sgs/site-header`** (section KIND) — the header shell; 3 optional named rows (top/middle/bottom); delegates outer render to `SGS_Container_Wrapper` (composite-mirror, R-31-9).
+- **`sgs/site-header`** (section KIND) — the header shell; 3 optional named rows (top/middle/bottom); delegates outer render to `SGS_Container_Wrapper` (composite-mirror, FP-9).
 - **`sgs/site-header-row`** (layout KIND) — an intrinsic never-overflow **Cluster** (flex-wrap + `min-width:0` children + `flex-shrink:0` logo); empty rows emit **zero output**.
 
 Wired into `parts/header.html` + `patterns/framework-header-default.php` (byte-identical), theme `Version` bumped 1.5.8→1.5.9, CPT `sgs_header` template added (`[['sgs/site-header']]`). DB reconciled (`block_composition` rows + roster + composition_role). Deployed to sandybrown; LiteSpeed + OPcache + CDN cleared before measuring (STOP-21).
@@ -42,7 +42,7 @@ Live Playwright on the real homepage, `document.documentElement.scrollWidth <= i
 - `site-header-375-mobile.png` — mobile: header wraps to a clean two-line cluster (logo + nav on line 1, burger + cart on line 2), no overflow.
 - `site-header-1440-desktop.png` — desktop: logo left, cart right; the nav wraps across several lines **because this test canary has ~15 nav items (test pages)** — not representative of a real client's ~5-item menu.
 
-## Known deltas (deferred, NOT emergency — logged per R-31-4, no silent skip)
+## Known deltas (deferred, NOT emergency — logged per FP-4, no silent skip)
 1. **Desktop distribution cosmetic** — flat `space-between` on the middle row + the test site's abnormally long nav = a busier, multi-line desktop header than the old single-row bar. On a normal client menu this reads as a clean logo/nav/cart bar. Refinement → FR-S9-8 (per-device/palette phase): logo-left / actions-right grouping.
 2. **1px bottom divider dropped** — the old header had a `1px surface-alt` bottom border; the MVP colour/border re-emit is uniform (not per-side), so it was not carried. ~5-min follow-up (per-side border support in the block render, or a theme rule).
 

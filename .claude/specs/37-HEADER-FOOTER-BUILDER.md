@@ -184,7 +184,7 @@ Concretely:
 - The row's **placeholder and inserter promote** the common elements (logo, nav, search, cart, account, CTA, contact, social, business-info) — steering, not gating.
 - The container supplies what a page cannot: named row slots, empty-row suppression, never-overflow, behaviours, and the per-device cascade (§3.8).
 
-**Why freeform.** A hard `allowedBlocks` lock breaks two standing rules. (1) R-31-9 universality — any SGS block must be placeable in a row; a locked palette turns any unlisted element into an unfixable gap. (2) It fights the framework's own composability, where any SGS block may nest in any container. The non-coder benefit a palette would give is delivered by steering (starter templates + promoted palette), and costs nothing on the day an operator needs something unusual.
+**Why freeform.** A hard `allowedBlocks` lock breaks two standing rules. (1) FP-9 universality — any SGS block must be placeable in a row; a locked palette turns any unlisted element into an unfixable gap. (2) It fights the framework's own composability, where any SGS block may nest in any container. The non-coder benefit a palette would give is delivered by steering (starter templates + promoted palette), and costs nothing on the day an operator needs something unusual.
 
 ### 3.6 Never-overflow contract
 
@@ -392,7 +392,7 @@ A shared `RowQuickInsertAppender` component (`src/components/RowQuickInsertAppen
 
 #### FR-37-11 — Footer columns: an operator-set count that stacks automatically
 
-The `columns` row exposes a **column count** as a number (§3.3): a per-device number, no CSS, no ratio string. The count is a **CEILING**, not an exact count — the row renders fewer columns, down to 1, as space runs out, at any width, driven by container width rather than a viewport breakpoint (`supports.sgs.intrinsicColumns`, §3.6). The inspector label is **"Maximum columns"**. Desktop is the only tier an operator must set; a per-device override is available but never required. The count drives the shared container grid engine — no new engine (R-31-9 reuse).
+The `columns` row exposes a **column count** as a number (§3.3): a per-device number, no CSS, no ratio string. The count is a **CEILING**, not an exact count — the row renders fewer columns, down to 1, as space runs out, at any width, driven by container width rather than a viewport breakpoint (`supports.sgs.intrinsicColumns`, §3.6). The inspector label is **"Maximum columns"**. Desktop is the only tier an operator must set; a per-device override is available but never required. The count drives the shared container grid engine — no new engine (FP-9 reuse).
 
 **Why intrinsic, not `@media`.** An exact-count mechanism driven by `@media` is structurally incapable of responding to content: measured, it collapsed all three footer rows from 3 tracks to 1 between viewport 768px and 767px while their content needed just 496px of the 767px available. Footer stacking is organic.
 
@@ -426,7 +426,7 @@ Four independent header behaviours: **sticky**, **transparent**, **shrink**, **h
 #### FR-37-14 — Behaviour attributes are tri-state
 Each behaviour is a **tri-state** (`inherit` / `on` / `off`) per device tier, not a flat boolean — a boolean cannot express "inherit from desktop" versus "explicitly off here" (P1 DP1). Applies to `headerSticky`, `headerTransparent`, `headerShrink`, `headerHideOnScroll` and `contrastSafe` (FR-37-44).
 
-**No migration, no fallback.** The framework is pre-production, so no deprecations and no read-time legacy fallback are carried (which would violate R-31-14 anyway).
+**No migration, no fallback.** The framework is pre-production, so no deprecations and no read-time legacy fallback are carried (which would violate FP-14 anyway).
 
 **Status:** `BUILT + LIVE-VERIFIED`. The behaviour attributes are `{desktop,tablet,mobile}` objects whose default `{}` resolves to off. `ResponsiveTriStateControl` in `site-header/edit.js` follows the global device toggle: a switch on Desktop, Inherit / Off / On on Tablet and Phone (Spec 35 §12). Server-side, per-tier resolution is emitted as `#uid`-scoped `@media` rules via `sgs_emit_tier_rules()`, through a single-writer merge pass (`sgs_merge_tri_state_declarations()`) so a behaviour that is off at every tier emits nothing and a narrow tier can genuinely cancel a wide one (independent emitters relying on `!important` and source order collide on a shared selector). `sgs_merge_tri_state_declarations()` also accepts a per-behaviour `fallback` map: Transparent's background fallback repaints the header's own resting fill on a tier where Transparent is off while a wider tier has it on, rather than leaving that narrower tier unpainted (live on a navy header: transparent at 1440px, `rgb(26,26,46)` at 375px). `site-header-row` / `site-footer-row` use the same canonical `sgs_resolve_on_tiers()` resolver (`'on'`/`'off'` tri-state). The canonical `resolveTier()` (`src/utils/responsive.js`) / `sgs_resolve_tier()` (`includes/helpers-responsive.php`) is the one inheritance mechanism in both runtimes — no second cascade exists. The theme pattern seeds carry `{"desktop":"on"}`.
 
@@ -527,12 +527,12 @@ Every capability above is a block attribute, so Spec 48's route can set it; no c
 
 **Status:** `PARTIAL` — the attribute layer is the contract and holds; Spec 48 owns the route's header, footer and drawer surfaces.
 
-**Done when:** a header, footer or drawer for a draft is written through block attributes only, verified on the real homepage (R-31-11); the acceptance proof is FR-37-23.
+**Done when:** a header, footer or drawer for a draft is written through block attributes only, verified on the real homepage (FP-11); the acceptance proof is FR-37-23.
 
 ### Further requirements
 
 #### FR-37-24 — Per-device content cascade (build owned by Spec 35)
-The per-device content cascade is a framework-wide concern, not a header/footer one. The mechanism it builds on — `sgsHideOnMobile`/`Tablet`/`Desktop` — is a universal extension applied to every block in the framework (`includes/device-visibility.php`, `src/blocks/extensions/responsive-visibility.js`), and Spec 35 §D3 owns the generic principle ("Mobile inherits from desktop unless overridden"). Spec 35 owns the build; §3.8 of this spec states the header/footer behaviour that depends on it. Changing the visibility extension from a header/footer spec would diverge from R-31-9 and the composite wrapper rule.
+The per-device content cascade is a framework-wide concern, not a header/footer one. The mechanism it builds on — `sgsHideOnMobile`/`Tablet`/`Desktop` — is a universal extension applied to every block in the framework (`includes/device-visibility.php`, `src/blocks/extensions/responsive-visibility.js`), and Spec 35 §D3 owns the generic principle ("Mobile inherits from desktop unless overridden"). Spec 35 owns the build; §3.8 of this spec states the header/footer behaviour that depends on it. Changing the visibility extension from a header/footer spec would diverge from FP-9 and the composite wrapper rule.
 
 **At the collapse point, not a tier (U-10, M-19).** A header block that moves into the drawer (a copy in the drawer body, the header copy hidden) can hide exactly while the menu shows its burger: the extension's `sgsCollapseVisibility` (`''` | `hide` | `only`, control "When the menu collapses to a burger", shown only inside an `sgs/site-header`) adds `sgs-hide-collapsed` / `sgs-only-collapsed`, and the header writes those rules at the collapse point of the `sgs/nav-bar-menu` that owns its burger (`plugins/sgs-blocks/includes/sgs-header-pass-through.php::sgs_header_collapse_visibility_css`), so the two can never disagree at a collapse point that is not a tier edge. No burger-owning menu: no rule, everything shows. A width set by content fit rather than by the burger (Eye Care's phone at 1160px) is a rare one-off and stays in the site's Additional CSS.
 
@@ -605,7 +605,7 @@ No `header-sticky` / `header-transparent` / `header-shrink` template-part regist
 ### Gate
 
 #### FR-37-23 — Acceptance
-This spec closes only when: FR-37-1/2/3/5 are live on the canary; §3 audits (FR-37-9/10) are recorded per clause; the never-overflow gate (FR-37-12) passes on every live site **across the full sweep per §3.6** (not three fixed widths); no inline `style=""` on either container; and **Bean's eye** signs off (R-31-13 — measurement and eye are co-authoritative, neither closes alone). The acceptance proof is cloning real references through Spec 48 as SGS-native output (header, drawer and footer together). Anything a reference needs that SGS cannot express is a defect in the framework, never a reason to trim the reference.
+This spec closes only when: FR-37-1/2/3/5 are live on the canary; §3 audits (FR-37-9/10) are recorded per clause; the never-overflow gate (FR-37-12) passes on every live site **across the full sweep per §3.6** (not three fixed widths); no inline `style=""` on either container; and **Bean's eye** signs off (FP-13 — measurement and eye are co-authoritative, neither closes alone). The acceptance proof is cloning real references through Spec 48 as SGS-native output (header, drawer and footer together). Anything a reference needs that SGS cannot express is a defect in the framework, never a reason to trim the reference.
 
 **Status:** `NOT-BUILT`.
 
@@ -634,7 +634,7 @@ Each `sgs/site-header-row` and `sgs/site-footer-row` carries its OWN `rowTranspa
 #### FR-37-39 — Shrink hides a chosen element, with a declarative guardrail
 A row may nominate ONE child to hide while it is shrunk, referenced by the child's own `anchor` attribute (`rowShrinkHideTarget`) — a **stable id that survives copy/paste**, never the editor's `clientId`.
 
-**The guardrail is declarative, not a hardcoded list (R-31-1).** Each critical block declares `supports.sgs.headerEssential: true` in its own block.json (for example `sgs/responsive-logo`, `sgs/cart`, `sgs/product-search`). The editor picker reads it via `wp.blocks.getBlockType()`; `sgs_resolve_row_shrink_hide_target()` (`includes/helpers-row-behaviour.php`) re-checks it server-side against `WP_Block_Type_Registry`. Protecting a new critical block later is one block.json flag. The picker ALSO excludes children lacking `supports.anchor` — WP silently discards an undeclared attr, so such a child would look configured and hide nothing. An orphaned target (child deleted) is a silent no-op plus an operator warning; a reset action is always visible.
+**The guardrail is declarative, not a hardcoded list (FP-1).** Each critical block declares `supports.sgs.headerEssential: true` in its own block.json (for example `sgs/responsive-logo`, `sgs/cart`, `sgs/product-search`). The editor picker reads it via `wp.blocks.getBlockType()`; `sgs_resolve_row_shrink_hide_target()` (`includes/helpers-row-behaviour.php`) re-checks it server-side against `WP_Block_Type_Registry`. Protecting a new critical block later is one block.json flag. The picker ALSO excludes children lacking `supports.anchor` — WP silently discards an undeclared attr, so such a child would look configured and hide nothing. An orphaned target (child deleted) is a silent no-op plus an operator warning; a reset action is always visible.
 
 **Status:** `BUILT + LIVE-VERIFIED`.
 
@@ -666,7 +666,7 @@ A row may nominate ONE child to hide while it is shrunk, referenced by the child
 #### FR-37-41 — Preview a layout on the real site before making it active
 **The need.** The layout CPTs register `'public' => false` (`plugins/sgs-blocks/includes/class-sgs-block-cpts.php::register_post_types`), so a layout post has **no frontend URL of its own**. Without preview, the only way to see a header on a real page is **Set as active** — publishing it to every visitor before ever looking at it. The editor "Show me the shrunk size" toggle covers **shrink only**; sticky, hide-on-scroll and transparent are scroll-triggered and cannot be shown in a static canvas.
 
-**Mechanism — one override point.** `Sgs_Active_Layout::get_preview_id()` is consulted first in `get_active_id()`, because every consumer converges there: the render path (`Sgs_Header_Rules::filter_template_part()` → `render_active()` → `get_active_content()`) **and** `SGS_Nav_Menu_Source::get_header_content()` → `get_active_content()`. One override serves both surfaces (R-31-9): the previewed post renders, and its own `#uid`-scoped behaviour CSS (FR-37-15) comes with it, so sticky/hide-on-scroll/transparent preview too.
+**Mechanism — one override point.** `Sgs_Active_Layout::get_preview_id()` is consulted first in `get_active_id()`, because every consumer converges there: the render path (`Sgs_Header_Rules::filter_template_part()` → `render_active()` → `get_active_content()`) **and** `SGS_Nav_Menu_Source::get_header_content()` → `get_active_content()`. One override serves both surfaces (FP-9): the previewed post renders, and its own `#uid`-scoped behaviour CSS (FR-37-15) comes with it, so sticky/hide-on-scroll/transparent preview too.
 
 **Fails closed to 0** unless all hold: per-area query var present + positive; `current_user_can('edit_theme_options')` (same bar as Set-as-active); nonce valid against an action scoped to BOTH area and post id; post exists and is the right type. **One deliberate deviation from `get_active_id()`: draft/pending are ACCEPTED** — previewing before publishing is the point; `trash`/`auto-draft` are rejected.
 
@@ -679,7 +679,7 @@ A row may nominate ONE child to hide while it is shrunk, referenced by the child
 **Not supported:** a shareable preview link for someone **without a login**. A client who should see a work-in-progress either has an account, or is shown it on a test site. Supporting it would need an expiring-token model instead of a nonce (a nonce is bound to a logged-in user), which means a second access path, a token lifetime, and a URL that grants site content to whoever holds it. The capability + nonce model above is the whole story.
 
 #### FR-37-42 — Visual column-shape picker for rows
-A row set to **Columns** exposes, alongside its column **count**, a set of **column SHAPES presented as small visual diagrams** the operator clicks — equal, wide-centre, wide-first, wide-last, the two-column 2:1 / 1:2 pair, and the three-column `fit-centre` shape. Selecting one writes the **existing** `gridTemplateColumns` object attribute (§3.3). One mechanism (R-31-9) serves `sgs/site-header-row`, `sgs/site-footer-row` and `sgs/container`.
+A row set to **Columns** exposes, alongside its column **count**, a set of **column SHAPES presented as small visual diagrams** the operator clicks — equal, wide-centre, wide-first, wide-last, the two-column 2:1 / 1:2 pair, and the three-column `fit-centre` shape. Selecting one writes the **existing** `gridTemplateColumns` object attribute (§3.3). One mechanism (FP-9) serves `sgs/site-header-row`, `sgs/site-footer-row` and `sgs/container`.
 
 **Why:** measured evidence, not preference. A teardown of an Awwwards-winning ecommerce footer found `grid-template-columns: 340px 680px 340px` — a wide-centre shape a **count can never produce**. A count-only control silently rules out a whole class of best-in-class footer design.
 
@@ -759,7 +759,7 @@ Header, footer and drawer posts are template-locked so each contains exactly its
 #### FR-37-47 — Starter looks are a preset control, extending FR-37-28
 Because FR-37-46 makes every new post non-empty by construction, WordPress's native "Choose a pattern" modal (FR-37-7) cannot fire for `sgs_header`/`sgs_footer`/`sgs_drawer`. The starter looks (FR-37-8) stay reachable through a preset control on the locked block, in the shape of the FR-37-28 "Layout preset": derived from existing attributes, writes only existing attributes, no new stored shape, switchable at will. Content must never arrive through WordPress's pattern-insertion path, because that path stamps provenance metadata (`metadata.patternName`/`metadata.name`) that locks child-block editing behind an "Edit pattern" click.
 
-**Mechanism.** `src/components/StarterLookPresetControl.js` renders a `PanelBody` titled "Starter look" holding a grid of buttons on the **Styles** tab of `sgs/site-header`, `sgs/site-footer` and `sgs/nav-drawer`. The looks are read dynamically from `select( 'core' ).getBlockPatterns()`, filtered by the pattern's `postTypes` — no hand-authored per-look attribute dictionary (R-31-1), so a starter file change cannot drift from the control. (`getSettings().__experimentalBlockPatterns` holds only the small "outside `init`" pattern bucket and misses every `init`-registered starter, so it cannot be the source.)
+**Mechanism.** `src/components/StarterLookPresetControl.js` renders a `PanelBody` titled "Starter look" holding a grid of buttons on the **Styles** tab of `sgs/site-header`, `sgs/site-footer` and `sgs/nav-drawer`. The looks are read dynamically from `select( 'core' ).getBlockPatterns()`, filtered by the pattern's `postTypes` — no hand-authored per-look attribute dictionary (FP-1), so a starter file change cannot drift from the control. (`getSettings().__experimentalBlockPatterns` holds only the small "outside `init`" pattern bucket and misses every `init`-registered starter, so it cannot be the source.)
 
 **Which looks are listed — the featured-else-all rule.** Of the patterns that qualify for the CPT, if any carries the pattern keyword `featured` the control lists only those; otherwise it lists every qualifying pattern. `featured` is a plain manual keyword on a pattern file; no script scores or selects it. The drawer looks carry it, so the drawer control lists them; no header or footer pattern carries it, so those controls list every qualifying starter (including the three FR-37-31 search starters).
 
@@ -840,11 +840,11 @@ The Active pointers are single global options: one install has one Active header
 ## 7. Constraints binding every FR
 
 1. **No inline `style=""`** on any block in this spec (Spec 32).
-2. **Composite wrapper (R-31-9)** — both containers are `containerKind: section`, so they keep `SGS_Container_Wrapper`; no per-block CSS that diverges from it. Block-private rendering is not used for header/footer: a private copy would not escape an attribute-shape inconsistency, because that inconsistency lives in the block's own settings, not the shared engine, so a fork would copy the mess into more files (design gate `plans/archive/2026-07-25-header-footer-per-row-identity-design-gate.md` §0). If a per-row effect needs a capability the engine lacks, ADD it to the engine.
-3. **No hardcoded client data** — Site Info or global styles, never literals (R-31-1).
+2. **Composite wrapper (FP-9)** — both containers are `containerKind: section`, so they keep `SGS_Container_Wrapper`; no per-block CSS that diverges from it. Block-private rendering is not used for header/footer: a private copy would not escape an attribute-shape inconsistency, because that inconsistency lives in the block's own settings, not the shared engine, so a fork would copy the mess into more files (design gate `plans/archive/2026-07-25-header-footer-per-row-identity-design-gate.md` §0). If a per-row effect needs a capability the engine lacks, ADD it to the engine.
+3. **No hardcoded client data** — Site Info or global styles, never literals (FP-1).
 4. **WCAG 2.1 AA** on default output; 44px targets; visible focus.
 5. **DB-first** — no hardcoded lookup dicts; the block/attr registry is authoritative.
-6. **Verify on the live page**, not the emit (R-31-11).
+6. **Verify on the live page**, not the emit (FP-11).
 
 ---
 

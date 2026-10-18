@@ -6,7 +6,7 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation:** clean test page 599 (`/ws4-cta-section-poc/`) — a real `sgs/cta-section` with a cover-image bg + ribbon + InnerBlocks heading. curl markup + Playwright @1100.
 
-## Result — PASS (live-DOM, R-22-11)
+## Result — PASS (live-DOM, FP-11)
 - 0 PHP errors/warnings/notices.
 - Wrapper `<section>`: carries `sgs-container` (mirror) + `sgs-cta-section sgs-cta-section--centred wp-block-sgs-cta-section`; transition/hover CSS vars + the cover-image bg preserved via `extra_styles`.
 - **Double-emit guard works:** `background-image` count = 1, `sgs-cta-section__overlay` count = 1 (no doubles).

@@ -129,7 +129,7 @@ defined( 'ABSPATH' ) || exit;
 
 	if ( $is_cpt_collection ) {
 		/*
-		 * Source mode is resolved PER ITEM (R-22-9 — universal, no hardcoded
+		 * Source mode is resolved PER ITEM (FP-9 — universal, no hardcoded
 		 * per-type dict), exactly as content-collection did:
 		 *   - a WooCommerce `product` post, on a site where WC is active → 'wc-product'
 		 *   - everything else (including sgs_product)                    → 'sgs-cpt'

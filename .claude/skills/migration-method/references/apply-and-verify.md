@@ -54,6 +54,6 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 
 Then open a real page rendering an affected block and check the changed property's computed value, **at least one instance per `classify()` category**, not one page.
 
-⛔ **A green `--check` proves no instance was MISSED. It proves nothing about whether the transform was RIGHT.** Closing on a green gate violates `CLAUDE.md` Rule 5. This method does not replace Rule 5 or R-31-13.
+⛔ **A green `--check` proves no instance was MISSED. It proves nothing about whether the transform was RIGHT.** Closing on a green gate violates `CLAUDE.md` Rule 5. This method does not replace Rule 5 or FP-13.
 
 ⛔ **If the deploy aborts with `deployed-files-dirty`, do NOT reach for `--allow-dirty`**: that flag was D336's trigger, a ~2.5-hour two-client-site outage, and the abort message offers it without that context. Commit your paths, or declare `--payload <path>`. **If the uncovered list names files you did not write, stop and hand back.**

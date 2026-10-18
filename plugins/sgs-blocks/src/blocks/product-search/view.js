@@ -14,7 +14,7 @@
  *                           the shared store('sgs/nav') plumbing (FR-36-7) —
  *                           the side-effect import below registers it, so
  *                           this block never hand-rolls a second open/close/
- *                           focus/inert utility (R-31-9).
+ *                           focus/inert utility (FP-9).
  *   "command-palette"     — The SAME <dialog> DIALOG mechanism as
  *                           full-screen-overlay (isInsideComponent() below
  *                           already covers it — no second containment

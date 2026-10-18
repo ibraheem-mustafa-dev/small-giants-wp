@@ -9,7 +9,7 @@ verdict: PASS first_paint_capture_passed: true
 - Frontend first paint: probe page published with `paddingTopTablet:'77px'` + `paddingTopMobile:'33px'` → computed `padding-top` = **77px at 768w** and **33px at ≤599w** (live `getComputedStyle` on the rendered `.sgs-container`). Probe page deleted after capture.
 - Build green incl. all 3 prebuild guards (check-dead-controls / check-hardcoded-render-defaults / check-control-ux: 0 net-new each).
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 Live DOM verified at two viewports; editor controls reachable for all 16 attrs; zero guard regressions; no frontend rendering change for existing content (attrs previously rendered, now merely controllable).
 
 ---
@@ -27,7 +27,7 @@ verdict: PASS first_paint_capture_passed: true
 - Editor: "Content band" panel reachable on a page-8 container — Band padding + Band width ResponsiveControls + colour control.
 - php -l clean; build green ×3 guards; probe pages deleted.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 
 ---
 
@@ -47,7 +47,7 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation (live canary):** probe page `layout:flex, flexDirection:row-reverse, justifyContent:space-between, flexWrap:nowrap` → computed `row-reverse` / `space-between` / `nowrap`. Build green ×3 guards; php -l clean; probe deleted.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 
 ---
 
@@ -63,10 +63,10 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation (live canary):** editor page 8 — hero registered (7 deprecations), 0 missing/0 invalid blocks; panel order Section (outer) → Content band → Responsive spacing → Layout → Content area → Media area → Background → Shadow → Shape Dividers; no splitColumnRatio control; per-area write round-trip = `contentPaddingTop:33` (number) + `contentPaddingUnit:'px'`. Frontend — hero grid 2-col, `__content` padding-top 72px, body text intact. Build green ×3 guards; php -l clean.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 
 ---
 
 **Validation (live canary editor, page 8):** full inspector enumeration with a container selected — all panels present (Layout, Responsive spacing, Content band, Template mode, Background, Shadow, Shape Dividers + extensions); switching layout→grid in-memory revealed Columns/Custom column template/Row template/Auto rows/Justify items/Align content + the Grid item defaults panel (Padding/Background/Radius/Border/Shadow/Text colour). Matches the before/after inventory; no control lost; reverted without save. Build green ×3 guards.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)

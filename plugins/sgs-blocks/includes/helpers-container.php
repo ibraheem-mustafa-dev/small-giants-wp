@@ -269,7 +269,7 @@ if ( ! function_exists( 'sgs_block_wants_intrinsic_columns' ) ) {
 	 * Does this block type opt in to content-aware column collapse?
 	 *
 	 * Declarative, read from `supports.sgs.intrinsicColumns` in the block-type
-	 * registry — the same mechanism as `supports.sgs.headerEssential`. R-31-1
+	 * registry — the same mechanism as `supports.sgs.headerEssential`. FP-1
 	 * forbids a hardcoded block-name list here, and this is deliberately opt-in
 	 * rather than universal: flipping every grid container to intrinsic sizing at
 	 * once would change the rendered column count of card grids, feature grids

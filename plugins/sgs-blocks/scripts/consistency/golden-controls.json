@@ -19,7 +19,7 @@
       "border",
       "typography"
     ],
-    "notEncoded": "NONE of Part O's 14 contracts remain unencoded as of 2026-08-19 (this session added 13 rows — the 12 requested types + typography, which has no Part O contract of its own but is MANDATORY per plugins/sgs-blocks/CLAUDE.md R-22-13 — PLUS a 14th, 'link', which the task brief that produced this batch claimed was already done. It was NOT: this file's controls{} held only 'colour' at session start, and the OLD version of this exact notEncoded string listed link among the 12 still missing. Corrected here rather than left silently wrong; the pre-existing 'colour' row is the only one genuinely unchanged this session). The earlier objection recorded here — 'a schema covering 13 types on day one is 12 untested claims' — is DELIBERATELY OVERRIDDEN this session, on Bean's explicit instruction, because every added row now carries the command that produced each figure it states (measured2026_08_19 blocks throughout controls.*), so a claim here is falsifiable by re-running the cited command, not asserted from memory. Where a figure could not be independently re-measured this session (most Spec 35 spec-cited scope/conformance numbers, which require the out-of-repo DB this file's own whyRosterNotDb note already explains this repo cannot reach), each row says so explicitly rather than presenting a spec citation as a fresh measurement. CORRECTION recorded here (2026-08-19): the task briefing that produced this batch described 'plugins/sgs-blocks/scripts/inspector-scan/core/golden.js — the shared engine that consumes these rows' with a docblock stating 'a new control type is a schema row rather than new code'. THAT FILE DOES NOT EXIST. The only file that currently reads golden-controls.json is inspector-scan/rules/31-golden-colour-control.js, which is COLOUR-SPECIFIC hand-written logic, not a generic schema-driven engine. None of the 12 new rows in this file are enforced by any running rule yet — they are schema-only, ready for a future generic engine (or 12 future colour-31-style per-type rule files) to consume. Do not assume any of these rows are gating anything until a rule file that reads them exists.",
+    "notEncoded": "NONE of Part O's 14 contracts remain unencoded as of 2026-08-19 (this session added 13 rows — the 12 requested types + typography, which has no Part O contract of its own but is MANDATORY per plugins/sgs-blocks/CLAUDE.md FP-13 — PLUS a 14th, 'link', which the task brief that produced this batch claimed was already done. It was NOT: this file's controls{} held only 'colour' at session start, and the OLD version of this exact notEncoded string listed link among the 12 still missing. Corrected here rather than left silently wrong; the pre-existing 'colour' row is the only one genuinely unchanged this session). The earlier objection recorded here — 'a schema covering 13 types on day one is 12 untested claims' — is DELIBERATELY OVERRIDDEN this session, on Bean's explicit instruction, because every added row now carries the command that produced each figure it states (measured2026_08_19 blocks throughout controls.*), so a claim here is falsifiable by re-running the cited command, not asserted from memory. Where a figure could not be independently re-measured this session (most Spec 35 spec-cited scope/conformance numbers, which require the out-of-repo DB this file's own whyRosterNotDb note already explains this repo cannot reach), each row says so explicitly rather than presenting a spec citation as a fresh measurement. CORRECTION recorded here (2026-08-19): the task briefing that produced this batch described 'plugins/sgs-blocks/scripts/inspector-scan/core/golden.js — the shared engine that consumes these rows' with a docblock stating 'a new control type is a schema row rather than new code'. THAT FILE DOES NOT EXIST. The only file that currently reads golden-controls.json is inspector-scan/rules/31-golden-colour-control.js, which is COLOUR-SPECIFIC hand-written logic, not a generic schema-driven engine. None of the 12 new rows in this file are enforced by any running rule yet — they are schema-only, ready for a future generic engine (or 12 future colour-31-style per-type rule files) to consume. Do not assume any of these rows are gating anything until a rule file that reads them exists.",
     "stateVocabulary": {
       "source": "THIS FILE. Corrected 2026-08-19 — an earlier draft deferred to scripts/consistency/cluster-member-sets.json -> states and called it the single source. IT IS NOT: every consumer of that file (check-element-manifest-conformance.js, check-cluster-coverage.py, placement-reach.py, extract-signatures.py) reads only its `clusters` and `order` keys. Its `states` block has ZERO readers — documentation sitting inside a data file, which is not a source of truth because nothing would notice it drifting.",
       "real": {
@@ -783,7 +783,7 @@
           },
           {
             "shape": "free text driving typography",
-            "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, R-22-13)",
+            "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, FP-13)",
             "liveInstances": 7
           },
           {
@@ -1135,7 +1135,7 @@
       }
     },
     "typography": {
-      "specRef": "NO Part O contract exists for this type in .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md — included here because plugins/sgs-blocks/CLAUDE.md's 'Block Customisation Standard' section mandates it explicitly: 'TYPOGRAPHY — use the SHARED component, never bespoke font controls (MANDATORY, Bean R-22-13 2026-06-11)'.",
+      "specRef": "NO Part O contract exists for this type in .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md — included here because plugins/sgs-blocks/CLAUDE.md's 'Block Customisation Standard' section mandates it explicitly: 'TYPOGRAPHY — use the SHARED component, never bespoke font controls (MANDATORY, Bean FP-13 2026-06-11)'.",
       "canonical": {
         "component": "TypographyControls",
         "path": "src/components/TypographyControls.js",
@@ -1146,7 +1146,7 @@
         "adoptedBlocks": "text/heading/button/label/quote (canonical) + counter/whatsapp-cta/mobile-nav/option-picker/trust-bar/product-card (migrated 2026-06-11) per plugins/sgs-blocks/CLAUDE.md — not independently re-verified per-block this session, the REACH=16 figure stands as the measured total"
       },
       "bannedLookalikes": {
-        "_note": "plugins/sgs-blocks/CLAUDE.md's R-22-13 rule + Spec 35 §9.3's cross-reference (7 rows of free text driving typography, plus product-card.ctaFontSize as a bare unitless NumberControl).",
+        "_note": "plugins/sgs-blocks/CLAUDE.md's FP-13 rule + Spec 35 §9.3's cross-reference (7 rows of free text driving typography, plus product-card.ctaFontSize as a bare unitless NumberControl).",
         "jsxComponents": [],
         "patterns": [
           {
@@ -1183,14 +1183,14 @@
         }
       },
       "shapeRule": {
-        "specRef": "plugins/sgs-blocks/CLAUDE.md 'Block Customisation Standard' section (R-22-13)",
+        "specRef": "plugins/sgs-blocks/CLAUDE.md 'Block Customisation Standard' section (FP-13)",
         "rule1": "attr shape per element: {prefix}FontSize (number) + {prefix}FontSizeUnit/Tablet/Mobile + {prefix}FontWeight/FontStyle + {prefix}LineHeight/Unit",
         "rule2": "the helper emits a per-instance uid-scoped <style> (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat",
         "rule3": "font size REQUIRED to be the integrated UnitControl shape (number+unit in one control), never a RangeControl + separate SelectControl — this is the specific stacked-control anti-pattern the rule exists to kill"
       },
       "exemption": {
         "declareAt": "N/A — no exemption mechanism recorded for this type in either governing doc.",
-        "rule": "Not applicable — R-22-13 is stated as MANDATORY with no carve-out clause in plugins/sgs-blocks/CLAUDE.md."
+        "rule": "Not applicable — FP-13 is stated as MANDATORY with no carve-out clause in plugins/sgs-blocks/CLAUDE.md."
       },
       "scope": {
         "eligible": "roster.json has no dedicated typography surface — the nearest proxy is supports.typography (25 blocks) measured above, which is a NATIVE-UI-COMPETITOR count, not a TypographyControls-eligibility count (a block can need per-element typography without declaring the native supports flag at all, e.g. via a dedicated child element's own font-size attrs). Scope is therefore UNRESOLVED for this type — recorded as an honest gap, not guessed.",

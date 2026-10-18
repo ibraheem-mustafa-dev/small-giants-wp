@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Track C register builder — read-only survey of replaceable core blocks.
 
-GROUND-TRUTH sources (R-31-1, DB-first):
+GROUND-TRUTH sources (FP-1, DB-first):
   * pairing map  = `blocks.replaces` in sgs-framework.db (never hardcoded)
   * target attrs = each SGS block's block.json `attributes`
   * instances    = parsed block trees of theme/sgs-theme/{parts,patterns,templates}

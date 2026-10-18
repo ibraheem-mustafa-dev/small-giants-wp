@@ -227,7 +227,7 @@ function currentTier() {
  * Gating here rather than inside each effect module is deliberate: `bootEffect`
  * is the one choke point every Tier G effect boots through, so a single check
  * covers every such effect present and future, with no per-effect carve-out
- * (R-31-9).
+ * (FP-9).
  *
  * Skipping boot is SAFE by construction: per FR-38-2 each effect applies its own
  * initial hidden/offset state and the server never renders one, so an element

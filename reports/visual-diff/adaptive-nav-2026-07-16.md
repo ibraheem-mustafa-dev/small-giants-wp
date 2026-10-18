@@ -42,5 +42,5 @@ Static: `animation-fill-mode:both` = 0, non-zero `animation-delay` = 0 (the draw
 
 ## Open / not covered
 
-- **Gate C** (still to run): 768 + 1440 sweeps; ESC + focus-return + Tab-wrap; the elementFromPoint sweep vs the 10/10 baseline; the frame sweep (anchor constant); the late-CSS A/B; two-default-nav-menu collision; short-viewport 50dvh floor; logged-in `#wpadminbar` probe; **Bean's screenshot sign-off (R-31-13)**.
+- **Gate C** (still to run): 768 + 1440 sweeps; ESC + focus-return + Tab-wrap; the elementFromPoint sweep vs the 10/10 baseline; the frame sweep (anchor constant); the late-CSS A/B; two-default-nav-menu collision; short-viewport 50dvh floor; logged-in `#wpadminbar` probe; **Bean's screenshot sign-off (FP-13)**.
 - **Not fixed, parked** (`P-CALL-BUTTON-CONTRAST`): the header's D331 "Call" button renders cream on pink = **2.24:1**, a live WCAG failure found by this sweep. Pre-existing, NOT drawer-related, deliberately not scope-crept into a drawer rebuild.

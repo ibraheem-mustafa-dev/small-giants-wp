@@ -12,7 +12,7 @@
  * `fx-draggable.js`'s own docblock (lines 54-74, as measured 2026-08-01) is a
  * documented prior decision that rejects exactly that: "re-deriving such a
  * block's own wrap-around maths inside a block-agnostic module is exactly the
- * per-block hyperfocus R-31-9 forbids", and its contract states it never
+ * per-block hyperfocus FP-9 forbids", and its contract states it never
  * creates a wrapper, never transforms an element, never reorders DOM — all
  * three of which looping a native scroller requires. That file is NOT
  * modified by this work, not one line. Bean's "independent controls" ruling
@@ -29,7 +29,7 @@
  * when that is also enabled) past the last item continues into the first
  * with no dead end and, in the common case, no visible seam.
  *
- * ELIGIBILITY (Spec 38 §2, R-31-9): the SAME structural question
+ * ELIGIBILITY (Spec 38 §2, FP-9): the SAME structural question
  * `fx-draggable.js` asks — `isNativeHorizontalScroller()`, extracted to
  * `../motion-utils.js` because that file is frozen and does not export its
  * own copy (see the docblock there for why this is a deliberate duplicate,
@@ -67,7 +67,7 @@
  * A loop has no last item, so "next never disables" and a fixed dot count
  * has no meaning against the CLONED count. This module cannot itself own a
  * block's arrows/dots — their markup and class names differ per block, and
- * hard-coding any of them here would be exactly the block-naming R-31-9
+ * hard-coding any of them here would be exactly the block-naming FP-9
  * forbids. Instead every clone is marked `data-sgs-loop-clone="true"`, made
  * `inert` (removed from focus order and the accessibility tree in one
  * property — supported Chrome/Edge/Firefox and Safari 17+) and additionally
@@ -153,7 +153,7 @@ const INDEX_LIKE_ATTRIBUTES = [ 'data-index', 'aria-current' ];
  * special-cased for the block that surfaced it (`sgs/buybox`'s thumbnail
  * strip, whose `<button>` thumbs carry directives plus `data-index` /
  * `aria-current` and are hydrated by the `sgs/product-card` store). Naming a
- * block in this module would be exactly the per-block hyperfocus R-31-9
+ * block in this module would be exactly the per-block hyperfocus FP-9
  * forbids.
  *
  * Belt-and-braces alongside `inert`/`aria-hidden` on the clone's own root —

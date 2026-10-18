@@ -97,7 +97,7 @@ $attributes[ $k_size ]`).
 
 `shared_include_files()` walks every `.php` under `includes/` (recursively — `trustpilot/`
 etc.). `_scan_file_for_hazards(path, prop, declared_siblings)` is applied to that list AND to
-every `src/blocks/*/render.php` (universal, not carve-out — R-31-9), and reports two hazard
+every `src/blocks/*/render.php` (universal, not carve-out — FP-9), and reports two hazard
 kinds, both HIGH-CONFIDENCE (not "prop appears", an actual dangerous SHAPE):
 
     DELETED_SIBLING_READ   a literal `$attributes['<prop>Tablet']` / `['<prop>Mobile']`
@@ -228,7 +228,7 @@ def _base_attr_key(attrs: dict, prop: str):
 # MEDIA REFERENCE (imageId/imageUrl/videoUrl/svgContent/...), which Bean's C19 ruling
 # forbids ever folding into a per-breakpoint object — each tier's image/video/SVG is a
 # genuinely independent piece of content, not a responsive VALUE of one property.
-# Universal file-reference NAME test, not a hardcoded attr list (R-31-1): an attribute
+# Universal file-reference NAME test, not a hardcoded attr list (FP-1): an attribute
 # whose bare name ends in one of these suffixes IS the file reference by construction —
 # a WP attachment ID, a URL, or raw embedded content. Verified against the live tree
 # (2026-09-02): matches all 17 known art-directed media attrs across
@@ -251,7 +251,7 @@ def _is_file_reference_attr(prop: str) -> bool:
 # `$sgs_hero_resolve_split_image()`, which reads `splitImageAlt<suffix>` alongside
 # `splitImageUrl<suffix>`/`splitImageId<suffix>` as one unit per tier).
 #
-# Structural detection, not a second hardcoded attr list (R-31-1): a companion field
+# Structural detection, not a second hardcoded attr list (FP-1): a companion field
 # shares a PascalCase name STEM with a real, declared file-reference attribute on the
 # same block (`splitImageAlt` stems from `splitImageUrl`'s "splitImage"), with a capital
 # letter immediately after the stem so a coincidental substring match (e.g. an unrelated
@@ -286,7 +286,7 @@ def _companion_media_stem(attrs: dict, prop: str) -> bool:
 #
 # The discriminator is the DB's `box_family` column — the SAME column the framework lookups
 # already treat as the sole legitimate gate for
-# this exact question (R-31-1: never re-derive from the attr NAME). A read-only,
+# this exact question (FP-1: never re-derive from the attr NAME). A read-only,
 # structural check: does ANY of this family's siblings carry a non-null box_family? A
 # genuine box-of-sides family's siblings DO (measured: sgs/container.paddingTablet ->
 # box_family='padding'); a genuine per-tier ASSET family's siblings do NOT (measured:
@@ -389,7 +389,7 @@ def edit_refs(block_dir: Path, prop: str, base_key: str = None) -> int:
 
 def shared_include_files():
     """Every `.php` file under `includes/`, recursively (covers subfolders like
-    `trustpilot/`), sorted for stable output. DB-first / no-hardcoded-roster (R-31-1):
+    `trustpilot/`), sorted for stable output. DB-first / no-hardcoded-roster (FP-1):
     this is a live directory walk, never a maintained list of "the includes that matter" —
     that list is exactly what went stale and let class-sgs-container-wrapper.php go
     unscanned."""
@@ -402,7 +402,7 @@ def _disk_declared_siblings(prop: str) -> set:
     list, so the two can never quietly disagree.
 
     This used to BE the answer (as `declared_siblings`). It is now the GUARD: the answer
-    comes from the DB (R-31-1, DB-first), and this walk is what proves the DB has not gone
+    comes from the DB (FP-1, DB-first), and this walk is what proves the DB has not gone
     stale against the tree. See `declared_siblings()`."""
     declared = set()
     for bj in sorted(BLOCKS_DIR.glob('*/block.json')):
@@ -434,7 +434,7 @@ def _db_declared_siblings(prop: str) -> set:
         raise RuntimeError(
             f'framework DB not found at {SGS_DB} — cannot answer DB-first. '
             'Run /sgs-update to build it. (Refusing to fall back to the disk walk: a silent '
-            'fallback makes the DB read decorative and the R-31-1 claim false.)')
+            'fallback makes the DB read decorative and the FP-1 claim false.)')
     names = [prop + t for t in TIERS]
     placeholders = ','.join('?' * len(names))
     try:
@@ -461,7 +461,7 @@ class TierSiblingParityError(RuntimeError):
 def declared_siblings(prop: str) -> set:
     """Which `<prop>Tablet` / `<prop>Mobile` suffixes are STILL declared by ANY block.
 
-    Answered from `block_attributes` (R-31-1, DB-first) and CROSSCHECKED against the tree,
+    Answered from `block_attributes` (FP-1, DB-first) and CROSSCHECKED against the tree,
     failing closed on disagreement.
 
     ⛔ Why not DB-only. `sgs-framework.db` is a DERIVED COPY repopulated by /sgs-update, and
@@ -886,7 +886,7 @@ def file_hazard_state(path: Path, prop: str, declared_siblings: set, object_type
 def survey_shared_includes(prop: str):
     """The shared-includes half of the census (D574) — mirrors survey()'s per-block loop
     but walks `includes/*.php` instead of `src/blocks/*/render.php`. Also re-scans every
-    block's OWN render.php for the two hazard shapes (universal, no carve-outs — R-31-9):
+    block's OWN render.php for the two hazard shapes (universal, no carve-outs — FP-9):
     a block's render.php can carry the same RAW_CAST/DELETED_SIBLING_READ hazards the
     wrapper had, and `render_state()`'s literal-key regex is blind to the computed-key
     alias shape, so it would otherwise miss exactly the helpers-typography.php-style bug

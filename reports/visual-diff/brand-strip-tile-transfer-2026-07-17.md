@@ -42,4 +42,4 @@ Instance values set on page 13: `tilePadding:0`, `tileRadius:30`, `logoFit:conta
 
 Logos fill their tiles edge-to-edge matching the reference; soft 30px corners; tight gaps; full-bleed marquee; band breathing matches at 271. The 768 page-level 20px overflow is the pre-existing, out-of-scope Services-section grid (hardcoded `139/250/123/187=771px` columns) — the brand band itself is 0.
 
-**Bean visual sign-off (R-31-13):** cropped 1440 pair (original vs clone) delivered.
+**Bean visual sign-off (FP-13):** cropped 1440 pair (original vs clone) delivered.

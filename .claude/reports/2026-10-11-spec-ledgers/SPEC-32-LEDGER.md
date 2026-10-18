@@ -47,7 +47,7 @@ Citation command (all counts in table 2): `git grep -n -o -E "FR-(32|33|26)-[A-Z
 | 29 | §6.1(e) Per-instance override channel | KEEP | Framework rule | none |
 | 30 | §6.1(f) Border defaults | KEEP | Current rule (Bean, 2026-10-05); drop the date from the heading | none |
 | 31 | §6.2 intro, Problem paragraph, "Status: BUILT" line | KEEP (trim) | Keep the problem and mechanism; cut the "Status: BUILT" line and the archived-plan pointer | (FR-32-11 detail) |
-| 32 | §6.2(a) The collector | KEEP | Cited by Spec 35A and `class-sgs-css-registry.php`; drop "(BUILT)" | none (cites R-31-9) |
+| 32 | §6.2(a) The collector | KEEP | Cited by Spec 35A and `class-sgs-css-registry.php`; drop "(BUILT)" | none (cites FP-9) |
 | 33 | §6.2(b) Head placement and output modes | KEEP | Matches the code (C2 is the fix for FR-32-11, not this section) | none |
 | 34 | §6.2(c) What does NOT change | KEEP | Generation versus relocation boundary | none |
 | 35 | §6.2(d) Output shape (canary) | CUT | Point-in-time canary measurement; fold the expected shape (one head `<link>` or `<style>`, 0 body `<style>`) into FR-32-11's "Done when" | none |
@@ -68,7 +68,7 @@ Citation command (all counts in table 2): `git grep -n -o -E "FR-(32|33|26)-[A-Z
 | 50 | Part B / §13 headings | KEEP | Global styles and theming | none |
 | 51 | §13.1 The model | KEEP | WordPress layer merge model | none |
 | 52 | §13.2 Per-client source of truth | KEEP (correct) | Cited by `.claude/wp-sgs-cli.md`; its sentence "the extractor overlays the base palette (FR-33-16)" becomes a pointer to Spec 48 | none |
-| 53 | §13.3 Hard constraints | CUT | Restates `framework-principles.md` and root `CLAUDE.md` | none (cites R-31-1, R-31-9, R-31-14) |
+| 53 | §13.3 Hard constraints | CUT | Restates `framework-principles.md` and root `CLAUDE.md` | none (cites FP-1, FP-9, FP-14) |
 | 54 | §13.4 Group A: FR-26-A3, FR-26-A4 | KEEP | Push mechanics for every client | FR-26-A3, FR-26-A4 |
 | 55 | §13.4 Group A: FR-26-A5 | CUT | A rationale, not a requirement ("no future session builds…"); no live code cites it | FR-26-A5 |
 | 56 | §13.4 Group B | KEEP | Raw values, overridable defaults, merged-value reads; B2 is a pointer to Spec 35 (O9) | FR-26-B1, B2, B3, B4, B6 |
@@ -78,7 +78,7 @@ Citation command (all counts in table 2): `git grep -n -o -E "FR-(32|33|26)-[A-Z
 | 60 | §14.2 Target `theme.json` slots | KEEP | The vocabulary a snapshot fills; gains the FR-33-19 "how applied" paragraph and the FR-33-18 runtime paragraph (O3) | none |
 | 61 | §14.3 `settings.custom` keys | KEEP | Format; keeps the reserved `header`/`footer` row without the FR-33-13 ID (O2) | none |
 | 62 | §14.4 Deployment | KEEP | `prepare_deploy_snapshot`, disk, REST, safety; used by every client push | none |
-| 63 | §15.1 Purpose and the iron law | MOVE-48 (correct) | Extractor; the iron law contradicts Spec 48A (C3) | none (cites R-31-9, R-47-7) |
+| 63 | §15.1 Purpose and the iron law | MOVE-48 (correct) | Extractor; the iron law contradicts Spec 48A (C3) | none (cites FP-9, R-47-7) |
 | 64 | §15.2 The process | MOVE-48 | Extractor steps; steps 7-8 become pointers to Spec 32 §14.4 and FR-33-14 | none |
 | 65 | §15.3 Requirements FR-33-1 to FR-33-20 | MOVE-48 (see table 2 for O1-O3 exceptions) | Extractor requirements | FR-33-1 … FR-33-20 |
 | 66 | §15.4 Known limits | MOVE-48 (correct) | Extractor limits; the README bullet contradicts Spec 48A (C4) | none |
@@ -163,9 +163,9 @@ Spec 32 **defines no rule IDs**. `git grep -n -E "\bR-3[23]-[0-9]" -- ':!.claude
 
 | Cited ID | Where in Spec 32 | Defined in | Destination |
 |---|---|---|---|
-| R-31-1 (DB-first) | §13.3 | `.claude/rules/framework-principles.md` | CUT with §13.3 (it already binds via the rule file) |
-| R-31-9 (universal mechanism) | §6.2(a); §13.3; §15.1 | `framework-principles.md` | Spec 32 §6.2(a) KEEP; Spec 48 (with §15.1); §13.3 copy CUT |
-| R-31-14 (no legacy fallback) | §13.3 | `framework-principles.md` | CUT with §13.3 |
+| FP-1 (DB-first) | §13.3 | `.claude/rules/framework-principles.md` | CUT with §13.3 (it already binds via the rule file) |
+| FP-9 (universal mechanism) | §6.2(a); §13.3; §15.1 | `framework-principles.md` | Spec 32 §6.2(a) KEEP; Spec 48 (with §15.1); §13.3 copy CUT |
+| FP-14 (no legacy fallback) | §13.3 | `framework-principles.md` | CUT with §13.3 |
 | R-47-7 (tokens before literals) | §15.1; FR-33-12; FR-33-13 | Spec 47 table (`**R-47-7 Tokens before literals**`) | Spec 48 must carry R-47-7 or name its successor, since all three citers move there |
 | "rule 4a" (computed, content-keyed verification) | §12.7 heading | No live definition: root `CLAUDE.md` "Verify the rendered output, not a metric" states it; the "rule 4a" label survives only in `.claude/memory/state-archive.md` and dated reports | Spec 48 (with §12.7); write the rule out, do not cite "rule 4a" (O8) |
 | Spec 11 Decision 24 (`D24`) | §3 row 5; §6 key decisions | Spec 11 `**Decision 24:**` | Spec 32 §3, §6 KEEP |

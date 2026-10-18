@@ -197,4 +197,4 @@ Rule 31: **355 → 309** (three consecutive agreeing runs on a settled tree). `n
 ## Not covered here
 
 - The 309 remaining rule-31 findings. This proves the migrated rows behave; it says nothing about the rows still lacking a hover or gradient attribute.
-- Bean's eye. R-31-13: measurement and the eye are co-authoritative, and only one of them is in this document.
+- Bean's eye. FP-13: measurement and the eye are co-authoritative, and only one of them is in this document.

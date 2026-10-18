@@ -72,8 +72,8 @@ Non-goals:
 | Constraint | Source | Non-negotiable |
 |---|---|---|
 | No inline `style` on any SGS element; per-instance values are scoped custom properties in the shared collector | Spec 32 FR-32-4, FR-32-4a | Y |
-| Framework facts in `sgs-framework.db`, no hand-written lists | R-31-1 | Y |
-| A migrated attribute has no server-side legacy fallback | R-31-14 | Y |
+| Framework facts in `sgs-framework.db`, no hand-written lists | FP-1 | Y |
+| A migrated attribute has no server-side legacy fallback | FP-14 | Y |
 | Element-first targeting from `supports.sgs.elements` | Spec 35 A4 | Y |
 | Every customisable value has an inspector control | root `CLAUDE.md` | Y |
 | GSAP only for Tier G, conditionally loaded; its tweens set inline styles at run time only, never in saved or rendered markup | Spec 38 §1, §4.4 | Y |
@@ -476,7 +476,7 @@ These are the attribute and file names the old motion mechanisms stored in exist
 | `countPopAnimation` | `sgs/cart` (`off`) | an `entrance.base` with trigger `state` (`count-changed`, plus `load` for load-and-change) on the cart count part (FR-38A-53) |
 
 3. **WP-CLI sweep** `wp sgs motion-migrate --dry-run|--apply` over posts, pages, templates, template parts and synced patterns on every target site.
-4. **Removal**: the old attributes, extension registrations, the old stagger and entrance-timing code, the save-time extraProps injection, the hover extension, the parallax scroll-timeline rules and scripts, the old tilt, ripple and scroll-progress scripts, the three nav stylesheets' index ladders (§13.1) and the second marquee implementation are deleted, and so are every §13.2 table input: the attributes `staggerDelay`, `sgsStaggerDelay`, `revealOnScroll`, `revealStagger`, `revealTrigger`, `photoEntrance`, `fxFooterStagger`, `captionReveal`, `animationStyle`, `animationSubstrate`, `svgAnimationSource` and `countPopAnimation` from their `block.json` files and the extension roster, the `supports.sgs.animationItems` key and its reader, and the code that played them (the `--sgs-stagger` emissions in `includes/hover-effects/vars.php`, the gallery and testimonial `render.php`, the gallery stagger and caption-reveal rules, the timeline's own reveal paths in `view.js`, the buybox `sgs-buybox--photo-*` classes, the footer row's scrub block, the logo's own draw and Lottie switch, and the cart's literal pop animation). No legacy fallback (R-31-14), no `deprecated.js`.
+4. **Removal**: the old attributes, extension registrations, the old stagger and entrance-timing code, the save-time extraProps injection, the hover extension, the parallax scroll-timeline rules and scripts, the old tilt, ripple and scroll-progress scripts, the three nav stylesheets' index ladders (§13.1) and the second marquee implementation are deleted, and so are every §13.2 table input: the attributes `staggerDelay`, `sgsStaggerDelay`, `revealOnScroll`, `revealStagger`, `revealTrigger`, `photoEntrance`, `fxFooterStagger`, `captionReveal`, `animationStyle`, `animationSubstrate`, `svgAnimationSource` and `countPopAnimation` from their `block.json` files and the extension roster, the `supports.sgs.animationItems` key and its reader, and the code that played them (the `--sgs-stagger` emissions in `includes/hover-effects/vars.php`, the gallery and testimonial `render.php`, the gallery stagger and caption-reveal rules, the timeline's own reveal paths in `view.js`, the buybox `sgs-buybox--photo-*` classes, the footer row's scrub block, the logo's own draw and Lottie switch, and the cart's literal pop animation). No legacy fallback (FP-14), no `deprecated.js`.
 
 ## 14. How the cloning route uses it
 

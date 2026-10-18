@@ -308,7 +308,7 @@ function evaluateRow( rowNode ) {
 /**
  * Which helper a row adopts. Mirrors rule 31's own mechanism resolution
  * (`recordRowMechanism` in `31-golden-colour-control.js`) rather than
- * inventing a second property->mechanism dictionary (R-31-1 bans hardcoded
+ * inventing a second property->mechanism dictionary (FP-1 bans hardcoded
  * lookups) — reads `resolveMechanismFromCssProperty` off the SAME
  * `block_attributes.css_property` DB column, preferring the gradient
  * sibling's mechanism when it resolves (more specific evidence) and falling

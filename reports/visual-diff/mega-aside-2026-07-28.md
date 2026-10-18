@@ -16,6 +16,6 @@ Supersedes `mega-aside-2026-07-27.md` (`verdict: INCOMPLETE`). Fixture as in `me
 ## NOT closed
 
 - `preview` aside format still limited to link TITLES (icon-list items carry no description field) — the known Task-5 scope, untouched.
-- Bean's R-31-13 eye sign-off pending.
+- Bean's FP-13 eye sign-off pending.
 
-verdict: PASS (R-31-13 eye sign-off pending) first_paint_capture_passed: true
+verdict: PASS (FP-13 eye sign-off pending) first_paint_capture_passed: true

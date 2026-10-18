@@ -36,7 +36,7 @@ The sibling capture — `site-footer-row` at `layout: grid` (see `site-footer-ro
 
 ## A deviation from the build brief, accepted because it is more correct
 
-The brief proposed treating `alignContent` per block (live on footer, inert on header because D455 locks the header to a single non-wrapping line). The implementer instead gated it to `layout === 'grid'` on BOTH blocks — matching what `sgs/container`'s own LayoutPanel already does (verified: `{ layout === 'grid' && (` wraps that control group in `ContainerWrapperControls.js`). `align-content` does nothing on a single-line flex row, so the universal gate removes the dead case without a per-block carve-out. That is R-31-9 (no per-block exceptions) applied correctly against a brief that would have breached it.
+The brief proposed treating `alignContent` per block (live on footer, inert on header because D455 locks the header to a single non-wrapping line). The implementer instead gated it to `layout === 'grid'` on BOTH blocks — matching what `sgs/container`'s own LayoutPanel already does (verified: `{ layout === 'grid' && (` wraps that control group in `ContainerWrapperControls.js`). `align-content` does nothing on a single-line flex row, so the universal gate removes the dead case without a per-block carve-out. That is FP-9 (no per-block exceptions) applied correctly against a brief that would have breached it.
 
 ## Not verified here
 

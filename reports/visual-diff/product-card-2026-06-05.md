@@ -7,7 +7,7 @@ ADDITIVE, Bound-mode (`wc-product`) only: a new SSR comparative value ladder ren
 
 Typed-mode product cards (page-144 clones) are UNAFFECTED: they carry no `valueLadder` context, so `valueLadderHidden` is true and nothing renders. No change to the existing configurator pills / price / image / cart UI.
 
-## Live evidence (R-22-11, DOM-verified on canary 540)
+## Live evidence (FP-11, DOM-verified on canary 540)
 - Lean-seed guard HELD: product-card `data-wp-context` = 22,408 bytes — BYTE-IDENTICAL to the pre-change baseline (KJC-B: the ladder is SSR-only, never seeded into the client context).
 - Configurator unregressed: 16 `type="radio"` pills present; 0 console/critical errors.
 - Ladder rows (with a QA reference price of 100p set, then cleared):

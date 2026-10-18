@@ -3,7 +3,7 @@
  *
  * WHY
  * ---
- * R-31-13: script measurement and the owner's eye are CO-AUTHORITATIVE. Numbers
+ * FP-13: script measurement and the owner's eye are CO-AUTHORITATIVE. Numbers
  * alone do not close a fidelity gate, so the drawer-variant exit gate needs a
  * visual pair per variant: our fixture next to the reference drawer it was
  * modelled on, at the same viewport, carrying the SAME CONTENT (the fixtures are

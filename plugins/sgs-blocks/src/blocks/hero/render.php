@@ -5,7 +5,7 @@
  * FR-22-6: the content column (label, headline, sub-headline, CTAs) is
  * rendered via InnerBlocks ($content). CTAs are child sgs/multi-button >
  * sgs/button blocks (D270/D293).
- * R-31-14: NO legacy scalar fallback.
+ * FP-14: NO legacy scalar fallback.
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, backgroundOverlayColour, overlayOpacity,
@@ -67,7 +67,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 
 // ── Shell / layout attributes (still scalar — drive the wrapper + media column).
 // FR-22-6: scalar content attrs (label, headline, subHeadline, ctaPrimary*,
-// ctaSecondary*) are deliberately NOT read here. R-31-14: no fallback.
+// ctaSecondary*) are deliberately NOT read here. FP-14: no fallback.
 $variant   = $attributes['variant'] ?? 'standard';
 $alignment = $attributes['alignment'] ?? 'left';
 $bg_image  = $attributes['backgroundImage'] ?? null;
@@ -82,7 +82,7 @@ $bg_image  = $attributes['backgroundImage'] ?? null;
 // explicitly set (the ungate condition below).
 $overlay_colour_raw = $attributes['backgroundOverlayColour'] ?? '';
 // D718: hero gates its overlay exactly like SGS_Container_Wrapper does — no
-// colour set, no overlay (R-31-9/D152: one shared control must not behave two
+// colour set, no overlay (FP-9/D152: one shared control must not behave two
 // ways). Hero still renders ALL its own media layers (so it controls their
 // stacking), and its background image is a REAL <img> with fetchpriority="high"
 // (the preload scanner finds it; the wrapper's CSS background-image is only
@@ -124,14 +124,14 @@ $overlay_blend_mode     = $attributes['backgroundOverlayBlendMode'] ?? '';
 // synthesise/hydrate bridges that kept it in sync with splitImage were DELETED
 // 2026-08-13 (Bean: no legacy elements as fallbacks; the framework is
 // pre-production, so there is nothing to migrate). They also contradicted this
-// file's own R-31-14 contract at the top — "NO legacy scalar fallback" — and
-// R-31-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
+// file's own FP-14 contract at the top — "NO legacy scalar fallback" — and
+// FP-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
 // Wave 6 (2026-09-01) — the `source` atom (prefix 'splitMedia') writes a NEW
 // {base}Id/{base}Url pair (its own canonical shape — `source.control.js`'s
 // `pairPickerRow()` always writes this, never the legacy composite object),
 // which is NOT the shape hero's `splitImage`/`splitVideo` attributes declare
 // (a composite `{id,url,alt}` object). NO legacy fallback is read here —
-// Bean-locked (2026-09-02): R-31-14 bans exactly the
+// Bean-locked (2026-09-02): FP-14 bans exactly the
 // `if ( empty($new) && !empty($legacy) )` shape, and this very block already
 // carries a 2026-08-13 precedent of deleting an identically-shaped bridge
 // for the same reason (see the comment block above this one). An
@@ -339,7 +339,7 @@ $allowed_text_align = array( 'left', 'center', 'right', 'start', 'end', 'justify
 // Layout grid (split variant). splitColumnRatio* was retired (Step 6 / D-next,
 // 2026-06-11) — render.php now reads gridTemplateColumns* exclusively.
 // The former deprecated.js v7 migrate() mapped splitColumnRatio→gridTemplateColumns; deprecations were deleted at D271, so un-migrated posts keep the legacy attr.
-// R-31-14: no legacy read-time fallback for splitColumnRatio.
+// FP-14: no legacy read-time fallback for splitColumnRatio.
 // block.json defaults gridTemplateColumns to '' (unlike the retired
 // splitColumnRatio whose default was '1fr 1fr') — ?? alone would let the
 // empty string through, so default explicitly.
@@ -1356,7 +1356,7 @@ if ( '' !== $overlay_decls ) {
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 // display/flex-direction/justify-content/background-color are ALL emitted
 // scoped (.uid .sgs-hero__content{...}) above.
-// R-31-14: no scalar content rendering. $content = full InnerBlocks output
+// FP-14: no scalar content rendering. $content = full InnerBlocks output
 // (sgs/label + sgs/heading + sgs/text + sgs/button(s) supplied by converter).
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
 $content_html = '<div class="sgs-hero__content">' . $content . '</div>';

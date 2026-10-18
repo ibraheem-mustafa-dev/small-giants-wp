@@ -48,6 +48,6 @@ The fixture frame set was generated so that mean pixel luminance **ramps monoton
 
 ## What this report does NOT claim
 
-- No human eye has judged the scrub's smoothness (R-31-13 not yet given).
+- No human eye has judged the scrub's smoothness (FP-13 not yet given).
 - Only the DESKTOP tier was exercised; `tabletFramesUrl` / `mobileFramesUrl` were left unset, so the resolution-ladder fallback is UNMEASURED.
 - Frames were synthetic fixtures, not real video output. The prep script's own video→frames path was not run in this session.

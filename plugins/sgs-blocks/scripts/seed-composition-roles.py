@@ -111,7 +111,7 @@ CORRECTIONS: dict[str, str] = {
 # Fresh INSERTS (2026-06-02, Workstream A — D150). Blocks added after the
 # block_composition table was seeded (D108, 188 rows) and therefore missing a
 # row. Without a row, sync-container-wrapping-blocks.py --apply silently skips
-# them. Values derived from each block's block.json + roster KIND (R-22-1).
+# them. Values derived from each block's block.json + roster KIND (FP-1).
 # Idempotent: only inserts when the row is absent.
 #
 # has_inner_blocks is NOT a column any more (dropped EXECUTION Step 16,

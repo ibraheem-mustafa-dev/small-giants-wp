@@ -71,7 +71,7 @@ MODES
 11 / owner ruling 4). The hard-fail scope is a single named module constant,
 `HARD_FAIL_BLOCKS`, left empty here; Step 26 sets it (reading the scope from
 `plugins/sgs-blocks/scripts/gates.json`'s own config for this gate's entry,
-never as a dict hardcoded in this file — R-31-1) to the hard-fail blocks once
+never as a dict hardcoded in this file — FP-1) to the hard-fail blocks once
 the tree is clean. Framework-wide hardening beyond that is separate future
 work, triaged against a real no-filter `--survey` run.
 
@@ -584,10 +584,10 @@ def scan_file(
 
 
 # ---------------------------------------------------------------------------
-# Block discovery — DB-first per R-31-1 would mean reading `sgs-framework.db`,
+# Block discovery — DB-first per FP-1 would mean reading `sgs-framework.db`,
 # but the two files this gate needs (a block's own `render.php`/`style.css`)
 # are file-path facts, not DB rows; block SLUGS are read from each block's
-# own `block.json`, never a cached/hardcoded roster (R-31-1/R-31-9).
+# own `block.json`, never a cached/hardcoded roster (FP-1/FP-9).
 # ---------------------------------------------------------------------------
 def discover_blocks() -> dict[str, Path]:
     """Returns {block_slug: block_dir} for every block under src/blocks/

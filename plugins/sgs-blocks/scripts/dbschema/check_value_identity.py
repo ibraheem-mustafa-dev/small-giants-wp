@@ -121,7 +121,7 @@ VALUE_ASSERTIONS: list[dict] = [
     # decides nested vs child, independent of `emit_shape`'s own value.
     # Confirmed structurally, not assumed: render.php no longer reads
     # `splitImage` at all (its own composite shape retired in favour of
-    # splitImageId/Url/Alt — Bean-locked, R-31-14, no legacy read-time
+    # splitImageId/Url/Alt — Bean-locked, FP-14, no legacy read-time
     # fallback), and `run_mechanism_b`'s ScalarLift for `splitImage` is
     # translated at write-time into those three new attrs instead
     # of the composite object — so a clone still produces content the

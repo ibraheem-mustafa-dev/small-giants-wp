@@ -125,7 +125,7 @@ EXCLUDED_DIRS = {"node_modules", "build", "vendor", ".git", "__pycache__"}
 # `supports.sgs.<key>: true` in a block's own block.json → a block_capabilities
 # row (slug, <capability>). Absent or false → the row is DELETED. Idempotent, and
 # NOT a slug list: adding a capability costs one entry here plus a block.json key,
-# so the fact always travels with the block (R-31-1).
+# so the fact always travels with the block (FP-1).
 #
 # ⛔ This map is the ONLY sanctioned writer of a non-lift capability.
 _DECLARATIVE_CAPABILITIES = {
@@ -1130,7 +1130,7 @@ def _index_sgs_block_files(
             for fn in ("view.js", "view.ts", "view.jsx", "view.tsx")
         )
         block_type = "dynamic" if has_render else "static"
-        # DB-first parent derivation (R-31-1): block.json's own `parent` array is
+        # DB-first parent derivation (FP-1): block.json's own `parent` array is
         # already parsed into `data` above — read it directly instead of a
         # hardcoded PARENT_CHILD dict (removed 2026-08-01; that dict silently
         # missed 5 blocks that declare `parent` — mega-aside, mega-group,
@@ -1329,7 +1329,7 @@ def _index_sgs_block_files(
         # variant's DISCRIMINATING slots (set-difference vs sibling variants)
         # from supports.sgs.variants. So a block's variant is detected
         # from an extracted fingerprint, universally, without per-block
-        # code (R-31-1 DB-driven, R-31-9 universal). Idempotent: variant_attr
+        # code (FP-1 DB-driven, FP-9 universal). Idempotent: variant_attr
         # writes only on drift; variant_slots is delete-then-insert.
         variant_attr_name = sgs_supports.get("variantAttr") if isinstance(sgs_supports, dict) else None
         variants_map = sgs_supports.get("variants") if isinstance(sgs_supports, dict) else None
@@ -1422,8 +1422,8 @@ def _index_sgs_block_files(
         # block.json supports.sgs.scalarContentLift === true → upsert a
         # block_capabilities row (slug, 'scalar-content-lift'); absent/false →
         # remove it. This is the DATA half of the universal
-        # scalar-content-lift opt-in gate (R-31-1 DB-driven /
-        # R-31-9 universal mechanism). Idempotent: present→INSERT OR IGNORE
+        # scalar-content-lift opt-in gate (FP-1 DB-driven /
+        # FP-9 universal mechanism). Idempotent: present→INSERT OR IGNORE
         # (UNIQUE(block_slug, capability)); absent→DELETE. Mirrors variant_attr's
         # presence/absence handling.
         wants_scalar_lift = bool(sgs_supports.get("scalarContentLift", False)) if isinstance(sgs_supports, dict) else False
@@ -1462,7 +1462,7 @@ def _index_sgs_block_files(
         # block.json supports.sgs.arrayContentLift === true → upsert a
         # block_capabilities row (slug, 'array-content-lift'); absent/false →
         # remove it. This is the DATA half of the array-resolver's universal
-        # opt-in gate (R-31-1 DB-driven / R-31-9 universal mechanism). The
+        # opt-in gate (FP-1 DB-driven / FP-9 universal mechanism). The
         # array resolver only processes blocks with this capability, preventing
         # accidental array-content lifting on blocks whose array attrs are config
         # arrays, not repeater content. Idempotent: present→INSERT OR IGNORE
@@ -2372,14 +2372,14 @@ ATTR_CLASSIFICATION_OVERRIDES: dict[tuple[str, str], dict[str, object]] = _load_
 # maps the surviving block attributes (dragMomentum, loopCarousel, dragToScroll)
 # onto their pseudo-CSS-property marker. /sgs-update is the only writer of the
 # column (layer 2.5 of `_apply_attr_classification_overrides`), read the same way
-# ATTR_CLASSIFICATION_OVERRIDES is (R-22-1: import the real dict, never hand-copy it).
+# ATTR_CLASSIFICATION_OVERRIDES is (FP-1: import the real dict, never hand-copy it).
 # ---------------------------------------------------------------------------
 
 _MOTION_FX_SEEDER_PATH = Path(__file__).resolve().parent / "seed-motion-fx-registry.py"
 
 
 def _load_fx_attr_css_property_map(path: Path = _MOTION_FX_SEEDER_PATH) -> dict[str, str]:
-    """Import FX_ATTR_CSS_PROPERTY from seed-motion-fx-registry.py (R-22-1: the
+    """Import FX_ATTR_CSS_PROPERTY from seed-motion-fx-registry.py (FP-1: the
     real dict, never a hand-copied duplicate that could silently drift from it).
 
     Soft-optional, matching `_load_css_property_classifications`'s contract —
@@ -2440,7 +2440,7 @@ def _canon_slot_value(value) -> str:
     MUST behave identically to `db-consistency/check_variant_reseed.py::_canon_slot_value`
     — one writes `variant_slots.slot_value`, the other re-derives it from
     source to verify the DB. A duplicated 3-line pure function (not a lookup
-    dict — R-31-1 doesn't apply) is simpler and safer than plumbing a shared
+    dict — FP-1 doesn't apply) is simpler and safer than plumbing a shared
     import between the seeder and the check.
     """
     try:
@@ -2499,7 +2499,7 @@ def _extract_variation_attribute_values(block_dir: Path) -> "dict | None":
 
 
 def _collect_boxfamily_overrides(blocks_dir: Path) -> dict:
-    """Derive box_family overrides DECLARATIVELY from block.json (R-31-1).
+    """Derive box_family overrides DECLARATIVELY from block.json (FP-1).
 
     box_family is the box-object merge categorisation guard (Spec 31 §4 / §3.A
     step 3b). It is NOT a hardcoded dict in this script (Bean 2026-07-10 — "stop
@@ -3021,7 +3021,7 @@ def _populate_emit_shape(
     read the proof beside it.
 
     Every run CLEARS both columns first and reseeds them in the same transaction, so a value
-    left by an older role or an older rule can never survive as stale truth. R-31-1: this seeds a
+    left by an older role or an older rule can never survive as stale truth. FP-1: this seeds a
     DB COLUMN, not a live PHP scan at read time.
     """
     from emit_shape import EmitContext, classify_emit_shape
@@ -3032,7 +3032,7 @@ def _populate_emit_shape(
         if _col not in _cols:
             c.execute(f"ALTER TABLE block_attributes ADD COLUMN {_col} TEXT")
 
-    # Content-bearing roles = the content-vs-styling filter (DB-driven, R-31-1).
+    # Content-bearing roles = the content-vs-styling filter (DB-driven, FP-1).
     content_roles = [
         r[0] for r in c.execute(
             "SELECT role_name FROM roles WHERE classification = 'content-bearing'"

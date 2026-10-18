@@ -45,4 +45,4 @@ Swapped page 13's `core/separator` → `sgs/separator` with the reference's exac
 
 Rendered `<hr>`: `border-bottom: 2px solid rgb(216,202,80)` = `#D8CA50`, centred. Matches the reference's underline (2px gold, ~heading-text width) and is now responsive (the old fixed-px version was not).
 
-**Bean visual sign-off (R-31-13):** cropped 1440 pair (original vs clone) delivered for eye confirmation.
+**Bean visual sign-off (FP-13):** cropped 1440 pair (original vs clone) delivered for eye confirmation.

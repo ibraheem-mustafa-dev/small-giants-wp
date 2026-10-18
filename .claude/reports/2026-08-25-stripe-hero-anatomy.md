@@ -195,7 +195,7 @@ The rig was built with Stripe's real shaders, geometry, camera and post-process,
 2. **The palette's real job is to avoid muddy transitions.** Four *complementary* stops (blue↔orange) produced a grey band, because interpolating complements in RGB passes through grey. Four *adjacent* stops did not. Stripe's palette is nearly all adjacent warm hues, which is very likely why it works — not the 82,831 colours.
 3. **The colour count is a symptom, not the cause.** Rendered through the shader the 4-stop palette yielded ~27,000 unique colours in the hero region anyway, because the grain and blur ADD variation. Counting colours in the source image measured the wrong thing.
 
-⚠ This is a strong result but a single-operator visual judgement on a static frame. It has not been Bean-reviewed (R-31-13) and no council has attacked it yet.
+⚠ This is a strong result but a single-operator visual judgement on a static frame. It has not been Bean-reviewed (FP-13) and no council has attacked it yet.
 
 ### Per-mechanism verdict
 

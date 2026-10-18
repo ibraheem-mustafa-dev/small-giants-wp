@@ -111,7 +111,7 @@ python plugins/sgs-blocks/scripts/build-deploy.py --target eye-care-test
 
 | Flag | Effect | When |
 |---|---|---|
-| `--target sandybrown\|indus-test\|eye-care-test` | Picks the site. Hostnames + remote WP paths live in the script's `TARGETS` dict (R-31-9, universal) — never inline a host here. | Always |
+| `--target sandybrown\|indus-test\|eye-care-test` | Picks the site. Hostnames + remote WP paths live in the script's `TARGETS` dict (FP-9, universal) — never inline a host here. | Always |
 | `--target a,b` / `--target all` | Several sites: one build and `gate:full`, then every site deployed at the same time, one result line per site (`.claude/dev-setup.md` "Several sites at once"). Naming an opt-in target in the list is its opt-in. | A change that ships to more than one site |
 | `--no-cache` | Rebuilds and re-runs `gate:full` even when this commit and framework DB already passed them | When a cached pass is in doubt |
 | `--motion-qa-tier none\|smoke\|full\|auto` | Which live motion probes run on the canary after the deploy. `none` (default) runs none: the motion model is finished, so a routine deploy skips them. `full` runs all 18 (about 16 minutes), `smoke` the 14 quick ones (about 6), `auto` full when no full pass is recorded, the last one is over 24 hours old, or a full-tier path changed since (uncommitted `--payload` files count). The log line `[motion-qa] tier ...` says which and why. | `full` before any release that touches motion, shared effects or the theme tokens |

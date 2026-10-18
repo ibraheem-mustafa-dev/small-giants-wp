@@ -13,7 +13,7 @@ caches_cleared_before_measure: LiteSpeed purge-all + OPcache reset + Hostinger C
 
 ## Headline
 
-The clone is **very close but not a pixel-100% clone — ~95% faithful.** Every section's **content, copy, images, overall layout, colours and fonts transferred**. There are **5 small but real divergences**, all of the same kind: an **SGS block applied its own default styling instead of faithfully matching the draft**. None are content losses; all are on the clone side (the clone *departs from* the draft, so per R-31-9 these are converter/block fixes, NOT draft fixes — the opposite of the D313 a11y case).
+The clone is **very close but not a pixel-100% clone — ~95% faithful.** Every section's **content, copy, images, overall layout, colours and fonts transferred**. There are **5 small but real divergences**, all of the same kind: an **SGS block applied its own default styling instead of faithfully matching the draft**. None are content losses; all are on the clone side (the clone *departs from* the draft, so per FP-9 these are converter/block fixes, NOT draft fixes — the opposite of the D313 a11y case).
 
 Evidence basis: all 5 are confirmed by **live `getComputedStyle` on the real page** (immune to image lazy-loading), cross-checked against draft. Screenshot pairs at 375/768/1440 corroborate.
 
@@ -87,7 +87,7 @@ Hero (headline, subtext, 2 CTAs, hero image right), trust bar (4 items), zookies
 `scratchpad/task1-ledger.json` (per-viewport rows), screenshot pairs `scratchpad/shot-{draft,clone}-{d,m}.png`, live probes captured in-session.
 
 ## For Bean — decision needed
-All 5 are **clone-side departures from the draft** → converter/block fixes (R-31-9), not draft edits. Options: (1) log them for a follow-up fidelity-fix session (recommended — Task 2 is the priority ask), or (2) fix now before Task 2. None block Task 2.
+All 5 are **clone-side departures from the draft** → converter/block fixes (FP-9), not draft edits. Options: (1) log them for a follow-up fidelity-fix session (recommended — Task 2 is the priority ask), or (2) fix now before Task 2. None block Task 2.
 
 ---
 
@@ -120,7 +120,7 @@ All 5 are **clone-side departures from the draft** → converter/block fixes (R-
 - **A (pack-pill selected-state + ✓) — ACCEPTED** (Bean). Not a gap.
 - **B (info-box `--elevated` card shadow) — ACCEPTED** (Bean). Not a gap.
 - **D (`<a>`→button routing) — SAFE, KEEP.** Proven on the real converter: an INLINE `<a>` inside a `<p>` stays inline HTML inside `sgs/text` (NOT a button); only a STANDALONE bare `<a>` becomes `sgs/button`. Per Bean's rule ("if inline links don't become buttons, keep it"), no change.
-- **C (description colour/font drop) — FIXED + LANDED LIVE (D314).** Root cause: product-card `descColour`/`descFontSize`/`descLineHeight` had `role=NULL` + `derived_selector=NULL` (missed in the D285 title-family pass) → the D301 role-driven router couldn't route them. Fix: seeded `role` + `derived_selector='.sgs-product-card__description'` via `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py` (R-31-1 channel), `/sgs-update --stage 1`, re-cloned page 8. **Verified live:** both descriptions now render `rgb(107,92,80)` (#6B5C50), `14px`, `1.55` line-height — exactly the draft.
+- **C (description colour/font drop) — FIXED + LANDED LIVE (D314).** Root cause: product-card `descColour`/`descFontSize`/`descLineHeight` had `role=NULL` + `derived_selector=NULL` (missed in the D285 title-family pass) → the D301 role-driven router couldn't route them. Fix: seeded `role` + `derived_selector='.sgs-product-card__description'` via `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py` (FP-1 channel), `/sgs-update --stage 1`, re-cloned page 8. **Verified live:** both descriptions now render `rgb(107,92,80)` (#6B5C50), `14px`, `1.55` line-height — exactly the draft.
 - **E (product-card CTA padding drop) — DEFERRED to next session (D284-entangled).** Live-proven E is EXCLUSIVELY the product-card CTA (standalone buttons transfer padding faithfully: 14/24, 48). E is NOT a role-seed like C: `ctaPaddingX`/`ctaPaddingY` have **no `property_suffixes` row** and padding isn't a scalar-styling-lift role, AND the cta* styling is owned by the D284 `sgs_button_element_style_css` on `.sgs-product-card__cta--primary` (per the sgs-update override comment). Fixing E needs new routing infrastructure (new suffixes + a box-CSS→scalar path) or a product-card `__cta` CSS-default alignment to the framework button standard — a design-gate build, bundled with the parity-tool rebuild next session.
 
 ## Scoring correction (Bean-challenged, D314)

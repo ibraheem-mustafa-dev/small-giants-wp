@@ -2,7 +2,7 @@
 """motion_presets_seed.py -- seeds `motion_presets` from scripts/data/motion-presets.json (Spec 38A FR-38A-6).
 
 The file is the one source of presets (hover, entrance, the reconciled keyframe presets and the Intensity trios);
-the table is the runtime query target for the cloner and the generators (R-31-1). Before any row is written the
+the table is the runtime query target for the cloner and the generators (FP-1). Before any row is written the
 file is validated against `schemas/motion.schema.json` by `validate-motion-presets.mjs` (the cloning tool's own
 validator), and a preset that fails raises `MotionPresetError` naming every failing slug, so a bad value stops the
 seeder with a non-zero exit instead of reaching the DB. Rows the file no longer lists are deleted.

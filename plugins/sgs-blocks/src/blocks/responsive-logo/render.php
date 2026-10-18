@@ -263,7 +263,7 @@ if ( $width_explicit ) {
 // setting closes that gap generically: it targets BOTH ancestor state classes
 // -- the logo does not know (and must not need to know) which one shrunk it,
 // so a logo not nested inside either simply never matches and emits nothing
-// extra (any-client test; R-31-9, no per-block carve-out). Height is
+// extra (any-client test; FP-9, no per-block carve-out). Height is
 // deliberately NOT a separate attribute: style.scss's `&__image--desktop`
 // already sets `height:auto`, so overriding only `--logo-width` scales the
 // shrunk logo at its own natural aspect ratio for ANY uploaded artwork,

@@ -88,6 +88,6 @@ The contract (`store.js`, FR-36-6): `.show()` instead of `showModal()`; **no** h
 
 ## What this does NOT claim
 
-- **No visual fidelity claim.** Nothing here says the drawer or the mega *looks* right; that is Bean's eye (R-31-13).
+- **No visual fidelity claim.** Nothing here says the drawer or the mega *looks* right; that is Bean's eye (FP-13).
 - **The mega panel measured `w≈50, h≈1242` once reparented** on these two-bar fixtures. That number is recorded as context for the height/visibility reads, not asserted as correct layout; it needs its own look.
 - **axe was not run** in this pass — this probe is keyboard, focus and state only. `axe-run.mjs` remains the accessibility gate.

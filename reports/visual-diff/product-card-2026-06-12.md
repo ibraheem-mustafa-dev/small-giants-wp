@@ -6,5 +6,5 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation:** The island lookup only fires when a `script.sgs-buybox-galleries` element exists inside the cardRef. Product-card cards emit NO such element (their galleries fit the context seed), so `island` stays null and the code path is skipped — identical behaviour to before (verified by reading the full git diff + cross-family haiku rater: product-card regression check PASS, purely additive/null-safe). The change exists solely so the buybox (which mounts this shared store) can swap thumbnails for all variations without the 24KB context cap.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 - Render output unchanged (first paint byte-identical); shared-store edit is a guarded additive no-op for product-card; `comboKey` in scope; JSON.parse try/caught + cached. No visual regression possible on product-card from this change.

@@ -66,7 +66,7 @@ everything it reads it reads to paint). They are now SEEDED `styling` by
 `assign-canonical.apply_role_detection_inline()` TIER 2.4, so this bucket reads 0 after
 a reseed. Measured post-reseed: 31 rows claimed, 0 content roles touched. NOTE they will
 never carry a `css_property` — `sgs/container`, the block every composite mirrors
-(R-31-9), deliberately declines to map the decorative families in its `decorative`
+(FP-9), deliberately declines to map the decorative families in its `decorative`
 element, so the earlier "owes an attrMap declaration" reading would have REVERSED a
 standing architectural decision rather than completing one.
 

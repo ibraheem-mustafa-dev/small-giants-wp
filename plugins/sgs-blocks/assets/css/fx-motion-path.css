@@ -83,7 +83,7 @@
  *     considered and REJECTED: the traveller can be an `<img>` (the spec's
  *     named `sgs/decorative-image` consumer), a void element that cannot take
  *     children — a fix that works for a `<p>` but breaks the primary
- *     documented consumer is not universal (R-31-9).
+ *     documented consumer is not universal (FP-9).
  * **CONCLUSION (superseded in part below): this is a PHP/CSS-file-boundary
  * problem, not a PHP/CSS-fixable one** for the ROUTE GEOMETRY specifically —
  * the oversized route box (`.entry-content`, ~1200×7934px) is still exactly
@@ -109,7 +109,7 @@
  * THE FEATURE: a client-facing "Resting position" control (four presets —
  * below-header / middle / lower-third / custom — plus a 5vh-stepped fine-tune
  * slider for custom) answering "where should this finish?" for ANY
- * `data-sgs-fx="motion-path"` traveller, `<img>` included (R-31-9 — the
+ * `data-sgs-fx="motion-path"` traveller, `<img>` included (FP-9 — the
  * traveller can be a void element, so the fix cannot depend on nesting
  * anything inside it; see the rejected-approach note above).
  *

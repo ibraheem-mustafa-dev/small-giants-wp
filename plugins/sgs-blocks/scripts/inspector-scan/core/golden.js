@@ -760,7 +760,7 @@ function statesArrayHasGradient( statesArray ) {
 // => the schema's stated default floor of 2.
 // ── Declared state vocabulary (2026-09-03) ───────────────────────────────
 // The REAL, admitted state names, read from golden-controls.json's own
-// `_meta.stateVocabulary.real` rather than hardcoded here (R-31-1: no
+// `_meta.stateVocabulary.real` rather than hardcoded here (FP-1: no
 // hardcoded dicts; the schema is the source and a new state is admitted by
 // editing it, not by editing this file).
 //
@@ -854,7 +854,7 @@ function slugify( s ) {
 // ── Mechanism resolution (Step 2, phase-colour-conformance.md, 2026-08-22) ──
 // Rule 31 asks "which PAINT MECHANISM does this colour row use?" by reading
 // `block_attributes.css_property` — the declarative routing column Spec 31
-// R-31-1 (DB-first, no hardcoded dicts) already requires blocks to populate —
+// FP-1 (DB-first, no hardcoded dicts) already requires blocks to populate —
 // rather than scanning render.php. A council tracer measured the render.php
 // scan and found it unsound: the shared wrapper calls neither
 // `sgs_background_paint_decl` nor `sgs_text_colour_decl` anywhere across its

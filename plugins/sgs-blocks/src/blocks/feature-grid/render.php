@@ -39,7 +39,7 @@ $min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attrib
 // Back-compat: pre-consolidation posts may store a bare number (e.g. 24) for gap.
 // Normalise it to a px value. The retired gapUnit attr is no longer declared, so WP
 // strips it before render (the old unit was always "px") — reading it would be a
-// dead legacy-attr fallback (R-31-14).
+// dead legacy-attr fallback (FP-14).
 // `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10): one attr carrying every tier.
 // ⛔ Do NOT cast $attributes['gap'] to string — it is an ARRAY now, and casting one
 // emits the PHP notice "Array to string conversion" on EVERY render plus literal

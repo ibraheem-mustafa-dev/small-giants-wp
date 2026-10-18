@@ -900,7 +900,7 @@ final class Product_Provisioning {
 	 * The mapping is a small, fixed in-method constant because Google's variesBy
 	 * enum is a CLOSED, Google-defined set (six values) — not client data. It will
 	 * only change if Google changes their spec, making a hardcoded map correct here
-	 * (unlike DB-first lookups used for open-ended client taxonomies per R-22-1).
+	 * (unlike DB-first lookups used for open-ended client taxonomies per FP-1).
 	 *
 	 * Matching rules (applied to the normalised token):
 	 *   - Strip a leading pa_ prefix (WC global taxonomy convention).

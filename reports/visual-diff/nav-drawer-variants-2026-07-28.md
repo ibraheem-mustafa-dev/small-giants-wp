@@ -12,6 +12,6 @@
 
 ## Outstanding (deliberately deferred to Task 5 — the pre-registered live gate)
 
-Openness-guarded axe per variant per breakpoint · ESC/focus-return re-observation · listColumns editor-canvas visibility · the 7 exact-content POC fixtures (design doc §6) · Bean's eye (R-31-13).
+Openness-guarded axe per variant per breakpoint · ESC/focus-return re-observation · listColumns editor-canvas visibility · the 7 exact-content POC fixtures (design doc §6) · Bean's eye (FP-13).
 
 **Verdict: PASS for commit** — no default-instance regression observed; new surfaces verified at the probe level; full variant-by-variant visual verification is Task 5's job and is NOT claimed here.

@@ -23,7 +23,7 @@ verdict: PASS intent_capture_passed: true commit_sha: f9f20b8e7 (tip); the chang
 - Site dark mode was not re-run in this pass (it was measured on 2026-09-22; the dark-mode light-surface reset added in c82ec0fb4 is unit-tested only).
 - A theme gradient preset referenced by slug reads as unknown in the canvas until block callers pass `useSettings( 'color.gradients' )`.
 - An image with no overlay is never sampled, on the page or in the canvas.
-- Bean's eye (R-31-13): signed off 2026-09-23, every band looks right.
+- Bean's eye (FP-13): signed off 2026-09-23, every band looks right.
 
 ---
 

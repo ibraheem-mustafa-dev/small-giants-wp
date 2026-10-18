@@ -39,7 +39,7 @@ require_once __DIR__ . '/helpers-cart-panel-css.php';
  *            own default navigation. This mirrors the `sgs/nav-bar-menu` burger.
  * `drawer` → the same button, wrapped in a `data-wp-interactive="sgs/nav"` element
  *            carrying the per-instance context, so the SHARED `store('sgs/nav')`
- *            drives it. No second open/close/focus utility exists (R-31-9).
+ *            drives it. No second open/close/focus utility exists (FP-9).
  *
  * @param string $mode           Effective display mode — link, flyout or drawer.
  * @param string $inner_html     Pre-built icon + badge markup.
@@ -214,7 +214,7 @@ function sgs_cart_close_button_html(): string {
  *             the SHARED `store('sgs/nav')` opens it with the same
  *             `showModal()` / body-reparent / scroll-lock / focus-trap
  *             / ESC behaviour `sgs/nav-drawer` already proves. No second
- *             open/close utility exists (R-31-9).
+ *             open/close utility exists (FP-9).
  * anything else (i.e. `link`) → no panel at all.
  *
  * @param string $mode      Effective display mode — link, flyout or drawer.

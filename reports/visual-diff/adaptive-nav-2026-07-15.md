@@ -10,7 +10,7 @@ Covers Steps 1, 2 and 4 of `next-session-prompt.md`, folded together at Bean's d
 
 ## What Bean rejected, and why it was right
 
-The pre-existing drawer was `background: var(--primary-dark)` + `color: var(--surface)` hardcoded in `style.css`. On mamas-munches `primary-dark` is a **pink** (`#c56a7a`), so it shipped cream-on-pink at **3.32:1 — a WCAG fail**. The D338 working tree fixed the contrast by computing the foreground (→ black, 5.72:1) but kept the dark-pink panel. Bean rejected that on sight (R-31-13, his eye is co-authoritative):
+The pre-existing drawer was `background: var(--primary-dark)` + `color: var(--surface)` hardcoded in `style.css`. On mamas-munches `primary-dark` is a **pink** (`#c56a7a`), so it shipped cream-on-pink at **3.32:1 — a WCAG fail**. The D338 working tree fixed the contrast by computing the foreground (→ black, 5.72:1) but kept the dark-pink panel. Bean rejected that on sight (FP-13, his eye is co-authoritative):
 
 1. *"It's dark pink, why? Why not either use primary pink which would look much better with black text or use white for the text"*
 2. *"the top strip where the logo sits needs to be cream so the logo doesn't overlap with background colour"*
@@ -24,7 +24,7 @@ All three were correct. Measured evidence for each:
 
 ## The fix — attrs, not a token swap
 
-Swapping one hardcoded token for another repeats the R-31-1 violation one token to the left, and the Spec-33 extractor **regenerates these palettes per client**, so the next client re-rolls the dice. FR-S9-10 already specifies the right shape: *"elements inherit these [theme tokens] as defaults; per-instance overrides remain available"*.
+Swapping one hardcoded token for another repeats the FP-1 violation one token to the left, and the Spec-33 extractor **regenerates these palettes per client**, so the next client re-rolls the dice. FR-S9-10 already specifies the right shape: *"elements inherit these [theme tokens] as defaults; per-instance overrides remain available"*.
 
 Per Bean's own distinction (2026-07-15): a hardcode is a value that **overrides a legitimate alternative source** (inline / `!important` / a block default beating theme.json / a block default beating a UA default). An overridable attr default that fights no other channel is a **default**, not a hardcode.
 
@@ -43,7 +43,7 @@ New attrs on `sgs/adaptive-nav` (all flat — see Shape freeze below):
 
 Also fixed: the close button's hover was a hardcoded `rgba(255,255,255,.25)` white — which is invisible the moment the strip is light (it is now cream by default). Now `color-mix(in srgb, currentColor 22%, transparent)`, so it tracks the computed foreground on any palette, with an `@supports` fallback.
 
-## Universality (R-31-9 / STOP-VERIFY-EVERY-CLIENT)
+## Universality (FP-9 / STOP-VERIFY-EVERY-CLIENT)
 
 A colour fix verified on one client is not verified. `drawerBg: primary` + the computed foreground, across **all 8 committed client palettes**:
 

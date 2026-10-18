@@ -140,7 +140,7 @@ Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`/`s
 
 ### Responsive model (never-overflow) + the drawer a11y contract
 
-The header/footer never overflow at any width down to 320px by construction — a Cluster layout (`flex-wrap` + `min-width:0` + fluid `clamp()` spacing) plus a per-breakpoint override model (768/1024 + a custom-px 4th tier, shared source per R-31-1) rather than per-element overflow hacks. The off-canvas drawer is the a11y benchmark (focus trap, ESC-to-close, backdrop dismiss, body-scroll-lock). Full mechanics: Spec 37 (never-overflow layout) + Spec 36 (drawer a11y).
+The header/footer never overflow at any width down to 320px by construction — a Cluster layout (`flex-wrap` + `min-width:0` + fluid `clamp()` spacing) plus a per-breakpoint override model (768/1024 + a custom-px 4th tier, shared source per FP-1) rather than per-element overflow hacks. The off-canvas drawer is the a11y benchmark (focus trap, ESC-to-close, backdrop dismiss, body-scroll-lock). Full mechanics: Spec 37 (never-overflow layout) + Spec 36 (drawer a11y).
 
 ## WooCommerce Layer (Spec 27 Part 3)
 

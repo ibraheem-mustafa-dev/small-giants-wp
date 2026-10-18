@@ -33,7 +33,7 @@ Status: APPROVED for build. Typed-attr, variant-driven rebuild of sgs/testimonia
 | per-element typography: `quoteFontSize`,`quoteColour`,`summaryFontSize`,`summaryColour`,`nameColour`,`roleColour`,`ratingColour` | string | `""` | empty → CSS token default via `:not([style*="color"])` | all |
 | KEEP verbatim: the WS-4 container-mirror CONTENT attrs (widthMode/customWidth/contentWidth/maxWidth) + hover/animation attrs already in block.json | — | — | — | all |
 
-RETIRE: the `style` enum (replaced by `variant`); collapse dual `avatar`+`authorMedia` → single `avatarMedia` (render.php keeps a one-way READ of legacy `avatar.url` for migration only — NOT an empty($content) fallback; R-22-14-compliant).
+RETIRE: the `style` enum (replaced by `variant`); collapse dual `avatar`+`authorMedia` → single `avatarMedia` (render.php keeps a one-way READ of legacy `avatar.url` for migration only — NOT an empty($content) fallback; FP-14-compliant).
 
 ## 7 variants (supports.sgs.variants discriminating-slot map)
 ```
@@ -56,10 +56,10 @@ Note: classic-card uses `ratingStars`, rating-led uses `ratingScale` — distinc
 ## Migration (HIGH RISK — separate step + adversarial-council)
 save.js changes (InnerBlocks → typed/no-inner). deprecated.js needs a v8 migrate handling BOTH legacy shapes:
 1. pre-FR-22-6 scalar posts (`quote`/`name`/`role`/`rating`/`avatar`/`style`) → map to typed attrs (`reviewerName`←name, `ratingStars`←rating + `showRating:true`, `avatarMedia`←avatar, `variant`← style map: card→classic-card, minimal→minimal-quote, featured→pull-quote-editorial).
-2. FR-22-6 InnerBlocks posts → HOIST child-block text (quote/name/role from innerBlocks) back into typed attrs, drop children. R-22-14: no server-side legacy fallback hack in render.php (the one-way avatar read is synthesise-on-read, compliant). Back-compat = the migrate + WP-CLI batch.
+2. FR-22-6 InnerBlocks posts → HOIST child-block text (quote/name/role from innerBlocks) back into typed attrs, drop children. FP-14: no server-side legacy fallback hack in render.php (the one-way avatar read is synthesise-on-read, compliant). Back-compat = the migrate + WP-CLI batch.
 
 ## Converter compatibility (cloning thread follow-on; block works standalone without it)
 Routing map draft class → typed attr: `__quote`/`__text`→quote, `__author`/`__name`→reviewerName, `__role`→reviewerRole, `__org`→orgName, `__summary`/`__pullquote`→summaryPhrase, `__stars`→ratingStars (+showRating), `__score`(N/M)→ratingScale+ratingScaleMax, `__avatar img`→avatarMedia, `__logo img`→orgLogo, `__work` img/video→workMedia, `__date`/`__verified`/`__source`→reviewDate/verified/sourcePlatform. Needs slots rows + blocks.variant_attr=variant + variant_slots (via /sgs-update) + FR-22-20 generalisation (testimonial = 2nd variant block onboarded). DEFERRED to cloning thread — does not block the block build.
 
 ## Build order
-1. block.json (schema) — foundation. 2. render.php + 3. style.css + 4. edit.js (core build). 5. deprecated.js v8 + save.js (migration, adversarial-council). 6. /sgs-update. 7. converter (deferred). Gates: build (dead-control + Gate B) → /sgs-update → deploy → /qc-council → /visual-qa 375/768/1440 → block-renderer per-variant live-verify → Bean R-22-13.
+1. block.json (schema) — foundation. 2. render.php + 3. style.css + 4. edit.js (core build). 5. deprecated.js v8 + save.js (migration, adversarial-council). 6. /sgs-update. 7. converter (deferred). Gates: build (dead-control + Gate B) → /sgs-update → deploy → /qc-council → /visual-qa 375/768/1440 → block-renderer per-variant live-verify → Bean FP-13.

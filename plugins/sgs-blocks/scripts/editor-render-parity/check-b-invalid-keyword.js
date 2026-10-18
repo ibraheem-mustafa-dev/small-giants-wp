@@ -22,7 +22,7 @@
  * self-contained baseline-file + pure-function + --check/--json/--self-test
  * shape; db-consistency/run.py's multi-check-in-one-script shape).
  *
- * SCHEMA CHECK (R-31-1, before hardcoding a new table): sgs-framework.db's
+ * SCHEMA CHECK (FP-1, before hardcoding a new table): sgs-framework.db's
  * `property_suffixes` table was queried before building css-keyword-enums.json
  * (`SELECT * FROM property_suffixes LIMIT 5` / schema dump, 2026-08-13). It
  * maps an ATTRIBUTE-NAME SUFFIX (e.g. "Colour") to a css_property — a
@@ -31,7 +31,7 @@
  * concept, not a duplicate — so a small versioned JSON data file
  * (css-keyword-enums.json) is the correct home, per this project's own
  * attr-classification-overrides.json / css-property-classifications.json
- * precedent (R-31-1 objects to a hardcoded dict buried IN SCRIPT LOGIC, not to
+ * precedent (FP-1 objects to a hardcoded dict buried IN SCRIPT LOGIC, not to
  * a versioned JSON data file).
  *
  *

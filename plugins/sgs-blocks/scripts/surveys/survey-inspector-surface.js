@@ -87,7 +87,7 @@ const PARSER_OPTIONS = {
 };
 
 // ---------------------------------------------------------------------------
-// KNOWN VOCABULARY (small, disclosed, no per-block entries — R-31-1)
+// KNOWN VOCABULARY (small, disclosed, no per-block entries — FP-1)
 // ---------------------------------------------------------------------------
 
 // Structural wrappers — never a row/panel themselves, walk descends through.
@@ -345,7 +345,7 @@ function extractReturnJsxNodes( body ) {
 // see through a `.map()` callback that returns `{ renderPanel(props) }`
 // (a CallExpression, not inline JSX). This is a UNIVERSAL special case keyed
 // off the `kind` prop every consumer already passes (29 blocks) — not a
-// per-block carve-out (R-31-9): any block passing kind="layout" gets the
+// per-block carve-out (FP-9): any block passing kind="layout" gets the
 // SAME layout-panel set, any block passing kind="section" (or omitting the
 // prop) gets the SAME section-panel set, and so on.
 // ---------------------------------------------------------------------------

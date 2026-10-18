@@ -3,7 +3,7 @@
 Spec 35 UNIT A0 — enumerate the block roster + per-block surface flags from the DB.
 
 This is the audit DENOMINATOR: every later "0 findings across the roster" claim is keyed to
-roster.json's block set. DB-first (R-31-1) — never hardcode the count. Re-run after /sgs-update.
+roster.json's block set. DB-first (FP-1) — never hardcode the count. Re-run after /sgs-update.
 
 Modes: (no args) write roster.json | --check freshness gate (DB vs on-disk, full payload
 compare — the roster-freshness gate closing the gap behind D523 + the 2026-07-30 18-block

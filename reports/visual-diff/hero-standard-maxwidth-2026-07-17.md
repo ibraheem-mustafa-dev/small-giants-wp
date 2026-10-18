@@ -3,7 +3,7 @@
 verdict: PASS first_paint_capture_passed: true
 
 ## Problem (container-block hardcode audit #1, High)
-`plugins/sgs-blocks/src/blocks/hero/style.css:180` — the standard hero content band read `max-width: var(--wp--style--global--wide-size, 1200px)`. The `1200px` fallback is a hardcode (R-31-1 violation) AND mismatched: it reads the `wide-size` token but falls back to a `content-size`-magnitude value (theme.json defines `wideSize: 1400px`, `contentSize: 1200px`). On a client whose theme.json omits `wideSize`, the band would silently cap at 1200px instead of falling through to full-width per the composite-mirror "absence → full-width" rule.
+`plugins/sgs-blocks/src/blocks/hero/style.css:180` — the standard hero content band read `max-width: var(--wp--style--global--wide-size, 1200px)`. The `1200px` fallback is a hardcode (FP-1 violation) AND mismatched: it reads the `wide-size` token but falls back to a `content-size`-magnitude value (theme.json defines `wideSize: 1400px`, `contentSize: 1200px`). On a client whose theme.json omits `wideSize`, the band would silently cap at 1200px instead of falling through to full-width per the composite-mirror "absence → full-width" rule.
 
 ## Fix (universal, shared block — no per-site patch)
 ```css

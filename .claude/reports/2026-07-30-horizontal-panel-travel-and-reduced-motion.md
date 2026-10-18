@@ -152,7 +152,7 @@ pin-scrub.triggers: 'scroll' -> '__selftest_scroll' — caught
 
 ## 4. Pin-scrub children never animated — FIXED (`4ae10dd9`), owner-reported
 
-Bean's eye pass: 6 of 7 canaries passed. On `/motion-canary-pin-scrub/` the pin engaged but nothing inside it moved, against a page whose own stated pass condition is that the children animate. R-31-13 — the eye caught what every mechanical check had called green.
+Bean's eye pass: 6 of 7 canaries passed. On `/motion-canary-pin-scrub/` the pin engaged but nothing inside it moved, against a page whose own stated pass condition is that the children animate. FP-13 — the eye caught what every mechanical check had called green.
 
 ### Two independent faults, either alone sufficient
 

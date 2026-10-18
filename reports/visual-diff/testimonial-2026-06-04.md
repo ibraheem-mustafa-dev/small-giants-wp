@@ -6,7 +6,7 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation:** clean test page (real sgs/testimonial, custom width + a core/paragraph child). curl markup.
 
-## Result — PASS (live-DOM, R-22-11)
+## Result — PASS (live-DOM, FP-11)
 - 0 PHP errors/warnings/notices.
 - Wrapper carries `sgs-container` (mirror) + `wp-block-sgs-testimonial` + the block's own classes; custom width applied.
 - InnerBlocks $content renders through (paragraph text present).

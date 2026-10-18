@@ -1,4 +1,4 @@
-// The facts the skeleton writer reasons from, all read from data (R-31-1): the framework database (read-only), the brand
+// The facts the skeleton writer reasons from, all read from data (FP-1): the framework database (read-only), the brand
 // registry, the client's Site Info placeholder map, the standing decisions file (data/skeleton-decisions.json) and the
 // block.json of the list block (its item properties are not database columns). No block name is written in code below.
 import fs from 'fs';

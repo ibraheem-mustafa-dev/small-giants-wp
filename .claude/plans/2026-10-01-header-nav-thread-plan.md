@@ -26,7 +26,7 @@ Gate 3C passes when:
 1. Every family in the signed list is covered: its exit cells reachable and at least one reproduced live. Twelve families are covered and in no unit: M-01, M-02, M-05, M-06, M-12, M-23, M-26, M-29, M-41, M-42, M-50, M-51. No family closes the gate as parked. **PASS** (M-08's lamalama corner card is accepted as DEC-18, Bean 2026-09-27).
 2. Each unit row cites its live report with `verdict: PASS`. **PASS.**
 3. `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 and `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a reachable canary. **PASS.**
-4. Two composed headers are 100% visual copies of their references at 375, 768 and 1440: a copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft. Every panel's position and width match the reference's measured cells (the Indus draft centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean 2026-09-26), and the header's left and right gaps are equal at 1440px. Bean's eye is co-authoritative (R-31-13). **Final pass (§2.3, §2.4).**
+4. Two composed headers are 100% visual copies of their references at 375, 768 and 1440: a copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft. Every panel's position and width match the reference's measured cells (the Indus draft centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean 2026-09-26), and the header's left and right gaps are equal at 1440px. Bean's eye is co-authoritative (FP-13). **Final pass (§2.3, §2.4).**
 5. Spec 36, Spec 37, the verify doc and `LEDGER.md` state the model. **PASS.**
 
 ### 2.2 How a row closes
@@ -85,7 +85,7 @@ Walked after the deploy of every cloud-session fix and a rebuild of the five cha
 
 | Item | What is owed | Who |
 |---|---|---|
-| Wave 1 | Bean's eye on the mega motion (R-31-13); the cart and search screenshot set (numeric probes only so far) | Bean / session |
+| Wave 1 | Bean's eye on the mega motion (FP-13); the cart and search screenshot set (numeric probes only so far) | Bean / session |
 | U-1, U-2, U-5, U-9+U-11, U-3+U-8 | Bean's eye: dark-surface shadow and ring strength, scrim screenshots, shapes, gallery arrows, three patterns with imagery | Bean |
 | W2-f | FR-37-42 column-shape picker (site-header row writes `gridTemplateColumns`, incl. `1fr auto 1fr`): live and eye verification | session + Bean |
 | W2-i | `labels-<site>.json` for ButcherBox and rabbit.tech, and a re-read of Away's (`.claude/reports/2026-07-28-drawer-code-extraction/labels-away.json`), after Step 0c; must precede any Wave 4 evidence | session |
@@ -111,7 +111,7 @@ Walked after the deploy of every cloud-session fix and a rebuild of the five cha
 | ID | Unit | Output | CP |
 |---|---|---|---|
 | W4-a2 | Substitution policy (§4) | Bean's signature | yes |
-| W4-b | studionamma 100% clone: header, drawer, footer; content, imagery, colours, type, motion, positioning, mobile | per-property DP5 homes table; DP7-clean harness evidence; Bean's eye (R-31-13). Expect one loop-back | yes |
+| W4-b | studionamma 100% clone: header, drawer, footer; content, imagery, colours, type, motion, positioning, mobile | per-property DP5 homes table; DP7-clean harness evidence; Bean's eye (FP-13). Expect one loop-back | yes |
 | W4-c | The remaining roster clones, only after W4-b is accepted | accepted clones; every capability gap is a defect filed against waves 1-3, never a trimmed reference. **Termination rule:** an effect a Spec 38 tier can express is built with the Spec 38 effects; an effect the built effect does not yet match is a defect against that FR; an effect no tier can express comes back to Bean as a trim or exclude decision, never a silent loop-back | yes |
 | W4-d | Preset extraction | each accepted clone gives a header preset, a footer preset and a drawer starter; invented fills: Utility commerce, Overlay hero-contrast, Directory footer | no |
 | W4-e | Starter-set narrowing | drop `centred`/`minimal`/`full`; keep `scratch` plus 3 search variants | no |

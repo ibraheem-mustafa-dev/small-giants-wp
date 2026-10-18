@@ -14,7 +14,7 @@ The universal per-tier show/hide extension (`includes/device-visibility.php`, `s
 
 ## Changes
 
-- **Breakpoints routed through the one canonical source (R-31-1).** Removed the hardcoded 599/600/1023/1024 media queries from `extensions.css`; the three `sgs-hide-*` rules are now GENERATED from `SGS_Breakpoints::MOBILE_MAX` (767) / `TABLET_MAX` (1023) and injected as inline CSS on the extensions handles. Editor help text updated (`responsive-visibility.js` + `DeviceVisibilityPanel.js`): "Below 768px" / "768px to 1023px" / "1024px and above".
+- **Breakpoints routed through the one canonical source (FP-1).** Removed the hardcoded 599/600/1023/1024 media queries from `extensions.css`; the three `sgs-hide-*` rules are now GENERATED from `SGS_Breakpoints::MOBILE_MAX` (767) / `TABLET_MAX` (1023) and injected as inline CSS on the extensions handles. Editor help text updated (`responsive-visibility.js` + `DeviceVisibilityPanel.js`): "Below 768px" / "768px to 1023px" / "1024px and above".
 - **Universal leading-`<style>` bug fixed.** The `render_block` filter's `next_tag()` grabbed the first tag — for any no-inline block (which prepends a scoped `<style>`) that was the `<style>`, which the D311 CSS collector then lifts to `<head>`, so the hide class silently vanished. The filter now skips leading `<style>`/`<script>` and targets the first visible wrapper.
 
 ## Live verification (sandybrown)

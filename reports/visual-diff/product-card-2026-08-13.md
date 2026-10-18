@@ -15,7 +15,7 @@ source_sha: 200da3b616e97fa0
 
 ## Why this block's evidence is the label capture
 
-`sgs/product-card`'s trial tag and `sgs/label` render their box through **one shared emitter**, `sgs_label_box_css_rule()` (`includes/helpers-box.php`) — deliberately, so the two produce byte-identical box CSS (the composite-mirror requirement, R-31-9). Verified at source this session: that function has exactly **two** callers, `label/render.php:273` and `product-card/render.php:373`.
+`sgs/product-card`'s trial tag and `sgs/label` render their box through **one shared emitter**, `sgs_label_box_css_rule()` (`includes/helpers-box.php`) — deliberately, so the two produce byte-identical box CSS (the composite-mirror requirement, FP-9). Verified at source this session: that function has exactly **two** callers, `label/render.php:273` and `product-card/render.php:373`.
 
 The change under test is *in that shared emitter*. Measuring it once through `sgs/label` exercises the identical code path this block uses. Both callers were changed in the same commit, in the same way, and both `block.json` carry the same `"type": [ "string", "number" ]` declaration.
 

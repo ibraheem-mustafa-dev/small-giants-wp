@@ -85,5 +85,5 @@ The shipped `motion-settings.js` was then run against that real admin markup: wi
 1. **Firefox.** It does not ship cross-document view transitions, so those visitors get plain navigation. That IS the specified fallback, and it is untested only in the sense that no Firefox run was made.
 2. **Safari.** Supports it from 18.2; not exercised here. The mechanism is the same CSS opt-in.
 3. **Hide-on-scroll × nav-drawer via the SETTING** (rather than a directly-applied transform) — see the §8 caveat.
-4. **A visual/aesthetic judgement of the fade and slide.** Measurement says they run; whether they *look* right is Bean's call (R-31-13). The setting is currently ON on the canary with site default `fade` and `page → slide`.
+4. **A visual/aesthetic judgement of the fade and slide.** Measurement says they run; whether they *look* right is Bean's call (FP-13). The setting is currently ON on the canary with site default `fade` and `page → slide`.
 5. **The 2rem slide edge.** The rater flagged that a translated root snapshot can expose a thin strip at the trailing edge for a frame. Not observed, not specifically hunted; worth an eye on a page whose background differs sharply from the next page's.

@@ -171,7 +171,7 @@ function extensionOwnedAttrs() {
 // BLOCK'S OWN DECLARED `supports` — a per-block opt-in read from its block.json
 // — and the names below are the fixed attribute keys the WordPress block API
 // registers for those flags. A block that does not declare the support gets no
-// exclusion, so the axis stays machine-readable per R-31-1.
+// exclusion, so the axis stays machine-readable per FP-1.
 //
 // Deliberately NOT included: spacing / border / dimensions / shadow supports.
 // Those serialise into the single `style` object attribute rather than

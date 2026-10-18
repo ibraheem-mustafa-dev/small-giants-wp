@@ -51,7 +51,7 @@ Post-fix: 2 instances present, selectable, **13 inspector panels**, zero crash s
 
 ## What this report does NOT claim
 
-- No human eye has judged the drag's feel (R-31-13 not yet given).
+- No human eye has judged the drag's feel (FP-13 not yet given).
 - Vertical orientation is unmeasured; only `orientation: horizontal` was exercised.
 - Touch drag is unmeasured — the range input carries native touch by construction, but that is a reading of the markup, not a device measurement.
 

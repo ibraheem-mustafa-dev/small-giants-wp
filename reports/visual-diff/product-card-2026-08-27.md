@@ -58,5 +58,5 @@ The theme applies a global `box-sizing: border-box`, so each typed card's OUTER 
 
 ## Two things this capture does NOT cover
 
-- **No screenshot.** Playwright was held by a concurrent session for the whole window. This is a computed-CSS capture of the served stylesheet, which proves the rules are delivered — it does not prove they look right. Per R-31-13, Bean's eye is co-authoritative and has not yet been applied to the hover.
+- **No screenshot.** Playwright was held by a concurrent session for the whole window. This is a computed-CSS capture of the served stylesheet, which proves the rules are delivered — it does not prove they look right. Per FP-13, Bean's eye is co-authoritative and has not yet been applied to the hover.
 - **Font-family controls were not exercised in the editor UI** for the same reason. The deployed bundle carries the props, and the identical mechanism was verified end-to-end on `sgs/button` earlier today (a set value produced `.sgs-btn-ba3ea562.sgs-button{font-family:"Fraunces", serif}` in the live CSS). The inference is strong but it is an inference, and is labelled as one.

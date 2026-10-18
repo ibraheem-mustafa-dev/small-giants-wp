@@ -502,7 +502,7 @@ $form_html = ob_get_clean();
 // -------------------------------------------------------------------------
 // Dialog-mode chrome — trigger button + <dialog>, wired through the shared
 // store('sgs/nav') (FR-36-20: reuse the ONE nav open/close/focus/inert
-// utility rather than hand-rolling a second one, R-31-9). The dialog is the
+// utility rather than hand-rolling a second one, FP-9). The dialog is the
 // DIALOG half of FR-36-10's disclosure-vs-dialog swap; icon-expand below is
 // the DISCLOSURE half — one attribute (displayMode) selects which pattern
 // wraps the SAME $form_html combobox (the spec's "ONE shared combobox

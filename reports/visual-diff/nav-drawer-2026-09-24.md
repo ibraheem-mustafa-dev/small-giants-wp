@@ -27,7 +27,7 @@ verdict: PASS intent_capture_passed: true commit_sha: c36105939 (feat(nav): how 
 - `axe-run.mjs` with the drawer open was not run (it launches its own browser; one window was kept). Owed, with the U-2 forced-colours check.
 - Tablet tier values, the `line` and `none` poses, `top-row-start`, and an always-burger bar (collapse above every width) were not exercised live; all are unit-tested (`run-close-control-standalone.php` 29/29, `run-burger-morph-standalone.php` 71/71, `nav-close-store.test.mjs`).
 - Editor round-trip of the new controls (set, save, reload in the real editor) was not done this pass. Owed.
-- Bean's eye (R-31-13): owed on the two screenshots.
+- Bean's eye (FP-13): owed on the two screenshots.
 
 ## Bean's feedback pass (commit 033b783ad, deployed to sandybrown)
 
@@ -42,7 +42,7 @@ Page `/qa-scrim/` (Active header 3777, Active drawer 3778: non-modal, `anchor {t
 | F5 | Drawer sits under the header and its buttons | drawer z 90 < header z 100; the header's second row (to 127px) painted over the drawer from 80px | drawer z 101; the point in the old overlap band (237,104) hits `.sgs-nav-drawer__body`; the burger still hit-tests to itself, `data-sgs-nav-opener-live` still set | PASS |
 | F6 | Empty band where the hidden x was | body `padding-top` 64px with the x `display:none` | body `padding-top` 27.27px (the normal body padding); first link 27px below the panel top; panel 381px tall (was 417) | PASS |
 
-Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone row, burger X on top, no empty band, basket icon plain. Bean's eye owed (R-31-13).
+Screenshot: `fb-drawer-after.png` (scratchpad): panel over the header's phone row, burger X on top, no empty band, basket icon plain. Bean's eye owed (FP-13).
 
 ## Close without the × reappearing (commit d3c5ee548, deployed to sandybrown)
 

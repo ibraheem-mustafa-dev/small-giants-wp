@@ -9,7 +9,7 @@ deploy: build-deploy.py --target sandybrown --blocks-only --skip-build, from an 
 
 # Wave B commit 1 — live verification record
 
-Canary: `sandybrown-nightingale-600381.hostingersite.com`. Setting left **ON** (strength 4) for the owner's eye check (R-31-13).
+Canary: `sandybrown-nightingale-600381.hostingersite.com`. Setting left **ON** (strength 4) for the owner's eye check (FP-13).
 
 ## PASS — measured, not inferred
 
@@ -59,7 +59,7 @@ So collapse-when-pinned behaves identically under Lenis, and the D391 scroll-pad
 4. **Touch momentum — MEASURED ON A REAL DEVICE 2026-07-30, and REJECTED.** An operator opt-in (`smooth_touch` + `smooth_touch_strength`, default OFF / 1) was added at the owner's request. Tried on an actual phone at the lightest setting (strength 1 = `syncTouchLerp` 0.3): the owner judged it **"abrupt and janky"** — worse than off, not better. Turned off on the canary (it was already the code default). The control is retained deliberately, labelled tested-and-rejected on the settings page and in FR-38-18(d). **Do not re-propose touch smoothing without new real-device evidence.** Desktop smoothing was separately judged sluggish at strength 4 and set to 3.
 5. **Sticky-under-smoothing at mobile is untested by configuration** — the canary header is not sticky at 390px, so that combination does not occur there.
 6. **The two qc-council sub-cases are not yet run:** sticky+transparent same-tier coexistence, and the nav-drawer `<dialog>`-in-header offset.
-7. **Owner's eye (R-31-13) not yet given.** Setting is ON at strength 4 — scroll the canary.
+7. **Owner's eye (FP-13) not yet given.** Setting is ON at strength 4 — scroll the canary.
 
 ## Method notes worth keeping
 

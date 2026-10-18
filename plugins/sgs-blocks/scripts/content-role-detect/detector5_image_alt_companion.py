@@ -237,7 +237,7 @@ def _first_var(expr: str | None) -> str | None:
 def _expand_suffix_pairs(declared: set[str], url_suffix: str, alt_suffix: str) -> list[tuple[str, str]]:
     """Expand a dynamic-key SUFFIX pair against the block's OWN declared attrs.
 
-    Never a hardcoded per-block dict (R-31-1): the prefixes ('before'/'after' etc.)
+    Never a hardcoded per-block dict (FP-1): the prefixes ('before'/'after' etc.)
     are read from whatever the block itself declares, not guessed or enumerated here.
     """
     pairs: list[tuple[str, str]] = []

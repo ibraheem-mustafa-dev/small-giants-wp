@@ -36,4 +36,4 @@ PASS. Option A confirmed: the untouched card resolves to the THEME token, not a 
 Manifest: team-member's STATE_WITHOUT_BASE finding is now STATE_OK. Global STATE_WITHOUT_BASE is now 0 (was 4).
 
 ## Not covered
-ShadowControl inspector panel verified by live REST attribute registration (cardShadow REGISTERED, 83 attrs total) and frontend render, NOT by opening the block editor UI. ShadowControl has crashed on first live render before despite passing 180 unit tests, so a human eye on this panel is specifically worth having (R-31-13).
+ShadowControl inspector panel verified by live REST attribute registration (cardShadow REGISTERED, 83 attrs total) and frontend render, NOT by opening the block editor UI. ShadowControl has crashed on first live render before despite passing 180 unit tests, so a human eye on this panel is specifically worth having (FP-13).

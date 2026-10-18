@@ -72,7 +72,7 @@ The block segment of `sgs-<block>` must match a registered block slug. The eleme
 
 #### 3.1.1 Label / badge recognition → `sgs/label` (convention)
 
-Every **short standalone label or cosmetic badge** text element uses the `label` canonical, which resolves to `sgs/label` (the atomic eyebrow / kicker / badge text block, style variants `plain` / `pill-fill` / `pill-wrap`). This is the canonical home for pre-heading labels and pill badges: not `sgs/text` (body copy) and not a per-block scalar attr. A draft that emits a badge as a literal `sgs/label` is faithful; inventing a per-block badge class is not (R-22-9).
+Every **short standalone label or cosmetic badge** text element uses the `label` canonical, which resolves to `sgs/label` (the atomic eyebrow / kicker / badge text block, style variants `plain` / `pill-fill` / `pill-wrap`). This is the canonical home for pre-heading labels and pill badges: not `sgs/text` (body copy) and not a per-block scalar attr. A draft that emits a badge as a literal `sgs/label` is faithful; inventing a per-block badge class is not (FP-9).
 
 The recognised aliases are the `aliases` of the `slots` row `label` (`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT aliases FROM slots WHERE slot_name='label'"`), seeded from `plugins/sgs-blocks/scripts/data/slots.json` by `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`. To add a new badge term, add its alias to that file and reseed; never hard-code a per-block badge class.
 
@@ -92,7 +92,7 @@ The recognised aliases are the `aliases` of the `slots` row `label` (`python ~/.
 
 **Rule:** An element's **selected / active** state uses the BEM **`--active` modifier** (`.sgs-<block>__<el>--active`) plus `aria-pressed="true"` on the interactive control (D299). The resting (unselected) state carries the bare element class with no state modifier (and `aria-pressed="false"`). Transient states use the standard pseudo-classes (`:hover`, `:focus-visible`). Example (a pack-size pill): `.sgs-product-card__pill { … }` (resting) and `.sgs-product-card__pill--active { … }` (selected) with `<button aria-pressed="true">`.
 
-**Why:** resting, `--active` and `:hover` rules map to a block's resting attrs, selected-state attrs (`pillSelectedBgColour`, `pillSelectedBorderColour`, …) and `hover*` companions, so a multi-state pill or toggle design is expressed in full, not just its resting appearance. The same grammar applies to every state-bearing block, not only pickers (R-31-9).
+**Why:** resting, `--active` and `:hover` rules map to a block's resting attrs, selected-state attrs (`pillSelectedBgColour`, `pillSelectedBorderColour`, …) and `hover*` companions, so a multi-state pill or toggle design is expressed in full, not just its resting appearance. The same grammar applies to every state-bearing block, not only pickers (FP-9).
 
 ### 3.5 Hover-state block attributes → `{base}Hover` SUFFIX (D309)
 

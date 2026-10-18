@@ -9,7 +9,7 @@
  *   the block's colour panel (edit.js `colourRows`, "Detached button").
  *
  * Every per-device value goes through ResponsiveTriStateControl or
- * ResponsiveOverride under the global device toggle (R-31-9).
+ * ResponsiveOverride under the global device toggle (FP-9).
  *
  * @package SGS\Blocks
  */

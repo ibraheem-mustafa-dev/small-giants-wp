@@ -66,7 +66,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 
 // ---------------------------------------------------------------------------
 // 0. FR-36-26c — resolve `source: menu` into flat { text, url }
-// items via the ONE shared resolver (SGS_Nav_Menu_Source, R-31-9 — never a
+// items via the ONE shared resolver (SGS_Nav_Menu_Source, FP-9 — never a
 // second menu-walker). The flattening step mirrors the sgs/nav-bar-menu
 // renderer (top-level items only; a submenu collapses to its own parent
 // link); that class is not reusable across blocks, so the FLATTENING step

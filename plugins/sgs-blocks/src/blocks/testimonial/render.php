@@ -12,7 +12,7 @@
  * rating-led, avatar-spotlight, corporate-logo, case-study-media, minimal-quote.
  * The wrapper carries `sgs-testimonial--{variant}`; per-variant layout is CSS-only.
  *
- * R-31-14: NO server-side legacy fallback hack. The ONE legacy read below
+ * FP-14: NO server-side legacy fallback hack. The ONE legacy read below
  * (avatar.url → avatarMedia) is synthesise-on-read for un-migrated posts only —
  * it is NOT an `if ( empty( $content ) )` scalar-render branch.
  *
@@ -416,7 +416,7 @@ if ( '' !== $quote_link_underline_css ) {
 // unchanged attribute/default/control) now route through the shared
 // TypographyControls companion helper, sgs_typography_css_rule(), so both
 // live in ONE emitted rule instead of two separate declarations of
-// font-weight on the same selector (D192/R-22-13: one shared mechanism,
+// font-weight on the same selector (D192/FP-13: one shared mechanism,
 // never a bespoke duplicate).
 $name_colour_sel       = $root_sel . ' .sgs-testimonial__name';
 $name_colour_effective = sgs_resolve_text_colour_or_gradient( $name_colour_raw, $name_colour_gradient );
@@ -1048,7 +1048,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 
 // ---------------------------------------------------------------------------
 // 4. Render.
-// R-31-14: no empty($content) branching — all nodes are explicitly gated above.
+// FP-14: no empty($content) branching — all nodes are explicitly gated above.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- all parts pre-sanitised: text via wp_kses_post()/esc_html(); media via sgs_render_media(); attrs via esc_attr()/sanitize_html_class(); schema via wp_json_encode(); CSS via wp_strip_all_tags() + the sanitisers above.
 // ---------------------------------------------------------------------------
 ?>

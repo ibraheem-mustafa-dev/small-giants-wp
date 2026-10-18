@@ -510,7 +510,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 							{ /* Attribution typography (font size/weight/style/family/
 							   decoration/transform/line-height) — rebuilt onto the shared
-							   TypographyControls component (Bean R-22-13), matching
+							   TypographyControls component (Bean FP-13), matching
 							   sgs/testimonial's `name` prefix pattern, rather than the
 							   bespoke controls this used to hand-roll. One shared UI,
 							   one shared render.php helper (sgs_typography_css_rule). */ }

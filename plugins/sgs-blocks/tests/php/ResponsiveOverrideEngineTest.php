@@ -20,7 +20,7 @@ require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/helpers-responsive.php';
 
 final class ResponsiveOverrideEngineTest extends TestCase {
 
-	// ── Breakpoint source (R-31-1) ────────────────────────────────────────────
+	// ── Breakpoint source (FP-1) ────────────────────────────────────────────
 
 	public function test_breakpoint_constants(): void {
 		$this->assertSame( 1023, SGS_Breakpoints::TABLET_MAX );

@@ -24,7 +24,7 @@ WHAT THIS SEEDS (§6 numbered list — each item below maps 1:1)
 
    This seeder never WRITES block_attributes.css_property: a write here is not reseed-durable
    (check_css_property_reseed.py Check B), so sgs-update-v2.py's `_apply_attr_classification_overrides`
-   (layer 2.5) is the one writer, importing FX_ATTR_CSS_PROPERTY through importlib (R-22-1). The
+   (layer 2.5) is the one writer, importing FX_ATTR_CSS_PROPERTY through importlib (FP-1). The
    `_seed_fx_attr_namespace` step below is VERIFY-ONLY: it reports [ok]/[MISMATCH]/[skip] against the
    DB and never issues an UPDATE.
 
@@ -172,7 +172,7 @@ def _ensure_fx_effects_table(cur: sqlite3.Cursor) -> None:
     #     (both use their own per-block grammar on a DESCENDANT scroller, never
     #     the generic root-stamping `data-sgs-fx` value) yet are otherwise
     #     ordinary block-scoped rows.
-    # So: `in_picker` states that fact once, in the DB, per R-31-1 — rather than
+    # So: `in_picker` states that fact once, in the DB, per FP-1 — rather than
     # adding a fourth hand-maintained list for the gate to compare against.
     #
     # DEFAULT 0, not 1 (the opposite of `creates_panel`): an effect must be

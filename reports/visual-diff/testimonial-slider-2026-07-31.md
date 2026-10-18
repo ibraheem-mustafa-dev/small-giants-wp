@@ -39,7 +39,7 @@ What momentum is FOR here is the short, fast flick that does not cross the dista
 
 ## Why the shared runtime correctly does nothing here
 
-`render.php` emits `data-sgs-fx="draggable"` on the track, but `fx-draggable.js` attaches only to a genuine native `overflow-x: auto|scroll` element and this track is not one. It no-ops — by design, so a block-agnostic module never has to re-derive this file's clone-zone wrap-around maths (R-31-9). The momentum upgrade lives in this block's own `view.js`.
+`render.php` emits `data-sgs-fx="draggable"` on the track, but `fx-draggable.js` attaches only to a genuine native `overflow-x: auto|scroll` element and this track is not one. It no-ops — by design, so a block-agnostic module never has to re-derive this file's clone-zone wrap-around maths (FP-9). The momentum upgrade lives in this block's own `view.js`.
 
 ## Editor surface (D388) — a real defect found and fixed
 
@@ -56,5 +56,5 @@ Two console errors persist in the editor — `Failed to resolve module specifier
 ## What this report does NOT claim
 
 - Momentum on this block (see the gap above).
-- No human eye has judged the drag's feel (R-31-13 not yet given).
+- No human eye has judged the drag's feel (FP-13 not yet given).
 - Touch drag is unmeasured.

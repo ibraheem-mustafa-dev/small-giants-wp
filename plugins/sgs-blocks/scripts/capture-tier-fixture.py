@@ -131,7 +131,7 @@ _NOT_CSS_MEASURABLE = {
 
 def _db_suffix_map() -> dict:
     """`property_suffixes` from sgs-framework.db — the project's CANONICAL
-    attribute-suffix → CSS-property table (R-31-1: DB-first, no hardcoded
+    attribute-suffix → CSS-property table (FP-1: DB-first, no hardcoded
     dicts). Returns {} if the DB is unreachable, so this degrades to the
     explicit overrides rather than crashing a capture.
     """

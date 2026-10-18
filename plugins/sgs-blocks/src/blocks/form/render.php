@@ -12,7 +12,7 @@
  * The block's own class (sgs-form) rides in `extra_classes`.
  * The interior (progress bar + <form> + success/error messages) is $inner_html.
  *
- * R-31-14: explicit discriminators only — never branch on empty($content).
+ * FP-14: explicit discriminators only — never branch on empty($content).
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  * The wrapper handles base+tier padding/margin scoped internally

@@ -43,7 +43,7 @@ One SVG carrying BOTH an attack payload and legitimate content that the OLD narr
 
 Two `<video>` elements on one page: one with `videoCaptionsUrl` set, one without. Exactly ONE `<track kind="captions" srclang="en-GB" label="English" … default>` rendered. The second video emitted none — so the emitter is conditional, not unconditional.
 
-## Bean's eye (R-31-13)
+## Bean's eye (FP-13)
 
 `svg-gradient-live-2026-08-30.png` — the probe renders a red→blue gradient with a white diagonal and a black circle. Before the unification the gradient elements were rejected, so this painted flat. Numbers do not close this; the eye does.
 

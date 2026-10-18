@@ -92,7 +92,7 @@ HELPERS_TYPOGRAPHY_PHP = INCLUDES_DIR / "helpers-typography.php"
 
 
 # ---------------------------------------------------------------------------
-# DB-backed breakpoint suffix vocabulary (R-31-1 — never a hardcoded dict)
+# DB-backed breakpoint suffix vocabulary (FP-1 — never a hardcoded dict)
 # ---------------------------------------------------------------------------
 
 def _framework_db_path() -> Path:
@@ -107,7 +107,7 @@ def _framework_db_path() -> Path:
 def breakpoint_suffixes() -> tuple[str, ...]:
     """{'Mobile', 'Tablet', 'Desktop'} from modifier_suffixes WHERE kind='breakpoint'.
 
-    R-31-1: the breakpoint suffix vocabulary is DB-owned. A caller that needs the
+    FP-1: the breakpoint suffix vocabulary is DB-owned. A caller that needs the
     full DB-derived set, including 'Desktop', uses it to exclude any
     suffix-named sibling attr from self-promoting to "migrated base".
     """

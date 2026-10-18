@@ -10,7 +10,7 @@
  *   3. `flyout` mode wires a local disclosure toggle (`flyout.js` — FR-36-10
  *      DISCLOSURE: no trap, page stays usable). `drawer` mode imports the
  *      SHARED `store('sgs/nav')` (registers the same dialog/DIALOG plumbing
- *      used by `sgs/nav-bar-menu` + `sgs/nav-drawer` — R-31-9, no
+ *      used by `sgs/nav-bar-menu` + `sgs/nav-drawer` — FP-9, no
  *      second open/close/focus utility).
  *   4. Either way, opening the panel triggers `panel-render.js` to fetch +
  *      render the live item list/qty/remove/subtotal — never a redirect.

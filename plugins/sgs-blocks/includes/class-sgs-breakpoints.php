@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS shared responsive breakpoint source (Spec 37 FR-37-16, R-31-1).
+ * SGS shared responsive breakpoint source (Spec 37 FR-37-16, FP-1).
  *
  * THE single source of truth for the device-tier breakpoint values used by the
  * header/footer/nav responsive-override engine. Never hardcode a second

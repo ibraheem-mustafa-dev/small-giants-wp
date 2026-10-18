@@ -3,7 +3,7 @@
  * Shared typography CSS emitter — the server-side companion to the
  * TypographyControls editor component (src/components/TypographyControls.js).
  *
- * One helper, one shape, every block (Bean R-22-13, 2026-06-11). Reads the
+ * One helper, one shape, every block (Bean FP-13, 2026-06-11). Reads the
  * canonical number+unit+responsive attribute set for a given prefix and returns
  * a scoped CSS rule string (base + tablet + mobile media queries) covering
  * font-size / font-weight / font-style / line-height. Only set properties are

@@ -6,5 +6,5 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation:** rendered live via do_blocks() probe on the canary (real block, minimal fixture). Wrapper carries `sgs-container` (mirror) + `wp-block-sgs-pricing-table` + own classes; 0 PHP fatals. (Foundation hardening this batch: the shared helper now requires its own deps — render-helpers.php + shape-dividers.php — so any composite that requires only the helper resolves sgs_container_gap_value / sgs_render_shape_divider; caught when feature-grid hit the gap path.)
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 - Renders with `sgs-container` mirror class; 0 PHP fatals; php -l + build clean; undefined-var scan clean.

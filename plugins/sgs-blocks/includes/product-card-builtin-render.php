@@ -350,7 +350,7 @@ if ( ! function_exists( 'sgs_product_card_rating_markup' ) ) {
 	 * fallback line. Operator-authored (ratingValue/reviewCount) — not derived
 	 * from a live WooCommerce rating meta (out of scope for this build; see the
 	 * block's own CLAUDE.md history for the reasoning). Called from EVERY
-	 * render branch (typed + all 3 bound branches, R-31-9) so one control
+	 * render branch (typed + all 3 bound branches, FP-9) so one control
 	 * governs the element everywhere it can appear.
 	 *
 	 * @param array $attributes Block attributes.
@@ -406,7 +406,7 @@ if ( ! function_exists( 'sgs_product_card_brand_markup' ) ) {
 	 * Frame Card component: the brand overlaid on the product image — the
 	 * brand's LOGO when it has one, else its name as text.
 	 *
-	 * Called from every render branch's media area (R-31-9) — one control
+	 * Called from every render branch's media area (FP-9) — one control
 	 * governs the element everywhere it can appear.
 	 *
 	 * The logo replaces the name rather than joining it, so the `<img>`'s
@@ -466,7 +466,7 @@ if ( ! function_exists( 'sgs_product_card_saving_badge_markup' ) ) {
 	 * `position:absolute;bottom:12px;left:12px`) — the design README's
 	 * "top-right" claim is stale prose and does not match the markup source;
 	 * savingBadgePosition defaults to 'bottom-left' and is operator-choosable.
-	 * Called from every render branch's media area (R-31-9).
+	 * Called from every render branch's media area (FP-9).
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string Safe HTML, or '' when showSavingBadge is off / savingLabel is empty.

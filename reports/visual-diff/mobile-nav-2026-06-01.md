@@ -21,7 +21,7 @@ pixel_diff_skip_reason: >
   mobile-nav is a chrome/interactive block (Popover API overlay), not a
   cloned page section — the cloning pixel-diff workflow does not apply. Verified
   instead by direct rendered-DOM measurement (getBoundingClientRect vs viewport)
-  + before/after screenshots, per R-22-11 (verify rendered output, not metrics).
+  + before/after screenshots, per FP-11 (verify rendered output, not metrics).
 verified_by: opus-main-thread-live-cdp
 ---
 

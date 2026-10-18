@@ -65,5 +65,5 @@ verdict: PASS with two defects found and fixed during the run, and one known gap
 - In site dark mode, a container with a hard-coded LIGHT background still resets its children to the site colour, which dark mode flips to a light text colour, so a white card in it gets a near-invisible light glow (measured: `#E8E8E8` at 0.05 / 0.08 / 0.12 on a `#F3F0E8` container). Not fixed: it is a deliberate light panel inside a dark theme; the fix is one more rule (`:root[data-theme="dark"] .sgs-on-light>*` resetting to black), and needs Bean's call.
 - The editor canvas does not get `sgs-on-dark` / `sgs-on-light`, so a dark container's children show the ordinary shadows in the editor; the page shows the dark variants.
 - A background set by anything other than `backgroundColour` (an overlay, a photo, a gradient) is not detected.
-- The 2.2x strength and the 12% ring were tuned by eye on one scaffold; here they were measured, not judged. Bean's eye on the screenshot is still owed (R-31-13).
+- The 2.2x strength and the 12% ring were tuned by eye on one scaffold; here they were measured, not judged. Bean's eye on the screenshot is still owed (FP-13).
 - Forced-colours emulation on the live page was not run.

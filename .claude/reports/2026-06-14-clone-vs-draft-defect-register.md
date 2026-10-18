@@ -9,7 +9,7 @@ status: ENUMERATION COMPLETE (Task 2). Source = direct static diff of current-cl
 
 # Clone-vs-draft defect register — Mama's Munches homepage
 
-**Method:** 4 read-only agents diffed the live clone (`current-clone-page-source.html`) against the draft truth source (`index.html`, CSS embedded L10-715). Paired by content+position. The draft is canonical. ~46 real defects. **The win is the family view** — 6 systemic converter families account for the majority; fixing each once fixes every instance (R-22-9 universal).
+**Method:** 4 read-only agents diffed the live clone (`current-clone-page-source.html`) against the draft truth source (`index.html`, CSS embedded L10-715). Paired by content+position. The draft is canonical. ~46 real defects. **The win is the family view** — 6 systemic converter families account for the majority; fixing each once fixes every instance (FP-9 universal).
 
 ## ⛔ SYSTEMIC FAMILIES (the high-leverage Task-3 levers — fix once, fix many)
 
@@ -24,7 +24,7 @@ status: ENUMERATION COMPLETE (Task 2). Source = direct static diff of current-cl
 
 ## 🔀 BLOCK-MATCH DECISIONS (Bean's eye — over-emit: SGS block adds chrome the draft never had)
 
-These are Stage-2 block-matching choices, not pure bugs. Each needs a keep/strip decision (R-22-13):
+These are Stage-2 block-matching choices, not pure bugs. Each needs a keep/strip decision (FP-13):
 
 | # | Draft element | Clone emitted | Over-added | Decision |
 |---|---------------|---------------|------------|----------|
@@ -34,7 +34,7 @@ These are Stage-2 block-matching choices, not pure bugs. Each needs a keep/strip
 | DEC-4 | static 3-col CSS grid of testimonials (no JS) | `sgs/testimonial-slider` interactive carousel (arrows/dots/autoplay) | full carousel behaviour + stage/track/slide DOM | keep carousel or static grid? |
 | DEC-5 | single CTA `<a>` direct child | wrapped in `sgs/multi-button` flex container | redundant single-item wrapper | unwrap singles? |
 
-## 🏗️ HEADER + FOOTER — template-part / data gap (NOT converter; chrome-skipped by R-22-1)
+## 🏗️ HEADER + FOOTER — template-part / data gap (NOT converter; chrome-skipped by FP-1)
 
 The `<header>` and `<footer>` are chrome-skipped by design and rebuilt as theme template parts — but the live page shows generic placeholders, so the CONTENT fidelity gap is real (fix layer = theme template-part wiring + SGS Site Info seeding, or a decision to populate from the draft):
 
@@ -110,7 +110,7 @@ The `<header>` and `<footer>` are chrome-skipped by design and rebuilt as theme 
 - HE2 label colour knock-on of HE1 · converter
 - HE3 h1 mobile line-height · LIVE-PROBE · block
 
-## 🔬 LIVE-PROBE RESULTS (page 8 computed-style @1440 + @502, R-22-11, 2026-06-14)
+## 🔬 LIVE-PROBE RESULTS (page 8 computed-style @1440 + @502, FP-11, 2026-06-14)
 **CONFIRMED real on live page:**
 - Fam C: hero `h1` = 58px at vw=502 (draft wants 34px <768) — desktop 58px correct, mobile tier dropped ✓
 - Fam D: hero-sub `max-width: none` (draft 420px) ✓ · trust-bar inner `max-width: none`, `display:flex` (draft 1100px) ✓

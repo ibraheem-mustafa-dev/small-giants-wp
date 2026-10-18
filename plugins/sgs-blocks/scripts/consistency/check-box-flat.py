@@ -67,7 +67,7 @@ a dict" below), and the report groups by status instead of printing one flat
 
 Why the baseline file, not a dict
 -----------------------------------
-This project's binding rule (blub.db 260 / R-31-1) is DB-first / no hardcoded
+This project's binding rule (blub.db 260 / FP-1) is DB-first / no hardcoded
 lookup dicts where a data source can carry the same information instead. The
 triage state here is exactly that kind of data — a per-key classification —
 so it lives in `box-flat-baseline.json` (already the mechanism this gate uses

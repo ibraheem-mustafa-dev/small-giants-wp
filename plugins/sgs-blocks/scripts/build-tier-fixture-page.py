@@ -37,7 +37,7 @@ DERIVED, NOT HARDCODED
 ----------------------
 The block list, each block's tier-object default, its `layout` enum and its
 parent/ancestor constraints are all read from the block.json files at run time.
-A hardcoded roster would rot at the next pass; this one cannot (R-31-1 in
+A hardcoded roster would rot at the next pass; this one cannot (FP-1 in
 spirit — behaviour comes from the schema, not from a dict in this file).
 
 Usage:
@@ -90,7 +90,7 @@ SECRETS = REPO / '.claude' / 'secrets' / 'sandybrown.env'
 # matter how correct the code under test is. `derive_probe_tiers()` below picks
 # the RIGHT shape per property, derived from the block's own declared default +
 # its edit.js control wiring — never a hand-written per-block/per-property
-# table (R-31-1). This constant is kept as the LENGTH case's actual value (used
+# table (FP-1). This constant is kept as the LENGTH case's actual value (used
 # by `_length_string_probe()`) and as the top-level manifest field for backward
 # compatibility with the frozen consumers — see `derive_probe_tiers()`'s
 # docstring for the compatibility limitation this leaves open.
@@ -173,7 +173,7 @@ def _resolve_options_array(edit_js: str, const_name: str) -> list[str]:
 def _keyword_pool_per_tier(edit_js: str, prop: str) -> dict[str, list[str]] | None:
     """The legal keyword values THIS block's own edit.js wires up to `prop`,
     per tier — derived from the actual JSX control binding, never a hand-listed
-    per-block table (R-31-1).
+    per-block table (FP-1).
 
     Every tier-object keyword control in this codebase follows one of three
     shapes (all seen live, none invented):
@@ -360,7 +360,7 @@ def _derive_probe_tiers_uncached(blk: dict, prop: str) -> tuple[dict | None, str
     """The per-tier probe VALUE for one (block, property) pair — TYPE-CORRECT
     for what that property actually holds, derived from the block's own
     declared shape (block.json default + edit.js control wiring), never a
-    hand-written per-block table (R-31-1 in spirit).
+    hand-written per-block table (FP-1 in spirit).
 
     `PROBE_TIERS` alone (a CSS length string at every tier) is correct for a
     length property but silently wrong for anything else: a keyword compared

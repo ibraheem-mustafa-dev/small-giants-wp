@@ -94,7 +94,7 @@ const CSS_HELPERS = array(
  * quiet — every verdict it gives becomes unusable.
  *
  * Recognising an arbitrary CSS property name WOULD need the `property_suffixes` table
- * (R-31-1 forbids a hardcoded property dict). That is a real extension, deliberately not
+ * (FP-1 forbids a hardcoded property dict). That is a real extension, deliberately not
  * bodged in here: the two signals below plus the helper list already cover every row this
  * detector currently resolves, and a narrower detector that is RIGHT beats a wider one
  * that has to be second-guessed.

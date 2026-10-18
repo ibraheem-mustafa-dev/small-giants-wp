@@ -2,7 +2,7 @@
 
 verdict: BLOCKED first_paint_capture_passed: false
 
-**Not a failure — the gate working.** The transformers are built, proven, and produce byte-correct output (51 headings + 121 paragraphs transform cleanly; 4 bound paragraphs correctly REFUSED). The swap was applied, live-verified, and **reverted** because live comparison proved it changes rendering in ways only Bean can sign off (R-31-13). The canary is back on the verified state (theme 1.5.26 = image pairing only).
+**Not a failure — the gate working.** The transformers are built, proven, and produce byte-correct output (51 headings + 121 paragraphs transform cleanly; 4 bound paragraphs correctly REFUSED). The swap was applied, live-verified, and **reverted** because live comparison proved it changes rendering in ways only Bean can sign off (FP-13). The canary is back on the verified state (theme 1.5.26 = image pairing only).
 
 Method: content-keyed computed-style comparison of a BEFORE page (core blocks at git HEAD) vs an AFTER page (migrated markup), both rendered live — rule 4a. Test pages: /tc-about-stats-before/ (1471), /tc-about-stats-after/ (1472).
 
@@ -41,7 +41,7 @@ core/paragraph {"textColor":"primary"}
 
 Measured live: that paragraph paints `rgb(58,46,38)` while its own markup says `primary`. **Every explicit colour on every core block is being clobbered to `--text`.** SGS blocks are immune (they emit scoped rules, not `has-*` classes) — which is why the migrated `sgs/text` renders the authored pink correctly.
 
-Consequence for the sweep: migrating 121 paragraphs would *fix* their colour, i.e. change the site's rendered appearance in ~121 places — correct, but a visible site-wide change that needs Bean's eye (R-31-13), not a silent side effect of a migration commit.
+Consequence for the sweep: migrating 121 paragraphs would *fix* their colour, i.e. change the site's rendered appearance in ~121 places — correct, but a visible site-wide change that needs Bean's eye (FP-13), not a silent side effect of a migration commit.
 
 **Proposed fix (needs Bean):** rename the palette slug `text` → e.g. `ink`/`body` across theme.json + the per-client `theme-snapshot.json` + every consumer, OR stop relying on `has-*` colour classes. Blast radius is large (every client snapshot references the slug) → design-gate.
 

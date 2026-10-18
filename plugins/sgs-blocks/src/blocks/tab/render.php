@@ -14,7 +14,7 @@
  * can find and toggle panel visibility without coupling to render internals.
  * The .sgs-tab__content inner div stays inside $inner_html (= $content).
  *
- * R-31-14: explicit discriminators, never empty($content).
+ * FP-14: explicit discriminators, never empty($content).
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.

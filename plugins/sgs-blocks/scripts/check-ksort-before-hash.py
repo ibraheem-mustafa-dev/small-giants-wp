@@ -17,11 +17,11 @@ it just leaks scoped `<style>` blocks that never dedup. `nav-bar-menu/render.php
 is what makes the comment true rather than aspirational
 (`.claude/reports/2026-08-21-unenforced-prohibition-register.md`).
 
-SCOPE — universal, not per-block (R-31-9)
+SCOPE — universal, not per-block (FP-9)
 ------------------------------------------
 Any render.php (or the shared wrapper) that hashes `$attributes` via
 `md5( wp_json_encode( $attributes ...` is in scope, not just the two files that carry
-the comment today. A hardcoded file list would itself violate R-31-1 and would miss the
+the comment today. A hardcoded file list would itself violate FP-1 and would miss the
 next block that adopts the same uid pattern.
 
 WHAT IT CHECKS

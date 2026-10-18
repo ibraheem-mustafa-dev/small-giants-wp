@@ -4,7 +4,7 @@
 Prints a JSON map of every `block_attributes` row with role IN ('color',
 'colour-gradient') to stdout: { "<block_slug>": { "<attr_name>": "<css_property
 or null>" } }. `css_property` is the DECLARATIVE routing column Spec 31
-already requires blocks to use (R-31-1, DB-first, no hardcoded dicts) — this
+already requires blocks to use (FP-1, DB-first, no hardcoded dicts) — this
 script is a thin read, not a second source of truth.
 
 A null value means the DB row exists but css_property is EMPTY — the caller

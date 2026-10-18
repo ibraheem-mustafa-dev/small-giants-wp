@@ -2,7 +2,7 @@
 
 verdict: PASS first_paint_capture_passed: true
 
-block: sgs/product-card change: B3 crash fix + B4 legacy-default + B5 dup-CTA gating + B6 overridable trial border canary: https://sandybrown-nightingale-600381.hostingersite.com (page 1069 = fp-eh-live-test-3) verified_by: live Playwright on the deployed canary (R-22-11) — editor + frontend bean_eyeball: OWED (R-22-13 co-authoritative final sign-off)
+block: sgs/product-card change: B3 crash fix + B4 legacy-default + B5 dup-CTA gating + B6 overridable trial border canary: https://sandybrown-nightingale-600381.hostingersite.com (page 1069 = fp-eh-live-test-3) verified_by: live Playwright on the deployed canary (FP-11) — editor + frontend bean_eyeball: OWED (FP-13 co-authoritative final sign-off)
 
 ## What changed (plain English)
 Four product-card fixes. Three are editor-only (no frontend pixels change); one (B6) is a CSS specificity change that is render-neutral by default.
@@ -27,7 +27,7 @@ Live Playwright on the deployed editor (page 1069), 0 console errors throughout:
 - **B5** — bound card Buttons panel: "Primary button text" present = **false**, "Primary button URL" present = **false**, "Primary button style" present = **true**.
 
 ## verdict
-PASS — all four fixes confirmed on the live canary; B6 is render-neutral. Bean's editor eyeball (R-22-13) is the remaining co-authoritative sign-off.
+PASS — all four fixes confirmed on the live canary; B6 is render-neutral. Bean's editor eyeball (FP-13) is the remaining co-authoritative sign-off.
 
 ---
 

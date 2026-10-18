@@ -422,7 +422,7 @@ def derive_selector(block_slug: str, canonical_slot: str) -> str:
 # leaves all "graduated" rows (content-bearing OR override-covered) bit-for-
 # bit unchanged — see the run log referenced from the D-log entry for this
 # fix. Both graduation signals are DB/file-driven; neither test ever spells
-# out a block slug, attribute name, or suffix (R-31-9).
+# out a block slug, attribute name, or suffix (FP-9).
 
 _OVERRIDES_JSON_PATH = Path(__file__).resolve().parent.parent / "attr-classification-overrides.json"
 
@@ -470,7 +470,7 @@ def load_override_keys(path: Path = _OVERRIDES_JSON_PATH) -> frozenset[tuple[str
 def load_content_bearing_roles(conn: sqlite3.Connection) -> frozenset[str]:
     """Return role_names classified 'content-bearing' in the `roles` table.
 
-    DB-driven, never a hardcoded role list (R-31-1).
+    DB-driven, never a hardcoded role list (FP-1).
     """
     try:
         rows = conn.execute(
@@ -570,7 +570,7 @@ def refresh_stale_suffix_roles(
     `property_suffixes` table via `resolve_role_with_healing`'s graduation
     guard (content-bearing roles and curated overrides are never touched).
 
-    Universal (R-31-9): iterates every row `canonical_slot` already covers, no
+    Universal (FP-9): iterates every row `canonical_slot` already covers, no
     block/attr/suffix name appears in this function.
     """
     content_bearing_roles = load_content_bearing_roles(conn)
@@ -1601,7 +1601,7 @@ def _structural_role_map() -> tuple[dict, str | None, set, set, dict, dict]:
         # These rows carry NO css_property and never will: the emission scanner
         # reads each block's own render.php/style.css and never the shared
         # wrapper, and `sgs/container` -- the block every composite mirrors
-        # (R-31-9) -- deliberately declines to map the decorative families
+        # (FP-9) -- deliberately declines to map the decorative families
         # (overlayGradient*/shapeDivider*/bgSvg*) in its `decorative` element.
         # So TIER 3's `css_property IS NOT NULL` gate can never reach them, and
         # leaving them NULL made 33 settled rows read as open work on every run.
@@ -1820,7 +1820,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     correct). And the old apply was NULL-only, so it never CORRECTED a wrong role.
 
     This is called from run() so the no-arg invocation completes role derivation.
-    Two deterministic actions, both DB-driven (R-22-1, no slug literals):
+    Two deterministic actions, both DB-driven (FP-1, no slug literals):
       - FILL: role IS NULL  → any content-bearing proposal (existing behaviour).
       - UPGRADE: role = 'content' (the generic catch-all) → a SPECIFIC
         content-bearing role, ONLY on a high-confidence Tier-1 attr-name regex
@@ -2297,7 +2297,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     #
     # THE GUARD: `css_property LIKE 'fx:%' AND css_element IS NULL`. Idempotent (a row
     # already carrying a css_element is never touched) and keyed on the SAME `fx:*`
-    # marker TIER 3.17 uses, never a name or block-slug guess (R-31-1/R-31-2) -- so the
+    # marker TIER 3.17 uses, never a name or block-slug guess (FP-1; recognition reads BEM classes only) -- so the
     # next `fx:*` attribute anyone adds is covered automatically, not just the rows this
     # session happened to find.
     #
@@ -2351,7 +2351,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # lift, so this ordering picks the more informative of two safe answers.
     #
     # The unit suffix comes from `modifier_suffixes` (kind='unit'), never a 'Unit'
-    # literal -- R-31-1.
+    # literal -- FP-1.
     unit_suffixes = sorted(
         (sfx for sfx, kind in load_modifier_suffixes(conn).items() if kind == "unit"),
         key=len,
@@ -2410,7 +2410,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # exact category, content or styling, by construction.
     #
     # The breakpoint suffix comes from `modifier_suffixes` (kind='breakpoint': Tablet,
-    # Mobile, Desktop), never a hardcoded literal -- R-31-1. 'Desktop' is included for
+    # Mobile, Desktop), never a hardcoded literal -- FP-1. 'Desktop' is included for
     # completeness but never matches in practice (the desktop tier IS the unsuffixed
     # base attr in this framework's own naming convention).
     #
@@ -2570,7 +2570,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # reached -- by a mechanism that was wrong about them. `boolean-visibility` is
     # classification='styling-behaviour', so the row leaves the content walk immediately.
     #
-    # DB-FIRST (R-31-1): content-bearing-ness is read from the `roles` table's own
+    # DB-FIRST (FP-1): content-bearing-ness is read from the `roles` table's own
     # classification column, never a hardcoded role list that would drift from it.
     boolean_swept = _sweep_boolean_content_roles(conn)
 
@@ -2584,7 +2584,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # contract cannot honour (`excludes_attr_types`) -- so the next instance of this class
     # closes by DATA, not by a third bespoke sweep.
     #
-    # WHY A ROLES.JSON FIELD, NOT A DB COLUMN (R-31-1 read the correct way here): roles.json
+    # WHY A ROLES.JSON FIELD, NOT A DB COLUMN (FP-1 read the correct way here): roles.json
     # is ALREADY the truth source for the `roles` table (seeded by
     # dbschema/seed_reference_data.py). Adding a 3rd
     # array element to a role's entry needs NO schema change and NO reseed to take effect in
@@ -4295,7 +4295,7 @@ def _sweep_boolean_content_roles(conn: sqlite3.Connection) -> int:
     passing while the real query changes underneath it. The companion tier established the
     better pattern in this same module; this follows it.
 
-    Content-bearing-ness comes from the `roles` table's own classification column (R-31-1),
+    Content-bearing-ness comes from the `roles` table's own classification column (FP-1),
     never a hardcoded role list that could drift from it.
     """
     cur = conn.cursor()
@@ -4434,7 +4434,7 @@ def _sweep_incompatible_role_types(conn: sqlite3.Connection) -> dict:
     change, same contract `_sweep_boolean_content_roles` gets from the `roles` table).
 
     Two proven-safe reclassification targets, chosen by evidence ALREADY ON the row
-    (attr_type + css_property), never by block/attr name (R-31-9):
+    (attr_type + css_property), never by block/attr name (FP-9):
       - attr_type='boolean' AND css_property IS NOT NULL -> 'css-gate' (a real CSS input
         signal exists; 'boolean-visibility' would misdocument it as absent).
       - attr_type='boolean' AND css_property IS NULL     -> 'boolean-visibility' (no CSS

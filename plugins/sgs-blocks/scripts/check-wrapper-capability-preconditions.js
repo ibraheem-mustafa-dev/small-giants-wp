@@ -29,7 +29,7 @@
  * `enabledExtensions` is a flat block.json array with no DB table home and no
  * consumer that would justify creating one. That makes it unlike
  * `boxFamilies`/`variantAttr`, which genuinely feed DB-driven lookups and
- * ARE legitimate R-31-1 DB-first cases. Checking it needs block.json and
+ * ARE legitimate FP-1 DB-first cases. Checking it needs block.json and
  * nothing else, so it belongs in `prebuild` beside its siblings.
  *
  * ── WHY NO BASELINE MECHANISM ───────────────────────────────────────────────
@@ -52,7 +52,7 @@
  * migration commits. The fix is a human decision: either add `layout`
  * deliberately, or remove `gridItems`.
  *
- * ── NO HARDCODED BLOCK LIST (blub.db 260 / R-31-1) ──────────────────────────
+ * ── NO HARDCODED BLOCK LIST (blub.db 260 / FP-1) ──────────────────────────
  * Every block is discovered by walking `src/blocks/&#42;/block.json`. The only
  * declared constant is CAPABILITY_PRECONDITIONS — the RULE itself, which is
  * the same shape `check-shared-panel-schema.js` uses for its own PANEL_NAMES /

@@ -12,7 +12,7 @@ editor knows their stagger delays are written when the page renders and not stor
 never named in a list: a call `Sgs_Motion_Loop_Delays::item_array( 'sgs/<slug>', ...` names its block, and a `::post_grid(` call
 inside a block folder names that folder's block.
 
-A block's grid-columns attribute is found by its DB role, never by a name list (R-31-1): block_attributes rows with
+A block's grid-columns attribute is found by its DB role, never by a name list (FP-1): block_attributes rows with
 role = 'layout', a tier-object responsive shape (attr_type 'object', tier_shape 'tier_object') and either the canonical
 slot 'column' or the css_property 'grid-template-columns:count' (a list whose cells are counted in columns, for example
 the drawer menu's list). A tier-object attribute stores {desktop, tablet, mobile}, so all three devices name the same
@@ -66,7 +66,7 @@ POST_GRID_CALL = re.compile(r"Sgs_Motion_Loop_Delays::post_grid\(")
 
 
 def server_items() -> list[str]:
-    """Blocks whose render code calls the server stagger, found by scanning the code (R-31-1: no hand-written list)."""
+    """Blocks whose render code calls the server stagger, found by scanning the code (FP-1: no hand-written list)."""
     blocks_dir = PLUGIN_DIR / "src" / "blocks"
     found: set[str] = set()
     for php in blocks_dir.rglob("*.php"):

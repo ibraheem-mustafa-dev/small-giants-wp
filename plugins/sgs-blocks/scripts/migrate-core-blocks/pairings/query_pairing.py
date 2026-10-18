@@ -82,7 +82,7 @@ WHAT WOULD MAKE THIS BUILDABLE: sgs/post-grid needs an explicit
 current archive term / current search string rather than building its own),
 verified against each of `is_archive()` / `is_search()` / `is_category()`
 context. Until that capability exists, migrating archive.html and
-search.html would be a silent behaviour regression (R-31-1-class: an
+search.html would be a silent behaviour regression (FP-1-class: an
 implicit "coincidentally works" case standing in for a universal rule).
 index.html *could* be migrated safely on its own merits (its main query
 genuinely has no extra filtering to lose) but doing that alone would be

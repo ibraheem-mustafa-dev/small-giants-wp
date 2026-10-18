@@ -33,4 +33,4 @@ All B3 CSS is `.product-card--bound`-scoped; all B3 render code is inside the `w
 ## Gates
 - `php -l` clean + WPCS 0 errors on all touched PHP.
 - Sonnet security/correctness review: **SAFE-TO-COMMIT** (no blockers; capability + nonce + sanitise + escape all confirmed; SSR==swap parity confirmed; scope-safe). Two hygiene notes applied (locale-divergence JSDoc + sprintf-parity split/join).
-- Formal cross-family ESCAPE-AUDIT qc-council + axe-0 + 3-breakpoint + Bean R-22-13 = the QA-VIS / ESCAPE-AUDIT gates after Cluster A (per plan).
+- Formal cross-family ESCAPE-AUDIT qc-council + axe-0 + 3-breakpoint + Bean FP-13 = the QA-VIS / ESCAPE-AUDIT gates after Cluster A (per plan).

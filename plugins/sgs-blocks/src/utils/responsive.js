@@ -3,7 +3,7 @@
  */
 
 /**
- * Spec 37 FR-37-16 shared breakpoint source (mirror of PHP SGS_Breakpoints, R-31-1).
+ * Spec 37 FR-37-16 shared breakpoint source (mirror of PHP SGS_Breakpoints, FP-1).
  * The single source of truth for device-tier widths on the editor side. Never
  * hardcode a second 768/1024 or 1023/767 pair in a block.
  */

@@ -50,7 +50,7 @@ Build-time gate (Rule 10 structural defence). Flags any attribute with an editor
 
 ## OWED — the one remaining gate (live verification)
 
-The SGS pre-commit visual-diff hook blocked the commit; committed with `--no-verify` (hook-sanctioned for non-visual changes — this set is dead-control removal + a guard). The proportionate live check is still owed (Ship-PM + Cloning-forensics R-22-13):
+The SGS pre-commit visual-diff hook blocked the commit; committed with `--no-verify` (hook-sanctioned for non-visual changes — this set is dead-control removal + a guard). The proportionate live check is still owed (Ship-PM + Cloning-forensics FP-13):
 
 1. **Deploy** the rebuilt plugin to the **sandybrown canary** + OPcache reset (creds `.claude/secrets/sandybrown.env`).
 2. **Editor smoke-load** hero + info-box + testimonial + announcement-bar on the canary — confirm **no "block contains unexpected/invalid content" recovery banner** (the one real risk: a saved instance carrying a removed attr). Removed attrs are on DYNAMIC blocks (save→InnerBlocks.Content/null) so this should be clean — but verify.

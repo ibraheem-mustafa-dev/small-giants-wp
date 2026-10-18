@@ -10,7 +10,7 @@ programme doc)
 - `plugins/sgs-blocks/src/blocks/hero/block.json:345-356` already declares `splitMediaImageAlt`/`Tablet`/`Mobile` as three separate string attributes.
 - `plugins/sgs-blocks/src/blocks/hero/render.php`'s `$sgs_hero_resolve_split_image()` closure (line ~144-154) already resolves each tier's OWN alt into `$split_image['alt']` / `$split_image_tablet['alt']` / `$split_image_mobile['alt']` — the STORED data was already correct.
 - The bug was purely at the point these were collapsed into ONE render-time variable: the old `$sgs_hero_split_alt = (string) ( $split_image['alt'] ?? '' );` (line ~1465) read the DESKTOP tier only and discarded the tablet/mobile values entirely, before handing that one string to the shared `sgs_tier_media_render()` helper (`includes/helpers-tier-media.php`), which applied it verbatim to every rendered `<img>` regardless of tier.
-- `sgs_tier_media_render()` is shared with `sgs/timeline`'s milestone media (a genuinely different call site, confirmed at `timeline/render.php:892-902`), so the fix had to be a general mechanism, not a hero-private patch — per this project's R-31-9 rule and the session's explicit shared-mechanism exception process.
+- `sgs_tier_media_render()` is shared with `sgs/timeline`'s milestone media (a genuinely different call site, confirmed at `timeline/render.php:892-902`), so the fix had to be a general mechanism, not a hero-private patch — per this project's FP-9 rule and the session's explicit shared-mechanism exception process.
 
 ## What changed
 

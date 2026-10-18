@@ -45,7 +45,7 @@ And `fx_effects` (13 rows: `pin-scrub`, `scrub`, `horizontal-panel`, `split-reve
 - §11.3 states the mapping is 1:1 to block attrs (`fx`, `fxTrigger`, `fxStart`, `fxEnd`, `fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin`) — **and says outright: "The lift is an extension of the Spec 31 §3.A dispatch (a routing-unit class alongside CSS decls + content), mapped to a named later stage — NOT built in Wave A (STOP-29: deferral mapped, not dropped)."**
 - Skip-with-reason contract (Rule 4) is specified but, per the same sentence, not built either.
 
-So the spec itself already told us this was deferred. The task was to verify whether it had since been picked up incidentally by the generic DB-driven attribute-routing machinery (per R-31-1) — since a generic mechanism could in principle absorb a new namespace without new code.
+So the spec itself already told us this was deferred. The task was to verify whether it had since been picked up incidentally by the generic DB-driven attribute-routing machinery (per FP-1) — since a generic mechanism could in principle absorb a new namespace without new code.
 
 ---
 

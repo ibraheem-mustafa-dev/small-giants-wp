@@ -248,7 +248,7 @@
         "jsxComponents": [],
         "patterns": [
           { "shape": "free text driving a colour", "why": "sgs/star-rating (Spec 35 §9.3) — a direct breach of the colour type's own canonical shape", "liveInstances": 1 },
-          { "shape": "free text driving typography", "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, R-22-13)", "liveInstances": 7 },
+          { "shape": "free text driving typography", "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, FP-13)", "liveInstances": 7 },
           { "shape": "product-card.ctaFontSize as a bare unitless NumberControl", "why": "Spec 35 §9.3 names this specific instance as a direct breach of the mandatory TypographyControls rule", "liveInstances": 1 }
         ],
         "matchRule": "The violation is which ATTRIBUTE ROLE the text control is bound to (colour/typography), not the component itself — needs a role/css_property cross-reference, not a bare component-name ban."

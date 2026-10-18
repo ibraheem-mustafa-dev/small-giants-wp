@@ -11,7 +11,7 @@ change: "gap + grid columns → FR-S9-6 {desktop,tablet,mobile} object model via
 # Visual-diff / live-verify — sgs/site-footer-row (D327, FR-S9-6)
 
 ## What changed
-`gap` → object `{desktop:"48px", mobile:"32px"}`; the columns/`gridTemplateColumns` flat attrs → one `gridTemplateColumns` object `{desktop:"repeat(3, 1fr)", mobile:"1fr"}` (preserves the D325 3→1 collapse). `render.php` passes `responsive_model=object`; the shared `SGS_Container_Wrapper` emits the responsive grid + gap via `sgs_emit_responsive_css()` (wrapper-owned, R-31-9 mirror). `edit.js` columns + gap controls → `ResponsiveOverride` (columns exposed as a client-friendly number mapped to the grid template).
+`gap` → object `{desktop:"48px", mobile:"32px"}`; the columns/`gridTemplateColumns` flat attrs → one `gridTemplateColumns` object `{desktop:"repeat(3, 1fr)", mobile:"1fr"}` (preserves the D325 3→1 collapse). `render.php` passes `responsive_model=object`; the shared `SGS_Container_Wrapper` emits the responsive grid + gap via `sgs_emit_responsive_css()` (wrapper-owned, FP-9 mirror). `edit.js` columns + gap controls → `ResponsiveOverride` (columns exposed as a client-friendly number mapped to the grid template).
 
 ## Live verification (sandybrown homepage footer; caches cleared OPcache+LiteSpeed+CDN)
 

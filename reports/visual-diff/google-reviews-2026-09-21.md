@@ -26,7 +26,7 @@ Intent: a `sgs/google-reviews` block holding written reviews (`reviews[]`, `data
 | Review schema | none from the written blocks: the only `ld+json` on the page is block 3's (below) |
 | Existing behaviour | block 3 (`variant: list`, no reviews, no place ID) unchanged: 3 demo reviews, as before |
 
-Captures for the eye (R-31-13; PNGs are gitignored, kept beside this file locally): `google-reviews-written-grid-1440.png`, `google-reviews-written-slider-1440.png`, `google-reviews-written-grid-375.png`. Read by the author: grid shows 13 cards in 3 columns, coloured initials, detail line, date, stars where rated, "4.9 15 reviews", "Write a Review"; slider shows arrows and 13 dots.
+Captures for the eye (FP-13; PNGs are gitignored, kept beside this file locally): `google-reviews-written-grid-1440.png`, `google-reviews-written-slider-1440.png`, `google-reviews-written-grid-375.png`. Read by the author: grid shows 13 cards in 3 columns, coloured initials, detail line, date, stars where rated, "4.9 15 reviews", "Write a Review"; slider shows arrows and 13 dots.
 
 ## Placeholder gating (commit f14814895), measured live on the canary after deploy
 
@@ -65,7 +65,7 @@ Cause of the crash: `ToolsPanel` imported by its unprefixed name is undefined in
 
 Front end (page 11, real homepage, cache cleared): the reviews block carries `sgs-google-reviews--slider` (the new default), the header reads "13 reviews" with no "0.0", 13 real cards, 0 broken images.
 
-Captures for the eye (R-31-13; PNGs gitignored, kept locally): `v8_selected-1.png` (sample slider in the editor), `v8_selected-3.png`.
+Captures for the eye (FP-13; PNGs gitignored, kept locally): `v8_selected-1.png` (sample slider in the editor), `v8_selected-3.png`.
 
 Not verified: the editor with a real Google place ID (live fetch was tested through a stub only).
 

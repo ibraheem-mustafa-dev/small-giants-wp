@@ -134,7 +134,7 @@ $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_clas
 // WP `typography.textAlign` support (skip-serialised, top-level attribute —
 // NOT nested under style.typography). block.json maps css:text-align to the
 // `body` element (`.sgs-collapsible-text__body`), so it is scoped there, not
-// the root wrapper (contract §B — element manifest is DB-first, R-31-1).
+// the root wrapper (contract §B — element manifest is DB-first, FP-1).
 $text_align_raw = $attributes['textAlign'] ?? '';
 $text_align     = in_array( $text_align_raw, array( 'left', 'center', 'right' ), true ) ? $text_align_raw : '';
 

@@ -34,7 +34,7 @@ Guards (per spec):
     - Never hand-roll tar/scp: the remote step swaps directories with a .bak
       rotation so a failed extract leaves something to roll back to.
 
-R-22-9 universal: hostnames and remote WP paths live in TARGETS dict — add a new
+FP-9 universal: hostnames and remote WP paths live in TARGETS dict — add a new
 client by adding a single dict entry; no code changes needed elsewhere.
 """
 from __future__ import annotations

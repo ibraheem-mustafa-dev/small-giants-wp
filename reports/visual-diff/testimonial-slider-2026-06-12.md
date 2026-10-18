@@ -2,7 +2,7 @@
 
 verdict: PASS first_paint_capture_passed: true
 
-block: sgs/testimonial-slider change: render.php:136 — fix dead `rating` attribute read → `ratingStars` (Schema.org reviewRating) canary: https://sandybrown-nightingale-600381.hostingersite.com/ (page 8 = "Homepage", front page) verified_by: live page render (R-22-11) + parity stage content 100% bean_eyeball: OWED (R-22-13 co-authoritative final sign-off)
+block: sgs/testimonial-slider change: render.php:136 — fix dead `rating` attribute read → `ratingStars` (Schema.org reviewRating) canary: https://sandybrown-nightingale-600381.hostingersite.com/ (page 8 = "Homepage", front page) verified_by: live page render (FP-11) + parity stage content 100% bean_eyeball: OWED (FP-13 co-authoritative final sign-off)
 
 ## What changed (plain English)
 This is a **non-visual** change. The slider's per-slide loop read a `rating` attribute that does not exist on the typed `sgs/testimonial` child block, so the Schema.org `reviewRating` in the JSON-LD was always dropped (defaulted to 0). It now reads the real `ratingStars` attribute, so search engines see the correct per-review star rating. No visible pixels change.

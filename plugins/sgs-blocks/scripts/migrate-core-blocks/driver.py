@@ -5,7 +5,7 @@ One PAIRING per run (Bean's method: a reusable transformer per unique
 pairing, never per instance). The driver owns everything a pairing module
 must not be trusted to remember:
 
-  * DB-first pairing map (`blocks.replaces`) — never a hardcoded list (R-31-1).
+  * DB-first pairing map (`blocks.replaces`) — never a hardcoded list (FP-1).
   * SAFE-zone scoping — Track A hands-off files are never touched.
   * The ANTI-SILENT-DISCARD GATE: WordPress drops any attr a block.json does
     not declare, silently (D338). Every attr the module emits is validated
@@ -78,7 +78,7 @@ def load_replaces_map(db_path):
     sgs-framework.db is a DERIVED COPY populated from it by /sgs-update.
 
     We read the JSON and CROSS-CHECK the DB copy, warning loudly on drift
-    rather than trusting a cache. This is not a hardcoded dict (R-31-1): it is
+    rather than trusting a cache. This is not a hardcoded dict (FP-1): it is
     the authoritative data file. Proven necessary 2026-07-15 — a concurrent
     /sgs-update left blocks.replaces with 0 of its 22 rows, which would have
     silently halted (or worse, narrowed) a migration sweep.

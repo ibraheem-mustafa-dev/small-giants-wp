@@ -4,7 +4,7 @@ project: small-giants-wp
 date: 2026-07-30
 unit: W2-a (sgs_drawer CPT) — GATE 2 evidence
 commit: bd67a641
-verdict: PASS on the mechanism. Fidelity NOT claimed — awaiting Bean's eye (R-31-13).
+verdict: PASS on the mechanism. Fidelity NOT claimed — awaiting Bean's eye (FP-13).
 ---
 
 # W2-a — GATE 2 evidence

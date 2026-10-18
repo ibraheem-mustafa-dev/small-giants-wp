@@ -15,7 +15,7 @@ pixel_diff_skipped: true
 pixel_diff_skip_reason: >
   Brand-new framework component with no mockup baseline — the cloning pixel-diff
   (mockup-vs-clone parity) workflow does not apply. Verified instead by rendered
-  output + interaction per R-22-11.
+  output + interaction per FP-11.
 verified_by: opus-main-thread-live-playwright
 evidence_screenshot: reports/visual-diff/option-picker-2026-06-01-frontend.png
 ---

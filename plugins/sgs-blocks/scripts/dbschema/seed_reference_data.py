@@ -2,7 +2,7 @@
 """seed_reference_data.py -- idempotent seeders for the framework DB's reference tables.
 
 Seeds the tables whose rows live in git-tracked data files under ``scripts/data/`` (the files are
-the source of truth; the DB tables are the runtime query target, R-31-1):
+the source of truth; the DB tables are the runtime query target, FP-1):
 
   roles                  <- roles.json
   modifier_suffixes      <- modifier-suffixes.json   (row order is load-bearing)

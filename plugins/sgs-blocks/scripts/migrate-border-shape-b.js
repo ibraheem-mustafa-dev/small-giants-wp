@@ -1303,7 +1303,7 @@ function transformBlockJson( text, adopt, radiusPlan ) {
 	}
 
 	// attrMap: repoint the FOUR legs (width/style/colour/radius) off `native:`
-	// and add the gradient key. This is the R-31-1 declarative source that
+	// and add the gradient key. This is the FP-1 declarative source that
 	// seeds the DB and is gated by check-element-manifest-conformance.js --
 	// leaving any leg on `native:` would make the DB describe a support the
 	// block no longer has.

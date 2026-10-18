@@ -48,20 +48,20 @@ Bound variable card SSRs concrete default price/image/title + two option-pickers
 - **Gate (d) 44px:** every pill (16) + the button measured ≥44px via computed bounding-rect. **0 console errors.**
 - Verified by an isolated Playwright + axe-core node script (the shared MCP browser was held by the cloning session); throwaway script removed after the run.
 
-### Bean R-22-13 sign-off fixes (Bound card polish)
+### Bean FP-13 sign-off fixes (Bound card polish)
 Bean's visual review (the co-authoritative gate) caught what the automated gates missed:
 - **Card width** — the bound card stretched to the full 1200px content width (placeholder image became a 1198×220 strip). Root cause: WP's constrained-layout `.wp-container-… > :where(:not(.alignfull)){max-width:1200px}` ties the card's own `.product-card{max-width:380px}` (both (0,1,0)) and wins on source order. Fixed with `.product-card.product-card--bound{max-width:380px}` (0,2,0). **Live-verified: card offsetWidth 1200→380, image 1198→378.**
 - **Resting pill outline** — unchecked pills had a dark-brown (`#3a2e26`) border; only the selected pill was pink. Fixed: `.product-card--bound .sgs-option-picker{--sgs-op-border: var(--wp--preset--color--primary)}`. **Live-verified: unchecked border now rgb(230,138,149) pink.**
 - **Card hover** — none existed. Added a Bound-scoped lift + shadow (`translateY(-4px)` + deeper shadow), reduced-motion-guarded. **Live-verified: transition-property = transform, box-shadow.** All three are new `.product-card--bound`-scoped selectors — page-144 Typed clones byte-identical. product-card 1.6.3→1.6.4.
 
-### Bean R-22-13 round 2 (product-page links + readability + cart feedback)
+### Bean FP-13 round 2 (product-page links + readability + cart feedback)
 Bean's second review pass + a `/research-buddies` study (Heydon Pickering Inclusive Components, Adrian Roselli, Kitty Giraudel, Smashing/Kalcevich, HTML spec, WooCommerce convention):
 - **Product-page links** — the card had no link to the product page. Added **image-as-link** (`<a class="product-card__img-link" tabindex="-1" aria-hidden="true">` — clickable for mouse/touch but removed from tab order + a11y tree, so no redundant duplicate link) + **title-as-link** (`<a class="product-card__title-link">` inside the `<h3>` — the one keyboard-focusable link). NO whole-card overlay (the card has nested interactive controls — pills + add-to-cart button — so an overlay would be an axe `nested-interactive`/WCAG failure + steal clicks) and NO redundant "View details" link. href = the product permalink (same URL the no-JS form uses). Both interactive Bound branches; **live-verified** title-link + img-link present, href correct.
 - **Description colour** — Bean's call: switched the Bound card description from brand-brown `#3a2e26` to pure near-black `#1a1a1a` (Bound-scoped). The measurement showed `#3a2e26` was already ~12:1 (not grey-muted), but Bean wanted crisper — his decision, recorded.
 - **Add-to-cart feedback** — add-to-cart worked but was invisible (success message was screen-reader-only). Removed `sgs-sr-only` from `.product-card__cart-status` + styled it as a visible success note (`#15803d`, 4.8:1). (Header cart badge = separate follow-up.)
 - 2-agent research-buddies converged; convention captured: interactive cards use discrete image+title links, navigation-only cards (content-collection results) may use a whole-card overlay. product-card 1.6.4→1.6.5. Bound-scoped; page-144 untouched.
 
-### Bean R-22-13 round 3 (graceful no-image state)
+### Bean FP-13 round 3 (graceful no-image state)
 - **No-image placeholder** — a photo-less product showed WooCommerce's default placeholder graphic (reads as broken). Now, when the resolved image URL is empty or contains `woocommerce-placeholder`, the card renders a branded `.product-card__no-image` box instead — same 220px height (no layout shift), brand `surface` background, a soft 50%-opacity framed-photo SVG icon, bottom border matching the card. Real-image products keep the existing linked `<img>` (with reactive swap) unchanged. Both interactive Bound branches; Bound-scoped only. **Live-verified** on the fixture (no photo) — clean intentional empty state, no broken graphic. Closes the no-image half of P-PRODUCT-CARD-COSMETIC-POLISH. product-card 1.6.5→1.6.6.
 
 ## Scope safety (page-144 / cloning thread)

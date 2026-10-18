@@ -105,12 +105,12 @@ So switching tools unlocks nothing. Using more of what we already have unlocks a
   - Pattern 5, knock-on shifts: if the element's own crop matches the draft and only its position differs, it is a pure shift and goes to whichever ancestor really moved.
   - Wrong writes: the home cards would have failed this test. Writing 22px padding on the outer card box narrows the contents by 44px, which moves pixels away from the draft, so the write is rejected with no 40-second rebuild (ASSUMED until tried on home).
   - Mispaired header: the change moves pixels away from the draft and is rejected (ASSUMED).
-- **What it replaces.** The guard's loop of rebuild-per-candidate trials (REPORT §7 item 3, "give the guard a memory"). Candidates get pre-filtered in the browser in milliseconds. The guard keeps one rebuild and remeasure at the end as the closing check against the rendered draft (R-31-11), so the two mechanisms do not overlap.
+- **What it replaces.** The guard's loop of rebuild-per-candidate trials (REPORT §7 item 3, "give the guard a memory"). Candidates get pre-filtered in the browser in milliseconds. The guard keeps one rebuild and remeasure at the end as the closing check against the rendered draft (FP-11), so the two mechanisms do not overlap.
 - **What it will not fix.**
   - Settings that change markup rather than CSS (a different tag, an added element). These cannot be tried in the browser.
   - It tests whether the CSS value is right, not whether the block's `render.php` actually emits that CSS on that element. The calibration cache must stay trusted for that.
   - Hover states need a forced `:hover` (already in `devtools.mjs`) before the crop.
-- **Universality.** Pure measurement, no knowledge of any client, so it satisfies R-31-9.
+- **Universality.** Pure measurement, no knowledge of any client, so it satisfies FP-9.
 - **Note on the pixel comparator.** Playwright's comparator is reachable through `toHaveScreenshot` (thresholds `maxDiffPixelRatio` and `threshold`, PROVEN, docs `class-testconfig.md`). That assertion sits in `@playwright/test`, and the walker is a plain script, so the walker would use a small pixel-diff library instead (ASSUMED that the library route is simpler).
 
 **2. Accessibility-tree pairing check (`ariaSnapshot` or `getByRole`). Medium-high impact, mainly pattern 2 (two different elements compared).**
@@ -226,7 +226,7 @@ Candidates that pass individually are then applied **together** as one combined 
 
 ### Risks and how each is contained
 
-1. **The trial says yes, the real build says no.** The rebuild and walk remain the verdict (R-31-11, R-31-4). Every trial prediction is logged next to the measurement after the rebuild, giving a running agreement rate per block and per setting. If a block's rate drops, trials for it switch off automatically. ASSUMED: high agreement for pure-CSS settings.
+1. **The trial says yes, the real build says no.** The rebuild and walk remain the verdict (FP-11, FP-4). Every trial prediction is logged next to the measurement after the rebuild, giving a running agreement rate per block and per setting. If a block's rate drops, trials for it switch off automatically. ASSUMED: high agreement for pure-CSS settings.
 2. **Tiers and container queries.** Judge at all four widths, and in container-query tiers (`containerTier`) at the real container width. Hover and focus rows reuse `devtools.mjs::forcedPseudo`, so state rows can be trialled too.
 3. **Editor-only effects.** WordPress's editor saves can strip or change stored attributes (memory: attribute change blast radius). That only affects the uid name, which the swap ignores. Long requests that broke earlier saves use GET; this route uses POST, which is proven to work.
 4. **Animations.** Settle them first with `settleAnimations`, as the walker already does.
@@ -333,7 +333,7 @@ I'm the pairing and identity innovator. I recommend we stop guessing which draft
 
 **What it replaces:** fix list item 2 ("stop Solve writing through two-different-elements comparisons"), carried out as a gate that hides nothing. Rows still appear; Solve just doesn't write through them.
 
-**Over-broad check:** if both methods agree and are both wrong, nothing catches it. Option A's fingerprint check and the closing comparison of the rendered page with the draft (R-31-11) catch that case.
+**Over-broad check:** if both methods agree and are both wrong, nothing catches it. Option A's fingerprint check and the closing comparison of the rendered page with the draft (FP-11) catch that case.
 
 ### E. Fixing the home write: a block can map to two nested draft elements
 
@@ -358,14 +358,14 @@ I'm the pairing and identity innovator. I recommend we stop guessing which draft
   - It is a better guesser, but A removes the need to guess.
   - It is worth having only as the fallback for drafts not made with the Claude Design runtime.
 
-## 4. Keeping it universal (R-31-9)
+## 4. Keeping it universal (FP-9)
 
 - The mechanism is the same for every client: a stable draft identity plus a copy number, recorded when the tree is built and checked against a fingerprint. Restaurant, law firm or eye-care shop makes no difference.
 - Only the identity source changes with the draft's format, never with the client:
   1. **Claude Design drafts:** the runtime's own `data-dc-tpl` stamp.
   2. **Plain static HTML:** a Playwright `addInitScript` stamps a parse-order number at DOMContentLoaded, before scripts run.
   3. **Anything else:** today's word matcher, with option D's agreement gate switched off. That is **ASSUMED** to be a rare case, since Spec 47's stated input is the Claude Design draft.
-- The closing gate stays the rendered page against the draft (R-31-11). Exact pairing makes the rows trustworthy; it does not close anything on its own (R-31-4).
+- The closing gate stays the rendered page against the draft (FP-11). Exact pairing makes the rows trustworthy; it does not close anything on its own (FP-4).
 
 ## 5. What I'd hand the council
 
@@ -463,11 +463,11 @@ Each needs a fixture: for example, gap 48 vs 16 inside a fixed-width box must st
 ## D. Three metrics to prove an idea works
 
 1. **Row precision: re-run the same audit.** Same method as C.md: seed 20261009, 6 per surface, same verdict rules, on a fresh walk. Run a second, larger sample of n≈100 to bring the confidence interval to about ±10%. A random 30 alone cannot show a gain smaller than ~20 points: the current interval runs from 39% to 73%. Report the false-positive rate per pattern (1–6), not just the total.
-2. **Recall on true positives.** Freeze section C plus the three negative controls as a labelled fixture set. An idea passes only if 100% of them stay open (or are correctly closed by a real fix). Pair it with the 19 false positives in A: target at least 15 of 19 rejected, with each rejection citing its information code. This catches an over-broad rule (R-31-9).
+2. **Recall on true positives.** Freeze section C plus the three negative controls as a labelled fixture set. An idea passes only if 100% of them stay open (or are correctly closed by a real fix). Pair it with the 19 false positives in A: target at least 15 of 19 rejected, with each rejection citing its information code. This catches an over-broad rule (FP-9).
 3. **Ground-truth wrong-write rate per surface, with the rendered check.** Count a write as wrong if an independent live read after the write shows its pair or any descendant moving away from the draft. This deliberately includes writes the guard never reverted, which today's metric misses (W1).
    - Target: 10% or fewer on every surface.
    - Report alongside it the walks spent per root cause closed. This exposes guard repeats (W10).
-   - Close each surface only on cropped draft/live pairs at 375/768/1440/1920 plus Bean's eye (R-31-4, R-31-11, R-31-13).
+   - Close each surface only on cropped draft/live pairs at 375/768/1440/1920 plus Bean's eye (FP-4, FP-11, FP-13).
 
 # round2
 
@@ -531,7 +531,7 @@ The walker loads the draft with no request blocking. PROVEN: there are no `route
 **New risks:**
 - **The designer revises the draft.** Numbering shifts. The fingerprint refuses changed pairs, so they need re-bootstrapping.
 - **Drafts not made in Claude Design.** Fall back to a parse-order stamp (`addInitScript` at DOMContentLoaded) plus the accessibility-tree fallback.
-- **Both methods agree and both are wrong.** Nothing in this architecture catches that. The closing check of the rendered page against the draft (R-31-11) does.
+- **Both methods agree and both are wrong.** Nothing in this architecture catches that. The closing check of the rendered page against the draft (FP-11) does.
 
 **First cheap proof (about 15 minutes).** On footer and header: convert today's pairs to template paths, re-derive pairs from the paths, and diff the two sets. **Pass:** the disagreements are exactly the audit's mispairs (#15 at least), and there are no new ones on rows the audit judged correct.
 
@@ -610,7 +610,7 @@ The guard-memory fix (item 3) ships now as a stopgap, with its deletion recorded
 | Pattern 6 (draft side never read) | Architecture 1: an element with no template address is genuinely absent; one inside an `sc-if` branch is an un-walked state |
 | W7 (product) and W9 (mega-lenses border) | Cause unproven; trace them after Architecture 3 lands |
 
-The closing gate stays the cropped draft/live pairs at all four widths plus Bean's eye (R-31-4, R-31-11, R-31-13).
+The closing gate stays the cropped draft/live pairs at all four widths plus Bean's eye (FP-4, FP-11, FP-13).
 
 **Recommended next actions** (each about 15 minutes, read-only):
 1. Freeze the fixtures (Architecture 3).
@@ -704,7 +704,7 @@ This **replaces** the `ba31e5157` heuristic. It does not sit beside it.
 
 **Tracing (the Playwright researcher's item 5).** Useful for the false-positive re-audit (REPORT §7 item 7). Not a fix.
 
-**Child value blamed on the parent block, by recording which element each value came from (the innovator's B).** Correct, and it should replace the underline-only pending test so the two don't overlap. The catch: it changes the row format, which reaches the triage, Solve, the guard (`anchorRef`) and the report readers. Ship them together in one commit series of at least three commits (`R-31-5`).
+**Child value blamed on the parent block, by recording which element each value came from (the innovator's B).** Correct, and it should replace the underline-only pending test so the two don't overlap. The catch: it changes the row format, which reaches the triage, Solve, the guard (`anchorRef`) and the report readers. Ship them together in one commit series of at least three commits (`FP-5`).
 
 **The Gap Map as an answer key.** I agree with the analyst: it is a grouping aid and a "look here first" signal only.
 
@@ -851,10 +851,10 @@ The false-alarm (FP#) and wrong-write (W#) numbers refer to the evidence auditor
 - today's "wrong" metric. That metric under-reports: home shows 3 of 24 against at least 15 of 41 real wrong writes. Changing it needs `R-47-9` amended.
 
 **Risks:**
-- If both pairing methods agree and are both wrong, nothing here catches it. The closing comparison of the rendered page with the draft does (R-31-11).
+- If both pairing methods agree and are both wrong, nothing here catches it. The closing comparison of the rendered page with the draft does (FP-11).
 - `block-renderer` renders with empty inner content, so CSS that depends on how many children a block has will differ. A mandatory per-block fidelity self-check marks those blocks "needs a rebuild".
 - A value can paint nothing today and paint for another client. So "inert" requires every width and state, and an inert row is collapsed into its own group, never deleted.
-- Changing the row format reaches triage, Solve, the guard and the reports. Ship that as at least 3 commits (R-31-5).
+- Changing the row format reaches triage, Solve, the guard and the reports. Ship that as at least 3 commits (FP-5).
 
 **Cost:** about one session each for the identity spine and for the trials. The harness is small. Trials should run at about 20–40s per page in place of about 17 minutes of rounds on home (ASSUMED).
 

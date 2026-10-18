@@ -50,7 +50,7 @@ except ImportError:
 
 # Reuse the REAL seeder's FX_EFFECTS declaration — same anti-drift rationale as
 # check_css_property_reseed.py importing ATTR_CLASSIFICATION_OVERRIDES from
-# sgs-update-v2.py (R-22-1): this check must never hand-roll a second copy of the
+# sgs-update-v2.py (FP-1): this check must never hand-roll a second copy of the
 # expected values that could silently diverge from what the seeder actually writes.
 _SEEDER_PATH = Path(__file__).resolve().parents[1] / "seed-motion-fx-registry.py"
 
@@ -58,7 +58,7 @@ if not _SEEDER_PATH.exists():
     raise ImportError(
         f"[check_motion_fx_reseed] Cannot find seed-motion-fx-registry.py at {_SEEDER_PATH}.\n"
         "This check imports FX_EFFECTS from the seeder to verify the DB against the "
-        "reseed-durable source (R-22-1)."
+        "reseed-durable source (FP-1)."
     )
 
 _spec = importlib.util.spec_from_file_location("sgs_seed_motion_fx_registry", str(_SEEDER_PATH))
@@ -73,13 +73,13 @@ except Exception as exc:  # noqa: BLE001
 if not hasattr(_seeder_mod, "FX_EFFECTS"):
     raise ImportError(
         "[check_motion_fx_reseed] seed-motion-fx-registry.py has no FX_EFFECTS symbol — "
-        "cannot verify the fx_effects seeding (R-22-1)."
+        "cannot verify the fx_effects seeding (FP-1)."
     )
 
 FX_EFFECTS: list[dict] = _seeder_mod.FX_EFFECTS
 
 # Spec 38A section 6.4: owned_properties and panels are read from the motion schema by the same helper the seeder
-# uses, and motion_presets is compared with the source file the seeder loads it from (R-22-1, no second copy).
+# uses, and motion_presets is compared with the source file the seeder loads it from (FP-1, no second copy).
 _MOTION_COLUMNS = _seeder_mod.effect_columns()
 _EMPTY_COLUMNS = (_seeder_mod.EMPTY_OWNED, _seeder_mod.EMPTY_PANELS)
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "dbschema"))

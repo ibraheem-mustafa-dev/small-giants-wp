@@ -2,7 +2,7 @@
 
 verdict: PASS first_paint_capture_passed: true
 
-block: sgs/option-picker change: C7 — group-label (legend) customisation: font-size + colour controls canary: https://sandybrown-nightingale-600381.hostingersite.com verified_by: live Playwright (editor preview, iframed canvas) + WP block-renderer REST (render.php output) bean_eyeball: OWED (R-22-13 co-authoritative final sign-off)
+block: sgs/option-picker change: C7 — group-label (legend) customisation: font-size + colour controls canary: https://sandybrown-nightingale-600381.hostingersite.com verified_by: live Playwright (editor preview, iframed canvas) + WP block-renderer REST (render.php output) bean_eyeball: OWED (FP-13 co-authoritative final sign-off)
 
 ## What changed (plain English)
 The "Size"/"Flavour" group label above an option-picker's pills had no styling controls — you could set its text but not its size or colour. Added two controls in the Label panel (shown only when the label is visible): "Label font size" (any CSS size, e.g. 18px / 1.2rem) and "Label colour" (theme token). Both apply inline to the `<legend class="sgs-option-picker__label">`, so they override the class-level default in style.css.
@@ -28,4 +28,4 @@ GET /wp/v2/block-renderer/sgs/option-picker with the same attrs returned: `<lege
 - first_paint_capture_passed: true (no animation/FOUC; static legend).
 
 ## verdict
-PASS — the group-label size + colour controls render, apply in the editor, and emit correctly from render.php on the frontend. Bean's editor eyeball (R-22-13) is the remaining co-authoritative sign-off.
+PASS — the group-label size + colour controls render, apply in the editor, and emit correctly from render.php on the frontend. Bean's editor eyeball (FP-13) is the remaining co-authoritative sign-off.

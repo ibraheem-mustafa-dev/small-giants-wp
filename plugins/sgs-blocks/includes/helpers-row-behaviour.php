@@ -11,7 +11,7 @@
  *      operator deleted the element, the stored id is orphaned — we return ''
  *      and shrink simply hides nothing (no error, no notice).
  *   2. The target's block type must NOT declare `supports.sgs.headerEssential`.
- *      That flag is the DECLARATIVE guardrail (R-31-1: no hardcoded block-name
+ *      That flag is the DECLARATIVE guardrail (FP-1: no hardcoded block-name
  *      dictionary here) marking a block whose absence would break the header —
  *      logo, primary navigation, cart. The editor picker greys those out; this
  *      backstop refuses them even if a hand-edited attribute slips through.

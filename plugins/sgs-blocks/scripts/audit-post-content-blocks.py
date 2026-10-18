@@ -27,7 +27,7 @@ the LOCAL block.json schemas — i.e. the code about to be deployed. Wire it int
 the deploy path (build-deploy.py step_oldshape_audit) so a renderer that abandons
 a stored shape can never ship silently again (the gate D182 used and D271 skipped).
 
-DETECTION (all schema/source-derived — no hardcoded block lists, R-31-1)
+DETECTION (all schema/source-derived — no hardcoded block lists, FP-1)
 ------------------------------------------------------------------------
 * undeclared-attr : attr key absent from block.json attributes, not injected by a declared
                     media element (supports.sgs.mediaElements) or the motion support

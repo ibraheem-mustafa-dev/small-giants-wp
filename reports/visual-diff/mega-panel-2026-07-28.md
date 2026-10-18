@@ -28,9 +28,9 @@ Also verified: `first_paint_capture_passed: true` for this scope — full-viewpo
 ## NOT closed — stated plainly
 
 - **Drawer width**: the in-drawer panel inherits the drawer menu's 95px shrink-wrapped list (pre-existing drawer layout, `align-items:flex-start` on the drawer body) — content clips. Widening changes the verified drawer's look → **Bean's decision**, not silently changed.
-- Bean's R-31-13 eye sign-off: pending (screenshot pair delivered this session).
+- Bean's FP-13 eye sign-off: pending (screenshot pair delivered this session).
 
-verdict: PASS (code + live behaviour; R-31-13 eye sign-off pending) first_paint_capture_passed: true
+verdict: PASS (code + live behaviour; FP-13 eye sign-off pending) first_paint_capture_passed: true
 
 ## Round 2 — Bean's eye findings (same day), all fixed + re-measured
 
@@ -38,11 +38,11 @@ verdict: PASS (code + live behaviour; R-31-13 eye sign-off pending) first_paint_
 2. **Floating "View all Brands" (Bean-caught):** the CF-15 viewall link rendered as a bare line above the panel chrome. Now SUPPRESSED whenever the panel contains an `sgs/button` (every aside starter does) — the panel's own CTA is the destination affordance; a button-less panel keeps the crawlable fallback, rendered after the panel body. Deliberate CF-15 deviation (Bean ruling): the viewall is no longer "the first link inside the panel". Fixture aside button set to "View all Brands" → /brands/.
 3. **Drawer width (Bean ruling — architecture, not a cap):** the drawer menu now FILLS available width (`width:100%` + `align-items:stretch` in drawer context). Measured: bar/nav/panel all 330px in a 375 drawer (was 95px, content clipping). Full-width items, labels at the natural left edge.
 
-verdict: PASS (round-2 fixes measured; R-31-13 sign-off pending on the new trio)
+verdict: PASS (round-2 fixes measured; FP-13 sign-off pending on the new trio)
 
 ## Round 3 — Bean's eye, four draft-fidelity defects (all measured before + after)
 
-Geometry from round 2 SIGNED OFF by Bean ("The 3 screenshots all look good") — R-31-13 met for centring, view-all removal and drawer width.
+Geometry from round 2 SIGNED OFF by Bean ("The 3 screenshots all look good") — FP-13 met for centring, view-all removal and drawer width.
 
 | # | Finding (Bean) | Measured BEFORE | Root cause | Measured AFTER |
 |---|---|---|---|---|

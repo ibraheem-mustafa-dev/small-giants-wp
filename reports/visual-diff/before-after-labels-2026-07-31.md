@@ -52,4 +52,4 @@ The block now reveals AFTER on the LEFT and BEFORE on the RIGHT, which is cohere
 ## What this report does NOT claim
 
 - The VERTICAL orientation is still unmeasured. Its clip reveals AFTER at the TOP, so its label order needs the same check — flagged in the CSS comment.
-- No human eye has judged this (R-31-13); the fix was verified by measurement + screenshot.
+- No human eye has judged this (FP-13); the fix was verified by measurement + screenshot.

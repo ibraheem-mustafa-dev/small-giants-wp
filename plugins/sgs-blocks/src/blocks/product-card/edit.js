@@ -713,7 +713,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		priceNoteColour,
 		priceNoteColourGradient,
 		// Frame Card component (Task 4, 2026-09-14) — operator-authored,
-		// applies to every render branch (R-31-9).
+		// applies to every render branch (FP-9).
 		showRating,
 		ratingValue,
 		reviewCount,
@@ -1353,7 +1353,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	}
 	// Frame Card component colours (Task 4, 2026-09-14) — apply in BOTH typed
 	// and bound modes, same as the CTA rows below: render.php emits the
-	// rating/brand/saving-badge markup + CSS from every branch (R-31-9).
+	// rating/brand/saving-badge markup + CSS from every branch (FP-9).
 	colourRows.push(
 		{
 			key: 'rating',
@@ -1990,7 +1990,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				{ /* ── Frame Card content panel (Task 4, 2026-09-14) — rating,
 				     brand overlay, saving badge, colour swatches. Applies in
 				     BOTH typed and bound modes (render.php reads all of these
-				     attrs before the branch split, R-31-9), so this panel is
+				     attrs before the branch split, FP-9), so this panel is
 				     shown unconditionally, unlike the isBuiltIn-gated panels
 				     below. Colours for these elements live in the Colour
 				     panel above (rating/brand/savingBadge rows). */ }
@@ -3203,7 +3203,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					     'main' governs every render branch's main product image
 					     (typed, bound read-only, bound variable-configurator —
 					     they never render simultaneously, so ONE control is
-					     correct per R-31-9). 'thumb' governs only the bound
+					     correct per FP-9). 'thumb' governs only the bound
 					     variable-configurator's thumbnail-rail images, a
 					     distinct element with its own 48x48 box. Mirrors
 					     sgs/before-after's + sgs/buybox's independently-scoped

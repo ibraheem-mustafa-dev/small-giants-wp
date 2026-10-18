@@ -199,7 +199,7 @@ def suppressed_shared_controls(block_dir):
     positive unfixable from the block's side. sgs/feature-grid's `layout` was exactly that,
     and it was the SOLE finding standing between this gate and being wireable into prebuild.
 
-    DERIVED FROM SOURCE, not hardcoded (R-31-1): for each `show<Prop>={ false }` the block
+    DERIVED FROM SOURCE, not hardcoded (FP-1): for each `show<Prop>={ false }` the block
     passes, find the matching `show<Prop> &&` guarded regions in the shared panel files and
     collect the attributes written inside them. Add a new suppression prop to a panel and
     this picks it up with no edit here.
@@ -254,7 +254,7 @@ def has_control_in_edit_js(block_dir: pathlib.Path, attr_name: str) -> bool:
     # was hard-coded here. As of R3-a, load_shared_controls() now resolves these and ~51 more
     # via the shared JS resolver (inspector-scan/core/components.js), which walks the
     # ContainerWrapperControls.js facade + all locally-imported panel files. The hardcoded
-    # allowlist became redundant bloat and a maintenance trap (R-31-1: no hardcoded dicts).
+    # allowlist became redundant bloat and a maintenance trap (FP-1: no hardcoded dicts).
     # All 8 names are now covered by load_shared_controls() and detected via Pattern 1-3 below
     # (or via the shared_controls check in scan()).
 

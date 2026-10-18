@@ -115,7 +115,7 @@ _FONT_FETCH_UA = (
 def _bundled_faces_by_family(baseline: dict) -> dict:
     """LOWERCASED font-family name -> its self-hosted fontFace entry, read straight off the
     framework's OWN theme.json — the single source of "already bundled", so this can never drift
-    against a hand-maintained list or the real assets/fonts/ folder contents (R-31-1 no hardcoded
+    against a hand-maintained list or the real assets/fonts/ folder contents (FP-1 no hardcoded
     dicts, applied to fonts)."""
     out: dict = {}
     for fam in (baseline.get("settings", {}).get("typography", {}).get("fontFamilies") or []):
@@ -175,7 +175,7 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
     for every font, whether it happens to be one the framework ships (Inter/DM Sans/DM Serif
     Display, resolved via ``_bundled_faces_by_family`` instead) or one a client draft introduces
     first (e.g. Fraunces for the bakery client). No special-casing "fonts we happened to bundle"
-    (R-31-9). Root cause fixed here: previously only bundled fonts got a working fontFace at all —
+    (FP-9). Root cause fixed here: previously only bundled fonts got a working fontFace at all —
     a fresh font's NAME was written with nothing loading it, so the browser silently fell back to
     its default serif/sans-serif stack.
 
@@ -302,7 +302,7 @@ def _resolve_family_face(name: str, bundled: dict, links: list, repo: pathlib.Pa
                          facts: dict) -> list | None:
     """A fontFace array for this family — from the framework's own bundled library when the
     family is already self-hosted there, else fetched + self-hosted fresh. Same code path for
-    every font (R-31-9): no branch for "fonts we happened to bundle" vs "fonts a client draft
+    every font (FP-9): no branch for "fonts we happened to bundle" vs "fonts a client draft
     introduces". Shared by the role slots and the rendered families (FR-33-18)."""
     if not name:
         return None

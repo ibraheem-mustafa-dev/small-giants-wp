@@ -116,7 +116,7 @@ Columns: **Model** is the `/delegate` route (2026-10-12, `~/.agents/skills/deleg
 
 | Unit | What it produces | FRs | Model | Needs | Edits | Wave |
 |---|---|---|---|---|---|---|
-| M3.W | Effect scripts and stylesheets by naming convention (registry resolver, webpack globs, the `fx-morph.css` rename) | enabler (R-31-1) | Sonnet | M2.9 | `webpack.config.js`, `includes/class-sgs-motion-registry.php`, `scripts/check-fx-registration.py`, `tests/php/MotionEffectStylesTest.php` | 11 |
+| M3.W | Effect scripts and stylesheets by naming convention (registry resolver, webpack globs, the `fx-morph.css` rename) | enabler (FP-1) | Sonnet | M2.9 | `webpack.config.js`, `includes/class-sgs-motion-registry.php`, `scripts/check-fx-registration.py`, `tests/php/MotionEffectStylesTest.php` | 11 |
 | M3.1 | Every §5.4 row and Appendix A control as schema and presets; nine new effect rows | FR-38A-11, 46, 9 (data) | Sonnet (extraction) | M1.11 | `schemas/motion.schema.json`, `scripts/data/motion-presets.json`, `scripts/seed-motion-fx-registry.py` | 11 |
 | M6.1 | Migration detector triad, `wp sgs motion-migrate` with backup and rollback, mapper interface | FR-38A-31, 32 (core) | Opus | M1.2 | `scripts/migrate-motion/`, `includes/motion/migrate/class-sgs-motion-migrate-{command,runner,backup}.php`, test | 11 |
 | M3.2 | Control-set and Intensity check | FR-38A-10, 11, 46 (checks) | Sonnet | M3.1 | `scripts/check-motion-control-sets.py`, fixtures | 12 |
@@ -287,7 +287,7 @@ Readiness score = four parts of 25: dependencies met, high-impact risks mitigate
 | GATE 6: Composition | wave 14 (M5.Z) | auto | `probe-motion-stacks.mjs` passes in three engines; `check-motion-style-writes.py --check` exits 0 | any stacked contribution missing | 85 |
 | GATE 7: Ready to sweep | wave 17 | go/no-go (main thread; Bean only for census rulings) | every mapper's `--self-test` passes; the M6.1 census lists no unmapped attribute without a Bean ruling; M5.W deployed to all four targets; each site's dry-run diff read and its pre-migration captures taken; no post open in the editor | an unmapped attribute, a coerced value in a diff, or a missing capture | 75 (25, 15, 15, 20) |
 | GATE 8: Removal | wave 19 | auto | `migrate_motion.py --consumers` and `--check` exit 0 in code and on four sites; `npm run gate:full`; reseed and deploy per group; `qa:motion` green; `audit-inline-styling.js --check` and `check-no-client-names.py --check` exit 0 | any wired gate red after a group: revert that group | 80 |
-| GATE 9: Final acceptance | wave 21 | review (Bean's eye, R-31-13) | cropped before-and-after pairs at 1440, 768 and 375 of every migrated fixture match; the heaviest fixture page is inside the CSS and JS budget; every FR-38A status line except FR-38A-33 says built; the R11 census over the live `.claude/` docs returns no hit | Bean sees a difference the probes missed: measure the extended set (`~/.claude/rules/measurement-vs-eye.md`) | 80 |
+| GATE 9: Final acceptance | wave 21 | review (Bean's eye, FP-13) | cropped before-and-after pairs at 1440, 768 and 375 of every migrated fixture match; the heaviest fixture page is inside the CSS and JS budget; every FR-38A status line except FR-38A-33 says built; the R11 census over the live `.claude/` docs returns no hit | Bean sees a difference the probes missed: measure the extended set (`~/.claude/rules/measurement-vs-eye.md`) | 80 |
 
 ## Risk register
 
@@ -343,10 +343,10 @@ Cross-track waits in S4: Track L's wave 13 units start when Track E pushes M5.1;
 
 ## Standing rules for every unit
 
-- **No client names in code, no hard-coding:** framework facts from the DB (R-31-1), values from tokens and each client's `sites/<client>/theme-snapshot.json`; Indus, Eye Care and Mama's draft values appear only in fixtures under `tests/`, `scripts/motion-qa/fixtures/` or `sites/`. `python scripts/check-no-client-names.py --check` exits 0 at every wave close.
+- **No client names in code, no hard-coding:** framework facts from the DB (FP-1), values from tokens and each client's `sites/<client>/theme-snapshot.json`; Indus, Eye Care and Mama's draft values appear only in fixtures under `tests/`, `scripts/motion-qa/fixtures/` or `sites/`. `python scripts/check-no-client-names.py --check` exits 0 at every wave close.
 - **No inline styles:** `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 after every build.
 - **Migration-method before the fourth same-shape edit:** M1.3, M1.4, M1.9, M6.6-G1, G4, the `sgsParallax` roster edit and M5.18 each build their survey, fix, check and self-test detector first.
-- **No legacy fallback (R-31-14), no `deprecated.js`:** old attributes are migrated by the sweep and deleted.
+- **No legacy fallback (FP-14), no `deprecated.js`:** old attributes are migrated by the sweep and deleted.
 - **Serial queue:** every reseed (from a clean HEAD, never a dirty tree) and every deploy (`python plugins/sgs-blocks/scripts/build-deploy.py`, never by hand) is announced to peer sessions first via ListAgents and SendMessage.
 - **Commits:** straight to `main`, explicit pathspecs, `git branch --show-current` in the same command, `git log origin/main..main` before pushing.
 - **Every FR closes on its done-when with its MUST FAIL control,** and each unit's status line in the spec is updated as it lands.

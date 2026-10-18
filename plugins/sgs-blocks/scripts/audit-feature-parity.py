@@ -8,7 +8,7 @@ equivalent = a GAP → closed OR recorded in feature-parity-exceptions.json with
 
 CORE-CAPABILITY SOURCE (PED-7, corrected 2026-07-19): the DB's `native_wp` block rows
 (block_supports + block_attributes where source='native_wp') — ALREADY INGESTED at the
-sandbox WP core version (WP 7.0.1). This is DB-first (R-31-1); `@wordpress/block-library`
+sandbox WP core version (WP 7.0.1). This is DB-first (FP-1); `@wordpress/block-library`
 is NOT installed in node_modules, so it was never a viable source. Re-ingest via /sgs-update
 when WP 7.1 lands (19 Aug 2026).
 
@@ -228,7 +228,7 @@ def _db_missing_message() -> str:
     # for the same pattern applied across the build chain.
     return (
         f"\n[feature-parity] SKIPPED — DB not found at {DB_PATH}.\n"
-        "This audit is DB-first (R-31-1): the sgs-wp-engine DB is an out-of-repo, "
+        "This audit is DB-first (FP-1): the sgs-wp-engine DB is an out-of-repo, "
         "home-directory dependency, deliberately unversioned. On a machine without "
         "it, the build proceeds and this audit is skipped rather than failing the "
         "whole chain.\n"

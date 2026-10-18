@@ -2,7 +2,7 @@
 
 verdict: PASS first_paint_capture_passed: true
 
-block: sgs/notice-banner change: E9 — make variant bg/border/colour operator-overridable (allergen-box-style customisation capability) canary: https://sandybrown-nightingale-600381.hostingersite.com verified_by: deployed CSS inspection + block-renderer REST bean_eyeball: OWED (R-22-13)
+block: sgs/notice-banner change: E9 — make variant bg/border/colour operator-overridable (allergen-box-style customisation capability) canary: https://sandybrown-nightingale-600381.hostingersite.com verified_by: deployed CSS inspection + block-renderer REST bean_eyeball: OWED (FP-13)
 
 ## What changed (plain English)
 notice-banner is the FUNCTIONALITY change Bean asked for: the ability to customise the box (background / border / radius / padding) so any notice — e.g. an allergen box — can be styled per-instance, NOT hardcoded values. The 5 variant colour defaults (info/success/warning/error/accent) were at specificity (0,1,0), which beat the operator's native color.background + border controls. Wrapped each variant selector in `:where()` (specificity 0) so operator-set or converter-transferred bg/border/colour always win. Visible defaults are byte-identical (declarations unchanged) — only specificity dropped.
@@ -20,7 +20,7 @@ Delivered by the EXISTING open InnerBlocks slot (no allowedBlocks lock) — it a
 - 0 net-new dead controls; 0 net-new F3; first_paint_capture_passed: true.
 
 ## verdict
-PASS — bg/border/colour are now operator/converter-overridable (the allergen-box capability), render-neutral by default. Bean R-22-13 eyeball owed.
+PASS — bg/border/colour are now operator/converter-overridable (the allergen-box capability), render-neutral by default. Bean FP-13 eyeball owed.
 
 ## Cleanup pass (2026-06-11): dead dismissible removed
 Deleted the `dismissible` attr + its render.php dismiss-button branch — it rendered a button with no editor control AND no JS handler (broken half-feature). block.json 0.6.0 -> 0.7.0. deprecated.js entry retained for migration. Live block-renderer: no dismiss button, banner renders. verdict: PASS.

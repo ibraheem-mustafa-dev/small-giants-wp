@@ -67,7 +67,7 @@ Visible elements under the draft root: 874. Breakdown:
 
 | Region | Elements | Share | In scope for the homepage clone? |
 |---|---|---|---|
-| `header` (nav) | 27 | 3% | Chrome. Converter skips top-level header/footer by design (R-31-3); WP theme supplies its own. Legitimately absent. |
+| `header` (nav) | 27 | 3% | Chrome. Converter skips top-level header/footer by design (a permitted walker exception); WP theme supplies its own. Legitimately absent. |
 | `footer` | 52 | 6% | Same. |
 | Announcement bar and root wrappers | about 19 (874 - 27 - 776 - 52) | 2% | Chrome. |
 | `main` | 776 | 89% | Yes, this is the homepage content. |

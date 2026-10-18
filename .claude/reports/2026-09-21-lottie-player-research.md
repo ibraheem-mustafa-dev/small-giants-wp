@@ -145,7 +145,7 @@ About 2 hours for `responsive-logo` plus the shared helper, validator and module
 4. **SVG cost on complex files.** Many nodes cost CPU. Mitigation: pause off-screen, size cap, and a later switch to `lottie_light_canvas` for heavy files.
 5. **Poster quality.** The poster must look like frame 0. For a logo this is the existing logo image. For a generic slot the editor must supply one. A possible convenience (not tested): render frame 0 to canvas in the editor and upload it as the poster; I have not validated this and would treat it as a stretch item.
 6. **WP core and host behaviour.** WP does not allow `.json` uploads by default and finfo can report `text/plain`; the filter above handles it, but needs one live upload test on Hostinger. Hostinger's CDN has served stale HTML after a deploy before (memory note), so verify on the canary after a cache purge.
-7. **Cloning pipeline.** Making the converter emit `lottieSource` from a Lottie in a draft is a separate step under Spec 31 (DB-first, R-31-1) and is not covered here.
+7. **Cloning pipeline.** Making the converter emit `lottieSource` from a Lottie in a draft is a separate step under Spec 31 (DB-first, FP-1) and is not covered here.
 8. **Naming.** `animationSubstrate` is a proposed name. Check it against the naming conventions linter before building.
 
 ## 6. Reference implementations

@@ -35,7 +35,7 @@
  * `snapControl()`/`selectionControl()`). That is what "layered on top" has to
  * mean for it to be true.
  *
- * ROSTER MECHANISM (R-31-1 — DB-first, no hardcoded dicts): the roster is
+ * ROSTER MECHANISM (FP-1 — DB-first, no hardcoded dicts): the roster is
  * DERIVED, not declared. `scripts/generate-fx-qualifying-blocks.py` grants a
  * block the `track` provision when its OWN stylesheet declares
  * `overflow-x: auto|scroll` in a rule a desktop-width viewport can reach —
@@ -56,7 +56,7 @@
  * `transform`/`translateX` mechanism is a DIFFERENT mechanism that this module
  * has no business touching, and re-deriving such a block's own wrap-around
  * maths inside a block-agnostic module is exactly the per-block hyperfocus
- * R-31-9 forbids. So `isNativeHorizontalScroller` finds nothing to attach to
+ * FP-9 forbids. So `isNativeHorizontalScroller` finds nothing to attach to
  * and `initDraggable` returns `undefined`.
  *
  * That is a safe no-op but NOT a free one, which is the historical lesson

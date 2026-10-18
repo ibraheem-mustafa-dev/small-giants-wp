@@ -6,5 +6,5 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation:** rendered live via do_blocks() probe on the canary (real block + child fixture). Wrapper carries `sgs-container` (mirror) + `wp-block-sgs-accordion` + own classes; 0 PHP fatals.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 - Renders with `sgs-container` mirror; 0 PHP fatals; php -l + build clean; undefined-var scan clean; interactivity attrs preserved.

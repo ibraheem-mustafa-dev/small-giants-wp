@@ -1,16 +1,16 @@
 ---
 block: sgs/product-card
 date: 2026-06-04
-unit: Spec 27 Phase 2 — R-22-13 sign-off fixes (image box, Sale badge, editable image height) + escape-audit imageAlt
+unit: Spec 27 Phase 2 — FP-13 sign-off fixes (image box, Sale badge, editable image height) + escape-audit imageAlt
 verdict: PASS
 first_paint_capture_passed: true
 canary: https://sandybrown-nightingale-600381.hostingersite.com/sgs-configurator-test-540/ (fixture 540)
-note: Bound branch only; .product-card--bound-scoped. From Bean's R-22-13 review of Cluster A.
+note: Bound branch only; .product-card--bound-scoped. From Bean's FP-13 review of Cluster A.
 ---
 
-# product-card R-22-13 fixes — visual-diff PASS
+# product-card FP-13 fixes — visual-diff PASS
 
-## What changed (Bean's R-22-13 feedback)
+## What changed (Bean's FP-13 feedback)
 1. **Image box sizing** — replaced the A4 aspect-ratio media box (which rendered a 378px square → over-zoomed, cropped to bottom-middle) with the mockup draft's fixed-height box: `.product-card__media { height: var(--sgs-product-card-image-height, 220px) }` + image `object-fit:cover; object-position:center`. Removed the per-render aspect-ratio inline style. Image now fills 100% width at a fixed 220px height, centred. Fixed height = CLS 0.
 2. **Editable image height** (Bean: must be a block attr like everything else) — NEW `imageHeight` block attribute + inspector "Image height" TextControl (edit.js) + overridable `--sgs-product-card-image-height` var (render.php emits it inline on the wrapper via the same anchored CSS-length allowlist as cardMaxWidth; :root default 220px). Editable per-instance (block editor) AND site-wide (theme/global styles).
 3. **Sale badge** — an on-sale variation now shows a **"Sale"** badge (limited-time urgency) instead of the cosmetic "Best value"; non-sale variations still show the author's `_sgs_discount_label`. `saleLabel` literal seeded for SSR==swap parity; view.js branches on `combo.saleMinor`.
@@ -28,4 +28,4 @@ note: Bound branch only; .product-card--bound-scoped. From Bean's R-22-13 review
 All `.product-card--bound`-scoped; Bound branch only; Typed page-144 clones untouched. CSS injection guarded by the anchored CSS-length regex (shared with cardMaxWidth, D156) + esc_attr.
 
 ## Gates
-- `php -l` + WPCS 0-errors on all touched PHP. axe-0. Bean R-22-13: points 1–3 sign-off addressed; image-zoom + Sale-badge fixes confirmed by Bean's exact prescription.
+- `php -l` + WPCS 0-errors on all touched PHP. axe-0. Bean FP-13: points 1–3 sign-off addressed; image-zoom + Sale-badge fixes confirmed by Bean's exact prescription.

@@ -12,7 +12,7 @@
  * All three are carried via extra_attrs so the parent form's Interactivity
  * API store can find and show/hide steps by class query.
  *
- * R-31-14: explicit discriminators, never empty($content).
+ * FP-14: explicit discriminators, never empty($content).
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js

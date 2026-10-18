@@ -2,7 +2,7 @@
 /**
  * Server-side render for the SGS Product Card block.
  *
- * Two modes, branched on the explicit `sourceMode` attribute (R-31-14 — never
+ * Two modes, branched on the explicit `sourceMode` attribute (FP-14 — never
  * `empty( $content )`):
  *
  *  - 'typed' (default): renders the card's built-in elements directly from
@@ -140,7 +140,7 @@ $picker_style_attrs = array(
 );
 
 // showPickers: when false, suppress all in-card option-picker renders (variable
-// and non-variable paths). Default true = existing behaviour unchanged (R-22-9).
+// and non-variable paths). Default true = existing behaviour unchanged (FP-9).
 $sgs_show_pickers = isset( $attributes['showPickers'] ) ? (bool) $attributes['showPickers'] : true;
 // showCta: live-data mode's button (View product / Add to cart / Buy now); off for listing grids.
 $sgs_show_cta = isset( $attributes['showCta'] ) ? (bool) $attributes['showCta'] : true;
@@ -214,7 +214,7 @@ $classes[] = $sgs_card_uid;
 // tag typography (scoped to this instance via the uid). Each rule's selector
 // list covers EVERY render branch's markup for that visual role (typed BEM
 // classes + the read-only/live-data plain classes) so ONE control governs the
-// element everywhere it can appear — no per-branch carve-out (R-31-9 / CG-9).
+// element everywhere it can appear — no per-branch carve-out (FP-9 / CG-9).
 // FONT FAMILIES — titleFontFamily, descFontFamily, priceFontFamily and
 // priceNoteFontFamily are all emitted by sgs_typography_css_rule() itself (G4,
 // helpers-typography.php) via its own base_decls font-family branch, sanitised
@@ -291,7 +291,7 @@ if ( preg_match( '/^\d+(\.\d+)?(px|em|rem)$/', $sgs_price_row_space ) ) {
 // (block.json's supports.sgs.elements.rating / .brand) — no gradient sibling
 // (small decorative text, deliberately scoped down; see block.json's own
 // _note on both elements). Emitted here, before the branch split, so BOTH
-// attrs apply to every render branch (typed + all 3 bound branches, R-31-9).
+// attrs apply to every render branch (typed + all 3 bound branches, FP-9).
 $sgs_rating_colour = sgs_colour_value( $attributes['ratingColour'] ?? '' );
 if ( '' !== $sgs_rating_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__rating-stars,.' . $sgs_card_uid . ' .sgs-product-card__rating-text{color:' . $sgs_rating_colour . ';}';
@@ -318,7 +318,7 @@ if ( '' !== $sgs_brand_colour ) {
 // shared box helper the trial tag already uses (sgs_label_box_css_rule()),
 // mirroring the tag element's own background/padding/radius emission below.
 // Emitted here (shared, pre-branch-split) so one control governs the badge
-// across every render branch (R-31-9) — unlike the trial-tag box CSS, which
+// across every render branch (FP-9) — unlike the trial-tag box CSS, which
 // stays typed-mode-only because the trial tag itself only renders there.
 $sgs_saving_badge_radius_raw  = $attributes['savingBadgeBorderRadius'] ?? '';
 $sgs_saving_badge_box_css     = sgs_label_box_css_rule(
@@ -338,7 +338,7 @@ $sgs_card_typo_css .= $sgs_saving_badge_box_css;
 
 // ── Frame Card attribute tag (generic, next to the title) — same shared box
 // helper as the saving badge above. Emitted here (shared, pre-branch-split)
-// so one control governs the tag across every render branch (R-31-9). The
+// so one control governs the tag across every render branch (FP-9). The
 // border (width, style, colour, radius) comes from the shared assembler below;
 // sgs_label_box_css_rule() supplies padding and background only.
 $sgs_attribute_tag_box_css     = sgs_label_box_css_rule(
@@ -487,7 +487,7 @@ if ( null !== $sgs_card_padding_shorthand ) {
 // - 'main' covers EVERY render branch's main product image (typed
 // .sgs-product-card__image, bound read-only/non-variable .product-card-img,
 // bound variable-configurator .product-card__media .product-card-img) —
-// deliberately ONE control (R-31-9 / CG-9), since only one branch ever
+// deliberately ONE control (FP-9 / CG-9), since only one branch ever
 // renders per page load. Each render site carries the SAME
 // sgs_media_element_scope_class( $sgs_card_uid, 'main' ) marker class, so
 // this ONE scoped rule (keyed to that class) governs whichever branch is
@@ -845,7 +845,7 @@ if ( 'typed' === $source_mode ) {
 // cards render their CTA via sgs_product_card_builtin_render() with a different
 // class (sgs-button--{style}) and those selectors don't exist there, so a typed
 // card must NOT ship this dead <style>. One rule governs the CTA across every
-// bound branch (R-31-9 / CG-9). $sgs_card_typo_tag is REBUILT to fold it in.
+// bound branch (FP-9 / CG-9). $sgs_card_typo_tag is REBUILT to fold it in.
 // bg_layer=true (D940 batch): moves ctaColourBackground onto a `::after`
 // layer per branch (D940's comma-split fix), freeing ctaColourText for a
 // future text-gradient sibling. Neither branch is positioned in style.css.
@@ -1234,7 +1234,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		/* translators: %s is the unit label, e.g. "per bar" or "per 100g". */
 		$per_unit_template = __( 'per %s', 'sgs-blocks' );
 		$per_unit_display  = sgs_configurator_per_unit_display( $def, $tax_mode, $decimals, $per_unit_template );
-		// R-22-13: the badge prefers "Sale" on an on-sale variation (limited-time
+		// FP-13: the badge prefers "Sale" on an on-sale variation (limited-time
 		// urgency) over the cosmetic discount label — a pack is only "best value"
 		// because it is temporarily on sale, so "Sale" is the honest + higher-
 		// converting signal. Non-sale variations fall back to the author's cosmetic
@@ -1320,7 +1320,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'perUnitTemplate'     => $per_unit_template,
 			'discountLabel'       => $discount_label,
 			'discountHidden'      => ( '' === $discount_label ),
-			// R-22-13: translated "Sale" badge literal, seeded so view.js shows the
+			// FP-13: translated "Sale" badge literal, seeded so view.js shows the
 			// SAME string on swap (SSR==swap parity) for on-sale combos.
 			'saleLabel'           => $sale_badge_label,
 			// A4: per-variation image gallery (FR-27-A4).
@@ -1831,7 +1831,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 /* ── Non-variable live-data mode (simple WC product / CPT / cap-exceeded fallback) */
 
 /*
- * Build the variations map from _sgs_variation_sets (R-22-9).
+ * Build the variations map from _sgs_variation_sets (FP-9).
  *
  * Each variation type lists content_impact slots (price, image, …) and options.
  * Phase 1 stores only key + label per option (no per-option price/image), so

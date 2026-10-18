@@ -92,7 +92,7 @@
 							}
 						}
 					},
-					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite wrapper rule R-31-9). Colour is SGS-owned (backgroundColour/textColour + Gradient/Hover siblings, the same shape as sgs/site-header); spacing and border are SGS-owned attributes too (see attrMap), each emitted into this block's own scoped <style> rather than inline (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. The animation cluster (anim:*) has no member here: motion is the sgsMotion model (Spec 38A), not attributes."
+					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite wrapper rule FP-9). Colour is SGS-owned (backgroundColour/textColour + Gradient/Hover siblings, the same shape as sgs/site-header); spacing and border are SGS-owned attributes too (see attrMap), each emitted into this block's own scoped <style> rather than inline (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. The animation cluster (anim:*) has no member here: motion is the sgsMotion model (Spec 38A), not attributes."
 				},
 				"inner": {
 					"selector": ".sgs-site-footer__content-band",

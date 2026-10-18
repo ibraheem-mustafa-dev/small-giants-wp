@@ -6,5 +6,5 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation:** clean test page (real sgs/accordion-item + a core/paragraph child). curl markup, live-DOM.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)
 - 0 PHP errors. Wrapper carries `sgs-container` (mirror) + `wp-block-sgs-accordion-item` + the block's own classes; custom width applied; interior content renders. Fan-out batch 2 (small batch + mandatory undefined-var self-check + orchestrator render-verify). php -l + build clean; undefined-var scan clean.

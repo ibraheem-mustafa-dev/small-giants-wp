@@ -14,7 +14,7 @@ The nav blocks are `sgs/nav-bar-menu` (bar), `sgs/nav-drawer-menu` (drawer link 
 - STATUS: CLOSED — all six units live-verified: the Gate 3 composed-nav fixture (page 1842, mega panel 1745 populated; opens on hover, tap and keyboard), mega motion, mini-cart (flyout + drawer modes, Store-API add/qty/remove, empty state), search (4 display modes), the social / business-info / notices controls, and the mega starters picker.
 - Residuals:
   1. axe on the OPEN mega panel reports 6 primary-colour contrast violations on the Mama's palette, accepted by owner ruling. Guarded harness (`axe-run.mjs`), run NOT VACUOUS.
-  2. Bean's eye (R-31-13) on the mega motion is not yet recorded.
+  2. Bean's eye (FP-13) on the mega motion is not yet recorded.
   3. The cart/search screenshot set is not captured (numeric probes only).
 
 ## Wave 2 — Capability
@@ -121,7 +121,7 @@ Gate 3C passes when (the one definition; the same words are in `plans/2026-10-01
 1. Every family in the signed list is covered: its exit cells reachable and at least one reproduced live. Twelve families (M-01, M-02, M-05, M-06, M-12, M-23, M-26, M-29, M-41, M-42, M-50, M-51) are already covered, are in no unit, and close the gate as covered. No family closes the gate as parked.
 2. Each unit row cites its live report with `verdict: PASS`.
 3. `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 and `python plugins/sgs-blocks/scripts/no-inline/check-no-inline.py` passes against a reachable canary.
-4. Two composed headers are 100% visual copies of their references, at 375, 768 and 1440: a copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft. Every panel's position and width match the reference's measured cells (the Indus draft centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean 2026-09-26), and the header's left and right gaps are equal at 1440px. The structural fixtures 3733 and 3734 are test rigs on Mama's content, not these copies. Bean's eye is co-authoritative (R-31-13).
+4. Two composed headers are 100% visual copies of their references, at 375, 768 and 1440: a copy of lamalama's floating pill and a copy of the Indus Foods Mega Menu draft. Every panel's position and width match the reference's measured cells (the Indus draft centres each panel on the page: mega 1080px, About and Trade 620px, More 300px; Bean 2026-09-26), and the header's left and right gaps are equal at 1440px. The structural fixtures 3733 and 3734 are test rigs on Mama's content, not these copies. Bean's eye is co-authoritative (FP-13).
 5. Spec 36, Spec 37, this verify doc and LEDGER state the model.
 
 ## Wave 4 — Proof gate (clones)

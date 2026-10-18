@@ -34,4 +34,4 @@ All A4 CSS `.product-card--bound`-scoped; all A4 render code inside the `wc-prod
 
 ## Gates
 - `php -l` + WPCS 0-errors on all touched PHP. Orchestrator caught + fixed 2 real bugs the agent missed: (1) thumb strip didn't rebuild on swap + injected-node directive non-binding → delegation + imperative rebuild; (2) gallery-without-featured-image rendered the placeholder → imageUrl=gallery[0] authoritative.
-- Formal axe-0 + 3-breakpoint + Bean R-22-13 = the QA-VIS gate after Cluster A.
+- Formal axe-0 + 3-breakpoint + Bean FP-13 = the QA-VIS gate after Cluster A.

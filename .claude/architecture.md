@@ -63,7 +63,7 @@ A design draft reaches a WordPress page by the computed route (Spec 48): script-
 
 ## 5. The data layer — `sgs-framework.db`
 
-**DB-first, no hardcoded dicts (R-31-1).** Every framework lookup (block to slot, role classification, CSS property routing, variant discrimination) reads `sgs-framework.db`.
+**DB-first, no hardcoded dicts (FP-1).** Every framework lookup (block to slot, role classification, CSS property routing, variant discrimination) reads `sgs-framework.db`.
 
 **Access pattern.** `sgs-update-v2.py` (with `dbschema/seed_reference_data.py` for the reference tables) is the only writer; every other script opens the DB directly read-only: `sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)` (as `audit-declared-vs-seeded-roles.py` and `audit-feature-parity.py` do). For an ad-hoc query use `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT …"` (the `/sgs-db` skill).
 
@@ -83,7 +83,7 @@ Verify current compliance: `node plugins/sgs-blocks/scripts/audit-inline-styling
 
 ### 6.2 `SGS_Container_Wrapper` and the composite wrapper rule
 
-`sgs/container` is the canonical wrapper block (background media, shape dividers, width capping, grid/flex layout, responsive gap, shadow). Every composite with a built-in outer wrapper (hero, trust-bar, card-grid, …) offers the container panels it needs, opt-in per block, and must not diverge from the wrapper's computed behaviour with per-block CSS hacks (Spec 02 "Composite wrapper rule", R-31-9). `block_composition.container_kind` (`section` / `layout` / `content`) is read from `block.json supports.sgs.containerKind` by `/sgs-update`.
+`sgs/container` is the canonical wrapper block (background media, shape dividers, width capping, grid/flex layout, responsive gap, shadow). Every composite with a built-in outer wrapper (hero, trust-bar, card-grid, …) offers the container panels it needs, opt-in per block, and must not diverge from the wrapper's computed behaviour with per-block CSS hacks (Spec 02 "Composite wrapper rule", FP-9). `block_composition.container_kind` (`section` / `layout` / `content`) is read from `block.json supports.sgs.containerKind` by `/sgs-update`.
 
 **A composite need not call `SGS_Container_Wrapper::render()`.** A content-KIND composite using only box + width (quote, info-box, testimonial, team-member) may render block-private, because the computed route writes settings by `block_attributes` keyed on `block_slug`, never by `wraps_block`. Section/layout-KIND composites (hero, card-grid, feature-grid) keep the wrapper for its grid/section machinery. A capability gap on a composite is added to the composite, never worked around in the route. The shared helper is `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`.
 
@@ -128,7 +128,7 @@ For what is built today or the current front, read `.claude/LEDGER.md` — the s
 4. **No inline styling, framework-wide** (§6.1); `audit-inline-styling.js --check` proves it.
 5. **Composite wrapper rule.** No composite with a built-in wrapper diverges from the wrapper's computed behaviour; `container_kind` gates which 3-layer panels a block exposes (§6.2).
 6. **Content-KIND composites may render block-private**; section/layout-KIND composites keep the shared wrapper (§6.2).
-7. **One cloning route**: Spec 48. The binding rules `R-31-N` (also cited as `R-22-N`) live in `.claude/rules/framework-principles.md`.
+7. **One cloning route**: Spec 48. The binding framework principles `FP-<n>` live in `.claude/rules/framework-principles.md`.
 8. **No fallback route.** Every draft takes the computed route (§4); there is no second route to fall back to.
 9. **Root-cause methodology is mandatory.** No fix without a proven cause; verify every dependency a theory rests on. Full statement: root `CLAUDE.md` "How to work here".
 10. **Git hygiene: commit straight to `main`, never open a PR, never `git stash`.** A stash or a glob-pathspec commit sweeps other sessions' uncommitted work. Rules: root `CLAUDE.md` "Git" and `~/.claude/rules/git-hygiene.md`.

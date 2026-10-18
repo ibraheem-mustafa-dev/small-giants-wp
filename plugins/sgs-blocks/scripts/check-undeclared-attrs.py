@@ -46,7 +46,7 @@ not declared per-block; they are added universally via WordPress filters. Extens
 register them via `addFilter('blocks.registerBlockType', ...)` and pass attribute
 validation. Examples: sgsHideOnMobile, sgsCustomCss, sgsChildSizing.
 
-This script DERIVES the extension list from extension/*.js files (R-31-1: DB-first,
+This script DERIVES the extension list from extension/*.js files (FP-1: DB-first,
 but only where a source exists; extension lists are code-first, not DB-first).
 
 NATIVE SUPPORTS-INJECTED ATTRIBUTES
@@ -161,7 +161,7 @@ def load_extension_attributes() -> Set[str]:
     Scans extension files for `addFilter` calls with `attributes: { sgs*: {...} }`
     patterns. Returns the complete set of sgs*-prefixed attribute names.
 
-    R-31-1 compliance: no hardcoded dict; derived from the canonical source (code).
+    FP-1 compliance: no hardcoded dict; derived from the canonical source (code).
     """
     attrs = set()
 

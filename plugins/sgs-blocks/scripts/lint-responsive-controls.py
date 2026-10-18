@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-lint-responsive-controls.py — FR-36-24 structural gate (R-31-9 for responsive controls).
+lint-responsive-controls.py — FR-36-24 structural gate (FP-9 for responsive controls).
 
 Purpose
 -------
 FR-36-24(b) (Spec 36 §2, `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`) requires:
 
     "No piece invents a parallel per-device control — a structural guard
-    (a `lint-responsive-controls.py`-style gate) enforces R-31-9: every
+    (a `lint-responsive-controls.py`-style gate) enforces FP-9: every
     responsive-worthy attr routes through `ResponsiveControl`, never a
     bespoke per-tier control."
 
@@ -16,7 +16,7 @@ inspector-control UI) for the tell-tale SHAPE of a hand-rolled device-tier
 switcher, and fails if one is found outside the two sanctioned SGS
 responsive primitives.
 
-Two sanctioned primitives (per DB-first rule R-31-1, this is the ONE
+Two sanctioned primitives (per DB-first rule FP-1, this is the ONE
 permitted structural constant — analogous to `SKIP_TOP_LEVEL_TAGS` — because
 it names the framework's own canonical architecture, not a business-domain
 lookup):
@@ -55,7 +55,7 @@ switcher built from scratch, i.e. BOTH of:
   device) extension (`extensions/responsive-visibility.js`,
   `universal-extensions/DeviceVisibilityPanel.js`) or its consumers — that
   is FR-36-24(a), a DIFFERENT ownership line (whole-piece show/hide, not a
-  per-tier SETTING VALUE), and it is out of scope for R-31-9 by the spec's
+  per-tier SETTING VALUE), and it is out of scope for FP-9 by the spec's
   own wording. Excluded from the scan: `src/components/**` (framework
   infrastructure — where the switchers themselves legitimately live) and
   `src/blocks/extensions/**` (the shared device-visibility extension).
@@ -67,7 +67,7 @@ at all. Device-tier (Mobile/Tablet/Desktop editor controls) and arbitrary
 visual breakpoints (a CSS rule) are different concepts; see
 `.claude/rules/cloning-pipeline.md`'s breakpoint-discipline rule.
 
-DB-first (R-31-1)
+DB-first (FP-1)
 ------------------
 No block name, attribute name, or count is hardcoded. Detection is pure
 code-shape analysis of the live source tree. The optional `--db-context`
@@ -103,7 +103,7 @@ COMPONENTS_INDEX = COMPONENTS_SRC / "index.js"
 SGS_DB_CLI = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "scripts" / "sgs-db.py"
 
 # The two canonical primitives — named explicitly in FR-36-24 / FR-S9-6.
-# This is the ONE permitted structural constant (R-31-1 exception, same
+# This is the ONE permitted structural constant (FP-1 exception, same
 # tier as SKIP_TOP_LEVEL_TAGS): it names the framework's OWN architecture,
 # not a business-domain block/attribute lookup.
 PRIMITIVE_FILES = {"ResponsiveControl.js", "ResponsiveOverride.js"}
@@ -346,7 +346,7 @@ def scan(blocks_src: Path, sanctioned: set, use_db_context: bool):
 
 def report(findings, files_scanned, sanctioned, quiet):
     if not quiet:
-        print(f"lint-responsive-controls.py — FR-36-24 structural gate (R-31-9)")
+        print(f"lint-responsive-controls.py — FR-36-24 structural gate (FP-9)")
         print(f"Sanctioned responsive components (discovered, not hardcoded): "
               f"{', '.join(sorted(sanctioned))}")
         print(f"Scanned {files_scanned} block edit.js file(s) under {BLOCKS_SRC.relative_to(REPO_ROOT)}")

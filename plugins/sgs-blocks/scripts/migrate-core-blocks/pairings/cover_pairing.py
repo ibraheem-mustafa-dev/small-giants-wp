@@ -17,7 +17,7 @@ theme/sgs-theme/patterns/hero-video-background.php):
 
   - sgs/hero/block.json (read 2026-07-16): headline/subHeadline/label/
     ctaPrimary*/ctaSecondary* are STILL declared as scalar attrs but render.php
-    says (its own header comment, FR-22-6/R-22-14) they are "NO LONGER read
+    says (its own header comment, FR-22-6/FP-14) they are "NO LONGER read
     here" / "deliberately NOT read" / "no fallback" — kept only for
     deprecated.js back-compat (which this framework has since deleted, D271
     no-deprecations policy). The REAL content mechanism is InnerBlocks:

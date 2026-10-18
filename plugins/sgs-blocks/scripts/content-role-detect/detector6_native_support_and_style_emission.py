@@ -76,7 +76,7 @@ role that matches the kind they feed. Icon-source lookups build
 `{role: attr_name}` for every role starting `icon-` and dispatch on
 it (D503) -- getting this wrong breaks icon routing, not just misfiles a row.
 
-The mechanism is DERIVED, never a per-block dict (R-31-1): (1) find the
+The mechanism is DERIVED, never a per-block dict (FP-1): (1) find the
 attribute in the block's `block.json` whose OWN `enum` declaration is
 exactly the 4-member set `{lucide, wp-icon, dashicon, emoji}` -- read the
 enum VALUES, never the attribute's name; (2) find where `render.php` reads

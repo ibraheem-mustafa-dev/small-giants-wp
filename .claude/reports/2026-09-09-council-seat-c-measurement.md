@@ -175,7 +175,7 @@ Each is a one-fixture, one-assertion check, and each one **fails today** — whi
 
 ## 5. Blocklist vs the `excluded_properties` DB table — two lists, already drifted (PROVEN)
 
-They are **not** the same source of truth. Nothing reads the DB into the tool; `BLOCK` is a hard-coded `new Set([…])` literal at `computed-parity.js:360-386`. This is a **no-hardcoded-dicts (R-31-1)** exposure in a measurement tool.
+They are **not** the same source of truth. Nothing reads the DB into the tool; `BLOCK` is a hard-coded `new Set([…])` literal at `computed-parity.js:360-386`. This is a **no-hardcoded-dicts (FP-1)** exposure in a measurement tool.
 
 | Property | In DB `excluded_properties` | In tool `BLOCK` | Scored at 1440? |
 |---|---|---|---|
@@ -247,7 +247,7 @@ One number is the reason this tool has been wrong in both directions twice. A si
 
 Rules that keep it honest:
 1. **Every percentage carries its denominator** — already enforced at `:1195-1197`; keep it.
-2. **No aggregate headline.** Four numbers, and a plain-English one-liner per dimension (*"7 elements are built with a different HTML tag than the draft"*). R-31-4 already says the aggregate is a diagnostic, never the closing gate.
+2. **No aggregate headline.** Four numbers, and a plain-English one-liner per dimension (*"7 elements are built with a different HTML tag than the draft"*). FP-4 already says the aggregate is a diagnostic, never the closing gate.
 3. **The tool must emit per-property pass counts**, not only failures — otherwise the next person auditing it hits the same wall I did in §3.
 4. A **STRUCTURE** miss must never be re-charged as N **LAYOUT** misses. That double-charge is the single largest distortion in the current number.
 

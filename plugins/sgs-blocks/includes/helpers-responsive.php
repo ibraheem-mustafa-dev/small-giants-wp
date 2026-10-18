@@ -232,7 +232,7 @@ if ( ! function_exists( 'sgs_responsive_box_shorthand_rule' ) ) {
  *     per-side inheritance and per-side tier-diff are exact (the
  *     `sgs_responsive_box_shorthand_rule` '0'-fill behaviour is deliberately
  *     NOT reused).
- *   - Breakpoints come from SGS_Breakpoints (R-31-1). When $opts['container'] is
+ *   - Breakpoints come from SGS_Breakpoints (FP-1). When $opts['container'] is
  *     true each tier is ALSO emitted as an @container query alongside the @media
  *     fallback (Spec 37 FR-37-16 container-queries-and-media-queries-together).
  *

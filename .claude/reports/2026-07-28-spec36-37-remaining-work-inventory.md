@@ -54,7 +54,7 @@ D4 multi-sticky warning · sticky↔hide-on-scroll exclusion (both die with per-
 | Item | Status | Detail |
 |---|---|---|
 | **Gate 3 composed-nav** (FR-36-16 arm) | **OWED — the named next front** | Populate panel 1745 (EMPTY), attach to menu 100, `sgs/nav-menu` on a page; open on hover/tap/keyboard; axe on the OPEN panel; live recursion test; drawer no-regression; Bean's eye. One fixture unblocks all of it (`P-MEGA-GATE3-LIVE`, trigger FIRED). |
-| **Mega motion live-verify** (D396) | **NOT live-verified** | Stagger/indicator/dark/2 variants ship-but-unproven; reports committed `INCOMPLETE`, R-31-13 sign-off NOT obtained. Same fixture as Gate 3. |
+| **Mega motion live-verify** (D396) | **NOT live-verified** | Stagger/indicator/dark/2 variants ship-but-unproven; reports committed `INCOMPLETE`, FP-13 sign-off NOT obtained. Same fixture as Gate 3. |
 
 ### B2. Deployed-but-unexercised (each needs a fixture + a live pass)
 | FR | What remains |
@@ -89,7 +89,7 @@ Block-menu (`wp_navigation`) support · Nav Health surface · **AI-builds-your-n
 1. **Fixture wave** — Gate 3 composed-nav + mega motion + the B2 unexercised set (one canary fixture family serves all of it).
 2. **Capability wave** — FR-37-42 shape picker · scroll-shadow · payment SVGs · 36-22 logo source · 36-8 modes b/c · FR-37-15 scoped CSS · FR-37-16 container reshape. (Spec 35's cascade unblocks FR-37-14/36-24 whenever it lands — schedule Spec 35 D4 into this wave if capacity allows.)
 3. **Polish wave** — Simple-surface ordering, simplicity findings 2+3, per-site CPTs (FR-37-6), blind-tester arm.
-4. **PROOF GATE — the 12-reference clone** (Bean decision 1): teardown the 3 unmeasured refs, then build all 12 headers+footers as SGS-native patterns/CPTs, zero hardcoding, mobile+drawer parity, contrast on all 8 client palettes, Bean's eye per R-31-13. Anything a reference needs that SGS cannot express = a defect in waves 1–3, not a reason to trim the reference.
+4. **PROOF GATE — the 12-reference clone** (Bean decision 1): teardown the 3 unmeasured refs, then build all 12 headers+footers as SGS-native patterns/CPTs, zero hardcoding, mobile+drawer parity, contrast on all 8 client palettes, Bean's eye per FP-13. Anything a reference needs that SGS cannot express = a defect in waves 1–3, not a reason to trim the reference.
 5. **Then Spec 33 Part 2** (the header/footer clone WALKER) — consumes the proven system; the 12 references become its regression fixtures.
 
 **On header/footer-specific block variants (Bean's open question):** the teardown evidence so far says the specialist blocks already exist (nav-menu, nav-drawer, responsive-logo, cart, search, business-info, icon-list, social) — what the references stress is **container-level capability** (grid shapes, floating mode, scroll states, layered backgrounds like Stripe's morphing `navigation-menu__background`), not missing block variants. The 12-clone will answer this definitively per block; wave 4's gap log is where the "needs a header-specific variant" list falls out with evidence rather than speculation.

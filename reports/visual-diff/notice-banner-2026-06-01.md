@@ -8,14 +8,14 @@ change_description: >
   FR-22-6 InnerBlocks migration of sgs/notice-banner: render.php now echoes
   $content (renders an InnerBlocks sgs/text child) instead of a scalar `text`
   attr; save.js returns <InnerBlocks.Content/>; deprecated.js v3 migrates the
-  old scalar text → a sgs/text child (carrying colour/font-size). R-22-14 clean
+  old scalar text → a sgs/text child (carrying colour/font-size). FP-14 clean
   (no server-side scalar fallback). Visual appearance unchanged.
 verification_method: live frontend render (full-page screenshot, shared with option-picker capture)
 pixel_diff_skipped: true
 pixel_diff_skip_reason: >
   Logic/structure migration — the banner's visual appearance is unchanged from the
   pre-migration block. Verified by rendering a banner whose text is now an InnerBlocks
-  child and confirming identical visual output + no PHP warnings (R-22-11).
+  child and confirming identical visual output + no PHP warnings (FP-11).
 verified_by: opus-main-thread-live-playwright
 evidence_screenshot: reports/visual-diff/option-picker-2026-06-01-frontend.png
 related_finding: parking P-FR226-NULL-SAVE-MIGRATION (latent null-save→InnerBlocks auto-migrate gap, framework-wide)

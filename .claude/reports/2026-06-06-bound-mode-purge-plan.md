@@ -35,7 +35,7 @@ Only trust-bar + product-card declare `sourceMode`. Only trust-bar's `bound` is 
 - **deprecated.js**: ADD newest-first `v5` matching the OLD saved shape (`save() => <InnerBlocks.Content/>`, enum incl. `bound`) → `migrate()` forces `sourceMode:'typed'` (label-only; items[] re-cloned per §existing-content). Order `[v5,v4,v3,v2]`.
 
 ## Existing serialised content (page 8, 144 carry `sourceMode:"bound"`)
-R-22-14 forbids an `empty($content)` fallback. After the render branch is removed, re-clone page 8 + page 144 (canary/scratch — the canonical path) so they get fresh typed items[]. Audit first: `wp post list` + grep post_content for `sgs/trust-bar` + `"sourceMode":"bound"` to confirm only scratch pages are affected.
+FP-14 forbids an `empty($content)` fallback. After the render branch is removed, re-clone page 8 + page 144 (canary/scratch — the canonical path) so they get fresh typed items[]. Audit first: `wp post list` + grep post_content for `sgs/trust-bar` + `"sourceMode":"bound"` to confirm only scratch pages are affected.
 
 ## Ordered execution (nothing breaks mid-purge)
 1. Audit serialised content for bound trust-bars (escalate if a real client page has one).
@@ -44,7 +44,7 @@ R-22-14 forbids an `empty($content)` fallback. After the render branch is remove
 4. render.php: delete bound branch.
 5. edit.js/index.js/block.json: strip bound UI, save→null, enum, version, description.
 6. Re-clone page 8 + 144 → fresh typed markup.
-7. VERIFY (R-22-11/R-22-13): homepage trust-bar badges render with correct labels; **product-card configurator on page 589 still resolves WooCommerce data (REGRESSION GUARD)**; content-collection grid still renders live cards. Bean sign-off.
+7. VERIFY (FP-11/FP-13): homepage trust-bar badges render with correct labels; **product-card configurator on page 589 still resolves WooCommerce data (REGRESSION GUARD)**; content-collection grid still renders live cards. Bean sign-off.
 8. `/sgs-update` (trust-bar enum/attr schema change).
 
 ## FOLLOW-ON DEPENDENCY (do NOT solve in the purge)
@@ -76,10 +76,10 @@ Trust-bar is `has_inner_blocks=1` → resolved as `_is_container_mirror_block` �
   - `render.php`: delete `$source_mode`/`$is_bound` (~28-29) + the entire BOUND branch (~147-157). Keep typed path. Confirm the typed `SGS_Container_Wrapper::render(...)` call (~292) is byte-unchanged (council #3 — shared wrapper blast radius; live `do_blocks()` verify, not page-clone).
   - `block.json`: enum `["typed","bound"]`→`["typed"]`; version bump; description drop the "Bound" clause (keep D95 attribution); (optional) `autoScroll` default→true if Bean confirms.
   - `edit.js`: strip ALL bound UI — SOURCE_MODE_OPTIONS, BOUND_TEMPLATE, useInnerBlocksProps+import, AND the entire "Content source" PanelBody (support-RT M3 — a 1-option dropdown confuses clients), the bound canvas div. Always-typed.
-  - `index.js`: `save()`→`()=>null`; drop the `InnerBlocks` import. **S4 — Build + deploy blocks** (`build-deploy.py --blocks-only`; OPcache reset). **S5 — Re-clone page 8** (`--deploy-target page:8`). Delete the old bound trust-bar block; emit fresh typed. Acceptance: emitted markup has `"sourceMode":"typed"` (or absent) + `"items":[` with entry-count == draft badge count. **S6 — VERIFY on the real homepage (R-22-11/R-22-13, council #5 — live DOM not eyeball):**
+  - `index.js`: `save()`→`()=>null`; drop the `InnerBlocks` import. **S4 — Build + deploy blocks** (`build-deploy.py --blocks-only`; OPcache reset). **S5 — Re-clone page 8** (`--deploy-target page:8`). Delete the old bound trust-bar block; emit fresh typed. Acceptance: emitted markup has `"sourceMode":"typed"` (or absent) + `"items":[` with entry-count == draft badge count. **S6 — VERIFY on the real homepage (FP-11/FP-13, council #5 — live DOM not eyeball):**
   - Playwright page 8: `document.querySelectorAll('.sgs-trust-bar__badge').length === <expected>`; native circles present; labels correct; icons = visible placeholder (flagged); NO nested `sgs/container` badge blocks.
   - REGRESSION GUARD: page 589 configurator still resolves (radio-pill count > 0, From-price renders); content-collection grid still renders live cards.
-  - Bean R-22-13 sign-off (expectation pre-set: labels+structure right, icons uniform-placeholder).
+  - Bean FP-13 sign-off (expectation pre-set: labels+structure right, icons uniform-placeholder).
   - Rollback line: if S5 emits empty/garbage items[] → revert the stamp deletion + re-plan (STOP #19), don't iterate inline. **S7 — `/sgs-update`** (enum/has_inner_blocks/attr schema change → DB sync).
 
 ## FOLLOW-ON (next task, Bean-scoped): icon-identity resolver — multi-library SVG fingerprint + emoji reverse-index + confidence threshold + visible fallback (never silent star). Replaces the S1(b) placeholder.

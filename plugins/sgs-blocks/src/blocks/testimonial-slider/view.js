@@ -50,7 +50,7 @@
  * the effect module (~35KB gzip) to run it.
  *
  * Re-deriving this file's clone-zone wrap-around maths inside a block-agnostic
- * module would be exactly the per-block hyperfocus R-31-9 forbids, so the
+ * module would be exactly the per-block hyperfocus FP-9 forbids, so the
  * momentum upgrade lives HERE, additively, on top of the pointer-drag:
  * `InertiaPlugin.track()`/`getVelocity()` (dynamically
  * imported, ONLY when an instance opts in — a page with the toggle off never

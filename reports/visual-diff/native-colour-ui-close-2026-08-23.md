@@ -59,4 +59,4 @@ Recorded because each one initially looked like a code failure, and reporting an
 
 - **Hover and gradient states are not captured here.** Every block gained `{attr}Hover` / `{attr}Gradient` / `{attr}HoverGradient` siblings, and only the resting flat colour was measured. The emitters are shared and gate-checked (`check-text-gradient-companion` is green, and it exists precisely to catch a gradient that silently paints nothing), but shared-and-gated is not the same as observed. Treat hover/gradient on these six as unverified.
 - **The editor surface.** That core's competing panel is gone follows from `supports.color` being all-false, which is a static fact in `block.json` and is what rule 31 measures (`native-colour-ui` 6 -> 0). It was not confirmed by opening the editor and looking.
-- **Bean's eye (R-31-13).** Measurement is co-authoritative, never sufficient.
+- **Bean's eye (FP-13).** Measurement is co-authoritative, never sufficient.

@@ -331,7 +331,7 @@ section.sgs-hero {
  * cropped hard. That compensation rule was written for an older hero shape
  * whose outer split grid carried its own padding; this grid has none, so the
  * term was a naked default beating faithfully-transferred CSS — the
- * R-31-1 / "hardcoded defaults are cheats to remove" pattern.
+ * FP-1 / "hardcoded defaults are cheats to remove" pattern.
  *
  * The cap was removed 2026-08-25 (`6db78e0e7`, "Hero media cell 392 -> 733px"),
  * which left the toggle INERT. Measured 2026-08-26 across five conditions —

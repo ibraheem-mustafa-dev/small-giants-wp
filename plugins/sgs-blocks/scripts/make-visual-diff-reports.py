@@ -280,7 +280,7 @@ def is_grid_only_css_property(css_prop: str) -> bool:
     """`grid-*` properties (grid-template-columns, grid-auto-flow, ...) have no
     effect unless the element's computed `display` is `grid`/`inline-grid` —
     a CSS fact, not an inference about any particular block. Kept as a plain
-    prefix check, not a hardcoded per-block list (R-31-1 in the parent
+    prefix check, not a hardcoded per-block list (FP-1 in the parent
     project's CLAUDE.md): the claim is about the PROPERTY, and holds for any
     block the property is ever measured against.
     """

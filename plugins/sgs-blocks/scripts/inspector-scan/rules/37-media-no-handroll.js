@@ -68,7 +68,7 @@
 // Derived two ways, INDEPENDENTLY of this rule's own code:
 //
 // (a) DB query (`sgs-framework.db`, seeded by `/sgs-update` from block.json
-//     via the `property_suffixes` table, itself DB-first per R-31-1):
+//     via the `property_suffixes` table, itself DB-first per FP-1):
 //         SELECT block_slug, attr_name, css_property FROM block_attributes
 //         WHERE css_property IN ('object-fit','object-position',
 //         'background-size','background-position','background-repeat',

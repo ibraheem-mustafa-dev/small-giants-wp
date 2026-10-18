@@ -19,7 +19,7 @@ Scope: media-cards + brands variants, dark value set, card hover-lift, stagger/s
 - axe on an OPEN mega panel: not run (same dependency).
 - Dark colour scheme rendering: not visually observed (no page sets colourScheme).
 - media-cards / brands variants rendering: patterns register, but no page inserts one yet.
-- Bean's visual sign-off (R-31-13): NOT obtained.
+- Bean's visual sign-off (FP-13): NOT obtained.
 
 ## Verdict
 

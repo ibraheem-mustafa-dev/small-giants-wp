@@ -35,7 +35,7 @@
  * image/icon/boxMedia/mediaEmoji predate the FR-22-6 InnerBlocks migration —
  * real media now lives in sgs/icon and sgs/media children — and were REMOVED
  * from block.json (no deprecated.js exists, D271; boxMedia/mediaEmoji were
- * already gone). R-31-14: NO legacy fallback hack.
+ * already gone). FP-14: NO legacy fallback hack.
  *
  * Scalar STYLING/LAYOUT attributes consumed here (wrapper-level only):
  *   cardStyle, iconPosition, backgroundColour, backgroundColourGradient,

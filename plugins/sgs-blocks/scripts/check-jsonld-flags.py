@@ -37,7 +37,7 @@ CONSTANT INDIRECTION
 The shared encoder (`includes/class-sgs-schema.php`) passes `self::JSON_FLAGS`,
 not a literal flag expression. A textual check would see no `JSON_HEX_TAG` there
 and either raise a false positive or need a hardcoded allowlist naming the shared
-encoder — and a hardcoded allowlist is exactly what R-31-1 forbids. So this gate
+encoder — and a hardcoded allowlist is exactly what FP-1 forbids. So this gate
 resolves ONE level of constant indirection: any `CONST`, `self::CONST` or
 `Class::CONST` in the flag expression is substituted with that constant's
 definition (harvested from the tree) before the rule is applied. No allowlist, no

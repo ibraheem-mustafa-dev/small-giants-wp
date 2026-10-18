@@ -89,7 +89,7 @@ _COMMENT_RE = re.compile(r'<!--\s*wp:(sgs/[a-zA-Z0-9-]+)\s+')
 def load_block_schemas() -> dict:
     """{block_name: {attr_name: attr_def_dict}} straight from every block.json's own
     "attributes" object — the single source of truth for what shape each property is
-    declared as TODAY. No hardcoded lookups (R-31-1)."""
+    declared as TODAY. No hardcoded lookups (FP-1)."""
     out = {}
     for bj in BLOCKS_DIR.glob('*/block.json'):
         try:

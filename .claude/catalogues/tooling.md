@@ -56,7 +56,7 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 22 | `check_value_identity.py` | Assert that named, load-bearing DB rows still hold the EXACT value they must. |
 | 23 | `capture_seed_data.py` | Capture the Phase-1 Group-5 seed tables from a LIVE database into data files. |
 | 24 | `run.py` | F6 DB-as-code consistency suite shared runner. |
-| 25 | `lint-responsive-controls.py` | FR-36-24 structural gate (R-31-9 for responsive controls). |
+| 25 | `lint-responsive-controls.py` | FR-36-24 structural gate (FP-9 for responsive controls). |
 | 26 | `check-tier-storage-shape.py` | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
 | 27 | `check-inert-controls.py` | Find block attributes that are OVERWRITTEN in render.php before being used. |
 | 28 | `check-undeclared-attrs.py` | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
@@ -1457,7 +1457,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `inspector-scan/rules/42-no-op-reset-controls.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/43-colour-only-state-indicator.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
 | `inspector-scan/rules/44-help-text-not-described.js` | manifest | GROUND-TRUTH: spec=.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md PART F |
-| `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2 (Bean R-22-13, 2026-06-11) +… |
+| `inspector-scan/rules/45-typography-full-replacement.js` | manifest | GROUND-TRUTH: spec=plugins/sgs-blocks/CLAUDE.md "Block Customisation Standard" item 2 (Bean FP-13, 2026-06-11) +… |
 | `inspector-scan/rules/46-inspector-fill-crosses-tab.js` | manifest | An inspector fill nested inside a fill that belongs to a DIFFERENT inspector tab never renders. |
 | `inspector-scan/run.js` | manifest+npm+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… ⚠ **header disputes this — it IS wired** |
 | `lib/block-source-files.js` | manifest+script-call | Block source-file resolver shared by the gate scripts. |
@@ -1479,7 +1479,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `lib/stage8-self-test-fixtures.js` | manifest+script-call | family, split out purely so no self-test file exceeds the repo's 250-line limit. |
 | `lib/stage8-self-test-network.js` | manifest+script-call | purely so no self-test file exceeds the repo's 250-line limit. Orchestrated by `stage8-self-test.js` via `runNetworkSelfTests(check)`. |
 | `lib/stage8-self-test.js` | manifest+script-call | launches a browser or touches the network — every assertion runs against fixture Lighthouse Result objects, so the SAME pure functions that a real… |
-| `lint-responsive-controls.py` | manifest+script-call | FR-36-24 structural gate (R-31-9 for responsive controls). |
+| `lint-responsive-controls.py` | manifest+script-call | FR-36-24 structural gate (FP-9 for responsive controls). |
 | `lints/bem-lint.py` | manifest+script-call+skill | BEM compliance lint — Stage 0.1 of /sgs-clone (Spec 31). |
 | `lints/lint-spec-drift.py` | manifest+npm+script-call | Spec-drift lint — do the specs describe things that actually EXIST? ⚠ **header disputes this — it IS wired** |
 | `lints/lint-theme-css-hardcodes.py` | manifest+script-call | Theme-CSS hardcode lint — arbitrary typography/colour literals in THEME CSS. |
@@ -1859,7 +1859,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/intake.mjs` | script-call | Stage 1 of a client build (Spec 48 FR-48-17): intake, closed by Bean's one batched review. |
 | `computed-route/ledger.mjs` | script-call+skill | Divergence ledger command (FR-47-5). |
 | `computed-route/lib/answer-sheet.mjs` | script-call | The answer sheet (Spec 48 route-accuracy R1): a frozen set of hand-labelled rows every route change is scored on. |
-| `computed-route/lib/brand-registry.mjs` | script-call | The brand and contact registry (plugins/sgs-blocks/includes/data/brand-registry.json, R-31-1): read from the one file, never copied into a table… |
+| `computed-route/lib/brand-registry.mjs` | script-call | The brand and contact registry (plugins/sgs-blocks/includes/data/brand-registry.json, FP-1): read from the one file, never copied into a table… |
 | `computed-route/lib/cache.mjs` | manifest+script-call | The calibration cache (§3.2). A calibration has two outputs: |
 | `computed-route/lib/calibrate-chunk.mjs` | script-call | How calibration builds a block's page in pieces (FR-47-2): the child process that saves a calibration page, the size of each piece, and halving a… |
 | `computed-route/lib/calibrate-container.mjs` | script-call | What a block's source says about how it renders, for calibration to act on before any browser opens (FR-47-2): whether its tiers follow its… |
@@ -1969,7 +1969,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/resolve.mjs` | manifest+script-call | The one property-to-setting engine (FR-47-1, R-47-3). Given a block, the rendered element (slot) a difference sits on, a CSS property, a state and… |
 | `computed-route/lib/runtime-probe.mjs` | manifest+script-call | The runtime probe (FR-48A-5): renders the checked-in fixture draft with a given support.js in headless Chromium and reads the data-dc-tpl numbering… |
 | `computed-route/lib/skeleton-classify.mjs` | script-call | Skeleton writer step 2a (Spec 48 §3.4): which block each draft element becomes, as scored candidates with their evidence. |
-| `computed-route/lib/skeleton-facts.mjs` | manifest+script-call | The facts the skeleton writer reasons from, all read from data (R-31-1): the framework database (read-only), the brand registry, the client's Site… |
+| `computed-route/lib/skeleton-facts.mjs` | manifest+script-call | The facts the skeleton writer reasons from, all read from data (FP-1): the framework database (read-only), the brand registry, the client's Site… |
 | `computed-route/lib/skeleton-finalise.mjs` | script-call | Skeleton writer, decisions and the finaliser (Spec 48 §3.4). Two files beside a surface's inventory hold choices: decisions.json          Bean's… |
 | `computed-route/lib/skeleton-inventory.mjs` | manifest+script-call | Skeleton writer step 1 (Spec 48 §3.4): the inventory of a draft surface. Every element the draft runtime stamped |
 | `computed-route/lib/skeleton-model.mjs` | script-call | The skeleton writer's reading of an inventory (lib/skeleton-inventory.mjs): the element tree, which elements are parts of another (a glyph and… |

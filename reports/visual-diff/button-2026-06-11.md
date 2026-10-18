@@ -6,4 +6,4 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation (live canary editor, page 8, 2026-06-11):** block registers (wp.blocks.getBlockType non-null); page-8 editor shows 0 core/missing + 0 invalid blocks across 105 blocks after deploy; check-control-ux guard green with an EMPTY baseline (zero tolerance); build green ×3 guards. Spot-checked sgs/text: Font size renders as device-switcher + integrated unit, no separate Unit dropdown.
 
-## Result — PASS (R-22-11)
+## Result — PASS (FP-11)

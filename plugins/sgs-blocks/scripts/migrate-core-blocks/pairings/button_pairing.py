@@ -46,7 +46,7 @@ _THEME_JSON = pathlib.Path(__file__).resolve().parents[5] / 'theme' / 'sgs-theme
 def _button_preset_backgrounds():
     """Map a resolved background hex -> preset name, from theme.json.
 
-    Theme-driven (R-31-1), not hardcoded: reads settings.color.palette to
+    Theme-driven (FP-1), not hardcoded: reads settings.color.palette to
     resolve slugs/`var(--wp--preset--color--X)` to hex, then keys each
     settings.custom.buttonPresets entry by its resolved background. Only
     solid-background presets are matchable (a transparent-background preset

@@ -44,7 +44,7 @@ Styles tab: the Navigation panel offers the five placements and the progress set
 
 ## Not verified
 
-Bean's eye on this state (R-31-13); the editor click-through after this deploy; dark mode.
+Bean's eye on this state (FP-13); the editor click-through after this deploy; dark mode.
 
 
 ## Follow-up (same day): phone header, partial star, review link (live page 11, run 2026-09-23 19:44)

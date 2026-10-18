@@ -8,7 +8,7 @@
 
 ---
 
-## G7 — live verification, both forks (R-31-11 / R-31-13)
+## G7 — live verification, both forks (FP-11 / FP-13)
 
 ### G7 mouse-hover persistence into the dropdown — **FAIL**
 
@@ -46,7 +46,7 @@ G7-BAR (`itemBorderColourHover:"#ff0000"`) confirmed hover-red as above. G7-DRAW
 
 ### G7 — Bean's eye
 
-Not performed — explicitly out of scope for this automated pass per the brief (R-31-13's human half).
+Not performed — explicitly out of scope for this automated pass per the brief (FP-13's human half).
 
 ---
 
@@ -236,7 +236,7 @@ This sub-check requires actually operating the block editor's device-preview tog
 - G9 disable-and-confirm-revert causation proof (rule correctly identified by file+selector match; the CSSOM-disable mechanical proof attempt didn't take effect, likely a script issue on my side, not a second competing rule)
 - G20(a) editor-UI device-toggle persistence round-trip (not attempted — requires a dedicated editor-interaction budget; render-side tier-object handling is separately confirmed correct via G20(b))
 
-**Not performed:** G7's final "Bean's eye" human visual sign-off half (R-31-13) — explicitly out of scope for automated verification, flagged rather than skipped silently.
+**Not performed:** G7's final "Bean's eye" human visual sign-off half (FP-13) — explicitly out of scope for automated verification, flagged rather than skipped silently.
 
 **A note on my own process:** two findings in this report (G16 and G19's cross-reference notes) were initially misreported as FAIL earlier in this same session, from an incomplete `edit.js`-only search that missed notes rendered by imported components used via an `after:` prop. Both were caught and corrected before finalising, by reading the actual component files those props reference rather than trusting a single grep's negative result. Recording this openly per this project's own "a gate's scope is not the defect's scope" lesson.
 

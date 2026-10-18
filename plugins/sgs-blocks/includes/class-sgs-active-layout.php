@@ -417,7 +417,7 @@ final class Sgs_Active_Layout {
 		// preview the markup while sticky / hide-on-scroll / transparent still
 		// resolved from the LIVE header — and those scroll behaviours are exactly
 		// what an editor canvas cannot show, i.e. the whole reason this exists.
-		// One override point, both surfaces, no second mechanism (R-31-9).
+		// One override point, both surfaces, no second mechanism (FP-9).
 		$preview_id = self::get_preview_id( $area );
 		if ( $preview_id > 0 ) {
 			return $preview_id;

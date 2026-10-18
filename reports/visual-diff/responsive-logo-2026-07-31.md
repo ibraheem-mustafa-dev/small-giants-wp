@@ -40,6 +40,6 @@ An earlier probe reported the scroll arm's dash state as "identical before and a
 
 ## What this report does NOT claim
 
-- No human eye has judged the draw's timing or easing (R-31-13 not yet given).
+- No human eye has judged the draw's timing or easing (FP-13 not yet given).
 - The `hover-redraw` arm is UNMEASURED — only `draw-on-load` and `scroll-trigger` were exercised on this canary.
 - `animationStyle`'s enum is byte-identical to the Vivus era and there is no `deprecated.js` (D270), so stored instances are expected to render identically — expected by construction, not verified against a pre-migration snapshot.

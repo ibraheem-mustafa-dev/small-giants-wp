@@ -39,6 +39,6 @@ The only published mega-panel instances on the canary render `__content` and a b
   - `groupBorderColour` / `groupBorderColourGradient` — the two NEW resting-state attrs, which no client has ever seen rendered
   - `groupBorderColourHover` / `...GradientHover` — the renamed hover surface
 
-So this report proves the rename is SAFE (nothing broke, nothing inlined, colours resolve). It does NOT prove the renamed attributes paint what Bean intended. Under R-31-13 his eye is co-authoritative and has not been applied to this surface.
+So this report proves the rename is SAFE (nothing broke, nothing inlined, colours resolve). It does NOT prove the renamed attributes paint what Bean intended. Under FP-13 his eye is co-authoritative and has not been applied to this surface.
 
 **Owed:** build a canary instance that actually mounts an `icon` and a `group` with non-default colours, then re-measure. Until then, treat the icon/group surface as UNPROVEN rather than green. A capture that cannot reach the changed surface is not evidence about it.

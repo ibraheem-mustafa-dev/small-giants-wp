@@ -1344,7 +1344,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						) }
 						{ /*
 						 * Quote and reviewer-name typography controls via the shared
-						 * TypographyControls component with targets (Bean R-22-13,
+						 * TypographyControls component with targets (Bean FP-13,
 						 * targets added 2026-09-07). The multi-target mode shows ONE
 						 * full control set at a time (toggled via segment buttons).
 						 *

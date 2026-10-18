@@ -134,7 +134,7 @@ Hover settings are scattered across several independent controls. Block counts b
 | `sgsHoverLift`, `sgsHoverIndent`, `sgsHoverOpacity`, `sgsHoverGrayscale`, `sgsHoverBorderAccent` | see DB | Hover panel Fine-tune values |
 | `sgsHoverTilt3D` (boolean) | see DB | Hover panel: tilt. Its angle and perspective limits are fixed in `plugins/sgs-blocks/assets/css/extensions.css` (`.sgs-has-tilt-3d`); they become stored values. The exact limits were not re-read in this pass |
 
-Colour and shadow hover VALUES are compliant per-element styling states and stay where they are; the redesign owns the effects and all hover transition timing. A WP-CLI sweep converts stored settings into the new per-element values with no legacy fallback (project rule R-31-14).
+Colour and shadow hover VALUES are compliant per-element styling states and stay where they are; the redesign owns the effects and all hover transition timing. A WP-CLI sweep converts stored settings into the new per-element values with no legacy fallback (project rule FP-14).
 
 ### Entrance migration
 What stays: WAAPI or CSS playback, and the pending flag if still needed. What goes: every runtime delay computation (`staggerOffset`, the cap of 7, group-index lookups). A WP-CLI sweep converts stored stagger settings into a stored delay on each child.
@@ -203,7 +203,7 @@ No review checked effect on Largest Contentful Paint (LCP, the time until the bi
 ### Storage object
 One key per motion type (hover, entrance, effect), registered once as a block support; targets come from `supports.sgs.elements` (every block in the framework DB declares `elements`; query it rather than caching a count). One JSON Schema is shared by the cloning tool, the PHP renderer and the inspector. Unsourced attributes serialise into the block comment with no documented size limit [S39]. On the container, `stagger` holds only the helper's last settings so it can be re-run; it is never read at render time. The shape is finalised once D2 is decided.
 
-### Storage-to-DB mapping (rule R-31-1: DB-first, no hand-written lists)
+### Storage-to-DB mapping (rule FP-1: DB-first, no hand-written lists)
 - **Per-element values become `block_attributes` rows.** Each stored motion value is one row with `css_property` (the property it drives, or the custom property it sets, such as a delay or duration variable), `css_state` (rest, hover or in-view), `css_tier` (the device tier) and `css_element` (the part it targets, from the declared part list). 1,035 object-typed attributes already carry a `css_property`, so object storage is routable; the motion object follows the same convention. The cloner, the calibration and the gates read these rows, so Phase 1's coverage test can see every motion setting.
 - **Effects stay in `fx_effects`.** Each effect's tier, scope, triggers, pins and picker membership already live there (section 7). The Effects panel lists only rows whose scope and requirements fit the block.
 - **Presets are DB-seeded.** The effect types offered in the Hover and Entrance panels (lift, zoom, fade up, slide, and so on) are rows seeded by `sgs-update-v2.py` from one source (the reconciled `animation_tokens` successor), each row listing the values it writes. The inspector and the cloner read the same rows; neither holds a hand-written list. Reference data is seeded through `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`.

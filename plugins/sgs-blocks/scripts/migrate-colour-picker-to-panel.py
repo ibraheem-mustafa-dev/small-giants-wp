@@ -10,7 +10,7 @@ SCOPE (this run, verified live): 6 blocks still mount a raw <DesignTokenPicker> 
 routing through SgsColourPanel -- hero (2), info-box (1), mega-panel (1), multi-button (3),
 pricing-table (1), trust-bar (1) = 9 raw mounts total (grep -l "<DesignTokenPicker"
 src/blocks/*/edit.js). The scan below is written UNIVERSALLY over every src/blocks/*/edit.js
-(R-31-9 -- no per-block carve-out), so it will also classify any NEW raw mount a future block
+(FP-9 -- no per-block carve-out), so it will also classify any NEW raw mount a future block
 introduces; it is not hardcoded to the 6 names above.
 
 CLASSIFICATION IS THE HARD PART -- refuse rather than guess (Bean's rule, this session).
@@ -295,7 +295,7 @@ def resolve_nonattr_colour_mechanism(block, prop, label):
     TRACING THE ACTUAL RENDER MECHANISM in the block's own render.php + style
     sheet -- never guessed from the JS shape alone (2026-08-30 owner ruling).
 
-    Evidence-driven, universal (R-31-9): this walks render.php looking for the
+    Evidence-driven, universal (FP-9): this walks render.php looking for the
     PHP array key `['<prop>']`, then asks what CSS mechanism the resolved value
     ultimately feeds --
       - a CSS custom property that is consumed by an SVG `fill:` declaration

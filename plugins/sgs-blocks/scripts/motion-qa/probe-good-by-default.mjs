@@ -22,7 +22,7 @@
  *   becomes visible at all. That is content loss. (b) For pin-scrub specifically, does it
  *   actually PIN — hold its viewport position while the document scrolls past?
  *
- *   NOT MEASURABLE (Bean's eye, R-31-13) — whether the motion looks tasteful, is paced
+ *   NOT MEASURABLE (Bean's eye, FP-13) — whether the motion looks tasteful, is paced
  *   well, or suits the section. A PASS here means "safe and functional by default", the
  *   necessary half of "good by default", not the whole of it.
  *
@@ -237,7 +237,7 @@ try {
 		exitCode === 0
 			? 'RESULT — all four effects are SAFE by default (content stays visible untuned), ' +
 					'and pin-scrub additionally pins. The aesthetic half of "good" is Bean\'s ' +
-					'eye, R-31-13.'
+					'eye, FP-13.'
 			: 'RESULT — at least one effect is not safe by default, or was not measurable.'
 	);
 } finally {

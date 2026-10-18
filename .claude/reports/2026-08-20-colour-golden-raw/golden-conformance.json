@@ -31966,7 +31966,7 @@
           },
           {
             "shape": "free text driving typography",
-            "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, R-22-13)",
+            "why": "7 rows (Spec 35 §9.3) — a direct breach of the mandatory TypographyControls rule (plugins/sgs-blocks/CLAUDE.md, FP-13)",
             "liveInstances": 7
           },
           {
@@ -32244,7 +32244,7 @@
       }
     },
     "typography": {
-      "specRef": "No dedicated Part O section exists for this type as of this session (the pre-existing golden-controls.json row said so explicitly: 'NO Part O contract exists for this type'). Included because plugins/sgs-blocks/CLAUDE.md R-22-13 mandates the shared component ('use the SHARED component, never bespoke font controls... MANDATORY'). This row is the first full Part-O-shaped contract for typography, written this session.",
+      "specRef": "No dedicated Part O section exists for this type as of this session (the pre-existing golden-controls.json row said so explicitly: 'NO Part O contract exists for this type'). Included because plugins/sgs-blocks/CLAUDE.md FP-13 mandates the shared component ('use the SHARED component, never bespoke font controls... MANDATORY'). This row is the first full Part-O-shaped contract for typography, written this session.",
       "canonical": {
         "panel": {
           "component": "TypographyControls",
@@ -32257,7 +32257,7 @@
         "hardCaseTest": "TypographyControls is the only implementation in this tree offering, on a SINGLE component: (a) responsive tiers (fontSizeTablet/fontSizeMobile via ResponsiveControl reading the ONE global device toggle — confirmed live 2026-08-19, ResponsiveControl.js Spec 35 Phase 1.2, no per-field switcher), (b) theme-token integration (fontSizePresets resolves useSettings('typography.fontSizes') instead of a raw px input), (c) built-in hover-state rows (decoration/transform/weight under a collapsible group) — a hand-rolled font-size control would need to reimplement all three per block it touches.",
         "corroboratingSignals": {
           "adoption": "26 font-size mounts / 16 blocks (measured via python scripts/surveys/survey-typography-controls.py, 2026-08-19) — consistent with, not proof of, the capability call above.",
-          "mandate": "plugins/sgs-blocks/CLAUDE.md R-22-13 — a pre-existing project decision this row ratifies with the capability evidence above, not inherits uncritically."
+          "mandate": "plugins/sgs-blocks/CLAUDE.md FP-13 — a pre-existing project decision this row ratifies with the capability evidence above, not inherits uncritically."
         }
       },
       "redesign2026_08_19": {

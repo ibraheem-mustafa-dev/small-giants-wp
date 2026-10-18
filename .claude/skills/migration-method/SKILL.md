@@ -40,7 +40,7 @@ At 4 instances the detector costs more than the edit. Measured floor: **131 line
 
 ### If this migration is a multi-commit phase
 
-⚠ **Then R-31-5 governs (`.claude/rules/framework-principles.md`) and you split it** into three or more commits. The single-landing-commit assumption elsewhere in this document describes a standalone codemod, not a phase.
+⚠ **Then FP-5 governs (`.claude/rules/framework-principles.md`) and you split it** into three or more commits. The single-landing-commit assumption elsewhere in this document describes a standalone codemod, not a phase.
 
 ## ⛔ When to STOP and hand back to Bean
 
@@ -53,7 +53,7 @@ Hand back, do not improvise, do not try one more thing, the moment any of these 
 5. **The deploy aborts naming files you did not touch.**
 6. **You are about to add a per-file special case to `transform()`.** By Step 5's test that means you miscounted your cases: re-census, do not patch.
 7. **You need a flag whose help text says "NOT recommended"** (`--allow-dirty`, `--skip-verify`, `--skip-gate-full`). Those exist for Bean's judgement, not yours.
-8. **Step 3 applies and Bean is not available.** A client-visible shape needs his eye (R-31-13) and you cannot proceed past Step 3 without it. Hand back with the census and the ONE instance built: that is the useful state to hand over, not nothing.
+8. **Step 3 applies and Bean is not available.** A client-visible shape needs his eye (FP-13) and you cannot proceed past Step 3 without it. Hand back with the census and the ONE instance built: that is the useful state to hand over, not nothing.
 9. **The change touches a shared wrapper, the walker, `scripts/computed-route/`, or ANY helper whose blast radius spans many blocks.** The three named systems are examples, not the boundary: a shared helper in `includes/` called by 40 blocks is inside this condition. If you are deciding whether your change qualifies, it qualifies: ask Bean. Rule 7 requires a design gate and Bean's approval BEFORE building. This document does not override it.
 
 ---
@@ -74,9 +74,9 @@ Grep the SUBJECT, never the verb (`census-*`, `survey-*`, `audit-*`, `check-*`, 
 
 **Only for changes with a surface a client sees. Skip for renames and call-site swaps.**
 
-Build **one** instance. Deploy it. Get Bean's eye on it (R-31-13). Write the settled shape down as the transform's target **before you census anything**.
+Build **one** instance. Deploy it. Get Bean's eye on it (FP-13). Write the settled shape down as the transform's target **before you census anything**.
 
-⛔ **If the target shape is ALREADY settled and recorded, Step 3 is satisfied: say so and move on.** A repo standard Bean has locked (e.g. `plugins/sgs-blocks/CLAUDE.md`'s `TypographyControls` + `sgs_typography_css_rule` rule, R-22-13) IS a settled shape. **Cite the rule and the blocks already conforming to it, then continue.** ⚠ If the blocks disagree about the standard in RENDER (as `text` and `heading` do for `letterSpacing`), the shape is NOT settled: take that disagreement to Bean.
+⛔ **If the target shape is ALREADY settled and recorded, Step 3 is satisfied: say so and move on.** A repo standard Bean has locked (e.g. `plugins/sgs-blocks/CLAUDE.md`'s `TypographyControls` + `sgs_typography_css_rule` rule, FP-13) IS a settled shape. **Cite the rule and the blocks already conforming to it, then continue.** ⚠ If the blocks disagree about the standard in RENDER (as `text` and `heading` do for `letterSpacing`), the shape is NOT settled: take that disagreement to Bean.
 
 ⚠ **Deploying ONE uncommitted instance trips the dirty gate** (`deployed-files-dirty`). **Commit your one block first, or declare `--payload <path>`.** Never `--allow-dirty`, the flag that caused D336.
 
@@ -138,7 +138,7 @@ Run `--self-test` (exit 0) and `--check` (exit 0). Then break one instance on pu
 
 ## Step 11 — Deploy and LOOK. The gate is not the proof.
 
-Run `git status --porcelain` (nothing of yours outstanding), then `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`. Open a real page and check the changed property's computed value, **at least one instance per `classify()` category**. No rendered surface: N/A, substitute a diff against a baseline from `git show <recorded-sha>:` (D775). A findings backlog: one live check per fixing mechanism (D778). ⛔ **A green `--check` proves no instance was MISSED. It proves nothing about whether the transform was RIGHT**; this method does not replace Rule 5 or R-31-13. ⛔ **If the deploy aborts with `deployed-files-dirty`, do NOT reach for `--allow-dirty`** (D336, a ~2.5-hour two-client-site outage); commit your paths or declare `--payload <path>`; **if the uncovered list names files you did not write, stop and hand back.** Read `references/apply-and-verify.md`.
+Run `git status --porcelain` (nothing of yours outstanding), then `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`. Open a real page and check the changed property's computed value, **at least one instance per `classify()` category**. No rendered surface: N/A, substitute a diff against a baseline from `git show <recorded-sha>:` (D775). A findings backlog: one live check per fixing mechanism (D778). ⛔ **A green `--check` proves no instance was MISSED. It proves nothing about whether the transform was RIGHT**; this method does not replace Rule 5 or FP-13. ⛔ **If the deploy aborts with `deployed-files-dirty`, do NOT reach for `--allow-dirty`** (D336, a ~2.5-hour two-client-site outage); commit your paths or declare `--payload <path>`; **if the uncovered list names files you did not write, stop and hand back.** Read `references/apply-and-verify.md`.
 
 ---
 

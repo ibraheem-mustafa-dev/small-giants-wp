@@ -11,7 +11,7 @@ first_paint_capture_passed: true
 
 **Change:** scoped the `.product-card` 380px `max-width` cap so it yields to the grid track when the card is a grid item (`.sgs-container--grid > .product-card { max-width:none; margin-inline:0 }`), keeping the 380px cap for the standalone case. CSS-only, no save()/markup change, no deprecation.
 
-**Why:** D5 / `P-CLONE-PAGE-VISUAL-TRIAGE #4b`. The converter places product cards as grid items in a `640px 384px` track, but the card's own 380px cap made both cards render 380px — the asymmetric featured/secondary layout was lost. Universal (R-22-9): any product-card in any grid fills its track; standalone cards keep 380px.
+**Why:** D5 / `P-CLONE-PAGE-VISUAL-TRIAGE #4b`. The converter places product cards as grid items in a `640px 384px` track, but the card's own 380px cap made both cards render 380px — the asymmetric featured/secondary layout was lost. Universal (FP-9): any product-card in any grid fills its track; standalone cards keep 380px.
 
 **Dependency:** required the converter `display:grid → layout:"grid"` bridge (commit c97f85f1) so the products container carries the `sgs-container--grid` class this selector targets.
 

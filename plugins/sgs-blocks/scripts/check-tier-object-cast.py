@@ -15,7 +15,7 @@ recording it (`multi-button/render.php:36-38`, `card-grid/render.php:55-56`) —
 is what makes those comments enforceable rather than just remembered
 (`.claude/reports/2026-08-21-unenforced-prohibition-register.md`).
 
-SCOPE — schema-derived, not a hardcoded attribute list (R-31-1)
+SCOPE — schema-derived, not a hardcoded attribute list (FP-1)
 ------------------------------------------------------------------
 The set of "tier object" attribute names is NEVER hand-maintained here. For every
 `src/blocks/*/block.json`, every attribute declared `"type": "object"` is read from the

@@ -75,7 +75,7 @@ The orchestrator's own comment (sc_var Tier, before `_section_html = ...`) recor
 ### 2.6 Is the halt correct policy? (PROVEN: no, for a classless section)
 
 - Spec 31 FR-31-4: "a slug-None node at any depth defaults to `sgs/container` ... A no-name-match section is the COMMON case, never a failure."
-- R-31-2 / Spec 00 section 3.1: BEM is the only signal for WHICH block a node is. It is not a permission to be converted at all. Emitting the container default for a classless node is not tag-based recognition, so it does not breach R-31-2.
+- The BEM-recognition rule / Spec 00 section 3.1: BEM is the only signal for WHICH block a node is. It is not a permission to be converted at all. Emitting the container default for a classless node is not tag-based recognition, so it does not breach the BEM-recognition rule.
 - The C1 comment in the orchestrator ("everything becomes an undifferentiated container" hazard) is about Tier 0 CLASS INJECTION from a lingua_franca guess. It does not apply to an empty class list, where nothing is injected (the sc_var / dom_shape tiers already admit with no injection).
 - The tests that lock hard-halts for non-empty non-SGS classes (Tailwind `flex-1`, `external-class`) are a separate decision. This report does not challenge them. The recommendation in section 6 is scoped to `class_signature == []`.
 

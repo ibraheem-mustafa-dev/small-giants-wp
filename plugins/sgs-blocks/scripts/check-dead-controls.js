@@ -732,7 +732,7 @@ const BREAKPOINT_TOKEN_RE = /['"`](?:Tablet|Mobile|Desktop)['"`]|@media/;
 const BREAKPOINT_DYNAMIC_RE =
 	/[.+]\s*['"`](?:Tablet|Mobile|Desktop)['"`]|\}(?:Tablet|Mobile|Desktop)|['"`](?:Tablet|Mobile|Desktop)['"`]\s*(?:,|\)|\]|=>)/;
 
-// Shared "prefixed attribute set" PHP helpers (Bean R-22-13 pattern): each
+// Shared "prefixed attribute set" PHP helpers (Bean FP-13 pattern): each
 // reads $attributes[ $prefix . 'Suffix' ] via string concatenation, so the
 // literal attribute name (e.g. "ctaBorderStyle") never appears anywhere in
 // source text — only the prefix ('cta') and the suffix ('BorderStyle') do,
@@ -898,7 +898,7 @@ function collectPrefixedHelperConsumed( corpus ) {
 	return consumed;
 }
 
-// A generalised version of the R-22-13 prefixed-attribute-set pattern above,
+// A generalised version of the FP-13 prefixed-attribute-set pattern above,
 // for the DYNAMIC-prefix shape found live in sgs/before-after's media
 // resolver (media-render.php, added 2026-08-05 while building CHECK 4): the
 // prefix is not a literal call-site argument to a fixed helper name — it's a

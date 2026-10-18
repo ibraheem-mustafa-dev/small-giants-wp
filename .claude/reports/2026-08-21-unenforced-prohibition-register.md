@@ -12,7 +12,7 @@ While trimming change-narrative from comments across the 20 densest block files,
 
 ## Why it matters
 
-A prohibition in a comment is a rule enforced by hope. It works only while every future reader happens to open that file, happens to read that paragraph, and happens to believe it. This project's own R-31-12 already says the quiet part: **QC gates are structural, not prompt.** Each entry below is therefore one of two things —
+A prohibition in a comment is a rule enforced by hope. It works only while every future reader happens to open that file, happens to read that paragraph, and happens to believe it. This project's own rule already says the quiet part: **QC gates are structural, not prompt.** Each entry below is therefore one of two things —
 
 - **knowledge that must survive**, in which case it should be somewhere more durable, or
 - **a gate that was never written**, in which case writing it retires the comment entirely.
@@ -59,7 +59,7 @@ Script inventory across all 91 over-limit files: **11 gate-backed, 37 unenforced
 - `site-header` — the text-shadow contrast mode is COSMETIC ONLY and must never be described as WCAG-conformant.
 - `cta-section` — no hardcoded fallback colour; unset stays unset (Bean-locked).
 - `icon-list` — no top-level function in `render.php`: fatals with "Cannot redeclare" on the second block instance. (Live incident: a 5-instance page 500'd while a single instance rendered fine.)
-- `hero` — R-22-14/R-31-14: no legacy scalar fallback; `'image'` tier type is STRICT; the tier-media CSS caller contract must append before printing.
+- `hero` — FP-14/FP-14: no legacy scalar fallback; `'image'` tier type is STRICT; the tier-media CSS caller contract must append before printing.
 
 ## Gates BUILT from this register (2026-08-21, D728)
 
@@ -75,7 +75,7 @@ Two entries retired by writing the check rather than keeping the prose.
 
 ## Owed follow-ups, recorded not dropped (STOP-29)
 
-1. **`R-22-14` is a stale spec anchor** in `testimonial/render.php` and `option-picker/render.php`. Spec 22 was merged into Spec 31; the live rule is **R-31-14**. The rule holds — only the number is wrong. A rename is its own change.
+1. **`FP-14` is a stale spec anchor** in `testimonial/render.php` and `option-picker/render.php`. Spec 22 was merged into Spec 31; the live rule is **FP-14**. The rule holds — only the number is wrong. A rename is its own change.
 2. **`multi-button`'s "H6 fix / kind was 'layout'" block** is history that doubles as an anti-regression note. It belongs as an explicit `do NOT set kind='layout'` prohibition. That is a rewrite, not a trim.
 3. ~~**`card-grid` has a duplicated `$hover_bg_gradient` assignment**, twice, present at HEAD.~~ **✅ CLOSED — verified 2026-08-22, this was already fixed by `a9ea9b8f` ("two emit sites into one"); one assignment remains at `card-grid/render.php:65`. The entry was true when written and stale a day later.**
 4. **The no-inline contract appears in many blocks and a real gate DOES exist** (`audit-inline-styling.js --check`) — but most comments never name it, so they classify as unenforced on their face. A pass compressing them all to one pointer would be cheap and would shrink the unenforced count honestly.

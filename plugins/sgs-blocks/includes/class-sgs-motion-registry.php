@@ -1094,7 +1094,7 @@ class SGS_Motion_Registry {
 	 * GENERATED from the `fx_effects` DB table by
 	 * `scripts/generate-fx-effects-php.py`, because `sgs-framework.db` is a
 	 * local authoring database that is never deployed — no PHP in this project
-	 * opens SQLite. The DB stays the source of truth (R-31-1: no hand-written
+	 * opens SQLite. The DB stays the source of truth (FP-1: no hand-written
 	 * lookup dictionaries); this is its shipped projection.
 	 *
 	 * @return array<string, array{plugin_set: string[], owns_scroll_transform: int}>

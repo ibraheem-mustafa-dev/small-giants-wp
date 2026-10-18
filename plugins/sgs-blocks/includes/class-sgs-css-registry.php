@@ -17,7 +17,7 @@
  * shapes across ~60 render.php + the container wrapper + custom-css.php. All 6
  * shapes produce a `<style>` tag IN THE BLOCK'S RENDERED HTML, so a single filter
  * that lifts `<style>` tags from each sgs/* block's output captures all of them
- * universally (R-31-9) — no per-shape audit, no risk of missing a block, and the
+ * universally (FP-9) — no per-shape audit, no risk of missing a block, and the
  * container wrapper (prepended tag) + custom-css residual (appended tag) are both
  * caught without touching either file.
  *

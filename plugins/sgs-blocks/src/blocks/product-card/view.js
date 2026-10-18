@@ -621,7 +621,7 @@ function applyPillSelection( ctx, detail ) {
 		const puDisplay = perUnitDisplay( combo, ctx );
 		ctx.perUnitDisplay = puDisplay;
 		ctx.perUnitHidden = puDisplay === '';
-		// R-22-13: an on-sale combo shows the "Sale" badge (limited-time urgency);
+		// FP-13: an on-sale combo shows the "Sale" badge (limited-time urgency);
 		// otherwise the author's cosmetic discount label (e.g. "Best value"). The
 		// "Sale" literal is the server-seeded ctx.saleLabel (SSR==swap parity).
 		const badgeLabel =

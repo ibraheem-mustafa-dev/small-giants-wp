@@ -60,7 +60,7 @@
 
 ## 5. Lateral application
 
-The identical **preset-ladder → layer-list → per-layer-advanced** shape solves **background layers** (stacked gradients/images/overlays: order, per-layer visibility, cap, raw-CSS paste), and equally **transforms/filters** and **border rules**. Build it once as a generic *ordered-effect-stack* control and three panels collapse into one — a real R-31-9 universality win.
+The identical **preset-ladder → layer-list → per-layer-advanced** shape solves **background layers** (stacked gradients/images/overlays: order, per-layer visibility, cap, raw-CSS paste), and equally **transforms/filters** and **border rules**. Build it once as a generic *ordered-effect-stack* control and three panels collapse into one — a real FP-9 universality win.
 
 ---
 

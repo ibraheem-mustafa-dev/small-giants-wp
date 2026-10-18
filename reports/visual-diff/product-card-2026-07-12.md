@@ -10,7 +10,7 @@ verified_on: "sandybrown page 8 (Mama's homepage), live computed-style 375/768/1
 # sgs/product-card — trial-tag full mirror (Fix 4)
 
 ## What changed
-- The in-body TRIAL tag ("New? Start here") now renders its box (padding/radius/background/full-width) through the SAME shared `sgs_label_box_css_rule()` helper the standalone `sgs/label` uses — Bean's composite-mirror requirement (R-31-9, Spec 31 §13.6 D294 block-private clean reproduction).
+- The in-body TRIAL tag ("New? Start here") now renders its box (padding/radius/background/full-width) through the SAME shared `sgs_label_box_css_rule()` helper the standalone `sgs/label` uses — Bean's composite-mirror requirement (FP-9, Spec 31 §13.6 D294 block-private clean reproduction).
 - New client-editable tag box attrs: `tagPadding`, `tagBackgroundColour`, `tagTextColour`, `tagBorderRadius`, `tagFullWidth` (default true = the trial tag's card-design full-width; a card-design constant, not a converter carve-out). Scoped to `.{uid}.sgs-product-card__tag--trial` (0,2,0) — wins by source order, never touches the featured overlay.
 - `style.css`: removed `width:max-content` from the base `.sgs-product-card__tag` rule (was forcing the trial tag to hug) and re-asserted it on `.sgs-product-card__tag--featured` (protects the featured overlay badge + image-less fallback hug). Base `padding`/`border-radius` converted to overridable var-defaults (F3 gate — the new attrs govern them).
 - FEATURED badge deliberately NOT mirrored (empty on this draft + a distinct overlay component — capability preserved, not broken).

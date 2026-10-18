@@ -74,7 +74,7 @@ Deployed `a5b8a3109` to sandybrown (blocks-only, 233s) from an isolated worktree
 
 Both halves confirmed on the live site: the default path is **byte-identical to the old behaviour** (backwards compatibility proven, not asserted), and the override reaches the painted pixels. Screenshot: `particles-live-override.png` — a clean golden trail, brightest at the pointer.
 
-⛔ **Still owed:** the EDITOR control has not been opened on the live site, and Bean has seen the effect only in these screenshots, not by moving his own pointer. R-31-13 is not closed by a measurement or a screenshot.
+⛔ **Still owed:** the EDITOR control has not been opened on the live site, and Bean has seen the effect only in these screenshots, not by moving his own pointer. FP-13 is not closed by a measurement or a screenshot.
 
 **Three unrelated blockers cleared to get this out** (all pre-existing, none caused by this change):
 1. `check-control-ux.js` was red on `sgs/site-header`/`sgs/trust-bar` — proven pre-existing in a clean worktree, then fixed by another track mid-session.

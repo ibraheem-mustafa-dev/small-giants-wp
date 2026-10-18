@@ -76,7 +76,7 @@ These govern how the SGS layer and WooCommerce relate.
 4. **There is no standalone SGS product store (Bean ruling).** Bean dropped the standalone `sgs_product` CPT and its admin toggle in favour of existing SGS blocks plus a normal WooCommerce install. Product data comes from WooCommerce. `sourceMode` is `typed` or `wc-product`; `sgs-cpt` is a legacy render branch for content that already references an `sgs_product` post and has no authoring UI.
 5. **No WC bundle on marketing pages.** The `sgs/*` card blocks never load WooCommerce's React bundle. WP Interactivity API plus the WC Store REST API replace it at approximately 12 KB.
 6. **WooCommerce owns commerce data (price, stock, variations).** SGS config that WC does not model (display modes, swatches, the per-unit divisor) lives in term meta, variation postmeta or block attributes. There is no `_sgs_sku_matrix`. (D149/D151 dual-source ruling: the WC-present path reads WC variations, never custom meta.)
-7. **R-31-14 clean.** `render.php` branches on the explicit `sourceMode` attribute, never on `empty($content)`.
+7. **FP-14 clean.** `render.php` branches on the explicit `sourceMode` attribute, never on `empty($content)`.
 
 ---
 
@@ -89,7 +89,7 @@ These govern how the SGS layer and WooCommerce relate.
 | `sgs/product-card` Bound mode, `sourceMode: sgs-cpt` | legacy render branch, no authoring UI | `plugins/sgs-blocks/src/blocks/product-card/render.php` | Design principle 4 |
 | `sgs-product/field` Block Bindings source | built | `plugins/sgs-blocks/includes/class-product-bindings.php` | Binding source section |
 | Editor product picker (WC products) and `sourceMode` auto-set | built | `plugins/sgs-blocks/src/blocks/product-card/edit.js` | FR-24-3 |
-| Add-to-cart through the SGS proxy (R-31-14-clean) | built | `plugins/sgs-blocks/includes/class-cart-proxy.php`, `plugins/sgs-blocks/src/blocks/product-card/view.js` | FR-27-G1 |
+| Add-to-cart through the SGS proxy (FP-14-clean) | built | `plugins/sgs-blocks/includes/class-cart-proxy.php`, `plugins/sgs-blocks/src/blocks/product-card/view.js` | FR-27-G1 |
 | `sgs/cart` mini-cart count badge | built; drawer not built | `plugins/sgs-blocks/src/blocks/cart/` | Cart section |
 | `sgs/option-picker` atomic block | built | `plugins/sgs-blocks/src/blocks/option-picker/` | FR-24-15 |
 | Collection query (own `WP_Query`, selection rules) in `sgs/card-grid` collection mode | built | `plugins/sgs-blocks/src/blocks/card-grid/`, `plugins/sgs-blocks/includes/class-cpt-collection-query.php` | FR-24-4, FR-24-5, FR-24-6 |
@@ -250,7 +250,7 @@ The collection mode exposes selection presets as named inspector controls, resol
 | `handpicked` | `post__in: handpickedIds[]`, ordered by the IDs array |
 | `category` | `tax_query` on the content type's category taxonomy, `orderby: date DESC` |
 
-Conditions are meta-driven, not hardcoded per content type (R-31-1, R-31-9). `contentType` is whitelisted via the `sgs_content_collection_post_types` filter (applied in `plugins/sgs-blocks/includes/class-cpt-collection-query.php`; default `['sgs_product', 'product']`). Count is capped server-side 1-24.
+Conditions are meta-driven, not hardcoded per content type (FP-1, FP-9). `contentType` is whitelisted via the `sgs_content_collection_post_types` filter (applied in `plugins/sgs-blocks/includes/class-cpt-collection-query.php`; default `['sgs_product', 'product']`). Count is capped server-side 1-24.
 
 #### FR-24-6 -- Designed empty state
 
@@ -270,7 +270,7 @@ Product cards and option pickers are produced by Spec 48's computed route from t
 
 #### FR-24-10 -- Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01)
 
-`sgs/trust-bar` keeps its curated **Typed mode** (an `items[]` repeater with the 3 badge variants `icon-circle`/`text-only`/`image-badge`, autoScroll and title) so the client editor is not replaced by raw block nesting. It has no Bound InnerBlocks mode for cloning. `render.php` branches on the explicit `sourceMode` attribute, not on `empty($content)` (R-31-14).
+`sgs/trust-bar` keeps its curated **Typed mode** (an `items[]` repeater with the 3 badge variants `icon-circle`/`text-only`/`image-badge`, autoScroll and title) so the client editor is not replaced by raw block nesting. It has no Bound InnerBlocks mode for cloning. `render.php` branches on the explicit `sourceMode` attribute, not on `empty($content)` (FP-14).
 
 #### FR-24-11 to FR-24-17 -- Variation-sets and `sgs/option-picker`
 
@@ -278,7 +278,7 @@ Design ratified via D144. Full design: `.claude/reports/2026-06-01-product-card-
 
 **FR-24-11 -- `_sgs_variation_sets` meta.** Per-type `content_impact` map. Each type also carries a `display_as` mode: `pills` | `static-list` | `hidden` (D144.1). For WC products this is presentation/config only; commerce data comes from WC. Read path built (`plugins/sgs-blocks/includes/class-product-bindings.php`); no editor panel exists.
 
-**FR-24-12 -- Content-impact map drives card rendering, not block logic.** R-31-9.
+**FR-24-12 -- Content-impact map drives card rendering, not block logic.** FP-9.
 
 **FR-24-13 -- Per-instance Interactivity API store.** The card owns the store; option-pickers read/write shared context (see the inter-block-state model in the architecture section and FR-27-I-MVP).
 
@@ -725,7 +725,7 @@ Product Collection + Product Filters composed into: (a) **toggle filters**: mobi
 
 Brand-style core Cart, Checkout and the Mini-Cart slide-out drawer (header placement; drawer width exposed as a Site-Editor global style / CSS custom property, not hard-coded). Gateway compatibility is FR-30-0(c)'s gate, not discovered here. Core controls the drawer markup, so styling targets the most stable selectors available and is re-verified per WC band.
 
-**Done when:** add-to-cart from the PDP opens/updates the styled Mini-Cart drawer; cart -> checkout completes a test order on the canary via the FR-30-0-verified gateway; all three surfaces render with zero horizontal overflow at 375/768/1440 (screenshot set attached) + axe 0 violations per surface. (Brand-styling judgement is Bean's R-22-13 gate, separate from this structural Done-when.)
+**Done when:** add-to-cart from the PDP opens/updates the styled Mini-Cart drawer; cart -> checkout completes a test order on the canary via the FR-30-0-verified gateway; all three surfaces render with zero horizontal overflow at 375/768/1440 (screenshot set attached) + axe 0 violations per surface. (Brand-styling judgement is Bean's FP-13 gate, separate from this structural Done-when.)
 
 #### FR-30-5 -- SGS product search block -- built
 
@@ -774,7 +774,7 @@ PDP reviews come from Trustpilot (`sgs/trustpilot-reviews` synced) or a verified
 
 **Done when:** the canary PDP renders only synced/verified reviews; with the sync disabled/empty the PDP renders without a layout gap and the toggle switches the empty behaviour with zero code; grep of templates and built trees finds zero hardcoded review text; schema `review`/`aggregateRating` emits only when live data exists.
 
-#### FR-30-11 -- Responsive + budget verification gate -- built (gates every phase close; R-22-13 3-breakpoint sign-off)
+#### FR-30-11 -- Responsive + budget verification gate -- built (gates every phase close; FP-13 3-breakpoint sign-off)
 
 Every page type (PDP, shop, cart, checkout) verified at 375/768/1440 via a **named, committed Playwright script** (`scripts/wc-pages-responsive-audit.js`) run at each phase close: touch targets at least 44px, no horizontal scroll, drawer/filters/gallery usable at every width, PLUS an executed-JS weight measurement per page against the under-50KB budget.
 

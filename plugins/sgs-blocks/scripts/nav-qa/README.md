@@ -8,7 +8,7 @@ The machine-checkable slice of the FR-36-16 live acceptance gate (Spec 36 §8). 
 | `sgs/nav-drawer-menu` | the vertical menu inside the drawer only | `.sgs-nav-drawer-menu` |
 | `sgs/nav-drawer` | the `<dialog>` that holds the drawer menu, the close button and any child blocks | `.sgs-nav-drawer` (a `<dialog>`) |
 
-Every script is parameterised (CLI arguments or a JSON probes file); none hardcodes block markup beyond the defaults documented below. None of them replaces the owner's eye (R-31-13) or the cropped screenshot pair: they are the machine-checkable slice of FR-36-16, not the whole gate.
+Every script is parameterised (CLI arguments or a JSON probes file); none hardcodes block markup beyond the defaults documented below. None of them replaces the owner's eye (FP-13) or the cropped screenshot pair: they are the machine-checkable slice of FR-36-16, not the whole gate.
 
 ## Prerequisites
 
@@ -321,7 +321,7 @@ It expects the fixture pages built by `build-poc-fixtures.py` (`<base>/poc-drawe
 
 ## 6. `shoot-drawer-pairs.mjs` — same-content screenshot pairs
 
-Captures, per variant and width, our fixture's open drawer next to the reference drawer it was modelled on, carrying the same content, for the owner's eye (R-31-13: numbers alone do not close a fidelity gate). Both sides go through the openness guard. A reference recipe with no `panel` selector is returned **UNVERIFIED** and is not presentable as a reference (`--allow-unverified-reference` opts in and stamps the cell). Any failed cell gives a non-zero exit; a reference that would not open is recorded as UNCAPTURED with the reason, never silently omitted.
+Captures, per variant and width, our fixture's open drawer next to the reference drawer it was modelled on, carrying the same content, for the owner's eye (FP-13: numbers alone do not close a fidelity gate). Both sides go through the openness guard. A reference recipe with no `panel` selector is returned **UNVERIFIED** and is not presentable as a reference (`--allow-unverified-reference` opts in and stamps the cell). Any failed cell gives a non-zero exit; a reference that would not open is recorded as UNCAPTURED with the reason, never silently omitted.
 
 ```bash
 node scripts/nav-qa/shoot-drawer-pairs.mjs --plan scripts/nav-qa/poc-content-plan.json \

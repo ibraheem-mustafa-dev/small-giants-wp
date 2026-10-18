@@ -23,7 +23,7 @@ This block is the core primitive of the FR-S9-8 Indus slim-bar reference pattern
 | labelCollapse=all email → mailto + accessible name | `<a href="mailto:Zainab@mamasmunches.com">`, `.sgs-business-info__label` clipped ≤2px, accName preserved | PASS |
 | labelCollapse=all phone → tel + accessible name | `<a href="tel:01214960123">`, label clipped ≤2px, accName "0121 496 0123" | PASS |
 | Call button (business-info phone) bottom row ≤1024 | `tel:01214960123`, 44px touch, primary bg, hidden `display:none` at ≥1024; on the bottom row (logo+cart+burger stay on the top row) | PASS |
-| Per-tier visibility 767/1023 | hide-mobile `max-width:767`, hide-tablet `768–1023` (aligned to canonical SGS_Breakpoints, R-31-1) — hide classes now injected on the wrapper div | PASS |
+| Per-tier visibility 767/1023 | hide-mobile `max-width:767`, hide-tablet `768–1023` (aligned to canonical SGS_Breakpoints, FP-1) — hide classes now injected on the wrapper div | PASS |
 | Move-to-drawer | email (`mailto:`) + socials (instagram) render inside the open drawer's custom zone, absent from the collapsed header row | PASS |
 | No header overflow | `scrollWidth ≤ innerWidth` at 320/375/768/1024/1440 (header); the 1024 page overflow is the accepted testimonial slider carousel, not the header | PASS |
 | No inline style / console | 0 inline `style=""` on the subtree; 0 console errors | PASS |

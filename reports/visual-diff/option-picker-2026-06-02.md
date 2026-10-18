@@ -11,7 +11,7 @@ change_description: >
   (spacing--30) for breathing room. version 0.1.1→0.1.2.
 verification_method: live canary render + computed-style eval (Playwright)
 pixel_diff_skipped: true
-pixel_diff_skip_reason: New atomic component, no mockup baseline; verified by rendered output + measurement (R-22-11).
+pixel_diff_skip_reason: New atomic component, no mockup baseline; verified by rendered output + measurement (FP-11).
 verified_by: opus-main-thread-live-playwright
 ---
 

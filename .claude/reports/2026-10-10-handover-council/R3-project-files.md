@@ -76,7 +76,7 @@ Every file is **909×540**, except `resp1.jpg`, which is 909×525. The naming fo
 - **Desktop evidence:** no. Nothing is at 1440 (the parity walker's desktop width); the widest frame is 909px.
 - **Breakpoint evidence:** weak. The "mobile" grabs are a roughly 375px iframe, but the mobile, tablet and desktop CSS live in v2 and can be measured directly at 375/768/1440.
 - **Missing-page evidence:** none. Every page shown exists as a route in v2.
-- **QA reference:** harmful. Several frames show states that were later removed (attribution placeholders, broken logo, text-link CTAs, three inner-page stylings), so they would contradict the ground truth that R-31-11 says to compare against.
+- **QA reference:** harmful. Several frames show states that were later removed (attribution placeholders, broken logo, text-link CTAs, three inner-page stylings), so they would contradict the ground truth that FP-11 says to compare against.
 
 They are design-iteration leftovers.
 

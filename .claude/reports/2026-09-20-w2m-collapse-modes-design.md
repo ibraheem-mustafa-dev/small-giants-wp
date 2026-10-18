@@ -355,7 +355,7 @@ Build only `Sgs_Bottom_Dock` + the bottom `scroll-padding` guard, ship nothing u
 
 ### 8.4 Closing gate
 
-Per R-31-13, script output alone does not close this. Bean's eye on the canary at 390 / 768 / 1440, with a non-default collapse point in the sweep (FR-36-8 §8 requires it), and with the drawer opened from the More tab.
+Per FP-13, script output alone does not close this. Bean's eye on the canary at 390 / 768 / 1440, with a non-default collapse point in the sweep (FR-36-8 §8 requires it), and with the drawer opened from the More tab.
 
 ---
 

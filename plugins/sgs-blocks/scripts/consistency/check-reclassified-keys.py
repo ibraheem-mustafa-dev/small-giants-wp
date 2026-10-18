@@ -18,7 +18,7 @@ data, every ruling silently reverts, with no error and no failing test.
 
 WHAT THIS GUARD DOES.
 Derives the protected key list FROM the golden master's own `bean_rulings_*`
-metadata (never a hardcoded dict — R-31-1 / blub.db 260), counts how many rows
+metadata (never a hardcoded dict — FP-1 / blub.db 260), counts how many rows
 in each upstream artefact still carry each ruled key, and DIFFS that against the
 accepted baseline in `reclassified-keys-baseline.json`.
 

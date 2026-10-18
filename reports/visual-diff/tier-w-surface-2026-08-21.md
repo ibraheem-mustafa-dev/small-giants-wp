@@ -27,9 +27,9 @@ Full page: `assets/tier-w-surface-desktop-full.png` (1440w) · mobile: `assets/t
 
 ---
 
-## Bean's eye — what to look at (R-31-13)
+## Bean's eye — what to look at (FP-13)
 
-R-31-13 is co-authoritative: the numbers below do not close this on their own.
+FP-13 is co-authoritative: the numbers below do not close this on their own.
 
 - **B (halftone)** is the strongest result — a genuine editorial dot-screen. This is the register's *"makes stock photography look art-directed"* claim, rendered.
 - **A (grain)** is deliberately subtle at the default `uIntensity` 0.08 — film grain plus a slight contrast lift. Judge whether the default should be stronger out of the box.

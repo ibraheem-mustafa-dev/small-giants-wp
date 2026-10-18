@@ -2036,7 +2036,7 @@
 					"withInputField": true
 				},
 				"preset_layer": null,
-				"units": "px/%/rem/vw; empty = full-width (theme default), never a hardcoded fallback per R-31-9",
+				"units": "px/%/rem/vw; empty = full-width (theme default), never a hardcoded fallback per FP-9",
 				"responsive_device_tier": true,
 				"multi_value": "none",
 				"dropdown_completeness": "n/a",

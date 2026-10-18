@@ -268,7 +268,7 @@ if ( '' !== $attrib_colour_effective_hover ) {
 
 // Attribution font-size/weight/style/family/decoration/transform/line-height —
 // the shared TypographyControls companion helper, sgs_typography_css_rule()
-// (Bean R-22-13), so this ONE call replaces the bespoke per-property
+// (Bean FP-13), so this ONE call replaces the bespoke per-property
 // extraction + sanitisation this block used to hand-roll — same pattern as
 // sgs/testimonial's `name` prefix (render.php:328). The helper reads
 // attributionFontSize's TIER-OBJECT shape {desktop,tablet,mobile} (Spec 35

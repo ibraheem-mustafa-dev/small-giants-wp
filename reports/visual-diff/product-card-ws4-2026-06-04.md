@@ -6,7 +6,7 @@ verdict: PASS first_paint_capture_passed: true
 
 **Validation:** rendered the REAL configurator surface — page 589 (`sourceMode='wc'`, productId 540, the 48-SKU fixture) via `do_blocks()` in full page context (`setup_postdata`) on the sandybrown canary, post-deploy + opcache reset. (The bare synthetic `do_blocks` of a `sourceMode='bound'` markup is NOT a valid surface — it renders empty for BOTH the migrated and the committed versions because the configurator mode is `'wc'` and needs page context. A prior session-internal attempt mis-read that invalid probe as a regression; corrected here by validating on the real surface.)
 
-## Result — PASS (live-DOM, R-22-11)
+## Result — PASS (live-DOM, FP-11)
 - **0 PHP errors/warnings** in the rendered page.
 - **Mirror applied:** the product-card outer element now carries `sgs-container` — `<div class="sgs-container product-card product-card--bound wp-block-sgs-product-card" data-wp-interactive="sgs/product-card" data-wp-context="{…48-combo manifest…}">`. `sgs-container` total on the page 2 → 3 (the +1 is product-card).
 - **Configurator fully intact:** `data-wp-interactive` ×1, `data-wp-context` ×1 (NOT doubled — no double-render), `data-wp-init` ×1, **44 `sgs-option-picker`** occurrences (the Size+Flavour pickers), the add-to-cart `<form>` + `data-wp-on--submit` + add-to-cart button all present. All three `data-wp-*` attrs land on the single outer wrapper element (verified in the opening tag).

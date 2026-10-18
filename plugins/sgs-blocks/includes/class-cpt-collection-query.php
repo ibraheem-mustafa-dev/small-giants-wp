@@ -24,7 +24,7 @@
  * on a bare WordPress install. WooCommerce-specific querying stays in
  * Card_Grid_Products, which is a different engine for a different data source.
  *
- * R-31-1 / R-22-1: query args are derived from the selection rule and the CPT
+ * FP-1 / FP-1: query args are derived from the selection rule and the CPT
  * meta registered in class-product-cpt.php — no hardcoded per-product logic.
  *
  * @package SGS\Blocks
@@ -253,7 +253,7 @@ final class CPT_Collection_Query {
 				if ( $category_term > 0 ) {
 					// Taxonomy associated with this content type by convention:
 					// sgs_product → sgs_product_cat. Generalises to future types
-					// via the {post_type}_cat naming pattern (R-22-9).
+					// via the {post_type}_cat naming pattern (FP-9).
 					$tax_slug                = $content_type . '_cat';
 					$query_args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- intentional; taxonomy filter is the purpose of this rule.
 						array(

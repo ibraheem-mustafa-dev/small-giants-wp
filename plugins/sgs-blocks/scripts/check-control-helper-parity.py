@@ -30,7 +30,7 @@ A block spreads the canonical key set instead of hand-declaring keys, and the
 PHP derives the SAME keys from the SAME rule. One owner, no drift. This script
 measures which other controls have caught up.
 
-WHAT IT CHECKS (derived from disk, never from a hardcoded roster — R-31-1)
+WHAT IT CHECKS (derived from disk, never from a hardcoded roster — FP-1)
 --------------------------------------------------------------------------
 The corpus is every `src/components/*.js` that at least one block's `edit.js`
 actually mounts. A component nothing mounts is reported separately rather than

@@ -66,7 +66,7 @@ Old numbers still appear in code comments, reports and history. Read them as fol
 | 26 | 32 Part B |
 | 28 | 27 Part 2 (FR-28-n unchanged) |
 | 30 | 27 Part 3 (FR-30-n unchanged) |
-| 31 | 48 (cloning); `.claude/rules/framework-principles.md` for R-31-n (R-22-n is the same rule); Spec 02 "Composite wrapper rule"; Spec 32 FR-32-13 and §6.1 |
+| 31 | 48 (cloning); `.claude/rules/framework-principles.md` for the binding rules, cited as FP-n (its first paragraph reads the old R-31-n and R-22-n labels); Spec 02 "Composite wrapper rule"; Spec 32 FR-32-13 and §6.1 |
 | 33 | 32 Part C (snapshot format, with FR-33-11 and FR-33-20) and 48 §11 (extractor); FR-33-n unchanged |
 | 34 | 36 |
 | 41 | 36 Part 14: `Spec 41 §N.M` is `Spec 36 §14.N.M`; FR-41-n unchanged |

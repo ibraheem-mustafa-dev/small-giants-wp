@@ -165,7 +165,7 @@ finding_count: 27
 ---
 
 ### 17. **Gate 3C definition not in implementation plan**
-**Quote** (wave-3c-implementation-plan.md:90–91): "Gate 3C passes when every family in the signed list is built or explicitly parked (section 1), each unit's live report is PASS, the specs state the model, and one composed real header (a pill or capped header, a mega, a drawer whose × is optional) matches its requirements-table row, with Bean's eye (R-31-13)."
+**Quote** (wave-3c-implementation-plan.md:90–91): "Gate 3C passes when every family in the signed list is built or explicitly parked (section 1), each unit's live report is PASS, the specs state the model, and one composed real header (a pill or capped header, a mega, a drawer whose × is optional) matches its requirements-table row, with Bean's eye (FP-13)."
 
 **Problem:** This definition exists in the implementation plan but NOT in the strategic plan's formal "Milestone gates" section (which just says "architecture harmonised"). A new reader will not look at the implementation plan first; they'll read the strategic plan and find only a one-liner. The full Gate 3C definition is buried in a later section of the implementation plan.
 

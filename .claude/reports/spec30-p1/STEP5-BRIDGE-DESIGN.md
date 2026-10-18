@@ -20,9 +20,9 @@
    - **Simple product / WC absent / manifest null / cap tripped:** fall back to `do_blocks()` of core `woocommerce/add-to-cart-with-options` + `woocommerce/product-price` — core path per FR-30-2.
 2. **Engine reuse, zero duplication** (lesson `duplicated-calculation-drifts`): buybox loads product-card's view module — preferred `wp_enqueue_script_module()` of the card's registered module ID from buybox render.php; fallback a thin buybox view.js that `import`s the card module source. Small BACKWARDS-COMPATIBLE engine additions only:
    - `actions.dismissCartStatus` (sets `ctx.cartStatus = ''`) — FR-30-7 dismissible error.
-   - `applyAvailability` reads `ctx.soldOutLabel` / `ctx.unavailableLabel` with current literals as defaults — operator-editable labels (buybox inspector controls, seeded into ctx). Benefits card too (R-22-9 universal).
+   - `applyAvailability` reads `ctx.soldOutLabel` / `ctx.unavailableLabel` with current literals as defaults — operator-editable labels (buybox inspector controls, seeded into ctx). Benefits card too (FP-9 universal).
 3. **Template part:** `parts/sgs-pdp-buybox.html` swaps core `product-price` + `add-to-cart-with-options` for `<!-- wp:sgs/buybox /-->` (breadcrumbs/title/rating stay core).
-4. **Gallery swap (riskiest unknown — probe FIRST on canary):** core `woocommerce/product-gallery` is Interactivity-based in WC 10.x. Probe its store/context on the live PDP; if drivable from the bridge (store action or context write), wire it; if not, document the fallback (gallery static at P1, flagged to Bean at R-22-13) — price+cart correctness are the hard acceptance.
+4. **Gallery swap (riskiest unknown — probe FIRST on canary):** core `woocommerce/product-gallery` is Interactivity-based in WC 10.x. Probe its store/context on the live PDP; if drivable from the bridge (store action or context write), wire it; if not, document the fallback (gallery static at P1, flagged to Bean at FP-13) — price+cart correctness are the hard acceptance.
 5. **Notify-me: DEFERRED at P1** (explicit, per FR-30-7 rule). No shipped guarded email-capture exists; building PECR-compliant capture (consent UI + storage + rate limits) is its own unit. Commit message carries the DEFER note. The notify-me CTA label control ships with the deferral.
 
 ## Why not (a) self-seeding option-picker

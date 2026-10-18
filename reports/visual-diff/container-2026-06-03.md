@@ -17,7 +17,7 @@ Server-rendered dynamic block (no animation/first-paint JS). The new `__inner` c
 - **A1 (block):** new `contentWidth` attr on sgs/container. render.php wraps `$content` in `<div class="sgs-container__inner" style="max-width:<contentWidth>;margin-inline:auto">`, guarded to `'' === $layout` (never wraps a direct grid/flex container — would collapse the layout). + `.sgs-container__inner { box-sizing:border-box; width:100% }` in style.css + editor.css; + a "Content width" TextControl in edit.js. block.json version 0.1.0 → 0.2.0. Additive attr on a dynamic block (save = `<InnerBlocks.Content/>`) → no deprecated.js needed.
 - **A2 (converter):** slug-None section path transfers the section's OWN max-width → widthMode (absent → `full`/alignfull → escapes WP's per-container `:not(.alignfull)` 1200 cap; present → `custom`+customWidth). The fold lifts the folded `__inner`'s max-width → `contentWidth` (was dropped).
 
-## Evidence (live-DOM, R-22-11, draft localhost :8137 vs canary page 144 @1440)
+## Evidence (live-DOM, FP-11, draft localhost :8137 vs canary page 144 @1440)
 
 | Section | Draft (target) | Clone BEFORE | Clone AFTER | Verdict |
 |---|---|---|---|---|
@@ -37,4 +37,4 @@ Server-rendered dynamic block (no animation/first-paint JS). The new `__inner` c
 - Featured-product regression check (it is one of the 4 target sections): #3 heading-centre originates on `.wp-block-sgs-heading` (the `__inner` wrapper computes `text-align:start`); #4 product-card width is on the card (grid stays 640/384). Both PRE-EXISTING, not caused by A1/A2.
 
 ## Review
-Build PASS (`npm run build`), render.php copied to build/, deployed to canary, re-cloned page 144, live-DOM measured. Structural parity per FR-22-18 (R-22-4/9/11/13/18). Bean visual review in progress; separate page-level issues (composites #1/#2, content-routing #3–#8, image sideload) tracked for the WS-4 + triage workstream — out of A1/A2 scope.
+Build PASS (`npm run build`), render.php copied to build/, deployed to canary, re-cloned page 144, live-DOM measured. Structural parity per FR-22-18 (per-section gates, FP-9, FP-11, FP-13). Bean visual review in progress; separate page-level issues (composites #1/#2, content-routing #3–#8, image sideload) tracked for the WS-4 + triage workstream — out of A1/A2 scope.

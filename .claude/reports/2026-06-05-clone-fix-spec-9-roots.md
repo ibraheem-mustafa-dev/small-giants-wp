@@ -12,7 +12,7 @@ source: v2 root-cause reports + QC-corrections + 3-persona adversarial council (
 
 **Objective (Bean-directed 2026-06-05):** fix the pipeline ONLY. No verifier-build this session. **Verification = re-clone + check the named symptom is gone on the live clone.** Deploy to the **actual homepage = page 8** on sandybrown (NOT page 144 — `--deploy-target page:8`; `page_on_front=8`). Re-clone command base: `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --converter-v2 --mode draft --deploy-target page:8`.
 
-**Rules:** no cheating / no per-section band-aids (R-22-1 DB-first, R-22-9 universal). Every fix passes "does this apply to all SGS blocks/clients, not just Mama's?". Build via Sonnet subagents, edit-only-named-files, verify each on the live clone, commit by explicit path (theme thread shares the tree — `git log -1 --stat`). **Never conclude no-fault from one DB column or script logic — read the block's actual capability (block.json attrs + render.php).**
+**Rules:** no cheating / no per-section band-aids (FP-1 DB-first, FP-9 universal). Every fix passes "does this apply to all SGS blocks/clients, not just Mama's?". Build via Sonnet subagents, edit-only-named-files, verify each on the live clone, commit by explicit path (theme thread shares the tree — `git log -1 --stat`). **Never conclude no-fault from one DB column or script logic — read the block's actual capability (block.json attrs + render.php).**
 
 ---
 
@@ -70,7 +70,7 @@ The converter doesn't handle blocks that hold content via an ARRAY attr (not Inn
 ### R8 — Missing specific lift mappings (IMPL) — symptoms #3, #5B, #11d, #12D
 No DB suffix / not in `_root_lift_rules` for: child→parent cross-level (`.sgs-hero__sub max-width`→hero `subHeadlineMaxWidth`, #3); the trust-bar `__icon` wrapper CSS `border-radius:50%`/`background:white`/dims/box-shadow — the D2 lift dropped them (#5B; OR set the REAL `sgs/icon` attr `backgroundShape:"circle"`); BEM modifier `--trial`→`variantStyle:"trial"` (#11d dashed border); `object-fit`/`border-radius`→`sgs/media` (#12D brand image zoom/corners).
 
-**Fix:** add each mapping (DB-driven, R-22-1).
+**Fix:** add each mapping (DB-driven, FP-1).
 
 **Symptom-check:** hero subheading capped (#3); trust-bar icon white circle present (#5B); trial card dashed border (#11d); brand image object-fit cover + rounded (#12D).
 

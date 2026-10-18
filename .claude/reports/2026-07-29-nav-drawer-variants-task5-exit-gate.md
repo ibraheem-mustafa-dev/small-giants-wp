@@ -4,7 +4,7 @@ project: small-giants-wp
 title: sgs/nav-drawer desktop variants — Task 5 exit-gate verification
 date: 2026-07-29
 spec: 36-SGS-NAVIGATION-SYSTEM.md FR-36-6
-status: MEASUREMENT COMPLETE — awaiting Bean's eye (R-31-13); gate does NOT close on this report alone
+status: MEASUREMENT COMPLETE — awaiting Bean's eye (FP-13); gate does NOT close on this report alone
 ---
 
 # Task 5 — the pre-registered exit gate for the drawer variants
@@ -33,7 +33,7 @@ status: MEASUREMENT COMPLETE — awaiting Bean's eye (R-31-13); gate does NOT cl
 
 Last session built seven "looks" for the burger menu, each modelled on a real agency website, and deployed them. **This session checked whether they actually work and actually resemble those sites.** Checking meant three things: building seven test pages that carry the *real* content of the sites they copy, running every accessibility and keyboard check on each one at three screen sizes, and taking side-by-side photographs so Bean can judge the look himself.
 
-**Result: every automated check passes — 21 of 21 cells.** Two genuine issues came out of it, neither an automated failure: one is a visual reading-order mismatch in the two-column look, and one belongs to another track entirely. **The gate is NOT closed** — by the project's own rule (R-31-13) numbers and Bean's eye are co-authoritative, and only the numbers are in.
+**Result: every automated check passes — 21 of 21 cells.** Two genuine issues came out of it, neither an automated failure: one is a visual reading-order mismatch in the two-column look, and one belongs to another track entirely. **The gate is NOT closed** — by the project's own rule (FP-13) numbers and Bean's eye are co-authoritative, and only the numbers are in.
 
 ---
 
@@ -132,7 +132,7 @@ A fourth issue was a **fixture** defect, not a product one: at 375px every click
 
 ## 6. What does NOT close on this report
 
-**Bean's eye (R-31-13).** Side-by-side same-content pairs at 1440 are at `reports/visual-diff/drawer-variants-2026-07-29/` with a `manifest.json`.
+**Bean's eye (FP-13).** Side-by-side same-content pairs at 1440 are at `reports/visual-diff/drawer-variants-2026-07-29/` with a `manifest.json`.
 
 **Tally: 7/7 ours captured, 6/7 references captured.** `buck.co` is UNCAPTURED — no clickable trigger found among the candidate selectors — and is recorded as a gap rather than omitted. The other six opened and were photographed with their panels genuinely open.
 

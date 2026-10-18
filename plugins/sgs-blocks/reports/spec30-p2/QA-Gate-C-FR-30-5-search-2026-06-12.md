@@ -8,7 +8,7 @@
 
 **Endpoint:** `GET /wp-json/sgs/v1/product-search?q=…`
 
-**Verifier:** main agent (live probes, not a subagent self-report — R-22-11)
+**Verifier:** main agent (live probes, not a subagent self-report — FP-11)
 
 ## Verdict: 7/7 PASS (C-6 closed after placing the block on /shop/)
 

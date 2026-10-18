@@ -15,7 +15,7 @@
  *
  * This module is therefore the flyout's own — much smaller — toggle:
  * no reparent, no scroll-lock, no background freeze, no focus trap. It is
- * NOT a second dialog utility (R-31-9 is about not re-deriving the SAME
+ * NOT a second dialog utility (FP-9 is about not re-deriving the SAME
  * mechanism twice); it is the disclosure pattern the shared store does not
  * (yet) provide, scoped to this one block, per the file-scope constraint on
  * this build (`plugins/sgs-blocks/src/blocks/cart/**` only — the shared

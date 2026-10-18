@@ -4,7 +4,7 @@
 BEFORE = the pattern's block markup at a given git ref (default HEAD, i.e.
 pre-swap); AFTER = the working-tree version. Both are posted as WP pages so
 the two renders can be compared on the real front end — the only fidelity
-signal that counts (R-31-11).
+signal that counts (FP-11).
 
 Usage (from the worktree root):
   python plugins/sgs-blocks/scripts/migrate-core-blocks/publish-pattern-pair.py \
