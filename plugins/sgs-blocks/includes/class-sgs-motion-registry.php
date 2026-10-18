@@ -492,6 +492,21 @@ class SGS_Motion_Registry {
 			'path' => 'build/shared/effects/magnet.js',
 			'deps' => array(),
 		),
+		/*
+		 * What the nav label magnets enqueue. The nav views load `@sgs/magnet` with a native `import()`, which resolves only
+		 * through the import map, and WordPress lists an enqueued module's dependencies there, not the module itself; this
+		 * id loads the same file and names `@sgs/magnet` as a dynamic dependency. Both ids resolve to one URL, so the
+		 * page holds one instance.
+		 */
+		'@sgs/magnet-loader'       => array(
+			'path' => 'build/shared/effects/magnet.js',
+			'deps' => array(
+				array(
+					'id'     => '@sgs/magnet',
+					'import' => 'dynamic',
+				),
+			),
+		),
 		'@sgs/fx-ripple'           => array(
 			'path' => 'build/shared/effects/fx-ripple.js',
 			'deps' => array(),

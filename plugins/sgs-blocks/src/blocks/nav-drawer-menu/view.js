@@ -33,7 +33,7 @@
  */
 
 import { initNavIndicator } from '../../shared/effects/nav-indicator';
-import { initMagnet } from '../../shared/effects/magnet';
+import { initLabelMagnet } from '../../shared/effects/label-magnet';
 import { initDrillDown } from '../../shared/effects/nav-drilldown';
 import { initSeparators } from '../../shared/separators';
 import { initAccordionScroll } from './accordion-scroll';
@@ -111,7 +111,7 @@ function initBarEffects( root ) {
 		bar.querySelectorAll( '.sgs-nav-drawer-menu__magnet-target' ).forEach(
 			( el ) =>
 				activeCleanups.push(
-					magnetOpts ? initMagnet( el, magnetOpts ) : initMagnet( el )
+					initLabelMagnet( el, magnetOpts )
 				)
 		);
 	}

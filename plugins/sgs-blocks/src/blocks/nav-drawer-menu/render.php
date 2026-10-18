@@ -581,6 +581,10 @@ $indicator_style           = 'highlight' === ( $attributes['itemBgHoverTreatment
 $indicator_colour          = isset( $attributes['itemBgHover'] ) ? (string) $attributes['itemBgHover'] : '';
 $indicator_colour_gradient = sgs_css_gradient_value( $attributes['itemBgHoverGradient'] ?? '' );
 $magnet_enabled            = ! empty( $attributes['itemMagnetEnabled'] );
+if ( $magnet_enabled ) {
+	// The view loads the shared magnet with a native import(); enqueuing the loader lists it in the import map.
+	wp_enqueue_script_module( '@sgs/magnet-loader' );
+}
 $bar_data_attrs            = '';
 $bar_data_attrs           .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
 $bar_data_attrs           .= $magnet_enabled ? ' data-magnet' : '';

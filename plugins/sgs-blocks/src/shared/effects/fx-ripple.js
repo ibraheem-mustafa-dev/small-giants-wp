@@ -12,7 +12,8 @@
  *  - `data-sgs-fx-ripple-duration`: milliseconds (default 650).
  *  - `data-sgs-fx-ripple-easing`: a CSS easing (default `ease-out`).
  *  - `data-sgs-fx-ripple-colour`: a resolved colour (default white).
- * The peak opacity is the schema field's own custom property, `--sgs-ripple-op`, which the stylesheet reads.
+ * The peak opacity is the schema field's own custom property, `--sgs-ripple-op`, which the stylesheet reads: a layer
+ * that stores one prints it as a scoped rule, and one that stores none (a preset) gets 0.35 written here.
  *
  * Reduced motion is read live on every trigger, and a switch to reduce cancels a circle already running.
  *
@@ -32,6 +33,7 @@ const DEFAULT_FACTOR = 2.2;
 const DEFAULT_DURATION = 650;
 const DEFAULT_EASING = 'ease-out';
 const DEFAULT_COLOUR = '#fff';
+const DEFAULT_PEAK = 0.35;
 const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
 
 /** Elements with a bound listener, each with its unbind. */
@@ -118,6 +120,11 @@ function play( el, x, y, rect ) {
 	el.style.setProperty( '--sgs-ripple-colour', safeValue( el.getAttribute( 'data-sgs-fx-ripple-colour' ), DEFAULT_COLOUR ) );
 	el.style.setProperty( '--sgs-ripple-duration', duration + 'ms' );
 	el.style.setProperty( '--sgs-ripple-ease', safeValue( el.getAttribute( 'data-sgs-fx-ripple-easing' ), DEFAULT_EASING ) );
+	// A layer that stores a peak opacity prints it as a scoped rule (and as the attribute); one that stores none (every
+	// preset) would read the registered initial 0 and paint nothing, so it takes the reference default here.
+	if ( null === el.getAttribute( 'data-sgs-fx-ripple-peak-opacity' ) ) {
+		el.style.setProperty( '--sgs-ripple-op', String( DEFAULT_PEAK ) );
+	}
 	// Restart the animation when a circle is still running.
 	stop( el );
 	void el.offsetWidth;

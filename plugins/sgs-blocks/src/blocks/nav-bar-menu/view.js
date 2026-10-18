@@ -43,7 +43,7 @@
 import '../../shared/nav-interactivity/store';
 import '../../shared/nav-interactivity/mega-disclosure';
 import { initNavIndicator } from '../../shared/effects/nav-indicator';
-import { initMagnet } from '../../shared/effects/magnet';
+import { initLabelMagnet } from '../../shared/effects/label-magnet';
 import initPanelMotionState from './panel-motion-state';
 import initBurgerMotionState from './burger-motion-state';
 
@@ -122,7 +122,7 @@ function initBarEffects( root ) {
 		bar.querySelectorAll( '.sgs-nav-bar-menu__magnet-target' ).forEach(
 			( el ) =>
 				activeCleanups.push(
-					magnetOpts ? initMagnet( el, magnetOpts ) : initMagnet( el )
+					initLabelMagnet( el, magnetOpts )
 				)
 		);
 	}

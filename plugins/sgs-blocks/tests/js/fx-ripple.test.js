@@ -57,6 +57,18 @@ describe( 'ripple writer', () => {
 		expect( el.getAttribute( 'data-sgs-ripple' ) ).toBe( 'play' );
 	} );
 
+	it( 'a layer carrying no peak opacity (a preset) gets the visible default, not the registered 0', () => {
+		const el = mount( 'data-sgs-fx-ripple-size-factor="1.6"' );
+		fire( el, 'pointerdown', 10, 20 );
+		expect( read( el, '--sgs-ripple-op' ) ).toBe( '0.35' );
+	} );
+
+	it( 'leaves the peak opacity to the layer rule when the layer carries one', () => {
+		const el = mount( 'data-sgs-fx-ripple-peak-opacity="0.6"' );
+		fire( el, 'pointerdown', 10, 20 );
+		expect( read( el, '--sgs-ripple-op' ) ).toBe( '' );
+	} );
+
 	it( 'takes the Indus defaults when no value is stored', () => {
 		const el = mount( '' );
 		fire( el, 'pointerdown', 10, 20 );
