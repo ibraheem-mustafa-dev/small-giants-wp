@@ -51,14 +51,24 @@ status: approved (Bean, 2026-10-12: option A); Phase 0 built (Spec 38A S7 closed
 ### Phase 2. Spec 48 in both directions (one session, needs Phase 1)
 - [x] **Done 2026-10-18 (Bean approved after a QC pass; `e0650c9`).** Spec 48 §10 runs in both directions: its "Both directions" paragraph names the capability inventory, the coverage map and the gate; matrix rows 11 and 12 point at the coverage map's gaps for their wave (no copied list or count); §10.1 holds the recogniser framework with FR-48-77 as its first member and one FR per Phase 4 wave, FR-48-78 (motion writer, 4.0) to FR-48-85 (draft reading), each done when `capabilities.mjs --gaps` lists none of its wave and `--gate` exits 0, with a planted draft that raises the row again once its writer, recogniser or reader is removed. §4 lists the coverage files; FR-48-47's status names the writer S6 left unmapped.
 
-### Phase 3. Behaviour semantics in the framework DB (framework lane, needs Phase 1)
+### Phase 3. Behaviour semantics in the framework DB (framework lane, needs Phase 1; only the behaviour recognisers and the modes and values waves need it, so it sits at item 5 of Phase 4's order)
 - [ ] Every behaviour and content setting gets a machine-readable meaning (what it does, its trigger, its parameters) seeded from `block.json` by `sgs-update-v2.py`, so recognisers map by query, never by a hand-written list (R-31-1).
 - **Next (first step):** in plan mode on Bean's PC, survey what the DB already records for the behaviour and content settings (the `block_attributes` description and role columns, and the coverage notes that say a setting has no description) against what each `block.json` declares, settle the shape of a setting's meaning (what it does, its trigger, its parameters) with Bean, then build the detector before the sweep (the migration-method skill) and extend `sgs-update-v2.py`, the only DB writer. Done when a behaviour setting with no recorded meaning fails a test.
 
-### Phase 4. Recognisers in waves (needs Phases 1 to 3; step 4.0 needs only Phase 0)
+### Phase 4. Recognisers in waves (needs Phase 1; step 4.0 needs only Phase 0; the behaviour recognisers and modes and values waves also need Phase 3)
 - [ ] **4.0 Motion cloning writer (Spec 38A FR-38A-33, its phase M7):** the cloning route writes `sgsMotion` per element through `scripts/computed-route/lib/motion-validate.mjs` (built in Spec 38A unit M5.2) and reads motion fields from the framework DB as Spec 38A decision 3 settles it. Its prerequisite, the Spec 38A build through M6.7, is done, so it can start before Phase 3; it is what the Indus clone waits on (`.claude/plans/2026-10-11-spec48-indus-build.md` step 15). Done when Spec 48 FR-48-78's done-when holds.
 - [ ] One recogniser framework: a mechanism signature, read from the re-derived inventory and sampled styles, identifies a behaviour and its options and maps it to an SGS setting by DB query, or raises a named gap. Waves follow the gap list, Indus needs first (its re-run intake's seen-but-unsupported rows, grouped by wave); each wave is closed by its Spec 48 FR (FR-48-79 to FR-48-85). Motion and effect recognisers target the standardised motion system from Phase 0, which is now built.
 
+## Order (with the Indus build)
+This plan and the Indus build plan (`.claude/plans/2026-10-11-spec48-indus-build.md`) run as one sequence (Bean, 2026-10-18): the Indus build is the client delivery and each wave builds capabilities it uses, so each wave names the Indus step it unblocks. Step and wave names stay as they are; they are cited in Spec 38A, Spec 48 and the coverage map.
+1. In parallel: lane A (framework) builds step 4.0, the motion writer (Spec 48 FR-48-78); lane B (Bean and Indus) resumes Indus step 15, Bean's intake review, then steps 16, 17 and 19, which need no wave. The review does not wait for step 4.0: motion transfers at Fill, and a later intake run adds new rows as a delta that keeps his marks (`scripts/computed-route/lib/intake-review.mjs::carryOver`).
+2. Draft reading (FR-48-85): it feeds every other wave, and holds the 8 capabilities only the Indus running page showed (inputs typed in code, an SVG filter built in code, `max()` in a set style).
+3. Site and surfaces (FR-48-84) and the media upload part of content, media and icons (FR-48-82); unblocks Indus step 18, the site build (FR-48-55, FR-48-58, FR-48-59).
+4. States (FR-48-81); with step 4.0, unblocks Indus step 20, the header slice.
+5. Phase 3, then behaviour recognisers (FR-48-80, whose first recogniser is FR-48-77, Indus step 20b) and modes and values with no CSS property (FR-48-79).
+6. The rest of content, media and icons (FR-48-82) and shop, forms and data (FR-48-83); unblocks Indus step 22, forms (FR-48-57).
+7. Indus steps 21, 23, 24 and 25 (trees, check, answer sheet, sign-off). Mama's Munches then needs its own drafts' shop and behaviour gaps closed.
+
 ## Sequencing with Indus
-- The Indus build (`.claude/plans/2026-10-11-spec48-indus-build.md`) continues through step 20 (the header slice needs mostly styling and navigation).
-- Step 20b (FR-48-77) is absorbed into Phase 4 of this plan. Steps 21 onwards wait for the Phase 4 waves that the Indus gap list names. Mama's Munches waits for the shop and behaviour waves.
+- The order above is the sequence; the Indus build plan's steps name the wave each needs.
+- Indus step 20b (FR-48-77) is the first recogniser of the behaviour recognisers wave (item 5).

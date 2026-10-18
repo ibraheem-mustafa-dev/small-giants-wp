@@ -1,6 +1,6 @@
 Invoke /autopilot before doing anything else.
 
-TRACK: Spec 48 Indus build, plan step 15 (Bean's intake review). Previous session closed 2026-10-13 at origin/main b1e879cfb.
+TRACK: Spec 48 Indus build, plan step 15 (Bean's intake review). It may run now, beside clone coverage step 4.0 (the coverage plan's Phase 4 "Order", lane B): the review needs no coverage wave. Previous session closed 2026-10-13 at origin/main b1e879cfb.
 
 CONTEXT (plain English)
 - Spec 48 turns a Claude Design export (draft pages in sites/indus-foods/handoff/) into an SGS WordPress site. Stage 1, "intake", reads the export and proposes everything Bean confirms in one review (review.md). Bean has decided category 1 (draft defects), category 2 (missing features) and skeleton batches 1 to 5 (which SGS block each draft element becomes, for the top bar, header, mega menus, drawer, footer, home hero and brand strip).

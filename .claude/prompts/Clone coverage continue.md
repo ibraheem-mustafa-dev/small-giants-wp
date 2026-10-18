@@ -21,7 +21,7 @@ CURRENT STATE
 - The Indus intake re-run finished on Bean's PC on 2026-10-18 (98 minutes; draft-defects pass B alone took 78 minutes and prints nothing until it ends) and is committed (`71ae521`), with `--rerun-skeletons` applied. `node scripts/computed-route/check-approved.mjs indus-foods` reproduces all 93 of Bean's recorded decisions (exit 0). The old intake held no saved marks (his decisions live in `approved-decisions.json` and the standing rules), so "carried marks 0" was correct.
 - review.md: 1,336 rows, 813 to read and 523 that Accept all covers. 184 of them are seen-but-unsupported rows: draft reading 67, content, media and icons 33, shop, forms and data 28, motion writer (4.0) 20, modes and values with no CSS property 12, behaviour recognisers 10, states 8, excluded 3, site and surfaces 1, and 2 not in the map (`html:image-slot`, `html:indus-logo`). Those 2 came from intake's skeleton path, which named a draft's custom elements by their own tag; fixed in the commit that wrote this note (`lib/intake-missing.mjs::coverageMissing` now counts them as `html:custom-element`, wave draft reading). The committed review still shows them until the next full intake run; Bean can mark both `gap:draft reading` by hand rather than re-run.
 - The running page used 8 capabilities the file read missed (each still raised as a row): `input-type:email`, `input-type:tel` and `input-type:text` on Indus element 560 (the enquiry form's inputs), `svg:filter`, `svg:feGaussianBlur`, `svg:feMerge` and `svg:feMergeNode` on element 321 (an SVG filter the draft's script builds), and `css-function:max` in an inline style the running page set. They are draft-reading wave work (FR-48-85): the file read should find inputs whose type is set in code and SVG elements built in code.
-- The Indus clone is paused at Bean's intake review (`.claude/plans/2026-10-11-spec48-indus-build.md` step 15) until step 4.0 lands.
+- The clone coverage plan and the Indus build plan (`.claude/plans/2026-10-11-spec48-indus-build.md`) now run as one sequence (the coverage plan's Phase 4 "Order" subsection, agreed with Bean 2026-10-18). Each coverage wave names the Indus step it unblocks; Indus step 15 (Bean's intake review) does not wait for step 4.0, because motion transfers at Fill, not at the review, so it runs beside this work through `.claude/prompts/Track 1 Indus review.md`.
 
 READ FIRST
 - `.claude/plans/2026-10-12-clone-coverage-foundation.md` in full (Phases 3 and 4 especially).
@@ -43,15 +43,15 @@ TASKS, IN ORDER
    - The writer writes per-element `sgsMotion` (entrance, hover, effect) through `scripts/computed-route/lib/motion-validate.mjs`, with motion fields read from the framework DB as Spec 38A decision 3 settles it, and token references where a value equals the client's token.
    - It must close every "motion writer (4.0)" entry in `scripts/computed-route/data/clone-coverage.json` (`capabilities.mjs --gaps`) or name it as a Spec 38 gap. Each coverage entry it closes gets its recognise, write and check references.
    - Done when FR-48-78's done-when holds, Indus's entrances clone with their measured timings at 375/768/1440, and a planted draft raises its row again with the writer removed.
-   - About 4 to 6 hours across two sessions; this is what the Indus clone waits on.
-   - Bean decides the order of steps 2 and 3. Recommend step 2 first, because it unblocks the Indus clone.
-3. Phase 3, behaviour meanings in the framework DB (framework lane, plan mode first). Follow the plan's "Next (first step)" under Phase 3:
-   - Survey what the DB records for behaviour and content settings against each `block.json`.
-   - Settle the shape of a meaning with Bean (what it does, its trigger, its parameters).
-   - Build the detector first if more than 3 files change (`.claude/skills/migration-method/SKILL.md`).
-   - Extend `sgs-update-v2.py`, the only DB writer, then reseed.
-   - Done when a behaviour setting with no recorded meaning fails a test. About 3 to 4 hours.
-4. Phase 4's other waves (FR-48-79 to FR-48-85), ordered by the Indus re-run's seen-but-unsupported rows. Each wave is its own plan-mode session, closed by its FR's done-when.
+   - About 4 to 6 hours across two sessions. Indus step 20 (the header slice) needs it, as do Fill's entrances on every surface.
+3. Then follow the combined order in the coverage plan's Phase 4 "Order" subsection; each item is its own plan-mode session, closed by its Spec 48 FR's done-when (`capabilities.mjs --gaps` lists none of its wave, `--gate` exits 0, and a planted draft raises its row again with the writer, recogniser or reader removed):
+   - Draft reading (FR-48-85), including the 8 capabilities only the running page showed (see CURRENT STATE).
+   - Site and surfaces (FR-48-84) and the media upload part of content, media and icons (FR-48-82), then Indus step 18 (site build).
+   - States (FR-48-81), then Indus step 20 (header slice).
+   - Phase 3, behaviour meanings in the framework DB, following the plan's "Next (first step)" under Phase 3: survey what the DB records for behaviour and content settings against each `block.json`, settle the shape of a meaning with Bean (what it does, its trigger, its parameters), build the detector first if more than 3 files change (`.claude/skills/migration-method/SKILL.md`), extend `sgs-update-v2.py` (the only DB writer) and reseed. Done when a behaviour setting with no recorded meaning fails a test. About 3 to 4 hours.
+   - Behaviour recognisers (FR-48-80, absorbing Indus step 20b) and modes and values with no CSS property (FR-48-79), which both need Phase 3.
+   - The rest of content, media and icons, and shop, forms and data (FR-48-82, FR-48-83), with Indus step 22 (forms).
+   - Then Indus steps 21, 23, 24 and 25 (trees, check, answer sheet, sign-off).
 
 OPEN ITEMS FOR BEAN
 - Confirm that the two catch-all exclusions (`svg:unlisted`, `css-property:unlisted`) are what he meant. He ruled on the mesh-gradient SVG elements and `enable-background` seen in an exported logo, and the catch-alls also cover any future element or property no browser lists.
