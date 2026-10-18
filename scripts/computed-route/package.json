@@ -6,10 +6,15 @@
 	"description": "The computed-route's own pinned third-party packages (Spec 48 FR-48-75). Route code imports them from this folder's node_modules only.",
 	"dependencies": {
 		"@babel/parser": "7.29.9",
+		"@mdn/browser-compat-data": "8.1.4",
 		"ajv": "8.20.0",
 		"ajv-formats": "2.1.1",
+		"aria-query": "5.3.2",
+		"css-tree": "3.2.1",
+		"html-element-attributes": "3.5.0",
 		"html-tag-names": "2.1.0",
 		"mdn-data": "2.37.1",
+		"oembed-providers": "1.0.20260604",
 		"playwright": "1.58.2",
 		"saxes": "6.0.0"
 	}

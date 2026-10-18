@@ -1,14 +1,16 @@
-# Clone coverage gap list: 419 capabilities neither covered nor excluded
+# Clone coverage gap list: 1922 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
-| motion writer (4.0) | 113 |
-| site and surfaces | 90 |
-| draft reading | 75 |
-| content, media and icons | 59 |
-| modes and values with no CSS property | 32 |
-| behaviour recognisers | 25 |
-| shop, forms and data | 25 |
+| content, media and icons | 806 |
+| draft reading | 252 |
+| exclusion candidate (awaiting Bean) | 221 |
+| shop, forms and data | 164 |
+| motion writer (4.0) | 160 |
+| site and surfaces | 96 |
+| modes and values with no CSS property | 89 |
+| behaviour recognisers | 75 |
+| states | 59 |
 
 ## block-setting (88)
 
@@ -377,6 +379,1001 @@
 - `html:track`: <track> (1); has nothing; wave content, media and icons
 - `html:video`: <video> (1); has nothing; wave content, media and icons
 
+## html-attr (512)
+
+- `html-attr:a.attributionsourceid`: <a attributionsourceid> (1); has nothing; wave content, media and icons
+- `html-attr:a.attributionsrc`: <a attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:a.charset`: <a charset> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:a.coords`: <a coords> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:a.download`: <a download> (1); has nothing; wave content, media and icons
+- `html-attr:a.hreflang`: <a hreflang> (1); has nothing; wave content, media and icons
+- `html-attr:a.hreftranslate`: <a hreftranslate> (1); has nothing; wave content, media and icons
+- `html-attr:a.interestfor`: <a interestfor> (1); has nothing; wave content, media and icons
+- `html-attr:a.name`: <a name> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:a.ping`: <a ping> (1); has nothing; wave content, media and icons
+- `html-attr:a.referrerpolicy`: <a referrerpolicy> (1); has nothing; wave content, media and icons
+- `html-attr:a.rel`: <a rel> (1); has nothing; wave content, media and icons
+- `html-attr:a.rev`: <a rev> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:a.shape`: <a shape> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:a.target`: <a target> (1); has nothing; wave content, media and icons
+- `html-attr:a.type`: <a type> (1); has nothing; wave content, media and icons
+- `html-attr:applet.align`: <applet align> (1); has nothing; wave content, media and icons
+- `html-attr:applet.alt`: <applet alt> (1); has nothing; wave content, media and icons
+- `html-attr:applet.archive`: <applet archive> (1); has nothing; wave content, media and icons
+- `html-attr:applet.code`: <applet code> (1); has nothing; wave content, media and icons
+- `html-attr:applet.codebase`: <applet codebase> (1); has nothing; wave content, media and icons
+- `html-attr:applet.height`: <applet height> (1); has nothing; wave content, media and icons
+- `html-attr:applet.hspace`: <applet hspace> (1); has nothing; wave content, media and icons
+- `html-attr:applet.name`: <applet name> (1); has nothing; wave content, media and icons
+- `html-attr:applet.object`: <applet object> (1); has nothing; wave content, media and icons
+- `html-attr:applet.vspace`: <applet vspace> (1); has nothing; wave content, media and icons
+- `html-attr:applet.width`: <applet width> (1); has nothing; wave content, media and icons
+- `html-attr:area.alt`: <area alt> (1); has nothing; wave content, media and icons
+- `html-attr:area.attributionsrc`: <area attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:area.coords`: <area coords> (1); has nothing; wave content, media and icons
+- `html-attr:area.download`: <area download> (1); has nothing; wave content, media and icons
+- `html-attr:area.href`: <area href> (1); has nothing; wave content, media and icons
+- `html-attr:area.hreflang`: <area hreflang> (1); has nothing; wave content, media and icons
+- `html-attr:area.interestfor`: <area interestfor> (1); has nothing; wave content, media and icons
+- `html-attr:area.nohref`: <area nohref> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:area.ping`: <area ping> (1); has nothing; wave content, media and icons
+- `html-attr:area.referrerpolicy`: <area referrerpolicy> (1); has nothing; wave content, media and icons
+- `html-attr:area.rel`: <area rel> (1); has nothing; wave content, media and icons
+- `html-attr:area.shape`: <area shape> (1); has nothing; wave content, media and icons
+- `html-attr:area.target`: <area target> (1); has nothing; wave content, media and icons
+- `html-attr:area.type`: <area type> (1); has nothing; wave content, media and icons
+- `html-attr:audio.autoplay`: <audio autoplay> (1); has nothing; wave content, media and icons
+- `html-attr:audio.controls`: <audio controls> (1); has nothing; wave content, media and icons
+- `html-attr:audio.controlslist`: <audio controlslist> (1); has nothing; wave content, media and icons
+- `html-attr:audio.crossorigin`: <audio crossorigin> (1); has nothing; wave content, media and icons
+- `html-attr:audio.disableremoteplayback`: <audio disableremoteplayback> (1); has nothing; wave content, media and icons
+- `html-attr:audio.loading`: <audio loading> (1); has nothing; wave content, media and icons
+- `html-attr:audio.loop`: <audio loop> (1); has nothing; wave content, media and icons
+- `html-attr:audio.muted`: <audio muted> (1); has nothing; wave content, media and icons
+- `html-attr:audio.preload`: <audio preload> (1); has nothing; wave content, media and icons
+- `html-attr:audio.src`: <audio src> (1); has nothing; wave content, media and icons
+- `html-attr:base.href`: <base href> (1); has nothing; wave draft reading
+- `html-attr:base.target`: <base target> (1); has nothing; wave draft reading
+- `html-attr:basefont.color`: <basefont color> (1); has nothing; wave content, media and icons
+- `html-attr:basefont.face`: <basefont face> (1); has nothing; wave content, media and icons
+- `html-attr:basefont.size`: <basefont size> (1); has nothing; wave content, media and icons
+- `html-attr:blockquote.cite`: <blockquote cite> (1); has nothing; wave content, media and icons
+- `html-attr:body.alink`: <body alink> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.background`: <body background> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.bgcolor`: <body bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.bottommargin`: <body bottommargin> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.leftmargin`: <body leftmargin> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.link`: <body link> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.rightmargin`: <body rightmargin> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.text`: <body text> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.topmargin`: <body topmargin> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:body.vlink`: <body vlink> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:br.clear`: <br clear> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:button.command`: <button command> (1); has nothing; wave shop, forms and data
+- `html-attr:button.commandfor`: <button commandfor> (1); has nothing; wave shop, forms and data
+- `html-attr:button.disabled`: <button disabled> (1); has nothing; wave shop, forms and data
+- `html-attr:button.form`: <button form> (1); has nothing; wave shop, forms and data
+- `html-attr:button.formaction`: <button formaction> (1); has nothing; wave shop, forms and data
+- `html-attr:button.formenctype`: <button formenctype> (1); has nothing; wave shop, forms and data
+- `html-attr:button.formmethod`: <button formmethod> (1); has nothing; wave shop, forms and data
+- `html-attr:button.formnovalidate`: <button formnovalidate> (1); has nothing; wave shop, forms and data
+- `html-attr:button.formtarget`: <button formtarget> (1); has nothing; wave shop, forms and data
+- `html-attr:button.interestfor`: <button interestfor> (1); has nothing; wave shop, forms and data
+- `html-attr:button.name`: <button name> (1); has nothing; wave shop, forms and data
+- `html-attr:button.popovertarget`: <button popovertarget> (1); has nothing; wave shop, forms and data
+- `html-attr:button.popovertargetaction`: <button popovertargetaction> (1); has nothing; wave shop, forms and data
+- `html-attr:button.type`: <button type> (1); has nothing; wave shop, forms and data
+- `html-attr:button.value`: <button value> (1); has nothing; wave shop, forms and data
+- `html-attr:canvas.height`: <canvas height> (1); has nothing; wave content, media and icons
+- `html-attr:canvas.moz-opaque`: <canvas moz-opaque> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:canvas.width`: <canvas width> (1); has nothing; wave content, media and icons
+- `html-attr:caption.align`: <caption align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:col.align`: <col align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:col.char`: <col char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:col.charoff`: <col charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:col.span`: <col span> (1); has nothing; wave content, media and icons
+- `html-attr:col.valign`: <col valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:col.width`: <col width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:colgroup.align`: <colgroup align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:colgroup.char`: <colgroup char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:colgroup.charoff`: <colgroup charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:colgroup.span`: <colgroup span> (1); has nothing; wave content, media and icons
+- `html-attr:colgroup.valign`: <colgroup valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:colgroup.width`: <colgroup width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:data.value`: <data value> (1); has nothing; wave content, media and icons
+- `html-attr:del.cite`: <del cite> (1); has nothing; wave content, media and icons
+- `html-attr:del.datetime`: <del datetime> (1); has nothing; wave content, media and icons
+- `html-attr:details.name`: <details name> (1); has nothing; wave behaviour recognisers
+- `html-attr:details.open`: <details open> (1); has nothing; wave behaviour recognisers
+- `html-attr:dialog.closedby`: <dialog closedby> (1); has nothing; wave behaviour recognisers
+- `html-attr:dialog.open`: <dialog open> (1); has nothing; wave behaviour recognisers
+- `html-attr:dir.compact`: <dir compact> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:div.align`: <div align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:dl.compact`: <dl compact> (1); has nothing; wave content, media and icons
+- `html-attr:embed.align`: <embed align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:embed.height`: <embed height> (1); has nothing; wave content, media and icons
+- `html-attr:embed.name`: <embed name> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:embed.src`: <embed src> (1); has nothing; wave content, media and icons
+- `html-attr:embed.type`: <embed type> (1); has nothing; wave content, media and icons
+- `html-attr:embed.width`: <embed width> (1); has nothing; wave content, media and icons
+- `html-attr:fencedframe.allow`: <fencedframe allow> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:fencedframe.height`: <fencedframe height> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:fencedframe.width`: <fencedframe width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:fieldset.disabled`: <fieldset disabled> (1); has nothing; wave shop, forms and data
+- `html-attr:fieldset.form`: <fieldset form> (1); has nothing; wave shop, forms and data
+- `html-attr:fieldset.name`: <fieldset name> (1); has nothing; wave shop, forms and data
+- `html-attr:font.color`: <font color> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:font.face`: <font face> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:font.size`: <font size> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:form.accept`: <form accept> (1); has nothing; wave shop, forms and data
+- `html-attr:form.accept-charset`: <form accept-charset> (1); has nothing; wave shop, forms and data
+- `html-attr:form.action`: <form action> (1); has nothing; wave shop, forms and data
+- `html-attr:form.autocomplete`: <form autocomplete> (1); has nothing; wave shop, forms and data
+- `html-attr:form.enctype`: <form enctype> (1); has nothing; wave shop, forms and data
+- `html-attr:form.method`: <form method> (1); has nothing; wave shop, forms and data
+- `html-attr:form.name`: <form name> (1); has nothing; wave shop, forms and data
+- `html-attr:form.novalidate`: <form novalidate> (1); has nothing; wave shop, forms and data
+- `html-attr:form.rel`: <form rel> (1); has nothing; wave shop, forms and data
+- `html-attr:form.target`: <form target> (1); has nothing; wave shop, forms and data
+- `html-attr:frame.frameborder`: <frame frameborder> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frame.longdesc`: <frame longdesc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frame.marginheight`: <frame marginheight> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frame.marginwidth`: <frame marginwidth> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frame.name`: <frame name> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frame.noresize`: <frame noresize> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frame.scrolling`: <frame scrolling> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frame.src`: <frame src> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frameset.cols`: <frameset cols> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:frameset.rows`: <frameset rows> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:geolocation.autolocate`: <geolocation autolocate> (1); has nothing; wave content, media and icons
+- `html-attr:geolocation.watch`: <geolocation watch> (1); has nothing; wave content, media and icons
+- `html-attr:global.accesskey`: accesskey (any element) (1); has nothing; wave content, media and icons
+- `html-attr:global.anchor`: anchor (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.autocapitalize`: autocapitalize (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.autocorrect`: autocorrect (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.autofocus`: autofocus (any element) (1); has nothing; wave behaviour recognisers
+- `html-attr:global.class`: class (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.containertiming`: containertiming (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.containertimingignore`: containertimingignore (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.contenteditable`: contenteditable (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.data`: data-* attributes (1); has nothing; wave behaviour recognisers
+- `html-attr:global.dir`: dir (any element) (1); has nothing; wave content, media and icons
+- `html-attr:global.draggable`: draggable (any element) (1); has nothing; wave behaviour recognisers
+- `html-attr:global.elementtiming`: elementtiming (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.enterkeyhint`: enterkeyhint (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.exportparts`: exportparts (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.headingoffset`: headingoffset (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.headingreset`: headingreset (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.id`: id (any element) (1); has nothing; wave content, media and icons
+- `html-attr:global.inert`: inert (any element) (1); has nothing; wave behaviour recognisers
+- `html-attr:global.inputmode`: inputmode (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.is`: is (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.itemid`: itemid (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.itemprop`: itemprop (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.itemref`: itemref (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.itemscope`: itemscope (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.itemtype`: itemtype (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.lang`: lang (any element) (1); has nothing; wave content, media and icons
+- `html-attr:global.nonce`: nonce (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.part`: part (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.popover`: popover (any element) (1); has nothing; wave behaviour recognisers
+- `html-attr:global.slot`: slot (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:global.spellcheck`: spellcheck (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.tabindex`: tabindex (any element) (1); has nothing; wave content, media and icons
+- `html-attr:global.title`: title (any element) (1); has nothing; wave content, media and icons
+- `html-attr:global.translate`: translate (any element) (1); has nothing; wave content, media and icons
+- `html-attr:global.virtualkeyboardpolicy`: virtualkeyboardpolicy (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:global.writingsuggestions`: writingsuggestions (any element) (1); has nothing; wave shop, forms and data
+- `html-attr:h1.align`: <h1 align> (1); has nothing; wave content, media and icons
+- `html-attr:h2.align`: <h2 align> (1); has nothing; wave content, media and icons
+- `html-attr:h3.align`: <h3 align> (1); has nothing; wave content, media and icons
+- `html-attr:h4.align`: <h4 align> (1); has nothing; wave content, media and icons
+- `html-attr:h5.align`: <h5 align> (1); has nothing; wave content, media and icons
+- `html-attr:h6.align`: <h6 align> (1); has nothing; wave content, media and icons
+- `html-attr:head.profile`: <head profile> (1); has nothing; wave draft reading
+- `html-attr:hr.align`: <hr align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:hr.color`: <hr color> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:hr.noshade`: <hr noshade> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:hr.size`: <hr size> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:hr.width`: <hr width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:html.manifest`: <html manifest> (1); has nothing; wave draft reading
+- `html-attr:html.version`: <html version> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:html.xmlns`: <html xmlns> (1); has nothing; wave draft reading
+- `html-attr:iframe.align`: <iframe align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.allow`: <iframe allow> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.allowfullscreen`: <iframe allowfullscreen> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.allowpaymentrequest`: <iframe allowpaymentrequest> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.allowusermedia`: <iframe allowusermedia> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.browsingtopics`: <iframe browsingtopics> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.credentialless`: <iframe credentialless> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.csp`: <iframe csp> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.frameborder`: <iframe frameborder> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.height`: <iframe height> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.loading`: <iframe loading> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.longdesc`: <iframe longdesc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.marginheight`: <iframe marginheight> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.marginwidth`: <iframe marginwidth> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.name`: <iframe name> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.privateToken`: <iframe privateToken> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.referrerpolicy`: <iframe referrerpolicy> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.sandbox`: <iframe sandbox> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.scrolling`: <iframe scrolling> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:iframe.src`: <iframe src> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.srcdoc`: <iframe srcdoc> (1); has nothing; wave content, media and icons
+- `html-attr:iframe.width`: <iframe width> (1); has nothing; wave content, media and icons
+- `html-attr:img.align`: <img align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:img.alt`: <img alt> (1); has nothing; wave content, media and icons
+- `html-attr:img.attributionsrc`: <img attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:img.border`: <img border> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:img.crossorigin`: <img crossorigin> (1); has nothing; wave content, media and icons
+- `html-attr:img.decoding`: <img decoding> (1); has nothing; wave content, media and icons
+- `html-attr:img.fetchpriority`: <img fetchpriority> (1); has nothing; wave content, media and icons
+- `html-attr:img.height`: <img height> (1); has nothing; wave content, media and icons
+- `html-attr:img.hspace`: <img hspace> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:img.ismap`: <img ismap> (1); has nothing; wave content, media and icons
+- `html-attr:img.loading`: <img loading> (1); has nothing; wave content, media and icons
+- `html-attr:img.longdesc`: <img longdesc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:img.name`: <img name> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:img.referrerpolicy`: <img referrerpolicy> (1); has nothing; wave content, media and icons
+- `html-attr:img.sizes`: <img sizes> (1); has nothing; wave content, media and icons
+- `html-attr:img.src`: <img src> (1); has nothing; wave content, media and icons
+- `html-attr:img.srcset`: <img srcset> (1); has nothing; wave content, media and icons
+- `html-attr:img.usemap`: <img usemap> (1); has nothing; wave content, media and icons
+- `html-attr:img.vspace`: <img vspace> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:img.width`: <img width> (1); has nothing; wave content, media and icons
+- `html-attr:input.accept`: <input accept> (1); has nothing; wave shop, forms and data
+- `html-attr:input.align`: <input align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:input.alpha`: <input alpha> (1); has nothing; wave shop, forms and data
+- `html-attr:input.alt`: <input alt> (1); has nothing; wave shop, forms and data
+- `html-attr:input.autocomplete`: <input autocomplete> (1); has nothing; wave shop, forms and data
+- `html-attr:input.capture`: <input capture> (1); has nothing; wave shop, forms and data
+- `html-attr:input.checked`: <input checked> (1); has nothing; wave shop, forms and data
+- `html-attr:input.colorspace`: <input colorspace> (1); has nothing; wave shop, forms and data
+- `html-attr:input.dirname`: <input dirname> (1); has nothing; wave shop, forms and data
+- `html-attr:input.disabled`: <input disabled> (1); has nothing; wave shop, forms and data
+- `html-attr:input.form`: <input form> (1); has nothing; wave shop, forms and data
+- `html-attr:input.formaction`: <input formaction> (1); has nothing; wave shop, forms and data
+- `html-attr:input.formenctype`: <input formenctype> (1); has nothing; wave shop, forms and data
+- `html-attr:input.formmethod`: <input formmethod> (1); has nothing; wave shop, forms and data
+- `html-attr:input.formnovalidate`: <input formnovalidate> (1); has nothing; wave shop, forms and data
+- `html-attr:input.formtarget`: <input formtarget> (1); has nothing; wave shop, forms and data
+- `html-attr:input.height`: <input height> (1); has nothing; wave shop, forms and data
+- `html-attr:input.ismap`: <input ismap> (1); has nothing; wave shop, forms and data
+- `html-attr:input.list`: <input list> (1); has nothing; wave shop, forms and data
+- `html-attr:input.max`: <input max> (1); has nothing; wave shop, forms and data
+- `html-attr:input.maxlength`: <input maxlength> (1); has nothing; wave shop, forms and data
+- `html-attr:input.min`: <input min> (1); has nothing; wave shop, forms and data
+- `html-attr:input.minlength`: <input minlength> (1); has nothing; wave shop, forms and data
+- `html-attr:input.multiple`: <input multiple> (1); has nothing; wave shop, forms and data
+- `html-attr:input.name`: <input name> (1); has nothing; wave shop, forms and data
+- `html-attr:input.pattern`: <input pattern> (1); has nothing; wave shop, forms and data
+- `html-attr:input.placeholder`: <input placeholder> (1); has nothing; wave shop, forms and data
+- `html-attr:input.popovertarget`: <input popovertarget> (1); has nothing; wave shop, forms and data
+- `html-attr:input.popovertargetaction`: <input popovertargetaction> (1); has nothing; wave shop, forms and data
+- `html-attr:input.readonly`: <input readonly> (1); has nothing; wave shop, forms and data
+- `html-attr:input.required`: <input required> (1); has nothing; wave shop, forms and data
+- `html-attr:input.size`: <input size> (1); has nothing; wave shop, forms and data
+- `html-attr:input.src`: <input src> (1); has nothing; wave shop, forms and data
+- `html-attr:input.step`: <input step> (1); has nothing; wave shop, forms and data
+- `html-attr:input.switch`: <input switch> (1); has nothing; wave shop, forms and data
+- `html-attr:input.type`: <input type> (1); has nothing; wave shop, forms and data
+- `html-attr:input.usemap`: <input usemap> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:input.value`: <input value> (1); has nothing; wave shop, forms and data
+- `html-attr:input.webkitdirectory`: <input webkitdirectory> (1); has nothing; wave shop, forms and data
+- `html-attr:input.width`: <input width> (1); has nothing; wave shop, forms and data
+- `html-attr:ins.cite`: <ins cite> (1); has nothing; wave content, media and icons
+- `html-attr:ins.datetime`: <ins datetime> (1); has nothing; wave content, media and icons
+- `html-attr:install.manifest`: <install manifest> (1); has nothing; wave content, media and icons
+- `html-attr:install.manifestId`: <install manifestId> (1); has nothing; wave content, media and icons
+- `html-attr:isindex.prompt`: <isindex prompt> (1); has nothing; wave content, media and icons
+- `html-attr:label.for`: <label for> (1); has nothing; wave shop, forms and data
+- `html-attr:label.form`: <label form> (1); has nothing; wave shop, forms and data
+- `html-attr:legend.align`: <legend align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:li.type`: <li type> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:li.value`: <li value> (1); has nothing; wave content, media and icons
+- `html-attr:link.as`: <link as> (1); has nothing; wave draft reading
+- `html-attr:link.blocking`: <link blocking> (1); has nothing; wave draft reading
+- `html-attr:link.charset`: <link charset> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:link.color`: <link color> (1); has nothing; wave draft reading
+- `html-attr:link.crossorigin`: <link crossorigin> (1); has nothing; wave draft reading
+- `html-attr:link.disabled`: <link disabled> (1); has nothing; wave draft reading
+- `html-attr:link.fetchpriority`: <link fetchpriority> (1); has nothing; wave draft reading
+- `html-attr:link.href`: <link href> (1); has nothing; wave draft reading
+- `html-attr:link.hreflang`: <link hreflang> (1); has nothing; wave draft reading
+- `html-attr:link.imagesizes`: <link imagesizes> (1); has nothing; wave draft reading
+- `html-attr:link.imagesrcset`: <link imagesrcset> (1); has nothing; wave draft reading
+- `html-attr:link.integrity`: <link integrity> (1); has nothing; wave draft reading
+- `html-attr:link.media`: <link media> (1); has nothing; wave draft reading
+- `html-attr:link.referrerpolicy`: <link referrerpolicy> (1); has nothing; wave draft reading
+- `html-attr:link.rel`: <link rel> (1); has nothing; wave draft reading
+- `html-attr:link.rev`: <link rev> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:link.sizes`: <link sizes> (1); has nothing; wave draft reading
+- `html-attr:link.target`: <link target> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:link.type`: <link type> (1); has nothing; wave draft reading
+- `html-attr:map.name`: <map name> (1); has nothing; wave content, media and icons
+- `html-attr:marquee.behavior`: <marquee behavior> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.bgcolor`: <marquee bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.direction`: <marquee direction> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.height`: <marquee height> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.hspace`: <marquee hspace> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.loop`: <marquee loop> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.scrollamount`: <marquee scrollamount> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.scrolldelay`: <marquee scrolldelay> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.truespeed`: <marquee truespeed> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.vspace`: <marquee vspace> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:marquee.width`: <marquee width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:menu.compact`: <menu compact> (1); has nothing; wave behaviour recognisers
+- `html-attr:meta.charset`: <meta charset> (1); has nothing; wave draft reading
+- `html-attr:meta.content`: <meta content> (1); has nothing; wave draft reading
+- `html-attr:meta.http-equiv`: <meta http-equiv> (1); has nothing; wave draft reading
+- `html-attr:meta.media`: <meta media> (1); has nothing; wave draft reading
+- `html-attr:meta.name`: <meta name> (1); has nothing; wave draft reading
+- `html-attr:meta.scheme`: <meta scheme> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:meter.high`: <meter high> (1); has nothing; wave shop, forms and data
+- `html-attr:meter.low`: <meter low> (1); has nothing; wave shop, forms and data
+- `html-attr:meter.max`: <meter max> (1); has nothing; wave shop, forms and data
+- `html-attr:meter.min`: <meter min> (1); has nothing; wave shop, forms and data
+- `html-attr:meter.optimum`: <meter optimum> (1); has nothing; wave shop, forms and data
+- `html-attr:meter.value`: <meter value> (1); has nothing; wave shop, forms and data
+- `html-attr:model.autoplay`: <model autoplay> (1); has nothing; wave content, media and icons
+- `html-attr:model.height`: <model height> (1); has nothing; wave content, media and icons
+- `html-attr:model.loop`: <model loop> (1); has nothing; wave content, media and icons
+- `html-attr:model.src`: <model src> (1); has nothing; wave content, media and icons
+- `html-attr:model.stagemode`: <model stagemode> (1); has nothing; wave content, media and icons
+- `html-attr:model.width`: <model width> (1); has nothing; wave content, media and icons
+- `html-attr:object.align`: <object align> (1); has nothing; wave content, media and icons
+- `html-attr:object.archive`: <object archive> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.border`: <object border> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.classid`: <object classid> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.codebase`: <object codebase> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.codetype`: <object codetype> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.data`: <object data> (1); has nothing; wave content, media and icons
+- `html-attr:object.declare`: <object declare> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.form`: <object form> (1); has nothing; wave content, media and icons
+- `html-attr:object.height`: <object height> (1); has nothing; wave content, media and icons
+- `html-attr:object.hspace`: <object hspace> (1); has nothing; wave content, media and icons
+- `html-attr:object.name`: <object name> (1); has nothing; wave content, media and icons
+- `html-attr:object.standby`: <object standby> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.type`: <object type> (1); has nothing; wave content, media and icons
+- `html-attr:object.typemustmatch`: <object typemustmatch> (1); has nothing; wave content, media and icons
+- `html-attr:object.usemap`: <object usemap> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:object.vspace`: <object vspace> (1); has nothing; wave content, media and icons
+- `html-attr:object.width`: <object width> (1); has nothing; wave content, media and icons
+- `html-attr:ol.compact`: <ol compact> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:ol.reversed`: <ol reversed> (1); has nothing; wave content, media and icons
+- `html-attr:ol.start`: <ol start> (1); has nothing; wave content, media and icons
+- `html-attr:ol.type`: <ol type> (1); has nothing; wave content, media and icons
+- `html-attr:optgroup.disabled`: <optgroup disabled> (1); has nothing; wave shop, forms and data
+- `html-attr:optgroup.label`: <optgroup label> (1); has nothing; wave shop, forms and data
+- `html-attr:option.disabled`: <option disabled> (1); has nothing; wave shop, forms and data
+- `html-attr:option.label`: <option label> (1); has nothing; wave shop, forms and data
+- `html-attr:option.selected`: <option selected> (1); has nothing; wave shop, forms and data
+- `html-attr:option.value`: <option value> (1); has nothing; wave shop, forms and data
+- `html-attr:output.for`: <output for> (1); has nothing; wave shop, forms and data
+- `html-attr:output.form`: <output form> (1); has nothing; wave shop, forms and data
+- `html-attr:output.name`: <output name> (1); has nothing; wave shop, forms and data
+- `html-attr:p.align`: <p align> (1); has nothing; wave content, media and icons
+- `html-attr:param.name`: <param name> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:param.type`: <param type> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:param.value`: <param value> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:param.valuetype`: <param valuetype> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:pre.width`: <pre width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:progress.max`: <progress max> (1); has nothing; wave shop, forms and data
+- `html-attr:progress.value`: <progress value> (1); has nothing; wave shop, forms and data
+- `html-attr:q.cite`: <q cite> (1); has nothing; wave content, media and icons
+- `html-attr:script.async`: <script async> (1); has nothing; wave draft reading
+- `html-attr:script.attributionsrc`: <script attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:script.blocking`: <script blocking> (1); has nothing; wave draft reading
+- `html-attr:script.charset`: <script charset> (1); has nothing; wave draft reading
+- `html-attr:script.crossorigin`: <script crossorigin> (1); has nothing; wave draft reading
+- `html-attr:script.defer`: <script defer> (1); has nothing; wave draft reading
+- `html-attr:script.fetchpriority`: <script fetchpriority> (1); has nothing; wave draft reading
+- `html-attr:script.integrity`: <script integrity> (1); has nothing; wave draft reading
+- `html-attr:script.language`: <script language> (1); has nothing; wave draft reading
+- `html-attr:script.nomodule`: <script nomodule> (1); has nothing; wave draft reading
+- `html-attr:script.referrerpolicy`: <script referrerpolicy> (1); has nothing; wave draft reading
+- `html-attr:script.src`: <script src> (1); has nothing; wave draft reading
+- `html-attr:script.type`: <script type> (1); has nothing; wave draft reading
+- `html-attr:select.autocomplete`: <select autocomplete> (1); has nothing; wave shop, forms and data
+- `html-attr:select.disabled`: <select disabled> (1); has nothing; wave shop, forms and data
+- `html-attr:select.form`: <select form> (1); has nothing; wave shop, forms and data
+- `html-attr:select.multiple`: <select multiple> (1); has nothing; wave shop, forms and data
+- `html-attr:select.name`: <select name> (1); has nothing; wave shop, forms and data
+- `html-attr:select.required`: <select required> (1); has nothing; wave shop, forms and data
+- `html-attr:select.size`: <select size> (1); has nothing; wave shop, forms and data
+- `html-attr:slot.name`: <slot name> (1); has nothing; wave draft reading
+- `html-attr:source.height`: <source height> (1); has nothing; wave content, media and icons
+- `html-attr:source.media`: <source media> (1); has nothing; wave content, media and icons
+- `html-attr:source.sizes`: <source sizes> (1); has nothing; wave content, media and icons
+- `html-attr:source.src`: <source src> (1); has nothing; wave content, media and icons
+- `html-attr:source.srcset`: <source srcset> (1); has nothing; wave content, media and icons
+- `html-attr:source.type`: <source type> (1); has nothing; wave content, media and icons
+- `html-attr:source.width`: <source width> (1); has nothing; wave content, media and icons
+- `html-attr:style.blocking`: <style blocking> (1); has nothing; wave draft reading
+- `html-attr:style.media`: <style media> (1); has nothing; wave draft reading
+- `html-attr:style.type`: <style type> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.align`: <table align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.bgcolor`: <table bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.border`: <table border> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.cellpadding`: <table cellpadding> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.cellspacing`: <table cellspacing> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.frame`: <table frame> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.rules`: <table rules> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.summary`: <table summary> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:table.width`: <table width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tbody.align`: <tbody align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tbody.bgcolor`: <tbody bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tbody.char`: <tbody char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tbody.charoff`: <tbody charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tbody.valign`: <tbody valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.abbr`: <td abbr> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.align`: <td align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.axis`: <td axis> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.bgcolor`: <td bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.char`: <td char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.charoff`: <td charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.colspan`: <td colspan> (1); has nothing; wave content, media and icons
+- `html-attr:td.headers`: <td headers> (1); has nothing; wave content, media and icons
+- `html-attr:td.height`: <td height> (1); has nothing; wave content, media and icons
+- `html-attr:td.nowrap`: <td nowrap> (1); has nothing; wave content, media and icons
+- `html-attr:td.rowspan`: <td rowspan> (1); has nothing; wave content, media and icons
+- `html-attr:td.scope`: <td scope> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.valign`: <td valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:td.width`: <td width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:template.for`: <template for> (1); has nothing; wave draft reading
+- `html-attr:template.shadowrootclonable`: <template shadowrootclonable> (1); has nothing; wave draft reading
+- `html-attr:template.shadowrootcustomelementregistry`: <template shadowrootcustomelementregistry> (1); has nothing; wave draft reading
+- `html-attr:template.shadowrootdelegatesfocus`: <template shadowrootdelegatesfocus> (1); has nothing; wave draft reading
+- `html-attr:template.shadowrootmode`: <template shadowrootmode> (1); has nothing; wave draft reading
+- `html-attr:template.shadowrootreferencetarget`: <template shadowrootreferencetarget> (1); has nothing; wave draft reading
+- `html-attr:template.shadowrootserializable`: <template shadowrootserializable> (1); has nothing; wave draft reading
+- `html-attr:template.shadowrootslotassignment`: <template shadowrootslotassignment> (1); has nothing; wave draft reading
+- `html-attr:textarea.autocomplete`: <textarea autocomplete> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.cols`: <textarea cols> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.dirname`: <textarea dirname> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.disabled`: <textarea disabled> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.form`: <textarea form> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.maxlength`: <textarea maxlength> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.minlength`: <textarea minlength> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.name`: <textarea name> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.placeholder`: <textarea placeholder> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.readonly`: <textarea readonly> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.required`: <textarea required> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.rows`: <textarea rows> (1); has nothing; wave shop, forms and data
+- `html-attr:textarea.wrap`: <textarea wrap> (1); has nothing; wave shop, forms and data
+- `html-attr:tfoot.align`: <tfoot align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tfoot.bgcolor`: <tfoot bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tfoot.char`: <tfoot char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tfoot.charoff`: <tfoot charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tfoot.valign`: <tfoot valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:th.abbr`: <th abbr> (1); has nothing; wave content, media and icons
+- `html-attr:th.align`: <th align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:th.axis`: <th axis> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:th.bgcolor`: <th bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:th.char`: <th char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:th.charoff`: <th charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:th.colspan`: <th colspan> (1); has nothing; wave content, media and icons
+- `html-attr:th.headers`: <th headers> (1); has nothing; wave content, media and icons
+- `html-attr:th.height`: <th height> (1); has nothing; wave content, media and icons
+- `html-attr:th.nowrap`: <th nowrap> (1); has nothing; wave content, media and icons
+- `html-attr:th.rowspan`: <th rowspan> (1); has nothing; wave content, media and icons
+- `html-attr:th.scope`: <th scope> (1); has nothing; wave content, media and icons
+- `html-attr:th.valign`: <th valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:th.width`: <th width> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:thead.align`: <thead align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:thead.bgcolor`: <thead bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:thead.char`: <thead char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:thead.charoff`: <thead charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:thead.valign`: <thead valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:time.datetime`: <time datetime> (1); has nothing; wave content, media and icons
+- `html-attr:tr.align`: <tr align> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tr.bgcolor`: <tr bgcolor> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tr.char`: <tr char> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tr.charoff`: <tr charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:tr.valign`: <tr valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:track.default`: <track default> (1); has nothing; wave content, media and icons
+- `html-attr:track.kind`: <track kind> (1); has nothing; wave content, media and icons
+- `html-attr:track.label`: <track label> (1); has nothing; wave content, media and icons
+- `html-attr:track.src`: <track src> (1); has nothing; wave content, media and icons
+- `html-attr:track.srclang`: <track srclang> (1); has nothing; wave content, media and icons
+- `html-attr:ul.compact`: <ul compact> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:ul.type`: <ul type> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `html-attr:video.autoplay`: <video autoplay> (1); has nothing; wave content, media and icons
+- `html-attr:video.controls`: <video controls> (1); has nothing; wave content, media and icons
+- `html-attr:video.controlslist`: <video controlslist> (1); has nothing; wave content, media and icons
+- `html-attr:video.crossorigin`: <video crossorigin> (1); has nothing; wave content, media and icons
+- `html-attr:video.disablepictureinpicture`: <video disablepictureinpicture> (1); has nothing; wave content, media and icons
+- `html-attr:video.disableremoteplayback`: <video disableremoteplayback> (1); has nothing; wave content, media and icons
+- `html-attr:video.height`: <video height> (1); has nothing; wave content, media and icons
+- `html-attr:video.loading`: <video loading> (1); has nothing; wave content, media and icons
+- `html-attr:video.loop`: <video loop> (1); has nothing; wave content, media and icons
+- `html-attr:video.muted`: <video muted> (1); has nothing; wave content, media and icons
+- `html-attr:video.playsinline`: <video playsinline> (1); has nothing; wave content, media and icons
+- `html-attr:video.poster`: <video poster> (1); has nothing; wave content, media and icons
+- `html-attr:video.preload`: <video preload> (1); has nothing; wave content, media and icons
+- `html-attr:video.src`: <video src> (1); has nothing; wave content, media and icons
+- `html-attr:video.width`: <video width> (1); has nothing; wave content, media and icons
+
+## input-type (22)
+
+- `input-type:button`: <input type="button"> (1); has nothing; wave shop, forms and data
+- `input-type:checkbox`: <input type="checkbox"> (1); has nothing; wave shop, forms and data
+- `input-type:color`: <input type="color"> (1); has nothing; wave shop, forms and data
+- `input-type:date`: <input type="date"> (1); has nothing; wave shop, forms and data
+- `input-type:datetime-local`: <input type="datetime-local"> (1); has nothing; wave shop, forms and data
+- `input-type:email`: <input type="email"> (1); has nothing; wave shop, forms and data
+- `input-type:file`: <input type="file"> (1); has nothing; wave shop, forms and data
+- `input-type:hidden`: <input type="hidden"> (1); has nothing; wave shop, forms and data
+- `input-type:image`: <input type="image"> (1); has nothing; wave shop, forms and data
+- `input-type:month`: <input type="month"> (1); has nothing; wave shop, forms and data
+- `input-type:number`: <input type="number"> (1); has nothing; wave shop, forms and data
+- `input-type:password`: <input type="password"> (1); has nothing; wave shop, forms and data
+- `input-type:radio`: <input type="radio"> (1); has nothing; wave shop, forms and data
+- `input-type:range`: <input type="range"> (1); has nothing; wave shop, forms and data
+- `input-type:reset`: <input type="reset"> (1); has nothing; wave shop, forms and data
+- `input-type:search`: <input type="search"> (1); has nothing; wave shop, forms and data
+- `input-type:submit`: <input type="submit"> (1); has nothing; wave shop, forms and data
+- `input-type:tel`: <input type="tel"> (1); has nothing; wave shop, forms and data
+- `input-type:text`: <input type="text"> (1); has nothing; wave shop, forms and data
+- `input-type:time`: <input type="time"> (1); has nothing; wave shop, forms and data
+- `input-type:url`: <input type="url"> (1); has nothing; wave shop, forms and data
+- `input-type:week`: <input type="week"> (1); has nothing; wave shop, forms and data
+
+## svg (63)
+
+- `svg:a`: SVG <a> (1); has nothing; wave content, media and icons
+- `svg:animate`: SVG <animate> (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `svg:animateMotion`: SVG <animateMotion> (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `svg:animateTransform`: SVG <animateTransform> (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `svg:circle`: SVG <circle> (1); has nothing; wave content, media and icons
+- `svg:clipPath`: SVG <clipPath> (1); has nothing; wave content, media and icons
+- `svg:defs`: SVG <defs> (1); has nothing; wave content, media and icons
+- `svg:desc`: SVG <desc> (1); has nothing; wave content, media and icons
+- `svg:ellipse`: SVG <ellipse> (1); has nothing; wave content, media and icons
+- `svg:feBlend`: SVG <feBlend> (1); has nothing; wave content, media and icons
+- `svg:feColorMatrix`: SVG <feColorMatrix> (1); has nothing; wave content, media and icons
+- `svg:feComponentTransfer`: SVG <feComponentTransfer> (1); has nothing; wave content, media and icons
+- `svg:feComposite`: SVG <feComposite> (1); has nothing; wave content, media and icons
+- `svg:feConvolveMatrix`: SVG <feConvolveMatrix> (1); has nothing; wave content, media and icons
+- `svg:feDiffuseLighting`: SVG <feDiffuseLighting> (1); has nothing; wave content, media and icons
+- `svg:feDisplacementMap`: SVG <feDisplacementMap> (1); has nothing; wave content, media and icons
+- `svg:feDistantLight`: SVG <feDistantLight> (1); has nothing; wave content, media and icons
+- `svg:feDropShadow`: SVG <feDropShadow> (1); has nothing; wave content, media and icons
+- `svg:feFlood`: SVG <feFlood> (1); has nothing; wave content, media and icons
+- `svg:feFuncA`: SVG <feFuncA> (1); has nothing; wave content, media and icons
+- `svg:feFuncB`: SVG <feFuncB> (1); has nothing; wave content, media and icons
+- `svg:feFuncG`: SVG <feFuncG> (1); has nothing; wave content, media and icons
+- `svg:feFuncR`: SVG <feFuncR> (1); has nothing; wave content, media and icons
+- `svg:feGaussianBlur`: SVG <feGaussianBlur> (1); has nothing; wave content, media and icons
+- `svg:feImage`: SVG <feImage> (1); has nothing; wave content, media and icons
+- `svg:feMerge`: SVG <feMerge> (1); has nothing; wave content, media and icons
+- `svg:feMergeNode`: SVG <feMergeNode> (1); has nothing; wave content, media and icons
+- `svg:feMorphology`: SVG <feMorphology> (1); has nothing; wave content, media and icons
+- `svg:feOffset`: SVG <feOffset> (1); has nothing; wave content, media and icons
+- `svg:fePointLight`: SVG <fePointLight> (1); has nothing; wave content, media and icons
+- `svg:feSpecularLighting`: SVG <feSpecularLighting> (1); has nothing; wave content, media and icons
+- `svg:feSpotLight`: SVG <feSpotLight> (1); has nothing; wave content, media and icons
+- `svg:feTile`: SVG <feTile> (1); has nothing; wave content, media and icons
+- `svg:feTurbulence`: SVG <feTurbulence> (1); has nothing; wave content, media and icons
+- `svg:filter`: SVG <filter> (1); has nothing; wave content, media and icons
+- `svg:foreignObject`: SVG <foreignObject> (1); has nothing; wave content, media and icons
+- `svg:g`: SVG <g> (1); has nothing; wave content, media and icons
+- `svg:image`: SVG <image> (1); has nothing; wave content, media and icons
+- `svg:line`: SVG <line> (1); has nothing; wave content, media and icons
+- `svg:linearGradient`: SVG <linearGradient> (1); has nothing; wave content, media and icons
+- `svg:marker`: SVG <marker> (1); has nothing; wave content, media and icons
+- `svg:mask`: SVG <mask> (1); has nothing; wave content, media and icons
+- `svg:metadata`: SVG <metadata> (1); has nothing; wave content, media and icons
+- `svg:mpath`: SVG <mpath> (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `svg:path`: SVG <path> (1); has nothing; wave content, media and icons
+- `svg:pattern`: SVG <pattern> (1); has nothing; wave content, media and icons
+- `svg:polygon`: SVG <polygon> (1); has nothing; wave content, media and icons
+- `svg:polyline`: SVG <polyline> (1); has nothing; wave content, media and icons
+- `svg:radialGradient`: SVG <radialGradient> (1); has nothing; wave content, media and icons
+- `svg:rect`: SVG <rect> (1); has nothing; wave content, media and icons
+- `svg:script`: SVG <script> (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `svg:set`: SVG <set> (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `svg:stop`: SVG <stop> (1); has nothing; wave content, media and icons
+- `svg:style`: SVG <style> (1); has nothing; wave content, media and icons
+- `svg:svg`: SVG <svg> (1); has nothing; wave content, media and icons
+- `svg:switch`: SVG <switch> (1); has nothing; wave content, media and icons
+- `svg:symbol`: SVG <symbol> (1); has nothing; wave content, media and icons
+- `svg:text`: SVG <text> (1); has nothing; wave content, media and icons
+- `svg:textPath`: SVG <textPath> (1); has nothing; wave content, media and icons
+- `svg:title`: SVG <title> (1); has nothing; wave content, media and icons
+- `svg:tspan`: SVG <tspan> (1); has nothing; wave content, media and icons
+- `svg:use`: SVG <use> (1); has nothing; wave content, media and icons
+- `svg:view`: SVG <view> (1); has nothing; wave content, media and icons
+
+## embed (386)
+
+- `embed:23hq.com`: 23HQ embed (23hq.com) (1); has nothing; wave content, media and icons
+- `embed:3q.video`: 3Q embed (3q.video) (1); has nothing; wave content, media and icons
+- `embed:abraia.me`: Abraia embed (abraia.me) (1); has nothing; wave content, media and icons
+- `embed:adilo.bigcommand.com`: Adilo embed (adilo.bigcommand.com) (1); has nothing; wave content, media and icons
+- `embed:afreecatv.com`: afreecaTV embed (afreecatv.com) (1); has nothing; wave content, media and icons
+- `embed:altium.com`: Altium LLC embed (altium.com) (1); has nothing; wave content, media and icons
+- `embed:altrulabs.com`: Altru embed (altrulabs.com) (1); has nothing; wave content, media and icons
+- `embed:amtraker.com`: Amtraker embed (amtraker.com) (1); has nothing; wave content, media and icons
+- `embed:animatron.com`: Animatron embed (animatron.com) (1); has nothing; wave content, media and icons
+- `embed:animoto.com`: Animoto embed (animoto.com) (1); has nothing; wave content, media and icons
+- `embed:anniemusic.app`: AnnieMusic embed (anniemusic.app) (1); has nothing; wave content, media and icons
+- `embed:app.archivos.digital`: Archivos embed (app.archivos.digital) (1); has nothing; wave content, media and icons
+- `embed:app.getfader.com`: Fader embed (app.getfader.com) (1); has nothing; wave content, media and icons
+- `embed:app.hivo.com.au`: Hivo embed (app.hivo.com.au) (1); has nothing; wave content, media and icons
+- `embed:app.zingsoft.com`: ZingSoft embed (app.zingsoft.com) (1); has nothing; wave content, media and icons
+- `embed:appforcestudio.com`: AppForceStudio embed (appforcestudio.com) (1); has nothing; wave content, media and icons
+- `embed:assemblrworld.com`: AssemblrWorld embed (assemblrworld.com) (1); has nothing; wave content, media and icons
+- `embed:audio.com`: audio.com embed (audio.com) (1); has nothing; wave content, media and icons
+- `embed:audioboom.com`: Audioboom embed (audioboom.com) (1); has nothing; wave content, media and icons
+- `embed:audioclip.naver.com`: AudioClip embed (audioclip.naver.com) (1); has nothing; wave content, media and icons
+- `embed:audiomack.com`: Audiomack embed (audiomack.com) (1); has nothing; wave content, media and icons
+- `embed:audiomeans.fr`: Audiomeans embed (audiomeans.fr) (1); has nothing; wave content, media and icons
+- `embed:audius.co`: Audius embed (audius.co) (1); has nothing; wave content, media and icons
+- `embed:backtracks.fm`: Backtracks embed (backtracks.fm) (1); has nothing; wave content, media and icons
+- `embed:balsamiq.cloud`: Balsamiq Cloud embed (balsamiq.cloud) (1); has nothing; wave content, media and icons
+- `embed:beams.fm`: Beams.fm embed (beams.fm) (1); has nothing; wave content, media and icons
+- `embed:beautiful.ai`: Beautiful.AI embed (beautiful.ai) (1); has nothing; wave content, media and icons
+- `embed:behance.net`: Behance embed (behance.net) (1); has nothing; wave content, media and icons
+- `embed:beta.nebula.tv`: Nebula Beta embed (beta.nebula.tv) (1); has nothing; wave content, media and icons
+- `embed:beta.quellensuche.de`: Beta QuellenSuche embed (beta.quellensuche.de) (1); has nothing; wave content, media and icons
+- `embed:biqapp.net`: biqapp embed (biqapp.net) (1); has nothing; wave content, media and icons
+- `embed:bitchute.com`: Bitchute embed (bitchute.com) (1); has nothing; wave content, media and icons
+- `embed:blackfire.io`: Blackfire.io embed (blackfire.io) (1); has nothing; wave content, media and icons
+- `embed:blogcast.host`: Blogcast embed (blogcast.host) (1); has nothing; wave content, media and icons
+- `embed:bookingmood.com`: Bookingmood embed (bookingmood.com) (1); has nothing; wave content, media and icons
+- `embed:bornetube.dk`: Bornetube embed (bornetube.dk) (1); has nothing; wave content, media and icons
+- `embed:boxofficebuz.com`: Box Office Buz embed (boxofficebuz.com) (1); has nothing; wave content, media and icons
+- `embed:brightcove.com`: Brightcove embed (brightcove.com) (1); has nothing; wave content, media and icons
+- `embed:bsky.app`: Bluesky Social embed (bsky.app) (1); has nothing; wave content, media and icons
+- `embed:builder.pikasso.xyz`: Pikasso embed (builder.pikasso.xyz) (1); has nothing; wave content, media and icons
+- `embed:bumper.com`: Bumper embed (bumper.com) (1); has nothing; wave content, media and icons
+- `embed:bunny.net`: bunny.net embed (bunny.net) (1); has nothing; wave content, media and icons
+- `embed:buttondown.email`: Buttondown embed (buttondown.email) (1); has nothing; wave content, media and icons
+- `embed:cacoo.com`: Cacoo embed (cacoo.com) (1); has nothing; wave content, media and icons
+- `embed:canva.com`: Canva embed (canva.com) (1); has nothing; wave content, media and icons
+- `embed:carbon.music`: Carbon embed (carbon.music) (1); has nothing; wave content, media and icons
+- `embed:castmake-ai.com`: castmake embed (castmake-ai.com) (1); has nothing; wave content, media and icons
+- `embed:celero.io`: Celero embed (celero.io) (1); has nothing; wave content, media and icons
+- `embed:ceros.com`: Ceros embed (ceros.com) (1); has nothing; wave content, media and icons
+- `embed:chainflix.net`: Chainflix embed (chainflix.net) (1); has nothing; wave content, media and icons
+- `embed:channel-islands.geograph.org`: Geograph Channel Islands embed (channel-islands.geograph.org) (1); has nothing; wave content, media and icons
+- `embed:chartblocks.com`: ChartBlocks embed (chartblocks.com) (1); has nothing; wave content, media and icons
+- `embed:chirbit.com`: chirbit.com embed (chirbit.com) (1); has nothing; wave content, media and icons
+- `embed:chroco.ooo`: CHROCO embed (chroco.ooo) (1); has nothing; wave content, media and icons
+- `embed:circlezeroeight.com`: CircleZeroEight embed (circlezeroeight.com) (1); has nothing; wave content, media and icons
+- `embed:circuitlab.com`: CircuitLab embed (circuitlab.com) (1); has nothing; wave content, media and icons
+- `embed:clipland.com`: Clipland embed (clipland.com) (1); has nothing; wave content, media and icons
+- `embed:cloud.needle.tools`: Needle Cloud embed (cloud.needle.tools) (1); has nothing; wave content, media and icons
+- `embed:clueso.io`: Clueso embed (clueso.io) (1); has nothing; wave content, media and icons
+- `embed:clyp.it`: Clyp embed (clyp.it) (1); has nothing; wave content, media and icons
+- `embed:cmc.byzart.eu`: Byzart Project embed (cmc.byzart.eu) (1); has nothing; wave content, media and icons
+- `embed:codehs.com`: CodeHS embed (codehs.com) (1); has nothing; wave content, media and icons
+- `embed:codepen.io`: CodePen embed (codepen.io) (1); has nothing; wave content, media and icons
+- `embed:codepoints.net`: Codepoints embed (codepoints.net) (1); has nothing; wave content, media and icons
+- `embed:codesandbox.io`: CodeSandbox embed (codesandbox.io) (1); has nothing; wave content, media and icons
+- `embed:collegehumor.com`: CollegeHumor embed (collegehumor.com) (1); has nothing; wave content, media and icons
+- `embed:commaful.com`: Commaful embed (commaful.com) (1); has nothing; wave content, media and icons
+- `embed:coub.com`: Coub embed (coub.com) (1); has nothing; wave content, media and icons
+- `embed:crowdranking.com`: Crowd Ranking embed (crowdranking.com) (1); has nothing; wave content, media and icons
+- `embed:crumb.sh`: Crumb.sh embed (crumb.sh) (1); has nothing; wave content, media and icons
+- `embed:cueup.io`: Cueup DJ Booking embed (cueup.io) (1); has nothing; wave content, media and icons
+- `embed:curated.co`: Curated embed (curated.co) (1); has nothing; wave content, media and icons
+- `embed:customerdb.com`: CustomerDB embed (customerdb.com) (1); has nothing; wave content, media and icons
+- `embed:d.tube`: DTube embed (d.tube) (1); has nothing; wave content, media and icons
+- `embed:dadan.io`: dadan embed (dadan.io) (1); has nothing; wave content, media and icons
+- `embed:dailymotion.com`: Dailymotion embed (dailymotion.com) (1); has nothing; wave content, media and icons
+- `embed:dalexni.com`: DALEXNI embed (dalexni.com) (1); has nothing; wave content, media and icons
+- `embed:datawrapper.de`: Datawrapper embed (datawrapper.de) (1); has nothing; wave content, media and icons
+- `embed:demofly.ai`: Demofly embed (demofly.ai) (1); has nothing; wave content, media and icons
+- `embed:deseret.com`: Deseret News embed (deseret.com) (1); has nothing; wave content, media and icons
+- `embed:deviantart.com`: Deviantart.com embed (deviantart.com) (1); has nothing; wave content, media and icons
+- `embed:docdroid.net`: DocDroid embed (docdroid.net) (1); has nothing; wave content, media and icons
+- `embed:docswell.com`: Docswell embed (docswell.com) (1); has nothing; wave content, media and icons
+- `embed:documentcloud.org`: DocumentCloud embed (documentcloud.org) (1); has nothing; wave content, media and icons
+- `embed:dotsub.com`: Dotsub embed (dotsub.com) (1); has nothing; wave content, media and icons
+- `embed:dreambroker.com`: Dream Broker embed (dreambroker.com) (1); has nothing; wave content, media and icons
+- `embed:echoeshq.com`: EchoesHQ embed (echoeshq.com) (1); has nothing; wave content, media and icons
+- `embed:edumedia-sciences.com`: eduMedia embed (edumedia-sciences.com) (1); has nothing; wave content, media and icons
+- `embed:egliseinfo.catholique.fr`: EgliseInfo embed (egliseinfo.catholique.fr) (1); has nothing; wave content, media and icons
+- `embed:elevenlabs.io`: ElevenLabs embed (elevenlabs.io) (1); has nothing; wave content, media and icons
+- `embed:embases.com`: Embases embed (embases.com) (1); has nothing; wave content, media and icons
+- `embed:embed.acast.com`: Acast embed (embed.acast.com) (1); has nothing; wave content, media and icons
+- `embed:embedery.com`: Embedery embed (embedery.com) (1); has nothing; wave content, media and icons
+- `embed:ethfiddle.com`: Ethfiddle embed (ethfiddle.com) (1); has nothing; wave content, media and icons
+- `embed:eventlive.pro`: EventLive embed (eventlive.pro) (1); has nothing; wave content, media and icons
+- `embed:everviz.com`: everviz embed (everviz.com) (1); has nothing; wave content, media and icons
+- `embed:everwall.com`: Everwall embed (everwall.com) (1); has nothing; wave content, media and icons
+- `embed:ex.co`: Ex.Co embed (ex.co) (1); has nothing; wave content, media and icons
+- `embed:eyrie.io`: Eyrie embed (eyrie.io) (1); has nothing; wave content, media and icons
+- `embed:facebook.com`: Facebook embed (facebook.com) (1); has nothing; wave content, media and icons
+- `embed:faithlifetv.com`: Faithlife TV embed (faithlifetv.com) (1); has nothing; wave content, media and icons
+- `embed:figma.com`: Figma embed (figma.com) (1); has nothing; wave content, media and icons
+- `embed:filestage.io`: Filestage embed (filestage.io) (1); has nothing; wave content, media and icons
+- `embed:fireworktv.com`: Firework embed (fireworktv.com) (1); has nothing; wave content, media and icons
+- `embed:fite.tv`: FITE embed (fite.tv) (1); has nothing; wave content, media and icons
+- `embed:flat.io`: Flat embed (flat.io) (1); has nothing; wave content, media and icons
+- `embed:flickr.com`: Flickr embed (flickr.com) (1); has nothing; wave content, media and icons
+- `embed:flourish.studio`: Flourish embed (flourish.studio) (1); has nothing; wave content, media and icons
+- `embed:flows.flowhub.org`: FlowHubOrg embed (flows.flowhub.org) (1); has nothing; wave content, media and icons
+- `embed:fooday.app`: Fooday embed (fooday.app) (1); has nothing; wave content, media and icons
+- `embed:form-data.com`: Form-Data embed (form-data.com) (1); has nothing; wave content, media and icons
+- `embed:foxsports.com.au`: FOX SPORTS Australia embed (foxsports.com.au) (1); has nothing; wave content, media and icons
+- `embed:framatube.org`: Framatube embed (framatube.org) (1); has nothing; wave content, media and icons
+- `embed:framebuzz.com`: FrameBuzz embed (framebuzz.com) (1); has nothing; wave content, media and icons
+- `embed:framer.com`: Framer embed (framer.com) (1); has nothing; wave content, media and icons
+- `embed:geo-en.hlipp.de`: Geograph Germany embed (geo-en.hlipp.de) (1); has nothing; wave content, media and icons
+- `embed:geograph.org.uk`: Geograph Britain and Ireland embed (geograph.org.uk) (1); has nothing; wave content, media and icons
+- `embed:geometryviewer.com`: GeometryViewer embed (geometryviewer.com) (1); has nothing; wave content, media and icons
+- `embed:getscenes.com`: Scenes embed (getscenes.com) (1); has nothing; wave content, media and icons
+- `embed:getshow.io`: Show by Animaker embed (getshow.io) (1); has nothing; wave content, media and icons
+- `embed:gettyimages.com`: Getty Images embed (gettyimages.com) (1); has nothing; wave content, media and icons
+- `embed:gifnote.com`: Gifnote embed (gifnote.com) (1); has nothing; wave content, media and icons
+- `embed:giphy.com`: GIPHY embed (giphy.com) (1); has nothing; wave content, media and icons
+- `embed:gloria.tv`: GloriaTV embed (gloria.tv) (1); has nothing; wave content, media and icons
+- `embed:gmetri.com`: GMetri embed (gmetri.com) (1); has nothing; wave content, media and icons
+- `embed:gong.io`: Gong embed (gong.io) (1); has nothing; wave content, media and icons
+- `embed:good-for-job.jp`: GOOD FOR JOB embed (good-for-job.jp) (1); has nothing; wave content, media and icons
+- `embed:grain.com`: Grain embed (grain.com) (1); has nothing; wave content, media and icons
+- `embed:gtchannel.com`: GT Channel embed (gtchannel.com) (1); has nothing; wave content, media and icons
+- `embed:gumlet.com`: Gumlet embed (gumlet.com) (1); has nothing; wave content, media and icons
+- `embed:gw2fashions.com`: GW2 Fashions embed (gw2fashions.com) (1); has nothing; wave content, media and icons
+- `embed:gyazo.com`: Gyazo embed (gyazo.com) (1); has nothing; wave content, media and icons
+- `embed:hash.ai`: HASH embed (hash.ai) (1); has nothing; wave content, media and icons
+- `embed:haus.fazen.co`: FazenHaus embed (haus.fazen.co) (1); has nothing; wave content, media and icons
+- `embed:hearthis.at`: hearthis.at embed (hearthis.at) (1); has nothing; wave content, media and icons
+- `embed:helenenglish.education`: helenenglish_education embed (helenenglish.education) (1); has nothing; wave content, media and icons
+- `embed:heyzine.com`: Heyzine embed (heyzine.com) (1); has nothing; wave content, media and icons
+- `embed:hihaho.com`: hihaho embed (hihaho.com) (1); has nothing; wave content, media and icons
+- `embed:hippovideo.io`: HippoVideo embed (hippovideo.io) (1); has nothing; wave content, media and icons
+- `embed:homey.app`: Homey embed (homey.app) (1); has nothing; wave content, media and icons
+- `embed:hopvue.com`: Hopvue embed (hopvue.com) (1); has nothing; wave content, media and icons
+- `embed:hubspot-media-bridge.thedamconsultants.com`: The DAM consultants embed (hubspot-media-bridge.thedamconsultants.com) (1); has nothing; wave content, media and icons
+- `embed:huffduffer.com`: HuffDuffer embed (huffduffer.com) (1); has nothing; wave content, media and icons
+- `embed:hulu.com`: Hulu embed (hulu.com) (1); has nothing; wave content, media and icons
+- `embed:icosa.gallery`: Icosa Gallery embed (icosa.gallery) (1); has nothing; wave content, media and icons
+- `embed:ideamapper.com`: Ideamapper embed (ideamapper.com) (1); has nothing; wave content, media and icons
+- `embed:idomoo.com`: Idomoo embed (idomoo.com) (1); has nothing; wave content, media and icons
+- `embed:ifixit.com`: iFixit embed (ifixit.com) (1); has nothing; wave content, media and icons
+- `embed:ifttt.com`: IFTTT embed (ifttt.com) (1); has nothing; wave content, media and icons
+- `embed:ignite.video`: Ignite embed (ignite.video) (1); has nothing; wave content, media and icons
+- `embed:iheart.com`: iHeartRadio embed (iheart.com) (1); has nothing; wave content, media and icons
+- `embed:ilovecoco.video`: CoCo Corp embed (ilovecoco.video) (1); has nothing; wave content, media and icons
+- `embed:imenupro.com`: iMenuPro embed (imenupro.com) (1); has nothing; wave content, media and icons
+- `embed:img.catbo.at`: CatBoat embed (img.catbo.at) (1); has nothing; wave content, media and icons
+- `embed:incredible.dev`: Incredible embed (incredible.dev) (1); has nothing; wave content, media and icons
+- `embed:infogram.com`: Infogram embed (infogram.com) (1); has nothing; wave content, media and icons
+- `embed:infoveave.net`: Infoveave embed (infoveave.net) (1); has nothing; wave content, media and icons
+- `embed:injurymap.com`: Injurymap embed (injurymap.com) (1); has nothing; wave content, media and icons
+- `embed:inoreader.com`: Inoreader embed (inoreader.com) (1); has nothing; wave content, media and icons
+- `embed:inphood.com`: inphood embed (inphood.com) (1); has nothing; wave content, media and icons
+- `embed:insighttimer.com`: Insight Timer embed (insighttimer.com) (1); has nothing; wave content, media and icons
+- `embed:instagram.com`: Instagram embed (instagram.com) (1); has nothing; wave content, media and icons
+- `embed:insticator.com`: Insticator Inc embed (insticator.com) (1); has nothing; wave content, media and icons
+- `embed:issuu.com`: Issuu embed (issuu.com) (1); has nothing; wave content, media and icons
+- `embed:jawafdehi.org`: Jawafdehi embed (jawafdehi.org) (1); has nothing; wave content, media and icons
+- `embed:jdr.knacki.info`: Knacki embed (jdr.knacki.info) (1); has nothing; wave content, media and icons
+- `embed:jovian.com`: Jovian embed (jovian.com) (1); has nothing; wave content, media and icons
+- `embed:juntos.live`: Juntos embed (juntos.live) (1); has nothing; wave content, media and icons
+- `embed:justspin.cc`: JustSpin embed (justspin.cc) (1); has nothing; wave content, media and icons
+- `embed:kickstarter.com`: Kickstarter embed (kickstarter.com) (1); has nothing; wave content, media and icons
+- `embed:kidoju.com`: Kidoju embed (kidoju.com) (1); has nothing; wave content, media and icons
+- `embed:kirim.email`: Kirim.Email embed (kirim.email) (1); has nothing; wave content, media and icons
+- `embed:kit.co`: Kit embed (kit.co) (1); has nothing; wave content, media and icons
+- `embed:kitchenbowl.com`: Kitchenbowl embed (kitchenbowl.com) (1); has nothing; wave content, media and icons
+- `embed:kmdr.sh`: kmdr embed (kmdr.sh) (1); has nothing; wave content, media and icons
+- `embed:knowledgepad.co`: Knowledge Pad embed (knowledgepad.co) (1); has nothing; wave content, media and icons
+- `embed:kommodo.ai`: Kommodo embed (kommodo.ai) (1); has nothing; wave content, media and icons
+- `embed:kooapp.com`: Kooapp embed (kooapp.com) (1); has nothing; wave content, media and icons
+- `embed:kubit.ai`: Kubit embed (kubit.ai) (1); has nothing; wave content, media and icons
+- `embed:kurozora.app`: Kurozora embed (kurozora.app) (1); has nothing; wave content, media and icons
+- `embed:landofassets.com`: Land of Assets embed (landofassets.com) (1); has nothing; wave content, media and icons
+- `embed:latd.com`: Lumiere embed (latd.com) (1); has nothing; wave content, media and icons
+- `embed:laude.org`: Laude embed (laude.org) (1); has nothing; wave content, media and icons
+- `embed:learningapps.org`: LearningApps.org embed (learningapps.org) (1); has nothing; wave content, media and icons
+- `embed:linkstackz.com`: Linkstackz embed (linkstackz.com) (1); has nothing; wave content, media and icons
+- `embed:live.amcharts.com`: amCharts Live Editor embed (live.amcharts.com) (1); has nothing; wave content, media and icons
+- `embed:livid.com`: Livid embed (livid.com) (1); has nothing; wave content, media and icons
+- `embed:loom.com`: Loom embed (loom.com) (1); has nothing; wave content, media and icons
+- `embed:lottiefiles.com`: LottieFiles embed (lottiefiles.com) (1); has nothing; wave content, media and icons
+- `embed:ludus.one`: Ludus embed (ludus.one) (1); has nothing; wave content, media and icons
+- `embed:m.naver.com`: Naver Clip embed (m.naver.com) (1); has nothing; wave content, media and icons
+- `embed:map.cam.ac.uk`: University of Cambridge Map embed (map.cam.ac.uk) (1); has nothing; wave content, media and icons
+- `embed:marimo.io`: marimo embed (marimo.io) (1); has nothing; wave content, media and icons
+- `embed:mathembed.com`: MathEmbed embed (mathembed.com) (1); has nothing; wave content, media and icons
+- `embed:matterport.com`: Matterport embed (matterport.com) (1); has nothing; wave content, media and icons
+- `embed:mdstrm.com`: Mediastream embed (mdstrm.com) (1); has nothing; wave content, media and icons
+- `embed:me.me`: me.me embed (me.me) (1); has nothing; wave content, media and icons
+- `embed:mediatheque.univ-paris1.fr`: UnivParis1.Pod embed (mediatheque.univ-paris1.fr) (1); has nothing; wave content, media and icons
+- `embed:medienarchiv.zhdk.ch`: Medienarchiv der Künste - Zürcher Hochschule der Künste embed (medienarchiv.zhdk.ch) (1); has nothing; wave content, media and icons
+- `embed:mermaid.ink`: Mermaid Ink embed (mermaid.ink) (1); has nothing; wave content, media and icons
+- `embed:minervaknows.com`: Minerva embed (minervaknows.com) (1); has nothing; wave content, media and icons
+- `embed:minesweeper.today`: Cardinal Blue embed (minesweeper.today) (1); has nothing; wave content, media and icons
+- `embed:miro.com`: Miro embed (miro.com) (1); has nothing; wave content, media and icons
+- `embed:mixcloud.com`: MixCloud embed (mixcloud.com) (1); has nothing; wave content, media and icons
+- `embed:mixpanel.com`: Mixpanel embed (mixpanel.com) (1); has nothing; wave content, media and icons
+- `embed:mobypicture.com`: Moby Picture embed (mobypicture.com) (1); has nothing; wave content, media and icons
+- `embed:musicboxmaniacs.com`: Music Box Maniacs embed (musicboxmaniacs.com) (1); has nothing; wave content, media and icons
+- `embed:mybeweeg.com`: myBeweeg embed (mybeweeg.com) (1); has nothing; wave content, media and icons
+- `embed:mysqlexplain.com`: MySQL Visual Explain embed (mysqlexplain.com) (1); has nothing; wave content, media and icons
+- `embed:namchey.com`: Namchey embed (namchey.com) (1); has nothing; wave content, media and icons
+- `embed:nanoo.tv`: nanoo.tv embed (nanoo.tv) (1); has nothing; wave content, media and icons
+- `embed:naturalatlas.com`: Natural Atlas embed (naturalatlas.com) (1); has nothing; wave content, media and icons
+- `embed:nb.no`: Nasjonalbiblioteket embed (nb.no) (1); has nothing; wave content, media and icons
+- `embed:ndla.no`: NDLA - Norwegian Digital Learning Arena embed (ndla.no) (1); has nothing; wave content, media and icons
+- `embed:nebula.tv`: Nebula embed (nebula.tv) (1); has nothing; wave content, media and icons
+- `embed:neetorecord.com`: neetoRecord embed (neetorecord.com) (1); has nothing; wave content, media and icons
+- `embed:nfb.ca`: nfb.ca embed (nfb.ca) (1); has nothing; wave content, media and icons
+- `embed:nopaste.ml`: NoPaste embed (nopaste.ml) (1); has nothing; wave content, media and icons
+- `embed:nytimes.com`: The New York Times embed (nytimes.com) (1); has nothing; wave content, media and icons
+- `embed:observablehq.com`: Observable embed (observablehq.com) (1); has nothing; wave content, media and icons
+- `embed:octopus.saooti.com`: Saooti embed (octopus.saooti.com) (1); has nothing; wave content, media and icons
+- `embed:odds.com.au`: Odds.com.au embed (odds.com.au) (1); has nothing; wave content, media and icons
+- `embed:odesli.co`: Odesli (formerly Songlink) embed (odesli.co) (1); has nothing; wave content, media and icons
+- `embed:odysee.com`: Odysee embed (odysee.com) (1); has nothing; wave content, media and icons
+- `embed:official.fm`: Official FM embed (official.fm) (1); has nothing; wave content, media and icons
+- `embed:omniscope.me`: Omniscope embed (omniscope.me) (1); has nothing; wave content, media and icons
+- `embed:omnystudio.com`: Omny Studio embed (omnystudio.com) (1); has nothing; wave content, media and icons
+- `embed:onsizzle.com`: Sizzle embed (onsizzle.com) (1); has nothing; wave content, media and icons
+- `embed:orbitvu.co`: Orbitvu embed (orbitvu.co) (1); has nothing; wave content, media and icons
+- `embed:origits.com`: Origits embed (origits.com) (1); has nothing; wave content, media and icons
+- `embed:outplayed.tv`: Outplayed.tv embed (outplayed.tv) (1); has nothing; wave content, media and icons
+- `embed:overflow.io`: Overflow embed (overflow.io) (1); has nothing; wave content, media and icons
+- `embed:oz.com`: OZ embed (oz.com) (1); has nothing; wave content, media and icons
+- `embed:padlet.com`: Padlet embed (padlet.com) (1); has nothing; wave content, media and icons
+- `embed:pandavideo.com`: Panda Video embed (pandavideo.com) (1); has nothing; wave content, media and icons
+- `embed:parta.io`: Parta.io embed (parta.io) (1); has nothing; wave content, media and icons
+- `embed:pastery.net`: Pastery embed (pastery.net) (1); has nothing; wave content, media and icons
+- `embed:peertube.tv`: PeerTube.TV embed (peertube.tv) (1); has nothing; wave content, media and icons
+- `embed:picturelfy.com`: Picturelfy embed (picturelfy.com) (1); has nothing; wave content, media and icons
+- `embed:piggy.to`: Piggy embed (piggy.to) (1); has nothing; wave content, media and icons
+- `embed:pingvp.com`: PingVP embed (pingvp.com) (1); has nothing; wave content, media and icons
+- `embed:pinpoll.com`: Pinpoll embed (pinpoll.com) (1); has nothing; wave content, media and icons
+- `embed:pinterest.com`: Pinterest embed (pinterest.com) (1); has nothing; wave content, media and icons
+- `embed:pitchhub.com`: PitchHub embed (pitchhub.com) (1); has nothing; wave content, media and icons
+- `embed:pixdor.com`: Pixdor embed (pixdor.com) (1); has nothing; wave content, media and icons
+- `embed:place.line.me`: Line Place embed (place.line.me) (1); has nothing; wave content, media and icons
+- `embed:play.itemis.io`: itemis CREATE embed (play.itemis.io) (1); has nothing; wave content, media and icons
+- `embed:player.indacolive.com`: Indaco embed (player.indacolive.com) (1); has nothing; wave content, media and icons
+- `embed:plinth.it`: Plinth embed (plinth.it) (1); has nothing; wave content, media and icons
+- `embed:plusdocs.com`: Plusdocs embed (plusdocs.com) (1); has nothing; wave content, media and icons
+- `embed:pod.u-pec.fr`: Upec.Pod embed (pod.u-pec.fr) (1); has nothing; wave content, media and icons
+- `embed:pod.univ-lille.fr`: Lille.Pod embed (pod.univ-lille.fr) (1); has nothing; wave content, media and icons
+- `embed:podbean.com`: Podbean embed (podbean.com) (1); has nothing; wave content, media and icons
+- `embed:podcasts.apple.com`: Apple Podcasts embed (podcasts.apple.com) (1); has nothing; wave content, media and icons
+- `embed:polldaddy.com`: Poll Daddy embed (polldaddy.com) (1); has nothing; wave content, media and icons
+- `embed:portfolium.com`: Portfolium embed (portfolium.com) (1); has nothing; wave content, media and icons
+- `embed:present.do`: Present embed (present.do) (1); has nothing; wave content, media and icons
+- `embed:prezi.com`: Prezi Video embed (prezi.com) (1); has nothing; wave content, media and icons
+- `embed:programmingly.dev`: Programmingly.dev embed (programmingly.dev) (1); has nothing; wave content, media and icons
+- `embed:purl.stanford.edu`: Stanford Digital Repository embed (purl.stanford.edu) (1); has nothing; wave content, media and icons
+- `embed:qtpi.gg`: QTpi embed (qtpi.gg) (1); has nothing; wave content, media and icons
+- `embed:quartr.com`: Quartr embed (quartr.com) (1); has nothing; wave content, media and icons
+- `embed:quellensuche.de`: QuellenSuche embed (quellensuche.de) (1); has nothing; wave content, media and icons
+- `embed:quiz.biz`: Quiz.biz embed (quiz.biz) (1); has nothing; wave content, media and icons
+- `embed:quizz.biz`: Quizz.biz embed (quizz.biz) (1); has nothing; wave content, media and icons
+- `embed:radiopublic.com`: RadioPublic embed (radiopublic.com) (1); has nothing; wave content, media and icons
+- `embed:raindrop.io`: Raindrop embed (raindrop.io) (1); has nothing; wave content, media and icons
+- `embed:rcvis.com`: rcvis embed (rcvis.com) (1); has nothing; wave content, media and icons
+- `embed:reddit.com`: Reddit embed (reddit.com) (1); has nothing; wave content, media and icons
+- `embed:redlof-medien.de`: Redlof-Medien embed (redlof-medien.de) (1); has nothing; wave content, media and icons
+- `embed:releasewire.com`: ReleaseWire embed (releasewire.com) (1); has nothing; wave content, media and icons
+- `embed:replit.com`: Replit embed (replit.com) (1); has nothing; wave content, media and icons
+- `embed:reverbnation.com`: ReverbNation embed (reverbnation.com) (1); has nothing; wave content, media and icons
+- `embed:risky.biz`: Risky Business embed (risky.biz) (1); has nothing; wave content, media and icons
+- `embed:roomshare.jp`: Roomshare embed (roomshare.jp) (1); has nothing; wave content, media and icons
+- `embed:roosterteeth.com`: RoosterTeeth embed (roosterteeth.com) (1); has nothing; wave content, media and icons
+- `embed:rumble.com`: Rumble embed (rumble.com) (1); has nothing; wave content, media and icons
+- `embed:runkit.com`: Runkit embed (runkit.com) (1); has nothing; wave content, media and icons
+- `embed:rushes.cc`: rushes.cc embed (rushes.cc) (1); has nothing; wave content, media and icons
+- `embed:sagenverse.com`: Sagenverse embed (sagenverse.com) (1); has nothing; wave content, media and icons
+- `embed:samay.itabtechinfosys.com`: Itabtech infosys embed (samay.itabtechinfosys.com) (1); has nothing; wave content, media and icons
+- `embed:satcat.com`: Satcat embed (satcat.com) (1); has nothing; wave content, media and icons
+- `embed:satoplayer.com`: Sato Video Player embed (satoplayer.com) (1); has nothing; wave content, media and icons
+- `embed:sbedit.net`: sbedit embed (sbedit.net) (1); has nothing; wave content, media and icons
+- `embed:screen9.com`: Screen9 embed (screen9.com) (1); has nothing; wave content, media and icons
+- `embed:screencast.com`: Screencast.com embed (screencast.com) (1); has nothing; wave content, media and icons
+- `embed:screenr.com`: Screenr embed (screenr.com) (1); has nothing; wave content, media and icons
+- `embed:scribblemaps.com`: ScribbleMaps embed (scribblemaps.com) (1); has nothing; wave content, media and icons
+- `embed:scribd.com`: Scribd embed (scribd.com) (1); has nothing; wave content, media and icons
+- `embed:secure.actblue.com`: ActBlue embed (secure.actblue.com) (1); has nothing; wave content, media and icons
+- `embed:sendtonews.com`: SendtoNews embed (sendtonews.com) (1); has nothing; wave content, media and icons
+- `embed:shared-file-kappa.vercel.app`: SharedFile embed (shared-file-kappa.vercel.app) (1); has nothing; wave content, media and icons
+- `embed:shopshare.tv`: Shopshare embed (shopshare.tv) (1); has nothing; wave content, media and icons
+- `embed:shortnote.jp`: ShortNote embed (shortnote.jp) (1); has nothing; wave content, media and icons
+- `embed:shoudio.com`: Shoudio embed (shoudio.com) (1); has nothing; wave content, media and icons
+- `embed:showtheway.io`: Show the Way, actionable location info embed (showtheway.io) (1); has nothing; wave content, media and icons
+- `embed:simplecast.com`: Simplecast embed (simplecast.com) (1); has nothing; wave content, media and icons
+- `embed:sketch.com`: Sketch embed (sketch.com) (1); has nothing; wave content, media and icons
+- `embed:sketchfab.com`: Sketchfab embed (sketchfab.com) (1); has nothing; wave content, media and icons
+- `embed:skoletube.dk`: Skoletube embed (skoletube.dk) (1); has nothing; wave content, media and icons
+- `embed:slideshare.net`: SlideShare embed (slideshare.net) (1); has nothing; wave content, media and icons
+- `embed:smashnotes.com`: SmashNotes embed (smashnotes.com) (1); has nothing; wave content, media and icons
+- `embed:smeme.com`: Smeme embed (smeme.com) (1); has nothing; wave content, media and icons
+- `embed:smrthi.com`: Smrthi embed (smrthi.com) (1); has nothing; wave content, media and icons
+- `embed:smugmug.com`: SmugMug embed (smugmug.com) (1); has nothing; wave content, media and icons
+- `embed:socialexplorer.com`: SocialExplorer embed (socialexplorer.com) (1); has nothing; wave content, media and icons
+- `embed:sooplive.com`: SOOP embed (sooplive.com) (1); has nothing; wave content, media and icons
+- `embed:soundcloud.com`: SoundCloud embed (soundcloud.com) (1); has nothing; wave content, media and icons
+- `embed:speakerdeck.com`: SpeakerDeck embed (speakerdeck.com) (1); has nothing; wave content, media and icons
+- `embed:spotify.com`: Spotify embed (spotify.com) (1); has nothing; wave content, media and icons
+- `embed:spotlightr.com`: Spotlightr embed (spotlightr.com) (1); has nothing; wave content, media and icons
+- `embed:spreaker.com`: Spreaker embed (spreaker.com) (1); has nothing; wave content, media and icons
+- `embed:sproutvideo.com`: SproutVideo embed (sproutvideo.com) (1); has nothing; wave content, media and icons
+- `embed:spyke.social`: Spyke embed (spyke.social) (1); has nothing; wave content, media and icons
+- `embed:storymaps.arcgis.com`: ArcGIS StoryMaps embed (storymaps.arcgis.com) (1); has nothing; wave content, media and icons
+- `embed:stream.microsoft.com`: Microsoft Stream embed (stream.microsoft.com) (1); has nothing; wave content, media and icons
+- `embed:streamable.com`: Streamable embed (streamable.com) (1); has nothing; wave content, media and icons
+- `embed:streamio.com`: Streamio embed (streamio.com) (1); has nothing; wave content, media and icons
+- `embed:subscribi.io`: Subscribi embed (subscribi.io) (1); has nothing; wave content, media and icons
+- `embed:sudomemo.net`: Sudomemo embed (sudomemo.net) (1); has nothing; wave content, media and icons
+- `embed:supercut.ai`: Supercut embed (supercut.ai) (1); has nothing; wave content, media and icons
+- `embed:sutori.com`: Sutori embed (sutori.com) (1); has nothing; wave content, media and icons
+- `embed:sway.com`: Sway embed (sway.com) (1); has nothing; wave content, media and icons
+- `embed:sway.office.com`: Sway Office embed (sway.office.com) (1); has nothing; wave content, media and icons
+- `embed:synthesia.io`: Synthesia embed (synthesia.io) (1); has nothing; wave content, media and icons
+- `embed:techpostcast.com`: Tech Post Cast embed (techpostcast.com) (1); has nothing; wave content, media and icons
+- `embed:ted.com`: TED embed (ted.com) (1); has nothing; wave content, media and icons
+- `embed:tella.tv`: Tella embed (tella.tv) (1); has nothing; wave content, media and icons
+- `embed:theysaidso.com`: They Said So embed (theysaidso.com) (1); has nothing; wave content, media and icons
+- `embed:tickcounter.com`: TickCounter embed (tickcounter.com) (1); has nothing; wave content, media and icons
+- `embed:tiktok.com`: TikTok embed (tiktok.com) (1); has nothing; wave content, media and icons
+- `embed:tksn.me`: tksn-me embed (tksn.me) (1); has nothing; wave content, media and icons
+- `embed:tonicaudio.com`: Tonic Audio embed (tonicaudio.com) (1); has nothing; wave content, media and icons
+- `embed:toornament.com`: Toornament embed (toornament.com) (1); has nothing; wave content, media and icons
+- `embed:topy.se`: Topy embed (topy.se) (1); has nothing; wave content, media and icons
+- `embed:totango.com`: Totango embed (totango.com) (1); has nothing; wave content, media and icons
+- `embed:trackspace.upitup.com`: Trackspace embed (trackspace.upitup.com) (1); has nothing; wave content, media and icons
+- `embed:trinityaudio.ai`: Trinity Audio embed (trinityaudio.ai) (1); has nothing; wave content, media and icons
+- `embed:trycli.com`: TryCLI Studio embed (trycli.com) (1); has nothing; wave content, media and icons
+- `embed:tumblr.com`: Tumblr embed (tumblr.com) (1); has nothing; wave content, media and icons
+- `embed:tuxx.be`: Tuxx embed (tuxx.be) (1); has nothing; wave content, media and icons
+- `embed:tv.kakao.com`: KakaoTv embed (tv.kakao.com) (1); has nothing; wave content, media and icons
+- `embed:tvcf.co.kr`: tvcf embed (tvcf.co.kr) (1); has nothing; wave content, media and icons
+- `embed:twinmotion.unrealengine.com`: Twinmotion embed (twinmotion.unrealengine.com) (1); has nothing; wave content, media and icons
+- `embed:twitter.com`: Twitter embed (twitter.com) (1); has nothing; wave content, media and icons
+- `embed:typecast.ai`: TypeCast embed (typecast.ai) (1); has nothing; wave content, media and icons
+- `embed:typlog.com`: Typlog embed (typlog.com) (1); has nothing; wave content, media and icons
+- `embed:uapod.univ-antilles.fr`: UAPod embed (uapod.univ-antilles.fr) (1); has nothing; wave content, media and icons
+- `embed:ultimedia.com`: Digiteka embed (ultimedia.com) (1); has nothing; wave content, media and icons
+- `embed:umotion-test.univ-lemans.fr`: LeMans.Pod embed (umotion-test.univ-lemans.fr) (1); has nothing; wave content, media and icons
+- `embed:ustream.tv`: Ustream embed (ustream.tv) (1); has nothing; wave content, media and icons
+- `embed:ustudio.com`: uStudio, Inc. embed (ustudio.com) (1); has nothing; wave content, media and icons
+- `embed:veer.tv`: VeeR VR embed (veer.tv) (1); has nothing; wave content, media and icons
+- `embed:vevo.com`: VEVO embed (vevo.com) (1); has nothing; wave content, media and icons
+- `embed:videfit.com`: Videfit embed (videfit.com) (1); has nothing; wave content, media and icons
+- `embed:videos.sapo.pt`: Sapo Videos embed (videos.sapo.pt) (1); has nothing; wave content, media and icons
+- `embed:vidmount.com`: VidMount embed (vidmount.com) (1); has nothing; wave content, media and icons
+- `embed:vidyard.com`: Vidyard embed (vidyard.com) (1); has nothing; wave content, media and icons
+- `embed:view.briovr.com`: BrioVR embed (view.briovr.com) (1); has nothing; wave content, media and icons
+- `embed:vimeo.com`: Vimeo embed (vimeo.com) (1); has nothing; wave content, media and icons
+- `embed:viostream.com`: Viostream embed (viostream.com) (1); has nothing; wave content, media and icons
+- `embed:viously.com`: Viously embed (viously.com) (1); has nothing; wave content, media and icons
+- `embed:vizdom.dev`: Vizdom embed (vizdom.dev) (1); has nothing; wave content, media and icons
+- `embed:vizydrop.com`: Vizydrop embed (vizydrop.com) (1); has nothing; wave content, media and icons
+- `embed:vlipsy.com`: Vlipsy embed (vlipsy.com) (1); has nothing; wave content, media and icons
+- `embed:vlive.tv`: VLIVE embed (vlive.tv) (1); has nothing; wave content, media and icons
+- `embed:vouchfor.com`: Vouch embed (vouchfor.com) (1); has nothing; wave content, media and icons
+- `embed:voxsnap.com`: VoxSnap embed (voxsnap.com) (1); has nothing; wave content, media and icons
+- `embed:waltrack`: Waltrack embed (waltrack) (1); has nothing; wave content, media and icons
+- `embed:wave.video`: Wave.video embed (wave.video) (1); has nothing; wave content, media and icons
+- `embed:web3isgoinggreat.com`: Web3 is Going Just Great embed (web3isgoinggreat.com) (1); has nothing; wave content, media and icons
+- `embed:webcrumbs.org`: Webcrumbs embed (webcrumbs.org) (1); has nothing; wave content, media and icons
+- `embed:wecandeo.com`: wecandeo embed (wecandeo.com) (1); has nothing; wave content, media and icons
+- `embed:wewtalk.com`: Wewtalk embed (wewtalk.com) (1); has nothing; wave content, media and icons
+- `embed:whimsical.com`: Whimsical embed (whimsical.com) (1); has nothing; wave content, media and icons
+- `embed:wistia.com`: Wistia, Inc. embed (wistia.com) (1); has nothing; wave content, media and icons
+- `embed:wizer.me`: wizer.me embed (wizer.me) (1); has nothing; wave content, media and icons
+- `embed:wokwi.com`: Wokwi embed (wokwi.com) (1); has nothing; wave content, media and icons
+- `embed:wolframcloud.com`: Wolfram Cloud embed (wolframcloud.com) (1); has nothing; wave content, media and icons
+- `embed:wordpress.com`: WordPress.com embed (wordpress.com) (1); has nothing; wave content, media and icons
+- `embed:x.com`: X embed (x.com) (1); has nothing; wave content, media and icons
+- `embed:youtube.com`: YouTube embed (youtube.com) (1); has nothing; wave content, media and icons
+- `embed:yumpu.com`: YUMPU embed (yumpu.com) (1); has nothing; wave content, media and icons
+- `embed:zeplin.io`: Zeplin embed (zeplin.io) (1); has nothing; wave content, media and icons
+- `embed:znipe.tv`: ZnipeTV embed (znipe.tv) (1); has nothing; wave content, media and icons
+- `embed:zoomable.ca`: Zoomable embed (zoomable.ca) (1); has nothing; wave content, media and icons
+
 ## css-at (14)
 
 - `css-at:container`: @container (1); has nothing; wave draft reading
@@ -393,6 +1390,54 @@
 - `css-at:starting-style`: @starting-style (1); has nothing; wave motion writer (4.0), waits on phase-0
 - `css-at:supports`: @supports (1); has nothing; wave draft reading
 - `css-at:view-transition`: @view-transition (1); has nothing; wave motion writer (4.0), waits on phase-0
+
+## css-media-feature (45)
+
+- `css-media-feature:-moz-device-pixel-ratio`: @media (-moz-device-pixel-ratio) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:-webkit-animation`: @media (-webkit-animation) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:-webkit-device-pixel-ratio`: @media (-webkit-device-pixel-ratio) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:-webkit-max-device-pixel-ratio`: @media (-webkit-max-device-pixel-ratio) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:-webkit-min-device-pixel-ratio`: @media (-webkit-min-device-pixel-ratio) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:-webkit-transform-2d`: @media (-webkit-transform-2d) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:-webkit-transform-3d`: @media (-webkit-transform-3d) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:-webkit-transition`: @media (-webkit-transition) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:any-hover`: @media (any-hover) (1); has nothing; wave behaviour recognisers
+- `css-media-feature:any-pointer`: @media (any-pointer) (1); has nothing; wave behaviour recognisers
+- `css-media-feature:aspect-ratio`: @media (aspect-ratio) (1); has nothing; wave modes and values with no CSS property
+- `css-media-feature:calc`: @media (calc) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:color`: @media (color) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:color-gamut`: @media (color-gamut) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:color-index`: @media (color-index) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:device-aspect-ratio`: @media (device-aspect-ratio) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:device-height`: @media (device-height) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:device-posture`: @media (device-posture) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:device-width`: @media (device-width) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:display-mode`: @media (display-mode) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:dynamic-range`: @media (dynamic-range) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:forced-colors`: @media (forced-colors) (1); has nothing; wave site and surfaces
+- `css-media-feature:grid`: @media (grid) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:height`: @media (height) (1); has nothing; wave modes and values with no CSS property
+- `css-media-feature:horizontal-viewport-segments`: @media (horizontal-viewport-segments) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:hover`: @media (hover) (1); has nothing; wave behaviour recognisers
+- `css-media-feature:inverted-colors`: @media (inverted-colors) (1); has nothing; wave site and surfaces
+- `css-media-feature:monochrome`: @media (monochrome) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:nested-queries`: @media (nested-queries) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:orientation`: @media (orientation) (1); has nothing; wave modes and values with no CSS property
+- `css-media-feature:overflow-block`: @media (overflow-block) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:overflow-inline`: @media (overflow-inline) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:pointer`: @media (pointer) (1); has nothing; wave behaviour recognisers
+- `css-media-feature:prefers-color-scheme`: @media (prefers-color-scheme) (1); has nothing; wave site and surfaces
+- `css-media-feature:prefers-contrast`: @media (prefers-contrast) (1); has nothing; wave site and surfaces
+- `css-media-feature:prefers-reduced-data`: @media (prefers-reduced-data) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:prefers-reduced-motion`: @media (prefers-reduced-motion) (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-media-feature:prefers-reduced-transparency`: @media (prefers-reduced-transparency) (1); has nothing; wave site and surfaces
+- `css-media-feature:resolution`: @media (resolution) (1); has nothing; wave modes and values with no CSS property
+- `css-media-feature:scan`: @media (scan) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:scripting`: @media (scripting) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:update`: @media (update) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:vertical-viewport-segments`: @media (vertical-viewport-segments) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:video-dynamic-range`: @media (video-dynamic-range) (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-media-feature:width`: @media (width) (1); has nothing; wave modes and values with no CSS property
 
 ## css-group (49)
 
@@ -445,6 +1490,499 @@
 - `css-group:viewport`: CSS properties: CSS Viewport (1); has nothing; wave draft reading; e.g. zoom
 - `css-group:will-change`: CSS properties: CSS Will Change (1); has nothing; wave draft reading; e.g. will-change
 - `css-group:writing-modes`: CSS properties: CSS Writing Modes (5); has nothing; wave draft reading; e.g. direction, text-combine-upright, text-orientation, unicode-bidi, writing-mode
+
+## css-pseudo-class (75)
+
+- `css-pseudo-class:active`: :active (1); has nothing; wave states
+- `css-pseudo-class:active-view-transition`: :active-view-transition (1); has nothing; wave states
+- `css-pseudo-class:active-view-transition-type`: :active-view-transition-type() (1); has nothing; wave states
+- `css-pseudo-class:any-link`: :any-link (1); has nothing; wave states
+- `css-pseudo-class:autofill`: :autofill (1); has nothing; wave states
+- `css-pseudo-class:blank`: :blank (1); has nothing; wave states
+- `css-pseudo-class:buffering`: :buffering (1); has nothing; wave states
+- `css-pseudo-class:checked`: :checked (1); has nothing; wave states
+- `css-pseudo-class:current`: :current (1); has nothing; wave states
+- `css-pseudo-class:default`: :default (1); has nothing; wave states
+- `css-pseudo-class:defined`: :defined (1); has nothing; wave draft reading
+- `css-pseudo-class:dir`: :dir() (1); has nothing; wave draft reading
+- `css-pseudo-class:disabled`: :disabled (1); has nothing; wave states
+- `css-pseudo-class:empty`: :empty (1); has nothing; wave states
+- `css-pseudo-class:enabled`: :enabled (1); has nothing; wave states
+- `css-pseudo-class:first`: :first (1); has nothing; wave draft reading
+- `css-pseudo-class:first-child`: :first-child (1); has nothing; wave draft reading
+- `css-pseudo-class:first-of-type`: :first-of-type (1); has nothing; wave draft reading
+- `css-pseudo-class:focus`: :focus (1); has nothing; wave states
+- `css-pseudo-class:focus-visible`: :focus-visible (1); has nothing; wave states
+- `css-pseudo-class:focus-within`: :focus-within (1); has nothing; wave states
+- `css-pseudo-class:fullscreen`: :fullscreen (1); has nothing; wave states
+- `css-pseudo-class:future`: :future (1); has nothing; wave states
+- `css-pseudo-class:has`: :has() (1); has nothing; wave draft reading
+- `css-pseudo-class:has-slotted`: :has-slotted (1); has nothing; wave states
+- `css-pseudo-class:host`: :host (1); has nothing; wave draft reading
+- `css-pseudo-class:host-context`: :host-context() (1); has nothing; wave draft reading
+- `css-pseudo-class:hover`: :hover (1); has nothing; wave states
+- `css-pseudo-class:in-range`: :in-range (1); has nothing; wave states
+- `css-pseudo-class:indeterminate`: :indeterminate (1); has nothing; wave states
+- `css-pseudo-class:invalid`: :invalid (1); has nothing; wave states
+- `css-pseudo-class:is`: :is() (1); has nothing; wave draft reading
+- `css-pseudo-class:lang`: :lang() (1); has nothing; wave draft reading
+- `css-pseudo-class:last-child`: :last-child (1); has nothing; wave draft reading
+- `css-pseudo-class:last-of-type`: :last-of-type (1); has nothing; wave draft reading
+- `css-pseudo-class:left`: :left (1); has nothing; wave draft reading
+- `css-pseudo-class:link`: :link (1); has nothing; wave states
+- `css-pseudo-class:local-link`: :local-link (1); has nothing; wave states
+- `css-pseudo-class:modal`: :modal (1); has nothing; wave states
+- `css-pseudo-class:muted`: :muted (1); has nothing; wave states
+- `css-pseudo-class:not`: :not() (1); has nothing; wave draft reading
+- `css-pseudo-class:nth-child`: :nth-child() (1); has nothing; wave draft reading
+- `css-pseudo-class:nth-last-child`: :nth-last-child() (1); has nothing; wave draft reading
+- `css-pseudo-class:nth-last-of-type`: :nth-last-of-type() (1); has nothing; wave draft reading
+- `css-pseudo-class:nth-of-type`: :nth-of-type() (1); has nothing; wave draft reading
+- `css-pseudo-class:only-child`: :only-child (1); has nothing; wave draft reading
+- `css-pseudo-class:only-of-type`: :only-of-type (1); has nothing; wave draft reading
+- `css-pseudo-class:open`: :open (1); has nothing; wave states
+- `css-pseudo-class:optional`: :optional (1); has nothing; wave states
+- `css-pseudo-class:out-of-range`: :out-of-range (1); has nothing; wave states
+- `css-pseudo-class:past`: :past (1); has nothing; wave states
+- `css-pseudo-class:paused`: :paused (1); has nothing; wave states
+- `css-pseudo-class:picture-in-picture`: :picture-in-picture (1); has nothing; wave states
+- `css-pseudo-class:placeholder-shown`: :placeholder-shown (1); has nothing; wave states
+- `css-pseudo-class:playing`: :playing (1); has nothing; wave states
+- `css-pseudo-class:popover-open`: :popover-open (1); has nothing; wave states
+- `css-pseudo-class:read-only`: :read-only (1); has nothing; wave states
+- `css-pseudo-class:read-write`: :read-write (1); has nothing; wave states
+- `css-pseudo-class:required`: :required (1); has nothing; wave states
+- `css-pseudo-class:right`: :right (1); has nothing; wave draft reading
+- `css-pseudo-class:root`: :root (1); has nothing; wave draft reading
+- `css-pseudo-class:scope`: :scope (1); has nothing; wave draft reading
+- `css-pseudo-class:seeking`: :seeking (1); has nothing; wave states
+- `css-pseudo-class:stalled`: :stalled (1); has nothing; wave states
+- `css-pseudo-class:state`: :state() (1); has nothing; wave states
+- `css-pseudo-class:target`: :target (1); has nothing; wave states
+- `css-pseudo-class:target-current`: :target-current (1); has nothing; wave draft reading
+- `css-pseudo-class:target-within`: :target-within (1); has nothing; wave states
+- `css-pseudo-class:user-invalid`: :user-invalid (1); has nothing; wave states
+- `css-pseudo-class:user-valid`: :user-valid (1); has nothing; wave states
+- `css-pseudo-class:valid`: :valid (1); has nothing; wave states
+- `css-pseudo-class:visited`: :visited (1); has nothing; wave states
+- `css-pseudo-class:volume-locked`: :volume-locked (1); has nothing; wave states
+- `css-pseudo-class:where`: :where() (1); has nothing; wave draft reading
+- `css-pseudo-class:xr-overlay`: :xr-overlay (1); has nothing; wave draft reading
+
+## css-pseudo-element (51)
+
+- `css-pseudo-element:-moz-progress-bar`: ::-moz-progress-bar (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-moz-range-progress`: ::-moz-range-progress (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-moz-range-thumb`: ::-moz-range-thumb (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-moz-range-track`: ::-moz-range-track (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-browse`: ::-ms-browse (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-check`: ::-ms-check (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-clear`: ::-ms-clear (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-expand`: ::-ms-expand (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-fill`: ::-ms-fill (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-fill-lower`: ::-ms-fill-lower (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-fill-upper`: ::-ms-fill-upper (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-reveal`: ::-ms-reveal (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-thumb`: ::-ms-thumb (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-ticks-after`: ::-ms-ticks-after (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-ticks-before`: ::-ms-ticks-before (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-tooltip`: ::-ms-tooltip (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-track`: ::-ms-track (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-ms-value`: ::-ms-value (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-webkit-progress-bar`: ::-webkit-progress-bar (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-webkit-progress-inner-value`: ::-webkit-progress-inner-value (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-webkit-progress-value`: ::-webkit-progress-value (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-webkit-slider-runnable-track`: ::-webkit-slider-runnable-track (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:-webkit-slider-thumb`: ::-webkit-slider-thumb (1); has nothing; wave exclusion candidate (awaiting Bean)
+- `css-pseudo-element:after`: ::after (1); has nothing; wave content, media and icons
+- `css-pseudo-element:backdrop`: ::backdrop (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:before`: ::before (1); has nothing; wave content, media and icons
+- `css-pseudo-element:checkmark`: ::checkmark (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:cue`: ::cue (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:cue-region`: ::cue-region (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:details-content`: ::details-content (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:file-selector-button`: ::file-selector-button (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:first-letter`: ::first-letter (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:first-line`: ::first-line (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:grammar-error`: ::grammar-error (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:highlight`: ::highlight() (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:marker`: ::marker (1); has nothing; wave content, media and icons
+- `css-pseudo-element:part`: ::part() (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:picker`: ::picker() (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:picker-icon`: ::picker-icon (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:placeholder`: ::placeholder (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:scroll-marker`: ::scroll-marker (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-pseudo-element:scroll-marker-group`: ::scroll-marker-group (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-pseudo-element:selection`: ::selection (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:slotted`: ::slotted() (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:spelling-error`: ::spelling-error (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:target-text`: ::target-text (1); has nothing; wave modes and values with no CSS property
+- `css-pseudo-element:view-transition`: ::view-transition (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-pseudo-element:view-transition-group`: ::view-transition-group() (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-pseudo-element:view-transition-image-pair`: ::view-transition-image-pair() (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-pseudo-element:view-transition-new`: ::view-transition-new() (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-pseudo-element:view-transition-old`: ::view-transition-old() (1); has nothing; wave motion writer (4.0), waits on phase-0
+
+## css-function (112)
+
+- `css-function:abs`: abs() (1); has nothing; wave modes and values with no CSS property
+- `css-function:acos`: acos() (1); has nothing; wave draft reading
+- `css-function:add`: add() (1); has nothing; wave draft reading
+- `css-function:anchor`: anchor() (1); has nothing; wave draft reading
+- `css-function:anchor-size`: anchor-size() (1); has nothing; wave draft reading
+- `css-function:annotation`: annotation() (1); has nothing; wave draft reading
+- `css-function:asin`: asin() (1); has nothing; wave draft reading
+- `css-function:atan`: atan() (1); has nothing; wave draft reading
+- `css-function:atan2`: atan2() (1); has nothing; wave draft reading
+- `css-function:attr`: attr() (1); has nothing; wave draft reading
+- `css-function:blur`: blur() (1); has nothing; wave draft reading
+- `css-function:brightness`: brightness() (1); has nothing; wave draft reading
+- `css-function:calc`: calc() (1); has nothing; wave modes and values with no CSS property
+- `css-function:calc-size`: calc-size() (1); has nothing; wave modes and values with no CSS property
+- `css-function:character-variant`: character-variant() (1); has nothing; wave draft reading
+- `css-function:circle`: circle() (1); has nothing; wave draft reading
+- `css-function:clamp`: clamp() (1); has nothing; wave modes and values with no CSS property
+- `css-function:conic-gradient`: conic-gradient() (1); has nothing; wave draft reading
+- `css-function:contrast`: contrast() (1); has nothing; wave draft reading
+- `css-function:cos`: cos() (1); has nothing; wave draft reading
+- `css-function:counter`: counter() (1); has nothing; wave draft reading
+- `css-function:counters`: counters() (1); has nothing; wave draft reading
+- `css-function:cross-fade`: cross-fade() (1); has nothing; wave draft reading
+- `css-function:cubic-bezier`: cubic-bezier() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:drop-shadow`: drop-shadow() (1); has nothing; wave draft reading
+- `css-function:dynamic-range-limit-mix`: dynamic-range-limit-mix() (1); has nothing; wave draft reading
+- `css-function:element`: element() (1); has nothing; wave draft reading
+- `css-function:ellipse`: ellipse() (1); has nothing; wave draft reading
+- `css-function:env`: env() (1); has nothing; wave draft reading
+- `css-function:exp`: exp() (1); has nothing; wave draft reading
+- `css-function:fit-content`: fit-content() (1); has nothing; wave draft reading
+- `css-function:grayscale`: grayscale() (1); has nothing; wave draft reading
+- `css-function:hue-rotate`: hue-rotate() (1); has nothing; wave draft reading
+- `css-function:hypot`: hypot() (1); has nothing; wave draft reading
+- `css-function:image`: image() (1); has nothing; wave draft reading
+- `css-function:image-set`: image-set() (1); has nothing; wave draft reading
+- `css-function:inset`: inset() (1); has nothing; wave draft reading
+- `css-function:invert`: invert() (1); has nothing; wave draft reading
+- `css-function:layer`: layer() (1); has nothing; wave draft reading
+- `css-function:leader`: leader() (1); has nothing; wave draft reading
+- `css-function:light-dark`: light-dark() (1); has nothing; wave site and surfaces
+- `css-function:linear`: linear() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:linear-gradient`: linear-gradient() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:log`: log() (1); has nothing; wave draft reading
+- `css-function:matrix`: matrix() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:matrix3d`: matrix3d() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:max`: max() (1); has nothing; wave modes and values with no CSS property
+- `css-function:min`: min() (1); has nothing; wave modes and values with no CSS property
+- `css-function:minmax`: minmax() (1); has nothing; wave draft reading
+- `css-function:mod`: mod() (1); has nothing; wave modes and values with no CSS property
+- `css-function:opacity`: opacity() (1); has nothing; wave draft reading
+- `css-function:ornaments`: ornaments() (1); has nothing; wave draft reading
+- `css-function:paint`: paint() (1); has nothing; wave draft reading
+- `css-function:palette-mix`: palette-mix() (1); has nothing; wave draft reading
+- `css-function:param`: param() (1); has nothing; wave draft reading
+- `css-function:path`: path() (1); has nothing; wave draft reading
+- `css-function:perspective`: perspective() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:polygon`: polygon() (1); has nothing; wave draft reading
+- `css-function:pow`: pow() (1); has nothing; wave draft reading
+- `css-function:radial-gradient`: radial-gradient() (1); has nothing; wave draft reading
+- `css-function:ray`: ray() (1); has nothing; wave draft reading
+- `css-function:rect`: rect() (1); has nothing; wave draft reading
+- `css-function:rem`: rem() (1); has nothing; wave modes and values with no CSS property
+- `css-function:repeat`: repeat() (1); has nothing; wave draft reading
+- `css-function:repeating-conic-gradient`: repeating-conic-gradient() (1); has nothing; wave draft reading
+- `css-function:repeating-linear-gradient`: repeating-linear-gradient() (1); has nothing; wave draft reading
+- `css-function:repeating-radial-gradient`: repeating-radial-gradient() (1); has nothing; wave draft reading
+- `css-function:reversed`: reversed() (1); has nothing; wave draft reading
+- `css-function:rotate`: rotate() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:rotate3d`: rotate3d() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:rotatex`: rotateX() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:rotatey`: rotateY() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:rotatez`: rotateZ() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:round`: round() (1); has nothing; wave modes and values with no CSS property
+- `css-function:saturate`: saturate() (1); has nothing; wave draft reading
+- `css-function:scale`: scale() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:scale3d`: scale3d() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:scalex`: scaleX() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:scaley`: scaleY() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:scalez`: scaleZ() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:scroll`: scroll() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:scroll-state`: scroll-state() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:selector`: selector() (1); has nothing; wave draft reading
+- `css-function:sepia`: sepia() (1); has nothing; wave draft reading
+- `css-function:shape`: shape() (1); has nothing; wave draft reading
+- `css-function:sign`: sign() (1); has nothing; wave modes and values with no CSS property
+- `css-function:sin`: sin() (1); has nothing; wave draft reading
+- `css-function:skew`: skew() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:skewx`: skewX() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:skewy`: skewY() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:snapinterval`: snapinterval() (1); has nothing; wave draft reading
+- `css-function:snaplist`: snaplist() (1); has nothing; wave draft reading
+- `css-function:sqrt`: sqrt() (1); has nothing; wave draft reading
+- `css-function:steps`: steps() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:style`: style() (1); has nothing; wave draft reading
+- `css-function:styleset`: styleset() (1); has nothing; wave draft reading
+- `css-function:stylistic`: stylistic() (1); has nothing; wave draft reading
+- `css-function:superellipse`: superellipse() (1); has nothing; wave draft reading
+- `css-function:swash`: swash() (1); has nothing; wave draft reading
+- `css-function:symbols`: symbols() (1); has nothing; wave draft reading
+- `css-function:tan`: tan() (1); has nothing; wave draft reading
+- `css-function:target-counter`: target-counter() (1); has nothing; wave draft reading
+- `css-function:target-counters`: target-counters() (1); has nothing; wave draft reading
+- `css-function:target-text`: target-text() (1); has nothing; wave draft reading
+- `css-function:translate`: translate() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:translate3d`: translate3d() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:translatex`: translateX() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:translatey`: translateY() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:translatez`: translateZ() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:type`: type() (1); has nothing; wave draft reading
+- `css-function:view`: view() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:xywh`: xywh() (1); has nothing; wave draft reading
+
+## css-unit (59)
+
+- `css-unit:cap`: cap (1); has nothing; wave draft reading
+- `css-unit:ch`: ch (1); has nothing; wave draft reading
+- `css-unit:cm`: cm (1); has nothing; wave draft reading
+- `css-unit:cqb`: cqb (1); has nothing; wave draft reading
+- `css-unit:cqh`: cqh (1); has nothing; wave draft reading
+- `css-unit:cqi`: cqi (1); has nothing; wave draft reading
+- `css-unit:cqmax`: cqmax (1); has nothing; wave draft reading
+- `css-unit:cqmin`: cqmin (1); has nothing; wave draft reading
+- `css-unit:cqw`: cqw (1); has nothing; wave draft reading
+- `css-unit:deg`: deg (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-unit:dpcm`: dpcm (1); has nothing; wave draft reading
+- `css-unit:dpi`: dpi (1); has nothing; wave draft reading
+- `css-unit:dppx`: dppx (1); has nothing; wave draft reading
+- `css-unit:dvb`: dvb (1); has nothing; wave modes and values with no CSS property
+- `css-unit:dvh`: dvh (1); has nothing; wave modes and values with no CSS property
+- `css-unit:dvi`: dvi (1); has nothing; wave modes and values with no CSS property
+- `css-unit:dvmax`: dvmax (1); has nothing; wave modes and values with no CSS property
+- `css-unit:dvmin`: dvmin (1); has nothing; wave modes and values with no CSS property
+- `css-unit:dvw`: dvw (1); has nothing; wave modes and values with no CSS property
+- `css-unit:ex`: ex (1); has nothing; wave draft reading
+- `css-unit:fr`: fr (1); has nothing; wave draft reading
+- `css-unit:grad`: grad (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-unit:hz`: hz (1); has nothing; wave draft reading
+- `css-unit:ic`: ic (1); has nothing; wave draft reading
+- `css-unit:in`: in (1); has nothing; wave draft reading
+- `css-unit:khz`: khz (1); has nothing; wave draft reading
+- `css-unit:lh`: lh (1); has nothing; wave draft reading
+- `css-unit:lvb`: lvb (1); has nothing; wave modes and values with no CSS property
+- `css-unit:lvh`: lvh (1); has nothing; wave modes and values with no CSS property
+- `css-unit:lvi`: lvi (1); has nothing; wave modes and values with no CSS property
+- `css-unit:lvmax`: lvmax (1); has nothing; wave modes and values with no CSS property
+- `css-unit:lvmin`: lvmin (1); has nothing; wave modes and values with no CSS property
+- `css-unit:lvw`: lvw (1); has nothing; wave modes and values with no CSS property
+- `css-unit:mm`: mm (1); has nothing; wave draft reading
+- `css-unit:ms`: ms (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-unit:pc`: pc (1); has nothing; wave draft reading
+- `css-unit:pt`: pt (1); has nothing; wave draft reading
+- `css-unit:q`: q (1); has nothing; wave draft reading
+- `css-unit:rad`: rad (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-unit:rcap`: rcap (1); has nothing; wave draft reading
+- `css-unit:rch`: rch (1); has nothing; wave draft reading
+- `css-unit:rex`: rex (1); has nothing; wave draft reading
+- `css-unit:ric`: ric (1); has nothing; wave draft reading
+- `css-unit:rlh`: rlh (1); has nothing; wave draft reading
+- `css-unit:s`: s (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-unit:svb`: svb (1); has nothing; wave modes and values with no CSS property
+- `css-unit:svh`: svh (1); has nothing; wave modes and values with no CSS property
+- `css-unit:svi`: svi (1); has nothing; wave modes and values with no CSS property
+- `css-unit:svmax`: svmax (1); has nothing; wave modes and values with no CSS property
+- `css-unit:svmin`: svmin (1); has nothing; wave modes and values with no CSS property
+- `css-unit:svw`: svw (1); has nothing; wave modes and values with no CSS property
+- `css-unit:turn`: turn (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-unit:vb`: vb (1); has nothing; wave modes and values with no CSS property
+- `css-unit:vh`: vh (1); has nothing; wave modes and values with no CSS property
+- `css-unit:vi`: vi (1); has nothing; wave modes and values with no CSS property
+- `css-unit:vmax`: vmax (1); has nothing; wave modes and values with no CSS property
+- `css-unit:vmin`: vmin (1); has nothing; wave modes and values with no CSS property
+- `css-unit:vw`: vw (1); has nothing; wave modes and values with no CSS property
+- `css-unit:x`: x (1); has nothing; wave draft reading
+
+## aria-role (127)
+
+- `aria-role:alert`: role="alert" (1); has nothing; wave content, media and icons
+- `aria-role:alertdialog`: role="alertdialog" (1); has nothing; wave behaviour recognisers
+- `aria-role:application`: role="application" (1); has nothing; wave content, media and icons
+- `aria-role:article`: role="article" (1); has nothing; wave content, media and icons
+- `aria-role:banner`: role="banner" (1); has nothing; wave content, media and icons
+- `aria-role:blockquote`: role="blockquote" (1); has nothing; wave content, media and icons
+- `aria-role:button`: role="button" (1); has nothing; wave behaviour recognisers
+- `aria-role:caption`: role="caption" (1); has nothing; wave content, media and icons
+- `aria-role:cell`: role="cell" (1); has nothing; wave content, media and icons
+- `aria-role:checkbox`: role="checkbox" (1); has nothing; wave behaviour recognisers
+- `aria-role:code`: role="code" (1); has nothing; wave content, media and icons
+- `aria-role:columnheader`: role="columnheader" (1); has nothing; wave behaviour recognisers
+- `aria-role:combobox`: role="combobox" (1); has nothing; wave behaviour recognisers
+- `aria-role:complementary`: role="complementary" (1); has nothing; wave content, media and icons
+- `aria-role:contentinfo`: role="contentinfo" (1); has nothing; wave content, media and icons
+- `aria-role:definition`: role="definition" (1); has nothing; wave content, media and icons
+- `aria-role:deletion`: role="deletion" (1); has nothing; wave content, media and icons
+- `aria-role:dialog`: role="dialog" (1); has nothing; wave behaviour recognisers
+- `aria-role:directory`: role="directory" (1); has nothing; wave content, media and icons
+- `aria-role:doc-abstract`: role="doc-abstract" (1); has nothing; wave content, media and icons
+- `aria-role:doc-acknowledgments`: role="doc-acknowledgments" (1); has nothing; wave content, media and icons
+- `aria-role:doc-afterword`: role="doc-afterword" (1); has nothing; wave content, media and icons
+- `aria-role:doc-appendix`: role="doc-appendix" (1); has nothing; wave content, media and icons
+- `aria-role:doc-backlink`: role="doc-backlink" (1); has nothing; wave behaviour recognisers
+- `aria-role:doc-biblioentry`: role="doc-biblioentry" (1); has nothing; wave content, media and icons
+- `aria-role:doc-bibliography`: role="doc-bibliography" (1); has nothing; wave content, media and icons
+- `aria-role:doc-biblioref`: role="doc-biblioref" (1); has nothing; wave behaviour recognisers
+- `aria-role:doc-chapter`: role="doc-chapter" (1); has nothing; wave content, media and icons
+- `aria-role:doc-colophon`: role="doc-colophon" (1); has nothing; wave content, media and icons
+- `aria-role:doc-conclusion`: role="doc-conclusion" (1); has nothing; wave content, media and icons
+- `aria-role:doc-cover`: role="doc-cover" (1); has nothing; wave content, media and icons
+- `aria-role:doc-credit`: role="doc-credit" (1); has nothing; wave content, media and icons
+- `aria-role:doc-credits`: role="doc-credits" (1); has nothing; wave content, media and icons
+- `aria-role:doc-dedication`: role="doc-dedication" (1); has nothing; wave content, media and icons
+- `aria-role:doc-endnote`: role="doc-endnote" (1); has nothing; wave content, media and icons
+- `aria-role:doc-endnotes`: role="doc-endnotes" (1); has nothing; wave content, media and icons
+- `aria-role:doc-epigraph`: role="doc-epigraph" (1); has nothing; wave content, media and icons
+- `aria-role:doc-epilogue`: role="doc-epilogue" (1); has nothing; wave content, media and icons
+- `aria-role:doc-errata`: role="doc-errata" (1); has nothing; wave content, media and icons
+- `aria-role:doc-example`: role="doc-example" (1); has nothing; wave content, media and icons
+- `aria-role:doc-footnote`: role="doc-footnote" (1); has nothing; wave content, media and icons
+- `aria-role:doc-foreword`: role="doc-foreword" (1); has nothing; wave content, media and icons
+- `aria-role:doc-glossary`: role="doc-glossary" (1); has nothing; wave content, media and icons
+- `aria-role:doc-glossref`: role="doc-glossref" (1); has nothing; wave behaviour recognisers
+- `aria-role:doc-index`: role="doc-index" (1); has nothing; wave content, media and icons
+- `aria-role:doc-introduction`: role="doc-introduction" (1); has nothing; wave content, media and icons
+- `aria-role:doc-noteref`: role="doc-noteref" (1); has nothing; wave behaviour recognisers
+- `aria-role:doc-notice`: role="doc-notice" (1); has nothing; wave content, media and icons
+- `aria-role:doc-pagebreak`: role="doc-pagebreak" (1); has nothing; wave content, media and icons
+- `aria-role:doc-pagefooter`: role="doc-pagefooter" (1); has nothing; wave content, media and icons
+- `aria-role:doc-pageheader`: role="doc-pageheader" (1); has nothing; wave content, media and icons
+- `aria-role:doc-pagelist`: role="doc-pagelist" (1); has nothing; wave content, media and icons
+- `aria-role:doc-part`: role="doc-part" (1); has nothing; wave content, media and icons
+- `aria-role:doc-preface`: role="doc-preface" (1); has nothing; wave content, media and icons
+- `aria-role:doc-prologue`: role="doc-prologue" (1); has nothing; wave content, media and icons
+- `aria-role:doc-pullquote`: role="doc-pullquote" (1); has nothing; wave content, media and icons
+- `aria-role:doc-qna`: role="doc-qna" (1); has nothing; wave content, media and icons
+- `aria-role:doc-subtitle`: role="doc-subtitle" (1); has nothing; wave content, media and icons
+- `aria-role:doc-tip`: role="doc-tip" (1); has nothing; wave content, media and icons
+- `aria-role:doc-toc`: role="doc-toc" (1); has nothing; wave content, media and icons
+- `aria-role:document`: role="document" (1); has nothing; wave content, media and icons
+- `aria-role:emphasis`: role="emphasis" (1); has nothing; wave content, media and icons
+- `aria-role:feed`: role="feed" (1); has nothing; wave content, media and icons
+- `aria-role:figure`: role="figure" (1); has nothing; wave content, media and icons
+- `aria-role:form`: role="form" (1); has nothing; wave content, media and icons
+- `aria-role:generic`: role="generic" (1); has nothing; wave content, media and icons
+- `aria-role:graphics-document`: role="graphics-document" (1); has nothing; wave content, media and icons
+- `aria-role:graphics-object`: role="graphics-object" (1); has nothing; wave content, media and icons
+- `aria-role:graphics-symbol`: role="graphics-symbol" (1); has nothing; wave content, media and icons
+- `aria-role:grid`: role="grid" (1); has nothing; wave behaviour recognisers
+- `aria-role:gridcell`: role="gridcell" (1); has nothing; wave behaviour recognisers
+- `aria-role:group`: role="group" (1); has nothing; wave content, media and icons
+- `aria-role:heading`: role="heading" (1); has nothing; wave content, media and icons
+- `aria-role:img`: role="img" (1); has nothing; wave content, media and icons
+- `aria-role:insertion`: role="insertion" (1); has nothing; wave content, media and icons
+- `aria-role:link`: role="link" (1); has nothing; wave behaviour recognisers
+- `aria-role:list`: role="list" (1); has nothing; wave content, media and icons
+- `aria-role:listbox`: role="listbox" (1); has nothing; wave behaviour recognisers
+- `aria-role:listitem`: role="listitem" (1); has nothing; wave content, media and icons
+- `aria-role:log`: role="log" (1); has nothing; wave content, media and icons
+- `aria-role:main`: role="main" (1); has nothing; wave content, media and icons
+- `aria-role:mark`: role="mark" (1); has nothing; wave content, media and icons
+- `aria-role:marquee`: role="marquee" (1); has nothing; wave content, media and icons
+- `aria-role:math`: role="math" (1); has nothing; wave content, media and icons
+- `aria-role:menu`: role="menu" (1); has nothing; wave behaviour recognisers
+- `aria-role:menubar`: role="menubar" (1); has nothing; wave behaviour recognisers
+- `aria-role:menuitem`: role="menuitem" (1); has nothing; wave behaviour recognisers
+- `aria-role:menuitemcheckbox`: role="menuitemcheckbox" (1); has nothing; wave behaviour recognisers
+- `aria-role:menuitemradio`: role="menuitemradio" (1); has nothing; wave behaviour recognisers
+- `aria-role:meter`: role="meter" (1); has nothing; wave content, media and icons
+- `aria-role:navigation`: role="navigation" (1); has nothing; wave content, media and icons
+- `aria-role:none`: role="none" (1); has nothing; wave content, media and icons
+- `aria-role:note`: role="note" (1); has nothing; wave content, media and icons
+- `aria-role:option`: role="option" (1); has nothing; wave behaviour recognisers
+- `aria-role:paragraph`: role="paragraph" (1); has nothing; wave content, media and icons
+- `aria-role:presentation`: role="presentation" (1); has nothing; wave content, media and icons
+- `aria-role:progressbar`: role="progressbar" (1); has nothing; wave behaviour recognisers
+- `aria-role:radio`: role="radio" (1); has nothing; wave behaviour recognisers
+- `aria-role:radiogroup`: role="radiogroup" (1); has nothing; wave behaviour recognisers
+- `aria-role:region`: role="region" (1); has nothing; wave content, media and icons
+- `aria-role:row`: role="row" (1); has nothing; wave behaviour recognisers
+- `aria-role:rowgroup`: role="rowgroup" (1); has nothing; wave content, media and icons
+- `aria-role:rowheader`: role="rowheader" (1); has nothing; wave behaviour recognisers
+- `aria-role:scrollbar`: role="scrollbar" (1); has nothing; wave behaviour recognisers
+- `aria-role:search`: role="search" (1); has nothing; wave content, media and icons
+- `aria-role:searchbox`: role="searchbox" (1); has nothing; wave behaviour recognisers
+- `aria-role:separator`: role="separator" (1); has nothing; wave content, media and icons
+- `aria-role:slider`: role="slider" (1); has nothing; wave behaviour recognisers
+- `aria-role:spinbutton`: role="spinbutton" (1); has nothing; wave behaviour recognisers
+- `aria-role:status`: role="status" (1); has nothing; wave content, media and icons
+- `aria-role:strong`: role="strong" (1); has nothing; wave content, media and icons
+- `aria-role:subscript`: role="subscript" (1); has nothing; wave content, media and icons
+- `aria-role:superscript`: role="superscript" (1); has nothing; wave content, media and icons
+- `aria-role:switch`: role="switch" (1); has nothing; wave behaviour recognisers
+- `aria-role:tab`: role="tab" (1); has nothing; wave behaviour recognisers
+- `aria-role:table`: role="table" (1); has nothing; wave content, media and icons
+- `aria-role:tablist`: role="tablist" (1); has nothing; wave behaviour recognisers
+- `aria-role:tabpanel`: role="tabpanel" (1); has nothing; wave content, media and icons
+- `aria-role:term`: role="term" (1); has nothing; wave content, media and icons
+- `aria-role:textbox`: role="textbox" (1); has nothing; wave behaviour recognisers
+- `aria-role:time`: role="time" (1); has nothing; wave content, media and icons
+- `aria-role:timer`: role="timer" (1); has nothing; wave content, media and icons
+- `aria-role:toolbar`: role="toolbar" (1); has nothing; wave content, media and icons
+- `aria-role:tooltip`: role="tooltip" (1); has nothing; wave content, media and icons
+- `aria-role:tree`: role="tree" (1); has nothing; wave behaviour recognisers
+- `aria-role:treegrid`: role="treegrid" (1); has nothing; wave behaviour recognisers
+- `aria-role:treeitem`: role="treeitem" (1); has nothing; wave behaviour recognisers
+
+## aria-attr (51)
+
+- `aria-attr:aria-activedescendant`: aria-activedescendant (1); has nothing; wave content, media and icons
+- `aria-attr:aria-atomic`: aria-atomic (1); has nothing; wave content, media and icons
+- `aria-attr:aria-autocomplete`: aria-autocomplete (1); has nothing; wave content, media and icons
+- `aria-attr:aria-braillelabel`: aria-braillelabel (1); has nothing; wave content, media and icons
+- `aria-attr:aria-brailleroledescription`: aria-brailleroledescription (1); has nothing; wave content, media and icons
+- `aria-attr:aria-busy`: aria-busy (1); has nothing; wave states
+- `aria-attr:aria-checked`: aria-checked (1); has nothing; wave states
+- `aria-attr:aria-colcount`: aria-colcount (1); has nothing; wave content, media and icons
+- `aria-attr:aria-colindex`: aria-colindex (1); has nothing; wave content, media and icons
+- `aria-attr:aria-colspan`: aria-colspan (1); has nothing; wave content, media and icons
+- `aria-attr:aria-controls`: aria-controls (1); has nothing; wave content, media and icons
+- `aria-attr:aria-current`: aria-current (1); has nothing; wave states
+- `aria-attr:aria-describedby`: aria-describedby (1); has nothing; wave content, media and icons
+- `aria-attr:aria-description`: aria-description (1); has nothing; wave content, media and icons
+- `aria-attr:aria-details`: aria-details (1); has nothing; wave content, media and icons
+- `aria-attr:aria-disabled`: aria-disabled (1); has nothing; wave states
+- `aria-attr:aria-dropeffect`: aria-dropeffect (1); has nothing; wave content, media and icons
+- `aria-attr:aria-errormessage`: aria-errormessage (1); has nothing; wave content, media and icons
+- `aria-attr:aria-expanded`: aria-expanded (1); has nothing; wave states
+- `aria-attr:aria-flowto`: aria-flowto (1); has nothing; wave content, media and icons
+- `aria-attr:aria-grabbed`: aria-grabbed (1); has nothing; wave states
+- `aria-attr:aria-haspopup`: aria-haspopup (1); has nothing; wave content, media and icons
+- `aria-attr:aria-hidden`: aria-hidden (1); has nothing; wave states
+- `aria-attr:aria-invalid`: aria-invalid (1); has nothing; wave states
+- `aria-attr:aria-keyshortcuts`: aria-keyshortcuts (1); has nothing; wave content, media and icons
+- `aria-attr:aria-label`: aria-label (1); has nothing; wave content, media and icons
+- `aria-attr:aria-labelledby`: aria-labelledby (1); has nothing; wave content, media and icons
+- `aria-attr:aria-level`: aria-level (1); has nothing; wave content, media and icons
+- `aria-attr:aria-live`: aria-live (1); has nothing; wave content, media and icons
+- `aria-attr:aria-modal`: aria-modal (1); has nothing; wave content, media and icons
+- `aria-attr:aria-multiline`: aria-multiline (1); has nothing; wave content, media and icons
+- `aria-attr:aria-multiselectable`: aria-multiselectable (1); has nothing; wave content, media and icons
+- `aria-attr:aria-orientation`: aria-orientation (1); has nothing; wave content, media and icons
+- `aria-attr:aria-owns`: aria-owns (1); has nothing; wave content, media and icons
+- `aria-attr:aria-placeholder`: aria-placeholder (1); has nothing; wave content, media and icons
+- `aria-attr:aria-posinset`: aria-posinset (1); has nothing; wave content, media and icons
+- `aria-attr:aria-pressed`: aria-pressed (1); has nothing; wave states
+- `aria-attr:aria-readonly`: aria-readonly (1); has nothing; wave content, media and icons
+- `aria-attr:aria-relevant`: aria-relevant (1); has nothing; wave content, media and icons
+- `aria-attr:aria-required`: aria-required (1); has nothing; wave content, media and icons
+- `aria-attr:aria-roledescription`: aria-roledescription (1); has nothing; wave content, media and icons
+- `aria-attr:aria-rowcount`: aria-rowcount (1); has nothing; wave content, media and icons
+- `aria-attr:aria-rowindex`: aria-rowindex (1); has nothing; wave content, media and icons
+- `aria-attr:aria-rowspan`: aria-rowspan (1); has nothing; wave content, media and icons
+- `aria-attr:aria-selected`: aria-selected (1); has nothing; wave states
+- `aria-attr:aria-setsize`: aria-setsize (1); has nothing; wave content, media and icons
+- `aria-attr:aria-sort`: aria-sort (1); has nothing; wave content, media and icons
+- `aria-attr:aria-valuemax`: aria-valuemax (1); has nothing; wave content, media and icons
+- `aria-attr:aria-valuemin`: aria-valuemin (1); has nothing; wave content, media and icons
+- `aria-attr:aria-valuenow`: aria-valuenow (1); has nothing; wave content, media and icons
+- `aria-attr:aria-valuetext`: aria-valuetext (1); has nothing; wave content, media and icons
 
 ## construct (19)
 

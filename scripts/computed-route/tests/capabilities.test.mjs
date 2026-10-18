@@ -74,3 +74,51 @@ test( 'every inventory ID is unique and carries its section as its prefix', () =
 	assert.equal( new Set( all.map( ( e ) => e.id ) ).size, all.length );
 	all.forEach( ( e ) => assert.ok( e.id.startsWith( `${ e.section }:` ), e.id ) );
 } );
+
+// Step 1.6: a small stand-in for each draft-side data package, so each section's MUST FAIL plant is exact.
+const C = ( status = {} ) => ( { __compat: { status: { deprecated: false, ...status } } } );
+const BCD = {
+	css: { 'at-rules': { media: { __compat: {}, 'prefers-color-scheme': C(), 'device-width': C( { deprecated: true } ), media_features: C() } }, types: { length: { __compat: {}, em: C(), viewport_percentage_units_dynamic: { __compat: { description: '<code>dvh</code>, <code>dvw</code> units' } } } } },
+	html: { global_attributes: { __compat: {}, popover: C(), data_attributes: C() }, elements: { __compat: {}, div: C(), marquee: C( { deprecated: true } ), img: { ...C(), loading: C(), aspect_ratio_computed_from_attributes: C() }, input: { ...C(), type_date: C() }, iframe: { ...C(), 'cross-origin-top-navigation': { __compat: { description: 'cross-origin top-navigation requires user activation' } } } } },
+	svg: { elements: { __compat: {}, path: C(), animate: C() } },
+};
+const CSS = { properties: { 'grid-template-columns': { groups: [ 'CSS Grid Layout' ] } }, atRules: { '@container': {} }, selectors: { ':hover': { status: 'standard' }, '::before': { status: 'standard' }, '::-moz-thing': { status: 'nonstandard' }, 'Child combinator': { status: 'standard' } }, functions: { 'clamp()': { status: 'standard' }, 'translate()': { status: 'standard' } }, units: { px: {} } };
+const OEMBED = [ { provider_name: 'YouTube', provider_url: 'https://www.youtube.com/' }, { provider_name: 'Broken', provider_url: 'not a url' } ];
+const ARIA = { roles: new Map( [ [ 'tab', { abstract: false } ], [ 'widget', { abstract: true } ] ] ), aria: new Map( [ [ 'aria-expanded', {} ] ] ) };
+const ATTRS = { '*': [ 'popover', 'itemprop' ], img: [ 'loading', 'alt' ], input: [ 'value' ] };
+const draft = ( over = {} ) => buildInventory( { dbFile: null, bcd: BCD, css: CSS, oembed: OEMBED, aria: ARIA, attributes: ATTRS, tags: [ 'div', 'marquee' ], ...over } );
+
+test( 'POSITIVE (1.6): every draft-side section is derived from its data package, with deprecated flags', () => {
+	const inv = draft();
+	assert.deepEqual( ids( inv, 'css-media-feature' ), [ 'css-media-feature:device-width', 'css-media-feature:prefers-color-scheme' ] );
+	assert.equal( inv.sections[ 'css-media-feature' ].entries[ 0 ].deprecated, true );
+	assert.deepEqual( ids( inv, 'html-attr' ), [ 'html-attr:global.data', 'html-attr:global.itemprop', 'html-attr:global.popover', 'html-attr:img.alt', 'html-attr:img.loading', 'html-attr:input.value' ] );
+	assert.deepEqual( ids( inv, 'input-type' ), [ 'input-type:date' ] );
+	assert.deepEqual( ids( inv, 'svg' ), [ 'svg:animate', 'svg:path' ] );
+	assert.equal( inv.sections.svg.entries[ 0 ].motion, true );
+	assert.deepEqual( ids( inv, 'embed' ), [ 'embed:youtube.com' ] );
+	assert.deepEqual( ids( inv, 'css-pseudo-class' ), [ 'css-pseudo-class:hover' ] );
+	assert.deepEqual( ids( inv, 'css-pseudo-element' ), [ 'css-pseudo-element:-moz-thing', 'css-pseudo-element:before' ] );
+	assert.equal( inv.sections[ 'css-pseudo-element' ].entries[ 0 ].deprecated, true );
+	assert.deepEqual( ids( inv, 'css-function' ), [ 'css-function:clamp', 'css-function:translate' ] );
+	assert.deepEqual( ids( inv, 'css-unit' ), [ 'css-unit:dvh', 'css-unit:dvw', 'css-unit:em', 'css-unit:percent', 'css-unit:px' ] );
+	assert.deepEqual( ids( inv, 'aria-role' ), [ 'aria-role:tab' ] );
+	assert.deepEqual( ids( inv, 'aria-attr' ), [ 'aria-attr:aria-expanded' ] );
+	assert.deepEqual( inv.sections.html.entries.map( ( e ) => [ e.id, !! e.deprecated ] ), [ [ 'html:div', false ], [ 'html:marquee', true ] ] );
+} );
+
+test( 'MUST FAIL (1.6): a planted entry in each draft-side source becomes a new inventory entry', () => {
+	const before = new Set( allEntries( draft() ).map( ( e ) => e.id ) );
+	const bcd = structuredClone( BCD );
+	bcd.css[ 'at-rules' ].media[ 'prefers-planted' ] = C();
+	bcd.html.global_attributes.plantedattr = C();
+	bcd.html.elements.input.type_planted = C();
+	bcd.svg.elements.plantedShape = C();
+	const css = structuredClone( CSS );
+	css.selectors[ ':planted' ] = { status: 'standard' };
+	css.functions[ 'planted()' ] = { status: 'standard' };
+	css.units.plu = {};
+	const attributes = { ...ATTRS, video: [ 'plantedattr2' ] };
+	const added = allEntries( draft( { bcd, css, attributes, oembed: [ ...OEMBED, { provider_name: 'Planted', provider_url: 'https://planted.example/' } ], aria: { roles: new Map( [ ...ARIA.roles, [ 'planted', { abstract: false } ] ] ), aria: ARIA.aria } } ) ).map( ( e ) => e.id ).filter( ( id ) => ! before.has( id ) ).sort();
+	assert.deepEqual( added, [ 'aria-role:planted', 'css-function:planted', 'css-media-feature:prefers-planted', 'css-pseudo-class:planted', 'css-unit:plu', 'embed:planted.example', 'html-attr:global.plantedattr', 'html-attr:video.plantedattr2', 'input-type:planted', 'svg:plantedShape' ] );
+} );

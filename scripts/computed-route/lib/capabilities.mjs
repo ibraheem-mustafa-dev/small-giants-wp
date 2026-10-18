@@ -8,6 +8,7 @@ import path from 'path';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { htmlTagNames } from 'html-tag-names';
+import { htmlElementAttributes } from 'html-element-attributes';
 import { DB_PATH, openDb, isPseudoProperty } from './db.mjs';
 import { loadRegistry } from './intake-registry.mjs';
 
@@ -22,7 +23,8 @@ const dirs = ( d ) => ( fs.existsSync( d ) ? fs.readdirSync( d, { withFileTypes:
 const files = ( d, rx ) => ( fs.existsSync( d ) ? fs.readdirSync( d ).filter( ( f ) => rx.test( f ) ).sort() : [] );
 const byId = ( a, b ) => ( a.id < b.id ? -1 : a.id > b.id ? 1 : 0 );
 
-// Members grouped under one ID: { id, label, count, examples (the first few, sorted), motion }.
+// Members grouped under one ID: { id, label, count, examples (the first few, sorted), motion }. An entry a data package
+// marks deprecated, obsolete or non-standard also carries `deprecated: true`.
 function grouped( rows, keyOf, labelOf, memberOf, motionOf = () => false ) {
 	const groups = new Map();
 	for ( const r of rows ) {
@@ -166,18 +168,100 @@ export function codeSections( root = REPO ) {
 
 // ---- What a draft can hold ----
 
-// HTML elements and CSS at-rules and property groups from the web platform's data packages, and the runtime construct
-// kinds from the construct registry.
-export function draftSections( { registry = loadRegistry(), css = require( 'mdn-data/css' ), tags = htmlTagNames } = {} ) {
+const kidsOf = ( o ) => Object.keys( o || {} ).filter( ( k ) => '__compat' !== k );
+const deprecatedIn = ( node ) => !! node?.__compat?.status?.deprecated;
+// The ID slug of an mdn-data property group (`CSS Grid Layout` → `grid-layout`); intake maps a used property through it.
+export const groupSlug = ( g ) => g.toLowerCase().replace( /^css\s+/, '' ).replace( /[^a-z0-9]+/g, '-' ).replace( /^-|-$/g, '' );
+// A browser-compat-data child that is a real attribute, not a feature note: an attribute name has no underscore, and a
+// described entry names itself in <code>.
+const isAttribute = ( name, node ) => ! name.includes( '_' ) && ( ! node.__compat?.description || node.__compat.description.includes( `<code>${ name }</code>` ) );
+const withFlag = ( e, deprecated ) => ( deprecated ? { ...e, deprecated: true } : e );
+// One entry per ID (`:host` and `:host()` are one capability); deprecated only when every form is.
+function unique( list ) {
+	const m = new Map();
+	for ( const e of list ) {
+		const prev = m.get( e.id );
+		m.set( e.id, prev ? { ...prev, deprecated: prev.deprecated && e.deprecated } : e );
+	}
+	return [ ...m.values() ].map( ( { deprecated, ...e } ) => ( deprecated ? { ...e, deprecated } : e ) ).sort( byId );
+}
+
+// CSS units: mdn-data's unit list, browser-compat-data's length units (each group of new viewport and container units
+// is named in its description), and the percentage sign.
+function cssUnits( css, bcd ) {
+	const units = new Set( Object.keys( css.units ).map( ( u ) => u.toLowerCase() ) );
+	const length = bcd.css.types.length;
+	for ( const k of kidsOf( length ) ) {
+		if ( ! k.includes( '_' ) ) {
+			units.add( k.toLowerCase() );
+		}
+		for ( const m of String( length[ k ].__compat?.description || '' ).matchAll( /<code>([a-z]+)<\/code>/gi ) ) {
+			units.add( m[ 1 ].toLowerCase() );
+		}
+	}
+	units.add( 'percent' );
+	return [ ...units ].sort().map( ( u ) => one( `css-unit:${ u }`, 'percent' === u ? '%' : u ) );
+}
+
+// HTML attributes: every global attribute (`html-attr:global.<name>`) and every element's own attribute
+// (`html-attr:<element>.<name>`), the union of browser-compat-data (with its deprecated flags) and the WHATWG lists in
+// html-element-attributes (`*` holds the global ones). `data_attributes` stands for every data-*.
+function htmlAttributes( bcd, lists ) {
+	const out = new Map();
+	const add = ( id, label, deprecated ) => out.set( id, withFlag( one( id, label ), deprecated || out.get( id )?.deprecated ) );
+	const g = bcd.html.global_attributes;
+	kidsOf( g ).forEach( ( a ) => add( `html-attr:global.${ 'data_attributes' === a ? 'data' : a }`, 'data_attributes' === a ? 'data-* attributes' : `${ a } (any element)`, deprecatedIn( g[ a ] ) ) );
+	( lists[ '*' ] || [] ).forEach( ( a ) => out.has( `html-attr:global.${ a }` ) || add( `html-attr:global.${ a }`, `${ a } (any element)`, false ) );
+	for ( const el of kidsOf( bcd.html.elements ) ) {
+		const node = bcd.html.elements[ el ];
+		kidsOf( node ).filter( ( a ) => isAttribute( a, node[ a ] ) ).forEach( ( a ) => add( `html-attr:${ el }.${ a }`, `<${ el } ${ a }>`, deprecatedIn( node[ a ] ) || deprecatedIn( node ) ) );
+	}
+	for ( const [ el, attrs ] of Object.entries( lists ).filter( ( [ el ] ) => '*' !== el ) ) {
+		attrs.filter( ( a ) => ! out.has( `html-attr:${ el }.${ a }` ) && ! out.has( `html-attr:global.${ a }` ) ).forEach( ( a ) => add( `html-attr:${ el }.${ a }`, `<${ el } ${ a }>`, deprecatedIn( bcd.html.elements[ el ] ) ) );
+	}
+	return [ ...out.values() ].sort( byId );
+}
+
+// Every function mdn-data's CSS grammar names (`repeat()`, `fit-content()` and the like that its function list omits):
+// each `name(` in a syntax, a property syntax or an at-rule descriptor syntax.
+export function grammarFunctions( css ) {
+	const texts = [ ...Object.values( css.syntaxes || {} ).map( ( x ) => x.syntax ), ...Object.values( css.properties ).map( ( x ) => x.syntax ) ];
+	return [ ...new Set( texts.flatMap( ( t ) => [ ...String( t || '' ).matchAll( /(?<![\w-])([a-z][a-z0-9-]*)\(/gi ) ].map( ( m ) => m[ 1 ].toLowerCase() ) ) ) ].sort();
+}
+
+// What a draft can hold, from the web platform's data packages and the construct registry.
+export function draftSections( { registry = loadRegistry(), css = require( 'mdn-data/css' ), tags = htmlTagNames, bcd = require( '@mdn/browser-compat-data' ), oembed = require( 'oembed-providers' ), aria = require( 'aria-query' ), attributes = htmlElementAttributes } = {} ) {
 	const groups = [];
 	for ( const [ prop, p ] of Object.entries( css.properties ) ) {
 		( p.groups || [ 'ungrouped' ] ).forEach( ( g ) => groups.push( { prop, g } ) );
 	}
-	const slug = ( s ) => s.toLowerCase().replace( /^css\s+/, '' ).replace( /[^a-z0-9]+/g, '-' ).replace( /^-|-$/g, '' );
+	const media = bcd.css[ 'at-rules' ].media;
+	const selectors = Object.entries( css.selectors ).filter( ( [ k ] ) => k.startsWith( ':' ) );
+	const name = ( k ) => k.replace( /^:+/, '' ).replace( /\(\)$/, '' );
+	const input = bcd.html.elements.input;
+	const hosts = new Map();
+	for ( const p of oembed ) {
+		try {
+			hosts.set( new URL( p.provider_url ).hostname.replace( /^www\./, '' ), p.provider_name );
+		} catch {
+			// A provider with no usable URL names no host.
+		}
+	}
 	return {
-		html: [ ...new Set( tags ) ].sort().map( ( t ) => one( `html:${ t }`, `<${ t }>` ) ),
+		html: [ ...new Set( tags ) ].sort().map( ( t ) => withFlag( one( `html:${ t }`, `<${ t }>` ), deprecatedIn( bcd.html.elements[ t ] ) ) ),
+		'html-attr': htmlAttributes( bcd, attributes ),
+		'input-type': kidsOf( input ).filter( ( k ) => k.startsWith( 'type_' ) ).map( ( k ) => withFlag( one( `input-type:${ k.slice( 5 ) }`, `<input type="${ k.slice( 5 ) }">` ), deprecatedIn( input[ k ] ) ) ).sort( byId ),
+		svg: kidsOf( bcd.svg.elements ).map( ( e ) => withFlag( one( `svg:${ e }`, `SVG <${ e }>`, [ 'animate', 'animateMotion', 'animateTransform', 'set', 'mpath' ].includes( e ) ), deprecatedIn( bcd.svg.elements[ e ] ) ) ).sort( byId ),
+		embed: [ ...hosts ].sort().map( ( [ h, n ] ) => one( `embed:${ h }`, `${ n } embed (${ h })` ) ),
 		'css-at': Object.keys( css.atRules ).sort().map( ( a ) => one( `css-at:${ a.replace( /^@/, '' ) }`, a ) ),
-		'css-group': grouped( groups, ( r ) => `css-group:${ slug( r.g ) }`, ( r ) => `CSS properties: ${ r.g }`, ( r ) => r.prop, ( r ) => /animation|transition|motion|scroll-driven/i.test( r.g ) ),
+		'css-media-feature': kidsOf( media ).filter( ( k ) => ! k.includes( '_' ) ).map( ( k ) => withFlag( one( `css-media-feature:${ k }`, `@media (${ k })`, 'prefers-reduced-motion' === k ), deprecatedIn( media[ k ] ) ) ).sort( byId ),
+		'css-group': grouped( groups, ( r ) => `css-group:${ groupSlug( r.g ) }`, ( r ) => `CSS properties: ${ r.g }`, ( r ) => r.prop, ( r ) => /animation|transition|motion|scroll-driven/i.test( r.g ) ),
+		'css-pseudo-class': unique( selectors.filter( ( [ k ] ) => ! k.startsWith( '::' ) ).map( ( [ k, v ] ) => withFlag( one( `css-pseudo-class:${ name( k ) }`, k ), 'obsolete' === v.status || 'nonstandard' === v.status ) ) ),
+		'css-pseudo-element': unique( selectors.filter( ( [ k ] ) => k.startsWith( '::' ) ).map( ( [ k, v ] ) => withFlag( one( `css-pseudo-element:${ name( k ) }`, k ), 'obsolete' === v.status || 'nonstandard' === v.status ) ) ),
+		'css-function': unique( [ ...Object.entries( css.functions ), ...grammarFunctions( css ).map( ( f ) => [ `${ f }()`, { status: 'standard' } ] ) ].map( ( [ k, v ] ) => withFlag( one( `css-function:${ k.replace( /\(\)$/, '' ).toLowerCase() }`, k, /^(?:matrix|rotate|scale|skew|translate|perspective|steps|cubic-bezier|linear|scroll|view)/i.test( k ) ), 'obsolete' === v.status || 'nonstandard' === v.status ) ) ),
+		'css-unit': cssUnits( css, bcd ),
+		'aria-role': [ ...aria.roles.keys() ].filter( ( r ) => ! aria.roles.get( r ).abstract ).sort().map( ( r ) => one( `aria-role:${ r }`, `role="${ r }"` ) ),
+		'aria-attr': [ ...aria.aria.keys() ].sort().map( ( a ) => one( `aria-attr:${ a }`, a ) ),
 		construct: Object.keys( registry ).sort().map( ( k ) => one( `construct:${ k }`, `runtime construct ${ k }`, [ 'waapi', 'transition', 'keyframes' ].includes( k ) ) ),
 	};
 }
@@ -186,10 +270,10 @@ export function draftSections( { registry = loadRegistry(), css = require( 'mdn-
 
 const DB_SECTIONS = [ 'block-setting', 'fx', 'motion-preset' ];
 const CODE_SECTIONS = [ 'sgs-support', 'extension', 'template', 'part', 'pattern', 'post-type', 'plugin', 'snapshot-key' ];
-const DRAFT_SECTIONS = [ 'html', 'css-at', 'css-group', 'construct' ];
+const DRAFT_SECTIONS = [ 'html', 'html-attr', 'input-type', 'svg', 'embed', 'css-at', 'css-media-feature', 'css-group', 'css-pseudo-class', 'css-pseudo-element', 'css-function', 'css-unit', 'aria-role', 'aria-attr', 'construct' ];
 
 // { sections: { <name>: { side, source, status, entries } } }. `dbFile` null or missing marks the DB sections absent.
-export function buildInventory( { root = REPO, dbFile = DB_PATH, registry, css, tags } = {} ) {
+export function buildInventory( { root = REPO, dbFile = DB_PATH, ...sources } = {} ) {
 	let db = null;
 	if ( dbFile && fs.existsSync( dbFile ) ) {
 		db = openDb( dbFile );
@@ -197,7 +281,7 @@ export function buildInventory( { root = REPO, dbFile = DB_PATH, registry, css, 
 	try {
 		const fromDb = db ? dbSections( db ) : {};
 		const fromCode = codeSections( root );
-		const fromDraft = draftSections( { ...( registry ? { registry } : {} ), ...( css ? { css } : {} ), ...( tags ? { tags } : {} ) } );
+		const fromDraft = draftSections( Object.fromEntries( Object.entries( sources ).filter( ( [ , v ] ) => undefined !== v ) ) );
 		const sections = {};
 		DB_SECTIONS.forEach( ( s ) => ( sections[ s ] = { side: 'framework', source: 'db', status: db ? 'ok' : 'absent', entries: fromDb[ s ] || [] } ) );
 		CODE_SECTIONS.forEach( ( s ) => ( sections[ s ] = { side: 'framework', source: 'code', status: 'ok', entries: fromCode[ s ] } ) );
