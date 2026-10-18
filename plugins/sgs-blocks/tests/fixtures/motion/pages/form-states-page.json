@@ -1,0 +1,33 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"className": "m517-states"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Form and choice-flow states",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "motion-form-states",
+					"formIsLinked": true
+				}
+			},
+			{
+				"name": "sgs/choice-flow",
+				"attributes": {
+					"flowId": "motion-states-flow",
+					"flowIsLinked": true
+				}
+			}
+		]
+	}
+]

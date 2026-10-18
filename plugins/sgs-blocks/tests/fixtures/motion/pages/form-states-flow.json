@@ -1,0 +1,82 @@
+[
+	{
+		"name": "sgs/choice-flow",
+		"attributes": {
+			"flowId": "motion-states-flow",
+			"title": "Motion states flow",
+			"flowLayout": "compact",
+			"advanceMode": "continue",
+			"className": "m517-flow",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "state",
+								"state": "step-changed",
+								"values": {
+									"from": {
+										"translateX": 36
+									},
+									"duration": 480,
+									"easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "One"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"question": "First choice",
+							"options": [
+								{
+									"label": "Alpha",
+									"value": "alpha"
+								},
+								{
+									"label": "Beta",
+									"value": "beta"
+								}
+							]
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Two"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"question": "Second choice",
+							"options": [
+								{
+									"label": "Gamma",
+									"value": "gamma"
+								},
+								{
+									"label": "Delta",
+									"value": "delta"
+								}
+							]
+						}
+					}
+				]
+			}
+		]
+	}
+]

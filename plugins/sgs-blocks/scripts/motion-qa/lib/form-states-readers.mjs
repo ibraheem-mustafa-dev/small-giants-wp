@@ -68,7 +68,7 @@ export async function readShake( page ) {
  * The translate a running state slide under the root computes at its start. The run is paused at 0, read and then
  * cancelled: resuming it with play() leaves it under script control, and Chromium then keeps it alive beside the next
  * step's animation, so the next reading would be wrong. The curve is the element's animation-timing-function (a CSS
- * animation's effect timing reports linear; the curve applies per keyframe).
+ * animation's effect timing reports linear; the curve applies per keyframe), read at the running animation's slot in the list.
  * @param page
  * @param rootSel
  */
@@ -96,9 +96,11 @@ export async function readSlide( page, rootSel ) {
 			run.currentTime = 0;
 			const cs = getComputedStyle( el );
 			const translate = cs.translate;
-			const easing = cs.animationTimingFunction
-				.split( /,(?![^(]*\))/ )[ 0 ]
-				.trim();
+			// The element carries one entry per animation slot (eight, most of them `none`); the curve is the entry
+			// at the running animation's own slot.
+			const list = ( text ) => text.split( /,(?![^(]*\))/ ).map( ( part ) => part.trim() );
+			const slot = Math.max( 0, list( cs.animationName ).indexOf( run.animationName ) );
+			const easing = list( cs.animationTimingFunction )[ slot ] ?? '';
 			const duration = Number( run.effect.getTiming().duration );
 			const name = run.animationName;
 			run.cancel();
