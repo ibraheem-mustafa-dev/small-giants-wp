@@ -63,7 +63,7 @@ def main():
 
     out = {
         '_meta': {
-            'generated_from': os.path.relpath(db_path, HERE),
+            'generated_from': 'sgs-framework.db',
             'source_table': 'block_attributes (role) joined to blocks (block_slug)',
             'row_count': len(role_map),
             'regenerate_with': 'python plugins/sgs-blocks/scripts/generate-attr-role-map.py',

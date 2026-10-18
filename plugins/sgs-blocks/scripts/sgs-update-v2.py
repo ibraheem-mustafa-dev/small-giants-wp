@@ -7209,13 +7209,16 @@ def main() -> None:
             print(f"Unknown stage: {stage_num}. Valid: 1-13.")
             continue
         results[stage_num] = dispatch[stage_num]()
+        # Stage 1 reclassifies block_attributes.role from the auto-classifier, which overwrites the
+        # 'scalar-media' anchor rows. Re-assert them straight after it, before any later stage reads the
+        # DB: stage 12 runs check-element-manifest-conformance.js, which regenerates
+        # consistency/attr-role-map.json from the DB, so a re-assert after the loop left the map
+        # holding the classifier's 'select-from-enum' for sgs/hero::splitMediaType.
+        if stage_num == 1 and not args.dry_run:
+            conn.commit()
+            reassert_reference_roles(SGS_DB)
 
     conn.close()
-
-    # Stage 1 reclassifies block_attributes.role from the auto-classifier, which overwrites the
-    # 'scalar-media' anchor rows; re-assert them whenever stage 1 ran (not only under --rebuild).
-    if 1 in results and not args.dry_run:
-        reassert_reference_roles(SGS_DB)
 
     # Summary
     print(f"\n{'=' * 50}")
