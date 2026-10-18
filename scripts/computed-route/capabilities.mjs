@@ -55,7 +55,7 @@ if ( '--write' === mode ) {
 			const c = g.coverage || {};
 			const has = [ 'recognise', 'write', 'check' ].filter( ( s ) => c[ s ] ).join( ', ' ) || 'nothing';
 			const ex = g.examples.length ? `; e.g. ${ g.examples.join( ', ' ) }` : '';
-			console.log( `- \`${ g.id }\`: ${ g.label } (${ g.count }${ g.motion ? ', motion' : '' }); has ${ has }; wave ${ c.wave || 'none' }${ c.waiting ? `, waits on ${ c.waiting }` : '' }${ ex }` );
+			console.log( `- \`${ g.id }\`: ${ g.label } (${ g.count }${ g.motion ? ', motion' : '' }); has ${ has }; wave ${ c.wave || 'none' }${ ex }` );
 		} );
 		console.log( '' );
 	}

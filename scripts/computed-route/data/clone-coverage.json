@@ -1290,7 +1290,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion settings: the cloning writer for sgsMotion is plan step 4.0 (Spec 38A M7)"
 		},
 		"block-setting:behaviour:number": {
@@ -1399,7 +1398,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "hover grayscale gate: a hover effect, folds into the motion model"
 		},
 		"block-setting:css-modifier:mode": {
@@ -1642,7 +1640,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion settings: the cloning writer for sgsMotion is plan step 4.0 (Spec 38A M7)"
 		},
 		"block-setting:number-css-percent:styling": {
@@ -1934,7 +1931,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
 		},
 		"block-setting:visual:mode": {
@@ -1942,7 +1938,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
 		},
 		"block-setting:visual:number": {
@@ -1950,7 +1945,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
 		},
 		"block-setting:visual:object": {
@@ -1958,7 +1952,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
 		},
 		"block-setting:visual:string": {
@@ -1966,7 +1959,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
 		},
 		"block-setting:visual:styling": {
@@ -2029,7 +2021,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "read by the construct registry's reader; no writer or check yet"
 		},
 		"construct:link": {
@@ -2100,7 +2091,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "read by the construct registry's reader; no writer or check yet"
 		},
 		"construct:waapi": {
@@ -2108,7 +2098,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "read by the construct registry's reader; no writer or check yet"
 		},
 		"css-at:charset": {
@@ -2172,7 +2161,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "keyframes: the motion writer"
 		},
 		"css-at:layer": {
@@ -2229,7 +2217,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "entry styles: the motion writer"
 		},
 		"css-at:supports": {
@@ -2244,7 +2231,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "view transitions: page transitions are an fx effect"
 		},
 		"css-function:abs": {
@@ -2431,7 +2417,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "cubic-bezier(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:drop-shadow": {
@@ -2588,7 +2573,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "linear(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:linear-gradient": {
@@ -2610,7 +2594,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "matrix(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:matrix3d": {
@@ -2618,7 +2601,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "matrix3d(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:max": {
@@ -2708,7 +2690,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "perspective(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:polygon": {
@@ -2805,7 +2786,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "rotate(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:rotate3d": {
@@ -2813,7 +2793,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "rotate3d(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:rotatex": {
@@ -2821,7 +2800,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "rotatex(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:rotatey": {
@@ -2829,7 +2807,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "rotatey(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:rotatez": {
@@ -2837,7 +2814,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "rotatez(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:round": {
@@ -2859,7 +2835,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "scale(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:scale3d": {
@@ -2867,7 +2842,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "scale3d(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:scalex": {
@@ -2875,7 +2849,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "scalex(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:scaley": {
@@ -2883,7 +2856,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "scaley(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:scalez": {
@@ -2891,7 +2863,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "scalez(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:scroll": {
@@ -2899,7 +2870,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "scroll(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:scroll-state": {
@@ -2949,7 +2919,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "skew(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:skewx": {
@@ -2957,7 +2926,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "skewx(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:skewy": {
@@ -2965,7 +2933,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "skewy(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:snapinterval": {
@@ -2994,7 +2961,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "steps(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:style": {
@@ -3072,7 +3038,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "translate(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:translate3d": {
@@ -3080,7 +3045,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "translate3d(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:translatex": {
@@ -3088,7 +3052,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "translatex(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:translatey": {
@@ -3096,7 +3059,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "translatey(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:translatez": {
@@ -3104,7 +3066,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "translatez(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:type": {
@@ -3125,7 +3086,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "view(): transform, timing or scroll-timeline function: the motion writer"
 		},
 		"css-function:xywh": {
@@ -3147,7 +3107,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "Fill reads 0 of 22 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:backgrounds-and-borders": {
@@ -3337,7 +3296,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "Fill reads 0 of 6 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:mozilla-extensions": {
@@ -3422,7 +3380,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "Fill reads 0 of 11 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:scroll-snap": {
@@ -3486,7 +3443,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "Fill reads 3 of 6 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:values-and-units": {
@@ -3501,7 +3457,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "Fill reads 0 of 3 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:viewport": {
@@ -3789,7 +3744,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "(prefers-reduced-motion): the motion model handles reduced motion itself"
 		},
 		"css-media-feature:prefers-reduced-transparency": {
@@ -5512,7 +5466,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "scroll-button: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:scroll-marker": {
@@ -5520,7 +5473,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "::scroll-marker: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:scroll-marker-group": {
@@ -5528,7 +5480,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "::scroll-marker-group: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:search-text": {
@@ -5571,7 +5522,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "::view-transition: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:view-transition-group": {
@@ -5579,7 +5529,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "::view-transition-group: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:view-transition-group-children": {
@@ -5587,7 +5536,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "view-transition-group-children: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:view-transition-image-pair": {
@@ -5595,7 +5543,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "::view-transition-image-pair: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:view-transition-new": {
@@ -5603,7 +5550,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "::view-transition-new: transition or scroll-marker part: the motion writer"
 		},
 		"css-pseudo-element:view-transition-old": {
@@ -5611,7 +5557,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "::view-transition-old: transition or scroll-marker part: the motion writer"
 		},
 		"css-unit:cap": {
@@ -5682,7 +5627,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "deg: time or angle unit: the motion writer"
 		},
 		"css-unit:dpcm": {
@@ -5773,7 +5717,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "grad: time or angle unit: the motion writer"
 		},
 		"css-unit:hz": {
@@ -5865,7 +5808,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "ms: time or angle unit: the motion writer"
 		},
 		"css-unit:pc": {
@@ -5906,7 +5848,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "rad: time or angle unit: the motion writer"
 		},
 		"css-unit:rcap": {
@@ -5955,7 +5896,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "s: time or angle unit: the motion writer"
 		},
 		"css-unit:svb": {
@@ -6005,7 +5945,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "turn: time or angle unit: the motion writer"
 		},
 		"css-unit:vb": {
@@ -8834,7 +8773,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:carousel-loop": {
@@ -8842,7 +8780,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:cursor-field": {
@@ -8850,7 +8787,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:curtain": {
@@ -8858,7 +8794,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:draggable": {
@@ -8866,7 +8801,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:draw": {
@@ -8874,7 +8808,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:flip": {
@@ -8882,7 +8815,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:follow-pointer": {
@@ -8890,7 +8822,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:generative-background": {
@@ -8898,7 +8829,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:glare": {
@@ -8906,7 +8836,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:grid-dots": {
@@ -8914,7 +8843,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:horizontal-panel": {
@@ -8922,7 +8850,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:image-sequence": {
@@ -8930,7 +8857,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:ken-burns": {
@@ -8938,7 +8864,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:lottie": {
@@ -8946,7 +8871,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:magnet": {
@@ -8954,7 +8878,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:marquee": {
@@ -8962,7 +8885,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:morph": {
@@ -8970,7 +8892,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:motion-path": {
@@ -8978,7 +8899,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:page-transitions": {
@@ -8986,7 +8906,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:parallax": {
@@ -8994,7 +8913,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:particles": {
@@ -9002,7 +8920,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:pin-scrub": {
@@ -9010,7 +8927,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:ripple": {
@@ -9018,7 +8934,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:scramble": {
@@ -9026,7 +8941,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:scroll-progress": {
@@ -9034,7 +8948,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:scroll-smoother": {
@@ -9042,7 +8955,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:scrub": {
@@ -9050,7 +8962,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:sheen": {
@@ -9058,7 +8969,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:split-reveal": {
@@ -9066,7 +8976,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:surface-treatment": {
@@ -9074,7 +8983,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:svg-loop": {
@@ -9082,7 +8990,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"fx:wave-gradient": {
@@ -9090,7 +8997,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"html-attr:a.attributionsourceid": {
@@ -11302,7 +11208,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "<marquee behavior>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.bgcolor": {
@@ -11316,7 +11221,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "<marquee direction>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.height": {
@@ -11337,7 +11241,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "<marquee loop>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.scrollamount": {
@@ -11345,7 +11248,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "<marquee scrollamount>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.scrolldelay": {
@@ -11353,7 +11255,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "<marquee scrolldelay>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.truespeed": {
@@ -11361,7 +11262,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "<marquee truespeed>: a scrolling-text setting: the motion writer (marquee effect)"
 		},
 		"html-attr:marquee.vspace": {
@@ -13316,7 +13216,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "<marquee>: obsolete, still rendered as scrolling text: the motion writer (marquee effect) (re-opened by Bean 2026-10-18)"
 		},
 		"html:math": {
@@ -13931,7 +13830,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:cursor-field": {
@@ -13939,7 +13837,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:draw-hover": {
@@ -13947,7 +13844,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:ken-burns": {
@@ -13955,7 +13851,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:morph": {
@@ -13963,7 +13858,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:motion-path": {
@@ -13971,7 +13865,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:parallax": {
@@ -13979,7 +13872,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:particles": {
@@ -13987,7 +13879,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:pin-scrub": {
@@ -13995,7 +13886,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:ripple": {
@@ -14003,7 +13893,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:scramble-hover": {
@@ -14011,7 +13900,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:scrub": {
@@ -14019,7 +13907,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:effects:svg-loop": {
@@ -14027,7 +13914,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:draw": {
@@ -14035,7 +13921,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-blur-in": {
@@ -14043,7 +13928,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-bounce-in": {
@@ -14051,7 +13935,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-fade-down": {
@@ -14059,7 +13942,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-fade-in": {
@@ -14067,7 +13949,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-fade-left": {
@@ -14075,7 +13956,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-fade-right": {
@@ -14083,7 +13963,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-fade-up": {
@@ -14091,7 +13970,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-reveal-up": {
@@ -14099,7 +13977,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-rotate-in": {
@@ -14107,7 +13984,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-scale-in": {
@@ -14115,7 +13991,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-scale-out": {
@@ -14123,7 +13998,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-slide-down": {
@@ -14131,7 +14005,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-slide-left": {
@@ -14139,7 +14012,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-slide-right": {
@@ -14147,7 +14019,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:entrance-slide-up": {
@@ -14155,7 +14026,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-bounce": {
@@ -14163,7 +14033,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-fade-in": {
@@ -14171,7 +14040,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-fade-out": {
@@ -14179,7 +14047,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-fade-up": {
@@ -14187,7 +14054,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-pulse": {
@@ -14195,7 +14061,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-slide-up": {
@@ -14203,7 +14068,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-spin": {
@@ -14211,7 +14075,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:keyframe-zoom-in": {
@@ -14219,7 +14082,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:nav-panel-item": {
@@ -14227,7 +14089,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:scramble": {
@@ -14235,7 +14096,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:split-reveal": {
@@ -14243,7 +14103,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:state-burger-morph": {
@@ -14251,7 +14110,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:state-count-pop": {
@@ -14259,7 +14117,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:state-icon-turn": {
@@ -14267,7 +14124,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:state-result-scale-in": {
@@ -14275,7 +14131,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:state-shake": {
@@ -14283,7 +14138,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:entrance:state-step-slide": {
@@ -14291,7 +14145,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:follow-pointer": {
@@ -14299,7 +14152,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-border-accent": {
@@ -14307,7 +14159,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-grayscale-to-colour": {
@@ -14315,7 +14166,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-indent": {
@@ -14323,7 +14173,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-lift": {
@@ -14331,7 +14180,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-none": {
@@ -14339,7 +14187,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-rotate": {
@@ -14347,7 +14194,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-scale": {
@@ -14355,7 +14201,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:hover-translate": {
@@ -14363,7 +14208,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:magnet": {
@@ -14371,7 +14215,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"motion-preset:hover:sheen": {
@@ -14379,7 +14222,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
 		},
 		"part:footer": {
@@ -15598,7 +15440,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "SVG <animate>: SVG animation: the motion writer"
 		},
 		"svg:animateMotion": {
@@ -15606,7 +15447,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "SVG <animateMotion>: SVG animation: the motion writer"
 		},
 		"svg:animateTransform": {
@@ -15614,7 +15454,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "SVG <animateTransform>: SVG animation: the motion writer"
 		},
 		"svg:circle": {
@@ -15895,7 +15734,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "SVG <mpath>: SVG animation: the motion writer"
 		},
 		"svg:path": {
@@ -15952,7 +15790,6 @@
 			"write": null,
 			"check": null,
 			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
 			"note": "SVG <set>: SVG animation: the motion writer"
 		},
 		"svg:stop": {

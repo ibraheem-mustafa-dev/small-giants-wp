@@ -38,7 +38,6 @@
 							"write": { "type": [ "string", "null" ], "minLength": 1 },
 							"check": { "type": [ "string", "null" ], "minLength": 1 },
 							"wave": { "type": "string" },
-							"waiting": { "const": "phase-0" },
 							"note": { "type": "string" }
 						}
 					}

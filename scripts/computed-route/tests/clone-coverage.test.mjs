@@ -4,7 +4,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildInventory, readInventoryFile } from '../lib/capabilities.mjs';
-import { loadCoverage, coverageProblems, statusOf, referenceProblem, seedGaps, gapList } from '../lib/clone-coverage.mjs';
+import { loadCoverage, coverageProblems, statusOf, referenceProblem, seedGaps, gapList, COVERAGE_SCHEMA } from '../lib/clone-coverage.mjs';
+import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { fixtureDb, BASE_ROWS } from './fixtures/framework-db.mjs';
 
 const clone = ( o ) => JSON.parse( JSON.stringify( o ) );
@@ -43,16 +44,14 @@ test( 'MUST FAIL (control 3): a reference to a writer, file or construct reader 
 	assert.ok( coverageProblems( committed.inventory, cov ).some( ( p ) => p.startsWith( 'html:div write:' ) ) );
 } );
 
-test( 'MUST FAIL (control 4): an unsigned exclusion, a gap with no wave, a motion gap not waiting on Phase 0, an entry for an unknown ID', () => {
+test( 'MUST FAIL (control 4): an unsigned exclusion, a gap with no wave, an entry for an unknown ID', () => {
 	const cov = clone( committed.coverage );
 	cov.entries[ 'html:div' ] = { excluded: { reason: 'x', signedBy: 'Claude', date: '2026-10-17' } };
 	delete cov.entries[ 'html:video' ].wave;
-	delete cov.entries[ 'css-group:animations' ].waiting;
 	cov.entries[ 'html:not-in-the-inventory' ] = { recognise: null, write: null, check: null, wave: 'unassigned' };
 	const p = coverageProblems( committed.inventory, cov );
 	assert.ok( p.some( ( x ) => x.startsWith( 'html:div: an exclusion needs' ) ) );
 	assert.ok( p.some( ( x ) => x.startsWith( 'html:video: a gap names its Phase 4 wave' ) ) );
-	assert.ok( p.some( ( x ) => x.startsWith( 'css-group:animations: a motion gap waits on Phase 0' ) ) );
 	assert.ok( p.some( ( x ) => x.startsWith( 'html:not-in-the-inventory: a coverage entry for an ID the inventory does not hold' ) ) );
 } );
 
@@ -79,4 +78,13 @@ test( 'seeding never changes an existing entry', () => {
 	assert.equal( added, 1 );
 	assert.deepEqual( coverage.entries[ 'html:div' ], cov.entries[ 'html:div' ] );
 	assert.equal( coverage.entries[ 'html:span' ].wave, 'unassigned' );
+} );
+
+test( 'MUST FAIL: no gap carries a Phase 0 marker now the motion model is built; the schema refuses one, and a seeded gap has none', () => {
+	assert.ok( Object.values( committed.coverage.entries ).every( ( e ) => ! ( 'waiting' in e ) ) );
+	const cov = clone( committed.coverage );
+	cov.entries[ 'css-group:animations' ] = { ...cov.entries[ 'css-group:animations' ], waiting: 'phase-0' };
+	assert.ok( schemaProblems( loadAjv(), COVERAGE_SCHEMA, cov ).length > 0 );
+	const { coverage } = seedGaps( { sections: { svg: { entries: [ { id: 'svg:animate', motion: true } ] } } }, { entries: {} }, 'note' );
+	assert.deepEqual( Object.keys( coverage.entries[ 'svg:animate' ] ).sort(), [ 'check', 'note', 'recognise', 'wave', 'write' ] );
 } );

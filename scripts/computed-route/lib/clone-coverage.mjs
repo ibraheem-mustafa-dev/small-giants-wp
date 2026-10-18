@@ -1,7 +1,7 @@
 // The clone coverage map (clone coverage plan Phase 1, steps 1.3 and 1.4): for every capability ID in
 // data/capabilities.json, how the route recognises it in a draft, writes it and checks it, or the exclusion Bean
 // signed. An entry missing any of the three is a gap and names the Phase 4 wave that closes it ("unassigned" until the
-// gap list is triaged); a motion gap also says it waits on Phase 0 (the Spec 38A build). `coverageProblems` is the
+// gap list is triaged). `coverageProblems` is the
 // gate: it fails on an inventory ID with no entry, an entry for an ID the inventory does not hold, a reference to a
 // file, export or construct reader that does not exist, an unsigned exclusion, and a gap with no wave.
 import fs from 'fs';
@@ -84,7 +84,6 @@ export function coverageProblems( inventory, coverage, { root = REPO, registry }
 	const problems = [];
 	const entries = coverage.entries || {};
 	const ids = new Set( allEntries( inventory ).map( ( e ) => e.id ) );
-	const motion = new Set( allEntries( inventory ).filter( ( e ) => e.motion ).map( ( e ) => e.id ) );
 	const absent = new Set( Object.entries( inventory.sections ).filter( ( [ , s ] ) => 'absent' === s.status ).map( ( [ n ] ) => n ) );
 	for ( const id of ids ) {
 		if ( ! entries[ id ] ) {
@@ -111,9 +110,6 @@ export function coverageProblems( inventory, coverage, { root = REPO, registry }
 			if ( ! String( e.wave || '' ).trim() ) {
 				problems.push( `${ id }: a gap names its Phase 4 wave ("unassigned" until triaged)` );
 			}
-			if ( motion.has( id ) && 'phase-0' !== e.waiting ) {
-				problems.push( `${ id }: a motion gap waits on Phase 0 (waiting: "phase-0") until the Spec 38A build closes` );
-			}
 		}
 	}
 	return problems;
@@ -130,7 +126,7 @@ export function seedGaps( inventory, coverage, note ) {
 	let added = 0;
 	for ( const e of allEntries( inventory ) ) {
 		if ( ! entries[ e.id ] ) {
-			entries[ e.id ] = { recognise: null, write: null, check: null, wave: 'unassigned', ...( e.motion ? { waiting: 'phase-0' } : {} ), note };
+			entries[ e.id ] = { recognise: null, write: null, check: null, wave: 'unassigned', note };
 			added++;
 		}
 	}
