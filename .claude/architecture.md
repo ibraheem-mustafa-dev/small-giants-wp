@@ -55,7 +55,7 @@ A design draft reaches a WordPress page by the computed route (Spec 48): script-
 
 **What it does.** Measures the rendered draft and writes block settings through the framework DB, never copying the draft's DOM or classes. Spec: `.claude/specs/48-CLONING-SYSTEM.md`.
 
-- **Code:** `scripts/computed-route/` (its `README.md` is the module index, enforced by `lint.mjs`). Commands: `calibrate.mjs` (measures what each block setting paints), `fill.mjs` (skeleton plus measured draft to a tree), `solve.mjs` (compare, write, rebuild, at most three rounds), `sweep.mjs` and `triage.mjs` (classify what survives), `confirm-canvas.mjs`; shared code in `lib/`.
+- **Code:** `scripts/computed-route/` (its `README.md` is the module index, enforced by `lint.mjs`). Commands: `calibrate.mjs` (measures what each block setting paints), `fill.mjs` (skeleton plus measured draft to a tree), `solve.mjs` (compare, write, rebuild, at most three rounds), `sweep.mjs` and `triage.mjs` (classify what survives), `confirm-canvas.mjs`, `intake.mjs` (reads a draft into a review), `capabilities.mjs` (the capability inventory and the clone coverage gate, `.claude/plans/2026-10-12-clone-coverage-foundation.md`); shared code in `lib/`.
 - **Data:** layout trees in `sites/<client>/build/*.tree.json`; surfaces in `sites/<client>/build/surfaces.json`.
 - **Build and measure:** trees are built through `scripts/wp-build-page.js`; the parity walker `scripts/parity/draft-live-walk.mjs` compares draft and live.
 - **Accepted differences:** the divergence ledger `sites/<client>/build/qa/divergences.json`, linted against the client's fix register.
