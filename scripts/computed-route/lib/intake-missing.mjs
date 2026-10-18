@@ -21,7 +21,26 @@
 import { loadRegistry } from './intake-registry.mjs';
 import { walkAst } from './intake-census-logic.mjs';
 import { buildModel, codeTarget } from './intake-census-map.mjs';
+import { createRequire } from 'module';
 import { statusOf } from './clone-coverage.mjs';
+import { PROPS as FILL_PROPS } from './fill-read.mjs';
+
+const MDN_PROPERTIES = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
+const FILL_READS = new Set( FILL_PROPS );
+// The longhands a property sets, by mdn-data's `computed` list, recursively (`border` → `border-width` → its four
+// sides); a longhand is itself.
+export function longhands( prop, seen = new Set() ) {
+	const c = MDN_PROPERTIES[ prop ]?.computed;
+	if ( ! Array.isArray( c ) || ! c.length || seen.has( prop ) || ( 1 === c.length && c[ 0 ] === prop ) ) {
+		return [ prop ];
+	}
+	seen.add( prop );
+	return [ ...new Set( c.flatMap( ( l ) => longhands( l, seen ) ) ) ];
+}
+// The properties of a CSS group a draft used that Fill does not read (lib/fill-read.mjs::PROPS, which Fill clones end to
+// end): a shorthand counts as read only when every longhand is. A custom property is read: it never paints on its own,
+// and its value reaches Fill through the properties that use it (`var()`).
+export const unreadProperties = ( props ) => [ ...props ].filter( ( p ) => ! p.startsWith( '--' ) && ! longhands( p ).every( ( l ) => FILL_READS.has( l ) ) ).sort();
 
 // A registry gap reason that is instrument debt (a reader to be built), not a feature SGS lacks.
 export const INSTRUMENT_DEBT = /\b(?:lands with|not built|reader|Appendix B|FR-\d)/i;
@@ -192,22 +211,29 @@ export function coverageMissing( { skeletonRows = [], census = { rows: [] }, cov
 	census.rows.forEach( ( r ) => note( `construct:${ r.kind }`, r.draftId || r.id ) );
 	for ( const [ id, u ] of usage || [] ) {
 		if ( ! seen.has( id ) ) {
-			seen.set( id, { id, draftId: u.draftId, count: u.count, runtimeOnly: u.runtimeOnly } );
+			seen.set( id, { id, draftId: u.draftId, count: u.count, runtimeOnly: u.runtimeOnly, props: u.props } );
 		}
 	}
 	const rows = [];
-	for ( const { id, draftId, count, runtimeOnly } of seen.values() ) {
+	for ( const { id, draftId, count, runtimeOnly, props } of seen.values() ) {
 		const e = coverage.entries?.[ id ];
 		const status = statusOf( e );
 		if ( 'covered' === status ) {
 			continue;
 		}
+		// A CSS property group is judged by the properties this draft used: none unread is cloned for this draft.
+		const unread = 'gap' === status && id.startsWith( 'css-group:' ) && props?.size ? unreadProperties( props ) : null;
+		if ( unread && ! unread.length ) {
+			continue;
+		}
+		const partly = unread && unread.length < props.size;
 		const why = ! e ? `${ id } is not in the clone coverage map: the capability inventory does not list it`
 			: 'excluded' === status ? `${ id } is excluded from cloning (Bean, ${ e.excluded.date }: ${ e.excluded.reason })`
-				: `${ id } has no clone path yet (has ${ [ 'recognise', 'write', 'check' ].filter( ( k ) => e[ k ] ).join( ', ' ) || 'nothing' }; wave ${ e.wave })`;
+				: unread ? `${ id }: Fill does not read ${ unread.join( ', ' ) }${ partly ? ` (it reads the group's other ${ props.size - unread.length } the draft uses)` : '' }; wave ${ e.wave }`
+					: `${ id } has no clone path yet (has ${ [ 'recognise', 'write', 'check' ].filter( ( k ) => e[ k ] ).join( ', ' ) || 'nothing' }; wave ${ e.wave })`;
 		const missed = runtimeOnly ? '; seen only when the page ran: the file read missed it' : '';
 		const track = 'excluded' === status ? { excluded: true } : e?.wave ? { wave: e.wave } : {};
-		rows.push( { rowId: `missing:coverage:${ id }`, draftId: String( draftId ), construct: id, from: 'coverage', line: `${ id } seen ${ count } time${ 1 === count ? '' : 's' } in the draft: seen but unsupported`, mainFlow: null, count, ...track, why: `${ why }${ missed }` } );
+		rows.push( { rowId: `missing:coverage:${ id }`, draftId: String( draftId ), construct: id, from: 'coverage', line: `${ id } seen ${ count } time${ 1 === count ? '' : 's' } in the draft: ${ partly ? 'partly supported' : 'seen but unsupported' }`, mainFlow: null, count, ...track, why: `${ why }${ missed }` } );
 	}
 	return rows;
 }

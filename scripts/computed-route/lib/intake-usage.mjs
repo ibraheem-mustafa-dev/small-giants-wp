@@ -42,11 +42,13 @@ const LEGACY_PSEUDO_ELEMENTS = new Set( [ 'before', 'after', 'first-line', 'firs
 const MARKUP = /<[a-z][\w-]*[\s/>]/i;
 const ASSET = /\.(?:svg|css)$/i;
 
-// A usage tally: id → { count, draftId (the first place it was seen) }.
+// A usage tally: id → { count, draftId (the first place it was seen), props? (a CSS property group's properties the
+// draft used, by their standard names) }.
 export const tally = () => new Map();
-const note = ( t, id, draftId ) => {
+const note = ( t, id, draftId, prop = null ) => {
 	const u = t.get( id ) || { count: 0, draftId: String( draftId ) };
 	u.count++;
+	prop && ( u.props = new Set( [ ...( u.props || [] ), prop ] ) );
 	t.set( id, u );
 };
 
@@ -100,6 +102,15 @@ function propertyIds( prop ) {
 	return [ BCD.css.properties[ name ] || name.startsWith( '--' ) ? `css-property:${ name }` : 'css-property:unlisted' ];
 }
 
+// A property's standard name: a vendor or old name browser-compat-data records under a standard one becomes it.
+export function standardName( prop ) {
+	const name = String( prop ).toLowerCase();
+	return ! MDN.properties[ name ] && ! BCD.css.properties[ name ] && ALIAS.has( name ) ? standardName( ALIAS.get( name ) ) : name;
+}
+
+// Notes a CSS property's capability IDs, recording the property itself on each property group it counts toward.
+const noteProperty = ( t, prop, draftId ) => propertyIds( prop ).forEach( ( id ) => note( t, id, draftId, id.startsWith( 'css-group:' ) ? standardName( prop ) : null ) );
+
 // The pseudo-class or pseudo-element ID of a selector name: a legacy one-colon pseudo-element (`:before`), or a name
 // the inventory holds only as a pseudo-element, is the pseudo-element.
 const pseudoId = ( name, known ) => ( LEGACY_PSEUDO_ELEMENTS.has( name ) || ( ! known.has( `css-pseudo-class:${ name }` ) && known.has( `css-pseudo-element:${ name }` ) ) ? `css-pseudo-element:${ name }` : `css-pseudo-class:${ name }` );
@@ -127,7 +138,7 @@ export function cssUsage( text, t, draftId, known = new Set(), context = 'styles
 			} else if ( 'FeatureRange' === n.type && inMedia.at( -1 ) && 'Identifier' === n.left?.type ) {
 				note( t, `css-media-feature:${ n.left.name.toLowerCase() }`, draftId );
 			} else if ( 'Declaration' === n.type ) {
-				propertyIds( n.property ).forEach( ( id ) => note( t, id, draftId ) );
+				noteProperty( t, n.property, draftId );
 			} else if ( 'PseudoClassSelector' === n.type ) {
 				note( t, pseudoId( n.name.toLowerCase(), known ), draftId );
 			} else if ( 'PseudoElementSelector' === n.type ) {
@@ -179,7 +190,7 @@ export function declarationsUsage( text, t, draftId, known = new Set() ) {
 		const at = d.indexOf( ':' );
 		const prop = at > 0 ? d.slice( 0, at ).trim() : '';
 		if ( d.includes( '{{' ) && /^-{0,2}[a-z][a-z0-9-]*$/i.test( prop ) ) {
-			propertyIds( prop ).forEach( ( id ) => note( t, id, draftId ) );
+			noteProperty( t, prop, draftId );
 		} else if ( d.trim() ) {
 			fixed.push( d );
 		}
@@ -247,7 +258,7 @@ export function elementUsage( { tag, attrs = [], svg = null }, t, draftId, known
 			note( t, BCD_GLOBALS.has( a ) || known.has( `html-attr:global.${ a }` ) ? `html-attr:global.${ a }` : `html-attr:${ lower }.${ a }`, draftId );
 		}
 		// A presentational attribute is the CSS it becomes too (`<td align>` uses text alignment).
-		( HINTS.get( `${ lower }.${ a }` ) || [] ).forEach( ( prop ) => propertyIds( prop ).forEach( ( id ) => note( t, id, draftId ) ) );
+		( HINTS.get( `${ lower }.${ a }` ) || [] ).forEach( ( prop ) => noteProperty( t, prop, draftId ) );
 		if ( 'input' === lower && 'type' === a && ! bound ) {
 			note( t, `input-type:${ value.toLowerCase() }`, draftId );
 		}
@@ -402,7 +413,7 @@ export function codeUsage( ast, t, at, known = new Set() ) {
 	const objectCss = ( obj, draftId ) => ( 'ObjectExpression' === obj?.type ? obj.properties : [] ).forEach( ( prop ) => {
 		const k = prop.key && ( prop.key.name ?? prop.key.value );
 		if ( k && isCssProperty( kebab( String( k ) ) ) ) {
-			propertyIds( kebab( String( k ) ) ).forEach( ( id ) => note( t, id, draftId ) );
+			noteProperty( t, kebab( String( k ) ), draftId );
 		}
 	} );
 	walkAst( ast.program, ( n, parents ) => {
@@ -431,10 +442,10 @@ export function codeUsage( ast, t, at, known = new Set() ) {
 		} else if ( 'AssignmentExpression' === n.type && 'MemberExpression' === n.left.type && ! n.left.computed && styleOf( n.left.object ) ) {
 			const p = kebab( n.left.property.name );
 			if ( isCssProperty( p ) ) {
-				propertyIds( p ).forEach( ( id ) => note( t, id, at( n ) ) );
+				noteProperty( t, p, at( n ) );
 			}
 		} else if ( 'CallExpression' === n.type && 'MemberExpression' === n.callee.type && styleOf( n.callee.object ) && 'setProperty' === n.callee.property?.name && 'StringLiteral' === n.arguments[ 0 ]?.type ) {
-			propertyIds( n.arguments[ 0 ].value ).forEach( ( id ) => note( t, id, at( n ) ) );
+			noteProperty( t, n.arguments[ 0 ].value, at( n ) );
 		} else if ( 'CallExpression' === n.type && 'MemberExpression' === n.callee.type && 'Object' === n.callee.object?.name && 'assign' === n.callee.property?.name && styleOf( n.arguments[ 0 ] ) ) {
 			n.arguments.slice( 1 ).forEach( ( a ) => objectCss( a, at( n ) ) );
 		}
@@ -627,7 +638,10 @@ export function runtimeUsage( raw, known = new Set() ) {
 	// no evidence there; every other capability an inline style shows counts.
 	const inline = tally();
 	[ ...( raw?.inline || [] ) ].forEach( ( c ) => cssUsage( c, inline, 'an inline style of the running page', known ) );
-	[ ...inline ].filter( ( [ id ] ) => ! /^css-function:rgba?$/.test( id ) ).forEach( ( [ id, u ] ) => ( t.has( id ) ? ( t.get( id ).count += u.count ) : t.set( id, u ) ) );
+	[ ...inline ].filter( ( [ id ] ) => ! /^css-function:rgba?$/.test( id ) ).forEach( ( [ id, u ] ) => {
+		const had = t.get( id );
+		had ? Object.assign( had, { count: had.count + u.count }, u.props ? { props: new Set( [ ...( had.props || [] ), ...u.props ] ) } : {} ) : t.set( id, u );
+	} );
 	[ ...( raw?.elements?.values?.() || raw?.elements || [] ) ].forEach( ( e ) => elementUsage( e, t, e.key || `${ e.visit || 'runtime' } (no draft ID)`, known ) );
 	return t;
 }

@@ -240,3 +240,12 @@ test( 'POSITIVE: a presentational attribute is the CSS the browser turns it into
 	elementUsage( { tag: 'td', attrs: [ [ 'align', 'center' ], [ 'bgcolor', '#fff' ], [ 'char', '.' ] ] }, t, 'Table:4', KNOWN );
 	assert.deepEqual( ids( t ), [ 'css-group:backgrounds-and-borders', 'css-group:text', 'html-attr:td.align', 'html-attr:td.bgcolor', 'html-attr:td.char', 'html:td' ] );
 } );
+
+test( 'MUST FAIL: the tally records, per CSS property group, the properties the draft used by their standard names', () => {
+	const t = tally();
+	cssUsage( 'x { color: red; -webkit-font-smoothing: antialiased; top: 0 } y { color: blue }', t, 'Home:20', KNOWN );
+	assert.deepEqual( [ ...t.get( 'css-group:color' ).props ], [ 'color' ] );
+	assert.deepEqual( [ ...t.get( 'css-group:fonts' ).props ], [ 'font-smooth' ], 'a vendor name is recorded as its standard property' );
+	assert.deepEqual( [ ...t.get( 'css-group:positioned-layout' ).props ], [ 'top' ] );
+	assert.equal( t.get( 'html:div' ), undefined );
+} );
