@@ -36,11 +36,20 @@ test( 'POSITIVE: a stylesheet maps to at-rules, media features, property groups,
 	assert.ok( ! t.has( 'css-media-feature:width' ) || 'Home:1' === t.get( 'css-media-feature:width' ).draftId );
 } );
 
-test( 'MUST FAIL: a property, function or unit the web platform data does not hold is named as itself, never dropped', () => {
+test( 'MUST FAIL: a function or unit the web platform data does not hold is named as itself, and a property no browser lists is the unlisted ID, never dropped', () => {
 	const t = tally();
 	cssUsage( 'x { -sgs-planted: 1; width: planted-fn(2plu) }', t, 'Home:2', KNOWN );
-	assert.deepEqual( ids( t ), [ 'css-function:planted-fn', 'css-property:-sgs-planted', 'css-unit:plu', 'css-group:box-sizing' ].sort() );
-	[ 'css-function:planted-fn', 'css-property:-sgs-planted', 'css-unit:plu' ].forEach( ( id ) => assert.ok( ! KNOWN.has( id ) ) );
+	assert.deepEqual( ids( t ), [ 'css-function:planted-fn', 'css-property:unlisted', 'css-unit:plu', 'css-group:box-sizing' ].sort() );
+	[ 'css-function:planted-fn', 'css-unit:plu' ].forEach( ( id ) => assert.ok( ! KNOWN.has( id ) ) );
+	assert.ok( KNOWN.has( 'css-property:unlisted' ) );
+} );
+
+test( 'MUST FAIL: a property in several groups counts toward its own spec\'s group, and a vendor name toward its standard property', () => {
+	const t = tally();
+	cssUsage( 'x { text-transform: uppercase; top: 0; align-items: center; -webkit-font-smoothing: antialiased; -webkit-backdrop-filter: blur(4px) }', t, 'Home:9', KNOWN );
+	const got = ids( t ).filter( ( id ) => id.startsWith( 'css-group:' ) || id.startsWith( 'css-property:' ) );
+	assert.deepEqual( got, [ 'css-group:box-alignment', 'css-group:filter-effects', 'css-group:flexible-box-layout', 'css-group:fonts', 'css-group:positioned-layout', 'css-group:text' ] );
+	[ 'css-group:mathml', 'css-group:anchor-positioning' ].forEach( ( id ) => assert.ok( ! got.includes( id ), `${ id } is only a second filing of text-transform or top` ) );
 } );
 
 test( 'POSITIVE: an element maps its tag, attributes, input type, embed host, ARIA and inline style', () => {
@@ -56,7 +65,8 @@ test( 'POSITIVE: an element maps its tag, attributes, input type, embed host, AR
 
 test( 'embed hosts shorten to the closest inventory host; a relative or data URL is no embed', () => {
 	assert.equal( embedId( 'https://player.vimeo.com/video/1', KNOWN ), 'embed:vimeo.com' );
-	assert.equal( embedId( 'https://www.google.com/maps/embed?pb=1', KNOWN ), 'embed:google.com', 'a host the oEmbed list lacks is still named' );
+	assert.equal( embedId( 'https://www.google.com/maps/embed?pb=1', KNOWN ), 'embed:other', 'a host the oEmbed list lacks is the other-host ID, never dropped' );
+	assert.equal( embedId( 'https://www.google.com/maps/embed?pb=1' ), 'embed:google.com', 'without the inventory the host is named' );
 	assert.equal( embedId( '/local/page.html', KNOWN ), null );
 	assert.equal( embedId( 'data:text/html,hi', KNOWN ), null );
 } );
@@ -158,7 +168,7 @@ test( 'POSITIVE: the runtime\'s template encodings are decoded, and state styles
 	elementUsage( { tag: 'sc-raw-table', attrs: [] }, t, 'Nav:2', KNOWN );
 	elementUsage( { tag: 'image-slot', attrs: [ [ 'shape', 'rounded' ], [ 'aria-label', 'Photo' ] ] }, t, 'Nav:3', KNOWN );
 	elementUsage( { tag: 'div', attrs: [ [ 'style-focus', '{{ R.ring }}' ] ] }, t, 'Nav:4', KNOWN );
-	assert.deepEqual( ids( t ), [ 'aria-attr:aria-label', 'css-group:generated-content', 'css-group:text-decoration', 'css-pseudo-class:focus', 'css-pseudo-class:hover', 'css-pseudo-element:after', 'css-unit:px', 'html-attr:a.href', 'html-attr:global.tabindex', 'html:a', 'html:div', 'html:image-slot', 'html:table' ] );
+	assert.deepEqual( ids( t ), [ 'aria-attr:aria-label', 'css-group:generated-content', 'css-group:text-decoration', 'css-pseudo-class:focus', 'css-pseudo-class:hover', 'css-pseudo-element:after', 'css-unit:px', 'html-attr:a.href', 'html-attr:global.tabindex', 'html:a', 'html:custom-element', 'html:div', 'html:table' ] );
 } );
 
 test( 'POSITIVE: markup written as strings in code is read (a shadow DOM template, concatenated)', () => {

@@ -2259,16 +2259,6 @@
 					"motion": false
 				},
 				{
-					"id": "sgs-support:hideExtensions",
-					"label": "supports.sgs.hideExtensions",
-					"count": 2,
-					"examples": [
-						"sgs/nav-bar-menu",
-						"sgs/nav-drawer-menu"
-					],
-					"motion": false
-				},
-				{
 					"id": "sgs-support:iconPicker",
 					"label": "supports.sgs.iconPicker",
 					"count": 14,
@@ -3965,6 +3955,13 @@
 				{
 					"id": "html:content",
 					"label": "<content>",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "html:custom-element",
+					"label": "a custom element the draft defines (a hyphenated tag)",
 					"count": 1,
 					"examples": [],
 					"motion": false
@@ -9334,6 +9331,13 @@
 					"motion": false
 				},
 				{
+					"id": "svg:unlisted",
+					"label": "an SVG element no browser lists",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
 					"id": "svg:use",
 					"label": "SVG <use>",
 					"count": 1,
@@ -10960,6 +10964,13 @@
 				{
 					"id": "embed:origits.com",
 					"label": "Origits embed (origits.com)",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "embed:other",
+					"label": "an embed from a host the oEmbed list does not name",
 					"count": 1,
 					"examples": [],
 					"motion": false
@@ -13850,6 +13861,13 @@
 					"motion": false
 				},
 				{
+					"id": "css-property:unlisted",
+					"label": "a CSS property no browser lists",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
 					"id": "css-property:user-modify",
 					"label": "user-modify",
 					"count": 1,
@@ -15339,7 +15357,7 @@
 					"label": "linear-gradient()",
 					"count": 1,
 					"examples": [],
-					"motion": true
+					"motion": false
 				},
 				{
 					"id": "css-function:log",
@@ -15640,7 +15658,7 @@
 					"label": "scroll-state()",
 					"count": 1,
 					"examples": [],
-					"motion": true
+					"motion": false
 				},
 				{
 					"id": "css-function:selector",

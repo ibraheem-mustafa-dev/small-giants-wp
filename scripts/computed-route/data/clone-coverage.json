@@ -2595,9 +2595,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
-			"note": "linear-gradient(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "draft reading",
+			"note": "linear-gradient(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:log": {
 			"recognise": null,
@@ -2907,9 +2906,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"waiting": "phase-0",
-			"note": "scroll-state(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "draft reading",
+			"note": "scroll-state(): a container scroll-state query; container queries are dropped by lib/intake-inventory-css.mjs::cssBlocks"
 		},
 		"css-function:selector": {
 			"recognise": null,
@@ -4486,6 +4484,13 @@
 			"check": null,
 			"wave": "draft reading",
 			"note": "text-decoration-skip-spaces: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
+		},
+		"css-property:unlisted": {
+			"excluded": {
+				"reason": "a CSS property no browser applies (enable-background, an SVG 1.1 editor property, seen in an exported logo); nothing to clone",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-property:user-modify": {
 			"excluded": {
@@ -7661,6 +7666,13 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"note": "Origits embed (origits.com): a third-party embed; no embed writer (core/embed where WordPress supports the host)"
+		},
+		"embed:other": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "an embed from a host the oEmbed list does not name (a Google Maps iframe): no embed writer (FR-48-39); map embeds are a named site surface"
 		},
 		"embed:outplayed.tv": {
 			"recognise": null,
@@ -12966,6 +12978,13 @@
 				"date": "2026-10-17"
 			}
 		},
+		"html:custom-element": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "a custom element the draft defines (an image slot, a logo component): what it renders is read through the running page, but no reader maps the component itself to a block"
+		},
 		"html:data": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
 			"write": "scripts/computed-route/lib/skeleton-propose.mjs#proposeSkeleton",
@@ -14993,13 +15012,6 @@
 				"date": "2026-10-17"
 			}
 		},
-		"sgs-support:hideExtensions": {
-			"excluded": {
-				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
-		},
 		"sgs-support:iconPicker": {
 			"excluded": {
 				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
@@ -16005,6 +16017,13 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"note": "SVG <tspan>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
+		},
+		"svg:unlisted": {
+			"excluded": {
+				"reason": "an SVG element no browser renders (meshgradient, meshrow and meshpatch from an SVG editor's draft spec, seen in an exported logo); the SVG file uploads whole, so the clone loses nothing",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"svg:use": {
 			"recognise": null,

@@ -53,7 +53,7 @@ test( 'POSITIVE: without the DB the DB sections are marked absent and the code a
 
 test( 'MUST FAIL (control 2): a planted draft tag becomes a new inventory entry', () => {
 	const inv = buildInventory( { dbFile: null, tags: [ 'div', 'sgs-planted-element' ] } );
-	assert.deepEqual( ids( inv, 'html' ), [ 'html:div', 'html:sgs-planted-element' ] );
+	assert.deepEqual( ids( inv, 'html' ), [ 'html:custom-element', 'html:div', 'html:sgs-planted-element' ] );
 } );
 
 test( 'a write without the DB keeps the committed DB sections; a write with it replaces them', () => {
@@ -95,19 +95,25 @@ test( 'POSITIVE (1.6): every draft-side section is derived from its data package
 	assert.equal( inv.sections[ 'css-media-feature' ].entries[ 0 ].deprecated, true );
 	assert.deepEqual( ids( inv, 'html-attr' ), [ 'html-attr:global.data', 'html-attr:global.itemprop', 'html-attr:global.popover', 'html-attr:img.alt', 'html-attr:img.loading', 'html-attr:input.value', 'html-attr:td.background' ] );
 	assert.deepEqual( ids( inv, 'input-type' ), [ 'input-type:date' ] );
-	assert.deepEqual( ids( inv, 'svg' ), [ 'svg:animate', 'svg:path' ] );
+	assert.deepEqual( ids( inv, 'svg' ), [ 'svg:animate', 'svg:path', 'svg:unlisted' ] );
 	assert.equal( inv.sections.svg.entries[ 0 ].motion, true );
-	assert.deepEqual( ids( inv, 'embed' ), [ 'embed:youtube.com' ] );
+	assert.deepEqual( ids( inv, 'embed' ), [ 'embed:other', 'embed:youtube.com' ] );
 	assert.deepEqual( ids( inv, 'css-pseudo-class' ), [ 'css-pseudo-class:hover', 'css-pseudo-class:old-thing' ] );
 	assert.equal( inv.sections[ 'css-pseudo-class' ].entries[ 1 ].deprecated, true );
-	assert.deepEqual( ids( inv, 'css-property' ), [ 'css-property:-webkit-user-drag', 'css-property:old-prop' ], 'browser-compat-data properties mdn-data does not group' );
+	assert.deepEqual( ids( inv, 'css-property' ), [ 'css-property:-webkit-user-drag', 'css-property:old-prop', 'css-property:unlisted' ], 'browser-compat-data properties mdn-data does not group, and one ID for any other' );
 	assert.deepEqual( ids( inv, 'css-pseudo-element' ), [ 'css-pseudo-element:-moz-thing', 'css-pseudo-element:-webkit-scrollbar', 'css-pseudo-element:before' ] );
 	assert.equal( inv.sections[ 'css-pseudo-element' ].entries[ 0 ].deprecated, undefined, 'vendor-prefixed is not deprecated: it still renders' );
 	assert.deepEqual( ids( inv, 'css-function' ), [ 'css-function:clamp', 'css-function:translate' ] );
 	assert.deepEqual( ids( inv, 'css-unit' ), [ 'css-unit:dvh', 'css-unit:dvw', 'css-unit:em', 'css-unit:percent', 'css-unit:px' ] );
 	assert.deepEqual( ids( inv, 'aria-role' ), [ 'aria-role:tab' ] );
 	assert.deepEqual( ids( inv, 'aria-attr' ), [ 'aria-attr:aria-expanded' ] );
-	assert.deepEqual( inv.sections.html.entries.map( ( e ) => [ e.id, !! e.deprecated ] ), [ [ 'html:div', false ], [ 'html:marquee', true ] ] );
+	assert.deepEqual( inv.sections.html.entries.map( ( e ) => [ e.id, !! e.deprecated ] ), [ [ 'html:custom-element', false ], [ 'html:div', false ], [ 'html:marquee', true ] ] );
+} );
+
+test( 'MUST FAIL: a motion function is flagged by its whole name, so a gradient or scroll-state query is not motion', () => {
+	const fns = { 'linear()': { status: 'standard' }, 'linear-gradient()': { status: 'standard' }, 'scroll()': { status: 'standard' }, 'scroll-state()': { status: 'standard' }, 'rotate3d()': { status: 'standard' }, 'translatex()': { status: 'standard' } };
+	const motion = draft( { css: { ...CSS, functions: fns } } ).sections[ 'css-function' ].entries.filter( ( e ) => e.motion ).map( ( e ) => e.id );
+	assert.deepEqual( motion.sort(), [ 'css-function:linear', 'css-function:rotate3d', 'css-function:scroll', 'css-function:translatex' ] );
 } );
 
 test( 'MUST FAIL (1.6): a planted entry in each draft-side source becomes a new inventory entry', () => {

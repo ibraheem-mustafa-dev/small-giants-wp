@@ -25,7 +25,8 @@ import { scanTags } from './intake-ast.mjs';
 const require = createRequire( import.meta.url );
 const csstree = require( 'css-tree' );
 const MDN = require( 'mdn-data/css' );
-const BCD_GLOBALS = new Set( Object.keys( require( '@mdn/browser-compat-data' ).html.global_attributes ).filter( ( k ) => '__compat' !== k ) );
+const BCD = require( '@mdn/browser-compat-data' );
+const BCD_GLOBALS = new Set( Object.keys( BCD.html.global_attributes ).filter( ( k ) => '__compat' !== k ) );
 // The draft runtime's own elements (the census reads them as constructs) and attributes (its stamping marks; `ref` and
 // `on*` are census constructs too; `key` is the runtime's list identity).
 const RUNTIME_TAG = /^(?:sc|dc|x)-|^helmet$/;
@@ -49,10 +50,54 @@ const note = ( t, id, draftId ) => {
 	t.set( id, u );
 };
 
-// The property group IDs of a CSS property, by mdn-data (a custom property is `--*`); an unknown property is its own ID.
+// The spec a URL names: its first path segment without a level (`drafts.csswg.org/css-text-4/#…` → css-text,
+// `w3c.github.io/svgwg/…` → svgwg).
+const specSlug = ( url ) => {
+	try {
+		const u = new URL( url );
+		return ( u.pathname.split( '/' ).filter( Boolean )[ 0 ] || u.hostname ).replace( /-\d+$/, '' );
+	} catch {
+		return null;
+	}
+};
+const specsOf = ( prop ) => [].concat( BCD.css.properties[ prop ]?.__compat?.spec_url || [] ).map( specSlug ).filter( Boolean );
+// Spec → the mdn-data groups of the properties it defines that sit in one group only (css-position → CSS Positioned
+// Layout), learned from the data, so a property mdn-data files under several groups can be credited to its own.
+const SPEC_GROUPS = new Map();
+for ( const [ prop, p ] of Object.entries( MDN.properties ) ) {
+	if ( 1 === p.groups?.length ) {
+		specsOf( prop ).forEach( ( s ) => SPEC_GROUPS.set( s, new Set( [ ...( SPEC_GROUPS.get( s ) || [] ), p.groups[ 0 ] ] ) ) );
+	}
+}
+// A vendor or old name → the standard property browser-compat-data records it as (`-webkit-font-smoothing` →
+// font-smooth, `-webkit-backdrop-filter` → backdrop-filter).
+const ALIAS = new Map();
+for ( const [ prop, v ] of Object.entries( BCD.css.properties ) ) {
+	for ( const s of Object.values( v.__compat?.support || {} ) ) {
+		for ( const e of [].concat( s ) ) {
+			e.alternative_name && ALIAS.set( e.alternative_name, prop );
+			e.prefix && ALIAS.set( `${ e.prefix }${ prop }`, prop );
+		}
+	}
+}
+
+// The property group IDs of a CSS property, by mdn-data (a custom property is `--*`). A property in several groups
+// counts toward the groups its own spec defines (`top` is Positioned Layout, not Anchor Positioning; `text-transform`
+// is Text, not MathML), or all of them when its spec names none. A vendor name counts as its standard property; a
+// property only browser-compat-data lists is its own ID, and one neither lists is `css-property:unlisted` (no
+// browser applies it).
 function propertyIds( prop ) {
-	const p = prop.startsWith( '--' ) ? MDN.properties[ '--*' ] : MDN.properties[ prop.toLowerCase() ];
-	return p?.groups?.length ? p.groups.map( ( g ) => `css-group:${ groupSlug( g ) }` ) : [ `css-property:${ prop.toLowerCase() }` ];
+	const name = prop.toLowerCase();
+	const p = name.startsWith( '--' ) ? MDN.properties[ '--*' ] : MDN.properties[ name ];
+	if ( ! p && ! BCD.css.properties[ name ] && ALIAS.has( name ) ) {
+		return propertyIds( ALIAS.get( name ) );
+	}
+	if ( p?.groups?.length ) {
+		const specs = specsOf( name );
+		const own = p.groups.filter( ( g ) => specs.some( ( s ) => SPEC_GROUPS.get( s )?.has( g ) ) );
+		return ( own.length ? own : p.groups ).map( ( g ) => `css-group:${ groupSlug( g ) }` );
+	}
+	return [ BCD.css.properties[ name ] || name.startsWith( '--' ) ? `css-property:${ name }` : 'css-property:unlisted' ];
 }
 
 // The pseudo-class or pseudo-element ID of a selector name: a legacy one-colon pseudo-element (`:before`), or a name
@@ -122,7 +167,7 @@ export function embedId( url, known = new Set() ) {
 			return `embed:${ h }`;
 		}
 	}
-	return `embed:${ host }`;
+	return known.has( 'embed:other' ) ? 'embed:other' : `embed:${ host }`;
 }
 
 // Every capability a declaration list uses (an inline style or a state style). A declaration whose value is bound
@@ -163,7 +208,10 @@ export function elementUsage( { tag, attrs = [], svg = null }, t, draftId, known
 		return [];
 	}
 	const custom = ! svg && lower.includes( '-' );
-	note( t, svg ? `svg:${ 'string' === typeof svg ? svg : real }` : `html:${ lower }`, draftId );
+	const svgId = svg && `svg:${ 'string' === typeof svg ? svg : real }`;
+	// An SVG element browser-compat-data does not list (an editor's draft element no browser renders) is one ID, and
+	// so is every custom element the draft defines (its tag names the draft's component, never a capability).
+	note( t, svgId ? ( known.has( 'svg:unlisted' ) && ! known.has( svgId ) ? 'svg:unlisted' : svgId ) : custom ? 'html:custom-element' : `html:${ lower }`, draftId );
 	const problems = [];
 	for ( const [ rawName, rawValue ] of attrs ) {
 		const name = REACT_PROP[ decode( String( rawName ) ) ] ?? decode( String( rawName ) );

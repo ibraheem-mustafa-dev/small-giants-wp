@@ -1,12 +1,12 @@
-# Clone coverage gap list: 1888 capabilities neither covered nor excluded
+# Clone coverage gap list: 1890 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
-| content, media and icons | 797 |
-| draft reading | 348 |
+| content, media and icons | 798 |
+| draft reading | 351 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 170 |
-| motion writer (4.0) | 165 |
+| motion writer (4.0) | 163 |
 | site and surfaces | 96 |
 | behaviour recognisers | 73 |
 | states | 60 |
@@ -314,7 +314,7 @@
 - `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave site and surfaces
 - `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave site and surfaces
 
-## html (67)
+## html (68)
 
 - `html:acronym`: <acronym> (1); has nothing; wave content, media and icons
 - `html:area`: <area> (1); has nothing; wave content, media and icons
@@ -328,6 +328,7 @@
 - `html:center`: <center> (1); has nothing; wave content, media and icons
 - `html:col`: <col> (1); has nothing; wave content, media and icons
 - `html:colgroup`: <colgroup> (1); has nothing; wave content, media and icons
+- `html:custom-element`: a custom element the draft defines (a hyphenated tag) (1); has nothing; wave draft reading
 - `html:datalist`: <datalist> (1); has nothing; wave shop, forms and data
 - `html:details`: <details> (1); has nothing; wave behaviour recognisers
 - `html:dialog`: <dialog> (1); has nothing; wave behaviour recognisers
@@ -855,7 +856,7 @@
 - `svg:use`: SVG <use> (1); has nothing; wave content, media and icons
 - `svg:view`: SVG <view> (1); has nothing; wave content, media and icons
 
-## embed (386)
+## embed (387)
 
 - `embed:23hq.com`: 23HQ embed (23hq.com) (1); has nothing; wave content, media and icons
 - `embed:3q.video`: 3Q embed (3q.video) (1); has nothing; wave content, media and icons
@@ -1087,6 +1088,7 @@
 - `embed:onsizzle.com`: Sizzle embed (onsizzle.com) (1); has nothing; wave content, media and icons
 - `embed:orbitvu.co`: Orbitvu embed (orbitvu.co) (1); has nothing; wave content, media and icons
 - `embed:origits.com`: Origits embed (origits.com) (1); has nothing; wave content, media and icons
+- `embed:other`: an embed from a host the oEmbed list does not name (1); has nothing; wave content, media and icons
 - `embed:outplayed.tv`: Outplayed.tv embed (outplayed.tv) (1); has nothing; wave content, media and icons
 - `embed:overflow.io`: Overflow embed (overflow.io) (1); has nothing; wave content, media and icons
 - `embed:oz.com`: OZ embed (oz.com) (1); has nothing; wave content, media and icons
@@ -1635,7 +1637,7 @@
 - `css-function:leader`: leader() (1); has nothing; wave draft reading
 - `css-function:light-dark`: light-dark() (1); has nothing; wave site and surfaces
 - `css-function:linear`: linear() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
-- `css-function:linear-gradient`: linear-gradient() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:linear-gradient`: linear-gradient() (1); has nothing; wave draft reading
 - `css-function:log`: log() (1); has nothing; wave draft reading
 - `css-function:matrix`: matrix() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
 - `css-function:matrix3d`: matrix3d() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
@@ -1674,7 +1676,7 @@
 - `css-function:scaley`: scaleY() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
 - `css-function:scalez`: scaleZ() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
 - `css-function:scroll`: scroll() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
-- `css-function:scroll-state`: scroll-state() (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
+- `css-function:scroll-state`: scroll-state() (1); has nothing; wave draft reading
 - `css-function:selector`: selector() (1); has nothing; wave draft reading
 - `css-function:sepia`: sepia() (1); has nothing; wave draft reading
 - `css-function:shape`: shape() (1); has nothing; wave draft reading

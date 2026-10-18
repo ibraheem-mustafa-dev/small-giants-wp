@@ -263,19 +263,23 @@ export function draftSections( { registry = loadRegistry(), css = require( 'mdn-
 		}
 	}
 	return {
-		html: [ ...new Set( tags ) ].sort().map( ( t ) => withFlag( one( `html:${ t }`, `<${ t }>` ), deprecatedIn( bcd.html.elements[ t ] ) ) ),
+		// Every custom element a draft defines is one capability: its tag names the draft's own component.
+		html: [ ...[ ...new Set( tags ) ].sort().map( ( t ) => withFlag( one( `html:${ t }`, `<${ t }>` ), deprecatedIn( bcd.html.elements[ t ] ) ) ), one( 'html:custom-element', 'a custom element the draft defines (a hyphenated tag)' ) ].sort( byId ),
 		'html-attr': htmlAttributes( bcd, attributes, hints ),
 		'input-type': kidsOf( input ).filter( ( k ) => k.startsWith( 'type_' ) ).map( ( k ) => withFlag( one( `input-type:${ k.slice( 5 ) }`, `<input type="${ k.slice( 5 ) }">` ), deprecatedIn( input[ k ] ) ) ).sort( byId ),
-		svg: kidsOf( bcd.svg.elements ).map( ( e ) => withFlag( one( `svg:${ e }`, `SVG <${ e }>`, [ 'animate', 'animateMotion', 'animateTransform', 'set', 'mpath' ].includes( e ) ), deprecatedIn( bcd.svg.elements[ e ] ) ) ).sort( byId ),
-		embed: [ ...hosts ].sort().map( ( [ h, n ] ) => one( `embed:${ h }`, `${ n } embed (${ h })` ) ),
+		// An SVG element browser-compat-data does not list (`meshgradient`, from SVG editors' drafts) is one ID.
+		svg: [ ...kidsOf( bcd.svg.elements ).map( ( e ) => withFlag( one( `svg:${ e }`, `SVG <${ e }>`, [ 'animate', 'animateMotion', 'animateTransform', 'set', 'mpath' ].includes( e ) ), deprecatedIn( bcd.svg.elements[ e ] ) ) ), one( 'svg:unlisted', 'an SVG element no browser lists' ) ].sort( byId ),
+		// A host the oEmbed list does not name (a map embed) is one ID.
+		embed: [ ...[ ...hosts ].sort().map( ( [ h, n ] ) => one( `embed:${ h }`, `${ n } embed (${ h })` ) ), one( 'embed:other', 'an embed from a host the oEmbed list does not name' ) ].sort( byId ),
 		'css-at': Object.keys( css.atRules ).sort().map( ( a ) => one( `css-at:${ a.replace( /^@/, '' ) }`, a ) ),
 		'css-media-feature': kidsOf( media ).filter( ( k ) => ! k.includes( '_' ) ).map( ( k ) => withFlag( one( `css-media-feature:${ k }`, `@media (${ k })`, 'prefers-reduced-motion' === k ), deprecatedIn( media[ k ] ) ) ).sort( byId ),
 		'css-group': grouped( groups, ( r ) => `css-group:${ groupSlug( r.g ) }`, ( r ) => `CSS properties: ${ r.g }`, ( r ) => r.prop, ( r ) => /animation|transition|motion|scroll-driven/i.test( r.g ) ),
 		'css-pseudo-class': unique( selectors.filter( ( [ k ] ) => ! k.startsWith( '::' ) ).map( ( [ k, dep ] ) => withFlag( one( `css-pseudo-class:${ name( k ) }`, k ), dep ) ) ),
 		'css-pseudo-element': unique( selectors.filter( ( [ k ] ) => k.startsWith( '::' ) ).map( ( [ k, dep ] ) => withFlag( one( `css-pseudo-element:${ name( k ) }`, k ), dep ) ) ),
 		// CSS properties mdn-data's groups do not hold (vendor and legacy ones, `-webkit-user-drag`), by browser-compat-data.
-		'css-property': kidsOf( bcdProps ).filter( ( p ) => ! css.properties[ p ] ).map( ( p ) => withFlag( one( `css-property:${ p }`, p ), deprecatedIn( bcdProps[ p ] ) ) ).sort( byId ),
-		'css-function': unique( [ ...Object.entries( css.functions ), ...grammarFunctions( css ).map( ( f ) => [ `${ f }()`, { status: 'standard' } ] ) ].map( ( [ k, v ] ) => withFlag( one( `css-function:${ k.replace( /\(\)$/, '' ).toLowerCase() }`, k, /^(?:matrix|rotate|scale|skew|translate|perspective|steps|cubic-bezier|linear|scroll|view)/i.test( k ) ), 'obsolete' === v.status ) ) ),
+		// A property neither lists is one ID (`enable-background`: no browser applies it).
+		'css-property': [ ...kidsOf( bcdProps ).filter( ( p ) => ! css.properties[ p ] ).map( ( p ) => withFlag( one( `css-property:${ p }`, p ), deprecatedIn( bcdProps[ p ] ) ) ), one( 'css-property:unlisted', 'a CSS property no browser lists' ) ].sort( byId ),
+		'css-function': unique( [ ...Object.entries( css.functions ), ...grammarFunctions( css ).map( ( f ) => [ `${ f }()`, { status: 'standard' } ] ) ].map( ( [ k, v ] ) => withFlag( one( `css-function:${ k.replace( /\(\)$/, '' ).toLowerCase() }`, k, /^(?:matrix|rotate|scale|skew|translate|perspective|steps|cubic-bezier|linear|scroll|view)(?:3d|[xyz])?(?:\(\))?$/i.test( k ) ), 'obsolete' === v.status ) ) ),
 		'css-unit': cssUnits( css, bcd ),
 		'aria-role': [ ...aria.roles.keys() ].filter( ( r ) => ! aria.roles.get( r ).abstract ).sort().map( ( r ) => one( `aria-role:${ r }`, `role="${ r }"` ) ),
 		'aria-attr': [ ...aria.aria.keys() ].sort().map( ( a ) => one( `aria-attr:${ a }`, a ) ),
