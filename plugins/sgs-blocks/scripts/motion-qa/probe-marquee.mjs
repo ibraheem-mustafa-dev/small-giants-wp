@@ -1,27 +1,30 @@
 /**
- * Spec 38A FR-38A-44: live acceptance of the shared marquee on a deployed site, against three reference drafts' marquees.
+ * Spec 38A FR-38A-44: live acceptance of the shared marquee on a deployed site.
  *
  * WHAT IT MEASURES (each check has a negative control that must come out red; a control that does not fails the run):
  *   marquee-one-runtime  `git grep` finds one marquee runtime under plugins/sgs-blocks/src (offline)
  *   marquee-range        at this width each marquee runs or stays a static row as its stored range says
- *   marquee-rate         the painted speed, measured from the set's on-screen position over time, against the draft:
- *                        a 45px/s strip; a 24s loop; a 64s loop; a 30s ticker (all within 2%).
- *                        The pitch is measured as the distance between the set and its first copy.
+ *   marquee-rate         the painted speed in px/s (translate distance of the set over time, from its on-screen
+ *                        position) against the stored speed: 45, 60, 40 and 70 px/s strips and a 50 px/s pause-control bar (all within 2%)
  *   marquee-hover        a mouse over the block runs the 45px/s strip at 0.15x (within 5%) and holds the others still
- *   marquee-touch        a touch tap holds the 24s loop still and a second tap lets it run
- *   marquee-fade         the 45px/s strip paints a mask that fades its ends over 5%
- *   marquee-pause        every running marquee has a pause button; pressing it holds the row still, pressing again lets it run
+ *   marquee-touch        tap: a touch tap holds the row still and a second tap lets it run
+ *   marquee-touch-hold   hold: a touch press held 600ms holds the row still and releasing lets it run; a quick tap never pauses
+ *   marquee-fade         the 45px/s strip paints a mask on its lane (never on the block root) that fades its ends over 5%
+ *   marquee-pause-default a marquee that does not store pauseControl has no pause button
+ *   marquee-pause        the one pause-control bar has a pause button; pressing it holds the row still, pressing again lets it run
  *   marquee-pause-visible the button sits inside the block's visible box and focusing it does not scroll the row (a
  *                        click would scroll a clipped button into view, so the press alone cannot show this)
+ *   marquee-pause-unmasked the button computes mask-image none and no ancestor of it carries a mask
  *   marquee-reduced      under prefers-reduced-motion: reduce nothing is cloned or moves
  *
  * NEGATIVE CONTROLS
  *   - one-runtime: the same search must find the runtime file itself (a search that finds nothing is not proof).
  *   - range: the control trust bar (no marquee) must never run.
- *   - rate: the 45px/s strip's reading is judged against 50px/s, and a row whose copies have `translate: none !important` forced
+ *   - rate: every strip's reading is judged against a speed 25% off its stored one, and a row whose copies have `translate: none !important` forced
  *     must fail the rate check.
  *   - hover: the rate before the pointer arrives must not pass as the hover rate.
- *   - touch / pause: the held-still judge on the running row must fail.
+ *   - touch / pause: the held-still judge on the running row must fail; a quick tap in hold mode must not pause.
+ *   - pause-unmasked: the same ancestor walk started from a child of the lane must find the lane's mask.
  *   - fade: the control trust bar must have no mask, and a fade width planted as 12 (applied by a breakpoint
  *     crossing, which makes the runtime re-read its settings) must fail the check.
  *   - rate: the row run at 1.05x its playback rate must fail the 2% judge.
@@ -56,9 +59,10 @@ const SAMPLE_MS = 1500;
 /** The drafts' marquees: what each fixture block must measure. `below` is the widest viewport it runs at. */
 export const DRAFTS = {
 	'.m515-speed': { speed: 45, hoverRate: 0.15, fade: 5, below: Infinity },
-	'.m515-loop24': { loopSeconds: 24, hoverRate: 0, touch: true, below: 1023 },
-	'.m515-loop64': { loopSeconds: 64, hoverRate: 0, below: Infinity },
-	'.m515-ticker': { loopSeconds: 30, hoverRate: 0, below: 767 },
+	'.m515-tap': { speed: 60, hoverRate: 0, touch: 'tap', below: 1023 },
+	'.m515-brands': { speed: 40, hoverRate: 0, below: Infinity },
+	'.m515-ticker': { speed: 70, hoverRate: 0, below: 767 },
+	'.m515-pause': { speed: 50, hoverRate: 0, touch: 'hold', fade: 6, pause: true, below: Infinity },
 };
 const CONTROL = '.m515-control';
 /** A trust bar with a title and a marquee at every width, edge fade 8%: the title must stay outside the moving strip. */
@@ -88,13 +92,14 @@ export function velocity( points ) {
 	return dt > 0 ? ( dx / dt ) * 1000 : 0;
 }
 
-/** True when a reading matches its draft within 2%: the speed for a px/s draft, else pitch / speed against the loop time. */
+/** True when a reading's px/s matches the stored speed within 2%. */
 export function judgeRate( draft, reading ) {
-	if ( ! reading || ! ( reading.speed > 0 ) ) return false;
-	if ( draft.speed ) return Math.abs( reading.speed - draft.speed ) <= draft.speed * TOLERANCE;
-	const seconds = reading.pitch / reading.speed;
-	return Math.abs( seconds - draft.loopSeconds ) <= draft.loopSeconds * TOLERANCE;
+	if ( ! reading || ! ( reading.speed > 0 ) || ! ( draft.speed > 0 ) ) return false;
+	return Math.abs( reading.speed - draft.speed ) <= draft.speed * TOLERANCE;
 }
+
+/** True when no element from the button up to the document root carries a mask (`chain` lists the masked ones). */
+export const judgeUnmasked = ( chain ) => Array.isArray( chain ) && 0 === chain.length;
 
 /** True when the hovered speed is the draft's hover rate times the free speed. */
 export function judgeHover( draft, free, hovered ) {
@@ -137,6 +142,22 @@ export function judgeTitle( samples ) {
 		const cut = s.clips ? [ Math.max( b[ 0 ], s.lane[ 0 ] ), Math.max( b[ 1 ], s.lane[ 1 ] ), Math.min( b[ 2 ], s.lane[ 2 ] ), Math.min( b[ 3 ], s.lane[ 3 ] ) ] : b;
 		return overlap( s.title, cut ) < 1;
 	} ) );
+}
+
+/**
+ * True when a titled bar's running layout is a title column plus a strip that fills the rest of the root: above the
+ * mobile tier the title is vertically centred on the lane (within 2px) and the lane's right edge reaches the root's
+ * content edge (within 2px of the root's right edge less its padding); at the mobile tier the title sits above the lane.
+ *
+ * @param {{root: number[], rootPad: number, lane: number[]|null, title: number[]}} s One sample.
+ * @param {number} width The viewport width.
+ */
+export function judgeTitleLayout( s, width ) {
+	if ( ! s || ! s.lane ) return false;
+	if ( width <= 767 ) return s.title[ 3 ] <= s.lane[ 1 ] + 1;
+	const centred = Math.abs( ( s.title[ 1 ] + s.title[ 3 ] ) / 2 - ( s.lane[ 1 ] + s.lane[ 3 ] ) / 2 ) <= 2;
+	const fills = Math.abs( s.lane[ 2 ] - ( s.root[ 2 ] - s.rootPad ) ) <= 2;
+	return centred && fills;
 }
 
 /** True when a marquee with per-item entrances shows every badge: it runs, has copies, and no badge is hidden. */
@@ -192,7 +213,11 @@ const MEASURE = ( [ sel, ms ] ) => new Promise( ( resolve ) => {
 		on: Boolean( root && 'on' === root.getAttribute( 'data-sgs-marquee' ) ),
 		clones: root ? root.querySelectorAll( '[data-sgs-marquee-clone]' ).length : 0,
 		pitch: set && clone ? clone.getBoundingClientRect().left - set.getBoundingClientRect().left : 0,
-		mask: root ? ( getComputedStyle( root ).maskImage || getComputedStyle( root ).webkitMaskImage || '' ) : '',
+		// The edge fade is a mask on the lane (the set's parent), never on the block root.
+		mask: ( () => {
+			const el = set ? set.parentElement : root;
+			return el ? ( getComputedStyle( el ).maskImage || getComputedStyle( el ).webkitMaskImage || '' ) : '';
+		} )(),
 	};
 	if ( ! set ) {
 		resolve( { ...base, points: [] } );
@@ -242,6 +267,8 @@ const TITLED_MEASURE = ( [ sel, n, gap ] ) => new Promise( ( resolve ) => {
 			lane: lane ? box( lane ) : null,
 			title: title ? box( title ) : [ 0, 0, 0, 0 ],
 			badges: Array.from( root.querySelectorAll( '.sgs-trust-bar__badge' ) ).map( box ),
+			root: box( root ),
+			rootPad: parseFloat( getComputedStyle( root ).paddingRight ) || 0,
 			rootMask: mask( root ),
 			laneMask: mask( lane ),
 		} );
@@ -297,8 +324,8 @@ async function liveChecks( ctx ) {
 		rep.check( 'marquee-range', { selector: sel, property: 'data-sgs-marquee="on", copies and movement', measured: { on: r.on, clones: r.clones, speed: r.speed }, expected: run ? 'running' : 'a static row', pass: run ? r.on && r.clones > 0 && r.speed > 0.5 : ! r.on && 0 === r.clones && judgeStill( r.speed ) } );
 		if ( ! run ) continue;
 
-		rep.check( 'marquee-rate', { selector: sel, property: draft.speed ? 'px/s' : 'pitch / px/s in seconds', measured: { speed: r.speed, pitch: r.pitch, seconds: r.pitch / r.speed, frames: r.frames }, expected: draft.speed ? `${ draft.speed }px/s within 2%` : `${ draft.loopSeconds }s within 2%`, pass: judgeRate( draft, r ) } );
-		if ( draft.speed ) rep.control( 'marquee-rate', { selector: sel, property: 'the same reading judged against 50px/s', measured: r.speed, expected: 'rejected', red: ! judgeRate( { speed: 50 }, r ) } );
+		rep.check( 'marquee-rate', { selector: sel, property: 'translate distance over time, px/s', measured: { speed: r.speed, pitch: r.pitch, frames: r.frames }, expected: `${ draft.speed }px/s within 2%`, pass: judgeRate( draft, r ) } );
+		rep.control( 'marquee-rate', { selector: sel, property: 'the same reading judged against a speed 25% higher', measured: r.speed, expected: 'rejected', red: ! judgeRate( { speed: draft.speed * 1.25 }, r ) } );
 		if ( draft.fade ) {
 			rep.check( 'marquee-fade', { selector: sel, property: 'computed mask-image', measured: r.mask, expected: `transparent at both ends over ${ draft.fade }%`, pass: judgeFade( r.mask, draft.fade ) } );
 		}
@@ -312,23 +339,42 @@ async function liveChecks( ctx ) {
 		rep.check( 'marquee-hover', { selector: sel, property: 'speed with a mouse over the block / free speed', measured: { free: r.speed, hovered: hovered.speed, ratio: hovered.speed / r.speed }, expected: draft.hoverRate ? `${ draft.hoverRate }x` : 'held still', pass: judgeHover( draft, r.speed, hovered.speed ) } );
 		rep.control( 'marquee-hover', { selector: sel, property: 'the free speed judged as the hovered speed', measured: r.speed, expected: 'rejected', red: ! judgeHover( draft, r.speed, r.speed ) } );
 
-		if ( draft.touch ) {
-			const tap = () => page.evaluate( ( s ) => {
-				const el = document.querySelector( s );
-				el.dispatchEvent( new PointerEvent( 'pointerdown', { bubbles: true, pointerType: 'touch', isPrimary: true } ) );
-			}, sel );
-			await tap();
+		const press = ( type ) => page.evaluate( ( [ s, kind ] ) => {
+			const el = document.querySelector( s );
+			el.dispatchEvent( new PointerEvent( kind, { bubbles: true, pointerType: 'touch', isPrimary: true } ) );
+		}, [ sel, type ] );
+		if ( 'tap' === draft.touch ) {
+			await press( 'pointerdown' );
 			await page.waitForTimeout( 200 );
 			const held = await measure( page, sel, 1000 );
-			await tap();
+			await press( 'pointerdown' );
 			await page.waitForTimeout( 200 );
 			const again = await measure( page, sel, 1000 );
 			rep.check( 'marquee-touch', { selector: sel, property: 'speed after one touch tap, then after a second', measured: { held: held.speed, again: again.speed }, expected: 'still, then running', pass: judgeStill( held.speed ) && again.speed > 0.5 } );
 			rep.control( 'marquee-touch', { selector: sel, property: 'the held-still judge on the running row', measured: again.speed, expected: 'rejected', red: ! judgeStill( again.speed ) } );
 		}
+		if ( 'hold' === draft.touch ) {
+			await press( 'pointerdown' );
+			await page.waitForTimeout( 600 );
+			const held = await measure( page, sel, 1000 );
+			await press( 'pointerup' );
+			await page.waitForTimeout( 200 );
+			const released = await measure( page, sel, 1000 );
+			rep.check( 'marquee-touch-hold', { selector: sel, property: 'speed while a touch press is held 600ms, then after release', measured: { held: held.speed, released: released.speed }, expected: 'still, then running', pass: judgeStill( held.speed ) && released.speed > 0.5 } );
+			rep.control( 'marquee-touch-hold', { selector: sel, property: 'the held-still judge on the released row', measured: released.speed, expected: 'rejected', red: ! judgeStill( released.speed ) } );
+			await press( 'pointerdown' );
+			await press( 'pointerup' );
+			await page.waitForTimeout( 600 );
+			const quick = await measure( page, sel, 1000 );
+			rep.check( 'marquee-touch-hold', { selector: sel, property: 'speed after a quick tap (down and up at once)', measured: { quick: quick.speed }, expected: 'running (a tap never pauses in hold mode)', pass: quick.speed > 0.5 } );
+		}
 
 		const button = pauseButton( page, sel );
 		const present = ( await button.count() ) > 0;
+		if ( ! draft.pause ) {
+			rep.check( 'marquee-pause-default', { selector: sel, property: 'pause buttons on a marquee that does not store pauseControl', measured: await button.count(), expected: 0, pass: ! present } );
+			continue;
+		}
 		let pressed = null;
 		let resumed = null;
 		// A click scrolls a clipped button into view, so the button's place is read first: inside the block's visible
@@ -358,6 +404,23 @@ async function liveChecks( ctx ) {
 			await page.waitForTimeout( 200 );
 			resumed = await measure( page, sel, 1000 );
 		}
+		const chain = ( fromLane ) => page.evaluate( ( [ s, lane ] ) => {
+			const root = document.querySelector( s );
+			let el = lane ? root.querySelector( '[data-sgs-marquee-set]' ) : root.querySelector( '.sgs-motion-pause' );
+			const masked = [];
+			while ( el ) {
+				const m = getComputedStyle( el ).maskImage || getComputedStyle( el ).webkitMaskImage || 'none';
+				if ( 'none' !== m ) masked.push( el.className || el.tagName );
+				el = el.parentElement;
+			}
+			return masked;
+		}, [ sel, fromLane ] );
+		if ( present ) {
+			const own = await chain( false );
+			rep.check( 'marquee-pause-unmasked', { selector: sel, property: 'mask-image on the pause button and every ancestor', measured: own, expected: 'none anywhere', pass: judgeUnmasked( own ) } );
+			const lane = await chain( true );
+			rep.control( 'marquee-pause-unmasked', { selector: sel, property: 'the same walk started from a child of the lane', measured: lane, expected: 'rejected (the lane carries the fade mask)', red: ! judgeUnmasked( lane ) } );
+		}
 		rep.check( 'marquee-pause', { selector: sel, property: 'the pause button: press, then press again', measured: { present, pressed: pressed && pressed.speed, resumed: resumed && resumed.speed }, expected: 'present, still, then running', pass: present && judgeStill( pressed.speed ) && resumed.speed > 0.5 } );
 	}
 
@@ -371,6 +434,8 @@ async function liveChecks( ctx ) {
 	const tr = await titledReading( page );
 	const last = tr[ tr.length - 1 ];
 	rep.check( 'marquee-title', { selector: TITLED, property: 'badge boxes (cut to the lane) against the title box over six samples', measured: { on: last.on, clips: last.clips, laneIsRoot: last.laneIsRoot, laneHoldsTitle: last.laneHoldsTitle, title: last.title.map( Math.round ), lane: last.lane && last.lane.map( Math.round ) }, expected: 'a clipping lane of its own; no badge area under the title', pass: last.on && judgeTitle( tr ) } );
+	rep.check( 'marquee-title-layout', { selector: TITLED, property: 'title centred on the strip and the strip filling the rest of the root (stacked at the mobile tier)', measured: { root: last.root.map( Math.round ), lane: last.lane && last.lane.map( Math.round ), title: last.title.map( Math.round ) }, expected: width > 767 ? 'title centre = lane centre; lane reaches the root edge' : 'title above the strip', pass: judgeTitleLayout( last, width ) } );
+	rep.control( 'marquee-title-layout', { selector: TITLED, property: 'the layout judge on a strip one column wide (the old four-column grid)', measured: last.lane && Math.round( last.lane[ 2 ] ), expected: 'rejected', red: width > 767 ? ! judgeTitleLayout( { ...last, lane: [ last.lane[ 0 ], last.lane[ 1 ], last.lane[ 0 ] + 314, last.lane[ 3 ] ] }, width ) : ! judgeTitleLayout( { ...last, title: [ last.title[ 0 ], last.lane[ 1 ], last.title[ 2 ], last.lane[ 1 ] + 20 ] }, width ) } );
 	rep.check( 'marquee-title-fade', { selector: TITLED, property: 'mask-image on the block root and on the lane', measured: { root: last.rootMask, lane: last.laneMask }, expected: `no mask on the root; transparent at both ends of the lane over ${ TITLED_FADE }%`, pass: ! /gradient/.test( last.rootMask ) && judgeFade( last.laneMask, TITLED_FADE ) } );
 	rep.control( 'marquee-title', { selector: TITLED, property: 'the same judge on the unclipped badge boxes', measured: { overlapPx2: Math.round( Math.max( ...tr.flatMap( ( s ) => s.badges.map( ( b ) => overlap( s.title, b ) ) ) ) ) }, expected: 'rejected (the strip does travel under the title)', red: ! judgeTitle( tr.map( ( s ) => ( { ...s, clips: false } ) ) ) } );
 	rep.control( 'marquee-title-fade', { selector: TITLED, property: 'the fade judge on the block root', measured: last.rootMask, expected: 'rejected', red: ! judgeFade( last.rootMask, TITLED_FADE ) } );
@@ -455,13 +520,14 @@ function selfTest() {
 	need( 'velocity skips the wrap', near( velocity( wrapped ), 45, 0.5 ) );
 	need( 'still', judgeStill( velocity( line( 0 ) ) ) && ! judgeStill( 45 ) );
 	need( 'rate speed', judgeRate( { speed: 45 }, { speed: 45.5, pitch: 1 } ) && ! judgeRate( { speed: 45 }, { speed: 47, pitch: 1 } ) );
-	need( 'rate seconds', judgeRate( { loopSeconds: 24 }, { speed: 50, pitch: 1200 } ) && ! judgeRate( { loopSeconds: 24 }, { speed: 40, pitch: 1200 } ) );
-	need( 'rate rejects still', ! judgeRate( { loopSeconds: 24 }, { speed: 0, pitch: 0 } ) );
+	need( 'rate rejects still', ! judgeRate( { speed: 60 }, { speed: 0, pitch: 0 } ) );
+	need( 'rate rejects a loop-time draft', ! judgeRate( { loopSeconds: 24 }, { speed: 50, pitch: 1200 } ) );
+	need( 'unmasked', judgeUnmasked( [] ) && ! judgeUnmasked( [ 'sgs-brand-strip__track' ] ) && ! judgeUnmasked( null ) );
 	need( 'hover slow', judgeHover( { hoverRate: 0.15 }, 45, 6.75 ) && ! judgeHover( { hoverRate: 0.15 }, 45, 45 ) );
 	need( 'hover stop', judgeHover( { hoverRate: 0 }, 45, 0 ) && ! judgeHover( { hoverRate: 0 }, 45, 40 ) );
 	need( 'fade', judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 5%, rgb(0, 0, 0) calc(95%), transparent 100%)', 5 ) && ! judgeFade( 'none', 5 ) );
 	need( 'fade is numeric', ! judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 15%, rgb(0, 0, 0) 85%, transparent 100%)', 5 ) && ! judgeFade( 'linear-gradient(to right, transparent 0px, rgb(0, 0, 0) 12%, rgb(0, 0, 0) 88%, transparent 100%)', 5 ) );
-	need( 'range', shouldRun( DRAFTS[ '.m515-loop24' ], 768 ) && ! shouldRun( DRAFTS[ '.m515-loop24' ], 1440 ) && ! shouldRun( DRAFTS[ '.m515-ticker' ], 768 ) );
+	need( 'range', shouldRun( DRAFTS[ '.m515-tap' ], 768 ) && ! shouldRun( DRAFTS[ '.m515-tap' ], 1440 ) && ! shouldRun( DRAFTS[ '.m515-ticker' ], 768 ) );
 	const sample = ( over ) => ( { laneIsRoot: false, laneHoldsTitle: false, clips: true, lane: [ 200, 0, 1000, 80 ], title: [ 0, 0, 180, 40 ], badges: [ [ 100, 0, 260, 60 ], [ 300, 0, 460, 60 ] ], ...over } );
 	need( 'overlap', 0 === overlap( [ 0, 0, 10, 10 ], [ 10, 0, 20, 10 ] ) && 25 === overlap( [ 0, 0, 10, 10 ], [ 5, 5, 20, 20 ] ) );
 	need( 'title clipped passes', judgeTitle( [ sample() ] ) );
@@ -469,6 +535,11 @@ function selfTest() {
 	need( 'title lane is the root fails', ! judgeTitle( [ sample( { laneIsRoot: true } ) ] ) && ! judgeTitle( [ sample( { laneHoldsTitle: true } ) ] ) );
 	need( 'title no lane or samples fails', ! judgeTitle( [ sample( { lane: null } ) ] ) && ! judgeTitle( [] ) );
 	const ok = { on: true, clones: 2, total: 18, pending: 18, hidden: 0 };
+	const lay = { root: [ 0, 0, 1000, 80 ], rootPad: 0, lane: [ 200, 10, 1000, 50 ], title: [ 0, 20, 180, 40 ] };
+	need( 'title layout fills and centres', judgeTitleLayout( lay, 1440 ) );
+	need( 'title layout rejects a narrow strip', ! judgeTitleLayout( { ...lay, lane: [ 200, 10, 514, 50 ] }, 1440 ) );
+	need( 'title layout rejects a top-aligned title', ! judgeTitleLayout( { ...lay, title: [ 0, 0, 180, 22 ] }, 1440 ) );
+	need( 'title layout stacks on mobile', judgeTitleLayout( { ...lay, title: [ 0, 0, 180, 20 ], lane: [ 0, 30, 375, 70 ] }, 375 ) && ! judgeTitleLayout( lay, 375 ) );
 	need( 'entrances visible', judgeEntrances( ok ) );
 	need( 'entrances hidden fails', ! judgeEntrances( { ...ok, hidden: 6 } ) );
 	need( 'entrances not running fails', ! judgeEntrances( { ...ok, on: false } ) && ! judgeEntrances( { ...ok, clones: 0 } ) );

@@ -909,9 +909,9 @@
         "id": "marquee",
         "effect": "marquee",
         "values": {
-         "duration": 30000,
+         "speed": 50,
          "hoverRate": 0,
-         "pauseOnTouch": true
+         "touchPause": "tap"
         }
        }
       ]

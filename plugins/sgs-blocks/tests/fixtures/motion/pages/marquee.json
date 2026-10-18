@@ -30,7 +30,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Indus: 45px/s, 0.15x on hover, 5% edge fade",
+					"content": "Brand strip: speed and hover slow-down",
 					"level": "h2"
 				}
 			},
@@ -144,8 +144,7 @@
 											"speed": 45,
 											"hoverRate": 0.15,
 											"edgeFade": true,
-											"edgeFadeWidth": 5,
-											"pauseControl": true
+											"edgeFadeWidth": 5
 										}
 									}
 								]
@@ -181,20 +180,20 @@
 					"left": "24px"
 				}
 			},
-			"className": "m515-loop24-section"
+			"className": "m515-tap-section"
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Mama's: 24s loop below 1024px, pauses on hover and touch",
+					"content": "Trust bar: tap to pause",
 					"level": "h2"
 				}
 			},
 			{
 				"name": "sgs/trust-bar",
 				"attributes": {
-					"className": "m515-loop24",
+					"className": "m515-tap",
 					"items": [
 						{
 							"icon": "check",
@@ -210,7 +209,7 @@
 						},
 						{
 							"icon": "check",
-							"label": "Free UK delivery over £35"
+							"label": "Free UK delivery over \u00a335"
 						}
 					],
 					"sgsMotion": {
@@ -222,11 +221,10 @@
 										"id": "mqm",
 										"effect": "marquee",
 										"values": {
-											"duration": 24000,
+											"speed": 60,
 											"hoverRate": 0,
-											"pauseOnTouch": true,
-											"belowBreakpoint": "tablet",
-											"pauseControl": true
+											"touchPause": "tap",
+											"belowBreakpoint": "tablet"
 										}
 									}
 								]
@@ -262,84 +260,92 @@
 					"left": "24px"
 				}
 			},
-			"className": "m515-loop64-section"
+			"className": "m515-brands-section"
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Eye Care brands: 64s loop, pauses on hover",
+					"content": "Brand strip: slow speed, hover pauses",
 					"level": "h2"
 				}
 			},
 			{
 				"name": "sgs/brand-strip",
 				"attributes": {
-					"className": "m515-loop64",
+					"className": "m515-brands",
 					"logos": [
 						{
-							"media": null,
-							"name": "Ray-Ban"
+							"media": {
+								"id": 3455,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 1",
+							"name": "Brand 1"
 						},
 						{
-							"media": null,
-							"name": "Gucci"
+							"media": {
+								"id": 3457,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 2",
+							"name": "Brand 2"
 						},
 						{
-							"media": null,
-							"name": "Oakley"
+							"media": {
+								"id": 3458,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 3",
+							"name": "Brand 3"
 						},
 						{
-							"media": null,
-							"name": "Prada"
+							"media": {
+								"id": 3459,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 4",
+							"name": "Brand 4"
 						},
 						{
-							"media": null,
-							"name": "Versace"
+							"media": {
+								"id": 3455,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/Halimahs-3.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 5",
+							"name": "Brand 5"
 						},
 						{
-							"media": null,
-							"name": "Balenciaga"
+							"media": {
+								"id": 3457,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/aesthetic-pic-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 6",
+							"name": "Brand 6"
 						},
 						{
-							"media": null,
-							"name": "Dolce & Gabbana"
+							"media": {
+								"id": 3458,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-on-bun-case-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 7",
+							"name": "Brand 7"
 						},
 						{
-							"media": null,
-							"name": "Michael Kors"
-						},
-						{
-							"media": null,
-							"name": "Carrera"
-						},
-						{
-							"media": null,
-							"name": "Polaroid"
-						},
-						{
-							"media": null,
-							"name": "Police"
-						},
-						{
-							"media": null,
-							"name": "Emporio Armani"
-						},
-						{
-							"media": null,
-							"name": "Ralph Lauren"
-						},
-						{
-							"media": null,
-							"name": "Coach"
-						},
-						{
-							"media": null,
-							"name": "Tiffany"
-						},
-						{
-							"media": null,
-							"name": "Superdry"
+							"media": {
+								"id": 3459,
+								"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+								"type": "image"
+							},
+							"alt": "Brand 8",
+							"name": "Brand 8"
 						}
 					],
 					"sgsMotion": {
@@ -351,9 +357,8 @@
 										"id": "mqe",
 										"effect": "marquee",
 										"values": {
-											"duration": 64000,
-											"hoverRate": 0,
-											"pauseControl": true
+											"speed": 40,
+											"hoverRate": 0
 										}
 									}
 								]
@@ -395,7 +400,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Eye Care ticker: 30s, mobile only",
+					"content": "Trust bar: ticker on mobile only",
 					"level": "h2"
 				}
 			},
@@ -410,11 +415,11 @@
 						},
 						{
 							"icon": "check",
-							"label": "Free UK delivery over £75, or collect in Birmingham"
+							"label": "Free UK delivery over \u00a375, or collect in Birmingham"
 						},
 						{
 							"icon": "check",
-							"label": "Prescription lenses glazed here in 7–10 days"
+							"label": "Prescription lenses glazed here in 7\u201310 days"
 						},
 						{
 							"icon": "check",
@@ -430,10 +435,9 @@
 										"id": "mqt",
 										"effect": "marquee",
 										"values": {
-											"duration": 30000,
+											"speed": 70,
 											"hoverRate": 0,
-											"belowBreakpoint": "mobile",
-											"pauseControl": true
+											"belowBreakpoint": "mobile"
 										}
 									}
 								]
@@ -475,7 +479,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Control: a trust bar with no marquee",
+					"content": "Trust bar: no marquee (control)",
 					"level": "h2"
 				}
 			},
@@ -498,7 +502,7 @@
 						},
 						{
 							"icon": "check",
-							"label": "Free UK delivery over £35"
+							"label": "Free UK delivery over \u00a335"
 						}
 					]
 				}
@@ -536,7 +540,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Titled trust bar: the title stays outside the moving strip",
+					"content": "Trust bar: titled",
 					"level": "h2"
 				}
 			},
@@ -560,7 +564,7 @@
 						},
 						{
 							"icon": "check",
-							"label": "Free UK delivery over £35"
+							"label": "Free UK delivery over \u00a335"
 						},
 						{
 							"icon": "check",
@@ -590,8 +594,89 @@
 										"values": {
 											"speed": 60,
 											"edgeFade": true,
-											"edgeFadeWidth": 8,
-											"pauseControl": false
+											"edgeFadeWidth": 8
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"layout": "stack",
+			"tagName": "section",
+			"padding": {
+				"desktop": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"tablet": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				},
+				"mobile": {
+					"top": "24px",
+					"right": "24px",
+					"bottom": "24px",
+					"left": "24px"
+				}
+			},
+			"className": "m515-pause-section"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Trust bar: pause button",
+					"level": "h2"
+				}
+			},
+			{
+				"name": "sgs/trust-bar",
+				"attributes": {
+					"className": "m515-pause",
+					"items": [
+						{
+							"icon": "check",
+							"label": "Baked fresh when you order"
+						},
+						{
+							"icon": "check",
+							"label": "Handmade in Birmingham"
+						},
+						{
+							"icon": "check",
+							"label": "Registered food business"
+						},
+						{
+							"icon": "check",
+							"label": "Free UK delivery over \u00a335"
+						}
+					],
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"effects": [
+									{
+										"id": "mqp",
+										"effect": "marquee",
+										"values": {
+											"speed": 50,
+											"hoverRate": 0,
+											"edgeFade": true,
+											"edgeFadeWidth": 6,
+											"touchPause": "hold",
+											"pauseControl": true
 										}
 									}
 								]
@@ -633,7 +718,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Marquee with a per-badge entrance: every badge and every copy stays visible",
+					"content": "Trust bar: scroll entrance does not hide badges",
 					"level": "h2"
 				}
 			},
@@ -656,7 +741,7 @@
 						},
 						{
 							"icon": "check",
-							"label": "Free UK delivery over £35"
+							"label": "Free UK delivery over \u00a335"
 						},
 						{
 							"icon": "check",

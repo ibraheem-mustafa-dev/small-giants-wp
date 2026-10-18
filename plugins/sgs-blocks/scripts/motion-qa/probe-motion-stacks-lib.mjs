@@ -16,7 +16,9 @@ import { near, parseTranslate } from './probe-motion-model-lib.mjs';
 export const PLUGIN = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
 export const LIFT = -6;
 export const SCALE = 1.04;
-export const PARALLAX_RATIO = 0.18;
+export const PARALLAX_RATIO = 0.08;
+/** The fixture's parallax clamp in px: the offset never leaves a band this wide either side of rest. */
+export const PARALLAX_CLAMP = 40;
 export const CSS_BUDGET = 100 * 1024;
 export const JS_BUDGET = 50 * 1024;
 /** Spec 38 §1.2: Tier W pages carry a named 120 KB JS allowance; the Lottie player (Tier H) a named 60 KB one, for the player alone. */
@@ -51,11 +53,17 @@ export const judgeMagnetStack = ( r ) => !! r && ! parseTranslate( r.translate )
 /** Stack (b): rotation in `transform` with scale 1.04 and translate -6px still present. */
 export const judgeTiltStack = ( r ) => !! r && rotated( r.matrix ) && near( parseFloat( r.scale ), SCALE, 0.005 ) && near( parseTranslate( r.translate ).y, LIFT, 0.5 );
 
-/** The parallax offset the page basis gives at a scrolled distance: ratio x scrolled px, rounded to 1px (fx-parallax.css). */
-export const parallaxOffset = ( scrollY, ratio = PARALLAX_RATIO ) => Math.round( ratio * scrollY );
+/** The parallax offset the view basis gives at a travel from rest: ratio x travel px, capped to the clamp either way, rounded to 1px (fx-parallax.css). */
+export const parallaxOffset = ( travel, ratio = PARALLAX_RATIO, clamp = PARALLAX_CLAMP ) => Math.round( Math.max( -clamp, Math.min( clamp, ratio * travel ) ) );
+
+/** View-basis travel in px of an element from its rest (centred in the viewport): positive once it has moved above the centre. `restTop` is the rect top less the element's own translate. */
+export const viewTravel = ( restTop, height, viewport ) => Math.round( viewport / 2 - ( restTop + height / 2 ) );
+
+/** Stack (a), proximity: the pointer is OUTSIDE the box, inside the catch area, and the magnet has pulled toward it. */
+export const judgeMagnetProximity = ( r ) => !! r && ! r.over && ! parseTranslate( r.translate ).none && parseTranslate( r.translate ).x > 2;
 
 /** Stack (c): the translate Y is the lift plus the parallax offset within 0.5px, with the tilt applied at the same time. */
-export const judgeLiftParallaxStack = ( r, expectedOffset ) => !! r && expectedOffset !== 0 && near( parseTranslate( r.translate ).y, LIFT + expectedOffset, 0.5 ) && rotated( r.matrix );
+export const judgeLiftParallaxStack = ( r, expectedOffset ) => !! r && near( parseTranslate( r.translate ).y, LIFT + expectedOffset, 0.5 ) && rotated( r.matrix );
 
 /** Stack (d): the ring, the ripple and the sheen layers present together, at most two injected layers, each aria-hidden. */
 export const judgeLayerStack = ( r ) => !! r && !! r.ring && r.ring.width > 1 && ripplePainting( r.ripple ) && sheenMoving( r.sheen ) && r.layers.length >= 2 && layersHidden( r.layers );
@@ -109,14 +117,14 @@ body { margin: 0; padding: 60px 160px 1600px; font: 16px sans-serif; }
 .card[data-sgs-mh] { --sgs-persp-self: 1100px; --sgs-tilt-max: 8deg; --sgs-tilt-lock: none; --sgs-mh-to-ty: ${ LIFT }px; }
 .m5z-b { --sgs-mh-to-s: ${ SCALE }; }
 .m5z-a, .m5z-d { --sgs-ripple-op: 0.35; }
-.m5z-c { --sgs-fx-parallax-ratio: ${ PARALLAX_RATIO }; }
+.m5z-c { --sgs-fx-parallax-ratio: ${ PARALLAX_RATIO }; --sgs-fx-parallax-clamp: ${ PARALLAX_CLAMP }px; }
 .m5z-d { --sgs-cursor-field-image: ${ IMAGE }; --sgs-ring-size: 180px; }
 .card[data-sgs-mh] { transition: --sgs-mh-ty 150ms ease-out, --sgs-mh-s 150ms ease-out; }
 .card[data-sgs-mh]:not(:hover) { transition: --sgs-mh-ty 150ms ease-out, --sgs-mh-s 150ms ease-out, --sgs-tilt-x 600ms ease-out, --sgs-tilt-y 600ms ease-out; }
 </style></head><body>
-<div><div class="btn m5z-a" data-sgs-fx="magnet sheen ripple" data-sgs-mc="translate ::after injected" data-sgs-fx-magnet-engage="over" data-sgs-fx-magnet-pull-model="normalised" data-sgs-fx-magnet-strength="10" data-sgs-fx-magnet-max-pull-y="8" data-sgs-fx-magnet-return-duration="250">${ layer( 'sheen' ) }Magnet, sheen and ripple</div></div>
+<div><div class="btn m5z-a" data-sgs-fx="magnet sheen ripple" data-sgs-mc="translate ::after injected" data-sgs-fx-magnet-engage="proximity" data-sgs-fx-magnet-pull-model="normalised" data-sgs-fx-magnet-strength="10" data-sgs-fx-magnet-max-pull-y="8" data-sgs-fx-magnet-return-duration="250">${ layer( 'sheen' ) }Magnet, sheen and ripple</div></div>
 <div class="card m5z-b" data-sgs-mh="self" data-sgs-mc="translate scale transform" data-sgs-fx="follow-pointer">Follow pointer, scale and lift</div>
-<div class="card m5z-c" data-sgs-mh="self" data-sgs-mc="translate transform" data-sgs-fx="follow-pointer parallax" data-sgs-fx-parallax-basis="page">Lift, parallax and Follow pointer</div>
+<div class="card m5z-c" data-sgs-mh="self" data-sgs-mc="translate transform" data-sgs-fx="follow-pointer parallax" data-sgs-fx-parallax-basis="view">Lift, parallax and Follow pointer</div>
 <div class="card m5z-d" data-sgs-fx="cursor-field ripple sheen" data-sgs-mc="::before ::after injected" data-sgs-cursor-field="image-reveal">${ layer( 'cursor-field-ring' ) }${ layer( 'sheen' ) }<p>Ring, ripple and sheen</p></div>
 <div class="card m5z-control">Control</div>
 <script type="importmap">${ JSON.stringify( IMPORT_MAP ) }</script>

@@ -9,21 +9,22 @@
  *
  * What it proves:
  * - the family is listed and loadable, and the mapper owns exactly the two blocks' scroll attributes;
- * - a stored duration (a custom one, or the slow, medium or fast preset) is the layer's `duration`, in seconds, never
- *   `speed`; the three acceptance fixtures (a 24 second loop that pauses on hover and touch, a 64 second desktop loop,
- *   a 30 second ticker below 768px) map to the expected layer; every fragment survives `Sgs_Motion_Document::sanitise()`
- *   untouched;
- * - a switched-off marquee consumes its inert attributes and writes no layer; a pixel fade width and a clamped
- *   duration are reported; a non-boolean is reported and left on the block;
+ * - no pace is written: the layer has only `speed` in px/s, so a stored loop time (a custom one, or a stored slow, medium
+ *   or fast preset) is reported as not convertible and consumed; the three acceptance fixtures (a 24 second loop that
+ *   pauses on hover and touch, a 64 second desktop loop, a 30 second ticker below 768px) map to the expected layer
+ *   (`hoverRate` 0 and `touchPause` tap); every fragment survives `Sgs_Motion_Document::sanitise()` untouched;
+ * - a switched-off marquee consumes its inert attributes and writes no layer; a pixel fade width and a loop time are
+ *   reported; a non-boolean is reported and left on the block;
  * - the runner removes the consumed attributes, and a second run over migrated content changes nothing.
  *
  * Planted faults (each must turn the run red; the run then exits 1). The fault is written into a TEMPORARY COPY of the
  * code under test and the test is run against the copy, so nothing in the repository changes.
- *   SGS_MOTION_MARQUEE_PLANT=duration-as-speed   a stored duration is written as a px/s speed
+ *   SGS_MOTION_MARQUEE_PLANT=duration-written    a stored loop time is written as a `duration` value
  *   SGS_MOTION_MARQUEE_PLANT=below-swap          the 768 breakpoint becomes tablet instead of mobile
  *   SGS_MOTION_MARQUEE_PLANT=hover-rate          pause on hover writes a hover rate of 1 instead of 0
- *   SGS_MOTION_MARQUEE_PLANT=clamp-lost          the 2 to 300 second clamp is dropped
- *   SGS_MOTION_MARQUEE_PLANT=invalid-value       pause on touch is written as a string
+ *   SGS_MOTION_MARQUEE_PLANT=clamp-lost          the 2 to 300 second clamp is dropped from the reported loop time
+ *   SGS_MOTION_MARQUEE_PLANT=invalid-value       touch pause is written as a boolean
+ *   SGS_MOTION_MARQUEE_PLANT=loop-time-silent    a custom loop time is no longer reported
  *
  * @package SGS\Blocks\Tests
  */
@@ -69,11 +70,12 @@ namespace {
 		$copy( __FILE__, $tmp . '/tests/php/run-motion-map-marquee-standalone.php' );
 		$mapper = '/migrate/mappers/class-sgs-motion-map-marquee.php';
 		$faults = array(
-			'duration-as-speed' => array( $mapper, "'duration' => \$this->duration(", "'speed' => \$this->duration(" ),
+			'duration-written'  => array( $mapper, "\$values = array();", "\$values = array( 'duration' => 24000 );" ),
 			'below-swap'        => array( $mapper, "768  => 'mobile',", "768  => 'tablet'," ),
-			'hover-rate'        => array( $mapper, "\$values['hoverRate']    = 0;", "\$values['hoverRate']    = 1;" ),
+			'hover-rate'        => array( $mapper, "\$values['hoverRate']  = 0;", "\$values['hoverRate']  = 1;" ),
 			'clamp-lost'        => array( $mapper, 'max( (float) self::MIN_SECONDS, min( (float) self::MAX_SECONDS, (float) $custom ) )', '(float) $custom' ),
-			'invalid-value'     => array( $mapper, "\$values['pauseOnTouch'] = true;", "\$values['pauseOnTouch'] = 'yes';" ),
+			'loop-time-silent'  => array( $mapper, "if ( is_numeric( \$custom ) && (float) \$custom > 0 ) {", "if ( false ) {" ),
+			'invalid-value'     => array( $mapper, "\$values['touchPause'] = 'tap';", "\$values['touchPause'] = true;" ),
 		);
 		if ( '' !== $plant ) {
 			if ( ! isset( $faults[ $plant ] ) ) {
@@ -205,35 +207,37 @@ namespace SGS\Blocks\Motion {
 
 	// 1. A 24 second loop that pauses on hover and on touch.
 	$mama = $mapper->map( 'sgs/brand-strip', array( 'scrolling' => true, 'scrollSpeed' => 'medium', 'scrollDuration' => 24, 'pauseOnHover' => true ) );
-	ok( array( 'duration' => 24000, 'hoverRate' => 0, 'pauseOnTouch' => true ) === values_of( $mama ), 'a 24 second brand strip is duration 24 with hover rate 0 and pause on touch (never a speed)', js( $mama ) );
-	ok( ! isset( values_of( $mama )['speed'] ) && valid( $mama['motion'] ) && sorted_copy( array( 'pauseOnHover', 'scrollDuration', 'scrollSpeed', 'scrolling' ) ) === sorted_copy( $mama['consumed'] ), 'no speed is written, the fragment is schema-valid and every attribute is consumed', js( $mama ) );
+	ok( array( 'hoverRate' => 0, 'touchPause' => 'tap' ) === values_of( $mama ), 'a 24 second brand strip writes hover rate 0 and touch pause tap, and no pace', js( $mama ) );
+	ok( array( 'scrollDuration' ) === reported_attrs( $mama ) && true === $mama['reported'][0]['consumed'] && false !== strpos( $mama['reported'][0]['reason'], 'px/s' ) && ! isset( values_of( $mama )['speed'] ) && ! isset( values_of( $mama )['duration'] ) && valid( $mama['motion'] ) && sorted_copy( array( 'pauseOnHover', 'scrollDuration', 'scrollSpeed', 'scrolling' ) ) === sorted_copy( $mama['consumed'] ), 'the 24 second loop time is reported as not convertible to px/s, no speed or duration is written, the fragment is schema-valid and every attribute is consumed', js( $mama ) );
 
 	// 2. A 64 second desktop loop pausing on hover; a 30 second ticker only below 768.
 	$eye_desktop = $mapper->map( 'sgs/trust-bar', array( 'autoScroll' => true, 'autoScrollDuration' => 64, 'autoScrollPauseOnHover' => true ) );
-	ok( array( 'duration' => 64000, 'hoverRate' => 0, 'pauseOnTouch' => true ) === values_of( $eye_desktop ) && valid( $eye_desktop['motion'] ), 'a 64 second trust bar is duration 64 pausing on hover', js( $eye_desktop ) );
+	ok( array( 'hoverRate' => 0, 'touchPause' => 'tap' ) === values_of( $eye_desktop ) && valid( $eye_desktop['motion'] ) && array( 'autoScrollDuration' ) === reported_attrs( $eye_desktop ), 'a 64 second trust bar pauses on hover and tap, writes no pace and reports the loop time', js( $eye_desktop ) );
 	$eye_ticker = $mapper->map( 'sgs/trust-bar', array( 'autoScroll' => true, 'autoScrollDuration' => 30, 'autoScrollBelow' => 768, 'autoScrollPauseOnHover' => false, 'autoScrollPauseButton' => true ) );
-	ok( array( 'duration' => 30000, 'pauseControl' => true, 'belowBreakpoint' => 'mobile' ) === values_of( $eye_ticker ) && valid( $eye_ticker['motion'] ), 'a 30 second ticker below 768 is duration 30, mobile only, with the pause button and no hover pause', js( $eye_ticker ) );
+	ok( array( 'pauseControl' => true, 'belowBreakpoint' => 'mobile' ) === values_of( $eye_ticker ) && valid( $eye_ticker['motion'] ), 'a 30 second ticker below 768 is mobile only, with the pause button, no hover pause and no pace', js( $eye_ticker ) );
 	$tablet = $mapper->map( 'sgs/trust-bar', array( 'autoScroll' => true, 'autoScrollBelow' => 1024 ) );
-	ok( 'tablet' === ( values_of( $tablet )['belowBreakpoint'] ?? '' ) && 25000 === ( values_of( $tablet )['duration'] ?? 0 ), 'autoScrollBelow 1024 is tablet; the medium trust-bar preset is 25 seconds', js( $tablet ) );
+	ok( 'tablet' === ( values_of( $tablet )['belowBreakpoint'] ?? '' ) && ! isset( values_of( $tablet )['duration'] ) && array() === reported_attrs( $tablet ), 'autoScrollBelow 1024 is tablet; an unstored preset writes and reports nothing', js( $tablet ) );
 	$always = $mapper->map( 'sgs/trust-bar', array( 'autoScroll' => true, 'autoScrollBelow' => 0, 'autoScrollSpeed' => 'slow' ) );
-	ok( ! isset( values_of( $always )['belowBreakpoint'] ) && 40000 === ( values_of( $always )['duration'] ?? 0 ), 'autoScrollBelow 0 writes no breakpoint; the slow trust-bar preset is 40 seconds' );
+	ok( ! isset( values_of( $always )['belowBreakpoint'] ) && array( 'autoScrollSpeed' ) === reported_attrs( $always ) && false !== strpos( $always['reported'][0]['reason'], '40 seconds' ), 'autoScrollBelow 0 writes no breakpoint; the stored slow trust-bar preset (40 seconds) is reported' );
 
 	// 3. Presets, direction, fade.
 	$fast = $mapper->map( 'sgs/brand-strip', array( 'scrolling' => true, 'scrollSpeed' => 'fast', 'scrollDirection' => 'right', 'fadeEdges' => true, 'fadeWidth' => 80, 'pauseOnHover' => false ) );
-	ok( array( 'duration' => 15000, 'direction' => 'right', 'edgeFade' => true ) === values_of( $fast ) && valid( $fast['motion'] ), 'a fast strip running right is 15 seconds, direction right, edge fade on, no hover pause', js( $fast ) );
-	ok( array( 'fadeWidth' ) === reported_attrs( $fast ) && true === $fast['reported'][0]['consumed'] && in_array( 'fadeWidth', $fast['consumed'], true ), 'the pixel fade width is reported (it cannot become a percentage) and consumed' );
+	ok( array( 'direction' => 'right', 'edgeFade' => true ) === values_of( $fast ) && valid( $fast['motion'] ), 'a fast strip running right is direction right, edge fade on, no hover pause, no pace', js( $fast ) );
+	ok( array( 'scrollSpeed', 'fadeWidth' ) === reported_attrs( $fast ) && false !== strpos( $fast['reported'][0]['reason'], '15 seconds' ) && true === $fast['reported'][1]['consumed'] && in_array( 'fadeWidth', $fast['consumed'], true ), 'the pixel fade width is reported (it cannot become a percentage) and consumed' );
 	$defaults = $mapper->map( 'sgs/brand-strip', array( 'scrolling' => true ) );
-	ok( array( 'duration' => 30000, 'hoverRate' => 0, 'pauseOnTouch' => true ) === values_of( $defaults ), 'a bare scrolling strip keeps the medium preset (30 seconds) and the default hover and touch pause', js( $defaults ) );
+	ok( array( 'hoverRate' => 0, 'touchPause' => 'tap' ) === values_of( $defaults ) && array() === reported_attrs( $defaults ), 'a bare scrolling strip keeps the default hover and touch pause and reports no loop time', js( $defaults ) );
 	$unknown = $mapper->map( 'sgs/brand-strip', array( 'scrolling' => true, 'scrollSpeed' => 'warp', 'pauseOnHover' => false ) );
-	ok( 25000 === ( values_of( $unknown )['duration'] ?? 0 ), 'an unknown preset ran 25 seconds' );
+	ok( array( 'scrollSpeed' ) === reported_attrs( $unknown ) && false !== strpos( $unknown['reported'][0]['reason'], '25 seconds' ) && ! isset( values_of( $unknown )['duration'] ), 'an unknown preset ran 25 seconds and is reported as such' );
 
-	// 4. Duration clamp and decimals.
+	ok( ! array_key_exists( 'touchPause', values_of( $fast ) ?? array() ) && ! array_key_exists( 'pauseOnTouch', values_of( $mama ) ), 'pause on hover off writes no touchPause, and the old boolean pauseOnTouch is never written' );
+
+	// 4. Loop time reporting and decimals.
 	$low = $mapper->map( 'sgs/brand-strip', array( 'scrolling' => true, 'scrollDuration' => 0.5, 'pauseOnHover' => false ) );
-	ok( 2000 === ( values_of( $low )['duration'] ?? 0 ) && array( 'scrollDuration' ) === reported_attrs( $low ) && valid( $low['motion'] ), 'a custom duration of 0.5 is stored as the rendered 2 and reported', js( $low ) );
+	ok( ! isset( values_of( $low )['duration'] ) && array( 'scrollDuration' ) === reported_attrs( $low ) && false !== strpos( $low['reported'][0]['reason'], 'ran 2)' ) && valid( $low['motion'] ), 'a custom duration of 0.5 is reported with the rendered 2 and writes no duration', js( $low ) );
 	$high = $mapper->map( 'sgs/trust-bar', array( 'autoScroll' => true, 'autoScrollDuration' => 9999, 'autoScrollPauseOnHover' => false ) );
-	ok( 300000 === ( values_of( $high )['duration'] ?? 0 ) && array( 'autoScrollDuration' ) === reported_attrs( $high ) && true === $high['reported'][0]['consumed'], 'a duration of 9999 is stored as the rendered 300 and reported', js( $high ) );
+	ok( ! isset( values_of( $high )['duration'] ) && array( 'autoScrollDuration' ) === reported_attrs( $high ) && true === $high['reported'][0]['consumed'] && false !== strpos( $high['reported'][0]['reason'], 'ran 300)' ), 'a duration of 9999 is reported with the rendered 300 and writes no duration', js( $high ) );
 	$decimal = $mapper->map( 'sgs/trust-bar', array( 'autoScroll' => true, 'autoScrollDuration' => 12.5, 'autoScrollPauseOnHover' => false ) );
-	ok( 12500 === ( values_of( $decimal )['duration'] ?? 0 ) && valid( $decimal['motion'] ), 'a fractional duration is kept' );
+	ok( array() === ( values_of( $decimal ) ?? array( 'x' ) ) && array( 'autoScrollDuration' ) === reported_attrs( $decimal ) && false !== strpos( $decimal['reported'][0]['reason'], '12.5 seconds' ) && valid( $decimal['motion'] ), 'a fractional duration is reported as given and the layer carries no values' );
 
 	// 5. Switched off, and a non-boolean.
 	$off = $mapper->map( 'sgs/trust-bar', array( 'autoScroll' => false, 'autoScrollBelow' => 768, 'autoScrollDuration' => 30, 'autoScrollSpeed' => 'fast' ) );
@@ -253,15 +257,15 @@ namespace SGS\Blocks\Motion {
 	) );
 	$first = $runner->migrate_content( $post );
 	$out   = parse_blocks( $first['content'] );
-	ok( $first['changed'] && 24000 === ( $out[0]['attrs']['sgsMotion']['elements']['root']['effects'][0]['values']['duration'] ?? null ) && 'mobile' === ( $out[1]['attrs']['sgsMotion']['elements']['root']['effects'][0]['values']['belowBreakpoint'] ?? null ), 'the runner writes both blocks marquee layers', js( array_column( $out, 'attrs' ) ) );
+	ok( $first['changed'] && 0 === ( $out[0]['attrs']['sgsMotion']['elements']['root']['effects'][0]['values']['hoverRate'] ?? null ) && 'tap' === ( $out[0]['attrs']['sgsMotion']['elements']['root']['effects'][0]['values']['touchPause'] ?? null ) && 'mobile' === ( $out[1]['attrs']['sgsMotion']['elements']['root']['effects'][0]['values']['belowBreakpoint'] ?? null ), 'the runner writes both blocks marquee layers', js( array_column( $out, 'attrs' ) ) );
 	ok( array( 'align', 'sgsMotion' ) === sorted_copy( array_keys( $out[0]['attrs'] ) ) && array( 'overflowMode', 'sgsMotion' ) === sorted_copy( array_keys( $out[1]['attrs'] ) ), 'the consumed attributes are removed and the unrelated ones kept', js( array_column( $out, 'attrs' ) ) );
 	ok( array( 'scrolling' => true ) === $out[2]['attrs'], 'a hero scrolling attribute is untouched' );
 	$second = $runner->migrate_content( $first['content'] );
 	ok( $second['content'] === $first['content'], 'idempotent: a second run leaves the content byte-identical' );
-	$stored = '<!-- wp:sgs/brand-strip {"scrolling":true,"scrollDuration":24,"sgsMotion":{"v":1,"elements":{"root":{"effects":[{"id":"marquee","effect":"marquee","values":{"duration":90000}}]}}}} /-->';
+	$stored = '<!-- wp:sgs/brand-strip {"scrolling":true,"scrollDuration":24,"sgsMotion":{"v":1,"elements":{"root":{"effects":[{"id":"marquee","effect":"marquee","values":{"speed":90}}]}}}} /-->';
 	$third  = $runner->migrate_content( $stored );
 	$kept   = parse_blocks( $third['content'] );
-	ok( 90000 === ( $kept[0]['attrs']['sgsMotion']['elements']['root']['effects'][0]['values']['duration'] ?? null ) && ! isset( $kept[0]['attrs']['scrollDuration'] ), 'a marquee layer already stored wins over the old duration, and the old attribute is consumed', js( $kept[0]['attrs'] ?? null ) );
+	ok( 90 === ( $kept[0]['attrs']['sgsMotion']['elements']['root']['effects'][0]['values']['speed'] ?? null ) && ! isset( $kept[0]['attrs']['scrollDuration'] ), 'a marquee layer already stored wins over the old duration, and the old attribute is consumed', js( $kept[0]['attrs'] ?? null ) );
 
 	echo "\nRESULT  $pass passed, $fail failed\n";
 	exit( $fail > 0 ? 1 : 0 );

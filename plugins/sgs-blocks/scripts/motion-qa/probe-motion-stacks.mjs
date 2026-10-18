@@ -4,10 +4,13 @@
  *
  * STACKS (the tree is tests/fixtures/motion/pages/motion-stacks.json; elements are found by marker class):
  *   stack-magnet-sheen-ripple  `.m5z-a`  a magnet translate, the sheen band moving and the ripple `::after` painting at once
+ *   stack-magnet-proximity     `.m5z-a`  the magnet (engage proximity, default 120px catch area) pulls toward a pointer still outside the
+ *                                        box, and returns to rest once the pointer leaves the catch area
  *   stack-tilt-scale-lift      `.m5z-b`  rotation in `transform` (non-zero rotateX and rotateY at a corner) with scale 1.04
  *                                        and translate -6px still present
- *   stack-lift-parallax        `.m5z-c`  the lift and the page-basis parallax offset sum to the computed translate within
- *                                        0.5px, with the tilt applied at the same time
+ *   stack-lift-parallax        `.m5z-c`  the lift and the view-basis parallax offset (ratio 0.08, clamp 40px) sum to the computed translate
+ *                                        within 0.5px, with the tilt applied at the same time: 0 offset centred in the viewport,
+ *                                        ratio x travel off-centre, never more than 40px either way
  *   stack-layers               `.m5z-d`  the cursor-field ring, the ripple and the sheen layers all present, at most two
  *                                        injected layers on the element, every layer aria-hidden with no text
  *   stack-style-custom-only              no stack element carries an inline channel declaration (custom properties only)
@@ -42,7 +45,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, firefox, webkit } from 'playwright';
-import { launchOptions, gotoThroughCheck, settleInView, parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
+import { launchOptions, gotoThroughCheck, isRest, settleInView, parseArgs, siteBase, Reporter, collectMotion, styleWritesTransform, FIXTURE_DIR } from './probe-motion-model-lib.mjs';
 import * as L from './probe-motion-stacks-lib.mjs';
 
 const BROWSERS = { chromium, firefox, webkit };
@@ -73,9 +76,9 @@ async function enter( page, box, [ fx, fy ], settle = 320 ) {
 const read = ( page, sel ) => page.evaluate( L.readComposed, { sel, gap: GAP } );
 
 /** Tilt stacks: park, enter at the top right corner, read. */
-async function cornerRead( page, sel, inset = 12 ) {
+async function cornerRead( page, sel, inset = 12, recentre = true ) {
 	await away( page );
-	const box = await reveal( page, sel );
+	const box = recentre ? await reveal( page, sel ) : await ( await page.$( sel ) ).boundingBox();
 	if ( ! box ) return null;
 	// A tilted card's corner is pulled inward, so a pointer within about 20px of an edge flickers out of :hover: read 5% in
 	// horizontally and 11.5% down, with `inset` as the floor.
@@ -123,19 +126,62 @@ async function stackTilt( page, rep ) {
 	rep.control( id, { selector: SEL.control, property: 'the control card at its top right corner through the same judge', measured: plain && { scale: plain.scale, translate: plain.translate }, expected: 'no rotation, scale 1 and no lift', red: !! plain && ! L.judgeTiltStack( plain ) } );
 }
 
+/** Park the pointer outside the box, then move it to a point 12px right of the box's right edge (inside the 120px catch area) and read. */
+async function proximityRead( page, sel ) {
+	await away( page );
+	const box = await reveal( page, sel );
+	if ( ! box ) return null;
+	const x = box.x + box.width + 12;
+	const y = box.y + box.height / 2;
+	await page.mouse.move( x + 60, y );
+	await page.mouse.move( x, y, { steps: 4 } );
+	await page.waitForTimeout( 420 );
+	const over = await page.evaluate( ( { sel: s, px, py } ) => !! document.elementFromPoint( px, py )?.closest( s ), { sel, px: x, py: y } );
+	const reading = await read( page, sel );
+	return { ...reading, over };
+}
+
+async function stackMagnetProximity( page, rep ) {
+	const id = 'stack-magnet-proximity';
+	const r = await proximityRead( page, SEL.a );
+	if ( ! r ) return rep.check( id, { selector: SEL.a, pass: null, why: 'no .m5z-a element on the page' } );
+	rep.check( id, { selector: SEL.a, property: 'computed translate with the pointer 12px outside the box (inside the default 120px catch area)', measured: { translate: r.translate, pointerOverBox: r.over }, expected: 'pointer not over the box and translate x above 2px', pass: L.judgeMagnetProximity( r ) } );
+	await away( page );
+	const rest = await read( page, SEL.a );
+	rep.check( id, { selector: SEL.a, property: 'computed translate after the pointer left the catch area, past the 250ms return', measured: rest.translate, expected: 'at rest', pass: isRest( rest.translate ) } );
+	rep.control( id, { selector: SEL.a, property: 'the pulled reading judged as over the box, then as rest', measured: r.translate, expected: 'the judge rejects both', red: ! L.judgeMagnetProximity( { ...r, over: true } ) && ! L.judgeMagnetProximity( { ...r, translate: 'none' } ) } );
+	const plain = await proximityRead( page, SEL.control );
+	rep.control( id, { selector: SEL.control, property: 'the control card with the pointer 12px outside it, read through the same judge', measured: plain && plain.translate, expected: 'no pull', red: !! plain && ! L.judgeMagnetProximity( plain ) } );
+	await away( page );
+}
+
+/** Rest-position facts of an element: the rect top less its own computed translate, its height and the viewport height. */
+const restFacts = ( sel ) => {
+	const el = document.querySelector( sel );
+	const rect = el.getBoundingClientRect();
+	const t = getComputedStyle( el ).translate;
+	const ty = t && t !== 'none' ? parseFloat( t.split( ' ' )[ 1 ] ) || 0 : 0;
+	return { restTop: rect.top - ty, height: rect.height, viewport: window.innerHeight };
+};
+
 async function stackLiftParallax( page, rep ) {
 	const id = 'stack-lift-parallax';
 	const first = await reveal( page, SEL.c );
 	if ( ! first ) return rep.check( id, { selector: SEL.c, pass: null, why: 'no .m5z-c element on the page' } );
+	// Centred in the viewport the view-basis travel is 0, so the translate is the lift alone.
+	const centred = await cornerRead( page, SEL.c, 14 );
+	rep.check( id, { selector: SEL.c, property: `computed translate y with the box centred in the viewport against lift ${ L.LIFT }px (view-basis travel 0), tilt applied`, measured: { translate: centred.translate, angles: L.decompose( centred.matrix ) }, expected: `translate y ${ L.LIFT }px within 0.5px and rotation non-zero`, pass: L.judgeLiftParallaxStack( centred, 0 ) } );
+	// Moved above the centre by 250px of scroll: travel is about 250px, the offset is ratio x travel and never passes the clamp.
 	await away( page );
-	const top = await page.evaluate( ( sel ) => document.querySelector( sel ).getBoundingClientRect().top + window.scrollY, SEL.c );
-	await page.evaluate( ( y ) => window.scrollTo( 0, y ), Math.max( 300, Math.round( top - 250 ) ) );
-	await page.waitForTimeout( 400 );
-	const r = await cornerRead( page, SEL.c, 14 );
-	const offset = L.parallaxOffset( r.scrollY );
-	rep.check( id, { selector: SEL.c, property: `computed translate y at scrollY ${ r.scrollY } against lift ${ L.LIFT }px plus ratio ${ L.PARALLAX_RATIO } x scrollY (${ offset }px), tilt applied`, measured: { translate: r.translate, angles: L.decompose( r.matrix ), scrollY: r.scrollY }, expected: `translate y ${ L.LIFT + offset }px within 0.5px and rotation non-zero`, pass: L.judgeLiftParallaxStack( r, offset ) } );
-	rep.control( id, { selector: SEL.c, property: 'the same reading against the lift alone (no parallax term)', measured: r.translate, expected: `${ L.LIFT }px, which the parallax offset must break`, red: ! L.judgeLiftParallaxStack( r, 0 ) && L.judgeLiftParallaxStack( r, offset ) } );
-	const plain = await cornerRead( page, SEL.control );
+	await page.evaluate( () => window.scrollBy( 0, 250 ) );
+	await page.waitForTimeout( 1200 );
+	const r = await cornerRead( page, SEL.c, 14, false );
+	const facts = await page.evaluate( restFacts, SEL.c );
+	const travel = L.viewTravel( facts.restTop, facts.height, facts.viewport );
+	const offset = L.parallaxOffset( travel );
+	rep.check( id, { selector: SEL.c, property: `computed translate y at view travel ${ travel }px against lift ${ L.LIFT }px plus ratio ${ L.PARALLAX_RATIO } x travel capped at ${ L.PARALLAX_CLAMP }px (${ offset }px), tilt applied`, measured: { translate: r.translate, angles: L.decompose( r.matrix ), travel }, expected: `translate y ${ L.LIFT + offset }px within 0.5px, a non-zero offset within +-${ L.PARALLAX_CLAMP }px and rotation non-zero`, pass: Math.abs( offset ) > 0 && Math.abs( offset ) <= L.PARALLAX_CLAMP && L.judgeLiftParallaxStack( r, offset ) } );
+	rep.control( id, { selector: SEL.c, property: 'the off-centre reading against the lift alone (no parallax term), then the centred reading against the off-centre offset', measured: r.translate, expected: `${ L.LIFT }px, which the parallax offset must break`, red: ! L.judgeLiftParallaxStack( r, 0 ) && L.judgeLiftParallaxStack( r, offset ) && ! L.judgeLiftParallaxStack( centred, offset ) } );
+	const plain = await cornerRead( page, SEL.control, 12, false );
 	rep.control( id, { selector: SEL.control, property: 'the control card at the same scroll position through the same judge', measured: plain && plain.translate, expected: 'no lift, no parallax, no tilt', red: !! plain && ! L.judgeLiftParallaxStack( plain, offset ) } );
 	await page.evaluate( () => window.scrollTo( 0, 0 ) );
 }
@@ -213,8 +259,12 @@ export function selfTest() {
 	want( ! L.judgeTiltStack( { ...tilt, scale: '1' } ), 'a lost scale fails' );
 	want( ! L.judgeTiltStack( { ...tilt, translate: 'none' } ), 'a lost lift fails' );
 	want( ! L.judgeTiltStack( { ...tilt, matrix: rot( 20, 20 ) } ), 'a rotation past the maximum fails' );
-	want( L.parallaxOffset( 500 ) === 90 && L.parallaxOffset( 333 ) === 60, 'the parallax offset is ratio x scroll, rounded to 1px' );
+	want( L.parallaxOffset( 250 ) === 20 && L.parallaxOffset( 333 ) === 27 && L.parallaxOffset( -250 ) === -20, 'the parallax offset is ratio x travel, rounded to 1px' );
+	want( L.parallaxOffset( 900 ) === 40 && L.parallaxOffset( -900 ) === -40 && L.parallaxOffset( 0 ) === 0, 'the parallax offset is capped at the clamp either way and 0 at rest' );
+	want( L.viewTravel( 350, 200, 900 ) === 0 && L.viewTravel( 100, 200, 900 ) === 250, 'view travel is 0 centred and positive above the centre' );
+	want( L.judgeMagnetProximity( { translate: '4px 0px', over: false } ) && ! L.judgeMagnetProximity( { translate: '4px 0px', over: true } ) && ! L.judgeMagnetProximity( { translate: 'none', over: false } ) && ! L.judgeMagnetProximity( { translate: '1px 0px', over: false } ), 'the proximity judge needs a pull with the pointer outside the box' );
 	const sum = { matrix: rot( 6, 6 ), translate: '0px 84px' };
+	want( L.judgeLiftParallaxStack( { matrix: rot( 6, 6 ), translate: '0px -6px' }, 0 ) && ! L.judgeLiftParallaxStack( { matrix: rot( 6, 6 ), translate: '0px -6px' }, 20 ), 'a centred box is the lift alone and fails a parallax term' );
 	want( L.judgeLiftParallaxStack( sum, 90 ), 'lift plus parallax within 0.5px passes' );
 	want( L.judgeLiftParallaxStack( { ...sum, translate: '0px 84.4px' }, 90 ), 'a 0.4px error passes' );
 	want( ! L.judgeLiftParallaxStack( { ...sum, translate: '0px 84.6px' }, 90 ), 'a 0.6px error fails' );
@@ -281,7 +331,7 @@ async function main() {
 				}
 				await page.waitForTimeout( 500 );
 				await settled();
-				for ( const run of [ stackMagnet, stackTilt, stackLiftParallax, stackLayers, styleCheck ] ) {
+				for ( const run of [ stackMagnet, stackMagnetProximity, stackTilt, stackLiftParallax, stackLayers, styleCheck ] ) {
 					try {
 						await run( page, rep );
 					} catch ( e ) {

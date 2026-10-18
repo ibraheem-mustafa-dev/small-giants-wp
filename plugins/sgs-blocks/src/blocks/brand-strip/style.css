@@ -120,11 +120,12 @@
 	min-width: 50vw;
 }
 
-/* ===== Item — uniform white tile =====
+/* ===== Item — uniform tile =====
  * Every tile is a FIXED-size box regardless of the logo's source aspect
  * ratio, so the row reads as a uniform grid (matches the reference brand
- * strip: equal-size rounded white cards on a coloured band, ~10px inset
- * between the logo content and the tile edge at every breakpoint). Tile
+ * strip: equal-size rounded cards on a coloured band, ~10px inset
+ * between the logo content and the tile edge at every breakpoint). The tile
+ * is transparent unless the author sets a tile colour or gradient. Tile
  * size is derived from --sgs-logo-max-height (the maxHeight attribute
  * stays the single per-instance control clients tune) × --sgs-logo-scale
  * (a UNIVERSAL responsive multiplier, 1 at desktop, reduced at tablet/
@@ -152,14 +153,14 @@
 	width: var(--sgs-tile-size);
 	height: var(--sgs-tile-size);
 	padding: var(--sgs-tile-padding, 10px);
-	background-color: var(--sgs-tile-bg, var(--wp--preset--color--surface-alt, #fff));
+	background-color: var(--sgs-tile-bg, transparent);
 	/* Gradient sibling (2026-09-04) — composites OVER background-color above;
 	 * unset falls back to "none" and paints nothing, leaving the flat colour
 	 * untouched. */
 	background-image: var(--sgs-tile-bg-gradient, none);
-	/* Clip the white fill to the PADDING box so the border sits AROUND the card,
+	/* Clip the tile fill to the PADDING box so the border sits AROUND the card,
 	 * not painted over it: the 10px border shows the band behind it (transparent
-	 * at rest) and turns gold on hover, framing the white tile rather than
+	 * at rest) and turns gold on hover, framing the tile rather than
 	 * cutting into it (Bean 2026-07-17). */
 	background-clip: padding-box;
 	border-radius: var(--sgs-tile-radius, 16px);
@@ -205,8 +206,12 @@
  * `height` (not `max-height`) is deliberate — Bean's requirement is every
  * logo renders at the EXACT SAME height regardless of source aspect ratio.
  * `max-height` only clamps oversized sources; a naturally-short logo would
- * stay short. An explicit `height` forces every logo to the identical
- * rendered height, letter-boxing width as needed — `object-fit` itself is
+ * stay short. The logo <img> is therefore a fixed BOX (width = height =
+ * the tile's content box, capped at --sgs-logo-max-height) and `object-fit`
+ * decides how the picture sits inside it: the default `contain` scales the
+ * whole logo up or down until its longer axis meets the box, so wide logos
+ * are width-limited and tall logos height-limited, uniformly sized tiles
+ * either way. `object-fit` itself is
  * now owned by the shared media-element atom layer's `.sgs-media-el` rule
  * (assets/css/media-element.css), fed by this block's own `logoFit`
  * control via the STORED_AS bridge (helpers-media-element.php); the marker
@@ -221,8 +226,9 @@
 	 * the logo stops and auto-centres with margin (Bean: "an auto-margin that
 	 * holds it… it won't extend further since height and width are locked").
 	 * The cap is what prevents a low-res logo up-scaling into pixelation. */
-	height: min(calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 10px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2), var(--sgs-logo-max-height, 180px));
-	width: auto;
+	--sgs-logo-box: min(calc(var(--sgs-tile-size) - var(--sgs-tile-padding, 10px) * 2 - var(--sgs-tile-border-thickness, 0px) * 2), var(--sgs-logo-max-height, 180px));
+	height: var(--sgs-logo-box);
+	width: var(--sgs-logo-box);
 	max-width: 100%;
 	display: block;
 }
@@ -432,7 +438,7 @@
  * themselves inherit down from root to item with no extra wiring needed. */
 
 .sgs-brand-strip__item:hover {
-	background-color: var(--sgs-tile-hover-bg, var(--sgs-tile-bg, var(--wp--preset--color--surface-alt, #fff)));
+	background-color: var(--sgs-tile-hover-bg, var(--sgs-tile-bg, transparent));
 }
 
 /* Hover overrides — the `--sgs-tile-hover-*` values are now emitted as a scoped

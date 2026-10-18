@@ -69,7 +69,7 @@
 													"id": "mag1",
 													"effect": "magnet",
 													"values": {
-														"engage": "over",
+														"engage": "proximity",
 														"pullModel": "normalised",
 														"maxPullX": 10,
 														"maxPullY": 8,
@@ -153,7 +153,7 @@
 				"name": "sgs/info-box",
 				"attributes": {
 					"heading": "Lift, parallax and Follow pointer",
-					"description": "A 6px lift and a page-basis parallax offset sum on one translate, with the tilt applied.",
+					"description": "A 6px lift and a view-basis parallax offset (ratio 0.08, clamped to 40px, resting when the box is centred in the viewport) sum on one translate, with the tilt applied.",
 					"className": "m5z-c",
 					"sgsMotion": {
 						"v": 1,
@@ -181,8 +181,9 @@
 										"id": "parallax",
 										"effect": "parallax",
 										"values": {
-											"speedRatio": 0.18,
-											"basis": "page"
+											"speedRatio": 0.08,
+											"basis": "view",
+											"clamp": 40
 										}
 									}
 								]
@@ -217,6 +218,11 @@
 						}
 					},
 					"className": "m5z-d",
+						"minHeight": {
+							"desktop": "220px",
+							"tablet": "220px",
+							"mobile": "220px"
+						},
 					"sgsMotion": {
 						"v": 1,
 						"elements": {
@@ -231,6 +237,7 @@
 											"hoverRadius": 90,
 											"radiusDuration": 400,
 											"radiusEasing": "cubic-bezier(0.16, 0.84, 0.32, 1)",
+											"image": 3457,
 											"edge": 0,
 											"washColour": "#ffffff",
 											"washOpacityStart": 0.5,
@@ -281,7 +288,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Ring, ripple and sheen",
+							"content": "Image reveal, ripple and sheen",
 							"level": "h3"
 						}
 					}

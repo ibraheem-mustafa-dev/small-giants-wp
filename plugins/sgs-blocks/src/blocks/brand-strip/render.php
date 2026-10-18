@@ -102,7 +102,7 @@ $tile_padding        = '' !== $tile_padding ? $tile_padding : '10px';
 $tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
 $tile_shape_raw      = $attributes['tileShape'] ?? 'square';
 $tile_shape          = in_array( $tile_shape_raw, array( 'square', 'circle', 'none' ), true ) ? $tile_shape_raw : 'square';
-// logoFit (contain|cover, default contain) is no longer read here — it is
+// logoFit (contain, cover, fill, scale-down or none; default contain) is no longer read here — it is
 // routed through the shared media-element atom layer (SGS_Media_Element::
 // style() below), bridged via STORED_AS so the pre-existing control keeps
 // its stored attribute name. See includes/media/atoms/object-fit.php.
@@ -311,7 +311,7 @@ if ( ! empty( $css_vars ) ) {
 // --- Media-element atom layer — object-fit for the logo <img>, routed
 // through the shared atom (supports.sgs.mediaElements in block.json) rather
 // than the block's own --sgs-logo-fit custom property. The pre-existing
-// `logoFit` control (contain|cover, default contain) stays the only UI —
+// `logoFit` control (contain, cover, fill, scale-down or none; default contain) stays the only UI —
 // STORED_AS in helpers-media-element.php bridges the atom onto it. The
 // marker classes the shared `.sgs-media-el` stylesheet rule reads are added
 // to each logo <img> below, in the logos-HTML build loop. ---

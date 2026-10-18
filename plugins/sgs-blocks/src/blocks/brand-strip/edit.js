@@ -20,9 +20,25 @@ import { generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { SourcePanel, BrandTextStylePanel } from './source-controls';
 
+const LOGO_FIT_OPTIONS = [
+	{ label: __( 'Fit (whole logo, same proportions)', 'sgs-blocks' ), value: 'contain' },
+	{ label: __( 'Fill the tile (crops the edges)', 'sgs-blocks' ), value: 'cover' },
+	{ label: __( 'Stretch to the tile (may distort)', 'sgs-blocks' ), value: 'fill' },
+	{ label: __( 'Fit, never enlarge', 'sgs-blocks' ), value: 'scale-down' },
+	{ label: __( 'Natural size', 'sgs-blocks' ), value: 'none' },
+];
+
+const LOGO_FIT_HELP = {
+	contain: __( 'The whole logo is scaled to the tile along its longer side, keeping its proportions.', 'sgs-blocks' ),
+	cover: __( 'The logo fills the whole tile and any overflow is cropped.', 'sgs-blocks' ),
+	fill: __( 'The logo is stretched to the tile shape, so it can look squashed or stretched.', 'sgs-blocks' ),
+	'scale-down': __( 'Like Fit, but a small logo is never enlarged past its own size.', 'sgs-blocks' ),
+	none: __( 'The logo keeps its own size and is cropped if it is bigger than the tile.', 'sgs-blocks' ),
+};
+
 const LOGO_OBJECT_FIT_OPTIONS = [
-	{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
-	{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+	{ label: __( 'Use the block setting', 'sgs-blocks' ), value: '' },
+	...LOGO_FIT_OPTIONS,
 ];
 
 const CAPTION_ALIGN_OPTIONS = [
@@ -90,7 +106,7 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 						'Overrides the block-wide "Logo fit" setting for this logo only.',
 						'sgs-blocks'
 					) }
-					value={ logo.objectFit || 'cover' }
+					value={ logo.objectFit || '' }
 					options={ LOGO_OBJECT_FIT_OPTIONS }
 					onChange={ ( val ) => update( 'objectFit', val ) }
 					__nextHasNoMarginBottom
@@ -264,7 +280,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			linkTarget: '_self',
 			linkRel: '',
 			_key: generateItemKey(),
-			objectFit: 'cover',
+			objectFit: '',
 		};
 	};
 
@@ -286,7 +302,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					linkTarget: '_self',
 					linkRel: '',
 					_key: generateItemKey(),
-					objectFit: 'cover',
+					objectFit: '',
 				},
 			],
 		} );
@@ -803,15 +819,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<SelectControl
 						label={ __( 'Logo fit', 'sgs-blocks' ) }
-						help={ __(
-							'Cover crops each logo to fill the tile square (matches a cropped-square reference); Contain shows the whole logo, letterboxed.',
-							'sgs-blocks'
-						) }
+						help={ LOGO_FIT_HELP[ logoFit ] || LOGO_FIT_HELP.contain }
 						value={ logoFit }
-						options={ [
-							{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
-							{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
-						] }
+						options={ LOGO_FIT_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { logoFit: val } )
 						}

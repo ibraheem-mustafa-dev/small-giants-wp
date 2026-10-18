@@ -6,14 +6,16 @@
  * `sgs/brand-strip` (`scrolling`, `scrollSpeed`, `scrollDuration`, `scrollDirection`, `fadeEdges`, `fadeWidth`,
  * `pauseOnHover`, `pauseButton`) and `sgs/trust-bar` (`autoScroll`, `autoScrollSpeed`, `autoScrollDuration`,
  * `autoScrollBelow`, `autoScrollPauseOnHover`, `autoScrollPauseButton`) each looped their items for a fixed number of
- * seconds, never at a speed in pixels per second (that needs the content-dependent track width). The loop time is
- * therefore stored in the layer's DURATION mode (`duration`, milliseconds like every stored duration), never as `speed`:
+ * seconds. The layer's only pace is `speed` in pixels per second, and a loop time becomes a speed only with the
+ * content-dependent track width, which a migration does not have. So no pace is written (the layer's default speed
+ * applies) and the stored loop time is reported and consumed:
  *
- * - the loop time is the custom duration when it is above 0, clamped 2 to 300 seconds as rendered (a clamped value is
- *   stored as rendered and reported), otherwise the slow, medium or fast preset (brand-strip 60, 30 and 15 seconds;
- *   trust-bar 40, 25 and 15; an unknown preset ran 25);
+ * - a custom loop time above 0 (`scrollDuration`, `autoScrollDuration`) is reported as not convertible to px/s; one
+ *   outside the render clamp of 2 to 300 seconds says so too;
+ * - a stored slow, medium or fast preset (`scrollSpeed`, `autoScrollSpeed`) is reported the same way, with the seconds
+ *   it ran (brand-strip 60, 30 and 15; trust-bar 40, 25 and 15; an unknown preset ran 25);
  * - `pauseOnHover` (default on) stopped the loop under a mouse and paused it for a touch: it is `hoverRate` 0 and
- *   `pauseOnTouch` true; off writes neither (hover rate 1 and no touch pause are the defaults);
+ *   `touchPause` tap; off writes neither (hover rate 1 and the layer's default touch behaviour apply);
  * - `pauseButton` and `autoScrollPauseButton` are `pauseControl`;
  * - `scrollDirection` right is `direction` right (left is the default and is not written);
  * - `autoScrollBelow` 768 is `belowBreakpoint` mobile (767px and below) and 1024 is tablet (1023px and below); the
@@ -144,16 +146,15 @@ final class Sgs_Motion_Map_Marquee implements Sgs_Motion_Mapper_Interface {
 			);
 		}
 
-		$values = array(
-			'duration' => $this->duration( $block_name, $attrs, $names, $reported ),
-		);
+		$values = array();
+		$this->report_loop_time( $block_name, $attrs, $names, $reported );
 		if ( '' !== $names['direction'] && 'right' === ( $attrs[ $names['direction'] ] ?? 'left' ) ) {
 			$values['direction'] = 'right';
 		}
 		$hover = $attrs[ $names['hover'] ] ?? true;
 		if ( true === $hover ) {
-			$values['hoverRate']    = 0;
-			$values['pauseOnTouch'] = true;
+			$values['hoverRate']  = 0;
+			$values['touchPause'] = 'tap';
 		} elseif ( false !== $hover ) {
 			$consumed   = array_values( array_diff( $consumed, array( $names['hover'] ) ) );
 			$reported[] = $this->row( $names['hover'], $hover, 'not a boolean, so the pause behaviour is not mapped and the attribute stays', false );
@@ -215,26 +216,27 @@ final class Sgs_Motion_Map_Marquee implements Sgs_Motion_Mapper_Interface {
 	}
 
 	/**
-	 * The loop time in milliseconds: the custom duration in seconds (clamped as rendered) when above 0, else the preset's.
+	 * Report the stored loop time (a custom one, or a stored preset) as not convertible to a speed in pixels per second.
 	 *
 	 * @param string                         $block_name Block name.
 	 * @param array<string,mixed>            $attrs      Stored attributes.
 	 * @param array<string,string>           $names      Attribute names by role.
 	 * @param array<int,array<string,mixed>> $reported   Reported rows (appended to).
-	 * @return int Milliseconds.
+	 * @return void
 	 */
-	private function duration( string $block_name, array $attrs, array $names, array &$reported ): int {
+	private function report_loop_time( string $block_name, array $attrs, array $names, array &$reported ): void {
 		$custom = $attrs[ $names['duration'] ] ?? 0;
 		if ( is_numeric( $custom ) && (float) $custom > 0 ) {
 			$seconds = max( (float) self::MIN_SECONDS, min( (float) self::MAX_SECONDS, (float) $custom ) );
-			if ( (float) $custom !== $seconds ) {
-				$reported[] = $this->row( $names['duration'], $custom, 'outside the render clamp of 2 to 300 seconds; stored as rendered', true );
-			}
-			return (int) round( $seconds * 1000 );
+			$clamped = (float) $custom !== $seconds ? ' (outside the render clamp of 2 to 300 seconds, so it ran ' . $seconds . ')' : '';
+			$reported[] = $this->row( $names['duration'], $custom, 'a loop time of ' . (float) $custom . ' seconds' . $clamped . ' cannot become a speed in px/s without the track width; the layer default speed applies', true );
+			return;
 		}
-		$preset = $attrs[ $names['preset'] ] ?? 'medium';
-		$seconds = is_string( $preset ) && isset( self::PRESETS[ $block_name ][ $preset ] ) ? self::PRESETS[ $block_name ][ $preset ] : self::FALLBACK_SECONDS;
-		return $seconds * 1000;
+		if ( array_key_exists( $names['preset'], $attrs ) ) {
+			$preset  = $attrs[ $names['preset'] ];
+			$seconds = is_string( $preset ) && isset( self::PRESETS[ $block_name ][ $preset ] ) ? self::PRESETS[ $block_name ][ $preset ] : self::FALLBACK_SECONDS;
+			$reported[] = $this->row( $names['preset'], $preset, 'a preset loop time of ' . $seconds . ' seconds cannot become a speed in px/s without the track width; the layer default speed applies', true );
+		}
 	}
 
 	/**

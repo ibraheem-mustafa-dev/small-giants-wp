@@ -10,7 +10,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Core and WooCommerce loop delays",
+					"content": "Post grid: cards arrive row by row",
 					"level": "h2"
 				}
 			},
@@ -28,8 +28,28 @@
 					},
 					"sgsMotion": {
 						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"preset": "entrance-fade-up",
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": "token:entrance.distance"
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0
+											}
+										}
+									}
+								}
+							}
+						},
 						"stagger": {
-							"apply": false,
+							"apply": true,
 							"offset": 0,
 							"step": 80,
 							"order": "row-first",

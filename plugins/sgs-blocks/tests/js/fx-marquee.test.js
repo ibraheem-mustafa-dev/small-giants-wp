@@ -342,53 +342,29 @@ describe( 'per-item entrances on a running marquee', () => {
 	} );
 } );
 
-describe( 'marquee duration mode', () => {
-	test( 'a stored duration is the loop time whatever the width', async () => {
-		mount( {
-			attrs: 'data-sgs-fx-marquee-duration="24" data-sgs-fx-marquee-speed="100"',
-		} );
+describe( 'marquee per-device speed', () => {
+	test( 'the custom property wins over the attribute', async () => {
+		props[ '--sgs-marquee-speed' ] = '200';
+		mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
 		await boot();
-		expect( animations[ 0 ].options.duration ).toBe( 24000 );
-		layout.set = 500;
-		resizeObservers[ 0 ].fire();
-		expect( live().pop().options.duration ).toBe( 24000 );
+		expect( animations[ 0 ].options.duration ).toBe( 2000 );
 	} );
-} );
 
-describe( 'marquee per-device duration', () => {
-	test( 'the custom property (ms or s) wins over the attribute and over speed', async () => {
+	test( 'a tier change rebuilds with the new speed', async () => {
+		mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
+		await boot();
+		expect( live()[ 0 ].options.duration ).toBe( 4000 );
+		props[ '--sgs-marquee-speed' ] = '200';
+		matching[ MOBILE ] = true;
+		query( MOBILE ).fire();
+		expect( live().pop().options.duration ).toBe( 2000 );
+	} );
+
+	test( 'NEGATIVE CONTROL: a stored loop duration is not a control any more; speed alone sets the pace', async () => {
 		props[ '--sgs-marquee-duration' ] = '12s';
 		mount( {
 			attrs: 'data-sgs-fx-marquee-duration="24" data-sgs-fx-marquee-speed="100"',
 		} );
-		await boot();
-		expect( animations[ 0 ].options.duration ).toBe( 12000 );
-	} );
-
-	test( 'milliseconds are read as milliseconds', async () => {
-		props[ '--sgs-marquee-duration' ] = '30000ms';
-		mount();
-		await boot();
-		expect( animations[ 0 ].options.duration ).toBe( 30000 );
-	} );
-
-	test( 'a tier change rebuilds with the new duration and speed', async () => {
-		mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
-		await boot();
-		expect( live()[ 0 ].options.duration ).toBe( 4000 );
-		props[ '--sgs-marquee-duration' ] = '30s';
-		matching[ MOBILE ] = true;
-		query( MOBILE ).fire();
-		expect( live().pop().options.duration ).toBe( 30000 );
-		delete props[ '--sgs-marquee-duration' ];
-		props[ '--sgs-marquee-speed' ] = '200';
-		query( TABLET ).fire();
-		expect( live().pop().options.duration ).toBe( 2000 );
-	} );
-
-	test( 'NEGATIVE CONTROL: a zero duration falls back to speed', async () => {
-		props[ '--sgs-marquee-duration' ] = '0s';
-		mount( { attrs: 'data-sgs-fx-marquee-speed="100"' } );
 		await boot();
 		expect( animations[ 0 ].options.duration ).toBe( 4000 );
 	} );
@@ -502,10 +478,10 @@ describe( 'marquee visibility', () => {
 	} );
 } );
 
-describe( 'marquee pause on touch', () => {
-	test( 'a tap pauses and the next tap resumes', async () => {
+describe( 'marquee touch pause', () => {
+	test( 'tap: a tap pauses and the next tap resumes', async () => {
 		const { root } = mount( {
-			attrs: 'data-sgs-fx-marquee-pause-on-touch="true"',
+			attrs: 'data-sgs-fx-marquee-touch-pause="tap"',
 		} );
 		await boot();
 		pointer( root, 'pointerdown', 'touch' );
@@ -514,18 +490,74 @@ describe( 'marquee pause on touch', () => {
 		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
 	} );
 
-	test( 'NEGATIVE CONTROL: a mouse press never pauses, and without the option a tap does nothing', async () => {
+	test( 'tap is the default when the attribute is absent', async () => {
+		const { root } = mount();
+		await boot();
+		pointer( root, 'pointerdown', 'touch' );
+		live().forEach( ( a ) => expect( a.playState ).toBe( 'paused' ) );
+	} );
+
+	test( 'NEGATIVE CONTROL: a mouse press never pauses, and with touch pause off a tap does nothing', async () => {
 		const { root } = mount( {
-			attrs: 'data-sgs-fx-marquee-pause-on-touch="true"',
+			attrs: 'data-sgs-fx-marquee-touch-pause="tap"',
 		} );
 		await boot();
 		pointer( root, 'pointerdown', 'mouse' );
 		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
 		animations = [];
-		const second = mount();
+		const second = mount( {
+			attrs: 'data-sgs-fx-marquee-touch-pause="off"',
+		} );
 		await boot();
 		pointer( second.root, 'pointerdown', 'touch' );
 		live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+	} );
+
+	describe( 'hold', () => {
+		beforeEach( () => jest.useFakeTimers() );
+		afterEach( () => jest.useRealTimers() );
+
+		test( 'pauses once held and resumes on release', async () => {
+			const { root } = mount( {
+				attrs: 'data-sgs-fx-marquee-touch-pause="hold"',
+			} );
+			await boot();
+			pointer( root, 'pointerdown', 'touch' );
+			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+			jest.advanceTimersByTime( 400 );
+			live().forEach( ( a ) => expect( a.playState ).toBe( 'paused' ) );
+			pointer( root, 'pointerup', 'touch' );
+			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+		} );
+
+		test( 'resumes when the gesture is cancelled', async () => {
+			const { root } = mount( {
+				attrs: 'data-sgs-fx-marquee-touch-pause="hold"',
+			} );
+			await boot();
+			pointer( root, 'pointerdown', 'touch' );
+			jest.advanceTimersByTime( 400 );
+			pointer( root, 'pointercancel', 'touch' );
+			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+		} );
+
+		test( 'NEGATIVE CONTROL: a quick tap, a cancelled scroll gesture and a mouse press never pause', async () => {
+			const { root } = mount( {
+				attrs: 'data-sgs-fx-marquee-touch-pause="hold"',
+			} );
+			await boot();
+			pointer( root, 'pointerdown', 'touch' );
+			pointer( root, 'pointerup', 'touch' );
+			jest.advanceTimersByTime( 400 );
+			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+			pointer( root, 'pointerdown', 'touch' );
+			pointer( root, 'pointercancel', 'touch' );
+			jest.advanceTimersByTime( 400 );
+			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+			pointer( root, 'pointerdown', 'mouse' );
+			jest.advanceTimersByTime( 400 );
+			live().forEach( ( a ) => expect( a.playState ).toBe( 'running' ) );
+		} );
 	} );
 } );
 

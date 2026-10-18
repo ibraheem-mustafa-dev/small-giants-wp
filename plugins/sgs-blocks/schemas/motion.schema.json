@@ -7680,6 +7680,7 @@
 				},
 				"basis": {
 					"$ref": "#/$defs/choice",
+					"description": "What the motion follows. Page moves the part for the whole page scroll and has no end position unless a clamp is set, so set a clamp (px) to stop it drifting into the next section. View is centred on the viewport at rest and symmetric: the part sits in place when it is centred and moves equally either side.",
 					"enum": [
 						"page",
 						"view"
@@ -7708,6 +7709,7 @@
 				},
 				"clamp": {
 					"$ref": "#/$defs/distance",
+					"description": "The most the part may move from its resting position, in px. Set it with the page basis, which otherwise has no end position and drifts into the next section; the view basis is already symmetric about the centred position.",
 					"minimum": 0,
 					"x-sgs-range": {
 						"min": 0,
@@ -8662,25 +8664,6 @@
 						"dataAttr": "data-sgs-fx-marquee-speed"
 					}
 				},
-				"duration": {
-					"$ref": "#/$defs/duration",
-					"description": "Loop duration, used instead of speed when a draft stores a time per loop (a stored duration cannot become px/s).",
-					"minimum": 2000,
-					"maximum": 120000,
-					"x-sgs-range": {
-						"min": 2000,
-						"max": 120000,
-						"unit": "ms"
-					},
-					"x-sgs-field": {
-						"fieldType": "duration",
-						"cssProperty": "--sgs-marquee-duration",
-						"state": "active",
-						"perDevice": true,
-						"dataAttr": "data-sgs-fx-marquee-duration",
-						"dataUnit": "s"
-					}
-				},
 				"direction": {
 					"$ref": "#/$defs/choice",
 					"enum": [
@@ -8709,14 +8692,20 @@
 						"dataAttr": "data-sgs-fx-marquee-hover-rate"
 					}
 				},
-				"pauseOnTouch": {
-					"$ref": "#/$defs/boolean",
+				"touchPause": {
+					"$ref": "#/$defs/choice",
+					"description": "What a touch does: off (nothing), tap (a tap pauses, the next tap resumes) or hold (pressed pauses, released resumes).",
+					"enum": [
+						"off",
+						"tap",
+						"hold"
+					],
 					"x-sgs-field": {
-						"fieldType": "boolean",
+						"fieldType": "choice",
 						"cssProperty": null,
 						"state": "active",
 						"perDevice": false,
-						"dataAttr": "data-sgs-fx-marquee-pause-on-touch"
+						"dataAttr": "data-sgs-fx-marquee-touch-pause"
 					}
 				},
 				"edgeFade": {
@@ -8781,17 +8770,6 @@
 					"$ref": "#/$defs/ratio",
 					"minimum": 1,
 					"maximum": 1000
-				},
-				"duration": {
-					"$ref": "#/$defs/duration",
-					"description": "Loop duration, used instead of speed when a draft stores a time per loop (a stored duration cannot become px/s).",
-					"minimum": 2000,
-					"maximum": 120000,
-					"x-sgs-range": {
-						"min": 2000,
-						"max": 120000,
-						"unit": "ms"
-					}
 				},
 				"hoverRate": {
 					"$ref": "#/$defs/ratio",

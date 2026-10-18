@@ -119,7 +119,7 @@ final class TrustBarRenderTest extends TestCase {
 		}
 	}
 
-	// ── Marquee lane (titled bar) ────────────────────────────────────────────
+	// ── Marquee lane ────────────────────────────────────────────
 
 	public function test_titled_marquee_prints_the_set_in_a_lane_beside_the_title(): void {
 		$out = $this->render( array_merge( $this->scroll_attrs(), array( 'title' => 'Accredited by' ) ) );
@@ -132,10 +132,15 @@ final class TrustBarRenderTest extends TestCase {
 		$this->assertSame( 1, substr_count( $out['html'], 'sgs-trust-bar__lane' ), 'one lane' );
 	}
 
-	public function test_untitled_marquee_and_titled_static_bar_print_no_lane(): void {
+	public function test_untitled_marquee_prints_a_lane_and_a_static_bar_prints_none(): void {
 		$untitled = $this->render( array_merge( $this->scroll_attrs(), array( 'title' => '' ) ) );
 		$this->assertStringContainsString( 'data-sgs-marquee-set', $untitled['html'], 'control: the untitled bar does print the marquee set' );
-		$this->assertStringNotContainsString( 'sgs-trust-bar__lane', $untitled['html'], 'an untitled marquee prints its set straight inside the root, as before' );
+		$this->assertStringNotContainsString( 'sgs-trust-bar__title', $untitled['html'], 'control: no title is printed' );
+		$this->assertMatchesRegularExpression(
+			'#<div class="sgs-trust-bar__lane"><div class="sgs-trust-bar__track" data-sgs-marquee-set>#',
+			$untitled['html'],
+			'an untitled marquee prints its set inside a lane too, so the edge-fade mask never covers the pause button'
+		);
 
 		$static = $this->render( array_merge( $this->circle_attrs(), array( 'title' => 'Accredited by' ) ) );
 		$this->assertStringContainsString( 'sgs-trust-bar__title', $static['html'], 'control: the static bar does print its title' );

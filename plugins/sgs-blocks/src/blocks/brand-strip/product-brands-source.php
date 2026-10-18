@@ -68,7 +68,7 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 		$hide_empty = ! isset( $attributes['brandHideEmpty'] ) || (bool) $attributes['brandHideEmpty'];
 		$link_terms = ! isset( $attributes['brandLinkToShop'] ) || (bool) $attributes['brandLinkToShop'];
 
-		$default_fit = ( isset( $attributes['logoFit'] ) && in_array( $attributes['logoFit'], array( 'contain', 'cover' ), true ) )
+		$default_fit = ( isset( $attributes['logoFit'] ) && in_array( $attributes['logoFit'], array( 'contain', 'cover', 'fill', 'scale-down', 'none' ), true ) )
 			? $attributes['logoFit']
 			: 'contain';
 

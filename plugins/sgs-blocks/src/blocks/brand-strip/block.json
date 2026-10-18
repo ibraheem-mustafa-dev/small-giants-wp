@@ -33,7 +33,7 @@
 			},
 			"collection": true,
 			"arrayContentLift": true,
-			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain|cover, default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
+			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain, cover, fill, scale-down or none; default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
 			"mediaElements": [
 				{
 					"prefix": "",
@@ -321,10 +321,14 @@
 					"objectFit": {
 						"type": "string",
 						"enum": [
+							"",
+							"contain",
 							"cover",
-							"contain"
+							"fill",
+							"scale-down",
+							"none"
 						],
-						"default": "cover",
+						"default": "",
 						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset."
 					}
 				}
@@ -546,9 +550,13 @@
 			"type": "string",
 			"enum": [
 				"contain",
-				"cover"
+				"cover",
+				"fill",
+				"scale-down",
+				"none"
 			],
-			"default": "contain"
+			"default": "contain",
+			"description": "How each logo sits in its tile: contain = whole logo scaled to the tile's longer axis keeping proportions; cover = fills the tile and crops; fill = stretches to the tile (may distort); scale-down = contain, never enlarged past natural size; none = natural size."
 		},
 		"tileBorderWidth": {
 			"type": "number",

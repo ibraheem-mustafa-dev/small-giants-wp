@@ -13,16 +13,14 @@
  *
  * Controls, each read from a custom property of the same name when the emitter writes one (the per-device fields)
  * and otherwise from the data attribute:
- *   speed          px/s; the loop time is the measured pitch divided by it, re-measured when the set or root resizes.
- *   duration       one loop's time; when above 0 it wins over speed (a stored duration cannot become px/s without
- *                  the content-dependent pitch). The emitter's `--sgs-marquee-duration` is read with `parseTime`
- *                  (ms or s); the attribute carries seconds.
+ *   speed          px/s, the one pace control; the loop time is the measured pitch divided by it, re-measured when the
+ *                  set or root resizes.
  *   direction      left, right, up or down.
  *   hoverRate      playback rate while a mouse or pen is over the block: 1 no change, 0 pauses.
- *   pauseOnTouch   a tap pauses, the next tap resumes.
+ *   touchPause     off, tap (a tap pauses, the next tap resumes; the default) or hold (paused while a finger rests on it).
  *   edgeFade       fade the two ends; edgeFadeWidth is the fade's size as a percentage of the root.
  *   belowBreakpoint always, tablet (1023px and below) or mobile (767px and below); static outside the range.
- *   pauseControl   the pause button.
+ *   pauseControl   the pause button; off by default. Hover and keyboard-focus pause do not depend on it.
  *
  * When the marquee cannot run (reduced motion, off at this device tier, outside the range, no Web Animations) nothing is cloned or animated and
  * the block keeps its static layout, so every item stays visible.
@@ -34,7 +32,6 @@
 import {
 	animateLoop,
 	onReducedMotionChange,
-	parseTime,
 	prefersReducedMotion,
 } from '@sgs/loop-control';
 /* eslint-enable import/no-unresolved */
@@ -47,6 +44,8 @@ const PREFIX = 'data-sgs-fx-marquee-';
 const IMAGE_WAIT_MS = 1500;
 const DEFAULT_SPEED = 40;
 const DEFAULT_FADE = 5;
+const TOUCH_MODES = [ 'off', 'tap', 'hold' ];
+const DEFAULT_TOUCH_PAUSE = 'tap';
 const BELOW = { tablet: '(max-width: 1023px)', mobile: '(max-width: 767px)' };
 const VERTICAL = [ 'up', 'down' ];
 const REVERSED = [ 'right', 'down' ];
@@ -62,7 +61,7 @@ function number( text ) {
  * The marquee's settings for one block root.
  *
  * @param {HTMLElement} root The element carrying the `marquee` token.
- * @return {Object} `speed`, `duration`, `direction`, `hoverRate`, `pauseOnTouch`, `edgeFade`, `edgeFadeWidth`,
+ * @return {Object} `speed`, `direction`, `hoverRate`, `touchPause`, `edgeFade`, `edgeFadeWidth`,
  *                  `below` and `pauseControl`, with the defaults filled in.
  */
 export function readMarquee( root ) {
@@ -75,19 +74,11 @@ export function readMarquee( root ) {
 	const direction = attr( 'direction' );
 	const below = attr( 'below-breakpoint' );
 	const speed = read( 'speed' );
-	const durationProp = style
-		.getPropertyValue( '--sgs-marquee-duration' )
-		.trim();
-	const durationSeconds = number( attr( 'duration' ) );
-	const duration =
-		durationProp !== ''
-			? parseTime( durationProp, 0 )
-			: ( durationSeconds || 0 ) * 1000;
+	const touchPause = attr( 'touch-pause' );
 	const hoverRate = read( 'hover-rate' );
 	const fade = read( 'edge-fade-width' );
 	return {
 		speed: speed !== null && speed > 0 ? speed : DEFAULT_SPEED,
-		duration: duration > 0 ? duration : 0,
 		direction: [ 'left', 'right', 'up', 'down' ].includes( direction )
 			? direction
 			: 'left',
@@ -95,7 +86,9 @@ export function readMarquee( root ) {
 			hoverRate !== null && hoverRate >= 0 && hoverRate < 1
 				? hoverRate
 				: 1,
-		pauseOnTouch: attr( 'pause-on-touch' ) === 'true',
+		touchPause: TOUCH_MODES.includes( touchPause )
+			? touchPause
+			: DEFAULT_TOUCH_PAUSE,
 		edgeFade: attr( 'edge-fade' ) === 'true',
 		edgeFadeWidth:
 			fade !== null && fade >= 0 && fade <= 50 ? fade : DEFAULT_FADE,
@@ -329,15 +322,12 @@ export function createMarquee( root ) {
 		fadeSize();
 		pitch = pitchOf( vertical, size );
 		state.distance = pitch;
-		state.period =
-			settings.duration > 0
-				? settings.duration
-				: Math.max( 100, ( pitch / settings.speed ) * 1000 );
+		state.period = Math.max( 100, ( pitch / settings.speed ) * 1000 );
 		if ( rebuilt ) {
 			// The new loops register before the old ones go, so the root's pause button and a visitor pause survive.
 			loops = start( {
 				hoverRate: settings.hoverRate,
-				pauseOnTouch: settings.pauseOnTouch,
+				touchPause: settings.touchPause,
 				pauseControl: settings.pauseControl,
 				label: 'Pause scrolling',
 			} );

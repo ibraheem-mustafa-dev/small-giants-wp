@@ -262,13 +262,13 @@
 	gap: inherit;
 }
 
-/* ─── Marquee lane (titled bar) ──────────────────────────────────────────────── */
+/* ─── Marquee lane ───────────────────────────────────────────────────────────── */
 /*
- * A titled bar prints its track inside `.sgs-trust-bar__lane`, a sibling of the title. The lane is not a box until the
- * marquee runs (fx-marquee.css lays it out as the flex row of copies), so the block keeps its own layout with no
- * JavaScript, under reduced motion or outside the marquee's breakpoint range. While it runs the lane takes the room
- * beside the title and clips the moving copies, so no badge slides under the title. The edge fade moves from the root
- * to the lane so it never fades the title's own edge.
+ * A marquee bar prints its track inside `.sgs-trust-bar__lane`, after the optional title. The lane is not a box until
+ * the marquee runs (fx-marquee.css lays it out as the flex row of copies), so the block keeps its own layout with no
+ * JavaScript, under reduced motion or outside the marquee's breakpoint range. While it runs the lane clips the moving
+ * copies and fx-marquee.css fades its two ends: the mask sits on the lane alone, so neither the title nor the pause
+ * button (a child of the root) is ever masked.
  */
 
 .sgs-trust-bar__lane {
@@ -282,18 +282,28 @@
 	gap: inherit;
 }
 
-.sgs-trust-bar[data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"]:has(> .sgs-trust-bar__lane) {
-	mask-image: none;
+/* A running bar without a title: the lane spans every column of a grid root. */
+.sgs-trust-bar[data-sgs-marquee="on"] > .sgs-trust-bar__lane[data-sgs-marquee-lane="on"] {
+	grid-column: 1 / -1;
 }
 
-.sgs-trust-bar[data-sgs-fx-marquee-edge-fade="true"] .sgs-trust-bar__lane[data-sgs-marquee-lane="on"] {
-	mask-image: linear-gradient(
-		var(--sgs-marquee-fade-axis, to right),
-		transparent 0,
-		#000 var(--sgs-marquee-fade-size, 5%),
-		#000 calc(100% - var(--sgs-marquee-fade-size, 5%)),
-		transparent 100%
-	);
+/* A running bar with a title: the title takes its own width, the strip takes the rest, and the title is centred on the
+ * badges. The doubled class outranks the scoped grid-template-columns rule the wrapper prints for the root's column
+ * count, which would otherwise give the title and the strip one equal column each and leave the rest empty. */
+.sgs-trust-bar.sgs-trust-bar[data-sgs-marquee="on"]:has(> .sgs-trust-bar__title):has(> .sgs-trust-bar__lane) {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+}
+
+.sgs-trust-bar[data-sgs-marquee="on"] > .sgs-trust-bar__title {
+	margin: 0;
+}
+
+@media (max-width: 767px) {
+	.sgs-trust-bar.sgs-trust-bar[data-sgs-marquee="on"]:has(> .sgs-trust-bar__title):has(> .sgs-trust-bar__lane) {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }
 
 /* ─── Overflow: drop mode ────────────────────────────────────────────────────── */
