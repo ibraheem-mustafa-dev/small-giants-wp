@@ -8,7 +8,7 @@ CONTEXT (plain English)
 - Spec 48 §10 now runs in both directions. Rows 11 (motion) and 12 (behaviour) point at the coverage map's gaps, and §10.1 holds the recogniser framework (FR-48-77) plus one requirement per Phase 4 wave: FR-48-78 motion writer (4.0), -79 modes and values with no CSS property, -80 behaviour recognisers, -81 states, -82 content, media and icons, -83 shop, forms and data, -84 site and surfaces, -85 draft reading. Each is done when `node scripts/computed-route/capabilities.mjs --gaps` lists none of its wave and `--gate` exits 0, with a planted draft that raises its row again once its writer, recogniser or reader is removed.
 
 DONE (with commits, all on `main`)
-- Phase 0, the Spec 38A motion model: built (S1 to S7; all four sites on `57d936225`, live motion QA 19/19). Bean still owes a look at the canary and a real-Safari check of canary page 5465 (LEDGER Front M). Motion cloning (FR-38A-33) is clone coverage step 4.0.
+- Phase 0, the Spec 38A motion model: built (S1 to S7; all four sites on `9f735e32c`, live motion QA 19/19; build plan archived). Bean still owes a look at the canary (LEDGER Front M). Motion cloning (FR-38A-33) is clone coverage step 4.0.
 - Phase 1, the capability inventory, coverage map, gate and draft-side usage read: built and signed off (plan steps 1.1 to 1.6).
 - Step 1.6's bulk acceptance (2026-10-18). A usage-read run on the Indus and Mama's redesign drafts found false rows and IDs no list held, fixed first in `4a28a73`:
   - A property mdn-data files under several groups counts only toward the groups its own spec defines (`text-transform` is Text, not MathML), and a vendor name counts as its standard property.
