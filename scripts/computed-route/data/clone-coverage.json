@@ -3522,11 +3522,11 @@
 			"note": "Fill reads 0 of 1 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:webkit-extensions": {
-			"excluded": {
-				"reason": "vendor, print or speech properties (Fill reads 0 of 50)",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "WebKit extensions (-webkit-line-clamp, -webkit-text-fill-color, -webkit-text-stroke, -webkit-mask, -webkit-appearance and the rest, 50 properties): common in modern designs; Fill reads none of them (re-opened by Bean 2026-10-18)"
 		},
 		"css-group:will-change": {
 			"recognise": null,
@@ -3550,11 +3550,11 @@
 			"note": "(-moz-device-pixel-ratio): the old spelling of resolution (retina image swaps); no writer"
 		},
 		"css-media-feature:-webkit-animation": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(-webkit-animation): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
+			"excluded": {
+				"reason": "(-webkit-animation): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-media-feature:-webkit-device-pixel-ratio": {
 			"recognise": null,
@@ -3578,25 +3578,25 @@
 			"note": "(-webkit-min-device-pixel-ratio): the old spelling of resolution (retina image swaps); no writer"
 		},
 		"css-media-feature:-webkit-transform-2d": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(-webkit-transform-2d): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
+			"excluded": {
+				"reason": "(-webkit-transform-2d): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-media-feature:-webkit-transform-3d": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(-webkit-transform-3d): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
+			"excluded": {
+				"reason": "(-webkit-transform-3d): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-media-feature:-webkit-transition": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "(-webkit-transition): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside"
+			"excluded": {
+				"reason": "(-webkit-transition): an old browser feature test; every current browser passes it, so the computed values Fill reads already include the styles inside",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-media-feature:any-hover": {
 			"recognise": null,
@@ -3620,11 +3620,11 @@
 			"note": "(aspect-ratio): breakpoints; draft thresholds are read from the logic only, not from CSS @media, and per-block writing is not built (FR-48-45, FR-48-50)"
 		},
 		"css-media-feature:calc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "calc: a syntax note in browser-compat-data, not a media feature"
+			"excluded": {
+				"reason": "calc: a syntax note in browser-compat-data, not a media feature",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-media-feature:color": {
 			"recognise": null,
@@ -3739,11 +3739,11 @@
 			"note": "(monochrome): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:nested-queries": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "nested-queries: a syntax note in browser-compat-data, not a media feature"
+			"excluded": {
+				"reason": "nested-queries: a syntax note in browser-compat-data, not a media feature",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-media-feature:orientation": {
 			"recognise": null,
@@ -4118,11 +4118,11 @@
 			"note": "-webkit-user-drag: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
 		},
 		"css-property:alt": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "alt: deprecated and no longer rendered"
+			"excluded": {
+				"reason": "alt: deprecated and no longer rendered",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-property:background-repeat-x": {
 			"recognise": null,
@@ -4146,18 +4146,18 @@
 			"note": "block-ellipsis: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
 		},
 		"css-property:buffered-rendering": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "buffered-rendering: deprecated and no longer rendered"
+			"excluded": {
+				"reason": "buffered-rendering: deprecated and no longer rendered",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-property:color-adjust": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "color-adjust: deprecated and no longer rendered"
+			"excluded": {
+				"reason": "color-adjust: deprecated and no longer rendered",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-property:color-interpolation": {
 			"recognise": null,
@@ -4167,11 +4167,11 @@
 			"note": "color-interpolation: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
 		},
 		"css-property:color-rendering": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "color-rendering: deprecated and no longer rendered"
+			"excluded": {
+				"reason": "color-rendering: deprecated and no longer rendered",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-property:column-rule-break": {
 			"recognise": null,
@@ -4272,11 +4272,11 @@
 			"note": "flow-tolerance: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
 		},
 		"css-property:glyph-orientation-vertical": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "glyph-orientation-vertical: deprecated and no longer rendered"
+			"excluded": {
+				"reason": "glyph-orientation-vertical: deprecated and no longer rendered",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-property:hyphenate-limit-lines": {
 			"recognise": null,
@@ -4496,11 +4496,11 @@
 			"note": "text-decoration-skip-spaces: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
 		},
 		"css-property:user-modify": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "user-modify: deprecated and no longer rendered"
+			"excluded": {
+				"reason": "user-modify: deprecated and no longer rendered",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-property:view-transition-group": {
 			"recognise": null,
@@ -4524,32 +4524,32 @@
 			"note": "wrap-inside: a vendor or legacy CSS property mdn-data's groups do not hold; Fill reads only the properties it lists"
 		},
 		"css-pseudo-class:-moz-first-node": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-moz-first-node: a Firefox or WebKit internal with no design value"
+			"excluded": {
+				"reason": "-moz-first-node: a Firefox or WebKit internal with no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-class:-moz-last-node": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-moz-last-node: a Firefox or WebKit internal with no design value"
+			"excluded": {
+				"reason": "-moz-last-node: a Firefox or WebKit internal with no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-class:-moz-only-whitespace": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-moz-only-whitespace: a Firefox or WebKit internal with no design value"
+			"excluded": {
+				"reason": "-moz-only-whitespace: a Firefox or WebKit internal with no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-class:-moz-window-inactive": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-moz-window-inactive: a Firefox or WebKit internal with no design value"
+			"excluded": {
+				"reason": "-moz-window-inactive: a Firefox or WebKit internal with no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-class:active": {
 			"recognise": null,
@@ -5140,102 +5140,102 @@
 			"note": "-moz-range-track: styles part of a form control (a range slider, progress or meter bar, number or search box); no form-field writer"
 		},
 		"css-pseudo-element:-ms-browse": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-browse: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-browse: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-check": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-check: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-check: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-clear": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-clear: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-clear: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-expand": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-expand: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-expand: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-fill": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-fill: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-fill: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-fill-lower": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-fill-lower: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-fill-lower: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-fill-upper": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-fill-upper: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-fill-upper: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-reveal": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-reveal: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-reveal: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-thumb": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-thumb: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-thumb: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-ticks-after": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-ticks-after: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-ticks-after: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-ticks-before": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-ticks-before: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-ticks-before: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-tooltip": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-tooltip: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-tooltip: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-track": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-track: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-track: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-ms-value": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "-ms-value: Internet Explorer and old Edge only; no current browser renders it"
+			"excluded": {
+				"reason": "-ms-value: Internet Explorer and old Edge only; no current browser renders it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"css-pseudo-element:-webkit-inner-spin-button": {
 			"recognise": null,
@@ -9128,25 +9128,25 @@
 			"note": "<a attributionsourceid>: element semantics (link target, list numbering, citation, date); no writer"
 		},
 		"html-attr:a.attributionsrc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<a attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<a attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:a.charset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<a charset>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<a charset>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:a.coords": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<a coords>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<a coords>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:a.download": {
 			"recognise": null,
@@ -9211,18 +9211,18 @@
 			"note": "<a rel>: element semantics (link target, list numbering, citation, date); no writer"
 		},
 		"html-attr:a.rev": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<a rev>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<a rev>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:a.shape": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<a shape>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<a shape>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:a.target": {
 			"recognise": null,
@@ -9323,11 +9323,11 @@
 			"note": "<area alt>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:area.attributionsrc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<area attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<area attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:area.coords": {
 			"recognise": null,
@@ -9365,11 +9365,11 @@
 			"note": "<area interestfor>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:area.nohref": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<area nohref>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<area nohref>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:area.ping": {
 			"recognise": null,
@@ -9544,11 +9544,11 @@
 			"note": "<body bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.bottommargin": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<body bottommargin>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<body bottommargin>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:body.leftmargin": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -9575,11 +9575,11 @@
 			"note": "<body marginwidth>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:body.rightmargin": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<body rightmargin>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<body rightmargin>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:body.text": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -9718,11 +9718,11 @@
 			"note": "<canvas height>: a presentational attribute the browser turns into aspect-ratio (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:canvas.moz-opaque": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<canvas moz-opaque>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<canvas moz-opaque>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:canvas.width": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -9744,25 +9744,25 @@
 			"note": "<center align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:col.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<col align>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<col align>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:col.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<col char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<col char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:col.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<col charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<col charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:col.span": {
 			"recognise": null,
@@ -9772,11 +9772,11 @@
 			"note": "<col span>: table structure; no table writer"
 		},
 		"html-attr:col.valign": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<col valign>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<col valign>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:col.width": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -9785,25 +9785,25 @@
 			"note": "<col width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:colgroup.align": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<colgroup align>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<colgroup align>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:colgroup.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<colgroup char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<colgroup char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:colgroup.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<colgroup charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<colgroup charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:colgroup.span": {
 			"recognise": null,
@@ -9813,18 +9813,18 @@
 			"note": "<colgroup span>: table structure; no table writer"
 		},
 		"html-attr:colgroup.valign": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<colgroup valign>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<colgroup valign>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:colgroup.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<colgroup width>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<colgroup width>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:data.value": {
 			"recognise": null,
@@ -9875,11 +9875,11 @@
 			"note": "<dialog open>: a presentational attribute the browser turns into display (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:dir.compact": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<dir compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<dir compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:div.align": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -9915,11 +9915,11 @@
 			"note": "<embed hspace>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:embed.name": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<embed name>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<embed name>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:embed.src": {
 			"recognise": null,
@@ -9948,25 +9948,25 @@
 			"note": "<embed width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:fencedframe.allow": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<fencedframe allow>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<fencedframe allow>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:fencedframe.height": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<fencedframe height>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<fencedframe height>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:fencedframe.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<fencedframe width>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<fencedframe width>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:fieldset.disabled": {
 			"recognise": null,
@@ -10078,74 +10078,74 @@
 			"note": "<form target>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:frame.frameborder": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame frameborder>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame frameborder>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frame.longdesc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame longdesc>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame longdesc>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frame.marginheight": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame marginheight>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame marginheight>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frame.marginwidth": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame marginwidth>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame marginwidth>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frame.name": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame name>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame name>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frame.noresize": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame noresize>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame noresize>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frame.scrolling": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame scrolling>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame scrolling>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frame.src": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frame src>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frame src>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frameset.cols": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frameset cols>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frameset cols>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:frameset.rows": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<frameset rows>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them"
+			"excluded": {
+				"reason": "<frameset rows>: framesets split the whole window into frames; still rendered, but no modern page or SGS site uses them",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:geolocation.autolocate": {
 			"recognise": null,
@@ -10197,32 +10197,32 @@
 			"note": "focus on load; no writer"
 		},
 		"html-attr:global.class": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census"
+			"excluded": {
+				"reason": "class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:global.containertiming": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "containertiming: performance measurement only"
+			"excluded": {
+				"reason": "containertiming: performance measurement only",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:global.containertimingignore": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "containertimingignore: performance measurement only"
+			"excluded": {
+				"reason": "containertimingignore: performance measurement only",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:global.contenteditable": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "contenteditable: makes text editable in the browser; a published site is never edited in place"
+			"excluded": {
+				"reason": "contenteditable: makes text editable in the browser; a published site is never edited in place",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:global.data": {
 			"recognise": null,
@@ -10246,11 +10246,11 @@
 			"note": "drag source; no writer"
 		},
 		"html-attr:global.elementtiming": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "elementtiming: performance measurement only"
+			"excluded": {
+				"reason": "elementtiming: performance measurement only",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:global.enterkeyhint": {
 			"recognise": null,
@@ -10357,11 +10357,11 @@
 			"note": "language of a passage; no writer"
 		},
 		"html-attr:global.nonce": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "nonce: a security token for the content security policy; generated by the server"
+			"excluded": {
+				"reason": "nonce: a security token for the content security policy; generated by the server",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:global.part": {
 			"recognise": null,
@@ -10516,11 +10516,11 @@
 			"note": "<html manifest>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:html.version": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<html version>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<html version>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:html.xmlns": {
 			"recognise": null,
@@ -10551,11 +10551,11 @@
 			"note": "<iframe allowfullscreen>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:iframe.allowpaymentrequest": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<iframe allowpaymentrequest>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<iframe allowpaymentrequest>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:iframe.allowusermedia": {
 			"recognise": null,
@@ -10565,11 +10565,11 @@
 			"note": "<iframe allowusermedia>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:iframe.browsingtopics": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<iframe browsingtopics>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<iframe browsingtopics>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:iframe.credentialless": {
 			"recognise": null,
@@ -10606,11 +10606,11 @@
 			"note": "<iframe loading>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:iframe.longdesc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<iframe longdesc>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<iframe longdesc>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:iframe.marginheight": {
 			"recognise": null,
@@ -10696,11 +10696,11 @@
 			"note": "<img alt>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:img.attributionsrc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<img attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<img attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:img.border": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -10757,18 +10757,18 @@
 			"note": "<img loading>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:img.longdesc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<img longdesc>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<img longdesc>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:img.name": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<img name>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<img name>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:img.referrerpolicy": {
 			"recognise": null,
@@ -11082,11 +11082,11 @@
 			"note": "<input type>: a presentational attribute the browser turns into appearance, direction, display, overflow-clip-margin (WHATWG presentational hints); Fill does not read appearance, direction, overflow-clip-margin"
 		},
 		"html-attr:input.usemap": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<input usemap>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<input usemap>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:input.value": {
 			"recognise": null,
@@ -11199,11 +11199,11 @@
 			"note": "<link blocking>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:link.charset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<link charset>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<link charset>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:link.color": {
 			"recognise": null,
@@ -11290,11 +11290,11 @@
 			"note": "<link rel>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:link.rev": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<link rev>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<link rev>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:link.sizes": {
 			"recognise": null,
@@ -11304,11 +11304,11 @@
 			"note": "<link sizes>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:link.target": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<link target>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<link target>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:link.type": {
 			"recognise": null,
@@ -11446,11 +11446,11 @@
 			"note": "<meta name>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:meta.scheme": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<meta scheme>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<meta scheme>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:meter.high": {
 			"recognise": null,
@@ -11544,11 +11544,11 @@
 			"note": "<object align>: a presentational attribute the browser turns into float, vertical-align (WHATWG presentational hints); Fill does not read float, vertical-align"
 		},
 		"html-attr:object.archive": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<object archive>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<object archive>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:object.border": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11557,25 +11557,25 @@
 			"note": "<object border>: a presentational attribute the browser turns into border-bottom-style, border-bottom-width, border-left-style, border-left-width, border-right-style, border-right-width, border-top-style, border-top-width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:object.classid": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<object classid>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<object classid>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:object.codebase": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<object codebase>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<object codebase>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:object.codetype": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<object codetype>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<object codetype>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:object.data": {
 			"recognise": null,
@@ -11585,11 +11585,11 @@
 			"note": "<object data>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:object.declare": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<object declare>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<object declare>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:object.form": {
 			"recognise": null,
@@ -11619,11 +11619,11 @@
 			"note": "<object name>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:object.standby": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<object standby>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<object standby>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:object.type": {
 			"recognise": null,
@@ -11640,11 +11640,11 @@
 			"note": "<object typemustmatch>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:object.usemap": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<object usemap>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<object usemap>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:object.vspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11659,11 +11659,11 @@
 			"note": "<object width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:ol.compact": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<ol compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<ol compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:ol.reversed": {
 			"recognise": null,
@@ -11756,39 +11756,39 @@
 			"note": "<p align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:param.name": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<param name>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<param name>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:param.type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<param type>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<param type>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:param.value": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<param value>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<param value>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:param.valuetype": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<param valuetype>: browser-plugin or legacy image-map plumbing; no current browser acts on it"
+			"excluded": {
+				"reason": "<param valuetype>: browser-plugin or legacy image-map plumbing; no current browser acts on it",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:pre.width": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<pre width>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<pre width>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:pre.wrap": {
 			"recognise": null,
@@ -11826,11 +11826,11 @@
 			"note": "<script async>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:script.attributionsrc": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<script attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value"
+			"excluded": {
+				"reason": "<script attributionsrc>: advertising, privacy-sandbox or payment plumbing; no design value",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:script.blocking": {
 			"recognise": null,
@@ -12029,11 +12029,11 @@
 			"note": "<style media>: document plumbing; read by intake only where a construct reader exists"
 		},
 		"html-attr:style.type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<style type>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<style type>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:table.align": {
 			"recognise": null,
@@ -12102,11 +12102,11 @@
 			"note": "<table rules>: a presentational attribute the browser turns into border-block-style, border-block-width, border-collapse, border-color, border-inline-style, border-inline-width, border-style, border-width (WHATWG presentational hints); Fill does not read border-block-style, border-block-width, border-collapse, border-color, border-inline-style, border-inline-width, border-style, border-width"
 		},
 		"html-attr:table.summary": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<table summary>: deprecated metadata with no rendering or behaviour effect in any current browser"
+			"excluded": {
+				"reason": "<table summary>: deprecated metadata with no rendering or behaviour effect in any current browser",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:table.width": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -12133,18 +12133,18 @@
 			"note": "<tbody bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tbody.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<tbody char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<tbody char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:tbody.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<tbody charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<tbody charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:tbody.height": {
 			"recognise": null,
@@ -12193,18 +12193,18 @@
 			"note": "<td bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:td.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<td char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<td char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:td.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<td charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<td charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:td.colspan": {
 			"recognise": null,
@@ -12427,18 +12427,18 @@
 			"note": "<tfoot bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tfoot.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<tfoot char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<tfoot char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:tfoot.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<tfoot charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<tfoot charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:tfoot.height": {
 			"recognise": null,
@@ -12487,18 +12487,18 @@
 			"note": "<th bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:th.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<th char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<th char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:th.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<th charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<th charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:th.colspan": {
 			"recognise": null,
@@ -12574,18 +12574,18 @@
 			"note": "<thead bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:thead.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<thead char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<thead char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:thead.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<thead charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<thead charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:thead.height": {
 			"recognise": null,
@@ -12627,18 +12627,18 @@
 			"note": "<tr bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:tr.char": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<tr char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<tr char>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:tr.charoff": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<tr charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<tr charoff>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:tr.height": {
 			"recognise": null,
@@ -12690,11 +12690,11 @@
 			"note": "<track srclang>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:ul.compact": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "<ul compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)"
+			"excluded": {
+				"reason": "<ul compact>: a deprecated layout attribute no current browser applies (no WHATWG rendering rule)",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"html-attr:ul.type": {
 			"recognise": null,
@@ -12820,11 +12820,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:acronym": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<acronym>: obsolete, rendered like <abbr> (dotted underline with its title); no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:address": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -12905,11 +12905,11 @@
 			}
 		},
 		"html:big": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<big>: obsolete, still rendered one font size larger; inline text formatting has no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:blink": {
 			"excluded": {
@@ -12959,11 +12959,11 @@
 			"note": "table structure: no table writer"
 		},
 		"html:center": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<center>: obsolete, still rendered as centred text (the user agent style sheet); no writer for it as an element (re-opened by Bean 2026-10-18)"
 		},
 		"html:cite": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13051,11 +13051,11 @@
 			"note": "native interactive element: open state and behaviour are not read"
 		},
 		"html:dir": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<dir>: obsolete, rendered like a <ul> list; no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:div": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13117,11 +13117,11 @@
 			"note": "media element: no media upload or attachment map yet (FR-48-39)"
 		},
 		"html:font": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<font>: obsolete, still rendered as inline colour, face and size (presentational hints); inline text formatting has no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:footer": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13306,11 +13306,11 @@
 			"note": "document plumbing: read by intake only where a construct reader exists"
 		},
 		"html:listing": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<listing>: obsolete, still rendered as preformatted text like <pre>; no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:main": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13332,18 +13332,19 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:marquee": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "motion writer (4.0)",
+			"waiting": "phase-0",
+			"note": "<marquee>: obsolete, still rendered as scrolling text: the motion writer (marquee effect) (re-opened by Bean 2026-10-18)"
 		},
 		"html:math": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "draft reading",
+			"note": "<math>: MathML equations, rendered by current browsers (MathML Core); not read (re-opened by Bean 2026-10-18)"
 		},
 		"html:menu": {
 			"recognise": null,
@@ -13394,11 +13395,11 @@
 			}
 		},
 		"html:nobr": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<nobr>: obsolete, still rendered without line breaks (white-space: nowrap); inline text formatting has no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:noembed": {
 			"excluded": {
@@ -13618,11 +13619,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:strike": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<strike>: obsolete, still rendered struck through; inline text formatting has no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:strong": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13747,11 +13748,11 @@
 			"note": "media element: no media upload or attachment map yet (FR-48-39)"
 		},
 		"html:tt": {
-			"excluded": {
-				"reason": "obsolete or non-HTML element",
-				"signedBy": "Bean",
-				"date": "2026-10-17"
-			}
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "<tt>: obsolete, still rendered in a monospace font; inline text formatting has no writer (re-opened by Bean 2026-10-18)"
 		},
 		"html:u": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -15981,11 +15982,11 @@
 			"note": "SVG <rect>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:script": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "exclusion candidate (awaiting Bean)",
-			"note": "a script inside SVG: never cloned"
+			"excluded": {
+				"reason": "a script inside SVG: never cloned",
+				"signedBy": "Bean",
+				"date": "2026-10-18"
+			}
 		},
 		"svg:set": {
 			"recognise": null,

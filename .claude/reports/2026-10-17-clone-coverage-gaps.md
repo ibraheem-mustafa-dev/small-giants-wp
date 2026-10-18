@@ -1,13 +1,12 @@
-# Clone coverage gap list: 1993 capabilities neither covered nor excluded
+# Clone coverage gap list: 1893 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
-| content, media and icons | 788 |
-| draft reading | 346 |
+| content, media and icons | 797 |
+| draft reading | 348 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 170 |
-| motion writer (4.0) | 168 |
-| exclusion candidate (awaiting Bean) | 112 |
+| motion writer (4.0) | 169 |
 | site and surfaces | 96 |
 | behaviour recognisers | 74 |
 | states | 60 |
@@ -320,24 +319,29 @@
 - `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave site and surfaces
 - `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave site and surfaces
 
-## html (56)
+## html (67)
 
+- `html:acronym`: <acronym> (1); has nothing; wave content, media and icons
 - `html:area`: <area> (1); has nothing; wave content, media and icons
 - `html:audio`: <audio> (1); has nothing; wave content, media and icons
 - `html:base`: <base> (1); has nothing; wave draft reading
+- `html:big`: <big> (1); has nothing; wave content, media and icons
 - `html:body`: <body> (1); has nothing; wave draft reading
 - `html:button`: <button> (1); has nothing; wave shop, forms and data
 - `html:canvas`: <canvas> (1); has nothing; wave content, media and icons
 - `html:caption`: <caption> (1); has nothing; wave content, media and icons
+- `html:center`: <center> (1); has nothing; wave content, media and icons
 - `html:col`: <col> (1); has nothing; wave content, media and icons
 - `html:colgroup`: <colgroup> (1); has nothing; wave content, media and icons
 - `html:datalist`: <datalist> (1); has nothing; wave shop, forms and data
 - `html:details`: <details> (1); has nothing; wave behaviour recognisers
 - `html:dialog`: <dialog> (1); has nothing; wave behaviour recognisers
+- `html:dir`: <dir> (1); has nothing; wave content, media and icons
 - `html:embed`: <embed> (1); has nothing; wave content, media and icons
 - `html:fieldset`: <fieldset> (1); has nothing; wave shop, forms and data
 - `html:figcaption`: <figcaption> (1); has nothing; wave content, media and icons
 - `html:figure`: <figure> (1); has nothing; wave content, media and icons
+- `html:font`: <font> (1); has nothing; wave content, media and icons
 - `html:form`: <form> (1); has nothing; wave shop, forms and data
 - `html:head`: <head> (1); has nothing; wave draft reading
 - `html:html`: <html> (1); has nothing; wave draft reading
@@ -347,10 +351,14 @@
 - `html:label`: <label> (1); has nothing; wave shop, forms and data
 - `html:legend`: <legend> (1); has nothing; wave shop, forms and data
 - `html:link`: <link> (1); has nothing; wave draft reading
+- `html:listing`: <listing> (1); has nothing; wave content, media and icons
 - `html:map`: <map> (1); has nothing; wave content, media and icons
+- `html:marquee`: <marquee> (1); has nothing; wave motion writer (4.0), waits on phase-0
+- `html:math`: <math> (1); has nothing; wave draft reading
 - `html:menu`: <menu> (1); has nothing; wave behaviour recognisers
 - `html:meta`: <meta> (1); has nothing; wave draft reading
 - `html:meter`: <meter> (1); has nothing; wave shop, forms and data
+- `html:nobr`: <nobr> (1); has nothing; wave content, media and icons
 - `html:noscript`: <noscript> (1); has nothing; wave draft reading
 - `html:object`: <object> (1); has nothing; wave content, media and icons
 - `html:optgroup`: <optgroup> (1); has nothing; wave shop, forms and data
@@ -363,6 +371,7 @@
 - `html:select`: <select> (1); has nothing; wave shop, forms and data
 - `html:slot`: <slot> (1); has nothing; wave draft reading
 - `html:source`: <source> (1); has nothing; wave content, media and icons
+- `html:strike`: <strike> (1); has nothing; wave content, media and icons
 - `html:style`: <style> (1); has nothing; wave draft reading
 - `html:summary`: <summary> (1); has nothing; wave behaviour recognisers
 - `html:svg`: <svg> (1); has nothing; wave content, media and icons
@@ -377,14 +386,12 @@
 - `html:title`: <title> (1); has nothing; wave draft reading
 - `html:tr`: <tr> (1); has nothing; wave content, media and icons
 - `html:track`: <track> (1); has nothing; wave content, media and icons
+- `html:tt`: <tt> (1); has nothing; wave content, media and icons
 - `html:video`: <video> (1); has nothing; wave content, media and icons
 
-## html-attr (459)
+## html-attr (378)
 
 - `html-attr:a.attributionsourceid`: <a attributionsourceid> (1); has nothing; wave content, media and icons
-- `html-attr:a.attributionsrc`: <a attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:a.charset`: <a charset> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:a.coords`: <a coords> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:a.download`: <a download> (1); has nothing; wave content, media and icons
 - `html-attr:a.hreflang`: <a hreflang> (1); has nothing; wave content, media and icons
 - `html-attr:a.hreftranslate`: <a hreftranslate> (1); has nothing; wave content, media and icons
@@ -393,8 +400,6 @@
 - `html-attr:a.ping`: <a ping> (1); has nothing; wave content, media and icons
 - `html-attr:a.referrerpolicy`: <a referrerpolicy> (1); has nothing; wave content, media and icons
 - `html-attr:a.rel`: <a rel> (1); has nothing; wave content, media and icons
-- `html-attr:a.rev`: <a rev> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:a.shape`: <a shape> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:a.target`: <a target> (1); has nothing; wave content, media and icons
 - `html-attr:a.type`: <a type> (1); has nothing; wave content, media and icons
 - `html-attr:applet.align`: <applet align> (1); has nothing; wave content, media and icons
@@ -409,13 +414,11 @@
 - `html-attr:applet.vspace`: <applet vspace> (1); has nothing; wave content, media and icons
 - `html-attr:applet.width`: <applet width> (1); has nothing; wave content, media and icons
 - `html-attr:area.alt`: <area alt> (1); has nothing; wave content, media and icons
-- `html-attr:area.attributionsrc`: <area attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:area.coords`: <area coords> (1); has nothing; wave content, media and icons
 - `html-attr:area.download`: <area download> (1); has nothing; wave content, media and icons
 - `html-attr:area.href`: <area href> (1); has nothing; wave content, media and icons
 - `html-attr:area.hreflang`: <area hreflang> (1); has nothing; wave content, media and icons
 - `html-attr:area.interestfor`: <area interestfor> (1); has nothing; wave content, media and icons
-- `html-attr:area.nohref`: <area nohref> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:area.ping`: <area ping> (1); has nothing; wave content, media and icons
 - `html-attr:area.referrerpolicy`: <area referrerpolicy> (1); has nothing; wave content, media and icons
 - `html-attr:area.rel`: <area rel> (1); has nothing; wave content, media and icons
@@ -438,8 +441,6 @@
 - `html-attr:basefont.face`: <basefont face> (1); has nothing; wave content, media and icons
 - `html-attr:basefont.size`: <basefont size> (1); has nothing; wave content, media and icons
 - `html-attr:blockquote.cite`: <blockquote cite> (1); has nothing; wave content, media and icons
-- `html-attr:body.bottommargin`: <body bottommargin> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:body.rightmargin`: <body rightmargin> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:br.clear`: <br clear> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:button.command`: <button command> (1); has nothing; wave shop, forms and data
 - `html-attr:button.commandfor`: <button commandfor> (1); has nothing; wave shop, forms and data
@@ -456,35 +457,20 @@
 - `html-attr:button.popovertargetaction`: <button popovertargetaction> (1); has nothing; wave shop, forms and data
 - `html-attr:button.type`: <button type> (1); has nothing; wave shop, forms and data
 - `html-attr:button.value`: <button value> (1); has nothing; wave shop, forms and data
-- `html-attr:canvas.moz-opaque`: <canvas moz-opaque> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:caption.align`: <caption align> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:col.align`: <col align> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:col.char`: <col char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:col.charoff`: <col charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:col.span`: <col span> (1); has nothing; wave content, media and icons
-- `html-attr:col.valign`: <col valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:colgroup.align`: <colgroup align> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:colgroup.char`: <colgroup char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:colgroup.charoff`: <colgroup charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:colgroup.span`: <colgroup span> (1); has nothing; wave content, media and icons
-- `html-attr:colgroup.valign`: <colgroup valign> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:colgroup.width`: <colgroup width> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:data.value`: <data value> (1); has nothing; wave content, media and icons
 - `html-attr:del.cite`: <del cite> (1); has nothing; wave content, media and icons
 - `html-attr:del.datetime`: <del datetime> (1); has nothing; wave content, media and icons
 - `html-attr:details.name`: <details name> (1); has nothing; wave behaviour recognisers
 - `html-attr:details.open`: <details open> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:dialog.closedby`: <dialog closedby> (1); has nothing; wave behaviour recognisers
-- `html-attr:dir.compact`: <dir compact> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:dl.compact`: <dl compact> (1); has nothing; wave content, media and icons
 - `html-attr:embed.align`: <embed align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:embed.height`: <embed height> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:embed.name`: <embed name> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:embed.src`: <embed src> (1); has nothing; wave content, media and icons
 - `html-attr:embed.type`: <embed type> (1); has nothing; wave content, media and icons
-- `html-attr:fencedframe.allow`: <fencedframe allow> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:fencedframe.height`: <fencedframe height> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:fencedframe.width`: <fencedframe width> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:fieldset.disabled`: <fieldset disabled> (1); has nothing; wave shop, forms and data
 - `html-attr:fieldset.form`: <fieldset form> (1); has nothing; wave shop, forms and data
 - `html-attr:fieldset.name`: <fieldset name> (1); has nothing; wave shop, forms and data
@@ -498,16 +484,6 @@
 - `html-attr:form.novalidate`: <form novalidate> (1); has nothing; wave shop, forms and data
 - `html-attr:form.rel`: <form rel> (1); has nothing; wave shop, forms and data
 - `html-attr:form.target`: <form target> (1); has nothing; wave shop, forms and data
-- `html-attr:frame.frameborder`: <frame frameborder> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frame.longdesc`: <frame longdesc> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frame.marginheight`: <frame marginheight> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frame.marginwidth`: <frame marginwidth> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frame.name`: <frame name> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frame.noresize`: <frame noresize> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frame.scrolling`: <frame scrolling> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frame.src`: <frame src> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frameset.cols`: <frameset cols> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:frameset.rows`: <frameset rows> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:geolocation.autolocate`: <geolocation autolocate> (1); has nothing; wave content, media and icons
 - `html-attr:geolocation.watch`: <geolocation watch> (1); has nothing; wave content, media and icons
 - `html-attr:global.accesskey`: accesskey (any element) (1); has nothing; wave content, media and icons
@@ -515,14 +491,9 @@
 - `html-attr:global.autocapitalize`: autocapitalize (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.autocorrect`: autocorrect (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.autofocus`: autofocus (any element) (1); has nothing; wave behaviour recognisers
-- `html-attr:global.class`: class (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:global.containertiming`: containertiming (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:global.containertimingignore`: containertimingignore (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:global.contenteditable`: contenteditable (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:global.data`: data-* attributes (1); has nothing; wave behaviour recognisers
 - `html-attr:global.dir`: dir (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.draggable`: draggable (any element) (1); has nothing; wave behaviour recognisers
-- `html-attr:global.elementtiming`: elementtiming (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:global.enterkeyhint`: enterkeyhint (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.exportparts`: exportparts (any element) (1); has nothing; wave draft reading
 - `html-attr:global.headingoffset`: headingoffset (any element) (1); has nothing; wave content, media and icons
@@ -537,7 +508,6 @@
 - `html-attr:global.itemscope`: itemscope (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.itemtype`: itemtype (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.lang`: lang (any element) (1); has nothing; wave content, media and icons
-- `html-attr:global.nonce`: nonce (any element) (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:global.part`: part (any element) (1); has nothing; wave draft reading
 - `html-attr:global.popover`: popover (any element) (1); has nothing; wave behaviour recognisers
 - `html-attr:global.slot`: slot (any element) (1); has nothing; wave draft reading
@@ -552,19 +522,15 @@
 - `html-attr:hr.noshade`: <hr noshade> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:hr.size`: <hr size> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:html.manifest`: <html manifest> (1); has nothing; wave draft reading
-- `html-attr:html.version`: <html version> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:html.xmlns`: <html xmlns> (1); has nothing; wave draft reading
 - `html-attr:iframe.align`: <iframe align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:iframe.allow`: <iframe allow> (1); has nothing; wave content, media and icons
 - `html-attr:iframe.allowfullscreen`: <iframe allowfullscreen> (1); has nothing; wave content, media and icons
-- `html-attr:iframe.allowpaymentrequest`: <iframe allowpaymentrequest> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:iframe.allowusermedia`: <iframe allowusermedia> (1); has nothing; wave content, media and icons
-- `html-attr:iframe.browsingtopics`: <iframe browsingtopics> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:iframe.credentialless`: <iframe credentialless> (1); has nothing; wave content, media and icons
 - `html-attr:iframe.csp`: <iframe csp> (1); has nothing; wave content, media and icons
 - `html-attr:iframe.height`: <iframe height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:iframe.loading`: <iframe loading> (1); has nothing; wave content, media and icons
-- `html-attr:iframe.longdesc`: <iframe longdesc> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:iframe.marginheight`: <iframe marginheight> (1); has nothing; wave content, media and icons
 - `html-attr:iframe.marginwidth`: <iframe marginwidth> (1); has nothing; wave content, media and icons
 - `html-attr:iframe.name`: <iframe name> (1); has nothing; wave content, media and icons
@@ -576,15 +542,12 @@
 - `html-attr:iframe.srcdoc`: <iframe srcdoc> (1); has nothing; wave content, media and icons
 - `html-attr:img.align`: <img align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:img.alt`: <img alt> (1); has nothing; wave content, media and icons
-- `html-attr:img.attributionsrc`: <img attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:img.crossorigin`: <img crossorigin> (1); has nothing; wave content, media and icons
 - `html-attr:img.decoding`: <img decoding> (1); has nothing; wave content, media and icons
 - `html-attr:img.fetchpriority`: <img fetchpriority> (1); has nothing; wave content, media and icons
 - `html-attr:img.height`: <img height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:img.ismap`: <img ismap> (1); has nothing; wave content, media and icons
 - `html-attr:img.loading`: <img loading> (1); has nothing; wave content, media and icons
-- `html-attr:img.longdesc`: <img longdesc> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:img.name`: <img name> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:img.referrerpolicy`: <img referrerpolicy> (1); has nothing; wave content, media and icons
 - `html-attr:img.sizes`: <img sizes> (1); has nothing; wave content, media and icons
 - `html-attr:img.src`: <img src> (1); has nothing; wave content, media and icons
@@ -626,7 +589,6 @@
 - `html-attr:input.step`: <input step> (1); has nothing; wave shop, forms and data
 - `html-attr:input.switch`: <input switch> (1); has nothing; wave shop, forms and data
 - `html-attr:input.type`: <input type> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:input.usemap`: <input usemap> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:input.value`: <input value> (1); has nothing; wave shop, forms and data
 - `html-attr:input.webkitdirectory`: <input webkitdirectory> (1); has nothing; wave shop, forms and data
 - `html-attr:ins.cite`: <ins cite> (1); has nothing; wave content, media and icons
@@ -641,7 +603,6 @@
 - `html-attr:li.value`: <li value> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:link.as`: <link as> (1); has nothing; wave draft reading
 - `html-attr:link.blocking`: <link blocking> (1); has nothing; wave draft reading
-- `html-attr:link.charset`: <link charset> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:link.color`: <link color> (1); has nothing; wave draft reading
 - `html-attr:link.crossorigin`: <link crossorigin> (1); has nothing; wave draft reading
 - `html-attr:link.disabled`: <link disabled> (1); has nothing; wave draft reading
@@ -654,9 +615,7 @@
 - `html-attr:link.media`: <link media> (1); has nothing; wave draft reading
 - `html-attr:link.referrerpolicy`: <link referrerpolicy> (1); has nothing; wave draft reading
 - `html-attr:link.rel`: <link rel> (1); has nothing; wave draft reading
-- `html-attr:link.rev`: <link rev> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:link.sizes`: <link sizes> (1); has nothing; wave draft reading
-- `html-attr:link.target`: <link target> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:link.type`: <link type> (1); has nothing; wave draft reading
 - `html-attr:map.name`: <map name> (1); has nothing; wave content, media and icons
 - `html-attr:marquee.behavior`: <marquee behavior> (1); has nothing; wave motion writer (4.0), waits on phase-0
@@ -672,7 +631,6 @@
 - `html-attr:meta.http-equiv`: <meta http-equiv> (1); has nothing; wave draft reading
 - `html-attr:meta.media`: <meta media> (1); has nothing; wave draft reading
 - `html-attr:meta.name`: <meta name> (1); has nothing; wave draft reading
-- `html-attr:meta.scheme`: <meta scheme> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:meter.high`: <meter high> (1); has nothing; wave shop, forms and data
 - `html-attr:meter.low`: <meter low> (1); has nothing; wave shop, forms and data
 - `html-attr:meter.max`: <meter max> (1); has nothing; wave shop, forms and data
@@ -686,20 +644,12 @@
 - `html-attr:model.stagemode`: <model stagemode> (1); has nothing; wave content, media and icons
 - `html-attr:model.width`: <model width> (1); has nothing; wave content, media and icons
 - `html-attr:object.align`: <object align> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:object.archive`: <object archive> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:object.classid`: <object classid> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:object.codebase`: <object codebase> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:object.codetype`: <object codetype> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:object.data`: <object data> (1); has nothing; wave content, media and icons
-- `html-attr:object.declare`: <object declare> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:object.form`: <object form> (1); has nothing; wave content, media and icons
 - `html-attr:object.height`: <object height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:object.name`: <object name> (1); has nothing; wave content, media and icons
-- `html-attr:object.standby`: <object standby> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:object.type`: <object type> (1); has nothing; wave content, media and icons
 - `html-attr:object.typemustmatch`: <object typemustmatch> (1); has nothing; wave content, media and icons
-- `html-attr:object.usemap`: <object usemap> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:ol.compact`: <ol compact> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:ol.reversed`: <ol reversed> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:ol.start`: <ol start> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:ol.type`: <ol type> (1); has nothing; wave modes and values with no CSS property
@@ -712,17 +662,11 @@
 - `html-attr:output.for`: <output for> (1); has nothing; wave shop, forms and data
 - `html-attr:output.form`: <output form> (1); has nothing; wave shop, forms and data
 - `html-attr:output.name`: <output name> (1); has nothing; wave shop, forms and data
-- `html-attr:param.name`: <param name> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:param.type`: <param type> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:param.value`: <param value> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:param.valuetype`: <param valuetype> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:pre.width`: <pre width> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:pre.wrap`: <pre wrap> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:progress.max`: <progress max> (1); has nothing; wave shop, forms and data
 - `html-attr:progress.value`: <progress value> (1); has nothing; wave shop, forms and data
 - `html-attr:q.cite`: <q cite> (1); has nothing; wave content, media and icons
 - `html-attr:script.async`: <script async> (1); has nothing; wave draft reading
-- `html-attr:script.attributionsrc`: <script attributionsrc> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:script.blocking`: <script blocking> (1); has nothing; wave draft reading
 - `html-attr:script.charset`: <script charset> (1); has nothing; wave draft reading
 - `html-attr:script.crossorigin`: <script crossorigin> (1); has nothing; wave draft reading
@@ -751,22 +695,16 @@
 - `html-attr:source.width`: <source width> (1); has nothing; wave content, media and icons
 - `html-attr:style.blocking`: <style blocking> (1); has nothing; wave draft reading
 - `html-attr:style.media`: <style media> (1); has nothing; wave draft reading
-- `html-attr:style.type`: <style type> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:table.align`: <table align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:table.border`: <table border> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:table.cellspacing`: <table cellspacing> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:table.frame`: <table frame> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:table.height`: <table height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:table.rules`: <table rules> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:table.summary`: <table summary> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:tbody.char`: <tbody char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:tbody.charoff`: <tbody charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:tbody.height`: <tbody height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:tbody.valign`: <tbody valign> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:td.abbr`: <td abbr> (1); has nothing; wave content, media and icons
 - `html-attr:td.axis`: <td axis> (1); has nothing; wave content, media and icons
-- `html-attr:td.char`: <td char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:td.charoff`: <td charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:td.colspan`: <td colspan> (1); has nothing; wave content, media and icons
 - `html-attr:td.headers`: <td headers> (1); has nothing; wave content, media and icons
 - `html-attr:td.height`: <td height> (1); has nothing; wave modes and values with no CSS property
@@ -795,14 +733,10 @@
 - `html-attr:textarea.required`: <textarea required> (1); has nothing; wave shop, forms and data
 - `html-attr:textarea.rows`: <textarea rows> (1); has nothing; wave shop, forms and data
 - `html-attr:textarea.wrap`: <textarea wrap> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:tfoot.char`: <tfoot char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:tfoot.charoff`: <tfoot charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:tfoot.height`: <tfoot height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:tfoot.valign`: <tfoot valign> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:th.abbr`: <th abbr> (1); has nothing; wave content, media and icons
 - `html-attr:th.axis`: <th axis> (1); has nothing; wave content, media and icons
-- `html-attr:th.char`: <th char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:th.charoff`: <th charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:th.colspan`: <th colspan> (1); has nothing; wave content, media and icons
 - `html-attr:th.headers`: <th headers> (1); has nothing; wave content, media and icons
 - `html-attr:th.height`: <th height> (1); has nothing; wave modes and values with no CSS property
@@ -810,13 +744,9 @@
 - `html-attr:th.rowspan`: <th rowspan> (1); has nothing; wave content, media and icons
 - `html-attr:th.scope`: <th scope> (1); has nothing; wave content, media and icons
 - `html-attr:th.valign`: <th valign> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:thead.char`: <thead char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:thead.charoff`: <thead charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:thead.height`: <thead height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:thead.valign`: <thead valign> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:time.datetime`: <time datetime> (1); has nothing; wave content, media and icons
-- `html-attr:tr.char`: <tr char> (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `html-attr:tr.charoff`: <tr charoff> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:tr.height`: <tr height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:tr.valign`: <tr valign> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:track.default`: <track default> (1); has nothing; wave content, media and icons
@@ -824,7 +754,6 @@
 - `html-attr:track.label`: <track label> (1); has nothing; wave content, media and icons
 - `html-attr:track.src`: <track src> (1); has nothing; wave content, media and icons
 - `html-attr:track.srclang`: <track srclang> (1); has nothing; wave content, media and icons
-- `html-attr:ul.compact`: <ul compact> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `html-attr:ul.type`: <ul type> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:video.autoplay`: <video autoplay> (1); has nothing; wave content, media and icons
 - `html-attr:video.controls`: <video controls> (1); has nothing; wave content, media and icons
@@ -866,7 +795,7 @@
 - `input-type:url`: <input type="url"> (1); has nothing; wave shop, forms and data
 - `input-type:week`: <input type="week"> (1); has nothing; wave shop, forms and data
 
-## svg (63)
+## svg (62)
 
 - `svg:a`: SVG <a> (1); has nothing; wave content, media and icons
 - `svg:animate`: SVG <animate> (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
@@ -918,7 +847,6 @@
 - `svg:polyline`: SVG <polyline> (1); has nothing; wave content, media and icons
 - `svg:radialGradient`: SVG <radialGradient> (1); has nothing; wave content, media and icons
 - `svg:rect`: SVG <rect> (1); has nothing; wave content, media and icons
-- `svg:script`: SVG <script> (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `svg:set`: SVG <set> (1, motion); has nothing; wave motion writer (4.0), waits on phase-0
 - `svg:stop`: SVG <stop> (1); has nothing; wave content, media and icons
 - `svg:style`: SVG <style> (1); has nothing; wave content, media and icons
@@ -1338,20 +1266,15 @@
 - `css-at:supports`: @supports (1); has nothing; wave draft reading
 - `css-at:view-transition`: @view-transition (1); has nothing; wave motion writer (4.0), waits on phase-0
 
-## css-media-feature (45)
+## css-media-feature (39)
 
 - `css-media-feature:-moz-device-pixel-ratio`: @media (-moz-device-pixel-ratio) (1); has nothing; wave modes and values with no CSS property
-- `css-media-feature:-webkit-animation`: @media (-webkit-animation) (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-media-feature:-webkit-device-pixel-ratio`: @media (-webkit-device-pixel-ratio) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:-webkit-max-device-pixel-ratio`: @media (-webkit-max-device-pixel-ratio) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:-webkit-min-device-pixel-ratio`: @media (-webkit-min-device-pixel-ratio) (1); has nothing; wave modes and values with no CSS property
-- `css-media-feature:-webkit-transform-2d`: @media (-webkit-transform-2d) (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-media-feature:-webkit-transform-3d`: @media (-webkit-transform-3d) (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-media-feature:-webkit-transition`: @media (-webkit-transition) (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-media-feature:any-hover`: @media (any-hover) (1); has nothing; wave behaviour recognisers
 - `css-media-feature:any-pointer`: @media (any-pointer) (1); has nothing; wave behaviour recognisers
 - `css-media-feature:aspect-ratio`: @media (aspect-ratio) (1); has nothing; wave modes and values with no CSS property
-- `css-media-feature:calc`: @media (calc) (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-media-feature:color`: @media (color) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:color-gamut`: @media (color-gamut) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:color-index`: @media (color-index) (1); has nothing; wave modes and values with no CSS property
@@ -1368,7 +1291,6 @@
 - `css-media-feature:hover`: @media (hover) (1); has nothing; wave behaviour recognisers
 - `css-media-feature:inverted-colors`: @media (inverted-colors) (1); has nothing; wave site and surfaces
 - `css-media-feature:monochrome`: @media (monochrome) (1); has nothing; wave modes and values with no CSS property
-- `css-media-feature:nested-queries`: @media (nested-queries) (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-media-feature:orientation`: @media (orientation) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:overflow-block`: @media (overflow-block) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:overflow-inline`: @media (overflow-inline) (1); has nothing; wave modes and values with no CSS property
@@ -1386,7 +1308,7 @@
 - `css-media-feature:video-dynamic-range`: @media (video-dynamic-range) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:width`: @media (width) (1); has nothing; wave modes and values with no CSS property
 
-## css-group (49)
+## css-group (50)
 
 - `css-group:anchor-positioning`: CSS properties: CSS Anchor Positioning (16); has nothing; wave draft reading; e.g. anchor-name, anchor-scope, bottom, left, margin-bottom
 - `css-group:animations`: CSS properties: CSS Animations (22, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. animation, animation-composition, animation-delay, animation-direction, animation-duration
@@ -1435,10 +1357,11 @@
 - `css-group:values-and-units`: CSS properties: CSS Values and Units (2); has nothing; wave draft reading; e.g. interpolate-size, link-parameters
 - `css-group:view-transitions`: CSS properties: CSS View Transitions (3, motion); has nothing; wave motion writer (4.0), waits on phase-0; e.g. view-transition-class, view-transition-name, view-transition-scope
 - `css-group:viewport`: CSS properties: CSS Viewport (1); has nothing; wave draft reading; e.g. zoom
+- `css-group:webkit-extensions`: CSS properties: WebKit Extensions (50); has nothing; wave draft reading; e.g. -moz-appearance, -webkit-appearance, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style
 - `css-group:will-change`: CSS properties: CSS Will Change (1); has nothing; wave draft reading; e.g. will-change
 - `css-group:writing-modes`: CSS properties: CSS Writing Modes (5); has nothing; wave draft reading; e.g. direction, text-combine-upright, text-orientation, unicode-bidi, writing-mode
 
-## css-property (95)
+## css-property (89)
 
 - `css-property:-webkit-app-region`: -webkit-app-region (1); has nothing; wave draft reading
 - `css-property:-webkit-border-horizontal-spacing`: -webkit-border-horizontal-spacing (1); has nothing; wave draft reading
@@ -1477,14 +1400,10 @@
 - `css-property:-webkit-transform-origin-y`: -webkit-transform-origin-y (1); has nothing; wave draft reading
 - `css-property:-webkit-transform-origin-z`: -webkit-transform-origin-z (1); has nothing; wave draft reading
 - `css-property:-webkit-user-drag`: -webkit-user-drag (1); has nothing; wave draft reading
-- `css-property:alt`: alt (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-property:background-repeat-x`: background-repeat-x (1); has nothing; wave draft reading
 - `css-property:background-repeat-y`: background-repeat-y (1); has nothing; wave draft reading
 - `css-property:block-ellipsis`: block-ellipsis (1); has nothing; wave draft reading
-- `css-property:buffered-rendering`: buffered-rendering (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-property:color-adjust`: color-adjust (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-property:color-interpolation`: color-interpolation (1); has nothing; wave draft reading
-- `css-property:color-rendering`: color-rendering (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-property:column-rule-break`: column-rule-break (1); has nothing; wave draft reading
 - `css-property:column-rule-inset`: column-rule-inset (1); has nothing; wave draft reading
 - `css-property:column-rule-inset-cap`: column-rule-inset-cap (1); has nothing; wave draft reading
@@ -1499,7 +1418,6 @@
 - `css-property:continue`: continue (1); has nothing; wave draft reading
 - `css-property:custom-property`: custom-property (1); has nothing; wave draft reading
 - `css-property:flow-tolerance`: flow-tolerance (1); has nothing; wave draft reading
-- `css-property:glyph-orientation-vertical`: glyph-orientation-vertical (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-property:hyphenate-limit-lines`: hyphenate-limit-lines (1); has nothing; wave draft reading
 - `css-property:row-rule`: row-rule (1); has nothing; wave draft reading
 - `css-property:row-rule-break`: row-rule-break (1); has nothing; wave draft reading
@@ -1531,17 +1449,12 @@
 - `css-property:size`: size (1); has nothing; wave draft reading
 - `css-property:speak`: speak (1); has nothing; wave draft reading
 - `css-property:text-decoration-skip-spaces`: text-decoration-skip-spaces (1); has nothing; wave draft reading
-- `css-property:user-modify`: user-modify (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-property:view-transition-group`: view-transition-group (1); has nothing; wave draft reading
 - `css-property:white-space-trim`: white-space-trim (1); has nothing; wave draft reading
 - `css-property:wrap-inside`: wrap-inside (1); has nothing; wave draft reading
 
-## css-pseudo-class (81)
+## css-pseudo-class (77)
 
-- `css-pseudo-class:-moz-first-node`: :-moz-first-node (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-class:-moz-last-node`: :-moz-last-node (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-class:-moz-only-whitespace`: :-moz-only-whitespace (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-class:-moz-window-inactive`: :-moz-window-inactive (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-pseudo-class:active`: :active (1); has nothing; wave states
 - `css-pseudo-class:active-view-transition`: :active-view-transition (1); has nothing; wave states
 - `css-pseudo-class:active-view-transition-type`: :active-view-transition-type() (1); has nothing; wave states
@@ -1620,7 +1533,7 @@
 - `css-pseudo-class:where`: :where() (1); has nothing; wave draft reading
 - `css-pseudo-class:xr-overlay`: :xr-overlay (1); has nothing; wave draft reading
 
-## css-pseudo-element (74)
+## css-pseudo-element (60)
 
 - `css-pseudo-element:-moz-color-swatch`: ::-moz-color-swatch (1); has nothing; wave shop, forms and data
 - `css-pseudo-element:-moz-list-bullet`: ::-moz-list-bullet (1); has nothing; wave content, media and icons
@@ -1629,20 +1542,6 @@
 - `css-pseudo-element:-moz-range-progress`: ::-moz-range-progress (1); has nothing; wave shop, forms and data
 - `css-pseudo-element:-moz-range-thumb`: ::-moz-range-thumb (1); has nothing; wave shop, forms and data
 - `css-pseudo-element:-moz-range-track`: ::-moz-range-track (1); has nothing; wave shop, forms and data
-- `css-pseudo-element:-ms-browse`: ::-ms-browse (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-check`: ::-ms-check (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-clear`: ::-ms-clear (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-expand`: ::-ms-expand (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-fill`: ::-ms-fill (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-fill-lower`: ::-ms-fill-lower (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-fill-upper`: ::-ms-fill-upper (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-reveal`: ::-ms-reveal (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-thumb`: ::-ms-thumb (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-ticks-after`: ::-ms-ticks-after (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-ticks-before`: ::-ms-ticks-before (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-tooltip`: ::-ms-tooltip (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-track`: ::-ms-track (1); has nothing; wave exclusion candidate (awaiting Bean)
-- `css-pseudo-element:-ms-value`: ::-ms-value (1); has nothing; wave exclusion candidate (awaiting Bean)
 - `css-pseudo-element:-webkit-inner-spin-button`: ::-webkit-inner-spin-button (1); has nothing; wave shop, forms and data
 - `css-pseudo-element:-webkit-meter-bar`: ::-webkit-meter-bar (1); has nothing; wave shop, forms and data
 - `css-pseudo-element:-webkit-meter-even-less-good-value`: ::-webkit-meter-even-less-good-value (1); has nothing; wave shop, forms and data
