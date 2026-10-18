@@ -277,7 +277,7 @@ def source_files(root: Path) -> list[Path]:
     for pattern in ("*.css", "*.scss", "*.php"):
         files.update(blocks.rglob(pattern))
     files.update((base / "includes").rglob("*.php"))
-    files.update((base / "assets/css").glob("*.css"))
+    files.update((base / "assets/css").rglob("*.css"))
     return sorted(p for p in files if not SKIP_DIRS & set(p.relative_to(root).parts))
 
 

@@ -44,7 +44,7 @@
 	background-image: var( --sgs-media-overlay-gradient, none );
 	opacity: var( --sgs-media-overlay-opacity, 1 );
 	mix-blend-mode: var( --sgs-media-overlay-blend, normal );
-	transition: background-color 0.3s ease, opacity 0.3s ease;
+	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-media-box:hover::after,

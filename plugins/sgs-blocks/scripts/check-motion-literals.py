@@ -7,7 +7,7 @@ leading-zero normalisation (`cubic-bezier(.4,0,.2,1)` equals `cubic-bezier(0.4, 
 after a CSS keyword holds that keyword's exact curve, so a literal `ease-out` equals `easing.ease-out`.
 
 WHAT IS SCANNED  every transition / animation declaration (shorthand, -duration, -delay, -timing-function) in
-`plugins/sgs-blocks/src/blocks/**/*.css|scss`, `plugins/sgs-blocks/assets/css/*.css`, and the CSS text inside every
+`plugins/sgs-blocks/src/blocks/**/*.css|scss`, `plugins/sgs-blocks/assets/css/**/*.css` (a generated sheet and its partials alike), and the CSS text inside every
 PHP file under `src/blocks/` and `includes/` (any file there can emit CSS). What counts as a literal, the role rule for delays and the PHP
 string limits are in motion_literals_scan.py.
 
@@ -260,6 +260,11 @@ def self_test() -> int:
         php.write_bytes(php.read_bytes())
         code = check(tmp, quiet=True)
         report("temp tree: --check passes once literals are tokens", code == 0, f"exit {code}")
+        partial = tmp / "plugins/sgs-blocks/assets/css/media-atoms/overlay.css"
+        partial.parent.mkdir(parents=True)
+        partial.write_bytes(b".o{transition: opacity 0.3s ease;}\n")
+        code = check(tmp, quiet=True)
+        report("a literal in a nested assets/css folder (a generated sheet's partial) fails --check", code == 1, f"exit {code}")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     print("self-test:", "FAILED" if failed else "all cases passed")
