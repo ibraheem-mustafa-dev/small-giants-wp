@@ -58,6 +58,25 @@ if ( ! function_exists( 'wp_enqueue_style' ) ) {
 	}
 }
 
+// Stub: wp_style_is() / wp_script_is() — every handle counts as registered;
+// 'enqueued' reads the handles the wp_enqueue_style() stub and the motion
+// tests record.
+if ( ! function_exists( 'wp_style_is' ) ) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- WP stub.
+    function wp_style_is( $handle, $status = 'enqueued' ) { // phpcs:ignore
+		if ( 'registered' === $status ) {
+			return true;
+		}
+		return in_array( $handle, $GLOBALS['sgs_test_enqueued_styles'] ?? array(), true );
+	}
+}
+if ( ! function_exists( 'wp_script_is' ) ) {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- WP stub.
+    function wp_script_is( $handle, $status = 'enqueued' ) { // phpcs:ignore
+		return isset( $GLOBALS['sgs_test_enqueued'][ 'script:' . $handle ] );
+	}
+}
+
 // Stub: get_block_wrapper_attributes() — merges attrs into an HTML attr string.
 if ( ! function_exists( 'get_block_wrapper_attributes' ) ) {
     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- WP stub.

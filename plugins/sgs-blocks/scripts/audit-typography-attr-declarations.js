@@ -126,12 +126,7 @@ const SUFFIX_SHAPES = {
 // (not just edit.js) and every target descriptor (not just a literal `targets` array). Each is
 // a real silent-discard defect in another surface's work, reported here but neither fixed nor
 // failing --check. An entry whose attribute becomes declared fails --check until it is removed.
-const BASELINE = {
-	'nav-bar-menu': {
-		reason: 'edit.js mounts a "burger" typography target whose size unit, style, line height and line-height unit are not declared; owned by the nav-menu typography work',
-		attrs: [ 'burgerFontSizeUnit', 'burgerFontStyle', 'burgerLineHeight', 'burgerLineHeightUnit' ],
-	},
-};
+const BASELINE = {};
 
 function listBlockDirs() {
 	return fs

@@ -306,6 +306,8 @@
 						"css:font-size": "burgerFontSize",
 						"css:font-family": "burgerFontFamily",
 						"css:font-weight": "burgerFontWeight",
+						"css:font-style": "burgerFontStyle",
+						"css:line-height": "burgerLineHeight",
 						"css:text-transform": "burgerTextTransform",
 						"css:letter-spacing": "burgerLetterSpacing",
 						"css:gap": "burgerTextGap"
@@ -826,6 +828,10 @@
 			"default": "",
 			"description": "Spec 36 section 14 Wave 2 J1. Unset renders font-size:inherit (helpers-typography.php's sgs_typography_css_rule(), $inherit_font_size_when_blank) — inherits the theme's real body font-size rather than the UA <button> default (~13.3px)."
 		},
+		"burgerFontSizeUnit": {
+			"type": "string",
+			"default": ""
+		},
 		"burgerFontFamily": {
 			"type": "string",
 			"default": "",
@@ -834,6 +840,17 @@
 		"burgerFontWeight": {
 			"type": "string",
 			"default": "600"
+		},
+		"burgerFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerLineHeight": {
+			"type": "number"
+		},
+		"burgerLineHeightUnit": {
+			"type": "string",
+			"default": ""
 		},
 		"burgerTextTransform": {
 			"type": "string",

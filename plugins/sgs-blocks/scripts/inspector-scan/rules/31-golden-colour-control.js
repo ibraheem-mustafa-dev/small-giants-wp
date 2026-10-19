@@ -309,6 +309,8 @@ const {
 	resolveAttrName,
 	normalStateAttrName,
 	statesArrayHasGradient,
+	prefixedRowSuffix,
+	prefixedAttrName,
 	requiredStatesFor,
 	soleDeclaredStateKey,
 	slugify,
@@ -464,11 +466,14 @@ function gradientPathMatchesMechanism( mechanisms, gradientCapable, statesHasGra
  * not of which block mounts it, so agreement across mounting blocks is
  * expected and a single resolved block is sufficient evidence.
  */
-function resolveSharedRowMechanism( ctx, ownerFile, mountedByList ) {
+function resolveSharedRowMechanism( ctx, ownerFile, mountedByList, statesArray = null ) {
 	const map = getColourCssPropertyMap( ctx );
 	const ownerTagName = path.basename( ownerFile, path.extname( ownerFile ) );
 	const allMechanisms = new Set();
 	let anyResolved = false;
+	// A row whose attribute names are built from the component's `prefix` prop
+	// resolves per mount from the mount's literal `prefix="x"`.
+	const prefixSuffix = prefixedRowSuffix( ( visitors ) => ctx.cache.traverse( ownerFile, visitors ), statesArray );
 
 	for ( const blockSlug of mountedByList ) {
 		const tail = blockSlug.replace( /^sgs\//, '' );
@@ -476,24 +481,30 @@ function resolveSharedRowMechanism( ctx, ownerFile, mountedByList ) {
 		const parsed = ctx.cache.parse( mountEditFile );
 		if ( ! parsed.ok ) continue;
 
-		let attrName = null;
+		const candidates = [];
 		ctx.cache.traverse( mountEditFile, {
 			JSXOpeningElement( nodePath ) {
-				if ( attrName ) return;
 				const node = nodePath.node;
 				if ( jsxName( node ) !== ownerTagName ) return;
-				attrName = resolveAttrName(
-					jsxAttrExpr( node, 'colour' ) || jsxAttrExpr( node, 'value' )
-				);
+				const direct = resolveAttrName( jsxAttrExpr( node, 'colour' ) || jsxAttrExpr( node, 'value' ) );
+				if ( direct ) {
+					if ( ! candidates.length ) candidates.push( direct );
+					return;
+				}
+				if ( ! prefixSuffix ) return;
+				// An absent prefix prop is the component's '' default; a non-literal prefix cannot be resolved.
+				const prefix = findJsxAttr( node, 'prefix' ) ? jsxAttrStringValue( node, 'prefix' ) : '';
+				if ( prefix !== null ) candidates.push( prefixedAttrName( prefix, prefixSuffix ) );
 			},
 		} );
-		if ( ! attrName ) continue;
 
-		const cssProperty = map[ blockSlug ] ? map[ blockSlug ][ attrName ] ?? null : null;
-		const { mechanisms, unresolved } = resolveMechanismFromCssProperty( cssProperty );
-		if ( ! unresolved ) {
-			anyResolved = true;
-			mechanisms.forEach( ( m ) => allMechanisms.add( m ) );
+		for ( const attrName of candidates ) {
+			const cssProperty = map[ blockSlug ] ? map[ blockSlug ][ attrName ] ?? null : null;
+			const { mechanisms, unresolved } = resolveMechanismFromCssProperty( cssProperty );
+			if ( ! unresolved ) {
+				anyResolved = true;
+				mechanisms.forEach( ( m ) => allMechanisms.add( m ) );
+			}
 		}
 	}
 
@@ -602,7 +613,7 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 			hasGradientOverride !== null
 				? hasGradientOverride
 				: gradientCapable === true || statesArrayHasGradient( statesArray );
-		const sharedMechanism = resolveSharedRowMechanism( ctx, file, mountedByList );
+		const sharedMechanism = resolveSharedRowMechanism( ctx, file, mountedByList, statesArray );
 		// Shadow and underline colours take no gradient, so a missing gradient path is no finding.
 		const sharedShadowExempt =
 			sharedMechanism.mechanisms.includes( 'shadow' ) || sharedMechanism.mechanisms.includes( 'decoration' );
@@ -1459,6 +1470,10 @@ module.exports = {
 			// narrowed too far and the tabs-shaped 3-state gap is silently
 			// uncovered again.
 			'three-state-required-below-minimum',
+			// Negative control for the prefix path: the same prefixed shared row, but its resolved
+			// attribute paints text (a mechanism that needs a gradient path), so the shared row
+			// must still flag. Pairs with 'FixturePrefixedColourPanel' (mustNotFlag, below).
+			'FixturePrefixedWrongMechanismPanel',
 		],
 		mustNotFlag: [
 			// A row whose SOLE state is a declared, admitted, non-normal state IS
@@ -1478,6 +1493,10 @@ module.exports = {
 			// reached the same way as FixtureSharedRowPanel above must not
 			// flag.
 			'FixtureCleanSharedRowPanel',
+			// A shared row whose attribute names are built from a `prefix` prop
+			// (TypographyControls' Outline colour shape) resolves through the mount's
+			// literal prefix to a decoration-mechanism attribute, which takes no gradient.
+			'FixturePrefixedColourPanel',
 			// THE 2026-09-05 FIX — Bean-verified false positive (process-steps
 			// numberBackgroundRow; site-header-row/site-footer-row
 			// fillRowDescriptor): a standalone control mounted via

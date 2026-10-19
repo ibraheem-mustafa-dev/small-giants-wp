@@ -30,24 +30,27 @@ if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 	 * @return string Sanitised markup.
 	 */
 	function sgs_rich_text_kses( $html ): string {
-		$html    = is_scalar( $html ) ? (string) $html : '';
-		$allowed = wp_kses_allowed_html( 'post' );
-		foreach ( $allowed as $tag => $attributes ) {
-			if ( is_array( $attributes ) ) {
-				unset( $allowed[ $tag ]['style'] );
+		static $allowed = null;
+		$html           = is_scalar( $html ) ? (string) $html : '';
+		if ( null === $allowed ) {
+			$allowed = wp_kses_allowed_html( 'post' );
+			foreach ( $allowed as $tag => $attributes ) {
+				if ( is_array( $attributes ) ) {
+					unset( $allowed[ $tag ]['style'] );
+				}
 			}
+			$allowed['img'] = array(
+				'src'      => true,
+				'alt'      => true,
+				'class'    => true,
+				'srcset'   => true,
+				'sizes'    => true,
+				'width'    => true,
+				'height'   => true,
+				'loading'  => true,
+				'decoding' => true,
+			);
 		}
-		$allowed['img'] = array(
-			'src'      => true,
-			'alt'      => true,
-			'class'    => true,
-			'srcset'   => true,
-			'sizes'    => true,
-			'width'    => true,
-			'height'   => true,
-			'loading'  => true,
-			'decoding' => true,
-		);
 		return wp_kses( $html, $allowed );
 	}
 }
@@ -93,7 +96,7 @@ if ( ! function_exists( 'sgs_inline_formats_enqueue' ) ) {
 	 */
 	function sgs_inline_formats_enqueue(): void {
 		static $done = false;
-		if ( $done ) {
+		if ( $done || ! wp_style_is( 'sgs-inline-formats', 'registered' ) ) {
 			return;
 		}
 		$done = true;

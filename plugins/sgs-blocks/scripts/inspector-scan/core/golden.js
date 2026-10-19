@@ -743,6 +743,85 @@ function normalStateAttrName( statesArray ) {
 	return first ? resolveAttrName( objProp( first, 'value' ) ) : null;
 }
 
+// A shared component can build its attribute names from a `prefix` prop: the
+// row reads `attributes[ k.someKey ]` where `const k = keysFor( prefix )` and
+// `keysFor` returns `{ someKey: nameFor( prefix, 'Suffix' ) }`. Returns the
+// literal `Suffix` the row's normal-state value resolves to, or null when the
+// row is not bound that way. `traverseFile( visitors )` walks the owner file.
+function prefixedRowSuffix( traverseFile, statesArray ) {
+	if ( ! statesArray || statesArray.type !== 'ArrayExpression' ) return null;
+	const stateObjs = statesArray.elements.filter( ( el ) => el && el.type === 'ObjectExpression' );
+	const normal =
+		stateObjs.find( ( el ) => stringLiteralValue( objProp( el, 'key' ) ) === 'normal' ) || stateObjs[ 0 ];
+	let expr = normal ? objProp( normal, 'value' ) : null;
+	while ( expr && expr.type === 'LogicalExpression' ) expr = expr.left;
+	if (
+		! expr ||
+		expr.type !== 'MemberExpression' ||
+		! expr.computed ||
+		! expr.object ||
+		expr.object.type !== 'Identifier' ||
+		expr.object.name !== 'attributes' ||
+		! expr.property ||
+		expr.property.type !== 'MemberExpression' ||
+		expr.property.computed ||
+		expr.property.object.type !== 'Identifier' ||
+		expr.property.property.type !== 'Identifier'
+	) {
+		return null;
+	}
+	const keysVar = expr.property.object.name;
+	const keyProp = expr.property.property.name;
+
+	// Pass 1: `const <keysVar> = <keysFn>( <prefixVar> )`.
+	let keysFn = null;
+	// Pass 2 collects every function body so the factory can be found whichever order it is declared in.
+	const functions = {};
+	traverseFile( {
+		VariableDeclarator( nodePath ) {
+			const n = nodePath.node;
+			if (
+				n.id.type === 'Identifier' &&
+				n.id.name === keysVar &&
+				n.init &&
+				n.init.type === 'CallExpression' &&
+				n.init.callee.type === 'Identifier'
+			) {
+				keysFn = n.init.callee.name;
+			}
+		},
+		FunctionDeclaration( nodePath ) {
+			if ( nodePath.node.id ) functions[ nodePath.node.id.name ] = nodePath.node;
+		},
+	} );
+	const factory = keysFn ? functions[ keysFn ] : null;
+	if ( ! factory ) return null;
+	let suffix = null;
+	traverseFile( {
+		ReturnStatement( nodePath ) {
+			if ( suffix || nodePath.getFunctionParent()?.node !== factory ) return;
+			const arg = nodePath.node.argument;
+			if ( ! arg || arg.type !== 'ObjectExpression' ) return;
+			const value = objProp( arg, keyProp );
+			if (
+				value &&
+				value.type === 'CallExpression' &&
+				value.arguments.length >= 2 &&
+				value.arguments[ 0 ].type === 'Identifier'
+			) {
+				suffix = stringLiteralValue( value.arguments[ 1 ] );
+			}
+		},
+	} );
+	return suffix;
+}
+
+// The framework's `prefix` naming convention (Spec 00): prefix 'title' + 'Suffix' is 'titleSuffix';
+// an empty prefix lower-cases the first letter of the suffix alone.
+function prefixedAttrName( prefix, suffix ) {
+	return prefix ? prefix + suffix : suffix.charAt( 0 ).toLowerCase() + suffix.slice( 1 );
+}
+
 function statesArrayHasGradient( statesArray ) {
 	if ( ! statesArray || statesArray.type !== 'ArrayExpression' ) return false;
 	return statesArray.elements.some(
@@ -990,6 +1069,8 @@ module.exports = {
 	normalStateAttrName,
 	normalStateGradientAttrName,
 	statesArrayHasGradient,
+	prefixedRowSuffix,
+	prefixedAttrName,
 	requiredStatesFor,
 	soleDeclaredStateKey,
 	declaredStateVocabulary,

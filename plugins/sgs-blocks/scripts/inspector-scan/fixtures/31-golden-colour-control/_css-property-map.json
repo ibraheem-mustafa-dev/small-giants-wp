@@ -16,5 +16,13 @@
 		"titleColour": "color",
 		"titleColourHover": "color",
 		"titleColourGradient": "color-gradient"
+	},
+	"sgs/prefixed-shared-row-mount": {
+		"headingFixtureColour": "-webkit-text-stroke-color",
+		"headingFixtureColourHover": "-webkit-text-stroke-color"
+	},
+	"sgs/prefixed-shared-row-wrong-mechanism": {
+		"headingFixtureColour": "color",
+		"headingFixtureColourHover": "color"
 	}
 }

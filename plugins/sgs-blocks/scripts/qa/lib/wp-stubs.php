@@ -713,6 +713,13 @@ if ( ! function_exists( 'wp_enqueue_style' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_style_is' ) ) {
+	function wp_style_is( string $handle, string $status = 'enqueued' ): bool {
+		// Every handle counts as registered, matching wp_enqueue_style()'s no-op.
+		return true;
+	}
+}
+
 if ( ! function_exists( 'has_action' ) ) {
 	function has_action( string $tag, $function_to_check = false ) {
 		// Matches do_action()'s "no listeners registered" convention.

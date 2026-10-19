@@ -8,9 +8,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "b_equal_sides": {
@@ -25,9 +23,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "c_unequal_dashed_raw": {
@@ -42,9 +38,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "d_style_none": {
@@ -58,9 +52,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "e_widths_no_colour": {
@@ -74,9 +66,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "f_colour_no_widths": {
@@ -89,9 +79,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "g_gradient": {
@@ -121,9 +109,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "h_hover_flat": {
@@ -141,9 +127,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ],
         "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-cg-UID.wp-block-sgs-card-grid .sgs-card-grid__item:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
@@ -176,9 +160,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "j_radius_uniform": {
@@ -191,9 +173,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ]
     },
     "k_radius_tiers": {
@@ -209,9 +189,7 @@
             "--sgs-card-grid-columns-mobile:1",
             "--sgs-card-grid-columns-tablet:2",
             "--sgs-card-grid-columns:3",
-            "--sgs-card-grid-gap:30px",
-            "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-card-grid-gap:30px"
         ],
         "@media(max-width:1023px) || .sgs-cg-UID.wp-block-sgs-card-grid": [
             "border-top-left-radius:6px"

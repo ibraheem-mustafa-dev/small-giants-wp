@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/prefixed-shared-row-wrong-mechanism",
+	"title": "Fixture: mounts a shared component that builds its attribute names from a prefix prop",
+	"category": "sgs",
+	"attributes": {
+		"headingFixtureColour": { "type": "string", "default": "" },
+		"headingFixtureColourHover": { "type": "string", "default": "" }
+	}
+}
