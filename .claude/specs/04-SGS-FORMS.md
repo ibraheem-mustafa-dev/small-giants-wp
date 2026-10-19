@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 4
-spec_version: 1.1
+spec_version: 1.2
 project: small-giants-wp
 title: SGS Forms
 status: active
-last_verified: 2026-10-09
+last_verified: 2026-10-19
 ---
 
 # SGS Forms — Custom Form System

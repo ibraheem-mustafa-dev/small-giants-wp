@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 1
-spec_version: 1.6.0
+spec_version: 1.7.0
 project: small-giants-wp
 title: SGS Theme
 status: shipped
-last_verified: 2026-10-09
+last_verified: 2026-10-19
 ---
 
 # SGS Theme — Custom WordPress Block Theme

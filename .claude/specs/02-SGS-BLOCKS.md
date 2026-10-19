@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.11"
+spec_version: "1.12"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: active
-last_verified: 2026-10-09
+last_verified: 2026-10-19
 authors: Bean + Claude
 ---
 

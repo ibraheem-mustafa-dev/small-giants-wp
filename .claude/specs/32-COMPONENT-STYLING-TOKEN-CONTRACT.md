@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "3.2.0"
+spec_version: "3.3.0"
 title: Styling, Tokens and Theming Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
-last_verified: 2026-10-17
+last_verified: 2026-10-19
 supersedes: .claude/specs/archive/32-COMPONENT-STYLING-TOKEN-CONTRACT-v2.0.md
 references:
   - .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md
@@ -29,9 +29,9 @@ lock_reason: null
 
 | Part | Sections | Owns |
 |---|---|---|
-| **A. Component styling and token contract** | §0 to §12 | How a block styles itself: BEM classes consuming per-client tokens, no inline styling, scoped CSS, box objects, the CSS collector, grid-item defaults, the palette colour-role contract. FR-32-1 to FR-32-13 and FR-32-20 (FR-32-7 lives in Spec 48). |
+| **A. Component styling and token contract** | §0 to §12 | How a block styles itself: BEM classes consuming per-client tokens, no inline styling, scoped CSS, box objects, the CSS collector, grid-item defaults, the palette colour-role contract. FR-32-1 to FR-32-13, FR-32-20 and FR-32-23 to FR-32-25 (FR-32-7 lives in Spec 48). |
 | **B. Global styles and theming** | §13 | The WordPress layer model (theme.json seed, `wp_global_styles` post), how a push reaches the live layer, the block-editor styling model. FR-26-A3, A4, B1 to B4, B6, D2, D3. |
-| **C. The theme-snapshot format** | §14 | `sites/<client>/theme-snapshot.json`: its keys, the target slots and token vocabulary, the `settings.custom.{component}Presets` contract, internal keys, how it is deployed. FR-33-11, FR-33-20, FR-32-14 to FR-32-19, FR-32-21, FR-32-22. |
+| **C. The theme-snapshot format** | §14 | `sites/<client>/theme-snapshot.json`: its keys, the target slots and token vocabulary, the `settings.custom.{component}Presets` contract, internal keys, how it is deployed. FR-33-11, FR-33-20, FR-32-14 to FR-32-19, FR-32-21, FR-32-22, FR-32-26. |
 
 Section numbers and part letters are stable because code, skills and other specs cite them (`Spec 32 §3`, `§5`, `§6.1(b)`, `§6.2`, `§13.2`, `§14`, `Part B`, `Part C`); gaps in the numbering are deliberate. A requirement ID's prefix is its origin and never changes: FR-32-n (Part A and Part C vocabulary), FR-26-xn (Part B), and the two FR-33-n push requirements in §14.4. Every other FR-33-n is in Spec 48 §11.
 
