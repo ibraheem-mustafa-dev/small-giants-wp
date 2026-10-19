@@ -1,9 +1,9 @@
-# Clone coverage gap list: 1732 capabilities neither covered nor excluded
+# Clone coverage gap list: 1713 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
 | content, media and icons | 799 |
-| draft reading | 262 |
+| draft reading | 243 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 175 |
 | behaviour recognisers | 127 |
@@ -1339,7 +1339,7 @@
 - `css-property:white-space-trim`: white-space-trim (1); has nothing; wave draft reading
 - `css-property:wrap-inside`: wrap-inside (1); has nothing; wave draft reading
 
-## css-pseudo-class (74)
+## css-pseudo-class (55)
 
 - `css-pseudo-class:active`: :active (1); has nothing; wave states
 - `css-pseudo-class:active-view-transition`: :active-view-transition (1); has nothing; wave states
@@ -1351,42 +1351,26 @@
 - `css-pseudo-class:checked`: :checked (1); has nothing; wave states
 - `css-pseudo-class:current`: :current (1); has nothing; wave states
 - `css-pseudo-class:default`: :default (1); has nothing; wave states
-- `css-pseudo-class:dir`: :dir() (1); has nothing; wave draft reading
 - `css-pseudo-class:disabled`: :disabled (1); has nothing; wave states
 - `css-pseudo-class:empty`: :empty (1); has nothing; wave states
 - `css-pseudo-class:enabled`: :enabled (1); has nothing; wave states
 - `css-pseudo-class:first`: :first (1); has nothing; wave draft reading
-- `css-pseudo-class:first-child`: :first-child (1); has nothing; wave draft reading
-- `css-pseudo-class:first-of-type`: :first-of-type (1); has nothing; wave draft reading
 - `css-pseudo-class:focus`: :focus (1); has nothing; wave states
 - `css-pseudo-class:focus-visible`: :focus-visible (1); has nothing; wave states
 - `css-pseudo-class:focus-within`: :focus-within (1); has nothing; wave states
 - `css-pseudo-class:fullscreen`: :fullscreen (1); has nothing; wave states
 - `css-pseudo-class:future`: :future (1); has nothing; wave states
-- `css-pseudo-class:has`: :has() (1); has nothing; wave draft reading
 - `css-pseudo-class:has-slotted`: :has-slotted (1); has nothing; wave states
-- `css-pseudo-class:heading`: :heading (1); has nothing; wave draft reading
 - `css-pseudo-class:hover`: :hover (1); has nothing; wave states
 - `css-pseudo-class:in-range`: :in-range (1); has nothing; wave states
 - `css-pseudo-class:indeterminate`: :indeterminate (1); has nothing; wave states
 - `css-pseudo-class:invalid`: :invalid (1); has nothing; wave states
-- `css-pseudo-class:is`: :is() (1); has nothing; wave draft reading
-- `css-pseudo-class:lang`: :lang() (1); has nothing; wave draft reading
-- `css-pseudo-class:last-child`: :last-child (1); has nothing; wave draft reading
-- `css-pseudo-class:last-of-type`: :last-of-type (1); has nothing; wave draft reading
 - `css-pseudo-class:left`: :left (1); has nothing; wave draft reading
 - `css-pseudo-class:link`: :link (1); has nothing; wave states
 - `css-pseudo-class:local-link`: :local-link (1); has nothing; wave states
 - `css-pseudo-class:modal`: :modal (1); has nothing; wave states
 - `css-pseudo-class:muted`: :muted (1); has nothing; wave states
 - `css-pseudo-class:navigation-source`: :navigation-source (1); has nothing; wave states
-- `css-pseudo-class:not`: :not() (1); has nothing; wave draft reading
-- `css-pseudo-class:nth-child`: :nth-child() (1); has nothing; wave draft reading
-- `css-pseudo-class:nth-last-child`: :nth-last-child() (1); has nothing; wave draft reading
-- `css-pseudo-class:nth-last-of-type`: :nth-last-of-type() (1); has nothing; wave draft reading
-- `css-pseudo-class:nth-of-type`: :nth-of-type() (1); has nothing; wave draft reading
-- `css-pseudo-class:only-child`: :only-child (1); has nothing; wave draft reading
-- `css-pseudo-class:only-of-type`: :only-of-type (1); has nothing; wave draft reading
 - `css-pseudo-class:open`: :open (1); has nothing; wave states
 - `css-pseudo-class:optional`: :optional (1); has nothing; wave states
 - `css-pseudo-class:out-of-range`: :out-of-range (1); has nothing; wave states
@@ -1400,8 +1384,6 @@
 - `css-pseudo-class:read-write`: :read-write (1); has nothing; wave states
 - `css-pseudo-class:required`: :required (1); has nothing; wave states
 - `css-pseudo-class:right`: :right (1); has nothing; wave draft reading
-- `css-pseudo-class:root`: :root (1); has nothing; wave draft reading
-- `css-pseudo-class:scope`: :scope (1); has nothing; wave draft reading
 - `css-pseudo-class:seeking`: :seeking (1); has nothing; wave states
 - `css-pseudo-class:stalled`: :stalled (1); has nothing; wave states
 - `css-pseudo-class:state`: :state() (1); has nothing; wave states
@@ -1413,7 +1395,6 @@
 - `css-pseudo-class:valid`: :valid (1); has nothing; wave states
 - `css-pseudo-class:visited`: :visited (1); has nothing; wave states
 - `css-pseudo-class:volume-locked`: :volume-locked (1); has nothing; wave states
-- `css-pseudo-class:where`: :where() (1); has nothing; wave draft reading
 - `css-pseudo-class:xr-overlay`: :xr-overlay (1); has nothing; wave draft reading
 
 ## css-pseudo-element (60)

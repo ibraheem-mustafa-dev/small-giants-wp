@@ -4538,11 +4538,10 @@
 			}
 		},
 		"css-pseudo-class:dir": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":dir: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":dir: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:disabled": {
 			"recognise": null,
@@ -4573,18 +4572,16 @@
 			"note": ":first: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
 		},
 		"css-pseudo-class:first-child": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":first-child: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":first-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:first-of-type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":first-of-type: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":first-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:focus": {
 			"recognise": null,
@@ -4622,11 +4619,10 @@
 			"note": ":future: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:has": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":has: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":has: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:has-slotted": {
 			"recognise": null,
@@ -4636,11 +4632,10 @@
 			"note": ":has-slotted: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:heading": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":heading: a structural or matching selector; not read as itself"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":heading: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:host": {
 			"excluded": {
@@ -4685,32 +4680,28 @@
 			"note": ":invalid: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:is": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":is: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":is: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:lang": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":lang: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":lang: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:last-child": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":last-child: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":last-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:last-of-type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":last-of-type: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":last-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:left": {
 			"recognise": null,
@@ -4755,53 +4746,46 @@
 			"note": ":navigation-source: a link state during navigation; walker states are built, the state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:not": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":not: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":not: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-child": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":nth-child: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":nth-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-last-child": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":nth-last-child: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":nth-last-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-last-of-type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":nth-last-of-type: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":nth-last-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-of-type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":nth-of-type: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":nth-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:only-child": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":only-child: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":only-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:only-of-type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":only-of-type: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":only-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:open": {
 			"recognise": null,
@@ -4895,18 +4879,16 @@
 			"note": ":right: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
 		},
 		"css-pseudo-class:root": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":root: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":root: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:scope": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":scope: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":scope: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:seeking": {
 			"recognise": null,
@@ -4986,11 +4968,10 @@
 			"note": ":volume-locked: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:where": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":where: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": ":where: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:xr-overlay": {
 			"recognise": null,
