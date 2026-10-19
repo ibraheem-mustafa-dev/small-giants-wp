@@ -10,7 +10,7 @@ status: in progress
 
 **Purpose.** Spec 48 Appendix B lists the 25 ordered steps that turn the Indus Claude Design export (`sites/indus-foods/handoff/`) into a working SGS site through stages 0 to 5. This plan groups them into phases, each closed by the done-when of the requirement it cites, and fixes who runs what, in which order, beside what. Quality and reliability come first; a speed or cost gain is taken only where it adds no risk (Bean, 2026-10-11).
 
-**Where it stands (2026-10-13).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current and the stage-0 calibration baseline is written. Steps 13, 14 and 14b are done; step 15 (Bean's review) is in progress, see its Progress note; steps 16 to 25 are not started. Progress per step is marked in the phases below.
+**Where it stands (2026-10-19).** Phase 1 (steps 1 to 8) and steps 9 to 12 are done: all 17 Indus blocks are current and the stage-0 calibration baseline is written. Steps 13, 14, 14b and 15 (Bean's review) are done; steps 16 to 25 are not started. Progress per step is marked in the phases below.
 
 ## Orchestration
 
