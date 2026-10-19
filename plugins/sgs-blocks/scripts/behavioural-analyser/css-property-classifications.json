@@ -2091,6 +2091,31 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "link",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "linkUnderlineThickness",
       "fields": {
         "css_property": "text-decoration-thickness-link",
@@ -5561,6 +5586,31 @@
       "attr": "linkUnderline",
       "fields": {
         "css_property": "text-decoration-link",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "body",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
         "css_element": "body"
       }
     },
@@ -11646,6 +11696,31 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "linkUnderlineThickness",
       "fields": {
         "css_property": "text-decoration-thickness-link",
@@ -12957,6 +13032,31 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "item-link"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "item-link",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "item-link"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "linkUnderlineThickness",
       "fields": {
         "css_property": "text-decoration-thickness-link",
@@ -13343,15 +13443,6 @@
     },
     {
       "slug": "sgs/label",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/label",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -13427,6 +13518,31 @@
       "attr": "linkUnderline",
       "fields": {
         "css_property": "text-decoration-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
         "css_element": "wrapper"
       }
     },
@@ -19498,6 +19614,31 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "descLinkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "desc"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLinkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "desc",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLinkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "desc"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "descLinkUnderlineThickness",
       "fields": {
         "css_property": "text-decoration-thickness-link",
@@ -21180,6 +21321,31 @@
       "attr": "attributionLinkUnderline",
       "fields": {
         "css_property": "text-decoration-link",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLinkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLinkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "attribution",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLinkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
         "css_element": "attribution"
       }
     },
@@ -23846,6 +24012,31 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "linkUnderlineThickness",
       "fields": {
         "css_property": "text-decoration-thickness-link",
@@ -24103,6 +24294,31 @@
       "attr": "quoteLinkUnderline",
       "fields": {
         "css_property": "text-decoration-link",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLinkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLinkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "quote-text",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLinkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
         "css_element": "quote-text"
       }
     },
@@ -24603,6 +24819,31 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "linkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "linkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "linkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "linkUnderlineThickness",
       "fields": {
         "css_property": "text-decoration-thickness-link",
@@ -24893,6 +25134,31 @@
       "attr": "descriptionLinkUnderline",
       "fields": {
         "css_property": "text-decoration-link",
+        "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "entry",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
         "css_element": "entry"
       }
     },
@@ -30525,6 +30791,15 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "background"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
