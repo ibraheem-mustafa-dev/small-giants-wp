@@ -305,8 +305,8 @@ These items are specified above and have no implementation yet. Each stays in th
 
 - **FR-4-1 — A long uploaded file name stays inside its box.** The file preview, its error, the field and the review step's values wrap long unbroken text (`overflow-wrap: anywhere`, `min-width: 0`). *Done when:* `npx wp-scripts test-unit-js tests/js/form-file-wrap.test.js` passes and live at 375 a 120-character file name causes no horizontal overflow.
 
-  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G9); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+  Status: built (498bac11c). Proof: `npx wp-scripts test-unit-js tests/js/form-file-wrap.test.js` passes. Live check at 375/768/1440 and the editor canvas: open (control-gaps plan Step 9, carried to the next session).
 
 - **FR-4-2 — Option tiles and choice-flow options show a description line with its own controls.** `sgs/form-field-tiles` gains a description per tile, copied from `sgs/choice-flow-question`'s option description (a plain-text field capped at 140 characters, shown under the label inside it, so it is part of the accessible name); both blocks gain typography and colour controls for the description, and tiles for the label too. *Done when:* `vendor/bin/phpunit --filter "FormFieldTilesDescriptionTest|ChoiceFlowQuestionDescriptionTest"` passes.
 
-  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G10); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+  Status: built (498bac11c, manifest and gate fixes 12a7ca3f8). Proof: `php vendor/phpunit/phpunit/phpunit --filter "FormFieldTilesDescriptionTest|ChoiceFlowQuestionDescriptionTest"` passes. Live check at 375/768/1440 and the editor canvas: open (control-gaps plan Step 9, carried to the next session).

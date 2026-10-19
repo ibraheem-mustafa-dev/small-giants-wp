@@ -675,6 +675,9 @@ Other `settings.custom` keys a snapshot carries:
 | `borderRadius` | `small`, `medium`, `large`, `pill` | block stylesheets |
 | `transition`, `duration`, `easing`, `distance`, `entrance`, `linkSweep`, `shadowHover`, `shadowColour` | motion and state tokens (`distance` and the `easing` springs per FR-32-21) | theme and block stylesheets; the Spec 38A motion renderer |
 | `focus` | the keyboard focus look: width, inner, ink, ring, near, far, their on-dark pair and the three signature stops (§14.5, FR-32-22) | `theme/sgs-theme/assets/css/focus.css` |
+| `scrollbar` | `thumb`, `thumbOnDark`, `track`: every scroller's brand colours, each thumb at least 2:1 on its ground (FR-32-26; gate `plugins/sgs-blocks/scripts/check-snapshot-scrollbar-tokens.py --check`, refused at push by `push-theme-snapshot.py::roster_guard`) | `theme/sgs-theme/assets/css/scrollbars.css` |
+| `highlight` | `colour`, `thickness`, `lift`, `overhang`, `tilt`: the highlighter stripe's site-wide look (Spec 02 FR-2-4; gate `plugins/sgs-blocks/scripts/check-snapshot-inline-format-tokens.py --check`, refused at push by `roster_guard`) | `plugins/sgs-blocks/assets/css/inline-formats.css` |
+| `inlinePhoto` | `width`, `height`, `borderWidth`, `borderColour`, `radius`, `tilt`: the small photo inside a line of text (Spec 02 FR-2-5; same gate) | `plugins/sgs-blocks/assets/css/inline-formats.css` |
 | `accentSets` | alternative accent sets as CSS variables, not picker swatches | the draft's variant switch |
 | `dark`, `darkInk` | derived dark palette and fill-scoped ink (FR-33-20) | `theme/sgs-theme/functions.php` (`dark_mode_mapping_css`, `dark_mode_ink_css`) |
 | `header`, `footer` | reserved, empty, for header and footer component tokens | Spec 37 decides use |
@@ -806,15 +809,15 @@ Every focusable element in the framework shows one keyboard focus look, defined 
 
 - **FR-32-23 — Text can have an outline.** The shared typography settings gain an outline width (per device) and an outline colour (normal and hover) for every prefix with the full typography set; hollow letters are the text colour at opacity 0. *Done when:* `vendor/bin/phpunit --filter TypographyTextStrokeTest` passes and `node scripts/audit-typography-attr-declarations.js --check` exits 0 (in `plugins/sgs-blocks/`).
 
-  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G2); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+  Status: built (09b02c958, gate fixes 13d04b31f). Proof: `php vendor/phpunit/phpunit/phpunit --filter TypographyTextStrokeTest` passes, and `node scripts/audit-typography-attr-declarations.js --check` and `node scripts/survey-typography-opt-in-props.js --check` exit 0 (122 targets in 45 blocks). Live check at 375/768/1440 and the editor canvas: open (control-gaps plan Step 9, carried to the next session).
 
 - **FR-32-24 — A link underline can have its own colour, gap and a hover-only mode.** The shared link underline settings gain an underline colour (normal and hover), an underline gap and a "Shows on hover" mode, on every block with link underline settings. *Done when:* `vendor/bin/phpunit --filter LinkUnderlineTest` passes and `node scripts/survey-link-underline-family.js --check` exits 0.
 
-  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G11); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+  Status: built (3ed66b36a, gate fixes 13d04b31f). Proof: `php vendor/phpunit/phpunit/phpunit --filter LinkUnderlineTest` (36 tests) passes and `node scripts/survey-link-underline-family.js --check` exits 0 (11 prefixes in 10 blocks). Live check at 375/768/1440 and the editor canvas: open (control-gaps plan Step 9, carried to the next session).
 
 - **FR-32-26 — Every scrollbar on the site follows the brand.** One theme stylesheet colours every scrollbar from `settings.custom.scrollbar` (thumb defaults to primary, an on-dark thumb to accent, track transparent); the page's own scrollbar keeps the arrow buttons the visitor's platform draws, while inner scrollers are slim with none; blocks that hide their bars keep them hidden; sgs/google-reviews keeps Google's look; a snapshot thumb under 2:1 against its ground is refused. The floor is 2:1, not WCAG 1.4.11's 3:1 for a restyled bar, by Bean's ruling (2026-10-19): the leading browsers' own bars sit below 3:1, and the standard is applied to secure good UX. *Done when:* `npx wp-scripts test-unit-js tests/js/scrollbar-contract.test.js` and `python scripts/check-snapshot-scrollbar-tokens.py --self-test` pass (in `plugins/sgs-blocks/`), and on Windows Chrome the page bar keeps its arrows while the drawer shows none.
 
-  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G3); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+  Status: built (8ee1e5564; deployed to sandybrown in 13d04b31f). Proof: `npx wp-scripts test-unit-js tests/js/scrollbar-contract.test.js` and `python scripts/check-snapshot-scrollbar-tokens.py --self-test` pass, every site snapshot passes `--check` at the 2:1 floor; live on the canary the root `scrollbar-color` resolves from the token at 375, 768 and 1440. Windows Chrome arrow check (page keeps its arrows, inner scrollers none): open (control-gaps plan Step 9).
 
 
 Part D (the draft-to-snapshot extractor, §15, FR-33-1 to FR-33-10 and FR-33-12 to FR-33-19) is in Spec 48 §11 (`.claude/specs/48-CLONING-SYSTEM.md`).

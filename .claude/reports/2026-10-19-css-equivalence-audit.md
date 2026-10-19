@@ -10,18 +10,18 @@ Twelve features the drafts use that no SGS control, block default, theme rule or
 
 | # | What the visitor sees | Draft | Fix and owner |
 |---|---|---|---|
-| 1 | A sticky side column stops below the sticky header | Indus | "Pin below the site header" and a gap on sgs/container's pin edge |
-| 2 | Hollow outlined lettering | Indus, Mama's | Outline width and colour in the shared typography settings |
-| 3 | Branded scrollbars on every scroller | Indus | One site-wide theme style, thumb in the brand primary |
-| 4 | Crisper text on macOS and iOS | Indus, Mama's | One base rule in the theme stylesheet |
-| 5 | A tilted ribbon tag with a V-cut end | Mama's | Left and right end shapes from the shape-divider library, plus the shared border panel, on sgs/label |
-| 6 | A phone add-to-basket bar that slides up once the buy button scrolls away | Mama's | A mobile bar option on sgs/buybox, its subtitle cut to one line by default |
-| 7 | A highlighter stripe behind selected words | Mama's | A highlight toolbar format in every SGS text element, its look in the theme snapshot |
-| 8 | A small rounded photo inside a line of text | Mama's | An inline-photo toolbar format in every SGS text element, its look in the theme snapshot |
-| 9 | A long uploaded file name stays inside its box | Indus | A wrap default on sgs/form's file name |
-| 10 | A description line under each option tile's label | Indus | A description per tile in sgs/form-field-tiles, copied from sgs/choice-flow-question, with controls on both |
-| 11 | A link underline in its own colour | Mama's | Underline colour in the shared link underline helper |
-| 13 | Anything floating over a section (a tag, a badge) | Mama's | sgs/decorative-image holds inner blocks as the Floating layer |
+| 1 | A sticky side column stops below the sticky header | Indus | "Pin below the site header" and a gap on sgs/container's pin edge (built 2026-10-19: Spec 02 FR-2-1) |
+| 2 | Hollow outlined lettering | Indus, Mama's | Outline width and colour in the shared typography settings (built 2026-10-19: Spec 32 FR-32-23) |
+| 3 | Branded scrollbars on every scroller | Indus | One site-wide theme style, thumb in the brand primary (built 2026-10-19: Spec 32 FR-32-26) |
+| 4 | Crisper text on macOS and iOS | Indus, Mama's | One base rule in the theme stylesheet (built 2026-10-19: Spec 01 FR-1-1) |
+| 5 | A tilted ribbon tag with a V-cut end | Mama's | Left and right end shapes from the shape-divider library, plus the shared border panel, on sgs/label (built 2026-10-19: Spec 02 FR-2-2) |
+| 6 | A phone add-to-basket bar that slides up once the buy button scrolls away | Mama's | A mobile bar option on sgs/buybox, its subtitle cut to one line by default (built 2026-10-19: Spec 02 FR-2-3) |
+| 7 | A highlighter stripe behind selected words | Mama's | A highlight toolbar format in every SGS text element, its look in the theme snapshot (built 2026-10-19: Spec 02 FR-2-4) |
+| 8 | A small rounded photo inside a line of text | Mama's | An inline-photo toolbar format in every SGS text element, its look in the theme snapshot (built 2026-10-19: Spec 02 FR-2-5) |
+| 9 | A long uploaded file name stays inside its box | Indus | A wrap default on sgs/form's file name (built 2026-10-19: Spec 04 FR-4-1) |
+| 10 | A description line under each option tile's label | Indus | A description per tile in sgs/form-field-tiles, copied from sgs/choice-flow-question, with controls on both (built 2026-10-19: Spec 04 FR-4-2) |
+| 11 | A link underline in its own colour | Mama's | Underline colour in the shared link underline helper (built 2026-10-19: Spec 32 FR-32-24) |
+| 13 | Anything floating over a section (a tag, a badge) | Mama's | sgs/decorative-image holds inner blocks as the Floating layer (built 2026-10-19: Spec 02 FR-2-6) |
 
 ## Layout, box and scrolling
 
