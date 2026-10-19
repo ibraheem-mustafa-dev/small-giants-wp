@@ -4,7 +4,7 @@ TRACK: Spec 48 FR-48-25, the intake inventory reader fixes Bean's Indus review f
 
 CONTEXT (plain English)
 - Intake re-derives the draft's animation and surface inventory and diffs it against Claude Design's copy; each disagreement is a review row Bean marks `ours` or `theirs`.
-- In the 2026-10-19 review, 125 of 420 Indus rows took `theirs` because the draft code proves our reader wrong. Those marks are in `sites/indus-foods/build/intake/review.md` and `intake.json`; the reader is still wrong for every future client.
+- In the 2026-10-19 review, 125 of 421 Indus rows took `theirs` because the draft code proves our reader wrong. Those marks are in `sites/indus-foods/build/intake/review.md` and `intake.json`; the reader is still wrong for every future client.
 - The full list of bugs, each with the functions, record IDs and draft lines, is FR-48-25's "Open (Bean's Indus review, 2026-10-19)" paragraph in `.claude/specs/48-CLONING-SYSTEM.md`.
 
 READ FIRST

@@ -20,14 +20,17 @@ import json
 from pathlib import Path
 
 SITE_INFO_DAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
+DAY_NAMES = {name: name[:3] for name in ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")}
+DAY_NAMES.update({d: d for d in SITE_INFO_DAYS})
 
 
 def site_info_key(intake_key: str) -> str:
-    """Intake's key as the Site Info key: `hours.monday` -> `opening_hours.mon`; every other key is unchanged."""
+    """Intake's key as the Site Info key: `hours.monday` -> `opening_hours.mon`. Only an exact day name maps; a range
+    or anything else (`hours.mon-fri`) is returned unchanged, so the script's key check refuses it."""
     if intake_key.startswith("hours."):
         day = intake_key.split(".", 1)[1].strip().lower()
-        if len(day) >= 3 and day[:3] in SITE_INFO_DAYS:
-            return f"opening_hours.{day[:3]}"
+        if day in DAY_NAMES:
+            return f"opening_hours.{DAY_NAMES[day]}"
     return intake_key
 
 
@@ -54,10 +57,12 @@ def read_intake(path: Path) -> tuple[list[dict], list[dict]]:
     site_info = data.get("siteInfo") if isinstance(data, dict) else None
     if not isinstance(site_info, dict) or not isinstance(site_info.get("rows"), list):
         raise ValueError(f"{path} holds no siteInfo.rows list")
-    marks = {
-        r.get("rowId"): r.get("mark")
-        for r in data.get("review", []) if isinstance(r, dict) and r.get("rowType") == "site-info"
-    }
+    marks: dict = {}
+    for r in data.get("review", []):
+        if isinstance(r, dict) and r.get("rowType") == "site-info":
+            if r.get("rowId") in marks:
+                raise ValueError(f"{path} marks {r.get('rowId')} twice in review[]: one row, one mark")
+            marks[r.get("rowId")] = r.get("mark")
     entries: list[dict] = []
     refused: list[dict] = []
     for row in site_info["rows"]:

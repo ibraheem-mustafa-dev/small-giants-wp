@@ -90,20 +90,25 @@ def test_apply_sets_drops_adds_and_clears_the_proposal_keys():
                  "accent": {"hex": "#d8ca50", "tokens": ["--gold"]},
                  "custom-ink": {"hex": "#1e2a3c", "tokens": ["--ink"]}}
     trace: list = []
-    cp.apply_confirmed(snap, confirmed, FRAMEWORK, trace)
+    # surface-topbar is this draft's token slug; custom-old is a client slug the snapshot already held.
+    cp.apply_confirmed(snap, confirmed, FRAMEWORK, trace, frozenset({"surface-topbar", "custom-surface-topbar"}))
     pal = {e["slug"]: e for e in snap["settings"]["color"]["palette"]}
-    assert set(pal) == {"primary", "accent", "success", "custom-ink"}
+    assert set(pal) == {"primary", "accent", "success", "custom-ink", "custom-old"}
     assert pal["accent"]["color"] == "#d8ca50" and pal["custom-ink"]["color"] == "#1e2a3c"
     assert pal["success"]["color"] == "#2E7D4F"  # a framework slug nobody confirmed stays
     assert not {"advisory", "confidence", "_baseline_color"} & set(pal["primary"])
     assert pal["primary"]["_source"] == "confirmed"
     actions = sorted((r["slug"], r["action"]) for r in trace)
-    assert actions == [("accent", "set"), ("custom-ink", "added"), ("custom-old", "dropped"),
+    assert actions == [("accent", "set"), ("custom-ink", "added"), ("custom-old", "kept"),
                        ("primary", "set"), ("surface-topbar", "dropped")]
-    # idempotent: a second pass (after merge_onto) changes and logs nothing
+    # idempotent: a second pass (after merge_onto) changes nothing (it logs only the kept client slug)
     again: list = []
-    cp.apply_confirmed(snap, confirmed, FRAMEWORK, again)
-    assert again == []
+    cp.apply_confirmed(snap, confirmed, FRAMEWORK, again, frozenset({"surface-topbar"}))
+    assert [(r["slug"], r["action"]) for r in again] == [("custom-old", "kept")]
+
+
+def test_draft_slugs_name_both_proposal_forms():
+    assert cp.draft_custom_slugs(_intake([("--brand-blue", "#0a7ea8", "primary")], {})) == {"brand-blue", "custom-brand-blue"}
 
 
 # ── build_snapshot on a real draft: the confirmed map differs from the extractor's proposal ────────
@@ -118,7 +123,8 @@ def _build(confirmed):
     html = DRAFT.read_text(encoding="utf-8")
     css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", html, re.DOTALL))
     facts = json.loads(FACTS.read_text(encoding="utf-8"))
-    return extract.build_snapshot("bakery-client", css, facts, html, BASELINE, [], REPO, confirmed=confirmed)
+    return extract.build_snapshot("bakery-client", css, facts, html, BASELINE, [], REPO, confirmed=confirmed,
+                                  draft_slugs=cp.draft_custom_slugs(INTAKE))
 
 
 def _assert_follows_confirmed(snap):

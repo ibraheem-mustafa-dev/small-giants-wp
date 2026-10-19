@@ -423,3 +423,35 @@ test( 'dotMarker: a dot or short bar beside text is removed, stacked dot rows ar
 	const glow = run( section( [ E( 'div', {}, [ dot( 'position:absolute;width:8px;height:8px;background:#fff' ), E( 'p', { words: 'Body' } ) ] ) ] ) );
 	assert.notEqual( row( glow, ( x ) => 'span' === x.tag ).rule, 'dotMarker' );
 } );
+
+test( 'formControl carries the field text into the block and stays inside real fields (QC council 2026-10-19); each case MUST FAIL without its guard', () => {
+	// The label, required flag and hint reach the field block's own settings.
+	const field = E( 'div', { style: 'display:flex;flex-direction:column' }, [ E( 'label', { words: 'Business name', attrs: { for: 'b' } }, [ E( 'span', { words: '*' } ) ] ), E( 'input', { attrs: { id: 'b', type: 'text', required: '' } } ), E( 'span', { words: 'As shown on your invoices', y: 40 } ) ] );
+	const f = byTag( run( section( [ E( 'form', {}, [ field ] ) ] ) ), 'input' );
+	assert.deepEqual( [ f.block, f.attributes.label, f.attributes.required, f.attributes.helpText ], [ 'sgs/form-field-text', 'Business name', true, 'As shown on your invoices' ] );
+	// A heading beside a lone newsletter input, and text beside a hidden input, are not field text.
+	const news = E( 'div', {}, [ E( 'h3', { words: 'Subscribe' } ), E( 'input', { attrs: { type: 'email' }, y: 30 } ) ] );
+	const hid = E( 'div', {}, [ E( 'input', { attrs: { type: 'hidden' } } ), E( 'p', { words: 'We reply within a day' } ) ] );
+	const r = run( section( [ news, hid ] ) );
+	assert.notEqual( byWords( r, 'Subscribe' ).action, 'remove' );
+	assert.notEqual( byWords( r, 'We reply within a day' ).action, 'remove' );
+	// A required checkbox among others is a checkbox, not the consent field; a password is a text field; a submit is not a field.
+	const group = E( 'fieldset', {}, [ E( 'label', {}, [ E( 'input', { attrs: { type: 'checkbox', required: '' } } ), E( 'span', { words: 'Rice' } ) ] ), E( 'label', { y: 30 }, [ E( 'input', { attrs: { type: 'checkbox' } } ), E( 'span', { words: 'Flour' } ) ] ) ] );
+	const g = run( section( [ E( 'form', {}, [ group ] ) ] ) );
+	assert.deepEqual( g.proposal.rows.filter( ( x ) => 'input' === x.tag ).map( ( x ) => x.block ), [ 'sgs/form-field-checkbox', 'sgs/form-field-checkbox' ] );
+	const misc = run( section( [ E( 'form', {}, [ E( 'input', { attrs: { type: 'password' } } ), E( 'input', { attrs: { type: 'submit', value: 'Send' }, y: 40 } ) ] ) ] ) );
+	const inputs = misc.proposal.rows.filter( ( x ) => 'input' === x.tag );
+	assert.equal( inputs[ 0 ].block, 'sgs/form-field-text' );
+	assert.notEqual( inputs[ 1 ].rule, 'formControl' );
+} );
+
+test( 'dotMarker never takes a control and needs text beside it; cardHeading reads rem and keyword weights (QC council 2026-10-19); MUST FAIL without each guard', () => {
+	// A slider's pagination dots: labelled buttons with no text beside them stay controls.
+	const dots = E( 'div', { display: 'flex' }, [ 0, 1, 2 ].map( ( i ) => E( 'button', { attrs: { 'aria-label': `Slide ${ i + 1 }` }, style: 'width:12px;height:12px;border-radius:999px', snippet: `<button sc-camel-on-click="{{ d.go }}" data-dc-tpl="${ i }"></button>` } ) ) );
+	assert.ok( run( section( [ dots ] ) ).proposal.rows.every( ( x ) => 'dotMarker' !== x.rule ) );
+	// An empty swatch with nothing written beside it is not a marker either.
+	const swatch = E( 'div', {}, [ E( 'span', { style: 'width:10px;height:10px;background:#D8CA50' } ) ] );
+	assert.notEqual( byTag( run( section( [ swatch ] ) ), 'span' ).rule, 'dotMarker' );
+	const card = ( y ) => E( 'div', { y }, [ E( 'div', { words: `Wholesale ${ y }`, style: 'font-weight:bold;font-size:1.25rem' } ), E( 'div', { words: 'Pallet volumes for cash and carries.', style: 'font-size:1rem' } ) ] );
+	assert.equal( byWords( run( section( [ E( 'div', { display: 'grid' }, [ card( 0 ), card( 1 ) ] ) ] ) ), 'Wholesale 0' ).rule, 'cardHeading' );
+} );

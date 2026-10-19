@@ -336,3 +336,24 @@ class SetInput(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_intake_day_names_map_exactly_and_ranges_do_not():
+    from site_info_intake import site_info_key
+    assert site_info_key("hours.monday") == "opening_hours.mon"
+    assert site_info_key("hours.sun") == "opening_hours.sun"
+    # A range or plural must not land on Monday alone (QC council 2026-10-19).
+    assert site_info_key("hours.mon-fri") == "hours.mon-fri"
+    assert site_info_key("hours.mondays") == "hours.mondays"
+
+
+def test_intake_duplicate_marks_are_refused(tmp_path):
+    from site_info_intake import read_intake
+    import json as _json
+    import pytest as _pytest
+    f = tmp_path / "intake.json"
+    f.write_text(_json.dumps({"siteInfo": {"rows": [{"rowId": "siteinfo:phone", "key": "phone", "value": "0121 771 4330"}]},
+                              "review": [{"rowId": "siteinfo:phone", "rowType": "site-info", "mark": "accept"},
+                                         {"rowId": "siteinfo:phone", "rowType": "site-info", "mark": "drop"}]}), encoding="utf-8")
+    with _pytest.raises(ValueError):
+        read_intake(f)

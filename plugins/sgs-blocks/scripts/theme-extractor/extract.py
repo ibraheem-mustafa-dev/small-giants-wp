@@ -360,7 +360,8 @@ def _declared_design(draft_dir, html: str, pass_a_found: bool) -> tuple[dict, di
 
 def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict, trace: list,
                     repo: pathlib.Path, draft_dir: pathlib.Path | None = None,
-                    draft_name: str | None = None, confirmed: dict | None = None) -> dict:
+                    draft_name: str | None = None, confirmed: dict | None = None,
+                    draft_slugs: frozenset = frozenset()) -> dict:
     root_tokens = build_draft_root_token_map(css)
     base_rules = parse_base_rules(css)
 
@@ -395,7 +396,8 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     if confirmed is not None:
         # FR-33-2: Bean's confirmed role map (intake review) is what the snapshot uses. Applied before
         # anything resolves a colour to a slug, so presets and references see the confirmed palette.
-        confirmed_palette.apply_confirmed(snap, confirmed, confirmed_palette.framework_slugs(baseline), trace)
+        confirmed_palette.apply_confirmed(snap, confirmed, confirmed_palette.framework_slugs(baseline), trace,
+                                          draft_slugs)
         pal = snap["settings"]["color"]["palette"]
     slug_by_hex = palette_refs.slug_by_hex(pal) if design else {
         e["color"].lower(): e["slug"] for e in pal
@@ -807,11 +809,13 @@ def main(argv=None) -> int:
     baseline = json.loads((repo / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 
     confirmed = None
+    draft_slugs: frozenset = frozenset()
     framework = confirmed_palette.framework_slugs(baseline)
     if args.intake:
+        intake = json.loads(pathlib.Path(args.intake).read_text(encoding="utf-8"))
+        draft_slugs = confirmed_palette.draft_custom_slugs(intake)
         try:
-            confirmed, unmarked = confirmed_palette.confirmed_map(
-                json.loads(pathlib.Path(args.intake).read_text(encoding="utf-8")), framework)
+            confirmed, unmarked = confirmed_palette.confirmed_map(intake, framework)
         except confirmed_palette.ConfirmError as exc:
             print(f"HALT (FR-33-2 confirm step): {exc}", file=sys.stderr)
             return 7
@@ -821,7 +825,7 @@ def main(argv=None) -> int:
 
     trace: list = []
     snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent,
-                          draft_name=draft.name, confirmed=confirmed)
+                          draft_name=draft.name, confirmed=confirmed, draft_slugs=draft_slugs)
 
     if args.merge_onto:
         existing_path = pathlib.Path(args.merge_onto)
@@ -829,7 +833,7 @@ def main(argv=None) -> int:
             snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace)
     if confirmed is not None:
         # The merge may carry slugs Bean did not confirm; the confirmed map still decides.
-        confirmed_palette.apply_confirmed(snap, confirmed, framework, trace)
+        confirmed_palette.apply_confirmed(snap, confirmed, framework, trace, draft_slugs)
 
     drop_inherited_heading_colour(snap, trace)
 

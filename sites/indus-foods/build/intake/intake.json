@@ -97682,7 +97682,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "47 copies of one template element on 12 surfaces; a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "reason": "47 copies of one template element on 12 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "rule": "dotMarker",
      "candidates": [],
      "action": "remove",
@@ -97725,7 +97725,7 @@
       "Indus Foods Website v2/391#2",
       "Indus Foods Website v2/391#3"
      ],
-     "proposalReason": "a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "proposalReason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "alsoIn": [
       {
        "surface": "page-sustainability",
@@ -99702,7 +99702,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "3 copies of one template element on 3 surfaces; a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "reason": "3 copies of one template element on 3 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "rule": "dotMarker",
      "candidates": [],
      "action": "remove",
@@ -101238,7 +101238,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "28 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "28 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [],
      "action": "unwrap",
@@ -101315,7 +101315,7 @@
       "Indus Foods Website v2/555#5",
       "Indus Foods Website v2/555#6"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "alsoIn": [
       {
        "surface": "page-catalogue",
@@ -101551,7 +101551,7 @@
      "block": "sgs/form-field-text",
      "confidence": 1,
      "low": false,
-     "reason": "6 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "6 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -101603,7 +101603,7 @@
      "keys": [
       "Indus Foods Website v2/560#0"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "splitFrom": "Indus Foods Website v2/560",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 1,
@@ -101641,7 +101641,7 @@
      "block": "sgs/form-field-email",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -101693,7 +101693,7 @@
      "keys": [
       "Indus Foods Website v2/560#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "splitFrom": "Indus Foods Website v2/560",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 1,
@@ -101729,7 +101729,7 @@
      "block": "sgs/form-field-phone",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -101781,7 +101781,7 @@
      "keys": [
       "Indus Foods Website v2/560#2"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "splitFrom": "Indus Foods Website v2/560",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 1,
@@ -101817,7 +101817,7 @@
      "block": "sgs/form-field-select",
      "confidence": 1,
      "low": false,
-     "reason": "8 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "8 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -101870,7 +101870,7 @@
       "Indus Foods Website v2/562#0",
       "Indus Foods Website v2/562#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "alsoIn": [
       {
        "surface": "page-catalogue",
@@ -101903,7 +101903,7 @@
      "block": "sgs/form-field-file",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -101969,7 +101969,7 @@
      "block": "sgs/form-field-textarea",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -102047,7 +102047,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [],
      "action": "unwrap",
@@ -102134,7 +102134,7 @@
      "block": "sgs/form-field-consent",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 4 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -102863,7 +102863,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "5 copies of one template element on 2 surfaces; a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "reason": "5 copies of one template element on 2 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "rule": "dotMarker",
      "candidates": [],
      "action": "remove",
@@ -102905,7 +102905,7 @@
       "Indus Foods Website v2/581#1",
       "Indus Foods Website v2/581#2"
      ],
-     "proposalReason": "a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "proposalReason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "alsoIn": [
       {
        "surface": "page-catalogue",
@@ -104825,7 +104825,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "rule": "dotMarker",
      "candidates": [],
      "action": "remove",
@@ -106543,7 +106543,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "rule": "dotMarker",
      "candidates": [],
      "action": "remove",
@@ -107765,7 +107765,7 @@
      "block": "sgs/form-field-text",
      "confidence": 1,
      "low": false,
-     "reason": "6 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "6 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -107819,7 +107819,7 @@
       "Indus Foods Website v2>TradeApplication@466#0/39#1",
       "Indus Foods Website v2>TradeApplication@466#0/39#2"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "alsoIn": [
       {
        "surface": "trade-account-application",
@@ -107839,7 +107839,7 @@
      "block": "sgs/form-field-select",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -107892,7 +107892,7 @@
       "Indus Foods Website v2>TradeApplication@466#0/41#0",
       "Indus Foods Website v2>TradeApplication@466#0/41#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "alsoIn": [
       {
        "surface": "trade-account-application",
@@ -114071,7 +114071,7 @@
      "block": "sgs/form-field-text",
      "confidence": 1,
      "low": false,
-     "reason": "4 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "4 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -114124,7 +114124,7 @@
       "Indus Foods Website v2>EnquiryForm@468#0/26#0",
       "Indus Foods Website v2>EnquiryForm@468#0/26#1"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "splitFrom": "Indus Foods Website v2>EnquiryForm@468/26",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 2,
@@ -114149,7 +114149,7 @@
      "block": "sgs/form-field-email",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -114201,7 +114201,7 @@
      "keys": [
       "Indus Foods Website v2>EnquiryForm@468#0/26#2"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "splitFrom": "Indus Foods Website v2>EnquiryForm@468/26",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 2,
@@ -114225,7 +114225,7 @@
      "block": "sgs/form-field-phone",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -114277,7 +114277,7 @@
      "keys": [
       "Indus Foods Website v2>EnquiryForm@468#0/26#3"
      ],
-     "proposalReason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "proposalReason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "splitFrom": "Indus Foods Website v2>EnquiryForm@468/26",
      "blocksAcrossCopies": {
       "sgs/form-field-text": 2,
@@ -114458,7 +114458,7 @@
      "block": "sgs/form-field-textarea",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
      "rule": "formControl",
      "candidates": [
       {
@@ -115674,7 +115674,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "6 copies of one template element on 6 surfaces; a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "reason": "6 copies of one template element on 6 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "rule": "dotMarker",
      "candidates": [],
      "action": "remove",
@@ -115888,7 +115888,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "6 copies of one template element on 6 surfaces; a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+     "reason": "6 copies of one template element on 6 surfaces; a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
      "rule": "dotMarker",
      "candidates": [],
      "action": "remove",

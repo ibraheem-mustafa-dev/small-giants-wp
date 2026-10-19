@@ -8,9 +8,12 @@ each ``palette-role`` row in ``intake.json``'s ``review[]``:
   ``one-off``       no palette entry; the colour stays a literal hex where it is used
 
 ``confirmed_map`` turns those marks into ``{slug: {"hex", "tokens"}}``. ``apply_confirmed`` then sets
-every confirmed slug to Bean's hex, adds a confirmed slug the palette lacks, and drops any
-non-framework slug no confirmed row names. Every change is logged to the trace. The step is
-idempotent, so it can run once on the generated palette and again after ``merge_onto``.
+every confirmed slug to Bean's hex, adds a confirmed slug the palette lacks, and drops a
+slug proposed from one of this draft's tokens that no confirmed row names (a token
+Bean marked one-off). Any other slug, such as a client slug ``merge_onto`` carried from the existing
+snapshot, is kept and logged, because the client's styles may reference it. Every change is logged
+to the trace. The step is idempotent, so it can run once on the generated palette and again after
+``merge_onto``.
 """
 from __future__ import annotations
 
@@ -86,11 +89,22 @@ def confirmed_map(intake: dict, known_slugs) -> tuple[dict[str, dict], list[str]
     return confirmed, unmarked
 
 
+def draft_custom_slugs(intake: dict) -> frozenset[str]:
+    """The slugs this draft's tokens can be proposed under (``--brand-blue`` -> ``brand-blue``, the raw
+    token slug the extractor keeps for a client's own token, and ``custom-brand-blue``, intake's): the
+    only non-framework slugs the confirm step may drop."""
+    rows = (intake.get("palette") or {}).get("rows") or []
+    names = [r["token"].lstrip("-") for r in rows
+             if isinstance(r, dict) and isinstance(r.get("token"), str) and r["token"].startswith("--")]
+    return frozenset([*names, *(f"custom-{n}" for n in names)])
+
+
 def _title(slug: str) -> str:
     return slug.replace("custom-", "").replace("-", " ").title()
 
 
-def apply_confirmed(snap: dict, confirmed: dict[str, dict], framework: dict[str, str], trace: list) -> dict:
+def apply_confirmed(snap: dict, confirmed: dict[str, dict], framework: dict[str, str], trace: list,
+                    draft_slugs: frozenset[str] = frozenset()) -> dict:
     """Make ``snap``'s palette follow ``confirmed`` (see the module docstring). Mutates and returns it."""
     color = snap.setdefault("settings", {}).setdefault("color", {})
     palette = color.get("palette") or []
@@ -98,10 +112,14 @@ def apply_confirmed(snap: dict, confirmed: dict[str, dict], framework: dict[str,
     for entry in palette:
         slug = entry.get("slug") if isinstance(entry, dict) else None
         if slug and slug not in framework and slug not in confirmed:
-            trace.append({"kind": "confirm", "slug": slug, "action": "dropped",
+            if slug in draft_slugs:
+                trace.append({"kind": "confirm", "slug": slug, "action": "dropped",
+                              "old": entry.get("color"),
+                              "reason": "proposed from a draft token that no confirmed intake row names"})
+                continue
+            trace.append({"kind": "confirm", "slug": slug, "action": "kept",
                           "old": entry.get("color"),
-                          "reason": "non-framework slug that no confirmed intake row names"})
-            continue
+                          "reason": "not a slug of this draft's tokens: a client slug the snapshot already held"})
         kept.append(entry)
     by_slug = {e.get("slug"): e for e in kept if isinstance(e, dict)}
     for slug, info in confirmed.items():

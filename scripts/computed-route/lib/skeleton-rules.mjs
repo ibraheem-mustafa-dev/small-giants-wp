@@ -43,12 +43,32 @@ export function isMarker( e, m, D ) {
 	if ( ! D || m.words( e ) || m.blockKids( e ).length || m.kids( e ).some( ( k ) => 'svg' === k.tag ) || DECORATION_TAGS.has( e.tag ) || [ 'absolute', 'fixed' ].includes( st.position ) ) {
 		return false;
 	}
-	const w = px( st.width );
-	const h = px( st.height );
-	if ( null == w || null == h ) {
+	// A control the visitor operates (a slider's pagination dot, a swatch) is never a marker.
+	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != e.attrs?.tabindex || /\s(?:sc-camel-on-click|onClick)=/.test( e.snippet || '' ) ) {
 		return false;
 	}
-	return ( w <= D.maxDotPx && h <= D.maxDotPx ) || ( h <= D.maxBarHeightPx && w <= D.maxBarWidthPx );
+	const w = px( st.width );
+	const h = px( st.height );
+	if ( null == w || null == h || ! ( ( w <= D.maxDotPx && h <= D.maxDotPx ) || ( h <= D.maxBarHeightPx && w <= D.maxBarWidthPx ) ) ) {
+		return false;
+	}
+	// It marks text: its parent holds words of its own or in another child.
+	const p = m.byKey[ e.parentKey ];
+	return !! p && ( !! m.words( p ) || m.blockKids( p ).some( ( k ) => k !== e && String( k.allText ?? m.words( k ) ).trim() ) );
+}
+// A length in px, with rem and em read against a 16px root (the draft's declared lengths); null for anything else.
+function lengthPx( v ) {
+	const n = /^(-?[\d.]+)(px|rem|em)$/.exec( String( v ?? '' ).trim() );
+	if ( ! n ) {
+		return null;
+	}
+	return 'px' === n[ 2 ] ? Number( n[ 1 ] ) : Number( n[ 1 ] ) * 16;
+}
+// A font weight as a number: keywords as CSS maps them (normal 400, bold and bolder 700, lighter 300).
+const WEIGHT_WORDS = { normal: 400, bold: 700, bolder: 700, lighter: 300 };
+function weightOf( v ) {
+	const t = String( v ?? '' ).trim().toLowerCase();
+	return WEIGHT_WORDS[ t ] ?? ( Number( t ) || null );
 }
 // One or more emoji (each optionally followed by a variation selector or a zero-width joiner), spaces removed first.
 const EMOJI = /^(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+$/u;
@@ -164,11 +184,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			return F.byTag?.[ e.tag ] || null;
 		}
 		const type = String( e.attrs?.type || 'text' ).toLowerCase();
+		// A submit, reset or image input is a button, never a field.
+		if ( ( F.notFields || [] ).includes( type ) ) {
+			return null;
+		}
 		// A lone required checkbox (a consent tick) is the consent field; a checkbox among others is a checkbox group.
-		if ( 'checkbox' === type && required( e ) ) {
+		if ( 'checkbox' === type && required( e ) && ! otherCheckbox( e ) ) {
 			return F.consent || null;
 		}
-		return F.byType?.[ type ] || null;
+		// A type with no field of its own (password, url, search) or a type the render left bound is a text field.
+		return F.byType?.[ type ] || F.fallback || null;
+	};
+	// Another checkbox in the same group (the control's parent or grandparent).
+	const otherCheckbox = ( e ) => {
+		const scope = m.byKey[ m.byKey[ e.parentKey ]?.parentKey ] || m.byKey[ e.parentKey ];
+		return !! scope && desc( scope ).some( ( k ) => k !== e && 'input' === k.tag && 'checkbox' === String( k.attrs?.type || '' ).toLowerCase() );
 	};
 	// Whether a control is required: its rendered attribute, else the template's own (a literal or `{{ true }}`, never a
 	// binding that may be false).
@@ -179,15 +209,54 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		const open = /^<[^>]*>/.exec( e.snippet || '' )?.[ 0 ] || '';
 		return /\srequired(?=[\s>/])/.test( open ) || /\srequired="(?:required|true|\{\{\s*true\s*\}\})?"/.test( open );
 	};
-	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( ( k ) => controlBlock( k ) );
+	// A hidden input is no visible field, so the text beside it is never that field's text.
+	const visibleControl = ( k ) => !! controlBlock( k ) && 'hidden' !== String( k.attrs?.type || '' ).toLowerCase();
+	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( visibleControl );
 	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
 	// field's wrapper beside the control, or in a <label> there (two levels up at most).
 	const fieldText = ( e ) => {
-		if ( ! R.formControl || controlBlock( e ) || ! all( e ) || 'button' === e.tag || m.blockKids( e ).some( ( k ) => controlBlock( k ) ) ) {
+		if ( ! R.formControl || controlBlock( e ) || ! all( e ) || 'button' === e.tag || HEADING.test( e.tag ) || m.blockKids( e ).some( ( k ) => controlBlock( k ) ) ) {
 			return false;
 		}
 		const p = m.byKey[ e.parentKey ];
 		return holdsControl( p ) || ( !! p && 'label' === p.tag && holdsControl( m.byKey[ p.parentKey ] ) ) || ( 'label' === e.tag && holdsControl( p ) );
+	};
+	// The words a field's removed texts carried, as the field block's own settings: the label (the <label> naming the
+	// control, else the first text in its wrapper), whether it is required, and the remaining hint. A required marker
+	// ("*") and a character count ("0 / 800") are drawn by the field block itself.
+	const fieldContent = ( e, block ) => {
+		const p = m.byKey[ e.parentKey ];
+		const scope = p && 'label' === p.tag ? m.byKey[ p.parentKey ] || p : p;
+		const own = ( k ) => k === e || desc( k ).includes( e );
+		const drawn = ( t ) => /^\*$/.test( t ) || /^\d+\s*\/\s*\d+$/.test( t );
+		const texts = [];
+		const visit = ( k ) => {
+			if ( k !== scope && own( k ) && k === e ) {
+				return;
+			}
+			if ( k !== scope && m.words( k ) && ! controlBlock( k ) ) {
+				texts.push( { el: k, text: m.words( k ).replace( /\s*\*$/, '' ).trim() } );
+			}
+			m.blockKids( k ).forEach( visit );
+		};
+		if ( scope ) {
+			visit( scope );
+		}
+		const named = texts.find( ( t ) => 'label' === t.el.tag || 'label' === m.byKey[ t.el.parentKey ]?.tag );
+		const label = ( named || texts.find( ( t ) => t.text && ! drawn( t.text ) ) )?.text || '';
+		const help = texts.filter( ( t ) => t.text && t.text !== label && ! drawn( t.text ) ).map( ( t ) => t.text ).join( ' ' );
+		const out = {};
+		const has = ( n ) => !! facts.attr?.( block, n );
+		if ( label && has( 'label' ) ) {
+			out.label = label;
+		}
+		if ( has( 'required' ) && required( e ) ) {
+			out.required = true;
+		}
+		if ( help && has( 'helpText' ) ) {
+			out.helpText = help;
+		}
+		return out;
 	};
 	const markerShape = ( e ) => isMarker( e, m, R.dotMarker );
 	// The first piece of text in a card that is not a bare number, set bold and larger than the next piece of text: the
@@ -197,8 +266,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		if ( ! C || ! /\p{L}/u.test( m.words( e ) ) || m.blockKids( e ).length || HEADING.test( e.tag ) || 'a' === e.tag || 'label' === e.tag || interactive( e ) || numberOnly( e ) || hooks.siteInfoKinds( e ).size ) {
 			return false;
 		}
-		const size = px( st[ 'font-size' ] );
-		if ( ( Number( st[ 'font-weight' ] ) || 0 ) < C.minWeight || null == size || size < C.minSizePx || m.words( e ).split( ' ' ).length > C.maxWords ) {
+		const size = lengthPx( st[ 'font-size' ] );
+		if ( ( weightOf( st[ 'font-weight' ] ) || 0 ) < C.minWeight || null == size || size < C.minSizePx || m.words( e ).split( ' ' ).length > C.maxWords ) {
 			return false;
 		}
 		let card = m.byKey[ e.parentKey ];
@@ -211,8 +280,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			return false;
 		}
 		const ns = declared( next );
-		const nextSize = px( ns[ 'font-size' ] );
-		return null != nextSize ? nextSize < size : ( Number( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
+		const nextSize = lengthPx( ns[ 'font-size' ] );
+		return null != nextSize ? nextSize < size : ( weightOf( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
 	};
 
 	// The link source a Site Info kind becomes on a link (tel: is phone, a maps host is directions), or null.
@@ -263,7 +332,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		( { e } ) => {
 			const block = controlBlock( e );
 			if ( block ) {
-				return v( 'formControl', { block, absorb: true } );
+				return v( 'formControl', { block, absorb: true, attributes: fieldContent( e, block ) } );
 			}
 			if ( R.formControl && 'label' === e.tag && m.blockKids( e ).some( ( k ) => controlBlock( k ) ) ) {
 				return v( 'formControl', { action: 'unwrap' } );

@@ -196,11 +196,6 @@ async function readUnderTrigger( page, instances, n, inst ) {
 async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
-	// A server error is the page failing, not the build: a PHP fatal anywhere on it (a header block, a stale build)
-	// renders no calibration wrapper either.
-	if ( response && response.status() >= 500 ) {
-		throw new Error( `the calibration page at ${ w }px returned HTTP ${ response.status() } (a server or PHP error on the page: check the site's PHP error log; a stale build/ synced to a mirror is one cause)` );
-	}
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
 	// are still read.
 	try {
@@ -208,6 +203,11 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	} catch {
 		// The page loaded and the instance never appeared: the block rendered nothing (an early return in its render.php).
 		const wrappers = await page.locator( '[class*="cr-cal-"]' ).count();
+		// A server error is the page failing, not the build: a PHP fatal anywhere on it (a header block, a stale build)
+		// renders no calibration wrapper either.
+		if ( ! wrappers && response && response.status() >= 500 ) {
+			throw new Error( `the calibration page at ${ w }px returned HTTP ${ response.status() } and holds none of the calibration wrappers (a server or PHP error on the page: check the site's PHP error log; a stale build/ synced to a mirror is one cause)` );
+		}
 		throw new Error( wrappers ? `the block rendered nothing inside its ${ wrappers } calibration wrapper(s) at ${ w }px (no .${ CAL_PREFIX }0 on the page)` : `the calibration page at ${ w }px holds none of the calibration wrappers (the build did not save, or the page is cached)` );
 	}
 	await page.waitForTimeout( 800 );

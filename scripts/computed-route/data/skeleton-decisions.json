@@ -376,8 +376,15 @@
 				"hidden": "sgs/form-field-hidden"
 			},
 			"consent": "sgs/form-field-consent",
-			"reason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
-			"fieldTextReason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)"
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"fieldTextReason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"notFields": [
+				"submit",
+				"reset",
+				"image",
+				"button"
+			],
+			"fallback": "sgs/form-field-text"
 		},
 		"cardHeading": {
 			"block": "sgs/heading",
@@ -390,7 +397,7 @@
 			"maxDotPx": 12,
 			"maxBarHeightPx": 3,
 			"maxBarWidthPx": 40,
-			"reason": "a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)"
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)"
 		}
 	}
 }
