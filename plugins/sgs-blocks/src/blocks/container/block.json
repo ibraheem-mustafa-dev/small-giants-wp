@@ -655,6 +655,16 @@
 			"default": {},
 			"description": "Pin to edge, per device tier: 'top' or 'bottom' keeps the container stuck to that edge of its nearest scrolling ancestor (a drawer, a panel or the page) with the safe-area inset added to its padding on that edge; 'none' or unset is not pinned (includes/container-pin-edge-css.php). Unset everywhere emits nothing."
 		},
+		"pinBelowHeader": {
+			"type": "object",
+			"default": {},
+			"description": "Stop below the site header, per device tier ('on' or 'off', inheriting from the larger tier): at a tier where the pin resolves to 'top', the container sticks at the sticky header's height plus pinGap instead of sliding under it. Ignored inside drawers and pop-ups (includes/container-pin-edge-css.php)."
+		},
+		"pinGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap below the header, per device tier: a CSS length or spacing preset slug, added to the header height when pinBelowHeader is on. Unset: the shop filter's spacing (var(--wp--preset--spacing--40, 1.5rem))."
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {

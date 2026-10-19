@@ -8,6 +8,13 @@
  * edge, so a band pinned to the bottom of a full-height drawer clears the
  * phone's home indicator.
  *
+ * With "Stop below the site header" (`pinBelowHeader`, "on" at a tier whose
+ * edge is `top`) the pin also sits below a sticky site header: `top` becomes the
+ * published `--sgs-header-height` (0 when the header is not sticky) plus
+ * `pinGap` (default: the shop filter's spacing). The `:not(dialog *, ...)`
+ * guard keeps a drawer, modal or pop-up pin at `top:0`, since those are
+ * top-layer elements above the header. A bottom pin takes no offset.
+ *
  * Emitted by `container/render.php` into the block's own scoped `<style>`,
  * inside each pinned tier's exact range (`sgs_tier_exact_media_css()`), so a
  * tier that is not pinned needs no reset. Unset everywhere (the default `{}`)
@@ -66,6 +73,26 @@ if ( ! function_exists( 'sgs_container_pin_edge_padding' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_container_pin_below_header_offset' ) ) {
+	/**
+	 * The gap that keeps a top-pinned container below the site header at one
+	 * tier: '' unless `pinBelowHeader` resolves to "on" there, else the tier's
+	 * `pinGap` (a CSS length or spacing preset; an unsafe value counts as unset)
+	 * or the shop filter's default spacing.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $tier       desktop | tablet | mobile.
+	 * @return string A CSS length to add to the header height, or ''.
+	 */
+	function sgs_container_pin_below_header_offset( array $attributes, string $tier ): string {
+		if ( 'on' !== sgs_resolve_tier( $attributes['pinBelowHeader'] ?? array(), $tier, 'off' )['value'] ) {
+			return '';
+		}
+		$gap = sgs_container_scroll_row_length( sgs_resolve_tier( $attributes['pinGap'] ?? array(), $tier, '' )['value'] );
+		return '' !== $gap ? $gap : 'var(--wp--preset--spacing--40,1.5rem)';
+	}
+}
+
 if ( ! function_exists( 'sgs_container_pin_edge_css' ) ) {
 	/**
 	 * The pin rules for one container.
@@ -80,28 +107,30 @@ if ( ! function_exists( 'sgs_container_pin_edge_css' ) ) {
 			return '';
 		}
 
-		$by_edge = array(
-			'top'    => array(),
-			'bottom' => array(),
-		);
-		$pads    = array();
+		$groups = array();
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 			$edge = sgs_resolve_tier( $raw, $tier, 'none' )['value'];
 			if ( ! in_array( $edge, array( 'top', 'bottom' ), true ) ) {
 				continue;
 			}
-			$pad                         = sgs_container_pin_edge_padding( $attributes, $tier, $edge );
-			$pads[ $edge . '|' . $pad ][] = $tier;
-			$by_edge[ $edge ][]          = $tier;
+			$pad    = sgs_container_pin_edge_padding( $attributes, $tier, $edge );
+			$offset = 'top' === $edge ? sgs_container_pin_below_header_offset( $attributes, $tier ) : '';
+			$key    = (string) json_encode( array( $edge, $pad, $offset ) );
+
+			$groups[ $key ][] = $tier;
 		}
 
 		$css = '';
-		foreach ( $pads as $key => $tiers ) {
-			list( $edge, $pad ) = explode( '|', $key, 2 );
-			$inset              = 'env(safe-area-inset-' . $edge . ', 0px)';
-			$rules              = $selector . '{position:sticky;' . $edge . ':0;z-index:2;padding-' . $edge . ':'
+		foreach ( $groups as $key => $tiers ) {
+			list( $edge, $pad, $offset ) = json_decode( $key, true );
+
+			$inset = 'env(safe-area-inset-' . $edge . ', 0px)';
+			$rules = $selector . '{position:sticky;' . $edge . ':0;z-index:2;padding-' . $edge . ':'
 				. ( '' !== $pad ? 'calc(' . $pad . ' + ' . $inset . ')' : $inset ) . ' !important;}';
-			$css               .= sgs_tier_exact_media_css( $tiers, $rules );
+			if ( '' !== $offset ) {
+				$rules .= $selector . ':not(dialog *,[role="dialog"] *,[popover] *){top:calc(var(--sgs-header-height,0px) + ' . $offset . ');}';
+			}
+			$css .= sgs_tier_exact_media_css( $tiers, $rules );
 		}
 		return $css;
 	}

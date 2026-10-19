@@ -18,6 +18,7 @@ import { useSeparatorOverlay } from "../../shared/separators/useSeparatorOverlay
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, SgsSeparatorControl } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
 import PinEdgeControl from "./components/PinEdgeControl";
+import { pinEdgeTopPreview } from "./pin-edge-preview";
 import { hasContentBand, sectionPaddingDefaults } from "../../utils/section-padding";
 import { resolveOnTiers } from "../../utils/responsive";
 import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
@@ -270,7 +271,11 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // too, so the previewed device's pin sticks the same way it does on the page.
   const pinEdgePreview = resolveResponsiveTier( attributes.pinEdge, previewTier )?.value;
   if ( "top" === pinEdgePreview || "bottom" === pinEdgePreview ) {
-    Object.assign( style, { position: "sticky", [ pinEdgePreview ]: 0, zIndex: 2 } );
+    Object.assign( style, {
+      position: "sticky",
+      [ pinEdgePreview ]: "top" === pinEdgePreview ? pinEdgeTopPreview( attributes, previewTier ) : 0,
+      zIndex: 2,
+    } );
   }
 
   // Editor preview: when a literal maxWidth is set, apply it as inline max-width.
