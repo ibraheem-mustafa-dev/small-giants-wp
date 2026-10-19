@@ -1,12 +1,12 @@
-# Clone coverage gap list: 1741 capabilities neither covered nor excluded
+# Clone coverage gap list: 1732 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
-| content, media and icons | 798 |
-| draft reading | 273 |
+| content, media and icons | 799 |
+| draft reading | 262 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 175 |
-| behaviour recognisers | 126 |
+| behaviour recognisers | 127 |
 | site and surfaces | 113 |
 | states | 71 |
 | motion model additions | 6 |
@@ -1479,7 +1479,7 @@
 - `css-pseudo-element:view-transition-new`: ::view-transition-new() (1); has nothing; wave site and surfaces
 - `css-pseudo-element:view-transition-old`: ::view-transition-old() (1); has nothing; wave site and surfaces
 
-## css-function (94)
+## css-function (86)
 
 - `css-function:abs`: abs() (1); has nothing; wave modes and values with no CSS property
 - `css-function:acos`: acos() (1); has nothing; wave draft reading
@@ -1491,12 +1491,11 @@
 - `css-function:atan`: atan() (1); has nothing; wave draft reading
 - `css-function:atan2`: atan2() (1); has nothing; wave draft reading
 - `css-function:attr`: attr() (1); has nothing; wave draft reading
-- `css-function:blur`: blur() (1); has nothing; wave draft reading
 - `css-function:brightness`: brightness() (1); has nothing; wave draft reading
 - `css-function:calc`: calc() (1); has nothing; wave modes and values with no CSS property
 - `css-function:calc-size`: calc-size() (1); has nothing; wave modes and values with no CSS property
 - `css-function:character-variant`: character-variant() (1); has nothing; wave draft reading
-- `css-function:circle`: circle() (1); has nothing; wave draft reading
+- `css-function:circle`: circle() (1); has nothing; wave behaviour recognisers
 - `css-function:clamp`: clamp() (1); has nothing; wave modes and values with no CSS property
 - `css-function:conic-gradient`: conic-gradient() (1); has nothing; wave draft reading
 - `css-function:contrast`: contrast() (1); has nothing; wave draft reading
@@ -1511,22 +1510,18 @@
 - `css-function:env`: env() (1); has nothing; wave draft reading
 - `css-function:exp`: exp() (1); has nothing; wave draft reading
 - `css-function:fit-content`: fit-content() (1); has nothing; wave draft reading
-- `css-function:grayscale`: grayscale() (1); has nothing; wave draft reading
 - `css-function:hue-rotate`: hue-rotate() (1); has nothing; wave draft reading
 - `css-function:hypot`: hypot() (1); has nothing; wave draft reading
 - `css-function:image`: image() (1); has nothing; wave draft reading
 - `css-function:image-set`: image-set() (1); has nothing; wave draft reading
-- `css-function:inset`: inset() (1); has nothing; wave draft reading
 - `css-function:invert`: invert() (1); has nothing; wave draft reading
 - `css-function:layer`: layer() (1); has nothing; wave draft reading
 - `css-function:leader`: leader() (1); has nothing; wave draft reading
 - `css-function:light-dark`: light-dark() (1); has nothing; wave site and surfaces
-- `css-function:linear-gradient`: linear-gradient() (1); has nothing; wave draft reading
 - `css-function:log`: log() (1); has nothing; wave draft reading
 - `css-function:matrix3d`: matrix3d() (1, motion); has recognise; wave motion model additions
 - `css-function:max`: max() (1); has nothing; wave modes and values with no CSS property
 - `css-function:min`: min() (1); has nothing; wave modes and values with no CSS property
-- `css-function:minmax`: minmax() (1); has nothing; wave draft reading
 - `css-function:mod`: mod() (1); has nothing; wave modes and values with no CSS property
 - `css-function:opacity`: opacity() (1); has nothing; wave draft reading
 - `css-function:ornaments`: ornaments() (1); has nothing; wave draft reading
@@ -1534,15 +1529,12 @@
 - `css-function:palette-mix`: palette-mix() (1); has nothing; wave draft reading
 - `css-function:param`: param() (1); has nothing; wave draft reading
 - `css-function:path`: path() (1); has nothing; wave draft reading
-- `css-function:polygon`: polygon() (1); has nothing; wave draft reading
+- `css-function:polygon`: polygon() (1); has nothing; wave content, media and icons
 - `css-function:pow`: pow() (1); has nothing; wave draft reading
-- `css-function:radial-gradient`: radial-gradient() (1); has nothing; wave draft reading
 - `css-function:ray`: ray() (1); has nothing; wave draft reading
 - `css-function:rect`: rect() (1); has nothing; wave draft reading
 - `css-function:rem`: rem() (1); has nothing; wave modes and values with no CSS property
-- `css-function:repeat`: repeat() (1); has nothing; wave draft reading
 - `css-function:repeating-conic-gradient`: repeating-conic-gradient() (1); has nothing; wave draft reading
-- `css-function:repeating-linear-gradient`: repeating-linear-gradient() (1); has nothing; wave draft reading
 - `css-function:repeating-radial-gradient`: repeating-radial-gradient() (1); has nothing; wave draft reading
 - `css-function:reversed`: reversed() (1); has nothing; wave draft reading
 - `css-function:rotate3d`: rotate3d() (1, motion); has recognise; wave motion model additions
@@ -1576,7 +1568,7 @@
 - `css-function:view`: view() (1, motion); has write, check; wave behaviour recognisers
 - `css-function:xywh`: xywh() (1); has nothing; wave draft reading
 
-## css-unit (53)
+## css-unit (52)
 
 - `css-unit:cap`: cap (1); has nothing; wave draft reading
 - `css-unit:ch`: ch (1); has nothing; wave draft reading
@@ -1597,7 +1589,6 @@
 - `css-unit:dvmin`: dvmin (1); has nothing; wave modes and values with no CSS property
 - `css-unit:dvw`: dvw (1); has nothing; wave modes and values with no CSS property
 - `css-unit:ex`: ex (1); has nothing; wave draft reading
-- `css-unit:fr`: fr (1); has nothing; wave draft reading
 - `css-unit:hz`: hz (1); has nothing; wave draft reading
 - `css-unit:ic`: ic (1); has nothing; wave draft reading
 - `css-unit:in`: in (1); has nothing; wave draft reading

@@ -2297,11 +2297,10 @@
 			"note": "attr(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:blur": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "blur(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#filterChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "blur() in an animated filter is the motion model's blur channel (tests/css-functions.test.mjs); a backdrop blur (the drawer scrim) belongs to nav-drawer's scrimBlur, which calibration has no marker for yet (coverage plan Order item 2(d) remaining)"
 		},
 		"css-function:brightness": {
 			"recognise": null,
@@ -2335,8 +2334,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "circle(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"wave": "behaviour recognisers",
+			"note": "circle(): the drafts' one use is the pointer-following reveal, the cursor-field effect's image reveal (fx:cursor-field, recognised by FR-48-77); as a static clip-path it is reported (tests/css-functions.test.mjs)"
 		},
 		"css-function:clamp": {
 			"recognise": null,
@@ -2369,7 +2368,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "contrast(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"note": "contrast(): reported by lib/motion-channels.mjs::filterChannels as unsupported, never written (tests/css-functions.test.mjs); the drafts' one use (a footer map, contrast(1.05)) is not visible"
 		},
 		"css-function:cos": {
 			"recognise": null,
@@ -2438,7 +2437,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "env(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"note": "env(safe-area-inset-bottom): Fill reads the computed padding, where env() is 0 off a notched phone; the safe-area part is the block's own default (sgs/buybox's phone bar, Spec 02 FR-2-3), and sgs/nav-drawer's footer has none yet (coverage plan Order item 2(d) remaining)"
 		},
 		"css-function:exp": {
 			"recognise": null,
@@ -2455,11 +2454,10 @@
 			"note": "fit-content(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:grayscale": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "grayscale(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#filterChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "grayscale() in a filter is the motion model's grayscale channel; at rest it is restGrayscale (lib/motion-layers.mjs) (tests/css-functions.test.mjs)"
 		},
 		"css-function:hsl": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -2508,11 +2506,10 @@
 			"note": "image-set(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:inset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "inset(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/motion-clip.mjs#clipChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "inset() in an animated clip-path is the entrance clip channel, in Chrome's computed form with 0px edges (tests/css-functions.test.mjs); a rounded inset (round 24px) has no channel and is reported (coverage plan Order item 2(d) remaining)"
 		},
 		"css-function:invert": {
 			"recognise": null,
@@ -2561,11 +2558,10 @@
 			"note": "a linear() curve is the layer's easing (the schema takes linear()); checked against the easing the render runs (lib/motion-check.mjs::entranceCheck)"
 		},
 		"css-function:linear-gradient": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "linear-gradient(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "linear-gradient(): Fill reads the computed background-image and writes it as measured to the element's `*Gradient` setting; a gradient never lands in an image setting (tests/css-functions.test.mjs); a block whose background gradient row has no real css_property in the framework DB (sgs/container, sgs/hero and others: NULL or the manifest key background-color-gradient) is not reached until the seeder reads it as background-image (coverage plan Order item 2(d) remaining)"
 		},
 		"css-function:log": {
 			"recognise": null,
@@ -2602,11 +2598,10 @@
 			"note": "min(): Fill reads the computed result at 375, 768 and 1440, so a fluid value becomes three steps (FR-48-44, fluid values, not built)"
 		},
 		"css-function:minmax": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "minmax(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/normalise.mjs#tracksSetting",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "minmax() in grid-template-columns: read through the computed tracks and written as per-tier proportions (tests/css-functions.test.mjs)"
 		},
 		"css-function:mod": {
 			"recognise": null,
@@ -2679,8 +2674,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "polygon(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"wave": "content, media and icons",
+			"note": "polygon(): the drafts' one use is the tilted tag's cut end, built as sgs/label's end shapes (Spec 02 FR-2-2, .claude/plans/2026-10-19-control-gaps-build.md); as a clip-path it is reported (tests/css-functions.test.mjs)"
 		},
 		"css-function:pow": {
 			"recognise": null,
@@ -2690,11 +2685,10 @@
 			"note": "pow(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:radial-gradient": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "radial-gradient(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "radial-gradient(): written as measured to the element's `*Gradient` setting, as linear-gradient() (tests/css-functions.test.mjs); a block whose background gradient row has no real css_property in the framework DB (sgs/container, sgs/hero and others: NULL or the manifest key background-color-gradient) is not reached until the seeder reads it as background-image (coverage plan Order item 2(d) remaining)"
 		},
 		"css-function:ray": {
 			"recognise": null,
@@ -2718,11 +2712,10 @@
 			"note": "rem(): Fill reads the computed result at 375, 768 and 1440, so a fluid value becomes three steps (FR-48-44, fluid values, not built)"
 		},
 		"css-function:repeat": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "repeat(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/normalise.mjs#tracksSetting",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "repeat() in grid-template-columns: Fill reads the computed tracks per width and writes them as per-tier proportions, repeat(auto-fit, minmax()) included (tests/css-functions.test.mjs)"
 		},
 		"css-function:repeating-conic-gradient": {
 			"recognise": null,
@@ -2732,11 +2725,10 @@
 			"note": "repeating-conic-gradient(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:repeating-linear-gradient": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "repeating-linear-gradient(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "repeating-linear-gradient(): written as measured, layered with other gradients, to the element's `*Gradient` setting (tests/css-functions.test.mjs); a block whose background gradient row has no real css_property in the framework DB (sgs/container, sgs/hero and others: NULL or the manifest key background-color-gradient) is not reached until the seeder reads it as background-image (coverage plan Order item 2(d) remaining)"
 		},
 		"css-function:repeating-radial-gradient": {
 			"recognise": null,
@@ -5671,11 +5663,10 @@
 			"note": "ex: not read as itself (print, resolution, frequency, font-relative and grid units)"
 		},
 		"css-unit:fr": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "fr: not read as itself (print, resolution, frequency, font-relative and grid units)"
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
+			"write": "scripts/computed-route/lib/normalise.mjs#tracksSetting",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "fr in grid-template-columns: read through the computed tracks and written as per-tier minmax(0, Nfr) proportions (tests/css-functions.test.mjs)"
 		},
 		"css-unit:grad": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
