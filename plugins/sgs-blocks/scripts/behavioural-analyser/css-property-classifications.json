@@ -6673,6 +6673,14 @@
     },
     {
       "slug": "sgs/decorative-image",
+      "attr": "decorMedia",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
       "attr": "flipX",
       "fields": {}
     },
@@ -6719,7 +6727,8 @@
       "slug": "sgs/decorative-image",
       "attr": "rotation",
       "fields": {
-        "css_property": "z-index"
+        "css_property": "transform",
+        "css_element": "wrapper"
       }
     },
     {
@@ -13330,6 +13339,31 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "background"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
       }
     },
     {
@@ -30491,6 +30525,14 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "background"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
       }
     },
     {

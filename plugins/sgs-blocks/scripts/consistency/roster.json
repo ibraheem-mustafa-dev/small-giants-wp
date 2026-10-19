@@ -412,7 +412,7 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "title": "SGS Decorative Image",
+      "title": "Floating layer",
       "category": "sgs-content",
       "tier": "block",
       "replaces": null,
@@ -1033,7 +1033,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 5,
+        "paintDeclarations": 6,
         "replacedCoreSupports": []
       }
     },
