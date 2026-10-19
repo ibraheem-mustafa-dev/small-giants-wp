@@ -1247,7 +1247,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `quietSkip(q, limit, { stepMs })` → the clock jump across a quiet stretch: whole steps, at least one step short of the next due time `q` (null: none) and of `limit`, 0 under two steps.
 - `bootStorageKeys(logicSource)` → `[{ store, key, expr, resolved }]`, keys the logic both reads and writes (from the tree).
 - `preparePage(page, opts)` installs the paused clock and the in-page harness before navigation (refuses a context prepared twice); `gotoDraft(page, origin, file, { hash, timeout })` opens the draft and throws on a draft error; `draftErrors(page)` → `{ page, console }`.
-- `ensureFonts(page, opts)` throws naming any face not `loaded`; `settleRest(page, opts)` → a summary of the rest-mode settle.
+- `ensureFonts(page, opts)` throws naming any face not `loaded`; `settleRest(page, opts)` → a summary of the rest-mode settle. `drainTimeouts(page, opts, capMs)` runs the clock until no timeout and no frame callback is pending (intervals keep running), at most `capMs` of virtual time: the timers a forced event started finish before the state is put back (`lib/intake-defects-chain.mjs` calls it through the forced page's `drain`).
 - `sampleTimes(duration)` → `[0, d/2, d]`; `targetAnimations(page, target)`; `sampleAt(page, { target, times, kind, read })` → the samples.
 - `openHarness({ folder, index, harPath, file, hash, width, height, timeout, ... })` → `{ sb, page, options, settings, close }`, one fresh sandbox per run.
 

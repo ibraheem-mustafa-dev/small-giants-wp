@@ -50,6 +50,7 @@ function fakeSession( { deaf = false } = {} ) {
 		},
 		changed: async ( slot ) => JSON.stringify( app.state ) !== JSON.stringify( win.__sgsStateSnaps[ slot ] ),
 		nudge: async () => {},
+		drain: async () => {},
 		copies: async ( h ) => h.copies,
 		setState: async () => 0,
 		dispatchAt: async ( h, i ) => {
@@ -118,4 +119,45 @@ test( 'MUST FAIL (route): a route change is undone until the visit route renders
 	const lost = await chainPass( deaf.s, { ...deaf.opts, triggers: [ link( deaf.app, deaf.win ), inert( 7 ) ] } );
 	assert.equal( lost.lost, true, 'a route that never comes back is reported' );
 	assert.equal( deaf.app.calls, 1, 'nothing more is tried on the wrong route' );
+} );
+
+// Indus drawer (2026-10-19): the first row of the mobile drawer is a plain link whose click starts a close animation and a
+// 420ms timer; putting the state back re-opens the drawer, the timer then closes it again, and the rows after it never
+// render, so the accordion row that runs the page's code was never tried and its code read as a draft defect.
+test( 'MUST FAIL (FR-48-34): a timer an attempt started runs before the state is put back, so it cannot undo the next attempt', async () => {
+	const { s, win, app, opts } = fakeSession();
+	const timers = [];
+	let now = 0;
+	const run = ( to ) => {
+		for ( const t of timers.filter( ( x ) => x.at <= to ).sort( ( a, b ) => a.at - b.at ) ) {
+			timers.splice( timers.indexOf( t ), 1 );
+			t.fn();
+		}
+		now = to;
+	};
+	s.nudge = async () => run( now + 400 );
+	s.drain = async () => run( Math.max( now, ...timers.map( ( t ) => t.at ) ) );
+	const opener = { component: 'Home', draftId: 'Home:9', copies: 1, fire: async () => ( app.state = { ...app.state, open: true }, true ) };
+	// Row 0 is a plain link: it leaves the page (the URL moves) and closes the drawer 300ms later. Row 1 is the accordion row: it
+	// can only be fired while the drawer is open.
+	const rows = { component: 'Home', draftId: 'Home:2', copies: 2, fire: async ( i ) => {
+		if ( 0 === i ) {
+			win.location.href = 'http://draft.test/#/about';
+			timers.push( { at: now + 300, fn: () => ( app.state = { ...app.state, open: false } ) } );
+			return true;
+		}
+		if ( app.state.open ) {
+			app.reached = true;
+			app.state = { ...app.state, acc: 1 };
+			return true;
+		}
+		return false;
+	} };
+	// Reached means the accordion row ran; opening the drawer alone does not count.
+	const check = async () => {
+		app.last = new Set( [ 'Home:1', ...( app.state.open && 'home' === app.route ? [ 'Home:2' ] : [] ) ] );
+	};
+	await check();
+	await chainPass( s, { ...opts, check, triggers: [ opener, rows ] } );
+	assert.equal( app.reached, true, 'the accordion row was fired with the drawer open' );
 } );

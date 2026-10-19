@@ -303,6 +303,29 @@ async function settlePhase( page, o, label ) {
 	}
 }
 
+// Runs the clock until no timeout (due within timeoutMaxMs) and no frame callback is pending, at most capMs of virtual
+// time; intervals keep running. The timers a forced state or event started finish, so putting the state back leaves
+// nothing queued to act on the restored page (a close animation's 420ms timer). Returns the virtual ms run.
+export async function drainTimeouts( page, opts = {}, capMs = 2000 ) {
+	const o = harnessOptions( opts );
+	const start = await page.evaluate( () => performance.now() );
+	const windowEnd = start + o.timeoutMaxMs;
+	let q = 0;
+	let now = start;
+	for ( ;; ) {
+		const skip = skipping( o ) ? quietSkip( q, start + capMs - now, o ) : 0;
+		if ( skip ) {
+			await advance( page, skip, o );
+		}
+		const p = await oneStep( page, o.stepMs, o, windowEnd );
+		q = p.quiet ?? 0;
+		now = p.t;
+		if ( ( ! p.timeouts.length && ! p.frames.length ) || p.t - start >= capMs ) {
+			return Math.round( p.t - start );
+		}
+	}
+}
+
 // One scroll pass: top to the end of the page and back in steps of one viewport height, a frame after each scroll
 // and the clock advanced scrollStepMs, so every IntersectionObserver reveal fires once. Returns the positions used.
 async function scrollPass( page, o ) {

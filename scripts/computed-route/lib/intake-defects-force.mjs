@@ -11,7 +11,7 @@
 // What to force is read statically (lib/intake-defects-keys.mjs); openForcedPage holds one harness page per width with
 // the probes on it.
 import { openSandbox } from './intake-sandbox.mjs';
-import { preparePage, gotoDraft, settleRest } from './intake-harness.mjs';
+import { preparePage, gotoDraft, settleRest, drainTimeouts } from './intake-harness.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
 import { setDraftState, snapshotDraftState, restoreDraftState, draftStateChanged, fireTrigger, listenerInit, fireListeners } from './intake-state.mjs';
 import { handlerInit, gestureIn, POINTER_TYPES, DRAG_TYPES } from './intake-defects-gesture.mjs';
@@ -182,6 +182,8 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 				return n > 0;
 			},
 			settle: () => settleRest( page, opts ),
+			// Lets the timers the last event started finish (drainTimeouts), before the state is put back.
+			drain: () => drainTimeouts( page, opts ),
 			// The forced pseudo-class's compiled rule matched on a rendered copy: true, false, or { gap }.
 			async forcePseudo( row ) {
 				const pseudo = row.detail.pseudo;

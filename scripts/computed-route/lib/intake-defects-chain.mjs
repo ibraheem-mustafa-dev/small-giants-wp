@@ -72,6 +72,9 @@ export async function chainPass( s, { triggers, patches, pending, check, rendere
 		out.attempts++;
 		// The URL is checked before the state: a link can move the route before (or without) any state change.
 		if ( was !== await href() ) {
+			// The timers the click started (a drawer's close animation) finish first: they would otherwise run on the restored page.
+			await s.drain();
+			await check();
 			if ( ! await backTo( was, slot, before, false ) && ! await backTo( was, slot, before, true ) ) {
 				out.lost = true;
 			}
@@ -90,6 +93,9 @@ export async function chainPass( s, { triggers, patches, pending, check, rendere
 				await inner( fresh );
 			}
 		}
+		// Timers the attempt started run to their end before the state is put back, so none acts on the next attempt's page.
+		await s.drain();
+		await check();
 		await s.restore( slot );
 		await s.nudge();
 		await check();
