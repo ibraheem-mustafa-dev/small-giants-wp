@@ -271,24 +271,38 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 		return done( { type: 'state', detail: `recursive call into ${ m.name }`, called: true } );
 	}
 	seen.add( `${ comp }:${ m.name }` );
+	const found = [];
 	for ( const r of ( p.refs.get( m.name ) || [] ).filter( ( x ) => ! ( m.node.start <= x.start && x.end <= m.node.end ) ) ) {
 		const names = ancestors( p, r ).filter( ( a ) => 'ObjectProperty' === a.type && ! a.computed ).map( ( a ) => a.key.name ?? a.key.value );
 		const last = ( e ) => String( e ?? '' ).split( '.' ).pop();
 		const h = rows.find( ( x ) => 'handler' === x.kind && 'template' === x.detail.wiring && names.includes( last( x.detail.expression ) ) );
 		const rf = names.includes( 'ref' ) ? null : rows.find( ( x ) => 'ref' === x.kind && names.includes( last( x.detail.expression ) ) );
 		if ( h ) {
-			return done( { type: eventTrigger( h.detail.event ), detail: `${ h.detail.event } on ${ h.draftId } (${ names[ 0 ] } → ${ m.name })` } );
+			found.push( done( { type: eventTrigger( h.detail.event ), detail: `${ h.detail.event } on ${ h.draftId } (${ names[ 0 ] } → ${ m.name })` } ) );
+			continue;
 		}
 		if ( rf || names.includes( 'ref' ) ) {
-			return done( { type: 'mount', detail: `ref callback${ rf ? ` ${ rf.detail.expression } on ${ rf.draftId }` : ' bound through renderVals' } (→ ${ m.name })` } );
+			found.push( done( { type: 'mount', detail: `ref callback${ rf ? ` ${ rf.detail.expression } on ${ rf.draftId }` : ' bound through renderVals' } (→ ${ m.name })` } ) );
+			continue;
 		}
 		if ( 'renderVals' === memberOf( p, r )?.name ) {
-			return done( { type: 'state', detail: `a value renderVals passes to the template${ names.length ? ` as ${ names.join( '.' ) }` : '' } (→ ${ m.name })` } );
+			found.push( done( { type: 'state', detail: `a value renderVals passes to the template${ names.length ? ` as ${ names.join( '.' ) }` : '' } (→ ${ m.name })` } ) );
+			continue;
 		}
 		const t = triggerOf( model, comp, r, seen );
 		if ( t.called ) {
-			return { ...t, via: [ ...via, ...t.via ], members: [ ...members, ...t.members ], detail: `${ t.detail } via ${ m.name }`, delay: t.delay ?? delay };
+			for ( const u of [ t, ...( t.others || [] ) ] ) {
+				found.push( { ...u, others: undefined, via: [ ...via, ...u.via ], members: [ ...members, ...u.members ], detail: `${ u.detail } via ${ m.name }`, delay: u.delay ?? delay } );
+			}
 		}
+	}
+	if ( found.length ) {
+		// A shared helper has one trigger per caller, each its own record. The primary is the first caller that is not a
+		// state change (a ref callback or an event outranks a componentDidUpdate); the rest follow in source order.
+		const seenKey = new Set();
+		const all = found.filter( ( t ) => ! seenKey.has( `${ t.type }|${ t.detail }` ) && seenKey.add( `${ t.type }|${ t.detail }` ) );
+		all.sort( ( x, y ) => ( 'state' === x.type ) - ( 'state' === y.type ) );
+		return { ...all[ 0 ], others: all.slice( 1 ) };
 	}
 	return done( { type: 'state', detail: `in ${ m.name }, which nothing calls, wires or references`, called: false } );
 }

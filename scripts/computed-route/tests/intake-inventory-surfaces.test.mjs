@@ -79,3 +79,34 @@ test( '(c3c) a static field value that is an identifier of the callback paramete
 	const c = loopCensus( withStatic( `renderVals() { const t = this.state.tab; return { items: [ 1, 2 ].map( ( p ) => ( { on: p, t } ) ) }; }` ) );
 	assert.deepEqual( kinds( c ), [ 'App' ] );
 } );
+
+// FR-48-25, the Indus review's nine static content variants and the toggles the reader missed: the draft's nav items,
+// form step and FAQ rows.
+const mapCensus = ( logic, ifValue, rows = [ forRow( '4', '{{ items }}', 'it' ) ] ) => ( { sources: [ source( logic ) ], rows: [ ...rows, ifRow( '5', ifValue ) ] } );
+
+test( '(d1) MUST FAIL: a map parameter is not the renderVals local that shares its spelling (a static field stays a content variant)', () => {
+	// `mn` is the map parameter in the items list and also a local read from state elsewhere in renderVals.
+	const c = mapCensus( withStatic( `renderVals() { const menus = this.menus; const active = this.state.tab; const mn = menus[ active ];
+const items = menus.map( ( mn, i ) => ( { hasPanel: !! mn.kind, label: mn.label } ) );
+return { items, activePanel: mn.links }; }` ), '{{ it.hasPanel }}' );
+	assert.deepEqual( kinds( c ), [ 'App' ] );
+} );
+
+test( '(d2) MUST FAIL: a local declared inside the list callback that reads state toggles the field built from it', () => {
+	const c = mapCensus( withStatic( `renderVals() { const blocks = this.blocks.map( ( b, bi ) => { const v = {}; if ( b.type === 'form' ) { const done = !! this.state.tab; Object.assign( v, { done, notDone: ! done } ); } return v; } );
+return { items: blocks }; }` ), '{{ it.done }}' );
+	assert.deepEqual( kinds( c ), [ 'App', 'App: tab (read through items)' ] );
+} );
+
+test( '(d3) MUST FAIL: a loop over an outer loop\'s field follows the outer list to the key that holds it', () => {
+	const c = mapCensus( withStatic( `renderVals() { const blocks = this.blocks.map( ( b ) => ( { groups: b.groups.map( ( g ) => ( { items: g.items.map( ( q ) => { const open = !! this.state.tab; return { ...q, open }; } ) } ) ) } ) );
+return { blocks }; }` ), '{{ q.open }}', [ forRow( '3', '{{ blocks }}', 'b' ), forRow( '4', '{{ b.groups }}', 'g' ), forRow( '6', '{{ g.items }}', 'q' ) ] );
+	c.rows = c.rows.map( ( r ) => ( 'sc-if' === r.kind ? { ...r, id: 'sc-if@App:7', draftId: 'App:7', detail: { value: '{{ q.open }}' } } : r ) );
+	assert.deepEqual( kinds( c ), [ 'App', 'App: tab (read through blocks)' ] );
+} );
+
+test( '(d4) MUST FAIL: a field spread from a helper method\'s result is read through the arguments the helper takes', () => {
+	const c = mapCensus( withStatic( `float( n, err ) { return { hasErr: !! err, tone: 'x' }; }
+renderVals() { const { tab } = this.state; return { items: [ 'a', 'b' ].map( ( n ) => ( { id: n, ...this.float( n, tab ) } ) ) }; }` ), '{{ it.hasErr }}' );
+	assert.deepEqual( kinds( c ), [ 'App', 'App: tab (read through items)' ] );
+} );

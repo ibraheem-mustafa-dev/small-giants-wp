@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { codeModel, triggerOf, reducedMotionOf } from '../lib/intake-inventory-code.mjs';
+import { animationRecords } from '../lib/intake-inventory-anim.mjs';
 
 const model = ( logic, rows = [] ) => codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ], rows } );
 // The first call to `name` in the program, in source order.
@@ -154,18 +155,32 @@ scatter() { const density = this.state.density; if ( density === 'Off' ) return;
 	assert.notEqual( triggerOf( m, 'App', call ).called, false );
 } );
 
-// a draft A-18 (the shine sweep): one shared helper that animates the element, called from two different triggers. Its
-// record used to name only the first caller in source order, so the second trigger was lost. Each caller must be a
-// trigger a record can carry: the climb reports the first, and `callersOf` lists every one for the record builder.
-test( 'MUST FAIL (FR-48-25): a shared helper animated from two callers lists both triggers, not only the first', () => {
-	const m = codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic: `class Component extends DCComponent {
+// a draft A-18 (the shine sweep): one shared helper that animates the element, called from two different triggers. A
+// record carries one trigger, so the helper has one record per caller; triggerOf lists the first caller as the trigger and
+// the rest as `others`, and the record builder emits one record each.
+const shineHover = { id: 'handler@App:9', kind: 'handler', component: 'App', draftId: 'App:9', detail: { wiring: 'template', event: 'mouseenter', method: 'onEnter', expression: 'onEnter' } };
+const shineSource = { component: 'App', file: 'App.dc.html', via: 'entry', logic: `class Component extends DCComponent {
 componentDidMount() { this.shine(); }
 onEnter() { this.shine(); }
 shine() { this._sweep.animate( [ { transform: 'translateX(-100%)' }, { transform: 'translateX(100%)' } ], { duration: 700 } ); }
-}`, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ], rows: [] } );
+}`, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } };
+
+test( 'MUST FAIL (FR-48-25): a shared helper animated from two callers has a trigger for each, not only the first', () => {
+	const m = codeModel( { sources: [ shineSource ], rows: [ shineHover ] } );
 	const call = m.progs.get( 'App' ).nodes.find( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name );
-	// The reader names one trigger per write; the shared helper has two callers, so the record must carry both. Today the
-	// climb reports only the first caller, so this asserts that the record's trigger list includes the second.
 	const t = triggerOf( m, 'App', call );
-	assert.ok( t.detail && /componentDidMount/.test( t.detail ) && /onEnter/.test( t.detail ), `one trigger named: ${ t.detail }` );
+	const all = [ t, ...( t.others || [] ) ];
+	assert.equal( all.length, 2, all.map( ( x ) => x.detail ).join( ' | ' ) );
+	assert.ok( all.some( ( x ) => 'mount' === x.type ), 'the componentDidMount caller is a mount' );
+	assert.ok( all.some( ( x ) => /onEnter/.test( x.detail ) ), 'the onEnter caller is named' );
+} );
+
+test( 'MUST FAIL (FR-48-25): a shared helper gives one animation record per caller, each with its own trigger', () => {
+	const census = { sources: [ shineSource ], rows: [ shineHover, { id: 'waapi@App:1', kind: 'waapi', component: 'App', draftId: 'App:js:4:0', detail: {} } ] };
+	const m = codeModel( census );
+	const call = m.progs.get( 'App' ).nodes.find( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name );
+	census.rows[ 1 ].draftId = `App:js:${ call.loc.start.line }:${ call.loc.start.column }`;
+	const recs = animationRecords( census ).records.filter( ( r ) => 'waapi' === r.mechanism );
+	assert.equal( recs.length, 2, recs.map( ( r ) => r.trigger.detail ).join( ' | ' ) );
+	assert.equal( new Set( recs.map( ( r ) => r.id ) ).size, 2 );
 } );

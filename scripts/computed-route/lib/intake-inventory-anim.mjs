@@ -55,6 +55,8 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		selector: t.selector, ...( t.rule ? { selection_rule: t.rule } : {} ), description: describe,
 	} );
 	const triggerField = ( tr ) => ( { type: tr.type, detail: tr.detail, ...( tr.state_keys?.length ? { state_keys: tr.state_keys } : {} ) } );
+	// A helper called from several triggers is one record per caller.
+	const triggersOf = ( tr ) => [ { ...tr, others: undefined }, ...( tr.others || [] ) ];
 	const statusOf = ( tr ) => ( false === tr.called ? 'dead-code' : 'active' );
 
 	// A and L: one record per Web Animations call site.
@@ -72,15 +74,17 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		const t = p.file ? { tpl: [], selector: textOf( p, call.callee.object ), rule: `inside ${ comp }: ${ textOf( p, call.callee.object ) }` } : targetOf( model, comp, call.callee.object );
 		const fn = functionName( p, call );
 		const owners = p.file ? census.rows.filter( ( x ) => 'helmet-script' === x.kind && x.detail.src && x.detail.src.endsWith( comp ) ).map( ( x ) => x.draftId.split( ':' ).pop() ) : [];
+		for ( const trg of triggersOf( tr ) ) {
 		add( p.file ? 'L' : 'A', {
 			name: `Web Animation in ${ fn } on ${ t.selector }`, mechanism: 'waapi',
 			element: element( comp, owner, p.file ? { ...t, near: owners } : t, `animated element: ${ t.selector }` ),
 			source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( call ), code: textOf( p, call ) },
-			trigger: triggerField( tr ), properties: fx.properties, duration_ms: fx.timing.duration, delay_ms: fx.timing.delay ?? 0, stagger: null,
+			trigger: triggerField( trg ), properties: fx.properties, duration_ms: fx.timing.duration, delay_ms: fx.timing.delay ?? 0, stagger: null,
 			easing: fx.timing.easing, iterations: fx.timing.iterations, direction: fx.timing.direction, fill: fx.timing.fill,
-			reduced_motion: reducedMotionOf( p, call ), status: statusOf( tr ), trace: traceOf( [ r ] ),
-			...( null != tr.delay ? { notes: `started after setTimeout ${ tr.delay }` } : {} ),
-		}, [ r ], { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: tr.via.map( ( o ) => `${ comp }@${ o }` ), members: tr.members.map( ( m ) => `${ comp }:${ m }` ), trigger: tr } );
+			reduced_motion: reducedMotionOf( p, call ), status: statusOf( trg ), trace: traceOf( [ r ] ),
+			...( null != trg.delay ? { notes: `started after setTimeout ${ trg.delay }` } : {} ),
+		}, [ r ], { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } );
+		}
 	}
 
 	// J: one record per JS writer site; a census transition or keyframes row inside a writer folds into it.
@@ -95,15 +99,16 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 			const inside = codeMotion.filter( ( r ) => compOf( r ) === comp && ( ( o ) => w.node.start <= o && o < w.node.end )( offsetOf( p, r.draftId ) ) );
 			inside.forEach( ( r ) => folded.add( r.id ) );
 			const fn = functionName( p, w.node );
-			const rec = add( 'J', {
+			const recs = triggersOf( tr ).map( ( trg ) => add( 'J', {
 				name: `${ w.mechanism } in ${ fn } on ${ t.selector }`, mechanism: w.mechanism,
 				element: element( comp, owner, t, `written element: ${ t.selector }` ),
 				source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( w.node ), code: textOf( p, w.node ) },
-				trigger: triggerField( tr ), properties: w.properties.map( ( x ) => ( { property: x.property, from: null, to: x.to ?? null, ...( x.formula ? { formula: x.formula } : {} ) } ) ),
-				duration_ms: 0, delay_ms: 'number' === typeof tr.delay ? tr.delay : 0, stagger: null, easing: null, iterations: 'interval' === tr.type || 'loop' === tr.type ? 'infinite' : 1,
-				direction: null, fill: null, reduced_motion: reducedMotionOf( p, w.node ), status: statusOf( tr ),
+				trigger: triggerField( trg ), properties: w.properties.map( ( x ) => ( { property: x.property, from: null, to: x.to ?? null, ...( x.formula ? { formula: x.formula } : {} ) } ) ),
+				duration_ms: 0, delay_ms: 'number' === typeof trg.delay ? trg.delay : 0, stagger: null, easing: null, iterations: 'interval' === trg.type || 'loop' === trg.type ? 'infinite' : 1,
+				direction: null, fill: null, reduced_motion: reducedMotionOf( p, w.node ), status: statusOf( trg ),
 				trace: { observed: 'not-instrumented', note: 'the census does not trace style writes; timer and frame writers are sampled (inventory.samples)' },
-			}, inside, { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: tr.via.map( ( o ) => `${ comp }@${ o }` ), members: tr.members.map( ( m ) => `${ comp }:${ m }` ), trigger: tr } );
+			}, inside, { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } ) );
+			const rec = recs[ 0 ];
 			sites.push( { key: `${ comp }:js:${ lineOf( w.node ) }:${ w.node.loc.start.column }`, comp, rec } );
 		}
 	}

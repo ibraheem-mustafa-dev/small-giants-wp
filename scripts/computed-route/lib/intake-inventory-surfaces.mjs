@@ -27,7 +27,30 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 	const m = logicModel( source );
 	const declarators = declaratorsOf( m );
 	const alias = new Set( [ ...m.locals ].filter( ( [ , l ] ) => 'MemberExpression' === l.node?.type && ! l.node.computed && 'ThisExpression' === l.node.object.type && 'state' === l.node.property.name ).map( ( [ k ] ) => k ) );
+	// The names a function binds as parameters; a name so bound is that function's own value, never a renderVals local that
+	// shares the spelling (a `.map( ( mn ) => … )` parameter beside a `const mn = menus[ active ]` elsewhere in renderVals).
+	const boundBy = ( fn ) => {
+		const names = new Set();
+		const take = ( q ) => {
+			if ( 'Identifier' === q?.type ) {
+				names.add( q.name );
+			} else if ( 'AssignmentPattern' === q?.type ) {
+				take( q.left );
+			} else if ( 'RestElement' === q?.type ) {
+				take( q.argument );
+			} else if ( 'ObjectPattern' === q?.type ) {
+				q.properties.forEach( ( x ) => take( x.value ?? x.argument ) );
+			} else if ( 'ArrayPattern' === q?.type ) {
+				q.elements.forEach( take );
+			}
+		};
+		fn.params.forEach( take );
+		return names;
+	};
+	const isFunction = ( n ) => /^(ArrowFunctionExpression|FunctionExpression|FunctionDeclaration|ObjectMethod|ClassMethod)$/.test( n.type );
 	const reads = ( start, onlyField, within = start ) => {
+		const outer = new Set( m.nodes.filter( ( f ) => isFunction( f ) && f.start <= start.start && start.end <= f.end && f !== start ).flatMap( ( f ) => [ ...boundBy( f ) ] ) );
+		const bound = ( name, parents ) => outer.has( name ) || parents.some( ( f ) => isFunction( f ) && boundBy( f ).has( name ) );
 		const seen = new Set();
 		const hit = new Set();
 		const fieldValues = [];
@@ -36,7 +59,28 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 				return;
 			}
 			seen.add( node );
-			walkAst( node, ( n ) => {
+			walkAst( node, ( n, parents ) => {
+				if ( 'Identifier' === n.type && bound( n.name, parents ) ) {
+					return;
+				}
+				// A field built by spreading a helper's result (`...this.float( n, focus, v[ n ], errs[ n ] )`): the helper's value for the
+				// field is read through the arguments its parameters take.
+				if ( onlyField && 'SpreadElement' === n.type && 'CallExpression' === n.argument?.type && 'ThisExpression' === n.argument.callee?.object?.type ) {
+					const mem = m.members.get( n.argument.callee.property?.name );
+					const fn = mem?.params ? mem : mem?.value;
+					if ( fn?.params && fn.body ) {
+						walkAst( fn.body, ( q ) => {
+							if ( 'ObjectProperty' === q.type && ! q.computed && onlyField === ( q.key.name ?? q.key.value ) ) {
+								walkAst( q.value, ( id ) => {
+									const at = 'Identifier' === id.type ? fn.params.findIndex( ( x ) => x.name === id.name ) : -1;
+									if ( at >= 0 && n.argument.arguments[ at ] ) {
+										fieldValues.push( n.argument.arguments[ at ] );
+									}
+								} );
+							}
+						} );
+					}
+				}
 				if ( onlyField && 'ObjectProperty' === n.type && ! n.computed && onlyField === ( n.key.name ?? n.key.value ) ) {
 					fieldValues.push( n.value );
 				} else if ( 'MemberExpression' === n.type && ! n.computed && 'MemberExpression' === n.object?.type && 'ThisExpression' === n.object.object?.type && 'state' === n.object.property?.name ) {
@@ -59,7 +103,8 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 						visit( l.node, depth + 1 );
 					}
 				} else if ( 'Identifier' === n.type ) {
-					const d = declarators.get( n.name )?.find( ( x ) => x.init !== node && within.start <= x.start && x.end <= within.end );
+					// The declaration nearest before the read, inside the code searched (a name declared in several blocks).
+					const d = declarators.get( n.name )?.filter( ( x ) => x.init !== node && within.start <= x.start && x.end <= within.end ).sort( ( a, b ) => ( b.start < n.start ) - ( a.start < n.start ) || b.start - a.start )[ 0 ];
 					if ( d ) {
 						visit( d.init, depth + 1 );
 					}
@@ -79,7 +124,9 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 	let keys = reads( node, field ).hit;
 	if ( field ) {
 		const r = reads( node, field );
-		keys = new Set( r.fieldValues.flatMap( ( v ) => [ ...reads( v, null, node ).hit ] ) );
+		// A value built from a local declared inside the list's callback (`const done = !!this.state.sent[ key ]`) is searched across renderVals, not only the returned key.
+		const wide = m.members.get( 'renderVals' );
+		keys = new Set( r.fieldValues.flatMap( ( v ) => [ ...reads( v, null, wide ? wide.body ?? wide : node ).hit ] ) );
 		if ( ! r.fieldValues.length ) {
 			const scope = m.members.get( 'renderVals' );
 			const all = scope ? reads( scope.body ?? scope, field ).fieldValues : [];
@@ -185,7 +232,10 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 		const { router, sized } = keyReadsOf( r.component );
 		const keys = [ ...ck.keys.keys() ].filter( ( k ) => ! sized.has( k ) );
 		const root = rootOf( r.detail.value );
-		const loop = rowsOf( r.component ).filter( ( x ) => 'sc-for' === x.kind && x.detail.as === root ).map( ( x ) => rootOf( x.detail.list ) );
+		// A loop over an outer loop's field (`g.items` inside `b.groups`) is followed out to the renderVals key that holds the list.
+		const vals = logicModel( src ).vals;
+		const loopRoots = ( name, depth = 0 ) => vals.has( name ) || depth > 4 ? [ name ] : rowsOf( r.component ).filter( ( x ) => 'sc-for' === x.kind && x.detail.as === name ).map( ( x ) => rootOf( x.detail.list ) ).filter( Boolean ).flatMap( ( n ) => loopRoots( n, depth + 1 ) );
+		const loop = rowsOf( r.component ).some( ( x ) => 'sc-for' === x.kind && x.detail.as === root ) ? loopRoots( root ) : [];
 		const field = loop.length ? /^\s*\{\{\s*!*\s*[A-Za-z_$][\w$]*\.([A-Za-z_$][\w$]*)/.exec( r.detail.value )?.[ 1 ] ?? null : null;
 		const from = ( loop.length ? loop : [ root ] ).filter( Boolean );
 		const read = keys.length ? [] : [ ...new Set( from.flatMap( ( k ) => readsState( src, k, field, sized ) ) ) ];
