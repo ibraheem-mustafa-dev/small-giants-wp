@@ -46,10 +46,11 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { slotMapSkip, cachedSite } from '../lib/cache.mjs';
+import { READ_KEY } from '../lib/calibrate-props.mjs';
 
 const cacheDir = ( site ) => {
 	const d = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-cache-' ) );
-	fs.writeFileSync( path.join( d, 'heading.json' ), JSON.stringify( { block: 'sgs/heading', site, slotKey: 'old' } ) );
+	fs.writeFileSync( path.join( d, 'heading.json' ), JSON.stringify( { block: 'sgs/heading', site, slotKey: 'old', readKey: READ_KEY } ) );
 	return d;
 };
 

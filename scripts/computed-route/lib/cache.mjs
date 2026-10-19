@@ -7,9 +7,12 @@
 //     theme-snapshot.json). A run on one site never opens another site's paint file. A local mirror is the same site as
 //     the test site it copies (`mirrorOf` in calibration-targets.json: same build, same database, same snapshot, so the
 //     same paintKey), so a mirror's paint lives in, and is read from, its test site's folder.
+// Both files carry the `readKey` they were read under (lib/calibrate-props.mjs::READ_KEY); a file read under another
+// list is stale on every site, so a property calibration newly reads is measured everywhere.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { READ_KEY } from './calibrate-props.mjs';
 
 const TARGETS_FILE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'calibration-targets.json' );
 let mirrors = null;
@@ -66,9 +69,9 @@ export function readPaint( dir, site, block ) {
 
 // The split of one calibration object into its slot map and its default paint.
 export function splitCalibration( file ) {
-	const { block, site, slotKey, paintKey, playwrightVersion, browserVersion, measured } = file;
+	const { block, site, slotKey, paintKey, readKey, playwrightVersion, browserVersion, measured } = file;
 	const slotMap = { ...file };
-	const paint = { block, site, slotKey, paintKey, playwrightVersion, browserVersion, measured };
+	const paint = { block, site, slotKey, paintKey, readKey, playwrightVersion, browserVersion, measured };
 	for ( const f of [ ...PAINT_FIELDS, 'paintKey' ] ) {
 		delete slotMap[ f ];
 	}
@@ -107,10 +110,11 @@ export function loadCalibration( dir, block, site ) {
 }
 
 // Why a run on `site` must leave the block's slot map alone, or null when it may write it: a slot map whose key is current
-// is kept, and another site's slot map is kept unless the run asks (--recalibrate).
+// is kept, and another site's slot map is kept unless the run asks (--recalibrate). One read under another read list is
+// due on any site.
 export function slotMapSkip( dir, block, site, slotKey, recalibrate = false ) {
 	const have = readSlotMap( dir, block );
-	if ( recalibrate || ! have ) {
+	if ( recalibrate || ! have || have.readKey !== READ_KEY ) {
 		return null;
 	}
 	if ( have.site && have.site !== site ) {
@@ -120,10 +124,10 @@ export function slotMapSkip( dir, block, site, slotKey, recalibrate = false ) {
 }
 
 // Why a run on `site` must leave the block's default paint for that site alone, or null when it must measure it: only this
-// site's own file with the current key is kept.
+// site's own file with the current key, read under the current read list, is kept.
 export function paintSkip( dir, block, site, paintKey, recalibrate = false ) {
 	const have = recalibrate ? null : readPaint( dir, site, block );
-	return have && have.paintKey === paintKey ? `default paint current for ${ site }` : null;
+	return have && have.paintKey === paintKey && have.readKey === READ_KEY ? `default paint current for ${ site }` : null;
 }
 
 // Which outputs a run writes for one block, from the reasons to skip each (null = due). `slotMapOnly` (stage 0, FR-48-3)
@@ -132,10 +136,10 @@ export function dueOutputs( slotWhy, paintWhy, slotMapOnly = false ) {
 	return { slotMap: ! slotWhy, paint: ! slotMapOnly && ! paintWhy };
 }
 
-// True when this site's paint file exists but its key no longer matches (so it is re-measured on that site).
+// True when this site's paint file exists but its key or read list no longer matches (so it is re-measured on that site).
 export function paintStale( dir, block, site, paintKey ) {
 	const have = readPaint( dir, site, block );
-	return !! have && have.paintKey !== paintKey;
+	return !! have && ( have.paintKey !== paintKey || have.readKey !== READ_KEY );
 }
 
 // The settings a new slot map drops that the existing one reaches: every key of `prev.settings` missing from

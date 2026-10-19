@@ -6,6 +6,7 @@ import path from 'path';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import { readSlotMap } from './cache.mjs';
+import { READ_KEY } from './calibrate-props.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { fixtureRoles, refsProblem, resolveFixture } from './calibration-refs.mjs';
 
@@ -43,7 +44,8 @@ export function blockSetFor( kinds, rows ) {
 }
 
 // How a block's slot map stands against the deployed build.
-//   current: the cached slotKey is the deployed hash.   stale: it differs.   missing: no slot map.
+//   current: the cached slotKey is the deployed hash and its readKey the current read list.   stale: either differs.
+//   missing: no slot map.
 //   undeployed: the local build differs from the deployed one, so calibrate.mjs would refuse (deploy or rebuild first).
 //   no-fixture: calibration-fixtures.json has no entry, so calibrate.mjs cannot measure it.   no-build: no build to hash.
 //   needs-refs: the fixture names a site reference the target does not supply or the site does not hold (refsWhy says
@@ -67,6 +69,9 @@ export function blockState( { cacheDir, block, hashes, fixtures, refsWhy = '' } 
 	}
 	if ( ! have ) {
 		return { ...out, state: 'missing', why: 'no slot map' };
+	}
+	if ( have.readKey !== READ_KEY ) {
+		return { ...out, state: 'stale', why: `slot map read under ${ have.readKey || 'no read key' }, not ${ READ_KEY }` };
 	}
 	const current = have.slotKey === hashes.deployed;
 	return { ...out, state: current ? 'current' : 'stale', why: current ? '' : `slot map keyed ${ have.slotKey }` };

@@ -1,4 +1,5 @@
 // What calibration reads and how a setting's css_property maps onto it (FR-47-2).
+import { createHash } from 'crypto';
 import { DEFAULT_PROPS, HOVER_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
 import { modifierOf } from './db.mjs';
@@ -35,6 +36,11 @@ export const TEXT_PSEUDO_PROPS = [ 'color', 'font-size', 'font-family', 'font-we
 // stylesheet sets them on its elements (a button's pointer, a form's accent, a tab's nowrap), which a comparison with
 // the parent would miss.
 export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-wrap', 'text-shadow' ];
+
+// The key of what calibration reads. Every cache file carries the key it was read under, and one read under another list
+// is stale on every site (lib/cache.mjs, lib/stage0.mjs::blockState): a property added to a list is measured, never taken
+// as absent from a file that did not look for it.
+export const READ_KEY = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED ] ) ).digest( 'hex' ).slice( 0, 12 );
 
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 

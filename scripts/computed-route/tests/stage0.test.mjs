@@ -10,9 +10,11 @@ import path from 'path';
 import { runStage0, blockSetFor, surfaceKinds, buildBaseline, baselineProblems, calibrateArgs, FIXED_BLOCKS } from '../lib/stage0.mjs';
 import { parseArgs } from '../stage0.mjs';
 import { dueOutputs, writeSlotMap, writePaint, readSlotMap } from '../lib/cache.mjs';
+import { READ_KEY } from '../lib/calibrate-props.mjs';
+import { blockState } from '../lib/stage0.mjs';
 
 const ROWS = [ 'sgs/form', 'sgs/form-field-text', 'sgs/form-step', 'sgs/nav-bar-menu', 'sgs/nav-drawer-menu', 'sgs/mega-panel', 'sgs/site-header', 'sgs/hero' ].map( ( block_slug ) => ( { block_slug } ) );
-const slotMap = ( block, slotKey, extra = {} ) => ( { block, site: 'local-x', slotKey, playwrightVersion: '1.58.2', browserVersion: '145.0.1', measured: '2026-10-12T10:00:00.000Z', settings: {}, dead: [ 'a', 'b' ], noMarker: [ 'c' ], oneWidth: [], untestedStates: [ 'd:hover' ], ...extra } );
+const slotMap = ( block, slotKey, extra = {} ) => ( { block, site: 'local-x', slotKey, readKey: READ_KEY, playwrightVersion: '1.58.2', browserVersion: '145.0.1', measured: '2026-10-12T10:00:00.000Z', settings: {}, dead: [ 'a', 'b' ], noMarker: [ 'c' ], oneWidth: [], untestedStates: [ 'd:hover' ], ...extra } );
 
 // A temp repo with a handoff surfaces.json of the given kinds and a cache holding the given slot maps ({ block: key }).
 function world( kinds, keys ) {
@@ -225,4 +227,14 @@ test( '--allow-loss passes from the command line through calibrateArgs to calibr
 	assert.deepEqual( args.slice( -2 ), [ '--allow-loss', 'sgs/a:x,sgs/b:discovered:layout' ] );
 	assert.ok( ! calibrateArgs( { site: 's', client: 'c', blocks: [ 'sgs/a' ], recalibrate: true } ).includes( '--allow-loss' ) );
 	assert.deepEqual( parseArgs( [ '--client', 'c', '--site', 's' ] ).allowLoss, [] );
+} );
+
+test( 'MUST FAIL TO KEEP: a slot map read under another read list is stale though its key is the deployed hash', () => {
+	const w = world( [ 'form' ], { 'sgs/form': 'H-sgs/form' } );
+	const hashes = { deployed: 'H-sgs/form', local: 'H-sgs/form' };
+	assert.equal( blockState( { cacheDir: w.cacheDir, block: 'sgs/form', hashes, fixtures: { 'sgs/form': {} } } ).state, 'current' );
+	writeSlotMap( w.cacheDir, 'sgs/form', slotMap( 'sgs/form', 'H-sgs/form', { readKey: 'old-list' } ) );
+	const r = blockState( { cacheDir: w.cacheDir, block: 'sgs/form', hashes, fixtures: { 'sgs/form': {} } } );
+	assert.equal( r.state, 'stale' );
+	assert.match( r.why, /read under old-list/ );
 } );

@@ -29,7 +29,7 @@ import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, wri
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll } from './lib/calibrate.mjs';
+import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 
@@ -274,7 +274,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	// FR-48-75: the Playwright and browser builds that produced this file; G0 treats a change in either as stale.
 	const playwrightVersion = createRequire( import.meta.url )( 'playwright/package.json' ).version;
 	const browserVersion = shared.context.browser()?.version() ?? null;
-	const file = { block, site, slotKey, paintKey, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
+	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	// The whole block is measured either way; only the output that is due is written.
 	const { slotMap, paint } = splitCalibration( file );
 	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [] ) : { write: false, lost: [] };

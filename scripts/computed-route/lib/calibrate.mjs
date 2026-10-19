@@ -6,7 +6,7 @@ import { WIDTHS, INHERITED, CAL_PREFIX, longhands } from './calibrate-props.mjs'
 import { splitProperty } from './resolve.mjs';
 import { timingSet } from '../../parity/lib/compare.mjs';
 
-export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, CAL_PREFIX, READ_PROPS, INHERITED, longhands } from './calibrate-props.mjs';
+export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, CAL_PREFIX, READ_PROPS, READ_KEY, INHERITED, longhands } from './calibrate-props.mjs';
 export { markersFor, formMarkers, FLUID_MARKERS, MARKER_REPEAT, MARKER_REPEAT_TRACKS, MARKER_DURATION_MS, MARKER_EASING, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
 export { STATE_TRIGGERS, triggerFor, planInstances, preconditionsFor, layoutModes, stateTarget, instanceCtx } from './calibrate-instances.mjs';
 export { readInstancesInPage, readAll, SCROLL_Y } from './calibrate-read.mjs';

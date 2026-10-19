@@ -10,9 +10,10 @@ import path from 'path';
 import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss } from '../lib/cache.mjs';
 import { calibrationFor } from '../solve.mjs';
 import { splitCache, placeMirrorPaint } from '../split-cache.mjs';
+import { READ_KEY } from '../lib/calibrate-props.mjs';
 
 const el = ( colour ) => ( { '': { 375: { color: colour }, 768: { color: colour }, 1440: { color: colour } } } );
-const measured = ( site, colour, slotKey = 'k1' ) => ( { block: 'sgs/heading', site, slotKey, paintKey: `${ slotKey }-snap-${ site }`, playwrightVersion: '1', browserVersion: '2', measured: 'now', settings: { fontSize: { slot: '', property: 'font-size' } }, elements: el( colour ), dead: [] } );
+const measured = ( site, colour, slotKey = 'k1' ) => ( { block: 'sgs/heading', site, slotKey, paintKey: `${ slotKey }-snap-${ site }`, readKey: READ_KEY, playwrightVersion: '1', browserVersion: '2', measured: 'now', settings: { fontSize: { slot: '', property: 'font-size' } }, elements: el( colour ), dead: [] } );
 const fresh = () => fs.mkdtempSync( path.join( os.tmpdir(), 'cr-cache2-' ) );
 // What a calibrate.mjs run on `site` writes into `dir`, under the same rules: each output only when due.
 function run( dir, site, colour, { recalibrate = false, slotKey = 'k1' } = {} ) {
@@ -26,7 +27,7 @@ test( 'the slot map holds no default paint and the paint file holds nothing but 
 	const { slotMap, paint } = splitCalibration( measured( 'a', 'red' ) );
 	assert.ok( ! ( 'elements' in slotMap ) && ! ( 'paintKey' in slotMap ) );
 	assert.deepEqual( Object.keys( slotMap.settings ), [ 'fontSize' ] );
-	assert.deepEqual( Object.keys( paint ).sort(), [ 'block', 'browserVersion', 'elements', 'measured', 'paintKey', 'playwrightVersion', 'site', 'slotKey' ] );
+	assert.deepEqual( Object.keys( paint ).sort(), [ 'block', 'browserVersion', 'elements', 'measured', 'paintKey', 'playwrightVersion', 'readKey', 'site', 'slotKey' ] );
 } );
 
 test( 'a run on site B leaves site A paint file byte-identical and writes B own', () => {
@@ -63,6 +64,26 @@ test( 'a slot map whose slotKey is current is kept on its own site; a changed ke
 	run( dir, 'site-a', 'red' );
 	assert.match( slotMapSkip( dir, 'sgs/heading', 'site-a', 'k1' ), /current/ );
 	assert.equal( slotMapSkip( dir, 'sgs/heading', 'site-a', 'k2' ), null );
+} );
+
+test( 'MUST FAIL TO KEEP: a slot map and a paint read under another read list are due on every site, keys current or not', () => {
+	const dir = fresh();
+	run( dir, 'site-a', 'red' );
+	const old = ( f ) => {
+		const j = JSON.parse( fs.readFileSync( f, 'utf8' ) );
+		delete j.readKey;
+		fs.writeFileSync( f, JSON.stringify( j ) );
+	};
+	old( path.join( dir, 'heading.json' ) );
+	old( paintFile( dir, 'site-a', 'sgs/heading' ) );
+	assert.equal( slotMapSkip( dir, 'sgs/heading', 'site-a', 'k1' ), null, 'a current slotKey under an old read list is due' );
+	assert.equal( slotMapSkip( dir, 'sgs/heading', 'site-b', 'k1' ), null, 'an old read list is due on another site without --recalibrate' );
+	assert.equal( paintSkip( dir, 'sgs/heading', 'site-a', 'k1-snap-site-a' ), null, 'a current paintKey under an old read list is due' );
+	assert.equal( paintStale( dir, 'sgs/heading', 'site-a', 'k1-snap-site-a' ), true );
+	run( dir, 'site-a', 'blue' );
+	assert.equal( readSlotMap( dir, 'sgs/heading' ).readKey, READ_KEY );
+	assert.equal( readPaint( dir, 'site-a', 'sgs/heading' ).readKey, READ_KEY );
+	assert.match( paintSkip( dir, 'sgs/heading', 'site-a', 'k1-snap-site-a' ), /current/ );
 } );
 
 test( 'MUST FAIL TO SHARE: a reader asked for site B paint never returns A', () => {
