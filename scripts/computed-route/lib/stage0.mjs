@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
-import { readSlotMap } from './cache.mjs';
+import { readSlotMap, refusedFile } from './cache.mjs';
 import { READ_KEY } from './calibrate-props.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { fixtureRoles, refsProblem, resolveFixture } from './calibration-refs.mjs';
@@ -71,7 +71,8 @@ export function blockState( { cacheDir, block, hashes, fixtures, refsWhy = '' } 
 		return { ...out, state: 'missing', why: 'no slot map' };
 	}
 	if ( have.readKey !== READ_KEY ) {
-		return { ...out, state: 'stale', why: `slot map read under ${ have.readKey || 'no read key' }, not ${ READ_KEY }` };
+		const refused = fs.existsSync( refusedFile( cacheDir, block ) ) ? `; a refused candidate waits in ${ path.basename( refusedFile( cacheDir, block ) ) } (calibrate.mjs --allow-loss)` : '';
+		return { ...out, state: 'stale', why: `slot map read under ${ have.readKey || 'no read key' }, not ${ READ_KEY }${ refused }` };
 	}
 	const current = have.slotKey === hashes.deployed;
 	return { ...out, state: current ? 'current' : 'stale', why: current ? '' : `slot map keyed ${ have.slotKey }` };

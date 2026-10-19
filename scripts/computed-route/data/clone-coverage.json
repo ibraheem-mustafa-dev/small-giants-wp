@@ -2457,7 +2457,7 @@
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#filterChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
-			"note": "grayscale() in a filter is the motion model's grayscale channel; at rest it is restGrayscale (lib/motion-layers.mjs) (tests/css-functions.test.mjs)"
+			"note": "grayscale() in a filter: at rest it is the motion model's restGrayscale (lib/motion-layers.mjs; the drafts' one use, a footer map) and on hover the hover state's grayscale; Spec 38A has no entrance grayscale channel, so an entrance grayscale is not written (tests/css-functions.test.mjs)"
 		},
 		"css-function:hsl": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -4541,7 +4541,7 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":dir: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":dir: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:disabled": {
 			"recognise": null,
@@ -4575,13 +4575,13 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":first-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":first-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:first-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":first-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":first-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:focus": {
 			"recognise": null,
@@ -4622,7 +4622,7 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":has: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":has: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:has-slotted": {
 			"recognise": null,
@@ -4635,7 +4635,7 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":heading: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":heading: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:host": {
 			"excluded": {
@@ -4683,25 +4683,25 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":is: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":is: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:lang": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":lang: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":lang: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:last-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":last-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":last-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:last-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":last-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":last-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:left": {
 			"recognise": null,
@@ -4749,43 +4749,43 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":not: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":not: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":nth-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-last-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-last-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":nth-last-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-last-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-last-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":nth-last-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:nth-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":nth-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":nth-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:only-child": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":only-child: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":only-child: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:only-of-type": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":only-of-type: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":only-of-type: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:open": {
 			"recognise": null,
@@ -4882,13 +4882,13 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":root: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":root: in a stylesheet it matches the document element, so its effect reaches the page's elements through inheritance and is read in their computed style (the page baseline, lib/fill-page.mjs); a custom property it defines is a token (lib/tokens.mjs) (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:scope": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":scope: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":scope: in a stylesheet it matches the document element, so its effect reaches the page's elements through inheritance and is read in their computed style (the page baseline, lib/fill-page.mjs); a custom property it defines is a token (lib/tokens.mjs) (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:seeking": {
 			"recognise": null,
@@ -4971,7 +4971,7 @@
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/resolve.mjs#resolve",
 			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": ":where: a selector that matches with no interaction, so its effect is in each matched element's computed style, which Fill reads per element and writes to that element's block; a pattern (zebra rows, a last item with no divider) becomes per-element values (tests/css-planted-draft.test.mjs)"
+			"note": ":where: a selector that matches with no interaction, so its effect is in the matched element's computed style; Fill reads it on each element the skeleton maps to a block and writes it there, so a pattern (zebra rows, a last item with no divider) becomes per-element values (recognised: tests/css-planted-draft.test.mjs)"
 		},
 		"css-pseudo-class:xr-overlay": {
 			"recognise": null,

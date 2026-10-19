@@ -13,7 +13,7 @@ export function clipChannels( value ) {
 	const m = /^inset\(([^)]*)\)$/.exec( s );
 	const parts = m ? m[ 1 ].trim().split( /\s+/ ) : [];
 	// A zero edge is 0 in any unit: Chrome's computed form writes it as 0px (inset(100% 0px 0px)).
-	const pct = parts.map( ( p ) => ( /^-?0*\.?0+(?:[a-z]+)?$/i.test( p ) ? 0 : /^-?\d*\.?\d+%$/.test( p ) ? Number( p.slice( 0, -1 ) ) : null ) );
+	const pct = parts.map( ( p ) => ( /^-?(?:0+\.?0*|\.0+)(?:px|em|rem|vh|vw|vmin|vmax|cm|mm|in|pt|pc|ch|ex)?$/i.test( p ) ? 0 : /^-?\d*\.?\d+%$/.test( p ) ? Number( p.slice( 0, -1 ) ) : null ) );
 	if ( ! m || ! parts.length || parts.length > 4 || pct.some( ( p ) => null === p ) ) {
 		return { channels: {}, unsupported: [ 'clip-path' ] };
 	}

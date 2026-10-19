@@ -39,7 +39,8 @@ export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', '
 
 // The key of what calibration reads. Every cache file carries the key it was read under, and one read under another list
 // is stale on every site (lib/cache.mjs, lib/stage0.mjs::blockState): a property added to a list is measured, never taken
-// as absent from a file that did not look for it.
+// as absent from a file that did not look for it. The key covers these four lists in their order (reordering one
+// re-measures every site); the read widths, the markers and the reader's code are not part of it.
 export const READ_KEY = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED ] ) ).digest( 'hex' ).slice( 0, 12 );
 
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];

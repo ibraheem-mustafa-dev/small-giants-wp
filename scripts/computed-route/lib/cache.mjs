@@ -96,7 +96,8 @@ export function writePaint( dir, site, block, paint ) {
 
 // The calibration a reader works from: the slot map with THIS site's default paint merged in as `elements`. Null when the
 // block has no slot map. A site with no paint file gets `elements: {}` and `paintMissing` naming the site, never another
-// site's paint.
+// site's paint. A file read under an older READ_KEY is returned as it is: what it recorded is still true, and a property
+// the read list gained since reads as absent until the site is recalibrated (stage 0 reports that slot map stale).
 export function loadCalibration( dir, block, site ) {
 	const slotMap = readSlotMap( dir, block );
 	if ( ! slotMap ) {
