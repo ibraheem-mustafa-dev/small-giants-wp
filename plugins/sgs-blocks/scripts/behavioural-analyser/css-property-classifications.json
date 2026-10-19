@@ -5367,6 +5367,7 @@
       "attr": "optionDescriptionColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "option-description"
       }
     },
@@ -29032,6 +29033,72 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileDescriptionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "tile-description"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileDescriptionFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "tile-description"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileDescriptionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "tile-description"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileDescriptionLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "tile-description"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileLabelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "tile-label"
       }
     },
     {
