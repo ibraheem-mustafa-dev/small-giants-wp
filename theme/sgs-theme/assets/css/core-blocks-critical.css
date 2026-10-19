@@ -81,6 +81,8 @@ img {
 html {
 	scroll-behavior: smooth;
 	scroll-padding-top: 5rem; /* Offset for sticky header — WCAG 2.2 SC 2.4.12 (#272) */
+	-webkit-font-smoothing: antialiased; /* Mac greyscale smoothing: text weight matches the drafts */
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /* ─── REMOVE INTER-SECTION GAPS ─── */
