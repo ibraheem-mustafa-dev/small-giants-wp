@@ -45,15 +45,16 @@
 }
 
 /* The dialog is the scroll container, so this is the drawer's scrollbar: a
-   rounded thumb in a tint of the drawer's ink, on a transparent track, with no
-   arrow buttons, held clear of the panel's rounded corners. render.php publishes
-   the drawer text colour as --sgs-nd-scrollbar-ink; unset, the ink is the
-   dialog's own colour.
+   rounded thumb in the scrollbar colour (--sgs-scrollbar-thumb, the theme's
+   brand token), on a transparent track, with no arrow buttons, held clear of
+   the panel's rounded corners. render.php publishes the drawer text colour as
+   --sgs-scrollbar-thumb when the drawer sets one.
    Chrome and Safari draw it through the ::-webkit-scrollbar parts, the only
    route that removes the arrow buttons and insets the track (Chrome keeps its
    arrows under the standard properties and ignores these parts once
-   scrollbar-width or scrollbar-color is set, so those are given only to
-   browsers without the parts: Firefox, which draws no arrows). */
+   scrollbar-width or scrollbar-color is set, so the theme's scrollbar-color is
+   reset to auto here where the parts exist; Firefox draws no arrows and keeps
+   the theme's colour with scrollbar-width: thin). */
 .wp-block-sgs-nav-drawer::-webkit-scrollbar {
 	background: transparent;
 	height: 10px;
@@ -78,15 +79,20 @@
 
 .wp-block-sgs-nav-drawer::-webkit-scrollbar-thumb {
 	background-clip: padding-box;
-	background-color: color-mix(in srgb, var(--sgs-nd-scrollbar-ink, currentColor) 35%, transparent);
+	background-color: var(--sgs-scrollbar-thumb);
 	border: 3px solid transparent;
 	border-radius: 999px;
+}
+
+@supports selector(::-webkit-scrollbar) {
+	.wp-block-sgs-nav-drawer {
+		scrollbar-color: auto;
+	}
 }
 
 @supports not selector(::-webkit-scrollbar) {
 	:where(.wp-block-sgs-nav-drawer) {
 		scrollbar-width: thin;
-		scrollbar-color: color-mix(in srgb, var(--sgs-nd-scrollbar-ink, currentColor) 35%, transparent) transparent;
 	}
 }
 

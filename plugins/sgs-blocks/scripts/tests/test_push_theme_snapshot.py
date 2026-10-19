@@ -311,6 +311,7 @@ def _full_roster_snap(pts) -> dict:
             node = node.setdefault(key, {})
         node[keys[-1]] = "0"
     custom["focus"] = {key: "2px" for key in pts.focus_tokens.FOCUS_KEYS}
+    custom["scrollbar"] = {key: "transparent" for key in pts.scrollbar_tokens.SCROLLBAR_KEYS}
     return snap
 
 

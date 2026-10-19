@@ -82,6 +82,7 @@ import snapshot_palette_roster as palette_roster  # noqa: E402
 import snapshot_layout_tokens as layout_tokens  # noqa: E402
 import snapshot_motion_tokens as motion_tokens  # noqa: E402
 import snapshot_focus_tokens as focus_tokens  # noqa: E402
+import snapshot_scrollbar_tokens as scrollbar_tokens  # noqa: E402
 
 # The generic host-matched secrets lookup lives with the Site Info push; one copy, not two.
 from business_info.credentials import credentials_from_secrets  # noqa: E402
@@ -236,7 +237,8 @@ def roster_guard(snapshot: dict) -> list[str]:
     completeness gate check-snapshot-palette-roster.py uses) and the per-tier layout tokens under
     settings.custom.section and settings.custom.gutter (snapshot_layout_tokens.py), and the motion tokens the
     motion schema's x-sgs-tokens table names (snapshot_motion_tokens.py, Spec 38A section 7), named `custom.<path>`,
-    and the keyboard-focus keys under settings.custom.focus (snapshot_focus_tokens.py), named `custom.focus.<key>`.
+    and the keyboard-focus keys under settings.custom.focus (snapshot_focus_tokens.py), named `custom.focus.<key>`,
+    and the scrollbar keys under settings.custom.scrollbar (snapshot_scrollbar_tokens.py), named `custom.scrollbar.<key>`.
     """
     missing = palette_roster.missing_roster_slugs(snapshot, palette_roster.framework_roster())
     missing += ["custom." + path for path in layout_tokens.missing_layout_tokens(
@@ -244,6 +246,7 @@ def roster_guard(snapshot: dict) -> list[str]:
     missing += ["custom." + path for path in motion_tokens.missing_motion_tokens(
         snapshot, motion_tokens.motion_token_keys())]
     missing += ["custom.focus." + key for key in focus_tokens.missing_focus_keys(snapshot)]
+    missing += ["custom.scrollbar." + key for key in scrollbar_tokens.missing_scrollbar_keys(snapshot)]
     return missing
 
 
@@ -1107,7 +1110,9 @@ def main() -> int:
               "for palette slugs, python scripts/migrate-section-gutter-tokens.py for custom.section and "
               "custom.gutter; for a custom.<family>.<key> motion token, add the client's own draft value or the "
               "framework value from theme/sgs-theme/theme.json settings.custom; for custom.focus.<key>, run "
-              "python scripts/check-snapshot-focus-tokens.py --fix --apply --client <client>) and re-run; "
+              "python scripts/check-snapshot-focus-tokens.py --fix --apply --client <client>; for "
+              "custom.scrollbar.<key>, copy the framework value from theme/sgs-theme/theme.json and check it with "
+              "python scripts/check-snapshot-scrollbar-tokens.py --check --client <client>) and re-run; "
               "nothing was sent.",
               file=sys.stderr)
         return 2

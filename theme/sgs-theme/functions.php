@@ -133,6 +133,8 @@ function setup(): void {
 	add_editor_style( 'assets/css/core-blocks.css' );
 	// The focus system, so the canvas shows the same keyboard focus look (its arms exclude editing chrome).
 	add_editor_style( 'assets/css/focus.css' );
+	// Branded scrollbars, so the canvas and the editor's own scrollers show the same bar colours.
+	add_editor_style( 'assets/css/scrollbars.css' );
 	// The responsive half of the type scale (D1007). Loaded into the editor canvas as
 	// well as the front end, or an operator resizing the canvas would see desktop
 	// heading sizes at every width while the published page shrank them.
@@ -434,6 +436,15 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/css/focus.css' ),
 		array( 'sgs-core-blocks-critical' ),
 		asset_version( 'assets/css/focus.css', $theme_version )
+	);
+
+	// Branded scrollbars (Spec 32 FR-32-26): synchronous, so the page's own bar is branded from first paint.
+	// The only reader of settings.custom.scrollbar.
+	wp_enqueue_style(
+		'sgs-scrollbars',
+		get_theme_file_uri( 'assets/css/scrollbars.css' ),
+		array( 'sgs-core-blocks-critical' ),
+		asset_version( 'assets/css/scrollbars.css', $theme_version )
 	);
 
 	wp_enqueue_style(

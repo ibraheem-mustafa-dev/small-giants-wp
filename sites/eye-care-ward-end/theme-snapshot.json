@@ -709,6 +709,11 @@
         "lg": "18px",
         "xl": "26px",
         "2xl": "48px"
+      },
+      "scrollbar": {
+        "thumb": "var(--wp--preset--color--primary)",
+        "thumbOnDark": "var(--wp--preset--color--accent)",
+        "track": "transparent"
       }
     },
     "appearanceTools": true,

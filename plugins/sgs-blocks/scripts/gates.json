@@ -1710,6 +1710,24 @@
     "order": 190
   },
   {
+    "id": "check-snapshot-scrollbar-tokens-self-test",
+    "cmd": "python scripts/check-snapshot-scrollbar-tokens.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 197
+  },
+  {
+    "id": "check-snapshot-scrollbar-tokens",
+    "cmd": "python scripts/check-snapshot-scrollbar-tokens.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 198
+  },
+  {
     "id": "check-motion-literals",
     "cmd": "python scripts/check-motion-literals.py --check",
     "tier": "fast",

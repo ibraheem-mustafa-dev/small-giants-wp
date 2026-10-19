@@ -407,6 +407,11 @@
         "signatureB": "var(--wp--preset--color--accent)",
         "signatureC": "var(--wp--preset--color--accent-light)"
       },
+      "scrollbar": {
+        "thumb": "var(--wp--preset--color--primary)",
+        "thumbOnDark": "var(--wp--preset--color--accent)",
+        "track": "transparent"
+      },
       "shadowColour": "var(--wp--preset--color--text)",
       "shadowHover": {
         "whisper": "soft",

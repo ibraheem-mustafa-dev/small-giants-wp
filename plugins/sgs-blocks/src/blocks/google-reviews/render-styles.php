@@ -279,7 +279,10 @@ if ( 'scrollbar' === $gr_pagination ) {
 	}
 	// scrollbar-color takes flat colours only, so the thumb colour travels as one custom property (style.css reads it).
 	$gr_scrollbar_decls = sgs_custom_property_gradient_decls( 'sgs-gr-scrollbar-colour', (string) ( $attributes['scrollbarColour'] ?? '' ), '' );
-	if ( array() !== $gr_scrollbar_decls ) {
+	if ( array() === $gr_scrollbar_decls ) {
+		// No bar colour set: the rail keeps the browser's own bar instead of the theme's brand scrollbar colour.
+		$gr_extra_classes[] = 'sgs-scrollbar-native';
+	} else {
 		$gr_responsive_css .= $gr_list_sel . '{' . implode( ';', $gr_scrollbar_decls ) . ';}';
 	}
 }

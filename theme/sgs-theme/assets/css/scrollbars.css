@@ -1,0 +1,44 @@
+/*
+ * Branded scrollbars (Spec 32 FR-32-26).
+ *
+ * Every scroller, and the page's own bar, takes its colours from the theme snapshot
+ * (settings.custom.scrollbar.thumb, .thumbOnDark and .track). A block that needs its own look sets
+ * --sgs-scrollbar-thumb or --sgs-scrollbar-track in its scoped style. The thumb on each ground reaches
+ * 2:1 (scripts/check-snapshot-scrollbar-tokens.py).
+ *
+ * `scrollbar-color` is declared on :where(*) so a scope's override reaches its descendants, which a
+ * single declaration on :root would not (a var() on :root resolves at the root). The width stays `auto`.
+ * Where `scrollbar-color` or `scrollbar-width` is not `auto`, Chrome 121+ ignores ::-webkit-scrollbar
+ * parts on that element, so a block that draws its own webkit parts resets `scrollbar-color` to `auto`
+ * on itself and a hidden bar keeps `scrollbar-width: none`.
+ */
+
+:root,
+.sgs-on-light {
+	--sgs-scrollbar-thumb: var(--wp--custom--scrollbar--thumb, var(--wp--preset--color--primary, #1f7a7a));
+	--sgs-scrollbar-track: var(--wp--custom--scrollbar--track, transparent);
+}
+
+.sgs-on-dark {
+	--sgs-scrollbar-thumb: var(--wp--custom--scrollbar--thumb-on-dark, var(--wp--preset--color--accent, #f59e0b));
+}
+
+:root,
+:where(*) {
+	scrollbar-color: var(--sgs-scrollbar-thumb) var(--sgs-scrollbar-track);
+}
+
+/* The browser's own bar, for a scroller that opts out (the shop filter sheet; a slider with no bar colour set). */
+:where(.sgs-scrollbar-native),
+:where(.sgs-scrollbar-native *) {
+	scrollbar-color: auto;
+}
+
+/*
+ * The page's own bar keeps whatever arrows the visitor's platform draws, recoloured only. Every inner
+ * scroller (drawer, menus, sliders, cart, pop-ups, rails) is slim with no arrow buttons (Chromium and
+ * WebKit; Firefox draws none).
+ */
+:where(body *)::-webkit-scrollbar-button {
+	display: none;
+}
