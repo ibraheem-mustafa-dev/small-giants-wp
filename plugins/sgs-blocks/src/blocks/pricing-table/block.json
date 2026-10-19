@@ -804,6 +804,18 @@
 			],
 			"default": ""
 		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"titleTextColumns": {
 			"type": "number"
 		},
@@ -900,6 +912,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"priceTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"priceTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"priceTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"priceTextColumns": {
@@ -1000,6 +1024,18 @@
 			],
 			"default": ""
 		},
+		"ctaTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"ctaTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"ctaTextColumns": {
 			"type": "number"
 		},
@@ -1096,6 +1132,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"featureTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"featureTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"featureTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"featureTextColumns": {

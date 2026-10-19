@@ -301,6 +301,18 @@
 			],
 			"default": ""
 		},
+		"optionDescriptionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"optionDescriptionTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"optionDescriptionColour": {
 			"type": "string",
 			"default": ""

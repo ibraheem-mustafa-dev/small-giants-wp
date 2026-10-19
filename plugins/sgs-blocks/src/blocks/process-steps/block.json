@@ -109,6 +109,8 @@
 						"css:letter-spacing": "iconLetterSpacing",
 						"css:text-align": "iconTextAlign",
 						"css:text-wrap": "iconTextWrap",
+						"css:-webkit-text-stroke-width": "iconTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "iconTextStrokeColour",
 						"css:column-count": "iconTextColumns",
 						"css:writing-mode": "iconWritingMode"
 					},
@@ -161,6 +163,8 @@
 						"css:letter-spacing": "numberLetterSpacing",
 						"css:text-align": "numberTextAlign",
 						"css:text-wrap": "numberTextWrap",
+						"css:-webkit-text-stroke-width": "numberTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "numberTextStrokeColour",
 						"css:column-count": "numberTextColumns",
 						"css:writing-mode": "numberWritingMode"
 					},
@@ -199,6 +203,8 @@
 						"css:letter-spacing": "descriptionLetterSpacing",
 						"css:text-align": "descriptionTextAlign",
 						"css:text-wrap": "descriptionTextWrap",
+						"css:-webkit-text-stroke-width": "descriptionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "descriptionTextStrokeColour",
 						"css:column-count": "descriptionTextColumns",
 						"css:writing-mode": "descriptionWritingMode"
 					},
@@ -575,6 +581,18 @@
 			],
 			"default": ""
 		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"titleTextColumns": {
 			"type": "number"
 		},
@@ -668,6 +686,18 @@
 			],
 			"default": ""
 		},
+		"iconTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"iconTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"iconTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"iconTextColumns": {
 			"type": "number"
 		},
@@ -735,6 +765,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"numberTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"numberTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"numberTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"numberTextColumns": {
@@ -828,6 +870,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"descriptionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"descriptionTextColumns": {

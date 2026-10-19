@@ -96,6 +96,7 @@ export default function IconLabelPanel( { attributes, setAttributes, state } ) {
 						showTransform
 						showLetterSpacing
 						showTextWrap
+						showTextStroke
 					/>
 				</>
 			) }

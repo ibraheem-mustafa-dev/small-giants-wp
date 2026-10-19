@@ -465,6 +465,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showLetterSpacing: true,
 								showTextAlign: true,
 								showTextWrap: true,
+								showTextStroke: true,
 							},
 							{
 								key: 'tileDescription',
@@ -477,6 +478,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showLetterSpacing: true,
 								showTextAlign: true,
 								showTextWrap: true,
+								showTextStroke: true,
 							},
 						] }
 					/>

@@ -314,6 +314,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showDecoration
 								showTextAlign
 								showTextWrap
+								showTextStroke
 								showTextColumns
 								showWritingMode
 							/>

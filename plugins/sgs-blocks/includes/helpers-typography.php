@@ -192,6 +192,9 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$k_columns     = sgs_typography_attr( $prefix, 'TextColumns' );
 		$k_indent      = sgs_typography_attr( $prefix, 'TextIndent' );
 		$k_writing     = sgs_typography_attr( $prefix, 'WritingMode' );
+		$k_stroke      = sgs_typography_attr( $prefix, 'TextStrokeWidth' );
+		$k_stroke_col  = sgs_typography_attr( $prefix, 'TextStrokeColour' );
+		$k_stroke_hov  = sgs_typography_attr( $prefix, 'TextStrokeColourHover' );
 
 		// Numeric responsive families (font-size / line-height / letter-spacing) may
 		// each be stored EITHER as the modern {desktop,tablet,mobile} OBJECT (Spec 35
@@ -289,6 +292,19 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 				'unit_default' => 'em',
 				'tablet_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingTablet' ),
 				'mobile_attr'  => sgs_typography_attr( $prefix, 'LetterSpacingMobile' ),
+			);
+		}
+
+		// Outline width (hollow lettering) — a per-tier object in px, drawn round
+		// each glyph. Only an object is read: a block that never declared
+		// `{prefix}TextStrokeWidth` has no key and emits nothing. The outline
+		// colour (below) is separate; with no colour the stroke takes the text
+		// colour, which is the browser's own default.
+		if ( isset( $attributes[ $k_stroke ] ) && is_array( $attributes[ $k_stroke ] ) ) {
+			$tiered_specs[] = array(
+				'value'        => $attributes[ $k_stroke ],
+				'css'          => '-webkit-text-stroke-width',
+				'unit_default' => 'px',
 			);
 		}
 
@@ -459,10 +475,24 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			}
 		}
 
+		// Outline colour — solid only (`-webkit-text-stroke-color` takes no
+		// gradient), painted through sgs_colour_value() so a palette slug or any
+		// colour the client picked survives. Hover rides the shared touch-safe
+		// pair; both states are optional.
+		$stroke_colour = isset( $attributes[ $k_stroke_col ] ) ? sgs_colour_value( (string) $attributes[ $k_stroke_col ] ) : '';
+		if ( '' !== $stroke_colour ) {
+			$base_decls[] = '-webkit-text-stroke-color:' . $stroke_colour . ';';
+		}
+
 		if ( ! empty( $base_decls ) ) {
 			// Prepend so base-only props sit before the responsive rules — same
 			// computed result either way (disjoint properties, same selector).
 			$css = $selector . '{' . implode( '', $base_decls ) . '}' . $css;
+		}
+
+		$stroke_hover = isset( $attributes[ $k_stroke_hov ] ) ? sgs_colour_value( (string) $attributes[ $k_stroke_hov ] ) : '';
+		if ( '' !== $stroke_hover ) {
+			$css .= sgs_hover_state_rules( $selector, '-webkit-text-stroke-color:' . $stroke_hover . ';' );
 		}
 
 		return $css;

@@ -769,6 +769,18 @@
       ],
       "default": ""
     },
+    "titleTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "titleTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "titleTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
     "titleTextColumns": {
       "type": "number"
     },
@@ -851,6 +863,18 @@
       ],
       "default": ""
     },
+    "pageButtonTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "pageButtonTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "pageButtonTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
     "pageButtonTextColumns": {
       "type": "number"
     },
@@ -931,6 +955,18 @@
         "pretty",
         "stable"
       ],
+      "default": ""
+    },
+    "loadMoreTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreTextStrokeColourHover": {
+      "type": "string",
       "default": ""
     },
     "loadMoreTextColumns": {
@@ -1026,6 +1062,18 @@
       ],
       "default": ""
     },
+    "metaTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "metaTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "metaTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
     "metaTextColumns": {
       "type": "number"
     },
@@ -1117,6 +1165,18 @@
         "pretty",
         "stable"
       ],
+      "default": ""
+    },
+    "badgeTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeTextStrokeColourHover": {
+      "type": "string",
       "default": ""
     },
     "badgeTextColumns": {
@@ -1212,6 +1272,18 @@
       ],
       "default": ""
     },
+    "categoryTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "categoryTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
     "categoryTextColumns": {
       "type": "number"
     },
@@ -1305,6 +1377,18 @@
       ],
       "default": ""
     },
+    "excerptTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "excerptTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
     "excerptTextColumns": {
       "type": "number"
     },
@@ -1396,6 +1480,18 @@
         "pretty",
         "stable"
       ],
+      "default": ""
+    },
+    "readMoreTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "readMoreTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreTextStrokeColourHover": {
+      "type": "string",
       "default": ""
     },
     "readMoreTextColumns": {

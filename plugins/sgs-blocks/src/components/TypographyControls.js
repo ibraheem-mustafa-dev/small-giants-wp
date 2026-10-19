@@ -69,6 +69,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
 import { useSettings } from '@wordpress/block-editor';
 import { BaseControl, Button, Flex, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
 // The same four icons core's own TextAlignmentControl imports — see the
@@ -86,6 +87,7 @@ import {
 } from '@wordpress/icons';
 import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
+import DesignTokenPicker from './DesignTokenPicker';
 import {
 	VStack,
 	UnitControl,
@@ -391,6 +393,10 @@ export function typographyAttrKeys( prefix ) {
 		// the modified-indicator scan already treats as unset.
 		textAlign: typographyAttrName( prefix, 'TextAlign' ),
 		textWrap: typographyAttrName( prefix, 'TextWrap' ),
+		// OPT-IN (showTextStroke): hollow outlined lettering.
+		textStrokeWidth: typographyAttrName( prefix, 'TextStrokeWidth' ),
+		textStrokeColour: typographyAttrName( prefix, 'TextStrokeColour' ),
+		textStrokeColourHover: typographyAttrName( prefix, 'TextStrokeColourHover' ),
 		// Hover companions (D309). Consumed only when showHover is enabled AND the
 		// block declares + renders them (else the dead-control gate flags it).
 		fontWeightHover: typographyAttrName( prefix, 'FontWeightHover' ),
@@ -482,6 +488,11 @@ function parseUnitValue( raw, currentUnit ) {
  *   server-side by sgs_typography_css_rule() (allowlist
  *   wrap|nowrap|balance|pretty|stable). WordPress core has no equivalent
  *   control — this one is SGS-only.
+ * @param {boolean}  [props.showTextStroke=false] Offer an outline width (per
+ *   device) and an outline colour (Normal and Hover) for hollow lettering.
+ *   OPT-IN: only pass true when the block declares {prefix}TextStrokeWidth,
+ *   {prefix}TextStrokeColour and {prefix}TextStrokeColourHover. Emitted
+ *   server-side by sgs_typography_css_rule().
  * @param {boolean}  [props.showFontFamily=false] Offer a font-family picker
  *   sourced from the theme.json `typography.fontFamilies` preset list (same
  *   opt-in shape as fontSizePresets). OPT-IN: only pass true when the block
@@ -506,12 +517,14 @@ function TypographyControlsFields( {
 	showLetterSpacing = false,
 	showTextAlign = false,
 	showTextWrap = false,
+	showTextStroke = false,
 	showTextColumns = false,
 	showTextIndent = false,
 	showWritingMode = false,
 	showHover = false,
 } ) {
 	const k = typographyAttrKeys( prefix );
+	const strokeHelpId = useInstanceId( TypographyControlsFields, 'sgs-typography-stroke-help' );
 
 	// ⛔ NO "More typography options" disclosure. Every field renders expanded,
 	// always. The 2026-08-19 compact-by-default pass collapsed weight / style /
@@ -1351,6 +1364,68 @@ function TypographyControlsFields( {
 				/>
 			) }
 
+			{ /* ── Outline ── SGS-ONLY (core has no text-stroke support). For
+			     hollow lettering the client sets the text colour's opacity to 0
+			     under Colour; that colour keeps its own Hover state, so no
+			     separate "hollow" toggle exists. The width is a tier object
+			     (ResponsiveOverride), the colour a solid-only picker with Normal
+			     and Hover states. OPT-IN (showTextStroke): the block must DECLARE
+			     the three `{prefix}TextStroke*` attributes first (D338). */ }
+			{ showTextStroke && (
+				<>
+					<div>
+						<ResponsiveOverride
+							label={ __( 'Outline width', 'sgs-blocks' ) }
+							value={ attributes[ k.textStrokeWidth ] }
+							onChange={ ( obj ) => setAttributes( { [ k.textStrokeWidth ]: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<NumberControl
+									label={ __( 'Outline width (px)', 'sgs-blocks' ) }
+									hideLabelFromVision
+									min={ 0 }
+									max={ 20 }
+									step={ 0.5 }
+									spinControls="custom"
+									value={ ownValue }
+									placeholder={ inherited && undefined !== effectiveValue ? String( effectiveValue ) : '' }
+									onChange={ ( val ) => {
+										const parsed = parseFloat( val );
+										setOwnValue( isNaN( parsed ) ? '' : Math.min( 20, Math.max( 0, parsed ) ) );
+									} }
+									aria-describedby={ strokeHelpId }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
+						<p id={ strokeHelpId } className="components-base-control__help">
+							{ __( "Draws a line round each letter. For hollow letters, set the text colour's opacity to 0 under Colour.", 'sgs-blocks' ) }
+						</p>
+					</div>
+					<DesignTokenPicker
+						label={ __( 'Outline colour', 'sgs-blocks' ) }
+						help={ __( 'Leave empty to draw the outline in the text colour.', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes[ k.textStrokeColour ] || '',
+								onChange: ( next ) => setAttributes( { [ k.textStrokeColour ]: next ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes[ k.textStrokeColourHover ] || '',
+								onChange: ( next ) => setAttributes( { [ k.textStrokeColourHover ]: next ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</>
+			) }
+
 			{ /* Hover typography (D309). Opt-in: only render for a block that
 			     DECLARES + renders the {prop}Hover companions, else the
 			     dead-control gate flags it. Paired into one compact row, same
@@ -1483,7 +1558,7 @@ function targetHasCustomValues( attributes, prefix ) {
  *   `fieldProps` are any of `TypographyControlsFields`' own props (`showWeight`,
  *   `showStyle`, `showLineHeight`, `showResponsive`, `fontSizePresets`,
  *   `showFontFamily`, `showDecoration`, `showTransform`, `showLetterSpacing`,
- *   `showTextAlign`, `showTextWrap`, `showHover`) — each target can expose a
+ *   `showTextAlign`, `showTextWrap`, `showTextStroke`, `showHover`) — each target can expose a
  *   different subset, exactly as
  *   today's separate per-element mounts do.
  * @return {JSX.Element} Switcher + the active target's full control set.

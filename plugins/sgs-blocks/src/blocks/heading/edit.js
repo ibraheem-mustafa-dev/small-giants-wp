@@ -513,6 +513,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						showTransform={ true }
 						showTextAlign={ true }
 						showTextWrap={ true }
+						showTextStroke
 						showWritingMode={ true }
 					/>
 					<SgsLengthControl

@@ -208,7 +208,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Styling', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="label"

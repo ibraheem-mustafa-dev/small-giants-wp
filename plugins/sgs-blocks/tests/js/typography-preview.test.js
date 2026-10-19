@@ -113,3 +113,49 @@ describe( 'font family slugs', () => {
 		expect( fontFamilyStoredValue( '', families, 'body' ) ).toBeUndefined();
 	} );
 } );
+
+// Hollow outlined lettering: the editor canvas twin of sgs_typography_css_rule()'s
+// -webkit-text-stroke-width (per tier) and -webkit-text-stroke-color. Hover is not previewed inline.
+describe( 'text outline', () => {
+	beforeEach( () => {
+		global.CSS = { supports: ( prop, value ) => 'color' === prop && /^#[0-9a-f]{3,8}$/i.test( value ) };
+	} );
+	afterEach( () => {
+		delete global.CSS;
+	} );
+
+	const attrs = {
+		textStrokeWidth: { desktop: 2, mobile: 1.5 },
+		textStrokeColour: '#0A7EA8',
+		textStrokeColourHover: '#D8CA50',
+	};
+
+	it( 'previews the width at the tier being edited, inheriting upward', () => {
+		expect( typographyPreviewStyle( attrs, '', 'desktop' ).WebkitTextStrokeWidth ).toBe( '2px' );
+		expect( typographyPreviewStyle( attrs, '', 'tablet' ).WebkitTextStrokeWidth ).toBe( '2px' );
+		expect( typographyPreviewStyle( attrs, '', 'mobile' ).WebkitTextStrokeWidth ).toBe( '1.5px' );
+	} );
+
+	it( 'previews the outline colour and never the hover colour', () => {
+		const style = typographyPreviewStyle( attrs );
+		expect( style.WebkitTextStrokeColor ).toBe( '#0A7EA8' );
+		expect( JSON.stringify( style ) ).not.toContain( 'D8CA50' );
+	} );
+
+	it( 'resolves a palette slug to its custom property', () => {
+		expect( typographyPreviewStyle( { heroTextStrokeColour: 'primary' }, 'hero' ).WebkitTextStrokeColor ).toBe( 'var(--wp--preset--color--primary, currentColor)' );
+	} );
+
+	it( 'reads the prefixed family', () => {
+		expect( typographyPreviewStyle( { yearTextStrokeWidth: { desktop: 3 } }, 'year' ).WebkitTextStrokeWidth ).toBe( '3px' );
+	} );
+
+	it( 'prints the width as a hyphenated declaration in an editor rule', () => {
+		expect( typographyPreviewCss( { textStrokeWidth: { desktop: 2 } }, '', '.x' ) ).toBe( '.x{-webkit-text-stroke-width:2px;}' );
+	} );
+
+	it( 'emits nothing when unset', () => {
+		expect( typographyPreviewStyle( {} ) ).toEqual( {} );
+		expect( typographyPreviewStyle( { textStrokeWidth: {}, textStrokeColour: '' } ) ).toEqual( {} );
+	} );
+} );

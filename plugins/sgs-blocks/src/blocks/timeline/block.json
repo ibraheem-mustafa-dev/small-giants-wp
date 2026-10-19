@@ -623,6 +623,18 @@
 			],
 			"default": ""
 		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"titleTextColumns": {
 			"type": "number"
 		},

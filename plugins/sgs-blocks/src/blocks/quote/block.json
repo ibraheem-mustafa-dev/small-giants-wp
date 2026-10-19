@@ -414,6 +414,18 @@
 			],
 			"default": ""
 		},
+		"attributionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"attributionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"attributionTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"attributionTextColumns": {
 			"type": "number"
 		},

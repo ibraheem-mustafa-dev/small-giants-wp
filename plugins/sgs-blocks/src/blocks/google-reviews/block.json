@@ -1581,6 +1581,18 @@
 			],
 			"default": ""
 		},
+		"sourceLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"sourceLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"sourceLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"scoreFontSize": {
 			"type": "object",
 			"default": {}
@@ -1664,6 +1676,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"scoreTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"scoreTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"countFontSize": {
@@ -1751,6 +1775,18 @@
 			],
 			"default": ""
 		},
+		"countTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"countTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"countTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"authorFontSize": {
 			"type": "object",
 			"default": {}
@@ -1834,6 +1870,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"authorTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"authorTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"authorTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"metaFontSize": {
@@ -1921,6 +1969,18 @@
 			],
 			"default": ""
 		},
+		"metaTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"metaTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"metaTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"dateFontSize": {
 			"type": "object",
 			"default": {}
@@ -2004,6 +2064,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"dateTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"dateTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dateTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"textFontSize": {
@@ -2091,6 +2163,18 @@
 			],
 			"default": ""
 		},
+		"textTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"avatarFontSize": {
 			"type": "object",
 			"default": {}
@@ -2174,6 +2258,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"avatarTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"avatarTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"avatarTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"footnoteFontSize": {
@@ -2261,6 +2357,18 @@
 			],
 			"default": ""
 		},
+		"footnoteTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"footnoteTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"footnoteTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"reviewLinkFontSize": {
 			"type": "object",
 			"default": {}
@@ -2344,6 +2452,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"reviewLinkTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewLinkTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewLinkTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"writeReviewFontSize": {
@@ -2431,6 +2551,18 @@
 			],
 			"default": ""
 		},
+		"writeReviewTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"writeReviewTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"writeReviewTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"seeAllFontSize": {
 			"type": "object",
 			"default": {}
@@ -2514,6 +2646,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"seeAllTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"seeAllTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"seeAllTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"mapsLinkFontSize": {
@@ -2603,6 +2747,18 @@
 			],
 			"default": ""
 		},
+		"mapsLinkTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"mapsLinkTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"mapsLinkTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"breakdownRowFontSize": {
 			"type": "object",
 			"default": {
@@ -2688,6 +2844,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"breakdownRowTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"breakdownRowTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"breakdownRowTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		}
 	},

@@ -790,6 +790,11 @@ const PREFIXED_HELPER_SUFFIXES = {
 		// silence this attribute on every block forever, including a future one
 		// where it really is dead.
 		'TextWrap',
+		// Outline (hollow lettering): the helper reads all three through the same
+		// `sgs_typography_attr( $prefix, … )` call, so none appears as a literal.
+		'TextStrokeWidth',
+		'TextStrokeColour',
+		'TextStrokeColourHover',
 		// Added 2026-09-06 alongside the helper's column-count / text-indent /
 		// writing-mode branches — same dynamic-key reason as every suffix above.
 		//

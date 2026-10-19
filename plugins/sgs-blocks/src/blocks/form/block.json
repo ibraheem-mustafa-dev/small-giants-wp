@@ -149,6 +149,8 @@
 						"css:letter-spacing": "submitLetterSpacing",
 						"css:text-align": "submitTextAlign",
 						"css:text-wrap": "submitTextWrap",
+						"css:-webkit-text-stroke-width": "submitTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "submitTextStrokeColour",
 						"css:column-count": "submitTextColumns",
 						"css:writing-mode": "submitWritingMode"
 					},
@@ -294,6 +296,8 @@
 						"css:letter-spacing": "tileIconLetterSpacing",
 						"css:text-align": "tileIconTextAlign",
 						"css:text-wrap": "tileIconTextWrap",
+						"css:-webkit-text-stroke-width": "tileIconTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tileIconTextStrokeColour",
 						"css:column-count": "tileIconTextColumns",
 						"css:writing-mode": "tileIconWritingMode"
 					},
@@ -316,6 +320,8 @@
 						"css:letter-spacing": "tileLabelLetterSpacing",
 						"css:text-align": "tileLabelTextAlign",
 						"css:text-wrap": "tileLabelTextWrap",
+						"css:-webkit-text-stroke-width": "tileLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tileLabelTextStrokeColour",
 						"css:column-count": "tileLabelTextColumns",
 						"css:writing-mode": "tileLabelWritingMode"
 					},
@@ -338,6 +344,8 @@
 						"css:letter-spacing": "consentLetterSpacing",
 						"css:text-align": "consentTextAlign",
 						"css:text-wrap": "consentTextWrap",
+						"css:-webkit-text-stroke-width": "consentTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "consentTextStrokeColour",
 						"css:column-count": "consentTextColumns",
 						"css:writing-mode": "consentWritingMode"
 					},
@@ -360,6 +368,8 @@
 						"css:letter-spacing": "reviewTermLetterSpacing",
 						"css:text-align": "reviewTermTextAlign",
 						"css:text-wrap": "reviewTermTextWrap",
+						"css:-webkit-text-stroke-width": "reviewTermTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "reviewTermTextStrokeColour",
 						"css:column-count": "reviewTermTextColumns",
 						"css:writing-mode": "reviewTermWritingMode"
 					},
@@ -382,6 +392,8 @@
 						"css:letter-spacing": "navButtonLetterSpacing",
 						"css:text-align": "navButtonTextAlign",
 						"css:text-wrap": "navButtonTextWrap",
+						"css:-webkit-text-stroke-width": "navButtonTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "navButtonTextStrokeColour",
 						"css:column-count": "navButtonTextColumns",
 						"css:writing-mode": "navButtonWritingMode"
 					},
@@ -404,6 +416,8 @@
 						"css:letter-spacing": "helpTextLetterSpacing",
 						"css:text-align": "helpTextTextAlign",
 						"css:text-wrap": "helpTextTextWrap",
+						"css:-webkit-text-stroke-width": "helpTextTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "helpTextTextStrokeColour",
 						"css:column-count": "helpTextTextColumns",
 						"css:writing-mode": "helpTextWritingMode"
 					},
@@ -426,6 +440,8 @@
 						"css:letter-spacing": "errorTextLetterSpacing",
 						"css:text-align": "errorTextTextAlign",
 						"css:text-wrap": "errorTextTextWrap",
+						"css:-webkit-text-stroke-width": "errorTextTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "errorTextTextStrokeColour",
 						"css:column-count": "errorTextTextColumns",
 						"css:writing-mode": "errorTextWritingMode"
 					},
@@ -448,6 +464,8 @@
 						"css:letter-spacing": "fileStatusLetterSpacing",
 						"css:text-align": "fileStatusTextAlign",
 						"css:text-wrap": "fileStatusTextWrap",
+						"css:-webkit-text-stroke-width": "fileStatusTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "fileStatusTextStrokeColour",
 						"css:column-count": "fileStatusTextColumns",
 						"css:writing-mode": "fileStatusWritingMode"
 					},
@@ -470,6 +488,8 @@
 						"css:letter-spacing": "reviewHeadingLetterSpacing",
 						"css:text-align": "reviewHeadingTextAlign",
 						"css:text-wrap": "reviewHeadingTextWrap",
+						"css:-webkit-text-stroke-width": "reviewHeadingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "reviewHeadingTextStrokeColour",
 						"css:column-count": "reviewHeadingTextColumns",
 						"css:writing-mode": "reviewHeadingWritingMode"
 					},
@@ -492,6 +512,8 @@
 						"css:letter-spacing": "reviewDetailLetterSpacing",
 						"css:text-align": "reviewDetailTextAlign",
 						"css:text-wrap": "reviewDetailTextWrap",
+						"css:-webkit-text-stroke-width": "reviewDetailTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "reviewDetailTextStrokeColour",
 						"css:column-count": "reviewDetailTextColumns",
 						"css:writing-mode": "reviewDetailWritingMode"
 					},
@@ -514,6 +536,8 @@
 						"css:letter-spacing": "stepLabelLetterSpacing",
 						"css:text-align": "stepLabelTextAlign",
 						"css:text-wrap": "stepLabelTextWrap",
+						"css:-webkit-text-stroke-width": "stepLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "stepLabelTextStrokeColour",
 						"css:column-count": "stepLabelTextColumns",
 						"css:writing-mode": "stepLabelWritingMode"
 					},
@@ -538,6 +562,8 @@
 						"css:letter-spacing": "fileButtonLetterSpacing",
 						"css:text-align": "fileButtonTextAlign",
 						"css:text-wrap": "fileButtonTextWrap",
+						"css:-webkit-text-stroke-width": "fileButtonTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "fileButtonTextStrokeColour",
 						"css:column-count": "fileButtonTextColumns",
 						"css:writing-mode": "fileButtonWritingMode"
 					},
@@ -560,6 +586,8 @@
 						"css:letter-spacing": "filePromptLetterSpacing",
 						"css:text-align": "filePromptTextAlign",
 						"css:text-wrap": "filePromptTextWrap",
+						"css:-webkit-text-stroke-width": "filePromptTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "filePromptTextStrokeColour",
 						"css:column-count": "filePromptTextColumns",
 						"css:writing-mode": "filePromptWritingMode"
 					},
@@ -582,6 +610,8 @@
 						"css:letter-spacing": "gridColHeadingLetterSpacing",
 						"css:text-align": "gridColHeadingTextAlign",
 						"css:text-wrap": "gridColHeadingTextWrap",
+						"css:-webkit-text-stroke-width": "gridColHeadingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "gridColHeadingTextStrokeColour",
 						"css:column-count": "gridColHeadingTextColumns",
 						"css:writing-mode": "gridColHeadingWritingMode"
 					},
@@ -604,6 +634,8 @@
 						"css:letter-spacing": "gridRowHeadingLetterSpacing",
 						"css:text-align": "gridRowHeadingTextAlign",
 						"css:text-wrap": "gridRowHeadingTextWrap",
+						"css:-webkit-text-stroke-width": "gridRowHeadingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "gridRowHeadingTextStrokeColour",
 						"css:column-count": "gridRowHeadingTextColumns",
 						"css:writing-mode": "gridRowHeadingWritingMode"
 					},
@@ -626,6 +658,8 @@
 						"css:letter-spacing": "stepNumberLetterSpacing",
 						"css:text-align": "stepNumberTextAlign",
 						"css:text-wrap": "stepNumberTextWrap",
+						"css:-webkit-text-stroke-width": "stepNumberTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "stepNumberTextStrokeColour",
 						"css:column-count": "stepNumberTextColumns",
 						"css:writing-mode": "stepNumberWritingMode"
 					},
@@ -934,6 +968,18 @@
 			],
 			"default": ""
 		},
+		"labelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"labelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"labelTextColumns": {
 			"type": "number"
 		},
@@ -1026,6 +1072,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"fieldTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"fieldTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"fieldTextColumns": {
@@ -1386,6 +1444,18 @@
 			],
 			"default": ""
 		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"textColumns": {
 			"type": "number"
 		},
@@ -1459,6 +1529,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"tileIconTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tileIconTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileIconTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"tileIconTextColumns": {
 			"type": "number"
 		},
@@ -1521,6 +1603,18 @@
 		"tileLabelTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"tileLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"tileLabelTextColumns": {
@@ -1587,6 +1681,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"reviewTermTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewTermTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewTermTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"reviewTermTextColumns": {
 			"type": "number"
 		},
@@ -1649,6 +1755,18 @@
 		"consentTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"consentTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"consentTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"consentTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"consentTextColumns": {
@@ -1715,6 +1833,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"navButtonTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"navButtonTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"navButtonTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"navButtonTextColumns": {
 			"type": "number"
 		},
@@ -1777,6 +1907,18 @@
 		"helpTextTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"helpTextTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"helpTextTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"helpTextTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"helpTextTextColumns": {
@@ -1843,6 +1985,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"errorTextTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"errorTextTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"errorTextTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"errorTextTextColumns": {
 			"type": "number"
 		},
@@ -1905,6 +2059,18 @@
 		"fileStatusTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"fileStatusTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"fileStatusTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fileStatusTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"fileStatusTextColumns": {
@@ -1971,6 +2137,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"fileButtonTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"fileButtonTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fileButtonTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"fileButtonTextColumns": {
 			"type": "number"
 		},
@@ -2033,6 +2211,18 @@
 		"filePromptTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"filePromptTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"filePromptTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"filePromptTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"filePromptTextColumns": {
@@ -2099,6 +2289,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"gridColHeadingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"gridColHeadingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridColHeadingTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"gridColHeadingTextColumns": {
 			"type": "number"
 		},
@@ -2161,6 +2363,18 @@
 		"gridRowHeadingTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"gridRowHeadingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"gridRowHeadingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"gridRowHeadingTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"gridRowHeadingTextColumns": {
@@ -2227,6 +2441,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"stepNumberTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"stepNumberTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stepNumberTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"stepNumberTextColumns": {
 			"type": "number"
 		},
@@ -2289,6 +2515,18 @@
 		"reviewHeadingTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"reviewHeadingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewHeadingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewHeadingTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"reviewHeadingTextColumns": {
@@ -2355,6 +2593,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"reviewDetailTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewDetailTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewDetailTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"reviewDetailTextColumns": {
 			"type": "number"
 		},
@@ -2419,6 +2669,18 @@
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
+		"stepLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"stepLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stepLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"stepLabelTextColumns": {
 			"type": "number"
 		},
@@ -2464,6 +2726,18 @@
 		"submitTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"submitTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"submitTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"submitTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"submitTextColumns": {

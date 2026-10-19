@@ -410,6 +410,18 @@
 			],
 			"default": ""
 		},
+		"childIconLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"childIconLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"gap": {
 			"type": "object",
 			"default": {},

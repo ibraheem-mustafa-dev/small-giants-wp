@@ -69,6 +69,8 @@
 						"css:color": "textColour",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour",
 						"css:writing-mode": "writingMode",
 						"css:font-family": "fontFamily",
 						"css:padding": "padding",
@@ -407,6 +409,18 @@
 			"default": false
 		},
 		"textWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
 			"type": "string",
 			"default": ""
 		},

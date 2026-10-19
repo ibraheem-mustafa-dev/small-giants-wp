@@ -332,6 +332,18 @@
 			],
 			"default": ""
 		},
+		"labelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"labelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"labelTextColumns": {
 			"type": "number"
 		},

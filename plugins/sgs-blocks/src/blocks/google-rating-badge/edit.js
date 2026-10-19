@@ -51,6 +51,7 @@ const typoTarget = ( prefix, label ) => ( {
 	showLetterSpacing: true,
 	showTextAlign: true,
 	showTextWrap: true,
+	showTextStroke: true,
 } );
 
 /** A tier object of lengths ({desktop, tablet, mobile}) with one length per device. */

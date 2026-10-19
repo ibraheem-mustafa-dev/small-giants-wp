@@ -78,6 +78,8 @@
 						"css:font-family": "fontFamily",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour",
 						"css:column-count": "textColumns",
 					"css:gap": "iconGap",
 					"css:justify-content": "contentAlign"
@@ -501,6 +503,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"textColumns": {

@@ -547,6 +547,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						showFontFamily={ true }
 						showTextAlign={ true }
 						showTextWrap={ true }
+						showTextStroke
 						showTextColumns={ true }
 						showTextIndent={ true }
 						showWritingMode={ true }

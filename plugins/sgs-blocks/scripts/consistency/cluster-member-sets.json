@@ -208,6 +208,22 @@
 					"note": "SGS-only — no nativeSupportsPath: no `typography.textWrap` (or any) key exists in WP core's block-supports typography vocabulary (verified via TypographyControls.js's own docblock, a full-tree search of `packages/` on WP 7.1). Currently 2 attrs: sgs/text.textWrap, sgs/heading.textWrap, both via the shared TypographyControls SelectControl. Draft addition pending Bean sign-off — see setting-registry-additions.json for the paired golden-master row."
 				},
 				{
+					"key": "css:-webkit-text-stroke-width",
+					"label": "Outline width",
+					"suffixes": [
+						"TextStrokeWidth"
+					],
+					"note": "SGS-only — no nativeSupportsPath: core has no text-stroke typography support. A per-device tier object in px, painted as -webkit-text-stroke-width by sgs_typography_css_rule() and set through the shared TypographyControls (opt-in showTextStroke). Hollow lettering sets the text colour's opacity to 0 under Colour."
+				},
+				{
+					"key": "css:-webkit-text-stroke-color",
+					"label": "Outline colour",
+					"suffixes": [
+						"TextStrokeColour"
+					],
+					"note": "SGS-only — no nativeSupportsPath. A solid colour (a palette slug or any CSS colour; -webkit-text-stroke-color takes no gradient) with a Hover sibling ({prefix}TextStrokeColourHover), painted by sgs_typography_css_rule() through sgs_colour_value() and set through the shared TypographyControls (opt-in showTextStroke)."
+				},
+				{
 					"key": "css:column-count",
 					"label": "Text columns",
 					"suffixes": [

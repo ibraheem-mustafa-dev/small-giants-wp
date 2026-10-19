@@ -161,6 +161,9 @@ const SUFFIX_MAP = [
 	// `flex-wrap: wrap` declarations were false-flagged as conflicting with
 	// their (unrelated) `textWrap` typography attribute.
 	{ suffix: 'textwrap',       props: [ 'text-wrap' ],                note: 'controls text-wrap (text reflow), NOT flex-wrap' },
+	{ suffix: 'textstrokewidth', props: [ '-webkit-text-stroke-width' ], note: 'outline width (hollow lettering), NOT width' },
+	{ suffix: 'textstrokecolourhover', props: [ '-webkit-text-stroke-color' ], note: 'outline colour on hover, NOT color' },
+	{ suffix: 'textstrokecolour', props: [ '-webkit-text-stroke-color' ], note: 'outline colour (hollow lettering), NOT color' },
 	{ suffix: 'flexwrap',       props: [ 'flex-wrap' ],                note: 'controls flex-wrap' },
 	{ suffix: 'wrap',           props: [ 'flex-wrap' ],                note: 'shorthand wrap attr → flex-wrap' },
 	{ suffix: 'flexdirection',  props: [ 'flex-direction' ],           note: 'controls flex-direction' },

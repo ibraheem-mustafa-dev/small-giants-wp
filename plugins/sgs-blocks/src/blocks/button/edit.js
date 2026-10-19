@@ -730,7 +730,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						 *           lineHeight/lineHeightUnit
 						 *           fontWeight / fontStyle
 						 */ }
-						<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
+						<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix=""

@@ -158,6 +158,7 @@ export function typoTarget( prefix, label, extra = {} ) {
 		showLetterSpacing: true,
 		showTextAlign: true,
 		showTextWrap: true,
+		showTextStroke: true,
 		...extra,
 	};
 }

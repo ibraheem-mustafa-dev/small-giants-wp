@@ -363,7 +363,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							{ /* Text colour moved to the top-level SgsColourPanel
 							   (D618/D621) — "Content colour" row. */ }
-							<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
+							<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="content"

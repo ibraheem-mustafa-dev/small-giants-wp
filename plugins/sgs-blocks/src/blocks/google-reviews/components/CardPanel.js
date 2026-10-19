@@ -75,6 +75,7 @@ export default function CardPanel( { name, attributes, setAttributes } ) {
 						showLetterSpacing: false,
 						showTextAlign: false,
 						showTextWrap: false,
+						showTextStroke: false,
 					} ),
 				] }
 				{ ...shared }

@@ -103,6 +103,8 @@
 						"css:letter-spacing": "questionLetterSpacing",
 						"css:text-align": "questionTextAlign",
 						"css:text-wrap": "questionTextWrap",
+						"css:-webkit-text-stroke-width": "questionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "questionTextStrokeColour",
 						"css:column-count": "questionTextColumns",
 						"css:writing-mode": "questionWritingMode"
 					},
@@ -301,6 +303,18 @@
 			],
 			"default": ""
 		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"textColumns": {
 			"type": "number"
 		},
@@ -372,6 +386,18 @@
 		"questionTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"questionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"questionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"questionTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"questionTextColumns": {

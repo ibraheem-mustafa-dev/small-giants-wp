@@ -23,7 +23,7 @@
  * session turned on that default to `false`: fontSizePresets (UI-only, no
  * attribute of its own — skip), showFontFamily, showDecoration,
  * showTransform, showLetterSpacing, showTextAlign, showTextWrap,
- * showTextColumns, showTextIndent, showWritingMode. Wherever a block's
+ * showTextStroke, showTextColumns, showTextIndent, showWritingMode. Wherever a block's
  * `<TypographyControls>` call now sets one of these `true` without the
  * matching attribute declared, the client sees a working-looking control
  * that silently does nothing once they use it.
@@ -105,6 +105,11 @@ const SUFFIX_SHAPES = {
 			shape: { type: 'string', enum: [ '', 'wrap', 'nowrap', 'balance', 'pretty', 'stable' ], default: '' },
 		},
 	],
+	showTextStroke: [
+		{ suffix: 'TextStrokeWidth', shape: { type: 'object', default: {} } },
+		{ suffix: 'TextStrokeColour', shape: { type: 'string', default: '' } },
+		{ suffix: 'TextStrokeColourHover', shape: { type: 'string', default: '' } },
+	],
 	showTextColumns: [ { suffix: 'TextColumns', shape: { type: 'number' } } ],
 	showTextIndent: [ { suffix: 'TextIndent', shape: { type: 'string', default: '' } } ],
 	showWritingMode: [
@@ -115,6 +120,17 @@ const SUFFIX_SHAPES = {
 	],
 	// showResponsive / fontSizePresets / showHover govern UI shape only — no
 	// attribute of their own to check.
+};
+
+// Declarations that were already missing when the audit began to read every file of a block
+// (not just edit.js) and every target descriptor (not just a literal `targets` array). Each is
+// a real silent-discard defect in another surface's work, reported here but neither fixed nor
+// failing --check. An entry whose attribute becomes declared fails --check until it is removed.
+const BASELINE = {
+	'nav-bar-menu': {
+		reason: 'edit.js mounts a "burger" typography target whose size unit, style, line height and line-height unit are not declared; owned by the nav-menu typography work',
+		attrs: [ 'burgerFontSizeUnit', 'burgerFontStyle', 'burgerLineHeight', 'burgerLineHeightUnit' ],
+	},
 };
 
 function listBlockDirs() {
@@ -184,6 +200,7 @@ function getStringLiteralProp( propsSource, isJsx, name ) {
  * (dynamic) — skipped, never guessed at. */
 function findCalls( ast ) {
 	const calls = [];
+	const seenDescriptors = new Set();
 	traverse( ast, {
 		JSXOpeningElement( p ) {
 			const node = p.node;
@@ -209,6 +226,7 @@ function findCalls( ast ) {
 			) {
 				for ( const el of targetsAttr.value.expression.elements ) {
 					if ( ! el || el.type !== 'ObjectExpression' ) continue;
+					seenDescriptors.add( el );
 					const prefixVal = getStringLiteralProp( el.properties, false, 'prefix' );
 					if ( prefixVal === undefined ) continue; // dynamic prefix, skip
 					calls.push( {
@@ -217,6 +235,21 @@ function findCalls( ast ) {
 					} );
 				}
 			}
+		},
+		// A target descriptor wherever it sits: a `targets` list wrapped in .filter() or a
+		// conditional, or one built in another file of the block.
+		ObjectExpression( p ) {
+			if ( seenDescriptors.has( p.node ) ) return;
+			const props = p.node.properties;
+			const hasPrefix = props.some(
+				( pr ) => pr.type === 'ObjectProperty' && ( pr.key.name === 'prefix' || pr.key.value === 'prefix' )
+			);
+			if ( ! hasPrefix ) return;
+			const showState = readShowProps( props, false );
+			if ( ! Object.keys( showState ).length ) return;
+			const prefixVal = getStringLiteralProp( props, false, 'prefix' );
+			if ( prefixVal === undefined || prefixVal === null ) return; // dynamic prefix, skip
+			calls.push( { prefix: prefixVal, showState } );
 		},
 	} );
 	return calls;
@@ -237,21 +270,58 @@ function effectiveShowState( showState ) {
 	return resolved;
 }
 
+/** Does this file offer the outline (showTextStroke set to anything but false) anywhere? */
+function offersTextStroke( ast ) {
+	let found = false;
+	traverse( ast, {
+		JSXAttribute( p ) {
+			if ( p.node.name && p.node.name.name === 'showTextStroke' && jsxIsOff( p.node ) === false ) found = true;
+		},
+		ObjectProperty( p ) {
+			const key = p.node.key.name || p.node.key.value;
+			if ( key === 'showTextStroke' && ! ( p.node.value.type === 'BooleanLiteral' && p.node.value.value === false ) ) found = true;
+		},
+	} );
+	return found;
+}
+
+function jsxIsOff( attr ) {
+	return attr.value && attr.value.type === 'JSXExpressionContainer' && attr.value.expression.type === 'BooleanLiteral' && attr.value.expression.value === false;
+}
+
+/** Every .js file under one block's directory, edit.js and its helper panels alike. */
+function blockJsFiles( dir ) {
+	const out = [];
+	for ( const entry of fs.readdirSync( dir, { withFileTypes: true } ) ) {
+		const full = path.join( dir, entry.name );
+		if ( entry.isDirectory() ) {
+			out.push( ...blockJsFiles( full ) );
+		} else if ( /\.js$/.test( entry.name ) ) {
+			out.push( full );
+		}
+	}
+	return out;
+}
+
 function auditBlock( blockName ) {
 	const editFile = path.join( BLOCKS_DIR, blockName, 'edit.js' );
 	const blockJsonFile = path.join( BLOCKS_DIR, blockName, 'block.json' );
 	if ( ! fs.existsSync( editFile ) || ! fs.existsSync( blockJsonFile ) ) return null;
 
-	const editSrc = fs.readFileSync( editFile, 'utf8' );
-	let ast;
-	try {
-		ast = parseJs( editSrc );
-	} catch ( e ) {
-		return { blockName, error: `parse error: ${ e.message }` };
+	const calls = [];
+	let offersStroke = false;
+	for ( const file of blockJsFiles( path.join( BLOCKS_DIR, blockName ) ) ) {
+		const src = fs.readFileSync( file, 'utf8' );
+		if ( ! src.includes( 'prefix' ) && ! src.includes( 'TypographyControls' ) && ! src.includes( 'showTextStroke' ) ) continue;
+		try {
+			const ast = parseJs( src );
+			calls.push( ...findCalls( ast ) );
+			offersStroke = offersStroke || offersTextStroke( ast );
+		} catch ( e ) {
+			return { blockName, error: `parse error in ${ path.basename( file ) }: ${ e.message }` };
+		}
 	}
-
-	const calls = findCalls( ast );
-	if ( ! calls.length ) return { blockName, missing: [] };
+	if ( ! calls.length && ! offersStroke ) return { blockName, missing: [] };
 
 	const blockJsonSrc = fs.readFileSync( blockJsonFile, 'utf8' );
 	let blockJson;
@@ -276,6 +346,23 @@ function auditBlock( blockName ) {
 		}
 	}
 
+	// A block that offers the outline anywhere also needs it for every element whose text-wrap
+	// it declares: the two ride the same typography rule, and a helper that builds targets from
+	// a prefix argument (google-reviews' typoTarget) or a shared base object (google-rating-badge)
+	// carries no literal prefix this scan could read.
+	if ( offersStroke ) {
+		for ( const name of declared ) {
+			const m = /^(.*)TextWrap$/.exec( name ) || ( 'textWrap' === name ? [ name, '' ] : null );
+			if ( ! m ) continue;
+			for ( const { suffix, shape } of SUFFIX_SHAPES.showTextStroke ) {
+				const attr = attrName( m[ 1 ], suffix );
+				if ( ! declared.has( attr ) ) {
+					missing.push( { name: attr, shape, showProp: 'showTextStroke (follows ' + name + ')', prefix: m[ 1 ] } );
+				}
+			}
+		}
+	}
+
 	// De-duplicate (a bare-prefix block with 2+ calls sharing the same prefix
 	// would otherwise report the same missing attr twice).
 	const seen = new Set();
@@ -285,25 +372,102 @@ function auditBlock( blockName ) {
 		return true;
 	} );
 
-	return { blockName, missing: deduped, blockJsonFile, blockJson };
+	const baselined = BASELINE[ blockName ] ? BASELINE[ blockName ].attrs : [];
+	const stale = baselined.filter( ( n ) => declared.has( n ) );
+	return {
+		blockName,
+		missing: deduped.filter( ( m ) => ! baselined.includes( m.name ) ),
+		baselined: deduped.filter( ( m ) => baselined.includes( m.name ) ),
+		stale,
+		blockJsonFile,
+		blockJson,
+	};
 }
 
+/**
+ * Add the missing attributes to a block.json as text, leaving every other byte as it was. Each
+ * new entry goes straight after the block's matching `{prefix}TextWrap` entry when it has one,
+ * otherwise after the last attribute.
+ */
 function applyFix( blockJsonFile, blockJson, missing ) {
 	const src = fs.readFileSync( blockJsonFile, 'utf8' );
-	// Insert as new keys into the `attributes` object, preserving existing
-	// formatting by re-serialising ONLY the attributes object's insertion —
-	// safest reliable approach here is a full JSON.stringify of the whole
-	// file with 2-tab indentation matching this repo's block.json style,
-	// since block.json files are pure data with no comments to preserve.
-	const updated = { ...blockJson };
-	updated.attributes = { ...updated.attributes };
+	const root = babelParser.parseExpression( src );
+	const attrsProp = root.properties.find( ( pr ) => ( pr.key.value || pr.key.name ) === 'attributes' );
+	const entries = attrsProp.value.properties;
+	const eol = src.includes( '\r\n' ) ? '\r\n' : '\n';
+	const unit = src.match( /^\t/m ) ? '\t' : '  ';
+	const indentOf = ( node ) => src.slice( src.lastIndexOf( '\n', node.start - 1 ) + 1, node.start );
+
+	const inserts = [];
 	for ( const m of missing ) {
-		updated.attributes[ m.name ] = m.shape;
+		const anchorName = attrName( m.prefix, 'TextWrap' );
+		const anchor = entries.find( ( e ) => ( e.key.value || e.key.name ) === anchorName ) || entries[ entries.length - 1 ];
+		const indent = indentOf( anchor );
+		const body = JSON.stringify( m.shape, null, unit ).split( '\n' ).join( eol + indent );
+		inserts.push( { at: anchor.end, text: ',' + eol + indent + JSON.stringify( m.name ) + ': ' + body } );
 	}
-	// This repo's block.json files are consistently tab-indented (verified
-	// across every file this codemod touches).
-	const indent = src.match( /^\t/m ) ? '\t' : 2;
-	return JSON.stringify( updated, null, indent ) + '\n';
+	// Later offsets first, so earlier ones stay valid; entries sharing an anchor keep their order.
+	let out = src;
+	const order = inserts.map( ( ins, i ) => ( { ...ins, i } ) ).sort( ( x, y ) => y.at - x.at || y.i - x.i );
+	for ( const ins of order ) {
+		out = out.slice( 0, ins.at ) + ins.text + out.slice( ins.at );
+	}
+	return out;
+}
+
+// The element manifest (supports.sgs.elements.<el>.attrMap) claims each attribute an element
+// owns. An element that claims `{stem}TextWrap` as css:text-wrap also claims the outline the
+// same typography rule paints, or check-element-manifest-conformance reports it as an orphan.
+// The Hover colour needs no entry of its own: it is claimed through the colour it follows.
+const MANIFEST_CLAIMS = [
+	[ 'css:-webkit-text-stroke-width', 'TextStrokeWidth' ],
+	[ 'css:-webkit-text-stroke-color', 'TextStrokeColour' ],
+];
+
+/**
+ * The text insertions that add the missing outline claims to a block.json, as text so every
+ * other byte stays as it was. A claim is only added once its attribute is declared.
+ *
+ * @param {string} src block.json text.
+ * @return {{at: number, text: string, claim: string}[]} Insertions.
+ */
+function manifestClaimInserts( src ) {
+	const root = babelParser.parseExpression( src );
+	const keyOf = ( pr ) => pr.key.value || pr.key.name;
+	const find = ( obj, key ) => obj && obj.properties && obj.properties.find( ( pr ) => key === keyOf( pr ) );
+	const attrs = find( root, 'attributes' );
+	const declared = new Set( attrs ? attrs.value.properties.map( keyOf ) : [] );
+	const sgs = find( find( root, 'supports' )?.value, 'sgs' )?.value;
+	const els = find( sgs, 'elements' )?.value;
+	if ( ! els ) return [];
+	const eol = src.includes( '\r\n' ) ? '\r\n' : '\n';
+	const out = [];
+	for ( const el of els.properties ) {
+		const attrMap = find( el.value, 'attrMap' )?.value;
+		const wrap = find( attrMap, 'css:text-wrap' );
+		if ( ! wrap || 'StringLiteral' !== wrap.value.type ) continue;
+		const stem = 'textWrap' === wrap.value.value ? '' : wrap.value.value.replace( /TextWrap$/, '' );
+		const indent = src.slice( src.lastIndexOf( '\n', wrap.start - 1 ) + 1, wrap.start );
+		for ( const [ cssKey, suffix ] of MANIFEST_CLAIMS ) {
+			const attr = attrName( stem, suffix );
+			if ( find( attrMap, cssKey ) || ! declared.has( attr ) ) continue;
+			out.push( {
+				at: wrap.end,
+				text: ',' + eol + indent + JSON.stringify( cssKey ) + ': ' + JSON.stringify( attr ),
+				claim: keyOf( el ) + ' ' + cssKey,
+			} );
+		}
+	}
+	return out;
+}
+
+function applyManifestClaims( src ) {
+	const inserts = manifestClaimInserts( src ).map( ( ins, i ) => ( { ...ins, i } ) );
+	let out = src;
+	for ( const ins of inserts.sort( ( x, y ) => y.at - x.at || y.i - x.i ) ) {
+		out = out.slice( 0, ins.at ) + ins.text + out.slice( ins.at );
+	}
+	return out;
 }
 
 function main() {
@@ -326,7 +490,15 @@ function main() {
 	for ( const r of results ) {
 		if ( r.error ) {
 			console.log( `  [ERROR] ${ r.blockName }: ${ r.error }` );
+			totalMissing++;
 			continue;
+		}
+		if ( r.baselined && r.baselined.length ) {
+			console.log( `  [${ r.blockName }] baselined (not fixed, not failing): ${ r.baselined.map( ( m ) => m.name ).join( ', ' ) }` );
+		}
+		if ( r.stale && r.stale.length ) {
+			totalMissing += r.stale.length;
+			console.log( `  [${ r.blockName }] STALE baseline entry (now declared, remove it from BASELINE): ${ r.stale.join( ', ' ) }` );
 		}
 		if ( ! r.missing.length ) continue;
 		totalMissing += r.missing.length;
@@ -345,7 +517,22 @@ function main() {
 		}
 	}
 
-	console.log( `\nSUMMARY: ${ totalMissing } missing attribute declaration(s) across ${ blocks.length } block(s).` );
+	// Second pass: the element-manifest claims for the attributes now declared.
+	for ( const blockName of blocks ) {
+		const file = path.join( BLOCKS_DIR, blockName, 'block.json' );
+		if ( ! fs.existsSync( file ) ) continue;
+		const src = fs.readFileSync( file, 'utf8' );
+		const inserts = manifestClaimInserts( src );
+		if ( ! inserts.length ) continue;
+		totalMissing += inserts.length;
+		console.log( `  [${ blockName }] missing ${ inserts.length } element-manifest claim(s): ${ inserts.map( ( i ) => i.claim ).join( '; ' ) }` );
+		if ( 'fix' === mode && apply ) {
+			fs.writeFileSync( file, applyManifestClaims( src ), 'utf8' );
+			console.log( `      -> WROTE ${ blockName }/block.json` );
+		}
+	}
+
+	console.log( `\nSUMMARY: ${ totalMissing } missing declaration(s) and claim(s) across ${ blocks.length } block(s).` );
 
 	if ( mode === 'check' && totalMissing > 0 ) {
 		console.error( '\n[audit-typography-attr-declarations] GATE FAILED.' );
@@ -414,6 +601,24 @@ function runSelfTest() {
 	const missingName = attrName( calls4[ 0 ].prefix, 'FontFamily' );
 	assert( missingName === 'fontFamily', 'fixture 4: bare prefix + FontFamily -> "fontFamily"' );
 	fs.rmSync( tmpDir, { recursive: true, force: true } );
+
+	// Fixture 5: applyFix adds entries as text and moves nothing else; show props that
+	// reach an object built outside a literal `targets` array are still read.
+	const fixDir = fs.mkdtempSync( path.join( require( 'os' ).tmpdir(), 'sgs-audit-fix-' ) );
+	const bjFile = path.join( fixDir, 'block.json' );
+	const original = '{\n\t"name": "sgs/x",\n\t"attributes": {\n\t\t"titleTextWrap": { "type": "string" },\n\t\t"other": {\n\t\t\t"type": "string",\n\t\t\t"default": "a"\n\t\t}\n\t}\n}\n';
+	fs.writeFileSync( bjFile, original );
+	const shapes = SUFFIX_SHAPES.showTextStroke.map( ( s ) => ( { name: 'title' + s.suffix, shape: s.shape, showProp: 'showTextStroke', prefix: 'title' } ) );
+	const fixed = applyFix( bjFile, JSON.parse( original ), shapes );
+	const fixedJson = JSON.parse( fixed );
+	assert( 'titleTextStrokeWidth' in fixedJson.attributes && 'titleTextStrokeColourHover' in fixedJson.attributes, 'fixture 5: the three outline attributes are added' );
+	assert( Object.keys( fixedJson.attributes ).join() === 'titleTextWrap,titleTextStrokeWidth,titleTextStrokeColour,titleTextStrokeColourHover,other', 'fixture 5: entries sit straight after the matching TextWrap, in order' );
+	assert( fixed.includes( '"other": {\n\t\t\t"type": "string",\n\t\t\t"default": "a"\n\t\t}' ), 'fixture 5: untouched entries keep their exact formatting' );
+	assert( applyFix( bjFile, JSON.parse( original ), [] ) === original, 'fixture 5: nothing missing means byte-identical' );
+	fs.rmSync( fixDir, { recursive: true, force: true } );
+
+	const wrapped = parseJs( 'const x = <TypographyControls attributes={a} setAttributes={s} targets={ [ { prefix: "a", showTextStroke: true } ].filter( Boolean ) } />;' );
+	assert( findCalls( wrapped ).some( ( c ) => 'a' === c.prefix && true === c.showState.showTextStroke ), 'fixture 5: a targets list wrapped in .filter() is read' );
 
 	console.log( `\n${ failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)' } — self-test ${ failures === 0 ? 'OK' : 'FAILED' }` );
 	if ( failures > 0 ) process.exit( 1 );

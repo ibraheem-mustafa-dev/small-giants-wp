@@ -1000,6 +1000,18 @@
       ],
       "default": ""
     },
+    "pageButtonTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "pageButtonTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "pageButtonTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
     "pageButtonTextColumns": {
       "type": "number"
     },
@@ -1093,6 +1105,18 @@
       ],
       "default": ""
     },
+    "glyphInitialTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "glyphInitialTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "glyphInitialTextStrokeColourHover": {
+      "type": "string",
+      "default": ""
+    },
     "glyphInitialTextColumns": {
       "type": "number"
     },
@@ -1184,6 +1208,18 @@
         "pretty",
         "stable"
       ],
+      "default": ""
+    },
+    "badgeTextStrokeWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeTextStrokeColour": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeTextStrokeColourHover": {
+      "type": "string",
       "default": ""
     },
     "badgeTextColumns": {

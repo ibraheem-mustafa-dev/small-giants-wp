@@ -76,6 +76,7 @@ export function SocialIconLabelsPanel( { attributes, setAttributes } ) {
 				showTransform
 				showLetterSpacing
 				showTextWrap
+				showTextStroke
 			/>
 		</PanelBody>
 	);

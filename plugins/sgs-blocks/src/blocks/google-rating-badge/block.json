@@ -417,6 +417,18 @@
 			],
 			"default": ""
 		},
+		"scoreTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"scoreTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"captionFontSize": {
 			"type": "object",
 			"default": {}
@@ -500,6 +512,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"captionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"captionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"captionTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		}
 	},

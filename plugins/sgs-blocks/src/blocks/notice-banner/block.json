@@ -509,6 +509,18 @@
 			],
 			"default": ""
 		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"textColumns": {
 			"type": "number"
 		},

@@ -301,6 +301,18 @@
 			],
 			"default": ""
 		},
+		"contentTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"contentTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"contentTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"contentTextColumns": {
 			"type": "number"
 		},

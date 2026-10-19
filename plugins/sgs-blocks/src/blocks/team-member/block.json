@@ -181,6 +181,8 @@
 						"css:letter-spacing": "socialLinkLetterSpacing",
 						"css:text-align": "socialLinkTextAlign",
 						"css:text-wrap": "socialLinkTextWrap",
+						"css:-webkit-text-stroke-width": "socialLinkTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "socialLinkTextStrokeColour",
 						"css:column-count": "socialLinkTextColumns",
 						"css:writing-mode": "socialLinkWritingMode"
 					},
@@ -540,6 +542,18 @@
 			],
 			"default": ""
 		},
+		"nameTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"nameTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"nameTextColumns": {
 			"type": "number"
 		},
@@ -636,6 +650,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"roleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"roleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"roleTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"roleTextColumns": {
@@ -736,6 +762,18 @@
 			],
 			"default": ""
 		},
+		"bioTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"bioTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"bioTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"bioTextColumns": {
 			"type": "number"
 		},
@@ -832,6 +870,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"socialLinkTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinkTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"socialLinkTextColumns": {

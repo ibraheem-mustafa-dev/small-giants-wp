@@ -690,6 +690,18 @@
 			],
 			"default": ""
 		},
+		"headingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"headingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"headingTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"headingTextColumns": {
 			"type": "number"
 		},
@@ -757,6 +769,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"itemTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"itemTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"itemTextColumns": {
@@ -855,6 +879,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"textElTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textElTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textElTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"textElTextColumns": {
@@ -958,6 +994,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"descriptionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"descriptionTextColumns": {

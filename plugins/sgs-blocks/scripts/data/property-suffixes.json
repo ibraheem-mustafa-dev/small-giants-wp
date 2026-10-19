@@ -1452,6 +1452,24 @@
       null,
       "2026-10-19 (Spec 32 FR-32-24). The gap between a link's text and its underline, set by {prefix}LinkUnderlineOffset through sgs_link_underline_css(). Appended at the END: no other row maps text-underline-offset.",
       null
+    ],
+    [
+      "TextStrokeWidth",
+      "typography",
+      "-webkit-text-stroke-width",
+      0,
+      null,
+      "2026-10-19 (Spec 32 FR-32-23). The width of the outline round each letter, set per device by {prefix}TextStrokeWidth through sgs_typography_css_rule(). Appended at the END: no other row maps -webkit-text-stroke-width, and the peel is a case-insensitive endswith so this longer suffix is matched before the generic Width row.",
+      null
+    ],
+    [
+      "TextStrokeColour",
+      "color",
+      "-webkit-text-stroke-color",
+      1,
+      "palette",
+      "2026-10-19 (Spec 32 FR-32-23). The colour of the outline round each letter, set by {prefix}TextStrokeColour (and its Hover sibling) through sgs_typography_css_rule(). Solid only: -webkit-text-stroke-color takes no gradient. Appended at the END: no other row maps -webkit-text-stroke-color.",
+      null
     ]
   ]
 }

@@ -854,7 +854,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextColumns showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"
@@ -882,7 +882,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showNames && (
 						<>
-							<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextColumns showWritingMode
+							<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextStroke showTextColumns showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="name"

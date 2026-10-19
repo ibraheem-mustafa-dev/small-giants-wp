@@ -104,6 +104,8 @@
 						"css:letter-spacing": "numberLetterSpacing",
 						"css:text-align": "numberTextAlign",
 						"css:text-wrap": "numberTextWrap",
+						"css:-webkit-text-stroke-width": "numberTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "numberTextStrokeColour",
 						"css:column-count": "numberTextColumns",
 						"css:writing-mode": "numberWritingMode"
 					},
@@ -129,6 +131,8 @@
 						"css:letter-spacing": "labelLetterSpacing",
 						"css:text-align": "labelTextAlign",
 						"css:text-wrap": "labelTextWrap",
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour",
 						"css:column-count": "labelTextColumns",
 						"css:writing-mode": "labelWritingMode"
 					}
@@ -152,6 +156,8 @@
 						"css:letter-spacing": "expiredLetterSpacing",
 						"css:text-align": "expiredTextAlign",
 						"css:text-wrap": "expiredTextWrap",
+						"css:-webkit-text-stroke-width": "expiredTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "expiredTextStrokeColour",
 						"css:column-count": "expiredTextColumns",
 						"css:writing-mode": "expiredWritingMode"
 					}
@@ -383,6 +389,18 @@
 			],
 			"default": ""
 		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"textColumns": {
 			"type": "number"
 		},
@@ -474,6 +492,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"numberTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"numberTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"numberTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"numberTextColumns": {
@@ -569,6 +599,18 @@
 			],
 			"default": ""
 		},
+		"labelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"labelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"labelTextColumns": {
 			"type": "number"
 		},
@@ -660,6 +702,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"expiredTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"expiredTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"expiredTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"expiredTextColumns": {

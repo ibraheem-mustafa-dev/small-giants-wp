@@ -653,6 +653,18 @@
 			],
 			"default": ""
 		},
+		"captionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"captionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"captionTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"captionTextColumns": {
 			"type": "number"
 		},
@@ -733,6 +745,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"videoTimeTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"videoTimeTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"videoTimeTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"videoTimeTextColumns": {

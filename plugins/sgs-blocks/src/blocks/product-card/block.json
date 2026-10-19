@@ -203,6 +203,8 @@
 						"css:line-height": "rrpLineHeight",
 						"css:letter-spacing": "rrpLetterSpacing",
 						"css:text-wrap": "rrpTextWrap",
+						"css:-webkit-text-stroke-width": "rrpTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "rrpTextStrokeColour",
 						"css:column-count": "rrpTextColumns",
 						"css:writing-mode": "rrpWritingMode"
 					},
@@ -283,6 +285,8 @@
 						"css:letter-spacing": "priceFromLabelLetterSpacing",
 						"css:text-align": "priceFromLabelTextAlign",
 						"css:text-wrap": "priceFromLabelTextWrap",
+						"css:-webkit-text-stroke-width": "priceFromLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "priceFromLabelTextStrokeColour",
 						"css:column-count": "priceFromLabelTextColumns",
 						"css:writing-mode": "priceFromLabelWritingMode"
 					},
@@ -342,6 +346,8 @@
 						"css:letter-spacing": "ratingLetterSpacing",
 						"css:text-align": "ratingTextAlign",
 						"css:text-wrap": "ratingTextWrap",
+						"css:-webkit-text-stroke-width": "ratingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "ratingTextStrokeColour",
 						"css:column-count": "ratingTextColumns",
 						"css:writing-mode": "ratingWritingMode"
 					},
@@ -365,6 +371,8 @@
 						"css:line-height": "brandLineHeight",
 						"css:letter-spacing": "brandLetterSpacing",
 						"css:text-wrap": "brandTextWrap",
+						"css:-webkit-text-stroke-width": "brandTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "brandTextStrokeColour",
 						"css:column-count": "brandTextColumns",
 						"css:writing-mode": "brandWritingMode",
 						"css:padding": "brandPadding"
@@ -391,6 +399,8 @@
 						"css:line-height": "savingBadgeLineHeight",
 						"css:letter-spacing": "savingBadgeLetterSpacing",
 						"css:text-wrap": "savingBadgeTextWrap",
+						"css:-webkit-text-stroke-width": "savingBadgeTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColour",
 						"css:column-count": "savingBadgeTextColumns",
 						"css:writing-mode": "savingBadgeWritingMode",
 						"css:background-color": "savingBadgeBackgroundColour",
@@ -439,6 +449,8 @@
 						"css:letter-spacing": "attributeTagLetterSpacing",
 						"css:text-align": "attributeTagTextAlign",
 						"css:text-wrap": "attributeTagTextWrap",
+						"css:-webkit-text-stroke-width": "attributeTagTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "attributeTagTextStrokeColour",
 						"css:column-count": "attributeTagTextColumns",
 						"css:writing-mode": "attributeTagWritingMode",
 						"css:color": "attributeTagTextColour",
@@ -469,6 +481,8 @@
 						"css:letter-spacing": "ratingStarsLetterSpacing",
 						"css:text-align": "ratingStarsTextAlign",
 						"css:text-wrap": "ratingStarsTextWrap",
+						"css:-webkit-text-stroke-width": "ratingStarsTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "ratingStarsTextStrokeColour",
 						"css:column-count": "ratingStarsTextColumns",
 						"css:writing-mode": "ratingStarsWritingMode"
 					},
@@ -492,6 +506,8 @@
 						"css:line-height": "swatchMoreLineHeight",
 						"css:letter-spacing": "swatchMoreLetterSpacing",
 						"css:text-wrap": "swatchMoreTextWrap",
+						"css:-webkit-text-stroke-width": "swatchMoreTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "swatchMoreTextStrokeColour",
 						"css:column-count": "swatchMoreTextColumns",
 						"css:writing-mode": "swatchMoreWritingMode"
 					},
@@ -1154,6 +1170,18 @@
 			],
 			"default": ""
 		},
+		"valueLadderTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"valueLadderTextColumns": {
 			"type": "number"
 		},
@@ -1250,6 +1278,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"valueLadderSavingTextColumns": {
@@ -1625,6 +1665,18 @@
 			],
 			"default": ""
 		},
+		"priceFromLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"priceFromLabelTextColumns": {
 			"type": "number"
 		},
@@ -1716,6 +1768,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"ratingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"ratingTextColumns": {
@@ -1811,6 +1875,18 @@
 			],
 			"default": ""
 		},
+		"ratingStarsTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"ratingStarsTextColumns": {
 			"type": "number"
 		},
@@ -1891,6 +1967,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"rrpTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"rrpTextColumns": {
@@ -1975,6 +2063,18 @@
 			],
 			"default": ""
 		},
+		"savingBadgeTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"savingBadgeTextColumns": {
 			"type": "number"
 		},
@@ -2057,6 +2157,18 @@
 			],
 			"default": ""
 		},
+		"swatchMoreTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"swatchMoreTextColumns": {
 			"type": "number"
 		},
@@ -2113,6 +2225,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"brandTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"brandTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"brandTextColumns": {
@@ -2186,6 +2310,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"attributeTagTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"attributeTagTextColumns": {
@@ -2340,6 +2476,18 @@
 			],
 			"default": ""
 		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"titleTextColumns": {
 			"type": "number"
 		},
@@ -2416,6 +2564,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"descTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"descTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"descTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"descTextColumns": {
@@ -2510,6 +2670,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"tagTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tagTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tagTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"tagTextColumns": {

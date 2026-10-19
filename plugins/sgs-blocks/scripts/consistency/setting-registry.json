@@ -3331,6 +3331,56 @@
 			"notes": "This row exists to close `check-element-manifest-conformance.js`'s orphan_style_defect finding: sgs/text's attrMap already declares \"css:text-wrap\": \"textWrap\" and the block.json attribute is real and rendered, but no setting-registry row nor cluster-member-sets.json 'text' cluster member existed to classify it — the vocabulary was missing, not the block's implementation. No native `nativeSupportsPath` is proposed in the companion cluster entry because core has no `typography.textWrap` (or any) supports key at all."
 		},
 		{
+			"setting_key": "css:-webkit-text-stroke-width",
+			"category": "css-property",
+			"label": "Outline width",
+			"optimal_control": {
+				"component": "NumberControl in ResponsiveOverride via TypographyControls (showTextStroke)",
+				"props": {
+					"min": 0,
+					"max": 20,
+					"step": 0.5
+				},
+				"preset_layer": null,
+				"units": "px",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "an empty tier inherits the tier above; desktop empty draws no outline"
+			},
+			"shared_component": "TypographyControls",
+			"spec_ref": "Spec 32 FR-32-23 — no core equivalent exists to defer to",
+			"current_state": "Added 2026-10-19: every element whose block declares {prefix}TextWrap also declares {prefix}TextStrokeWidth (audit-typography-attr-declarations.js keeps the two in step); same shared-component control on all.",
+			"divergence": "None against an assumed WP-native path: core has no text-stroke typography support.",
+			"divergence_severity": "none",
+			"notes": "Hollow lettering: the width draws the line, and the text colour at opacity 0 clears the fill. Painted as -webkit-text-stroke-width by includes/helpers-typography.php::sgs_typography_css_rule; the canvas twin is src/utils/typography-preview.js::typographyPreviewStyle."
+		},
+		{
+			"setting_key": "css:-webkit-text-stroke-color",
+			"category": "css-property",
+			"label": "Outline colour",
+			"optimal_control": {
+				"component": "DesignTokenPicker with Normal and Hover states via TypographyControls (showTextStroke)",
+				"props": {
+					"states": "normal, hover (each linked: true)"
+				},
+				"preset_layer": "theme colour palette",
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "clearable; alpha allowed",
+				"reset_disclosure": "clears to '' (the outline takes the text colour)"
+			},
+			"shared_component": "TypographyControls",
+			"spec_ref": "Spec 32 FR-32-23 — no core equivalent exists to defer to",
+			"current_state": "Added 2026-10-19: {prefix}TextStrokeColour and its Hover sibling beside the outline width on every element that offers it.",
+			"divergence": "None against an assumed WP-native path: core has no text-stroke typography support. Solid only: -webkit-text-stroke-color takes no gradient, so the picker offers no Solid/Gradient toggle.",
+			"divergence_severity": "none",
+			"notes": "Painted through sgs_colour_value() by sgs_typography_css_rule(); the Hover colour rides sgs_hover_state_rules(). Inspector-scan rule 31 reads the row as having no gradient path: scripts/inspector-scan/core/golden.js::MECHANISM_BY_CSS_PROPERTY maps -webkit-text-stroke-color to 'decoration', the exemption the link underline colour has."
+		},
+		{
 			"setting_key": "css:column-count",
 			"category": "css-property",
 			"label": "Text columns",

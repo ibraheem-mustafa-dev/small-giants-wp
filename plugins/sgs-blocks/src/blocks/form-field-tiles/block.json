@@ -461,6 +461,18 @@
 			],
 			"default": ""
 		},
+		"tileLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"tileDescriptionFontSize": {
 			"type": "object",
 			"default": {}
@@ -544,6 +556,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"tileDescriptionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"tileLabelColour": {

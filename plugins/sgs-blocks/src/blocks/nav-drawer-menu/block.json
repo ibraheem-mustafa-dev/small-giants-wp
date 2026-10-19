@@ -1201,6 +1201,18 @@
 			],
 			"default": ""
 		},
+		"itemTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"itemTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"itemTextColumns": {
 			"type": "number"
 		},
@@ -1434,6 +1446,18 @@
 			"type": "string",
 			"default": ""
 		},
+		"submenuTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"submenuTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"submenuTextColumns": {
 			"type": "number"
 		},
@@ -1664,6 +1688,18 @@
 			"default": ""
 		},
 		"drillBackTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"drillBackTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackTextStrokeColourHover": {
 			"type": "string",
 			"default": ""
 		},

@@ -895,6 +895,9 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	// A link underline's own colour (helpers-link-underline.php): text-decoration-color takes
 	// no gradient, so, like a shadow colour, its row needs no gradient path.
 	'text-decoration-color': 'decoration',
+	// The outline round each letter (sgs_typography_css_rule): -webkit-text-stroke-color takes no
+	// gradient either, so its row needs no gradient path.
+	'-webkit-text-stroke-color': 'decoration',
 	fill: 'fill',
 	stroke: 'stroke',
 };

@@ -66,6 +66,8 @@
 						"css:color": "textColour",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour",
 						"css:column-count": "textColumns",
 						"css:text-indent": "textIndent",
 						"css:writing-mode": "writingMode",
@@ -304,6 +306,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"textColumns": {

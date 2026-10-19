@@ -493,6 +493,18 @@
 			],
 			"default": ""
 		},
+		"labelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"labelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"labelTextColumns": {
 			"type": "number"
 		},
@@ -577,6 +589,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"pillTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"pillTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pillTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"pillTextColumns": {

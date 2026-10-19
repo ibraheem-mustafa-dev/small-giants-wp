@@ -93,6 +93,8 @@
 						"css:letter-spacing": "titleLetterSpacing",
 						"css:text-align": "titleTextAlign",
 						"css:text-wrap": "titleTextWrap",
+						"css:-webkit-text-stroke-width": "titleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "titleTextStrokeColour",
 						"css:column-count": "titleTextColumns",
 						"css:writing-mode": "titleWritingMode"
 					},
@@ -335,6 +337,18 @@
 			],
 			"default": ""
 		},
+		"textStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"textStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"textColumns": {
 			"type": "number"
 		},
@@ -426,6 +440,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"titleTextColumns": {

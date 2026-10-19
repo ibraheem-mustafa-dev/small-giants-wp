@@ -830,7 +830,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				    enabled because the native support being replaced actually
 				    declared and rendered both. */}
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

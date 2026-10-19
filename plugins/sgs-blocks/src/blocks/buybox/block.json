@@ -258,6 +258,8 @@
 						"css:letter-spacing": "notifyHeadingLetterSpacing",
 						"css:text-align": "notifyHeadingTextAlign",
 						"css:text-wrap": "notifyHeadingTextWrap",
+						"css:-webkit-text-stroke-width": "notifyHeadingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyHeadingTextStrokeColour",
 						"css:column-count": "notifyHeadingTextColumns",
 						"css:writing-mode": "notifyHeadingWritingMode"
 					},
@@ -282,6 +284,8 @@
 						"css:letter-spacing": "notifyLabelLetterSpacing",
 						"css:text-align": "notifyLabelTextAlign",
 						"css:text-wrap": "notifyLabelTextWrap",
+						"css:-webkit-text-stroke-width": "notifyLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyLabelTextStrokeColour",
 						"css:column-count": "notifyLabelTextColumns",
 						"css:writing-mode": "notifyLabelWritingMode"
 					},
@@ -306,6 +310,8 @@
 						"css:letter-spacing": "notifyInputLetterSpacing",
 						"css:text-align": "notifyInputTextAlign",
 						"css:text-wrap": "notifyInputTextWrap",
+						"css:-webkit-text-stroke-width": "notifyInputTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyInputTextStrokeColour",
 						"css:column-count": "notifyInputTextColumns",
 						"css:writing-mode": "notifyInputWritingMode"
 					},
@@ -330,6 +336,8 @@
 						"css:letter-spacing": "notifySubmitLetterSpacing",
 						"css:text-align": "notifySubmitTextAlign",
 						"css:text-wrap": "notifySubmitTextWrap",
+						"css:-webkit-text-stroke-width": "notifySubmitTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifySubmitTextStrokeColour",
 						"css:column-count": "notifySubmitTextColumns",
 						"css:writing-mode": "notifySubmitWritingMode"
 					},
@@ -355,6 +363,8 @@
 						"css:letter-spacing": "notifyStatusLetterSpacing",
 						"css:text-align": "notifyStatusTextAlign",
 						"css:text-wrap": "notifyStatusTextWrap",
+						"css:-webkit-text-stroke-width": "notifyStatusTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "notifyStatusTextStrokeColour",
 						"css:column-count": "notifyStatusTextColumns",
 						"css:writing-mode": "notifyStatusWritingMode"
 					},
@@ -378,6 +388,8 @@
 						"css:line-height": "savingBadgeLineHeight",
 						"css:letter-spacing": "savingBadgeLetterSpacing",
 						"css:text-wrap": "savingBadgeTextWrap",
+						"css:-webkit-text-stroke-width": "savingBadgeTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "savingBadgeTextStrokeColour",
 						"css:column-count": "savingBadgeTextColumns",
 						"css:writing-mode": "savingBadgeWritingMode"
 					},
@@ -403,6 +415,8 @@
 						"css:letter-spacing": "stockLetterSpacing",
 						"css:text-align": "stockTextAlign",
 						"css:text-wrap": "stockTextWrap",
+						"css:-webkit-text-stroke-width": "stockTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "stockTextStrokeColour",
 						"css:column-count": "stockTextColumns",
 						"css:writing-mode": "stockWritingMode"
 					},
@@ -427,6 +441,8 @@
 						"css:letter-spacing": "guidedMeterLetterSpacing",
 						"css:text-align": "guidedMeterTextAlign",
 						"css:text-wrap": "guidedMeterTextWrap",
+						"css:-webkit-text-stroke-width": "guidedMeterTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "guidedMeterTextStrokeColour",
 						"css:column-count": "guidedMeterTextColumns",
 						"css:writing-mode": "guidedMeterWritingMode"
 					},
@@ -454,6 +470,8 @@
 						"css:letter-spacing": "guidedGroupTitleLetterSpacing",
 						"css:text-align": "guidedGroupTitleTextAlign",
 						"css:text-wrap": "guidedGroupTitleTextWrap",
+						"css:-webkit-text-stroke-width": "guidedGroupTitleTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "guidedGroupTitleTextStrokeColour",
 						"css:column-count": "guidedGroupTitleTextColumns",
 						"css:writing-mode": "guidedGroupTitleWritingMode"
 					},
@@ -658,6 +676,18 @@
 			],
 			"default": ""
 		},
+		"valueLadderTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"valueLadderTextColumns": {
 			"type": "number"
 		},
@@ -754,6 +784,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"valueLadderSavingTextColumns": {
@@ -1393,6 +1435,18 @@
 			],
 			"default": ""
 		},
+		"notifyHeadingTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyHeadingTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"notifyHeadingTextColumns": {
 			"type": "number"
 		},
@@ -1489,6 +1543,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"notifyLabelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyLabelTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"notifyLabelTextColumns": {
@@ -1589,6 +1655,18 @@
 			],
 			"default": ""
 		},
+		"notifyInputTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyInputTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"notifyInputTextColumns": {
 			"type": "number"
 		},
@@ -1685,6 +1763,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"notifySubmitTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifySubmitTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"notifySubmitTextColumns": {
@@ -1785,6 +1875,18 @@
 			],
 			"default": ""
 		},
+		"notifyStatusTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyStatusTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"notifyStatusTextColumns": {
 			"type": "number"
 		},
@@ -1870,6 +1972,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"savingBadgeTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"savingBadgeTextColumns": {
@@ -1970,6 +2084,18 @@
 			],
 			"default": ""
 		},
+		"stockTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"stockTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"stockTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"stockTextColumns": {
 			"type": "number"
 		},
@@ -2068,6 +2194,18 @@
 			],
 			"default": ""
 		},
+		"guidedMeterTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedMeterTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"guidedMeterTextColumns": {
 			"type": "number"
 		},
@@ -2164,6 +2302,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"guidedGroupTitleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedGroupTitleTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"guidedGroupTitleTextColumns": {

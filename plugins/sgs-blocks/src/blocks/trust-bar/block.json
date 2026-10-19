@@ -1129,6 +1129,18 @@
 			],
 			"default": ""
 		},
+		"labelTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"labelTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"labelTextColumns": {
 			"type": "number"
 		},
@@ -1196,6 +1208,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"titleTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"titleTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"titleTextColumns": {

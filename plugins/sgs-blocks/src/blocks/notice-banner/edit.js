@@ -737,7 +737,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 							/>
 						) ) }
 					</ToggleGroupControl>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

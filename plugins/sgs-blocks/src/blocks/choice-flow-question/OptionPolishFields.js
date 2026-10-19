@@ -140,6 +140,7 @@ export function OptionDescriptionPanel( { attributes, setAttributes } ) {
 				showLetterSpacing
 				showTextAlign
 				showTextWrap
+				showTextStroke
 			/>
 		</PanelBody>
 	);

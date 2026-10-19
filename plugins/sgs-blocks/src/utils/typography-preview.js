@@ -14,7 +14,9 @@
  * line-height and letter-spacing per device tier; font-family, font-weight,
  * font-style, text-transform, text-decoration, text-align, text-wrap,
  * writing-mode and column-count as flat values, each against the same
- * allowlist PHP uses. text-indent is not mirrored: PHP emits it only on a
+ * allowlist PHP uses; -webkit-text-stroke-width per device tier and
+ * -webkit-text-stroke-color as a solid colour (the hover colour is not
+ * previewed inline: an inline style cannot carry :hover). text-indent is not mirrored: PHP emits it only on a
  * caller-supplied adjacent-sibling selector, never on the element itself.
  *
  * The device tier is the one the editor is previewing (pass usePreviewTier()):
@@ -33,6 +35,8 @@
  *   as the PHP-emitted CSS does when a property is unset.
  */
 
+import { colourVar } from './tokens';
+
 const TIER_CHAIN = {
 	desktop: [ 'desktop' ],
 	tablet: [ 'tablet', 'desktop' ],
@@ -45,6 +49,8 @@ const RESPONSIVE_BASES = {
 	'FontSize': { desktop: 'FontSize', tablet: 'FontSizeTablet', mobile: 'FontSizeMobile' },
 	'LineHeight': { desktop: 'LineHeight', tablet: 'LineHeightTablet', mobile: 'LineHeightMobile' },
 	'LetterSpacing': { desktop: 'LetterSpacing', tablet: 'LetterSpacingTablet', mobile: 'LetterSpacingMobile' },
+	// Outline width is only ever stored as a tier object; the flat names read as unset.
+	'TextStrokeWidth': { desktop: 'TextStrokeWidth', tablet: 'TextStrokeWidthTablet', mobile: 'TextStrokeWidthMobile' },
 };
 
 // Flat keyword declarations: attribute suffix -> [ style key, PHP's allowlist ].
@@ -197,6 +203,16 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 		if ( allowed.includes( v ) ) {
 			style[ prop ] = v;
 		}
+	}
+
+	const strokeWidth = valueAtTier( attributes, attrKey, 'TextStrokeWidth', tier );
+	if ( isNumericLike( strokeWidth ) ) {
+		style.WebkitTextStrokeWidth = `${ Number( strokeWidth ) }px`;
+	}
+
+	const strokeColour = colourVar( attributes[ attrKey( 'TextStrokeColour' ) ] );
+	if ( strokeColour ) {
+		style.WebkitTextStrokeColor = strokeColour;
 	}
 
 	const columns = attributes[ attrKey( 'TextColumns' ) ];

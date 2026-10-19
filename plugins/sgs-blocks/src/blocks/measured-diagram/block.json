@@ -143,6 +143,8 @@
 						"css:text-align": "valueTextAlign",
 						"css:font-family": "valueFontFamily",
 						"css:text-wrap": "valueTextWrap",
+						"css:-webkit-text-stroke-width": "valueTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueTextStrokeColour",
 						"css:column-count": "valueTextColumns",
 						"css:writing-mode": "valueWritingMode"
 					},
@@ -169,6 +171,8 @@
 						"css:text-align": "captionTextAlign",
 						"css:font-family": "captionFontFamily",
 						"css:text-wrap": "captionTextWrap",
+						"css:-webkit-text-stroke-width": "captionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "captionTextStrokeColour",
 						"css:column-count": "captionTextColumns",
 						"css:writing-mode": "captionWritingMode"
 					},
@@ -352,6 +356,18 @@
 			],
 			"default": ""
 		},
+		"valueTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"valueTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"valueTextColumns": {
 			"type": "number"
 		},
@@ -443,6 +459,18 @@
 				"pretty",
 				"stable"
 			],
+			"default": ""
+		},
+		"captionTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"captionTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"captionTextStrokeColourHover": {
+			"type": "string",
 			"default": ""
 		},
 		"captionTextColumns": {
