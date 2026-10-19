@@ -3,15 +3,20 @@
     "apiVersion": 3,
     "name": "sgs/decorative-image",
     "version": "0.3.0",
-    "title": "SGS Decorative Image",
+    "title": "Floating layer",
     "category": "sgs-content",
-    "description": "Absolute-positioned decorative image that floats freely over sections. Used for organic, editorial-style design with optional parallax scroll effects.",
+    "description": "Floats an image, text, a label or a badge over its section at a set position, size and angle.",
     "keywords": [
         "image",
         "decorative",
         "parallax",
         "float",
-        "position"
+        "position",
+        "floating",
+        "layer",
+        "badge",
+        "sticker",
+        "tag"
     ],
     "textdomain": "sgs-blocks",
     "icon": "format-image",
@@ -39,7 +44,8 @@
                         "css:max-width": "maxWidthPercent",
                         "css:width": "width",
                         "css:opacity": "opacity",
-                        "css:z-index": "zIndex"
+                        "css:z-index": "zIndex",
+                        "css:transform": "rotation"
                     },
                     "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are percentage-based anchor coordinates for the whole floating element, not literal CSS top/bottom offsets or object-position within a box, so they are deliberately left unmapped — css:top/css:bottom stay genuine gaps rather than being force-mapped to a different semantic. No layer field is declared (this is not a composite). The old motion cluster (transition-duration/transition-timing-function) is still deliberately NOT declared here — these are JS-driven scroll-triggered parameters, not CSS transitions, and mapping them there would misrepresent the mechanism."
                 }
@@ -47,6 +53,12 @@
         }
     },
     "attributes": {
+        "_comment_widthUnit": "One unit for every tier of `width`: px (fixed), % (of the section) or auto (fit the content: width:max-content capped at the parent, tiers ignored).",
+        "widthUnit": {
+            "type": "string",
+            "enum": [ "px", "%", "auto" ],
+            "default": "px"
+        },
         "_comment_decorMedia": "Migrated 2026-05-05 — legacy imageId/imageUrl/imageAlt retained for deprecation. New instances should use decorMedia (unified image-or-video slot).",
         "decorMedia": {
             "type": "object",
@@ -82,7 +94,7 @@
         "imageDecorative": {
             "type": "boolean",
             "default": true,
-            "_comment": "Spec 35 item 18 / {element}Decorative convention (matches sgs/media's imageDecorative). Default true because this block IS the decorative-image primitive by design (absolute-positioned floating graphic, no InnerBlocks, permanently aria-hidden+role=presentation in render.php) — the toggle exists for the rare case an operator wants to expose imageAlt as a real accessible name instead of leaving it silent."
+            "_comment": "Spec 35 item 18 / {element}Decorative convention (matches sgs/media's imageDecorative). Default true because a floating image is decoration by default. It governs only the <img> (alt empty plus aria-hidden when on, imageAlt when off); text and blocks inside the layer are always read out."
         },
         "positionX": {
 			"type": "object",
@@ -106,7 +118,7 @@
 		},
         "opacity": {
             "type": "number",
-            "default": 85
+            "default": 100
         },
         "zIndex": {
             "type": "number",
@@ -140,11 +152,11 @@
     "viewScriptModule": "file:./view.js",
     "example": {
         "attributes": {
-            "positionX": 80,
-            "positionY": 20,
-            "width": 200,
-            "rotation": 15,
-            "opacity": 85
+            "positionX": { "desktop": 80 },
+            "positionY": { "desktop": 20 },
+            "width": { "desktop": 200 },
+            "rotation": { "desktop": 15 },
+            "opacity": 100
         }
     }
 }

@@ -111,6 +111,12 @@ if ( ! function_exists( 'esc_attr' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_specialchars_decode' ) ) {
+	function wp_specialchars_decode( $text, $quote_style = ENT_NOQUOTES ): string {
+		return htmlspecialchars_decode( (string) $text, is_int( $quote_style ) ? $quote_style : ENT_QUOTES );
+	}
+}
+
 if ( ! function_exists( 'esc_html' ) ) {
 	function esc_html( $val ): string {
 		return htmlspecialchars( (string) $val, ENT_QUOTES, 'UTF-8' );

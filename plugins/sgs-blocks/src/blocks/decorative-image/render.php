@@ -1,9 +1,11 @@
 <?php
 /**
- * Server-side render for the SGS Decorative Image block.
+ * Server-side render for the SGS Floating layer (sgs/decorative-image).
  *
- * Outputs an absolute-positioned image. Positioning, rotation, opacity, and
- * z-index are emitted into the block's OWN scoped `<style>` tag.
+ * Outputs an absolute-positioned layer: an image alone (the naked `<img>` is the
+ * root), or a wrapper holding an optional image plus inner blocks. Positioning,
+ * rotation, opacity, and z-index are emitted into the block's OWN scoped
+ * `<style>` tag.
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
@@ -84,7 +86,7 @@ $width_obj           = sgs_responsive_normalise_object( $attributes['width'] ?? 
 $width               = $width_obj['desktop'] ?? 200;
 $max_width_percent   = $attributes['maxWidthPercent'] ?? 20;
 $rotation            = $rotation_obj['desktop'] ?? 0;
-$opacity             = $attributes['opacity'] ?? 85;
+$opacity             = $attributes['opacity'] ?? 100;
 $z_index             = $attributes['zIndex'] ?? 1;
 $flip_x              = $attributes['flipX'] ?? false;
 $fade_on_scroll      = (bool) ( $attributes['fadeOnScroll'] ?? false );
@@ -111,10 +113,16 @@ $width_mobile        = $width_obj['mobile'] ?? null;
 $rotation_mobile     = $rotation_obj['mobile'] ?? null;
 $hide_on_mobile      = $attributes['hideOnMobile'] ?? false;
 
-// Don't render if no media.
-if ( empty( $decor_media['url'] ) && ! $image_url ) {
+// A layer needs media, inner content, or both. Content is the rendered inner blocks.
+$has_media   = ! ( empty( $decor_media['url'] ) && ! $image_url );
+$has_content = '' !== trim( (string) $content );
+if ( ! $has_media && ! $has_content ) {
 	return;
 }
+
+// One width unit for every tier: px (fixed), % (of the section) or auto (fit the content).
+$width_unit_raw = $attributes['widthUnit'] ?? 'px';
+$width_unit     = in_array( $width_unit_raw, array( 'px', '%', 'auto' ), true ) ? $width_unit_raw : 'px';
 
 // ---------------------------------------------------------------------------
 // Scoped CSS assembly (contract §A). uid is a CLASS — this block declares
@@ -150,16 +158,29 @@ $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x ) {
 	return implode( ' ', $parts );
 };
 
-$root_decls = array(
-	'position:absolute',
-	'left:' . $pos_x_css . '%',
-	'top:' . $pos_y_css . '%',
-	'width:' . $width_css . 'px',
-	'max-width:' . $max_width_css . '%',
-	'opacity:var(--sgs-di-op, ' . $opacity_css . ')',
-	'z-index:' . $z_index_css,
-	'transform:' . $sgs_di_transform( $rotation ),
-	'overflow:' . $overflow,
+// Fit the content ignores the width tiers and the percentage cap; a percentage width is already a share of the
+// section, so the cap applies to fixed pixel widths only.
+if ( 'auto' === $width_unit ) {
+	$size_decls = array( 'width:max-content', 'max-width:100%' );
+} elseif ( '%' === $width_unit ) {
+	$size_decls = array( 'width:' . $width_css . '%' );
+} else {
+	$size_decls = array( 'width:' . $width_css . 'px', 'max-width:' . $max_width_css . '%' );
+}
+
+$root_decls = array_merge(
+	array(
+		'position:absolute',
+		'left:' . $pos_x_css . '%',
+		'top:' . $pos_y_css . '%',
+	),
+	$size_decls,
+	array(
+		'opacity:var(--sgs-di-op, ' . $opacity_css . ')',
+		'z-index:' . $z_index_css,
+		'transform:' . $sgs_di_transform( $rotation ),
+		'overflow:' . $overflow,
+	)
 );
 
 $scoped_css   = array();
@@ -178,6 +199,13 @@ $sgs_di_tier_attrs = array(
 	'rotationTablet'  => $rotation_tablet,
 	'rotationMobile'  => $rotation_mobile,
 );
+$sgs_di_width_spec = array(
+	'attr'         => 'widthDesktop',
+	'css'          => 'width',
+	'unit_default' => '%' === $width_unit ? '%' : 'px',
+	'tablet_attr'  => 'widthTablet',
+	'mobile_attr'  => 'widthMobile',
+);
 $sgs_di_tier_css   = sgs_responsive_css_rule(
 	$sgs_di_tier_attrs,
 	array(
@@ -195,13 +223,7 @@ $sgs_di_tier_css   = sgs_responsive_css_rule(
 			'tablet_attr'  => 'positionYTablet',
 			'mobile_attr'  => 'positionYMobile',
 		),
-		array(
-			'attr'         => 'widthDesktop',
-			'css'          => 'width',
-			'unit_default' => 'px',
-			'tablet_attr'  => 'widthTablet',
-			'mobile_attr'  => 'widthMobile',
-		),
+		'auto' === $width_unit ? array() : $sgs_di_width_spec,
 		array(
 			'attr'        => 'rotationDesktop',
 			'css'         => 'transform',
@@ -234,9 +256,9 @@ if ( '' !== $sgs_di_tier_css ) {
 // the atom layer exactly per the migration brief, not a replacement of any
 // existing hand-rolled CSS (there was none to replace).
 $sgs_di_atoms        = array( 'object-fit', 'focal-point', 'overlay' );
-$sgs_di_requires_box = class_exists( 'SGS_Media_Element' )
+$sgs_di_requires_box = $has_media && class_exists( 'SGS_Media_Element' )
 	&& SGS_Media_Element::requires_box( $attributes, '', 'sgs/decorative-image', $sgs_di_atoms );
-if ( class_exists( 'SGS_Media_Element' ) ) {
+if ( $has_media && class_exists( 'SGS_Media_Element' ) ) {
 	$sgs_di_atom_css = SGS_Media_Element::style( $attributes, '', 'sgs/decorative-image', $uid, $sgs_di_atoms );
 	if ( '' !== $sgs_di_atom_css ) {
 		$scoped_css[] = $sgs_di_atom_css;
@@ -284,11 +306,18 @@ if ( $hide_on_mobile ) {
 // Video branch: when decorMedia is a video, defer to sgs_render_media() and
 // wrap it in a positioned span so the existing position/transform/data-*
 // pipeline (parallax, fade, hide-on-*, responsive overrides) still applies.
-$is_video = ! empty( $decor_media ) && isset( $decor_media['type'] ) && 'video' === $decor_media['type'];
+$is_video = $has_media && ! empty( $decor_media ) && isset( $decor_media['type'] ) && 'video' === $decor_media['type'];
+
+// The inner blocks sit in one content box after the media (or alone, with no media). Text and blocks inside a layer are
+// always read out, so a layer with content never hides its wrapper; imageDecorative governs the <img> only.
+$content_html = $has_content
+	? '<div class="sgs-decorative-image__content">' . $content . '</div>'
+	: '';
+$layer_tag    = $has_content ? 'div' : 'span';
 
 if ( $is_video ) {
 	$video_html = sgs_render_media( $decor_media, 'sgs/decorative-image' );
-	if ( '' === $video_html ) {
+	if ( '' === $video_html && ! $has_content ) {
 		return;
 	}
 
@@ -308,16 +337,22 @@ if ( $is_video ) {
 	// not a silent drop (this block never had object-fit/focal-point controls
 	// for video before this migration either).
 	$video_wrapper_class = array( 'sgs-decorative-image', 'sgs-decorative-image--video' );
+	if ( $has_content ) {
+		$video_wrapper_class[] = 'sgs-decorative-image--layer';
+		$video_wrapper_class[] = 'sgs-decorative-image--over-image';
+	}
 	if ( $sgs_di_requires_box ) {
 		$video_wrapper_class[] = SGS_Media_Element::CLASS_BOX;
 	}
 	$video_wrapper_class[] = $uid;
 	$video_wrapper_class[] = $sgs_di_extra_class;
 	$wrapper_attrs         = array(
-		'class'       => trim( implode( ' ', $video_wrapper_class ) ),
-		'aria-hidden' => 'true',
-		'role'        => 'presentation',
+		'class' => trim( implode( ' ', $video_wrapper_class ) ),
 	);
+	if ( ! $has_content ) {
+		$wrapper_attrs['aria-hidden'] = 'true';
+		$wrapper_attrs['role']        = 'presentation';
+	}
 	if ( '' !== $sgs_di_anchor ) {
 		$wrapper_attrs['id'] = $sgs_di_anchor;
 	}
@@ -333,10 +368,12 @@ if ( $is_video ) {
 	}
 
 	printf(
-		'%1$s<span %2$s>%3$s</span>',
+		'%1$s<%2$s %3$s>%4$s%5$s</%2$s>',
 		$style_tag_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
+		$layer_tag, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal div or span.
 		implode( ' ', $wrapper_attr_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attr already escaped above.
-		$video_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_render_media() escapes attributes internally.
+		$video_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_render_media() escapes attributes internally.
+		$content_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered inner blocks, escaped by their own renders.
 	);
 	return;
 }
@@ -377,7 +414,7 @@ if ( $is_video ) {
 //     position:absolute from $root_sel.
 // So in treated mode the WRAPPER takes over the root role wholesale and the inner <img> becomes plain fill-the-host
 // media, exactly the division the video branch above already uses.
-$has_treatment = sgs_motion_root_has_effect( $attributes, 'surface-treatment' );
+$has_treatment = $has_media && sgs_motion_root_has_effect( $attributes, 'surface-treatment' );
 
 // A real container is needed whenever EITHER the FX surface-treatment (a
 // <canvas> host) OR the overlay atom (a ::after box paint) needs one — a
@@ -386,10 +423,10 @@ $has_treatment = sgs_motion_root_has_effect( $attributes, 'surface-treatment' );
 // the identical constraint independently). Generalising the wrapper-takes-
 // root-role shape this file already uses for $has_treatment means overlay
 // gets it for free with no second implementation.
-$sgs_di_wants_wrapper = $has_treatment || $sgs_di_requires_box;
+$sgs_di_wants_wrapper = $has_treatment || $sgs_di_requires_box || $has_content;
 
 $tier_imgs = array();
-foreach ( array( 'Tablet', 'Mobile' ) as $sgs_tier ) {
+foreach ( $has_media ? array( 'Tablet', 'Mobile' ) : array() as $sgs_tier ) {
 	$tier_id  = isset( $attributes[ 'imageId' . $sgs_tier ] ) ? absint( $attributes[ 'imageId' . $sgs_tier ] ) : 0;
 	$tier_url = isset( $attributes[ 'imageUrl' . $sgs_tier ] ) ? (string) $attributes[ 'imageUrl' . $sgs_tier ] : '';
 	if ( '' === $tier_url && 0 === $tier_id ) {
@@ -457,6 +494,12 @@ if ( $sgs_di_wants_wrapper ) {
 	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 
 	$sgs_di_wrapper_class = array( 'sgs-decorative-image' );
+	if ( $has_content ) {
+		$sgs_di_wrapper_class[] = 'sgs-decorative-image--layer';
+		if ( $has_media ) {
+			$sgs_di_wrapper_class[] = 'sgs-decorative-image--over-image';
+		}
+	}
 	if ( $has_treatment ) {
 		$sgs_di_wrapper_class[] = 'sgs-decorative-image--treated';
 	}
@@ -477,7 +520,7 @@ if ( $sgs_di_wants_wrapper ) {
 	if ( '' !== $sgs_di_anchor ) {
 		$wrapper_attrs['id'] = $sgs_di_anchor;
 	}
-	if ( $image_decorative ) {
+	if ( $image_decorative && ! $has_content ) {
 		$wrapper_attrs['aria-hidden'] = 'true';
 		$wrapper_attrs['role']        = 'presentation';
 	}
@@ -505,6 +548,10 @@ if ( $sgs_di_wants_wrapper ) {
 		'loading'  => 'lazy',
 		'decoding' => 'async',
 	);
+	// With content the wrapper stays readable, so a decorative <img> hides itself.
+	if ( $has_content && $image_decorative ) {
+		$media_attrs['aria-hidden'] = 'true';
+	}
 
 	/*
 	 * ⚠ KNOWN LIMITATION — treatment + art-direction tiers samples the DESKTOP
@@ -523,13 +570,15 @@ if ( $sgs_di_wants_wrapper ) {
 	 * the markup is correct, the canvas paints, and only the SOURCE PIXELS are
 	 * wrong. A block using a treatment with no tiers is unaffected.
 	 */
-	$media_html = sgs_responsive_image(
-		$image_id ? absint( $image_id ) : 0,
-		$image_url,
-		$rendered_alt,
-		'large',
-		$media_attrs
-	);
+	$media_html = $has_media
+		? sgs_responsive_image(
+			$image_id ? absint( $image_id ) : 0,
+			$image_url,
+			$rendered_alt,
+			'large',
+			$media_attrs
+		)
+		: '';
 	foreach ( $tier_imgs as $tier_key => $tier_media ) {
 		$tier_attrs          = $media_attrs;
 		$tier_attrs['class'] = $sgs_media_class . ' sgs-media-el ' . $sgs_media_class . '--' . $tier_key;
@@ -543,10 +592,12 @@ if ( $sgs_di_wants_wrapper ) {
 	}
 
 	printf(
-		'%1$s<span %2$s>%3$s</span>',
+		'%1$s<%2$s %3$s>%4$s%5$s</%2$s>',
 		$style_tag_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_num + wp_strip_all_tags.
+		$layer_tag, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal div or span.
 		implode( ' ', $wrapper_attr_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attr already escaped above.
-		$media_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
+		$media_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
+		$content_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered inner blocks, escaped by their own renders.
 	);
 	return;
 }

@@ -34,15 +34,12 @@
 	overflow: hidden;
 }
 
-.sgs-decorative-image-editor__preview {
-	max-width: 100%;
-	height: auto;
-}
-
-.sgs-decorative-image-editor__actions {
-	margin-top: 1rem;
-	display: flex;
-	gap: 0.5rem;
+/* The positioned layer: a dashed outline keeps an empty or text-only layer findable on the checkerboard. */
+.sgs-decorative-image-editor__layer {
+	min-width: 2rem;
+	min-height: 2rem;
+	outline: 1px dashed var( --wp--preset--color--text-muted, #999 );
+	outline-offset: 2px;
 }
 
 /* D4 dedup (2026-08-14) — a ToolsPanel nested inside a PanelBody renders its

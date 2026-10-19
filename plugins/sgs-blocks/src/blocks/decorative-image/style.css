@@ -13,6 +13,34 @@
 	transition: none; /* No layout transitions — purely positional. */
 }
 
+/* ─── Floating layer ───
+   A layer that holds inner blocks takes pointer events and text selection back
+   (the image-only root stays inert). With an image, the content box covers the
+   image and centres its blocks; with no image it is a plain block box. */
+.sgs-decorative-image--layer {
+	pointer-events: auto;
+	user-select: auto;
+}
+
+.sgs-decorative-image--layer > .sgs-decorative-image__media {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.sgs-decorative-image--over-image > .sgs-decorative-image__content {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-decorative-image__content {
+	display: flow-root;
+}
+
 /* Parent containers must be position: relative. */
 .wp-block-sgs-container,
 .wp-block-group {

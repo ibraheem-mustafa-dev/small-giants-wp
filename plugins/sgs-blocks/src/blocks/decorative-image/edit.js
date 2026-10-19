@@ -1,8 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useInnerBlocksProps,
+	InnerBlocks,
 	InspectorControls,
 } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
 	RangeControl,
@@ -15,14 +18,22 @@ import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePanelLayout';
 import { elementCustomProperties, requiresBox } from '../../components/media/canvasStyle';
-import { resolveTier, usePreviewTier } from '../../utils';
+import { usePreviewTier } from '../../utils';
+import LayerImagePanel from './LayerImagePanel';
+import { layerPreviewStyle } from './layer-preview';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
 	{ label: __( 'Hidden', 'sgs-blocks' ), value: 'hidden' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+const WIDTH_TYPE_OPTIONS = [
+	{ label: __( 'Fixed (px)', 'sgs-blocks' ), value: 'px' },
+	{ label: __( 'Percentage of the section (%)', 'sgs-blocks' ), value: '%' },
+	{ label: __( 'Fit the content', 'sgs-blocks' ), value: 'auto' },
+];
+
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		decorMedia,
 		imageId,
@@ -32,6 +43,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		positionX,
 		positionY,
 		width,
+		widthUnit,
 		maxWidthPercent,
 		rotation,
 		opacity,
@@ -46,6 +58,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-decorative-image-editor',
 	} );
+	const blockCount = useSelect(
+		( select ) => select( 'core/block-editor' ).getBlockCount( clientId ),
+		[ clientId ]
+	);
+	const innerBlocksProps = useInnerBlocksProps(
+		{ className: 'sgs-decorative-image__content' },
+		{ renderAppender: blockCount ? undefined : InnerBlocks.ButtonBlockAppender }
+	);
 
 	// Hydrate from new decorMedia first; fall back to legacy imageUrl for
 	// posts that have not yet round-tripped through the editor migration.
@@ -84,10 +104,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	// preview shows the tier the editor is previewing, a narrower tier inheriting
 	// from the wider one as the frontend's @media overrides do.
 	const previewTier = usePreviewTier();
-	const positionXDesktop = resolveTier( positionX, previewTier, 50 ).value;
-	const positionYDesktop = resolveTier( positionY, previewTier, 50 ).value;
-	const rotationDesktop = resolveTier( rotation, previewTier, 0 ).value;
-	const widthDesktop = resolveTier( width, previewTier, 200 ).value;
 
 	// -------------------------------------------------------------------------
 	// Media-atom canvas mirror (Wave 6, 2026-09-02) — object-fit/focal-point/
@@ -129,41 +145,46 @@ export default function Edit( { attributes, setAttributes } ) {
 		atoms: mediaAtomIds,
 	} );
 
-	// Build preview styles for editor.
-	const previewStyles = {
-		position: 'absolute',
-		left: `${ positionXDesktop }%`,
-		top: `${ positionYDesktop }%`,
-		width: `${ widthDesktop }px`,
-		maxWidth: `${ maxWidthPercent }%`,
-		opacity: opacity / 100,
-		zIndex,
-		overflow,
-		pointerEvents: 'none',
-		transform: [
-			'translate(-50%, -50%)',
-			rotationDesktop !== 0 && `rotate(${ rotationDesktop }deg)`,
-			flipX && 'scaleX(-1)',
-		]
-			.filter( Boolean )
-			.join( ' ' ),
-	};
+	// The positioned layer: the canvas twin of the root rule render.php emits.
+	const layerStyle = layerPreviewStyle(
+		{
+			positionX,
+			positionY,
+			width,
+			widthUnit,
+			maxWidthPercent,
+			rotation,
+			opacity,
+			zIndex,
+			flipX,
+			overflow,
+		},
+		previewTier,
+		0 < blockCount
+	);
+	const widthUnitValue = widthUnit || 'px';
+	const widthLabel = '%' === widthUnitValue
+		? __( 'Width (%)', 'sgs-blocks' )
+		: __( 'Width (px)', 'sgs-blocks' );
 
 	return (
 		<>
 			<InspectorControls>
-				{ /* Accessibility (Spec 35 item 18) — this block is decorative-by-design
-				     (absolute-positioned floating graphic, no InnerBlocks) so the toggle
-				     defaults ON/decorative, matching what render.php has always done
-				     unconditionally. The rare operator who wants this image to carry a
-				     real accessible name can switch it off and set alt text — mirrors
-				     sgs/media's imageDecorative control. */ }
+				<LayerImagePanel
+					media={ effectiveMedia }
+					onSelect={ onSelectMedia }
+					onRemove={ onRemoveMedia }
+				/>
+
+				{ /* Accessibility (Spec 35 item 18) — the toggle governs the <img> only,
+				     defaulting ON/decorative. Text and blocks inside the layer are always
+				     read out. Mirrors sgs/media's imageDecorative control. */ }
 				{ effectiveMedia && 'image' === effectiveMedia.type && (
 					<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 						<ToggleControl
 							label={ __( 'Decorative image', 'sgs-blocks' ) }
 							help={ __(
-								'On (recommended): hidden from screen readers, since this image adds no information of its own. Turn off only if this image genuinely needs a text description.',
+								'Turn off only when the image carries meaning, then write alt text. Text and blocks inside the layer are always read out.',
 								'sgs-blocks'
 							) }
 							checked={ imageDecorative ?? true }
@@ -274,16 +295,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Size', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<RangeControl
-						label={ __( 'Max Width (% of parent)', 'sgs-blocks' ) }
-						value={ maxWidthPercent }
-						onChange={ ( val ) => setAttributes( { maxWidthPercent: val } ) }
-						min={ 0 }
-						max={ 50 }
-						step={ 1 }
+					<SelectControl
+						label={ __( 'Width type', 'sgs-blocks' ) }
+						help={ __(
+							'Fit the content suits a label or a badge; fixed or percentage suits a photo.',
+							'sgs-blocks'
+						) }
+						value={ widthUnitValue }
+						options={ WIDTH_TYPE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { widthUnit: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ 'px' === widthUnitValue && (
+						<RangeControl
+							label={ __( 'Max Width (% of parent)', 'sgs-blocks' ) }
+							value={ maxWidthPercent }
+							onChange={ ( val ) => setAttributes( { maxWidthPercent: val } ) }
+							min={ 0 }
+							max={ 50 }
+							step={ 1 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody
@@ -457,37 +492,39 @@ export default function Edit( { attributes, setAttributes } ) {
 							</ResponsiveOverride>
 						</ToolsPanelItem>
 
-						<ToolsPanelItem
-							label={ __( 'Width (px)', 'sgs-blocks' ) }
-							hasValue={ () =>
-								JSON.stringify( width ) !== JSON.stringify( { desktop: 200 } )
-							}
-							onDeselect={ () =>
-								setAttributes( { width: { desktop: 200 } } )
-							}
-						>
-							{ /* `width` is a TIER OBJECT — same shape as `positionX`/
-							     `positionY`/`rotation` above. */ }
-							<ResponsiveOverride
-								label={ __( 'Width (px)', 'sgs-blocks' ) }
-								value={ width }
-								onChange={ ( obj ) => setAttributes( { width: obj } ) }
+						{ 'auto' !== widthUnitValue && (
+							<ToolsPanelItem
+								label={ widthLabel }
+								hasValue={ () =>
+									JSON.stringify( width ) !== JSON.stringify( { desktop: 200 } )
+								}
+								onDeselect={ () =>
+									setAttributes( { width: { desktop: 200 } } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-									<RangeControl
-										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-										value={ ownValue ?? effectiveValue ?? 200 }
-										onChange={ ( v ) => setOwnValue( v ) }
-										min={ 50 }
-										max={ 800 }
-										step={ 10 }
-										allowReset={ inherited }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								) }
-							</ResponsiveOverride>
-						</ToolsPanelItem>
+								{ /* `width` is a TIER OBJECT — same shape as `positionX`/
+								     `positionY`/`rotation` above. */ }
+								<ResponsiveOverride
+									label={ widthLabel }
+									value={ width }
+									onChange={ ( obj ) => setAttributes( { width: obj } ) }
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										<RangeControl
+											help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
+											value={ ownValue ?? effectiveValue ?? 200 }
+											onChange={ ( v ) => setOwnValue( v ) }
+											min={ '%' === widthUnitValue ? 5 : 50 }
+											max={ '%' === widthUnitValue ? 100 : 800 }
+											step={ '%' === widthUnitValue ? 5 : 10 }
+											allowReset={ inherited }
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+										/>
+									) }
+								</ResponsiveOverride>
+							</ToolsPanelItem>
+						) }
 
 						<ToolsPanelItem
 							label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
@@ -525,66 +562,62 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ ! effectiveMedia ? (
+				{ ! effectiveMedia && 0 === blockCount && (
 					<div className="sgs-decorative-image-editor__placeholder">
 						<MediaPicker
 							value={ null }
 							onChange={ onSelectMedia }
 							onRemove={ onRemoveMedia }
-							label={ __( 'Select Decorative Media', 'sgs-blocks' ) }
+							label={ __( 'Choose image', 'sgs-blocks' ) }
 							instructionsImage={ __(
-								'Decorative images or videos float absolutely over sections with optional parallax effects.',
+								'Or add blocks to float text, a label or a badge.',
 								'sgs-blocks'
 							) }
 						/>
 					</div>
-				) : (
-					<div className="sgs-decorative-image-editor__preview-wrapper">
+				) }
+				<div className="sgs-decorative-image-editor__preview-wrapper">
+					<div
+						className="sgs-decorative-image-editor__preview-container"
+						style={ { position: 'relative', minHeight: '400px' } }
+					>
 						<div
 							className={ [
-								'sgs-decorative-image-editor__preview-container',
+								'sgs-decorative-image-editor__layer',
+								'sgs-decorative-image--layer',
+								effectiveMedia ? 'sgs-decorative-image--over-image' : '',
 								mediaWantsBox ? 'sgs-media-box' : '',
 							]
 								.filter( Boolean )
 								.join( ' ' ) }
-							style={ { position: 'relative', minHeight: '400px', ...mediaBoxStyle } }
+							style={ { ...layerStyle, ...mediaBoxStyle } }
 						>
-							{ effectiveMedia.type === 'video' ? (
+							{ effectiveMedia && 'video' === effectiveMedia.type && (
 								<video
 									src={ effectiveMedia.url }
 									autoPlay
 									muted
 									loop
 									playsInline
-									className="sgs-decorative-image-editor__preview sgs-media-el"
-									style={ { ...previewStyles, ...mediaElementStyle } }
+									className="sgs-decorative-image__media sgs-media-el"
+									style={ mediaElementStyle }
 								/>
-							) : (
+							) }
+							{ effectiveMedia && 'video' !== effectiveMedia.type && (
 								<img
 									src={ effectiveMedia.url }
 									alt={
 										effectiveMedia.alt ||
 										__( 'Decorative image preview', 'sgs-blocks' )
 									}
-									className="sgs-decorative-image-editor__preview sgs-media-el"
-									style={ { ...previewStyles, ...mediaElementStyle } }
+									className="sgs-decorative-image__media sgs-media-el"
+									style={ mediaElementStyle }
 								/>
 							) }
-						</div>
-						<div className="sgs-decorative-image-editor__actions">
-							<MediaPicker
-								value={ effectiveMedia }
-								onChange={ onSelectMedia }
-								onRemove={ onRemoveMedia }
-								label={ __( 'Replace Media', 'sgs-blocks' ) }
-								instructionsImage={ __(
-									'Choose an image or video for this decorative slot.',
-									'sgs-blocks'
-								) }
-							/>
+							<div { ...innerBlocksProps } />
 						</div>
 					</div>
-				) }
+				</div>
 			</div>
 		</>
 	);
