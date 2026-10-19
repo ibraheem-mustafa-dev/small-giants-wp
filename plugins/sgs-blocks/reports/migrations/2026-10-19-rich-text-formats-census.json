@@ -1,0 +1,597 @@
+{
+  "richText": [
+    {
+      "file": "src/blocks/accordion-item/edit.js",
+      "line": 267,
+      "field": "title",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY_NO_LINK",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/button/edit.js",
+      "line": 995,
+      "field": "label",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_EMPHASIS",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/choice-flow-result/edit.js",
+      "line": 155,
+      "field": "heading",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/choice-flow-result/edit.js",
+      "line": 163,
+      "field": "body",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/collapsible-text/edit.js",
+      "line": 206,
+      "field": "text",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/counter/edit.js",
+      "line": 248,
+      "field": "label",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/form-field-consent/edit.js",
+      "line": 107,
+      "field": "consentText",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/heading/edit.js",
+      "line": 665,
+      "field": "content",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/label/edit.js",
+      "line": 215,
+      "field": "text",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_LINK_ONLY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/label/edit.js",
+      "line": 456,
+      "field": "text",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_LINK_ONLY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/pricing-table/edit.js",
+      "line": 785,
+      "field": "plan.name",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/pricing-table/edit.js",
+      "line": 807,
+      "field": "plan.price",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/pricing-table/edit.js",
+      "line": 830,
+      "field": "plan.priceYearly || ''",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/pricing-table/edit.js",
+      "line": 949,
+      "field": "feature.text",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/product-card/edit.js",
+      "line": 1603,
+      "field": "productName || ''",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/product-card/edit.js",
+      "line": 3565,
+      "field": "description || ''",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/product-faq-item/edit.js",
+      "line": 224,
+      "field": "question",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/product-faq/edit.js",
+      "line": 342,
+      "field": "heading",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/quote/edit.js",
+      "line": 830,
+      "field": "attribution",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/team-member/edit.js",
+      "line": 824,
+      "field": "name",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/team-member/edit.js",
+      "line": 832,
+      "field": "role",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/team-member/edit.js",
+      "line": 841,
+      "field": "bio",
+      "state": "missing",
+      "constant": null,
+      "role": null,
+      "status": "unmapped"
+    },
+    {
+      "file": "src/blocks/testimonial/edit.js",
+      "line": 1701,
+      "field": "summaryPhrase",
+      "state": "inline",
+      "constant": null,
+      "role": null,
+      "status": "unmapped"
+    },
+    {
+      "file": "src/blocks/testimonial/edit.js",
+      "line": 1717,
+      "field": "quote",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/testimonial/edit.js",
+      "line": 1764,
+      "field": "reviewerName",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/testimonial/edit.js",
+      "line": 1775,
+      "field": "reviewerRole",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/testimonial/edit.js",
+      "line": 1786,
+      "field": "orgName",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_PLAIN",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/text/edit.js",
+      "line": 866,
+      "field": "text",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/timeline/edit.js",
+      "line": 279,
+      "field": "entry.description || ''",
+      "state": "inline",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "inline"
+    },
+    {
+      "file": "src/blocks/trust-bar/edit.js",
+      "line": 1310,
+      "field": "title",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/whatsapp-cta/card-fields.js",
+      "line": 62,
+      "field": "label",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY_NO_LINK",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/whatsapp-cta/card-fields.js",
+      "line": 102,
+      "field": "cardTitle",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY_NO_LINK",
+      "status": "missing"
+    },
+    {
+      "file": "src/blocks/whatsapp-cta/card-fields.js",
+      "line": 110,
+      "field": "cardSubline",
+      "state": "missing",
+      "constant": null,
+      "role": "RICH_TEXT_BODY_NO_LINK",
+      "status": "missing"
+    }
+  ],
+  "kses": [
+    {
+      "file": "src/blocks/accordion-item/render.php",
+      "line": 405,
+      "fn": "wp_kses_post",
+      "arg": "$sgs_title",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/choice-flow-result/render.php",
+      "line": 115,
+      "fn": "wp_kses_post",
+      "arg": "$heading",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/choice-flow-result/render.php",
+      "line": 119,
+      "fn": "wp_kses_post",
+      "arg": "$body",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/collapsible-text/render.php",
+      "line": 312,
+      "fn": "wp_kses_post",
+      "arg": "$text",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/counter/render.php",
+      "line": 379,
+      "fn": "wp_kses_post",
+      "arg": "$label",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/form-field-consent/render.php",
+      "line": 33,
+      "fn": "wp_kses_post",
+      "arg": "$text",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/heading/render.php",
+      "line": 571,
+      "fn": "wp_kses_post",
+      "arg": "$content",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/label/render.php",
+      "line": 472,
+      "fn": "wp_kses_post",
+      "arg": "$text",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "line": 1129,
+      "fn": "wp_kses_post",
+      "arg": "$sgs_resolved_desc",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "line": 1140,
+      "fn": "wp_kses_post",
+      "arg": "$data['price_from_html']",
+      "decision": "WooCommerce price markup (wc_price), not RichText",
+      "status": "exempt"
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "line": 1143,
+      "fn": "wp_kses_post",
+      "arg": "$data['price_html']",
+      "decision": "WooCommerce price markup (get_price_html), not RichText",
+      "status": "exempt"
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "line": 1609,
+      "fn": "wp_kses_post",
+      "arg": "$sgs_resolved_desc",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "line": 1994,
+      "fn": "wp_kses_post",
+      "arg": "$sgs_resolved_desc",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "line": 2080,
+      "fn": "wp_kses_post",
+      "arg": "$data['price_from_html']",
+      "decision": "WooCommerce price markup (wc_price), not RichText",
+      "status": "exempt"
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "line": 2084,
+      "fn": "wp_kses_post",
+      "arg": "$data['price_html']",
+      "decision": "WooCommerce price markup (get_price_html), not RichText",
+      "status": "exempt"
+    },
+    {
+      "file": "src/blocks/product-faq-item/render.php",
+      "line": 237,
+      "fn": "wp_kses_post",
+      "arg": "$question",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/quote/render.php",
+      "line": 533,
+      "fn": "wp_kses_post",
+      "arg": "$attribution",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/team-member/render.php",
+      "line": 294,
+      "fn": "wp_kses_post",
+      "arg": "$bio",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/team-member/render.php",
+      "line": 302,
+      "fn": "wp_kses_post",
+      "arg": "$bio",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/team-member/render.php",
+      "line": 320,
+      "fn": "wp_kses_post",
+      "arg": "$name",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/team-member/render.php",
+      "line": 321,
+      "fn": "wp_kses_post",
+      "arg": "$sgs_role",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/team-member/render.php",
+      "line": 322,
+      "fn": "wp_kses_post",
+      "arg": "$bio",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/testimonial/render.php",
+      "line": 916,
+      "fn": "wp_kses_post",
+      "arg": "$summary_phrase",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/testimonial/render.php",
+      "line": 921,
+      "fn": "wp_kses_post",
+      "arg": "$quote",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/text/render.php",
+      "line": 173,
+      "fn": "wp_kses_post",
+      "arg": "$text",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/text/render.php",
+      "line": 620,
+      "fn": "wp_kses_post",
+      "arg": "$text",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/timeline/render.php",
+      "line": 871,
+      "fn": "wp_kses_post",
+      "arg": "$description",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/trust-bar/render.php",
+      "line": 428,
+      "fn": "wp_kses_post",
+      "arg": "$block_title",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/whatsapp-cta/variant-render.php",
+      "line": 87,
+      "fn": "wp_kses_post",
+      "arg": "$title",
+      "decision": "rich-text",
+      "status": "kses-post"
+    },
+    {
+      "file": "src/blocks/whatsapp-cta/variant-render.php",
+      "line": 90,
+      "fn": "wp_kses_post",
+      "arg": "$subline",
+      "decision": "rich-text",
+      "status": "kses-post"
+    }
+  ],
+  "allowlisted": [
+    {
+      "block": "button",
+      "reason": "The label keeps its own narrower wp_kses() allowlist (no link, no style) in render.php."
+    },
+    {
+      "block": "pricing-table",
+      "reason": "Every RichText field is printed through wp_strip_all_tags() and esc_html()."
+    },
+    {
+      "block": "product-faq",
+      "reason": "The heading is printed through esc_html()."
+    }
+  ],
+  "unparsed": [],
+  "width": [],
+  "crossCheck": [],
+  "fixable": [
+    "src/blocks/accordion-item/edit.js",
+    "src/blocks/button/edit.js",
+    "src/blocks/choice-flow-result/edit.js",
+    "src/blocks/collapsible-text/edit.js",
+    "src/blocks/counter/edit.js",
+    "src/blocks/form-field-consent/edit.js",
+    "src/blocks/heading/edit.js",
+    "src/blocks/label/edit.js",
+    "src/blocks/pricing-table/edit.js",
+    "src/blocks/product-card/edit.js",
+    "src/blocks/product-faq-item/edit.js",
+    "src/blocks/product-faq/edit.js",
+    "src/blocks/quote/edit.js",
+    "src/blocks/team-member/edit.js",
+    "src/blocks/testimonial/edit.js",
+    "src/blocks/text/edit.js",
+    "src/blocks/timeline/edit.js",
+    "src/blocks/trust-bar/edit.js",
+    "src/blocks/whatsapp-cta/card-fields.js",
+    "src/blocks/accordion-item/render.php",
+    "src/blocks/choice-flow-result/render.php",
+    "src/blocks/collapsible-text/render.php",
+    "src/blocks/counter/render.php",
+    "src/blocks/form-field-consent/render.php",
+    "src/blocks/heading/render.php",
+    "src/blocks/label/render.php",
+    "src/blocks/product-card/render.php",
+    "src/blocks/product-faq-item/render.php",
+    "src/blocks/quote/render.php",
+    "src/blocks/team-member/render.php",
+    "src/blocks/testimonial/render.php",
+    "src/blocks/text/render.php",
+    "src/blocks/timeline/render.php",
+    "src/blocks/trust-bar/render.php",
+    "src/blocks/whatsapp-cta/variant-render.php"
+  ]
+}

@@ -60,6 +60,13 @@ final class SGS_Blocks {
 		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
 		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
 
+		// The universal rich-text formats (Spec 02 FR-2-4 highlight, FR-2-5 inline photo). Their stylesheet is
+		// registered once; the page loads it only when a block's markup holds either format (the render_block
+		// filter), and the editor canvas always loads it (enqueue_editor_extension_styles()).
+		require_once SGS_BLOCKS_PATH . 'includes/helpers-inline-formats.php';
+		add_action( 'init', array( $this, 'register_inline_formats_style' ) );
+		add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
+
 		// Tier G motion registry (Spec 38 §4.4) — registers the GSAP
 		// script modules and enqueues them ONLY on pages whose rendered blocks
 		// actually carry an fx effect. A page with no Tier G effect serves zero
@@ -409,6 +416,9 @@ final class SGS_Blocks {
 			);
 		}
 
+		// The highlight and inline-photo look, so the canvas shows them as the page does.
+		sgs_inline_formats_enqueue();
+
 		$colour_picker_css = SGS_BLOCKS_PATH . 'build/extensions/index.css';
 		if ( file_exists( $colour_picker_css ) ) {
 			$asset_file = SGS_BLOCKS_PATH . 'build/extensions/index.asset.php';
@@ -420,6 +430,23 @@ final class SGS_Blocks {
 				$version['version'] ?? SGS_BLOCKS_VERSION
 			);
 		}
+	}
+
+	/**
+	 * Register the `sgs-inline-formats` stylesheet (the highlight and inline-photo look).
+	 *
+	 * Registered, not enqueued: helpers-inline-formats.php::sgs_inline_formats_enqueue loads it with its palette rules
+	 * on a page whose blocks use either format, and in the editor canvas.
+	 *
+	 * @return void
+	 */
+	public function register_inline_formats_style(): void {
+		wp_register_style(
+			'sgs-inline-formats',
+			SGS_BLOCKS_URL . 'assets/css/inline-formats.css',
+			array(),
+			SGS_BLOCKS_VERSION
+		);
 	}
 
 	/**

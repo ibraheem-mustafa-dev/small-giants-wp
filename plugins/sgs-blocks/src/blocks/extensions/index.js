@@ -49,6 +49,8 @@ import './cpt-default-panel';
 import './product-collection-same-term';
 import './product-filter-chips-gap';
 import './motion';
+// The "Highlight" and "Inline photo" rich-text formats, offered by every SGS RichText whose `allowedFormats` lists them (Spec 02 FR-2-4, FR-2-5).
+import './inline-formats';
 
 // The two colour-picker fork stylesheets that carry genuinely NEW SGS
 // classnames (not core's own `.components-*` names, which `wp-components`

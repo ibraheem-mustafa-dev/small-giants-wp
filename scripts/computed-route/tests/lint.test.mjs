@@ -58,6 +58,14 @@ test( 'trees: a core style attribute fails; sgs settings pass', () => {
 	assert.equal( lintTree( [ { name: 'core/list-item', attributes: { content: 'A link' } } ], db ).length, 0 );
 } );
 
+test( 'MUST FAIL: a tree whose content or text markup carries an inline style attribute fails (FR-2-4, FR-2-5)', () => {
+	assert.equal( lintTree( [ { name: 'sgs/heading', attributes: { content: 'Made for the <span style="color:red">most</span>' } } ], db ).length, 1 );
+	assert.equal( lintTree( [ { name: 'sgs/container', attributes: {}, innerBlocks: [ { name: 'sgs/text', attributes: { text: 'A <img STYLE = "width:2em" src="a.jpg"> photo' } } ] } ], db ).length, 1 );
+	// Negative controls: class-only formats, the word "lifestyle=" in prose and a data-style attribute all pass.
+	assert.equal( lintTree( [ { name: 'sgs/heading', attributes: { content: 'the <span class="sgs-highlight sgs-highlight--accent">most</span>' } } ], db ).length, 0 );
+	assert.equal( lintTree( [ { name: 'sgs/text', attributes: { text: 'lifestyle=calm and <span data-style="x">y</span>' } } ], db ).length, 0 );
+} );
+
 test( 'skeletons: a setting that paints CSS fails; content passes', () => {
 	assert.equal( lintSkeleton( [ { name: 'sgs/heading', attributes: { content: 'Hi', level: 'h2' } } ], db ).length, 0 );
 	assert.equal( lintSkeleton( [ { name: 'sgs/heading', attributes: { fontSize: { desktop: '18px' } } } ], db ).length, 1 );

@@ -50,6 +50,11 @@
  *                                     sgs_end_shape_ring_decls (label end shapes cut
  *                                     from the shape-divider library)
  *
+ *   helpers-inline-formats.php      — sgs_rich_text_kses, sgs_inline_format_palette_css,
+ *                                     sgs_inline_formats_enqueue,
+ *                                     sgs_inline_formats_maybe_enqueue (the highlight
+ *                                     and inline-photo rich-text formats)
+ *
  *   helpers-css-safety.php          — sgs_css_length_value (shared CSS-length
  *                                     safety primitive; required by
  *                                     helpers-container.php's
@@ -205,6 +210,7 @@ require_once __DIR__ . '/helpers-site-info-items.php';
 require_once __DIR__ . '/helpers-icon.php';
 require_once __DIR__ . '/helpers-icon-shadow.php';
 require_once __DIR__ . '/helpers-end-shape.php';
+require_once __DIR__ . '/helpers-inline-formats.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';

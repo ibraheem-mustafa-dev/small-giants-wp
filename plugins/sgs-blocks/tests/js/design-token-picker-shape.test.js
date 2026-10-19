@@ -66,13 +66,15 @@ jest.mock( '../../src/components/colour-picker', () => {
 	const R = require( 'react' );
 	return {
 		__esModule: true,
-		ColorPalette: ( { colors, onChange } ) =>
+		// Like the real palette, the custom-colour picker shows unless `disableCustomColors` is set.
+		ColorPalette: ( { colors, onChange, disableCustomColors } ) =>
 			R.createElement(
 				'div',
 				null,
 				colors.map( ( c ) =>
 					R.createElement( 'button', { key: c.slug, type: 'button', 'data-swatch': c.slug, onClick: () => onChange( c.color ) } )
-				)
+				),
+				disableCustomColors ? null : R.createElement( 'button', { key: 'custom', type: 'button', 'data-custom-picker': 'true' } )
 			),
 	};
 } );
@@ -119,6 +121,33 @@ describe( 'DesignTokenPicker without `states`', () => {
 		act( () => container.querySelector( '[data-dropdown] > button' ).click() );
 		act( () => container.querySelector( '[data-swatch="primary"]' ).click() );
 		expect( onChange ).toHaveBeenCalledWith( '#112233' );
+		act( () => root.unmount() );
+	} );
+} );
+
+describe( 'DesignTokenPicker `disableCustomColors`', () => {
+	it( 'offers the custom-colour picker by default', () => {
+		const { container, root } = mount( { label: 'Swatch colour', value: '', onChange: jest.fn() } );
+		act( () => container.querySelector( '[data-dropdown] > button' ).click() );
+		expect( container.querySelector( '[data-custom-picker]' ) ).not.toBeNull();
+		act( () => root.unmount() );
+	} );
+
+	it( 'MUST FAIL: removes the custom-colour picker and keeps the swatches when set, on a one-state `states` caller', () => {
+		const onChange = jest.fn();
+		const { container, root } = mount( {
+			label: 'Highlight colour',
+			linked: true,
+			disableCustomColors: true,
+			clearable: true,
+			states: [ { key: 'normal', label: 'Normal', value: '', onChange, linked: true } ],
+		} );
+		act( () => container.querySelector( '[data-dropdown] > button' ).click() );
+		const popover = container.querySelector( '[data-popover]' );
+		expect( popover.querySelectorAll( '[data-swatch]' ) ).toHaveLength( PALETTE.length );
+		expect( popover.querySelector( '[data-custom-picker]' ) ).toBeNull();
+		act( () => popover.querySelector( '[data-swatch="accent"]' ).click() );
+		expect( onChange ).toHaveBeenCalledWith( 'accent' );
 		act( () => root.unmount() );
 	} );
 } );

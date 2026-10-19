@@ -606,6 +606,21 @@
         "thumb": "var(--wp--preset--color--primary)",
         "thumbOnDark": "var(--wp--preset--color--accent)",
         "track": "transparent"
+      },
+      "highlight": {
+        "colour": "#F9CF6E",
+        "thickness": "0.2em",
+        "lift": "0.02em",
+        "overhang": "4%",
+        "tilt": "-1.5deg"
+      },
+      "inlinePhoto": {
+        "width": "1.55em",
+        "height": "0.78em",
+        "borderWidth": "3px",
+        "borderColour": "var(--wp--preset--color--text)",
+        "radius": "999px",
+        "tilt": "-4deg"
       }
     },
     "appearanceTools": true,

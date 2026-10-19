@@ -1728,6 +1728,33 @@
     "order": 198
   },
   {
+    "id": "survey-rich-text-formats-self-test",
+    "cmd": "node scripts/survey-rich-text-formats.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 199
+  },
+  {
+    "id": "check-snapshot-inline-format-tokens-self-test",
+    "cmd": "python scripts/check-snapshot-inline-format-tokens.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 200
+  },
+  {
+    "id": "check-snapshot-inline-format-tokens",
+    "cmd": "python scripts/check-snapshot-inline-format-tokens.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 201
+  },
+  {
     "id": "check-motion-literals",
     "cmd": "python scripts/check-motion-literals.py --check",
     "tier": "fast",

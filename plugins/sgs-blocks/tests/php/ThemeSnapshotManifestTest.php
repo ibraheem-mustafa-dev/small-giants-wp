@@ -168,6 +168,67 @@ class ThemeSnapshotManifestTest extends TestCase {
 	}
 
 	/**
+	 * The highlight and inline-photo tokens (Spec 02 FR-2-4, FR-2-5) every snapshot and the framework theme.json carry.
+	 *
+	 * @return array<string, array<int, string>> Group => keys.
+	 */
+	private static function inline_format_keys(): array {
+		return array(
+			'highlight'   => array( 'colour', 'thickness', 'lift', 'overhang', 'tilt' ),
+			'inlinePhoto' => array( 'width', 'height', 'borderWidth', 'borderColour', 'radius', 'tilt' ),
+		);
+	}
+
+	/**
+	 * Assert one decoded theme file declares every inline-format token as a non-empty string.
+	 *
+	 * @param array<mixed> $data  Decoded theme JSON.
+	 * @param string       $label Which file, for the failure message.
+	 */
+	private function assert_inline_format_tokens( array $data, string $label ): void {
+		$custom = $data['settings']['custom'] ?? array();
+		foreach ( self::inline_format_keys() as $group => $keys ) {
+			$this->assertArrayHasKey( $group, $custom, "Missing 'settings.custom.{$group}' in {$label}" );
+			foreach ( $keys as $key ) {
+				$value = $custom[ $group ][ $key ] ?? null;
+				$this->assertIsString( $value, "settings.custom.{$group}.{$key} must be a string in {$label}" );
+				$this->assertNotSame( '', trim( $value ), "settings.custom.{$group}.{$key} must not be empty in {$label}" );
+			}
+		}
+	}
+
+	/**
+	 * The framework theme.json carries the inline-format defaults the shared stylesheet falls back to.
+	 */
+	public function test_framework_theme_json_declares_the_inline_format_tokens(): void {
+		$path = dirname( self::$sites_dir ) . '/theme/sgs-theme/theme.json';
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$data = json_decode( (string) file_get_contents( $path ), true );
+		$this->assertIsArray( $data, 'theme/sgs-theme/theme.json must parse' );
+		$this->assert_inline_format_tokens( $data, 'theme/sgs-theme/theme.json' );
+		$this->assertSame( '0.2em', $data['settings']['custom']['highlight']['thickness'] );
+		$this->assertSame( '1.55em', $data['settings']['custom']['inlinePhoto']['width'] );
+	}
+
+	/**
+	 * Each named client snapshot carries the inline-format tokens (a snapshot replaces theme.json wholesale).
+	 *
+	 * @dataProvider client_snapshots_provider
+	 *
+	 * @param string $filename        Client slug.
+	 * @param string $expected_header Expected headerPattern slug.
+	 * @param string $expected_footer Expected footerPattern slug.
+	 */
+	#[DataProvider( 'client_snapshots_provider' )]
+	public function test_snapshot_declares_the_inline_format_tokens(
+		string $filename,
+		string $expected_header,
+		string $expected_footer
+	): void {
+		$this->assert_inline_format_tokens( $this->load_snapshot( $filename ), $filename );
+	}
+
+	/**
 	 * Pattern slugs must start with the sgs/ prefix.
 	 *
 	 * @dataProvider client_snapshots_provider

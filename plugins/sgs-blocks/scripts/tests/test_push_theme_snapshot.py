@@ -312,6 +312,9 @@ def _full_roster_snap(pts) -> dict:
         node[keys[-1]] = "0"
     custom["focus"] = {key: "2px" for key in pts.focus_tokens.FOCUS_KEYS}
     custom["scrollbar"] = {key: "transparent" for key in pts.scrollbar_tokens.SCROLLBAR_KEYS}
+    custom["highlight"] = {"colour": "#ffcc00", "thickness": "0.2em", "lift": "0.02em", "overhang": "4%", "tilt": "0deg"}
+    custom["inlinePhoto"] = {"width": "1.55em", "height": "0.78em", "borderWidth": "0", "borderColour": "currentColor",
+                             "radius": "999px", "tilt": "0deg"}
     return snap
 
 

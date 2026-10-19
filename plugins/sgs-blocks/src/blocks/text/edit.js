@@ -48,6 +48,7 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import { composeShadow } from '../../utils/shadow-layers';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -869,11 +870,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				value={ text }
 				onChange={ ( val ) => setAttributes( { text: val } ) }
 				placeholder={ __( 'Text…', 'sgs-blocks' ) }
-				allowedFormats={ [
-					'core/bold',
-					'core/italic',
-					'core/link',
-				] }
+				allowedFormats={ RICH_TEXT_BODY }
 			/>
 		</>
 	);

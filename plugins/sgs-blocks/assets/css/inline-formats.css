@@ -1,0 +1,50 @@
+/**
+ * The universal rich-text formats' site-wide look (Spec 02 FR-2-4 highlight, FR-2-5 inline photo).
+ *
+ * Every value reads a `settings.custom` token from the client's theme snapshot (`--wp--custom--highlight--*`,
+ * `--wp--custom--inline-photo--*`); the fallbacks are the framework defaults in theme/sgs-theme/theme.json.
+ * A highlight picked from the palette carries `.sgs-highlight--{slug}`, whose `--sgs-highlight-colour` rule
+ * helpers-inline-formats.php::sgs_inline_format_palette_css writes beside this file.
+ *
+ * Loaded on the front end only when a block's markup holds either class
+ * (helpers-inline-formats.php::sgs_inline_formats_maybe_enqueue), and always in the editor canvas.
+ */
+
+.sgs-highlight {
+	position: relative;
+	isolation: isolate;
+	white-space: nowrap;
+}
+
+.sgs-highlight::before {
+	content: "";
+	position: absolute;
+	pointer-events: none;
+	z-index: -1;
+	inset-inline: calc(var(--wp--custom--highlight--overhang, 4%) * -1);
+	bottom: var(--wp--custom--highlight--lift, 0.02em);
+	block-size: var(--wp--custom--highlight--thickness, 0.2em);
+	background: var(--sgs-highlight-colour, var(--wp--custom--highlight--colour, var(--wp--preset--color--accent)));
+	border-radius: 999px;
+	transform: rotate(var(--wp--custom--highlight--tilt, 0deg));
+}
+
+.sgs-inline-photo {
+	display: inline-block;
+	vertical-align: middle;
+	box-sizing: border-box;
+	object-fit: cover;
+	margin: 0 0.06em;
+	inline-size: var(--wp--custom--inline-photo--width, 1.55em);
+	block-size: var(--wp--custom--inline-photo--height, 0.78em);
+	border: var(--wp--custom--inline-photo--border-width, 0) solid var(--wp--custom--inline-photo--border-colour, currentColor);
+	border-radius: var(--wp--custom--inline-photo--radius, 999px);
+	transform: rotate(var(--wp--custom--inline-photo--tilt, 0deg));
+}
+
+/* Forced colours paint no backgrounds, so the stripe becomes an underline. */
+@media (forced-colors: active) {
+	.sgs-highlight {
+		text-decoration: underline;
+	}
+}

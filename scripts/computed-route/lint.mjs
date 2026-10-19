@@ -7,7 +7,8 @@
 //   - a route file imports from plugins/sgs-blocks/scripts/ (the converter; its db_lookup.py migrates the shared DB);
 //   - a route file (tests included) names the plugin's node_modules folder; the route imports its third-party packages
 //     from its own pinned install (FR-48-75);
-//   - a --tree carries a core `style` attribute or a native_wp setting (both serialise as inline style, Spec 32);
+//   - a --tree carries a core `style` attribute or a native_wp setting (both serialise as inline style, Spec 32), or a
+//     `content` or `text` markup string holding a tag with a style attribute (rich-text formats are class-only);
 //   - a --skeleton carries any attribute whose css_property is not null (Fill skeletons hold no style values);
 //   - a --surfaces manifest has a tree printing another post (a linked block, a modal or drawer reference, a template
 //     part) that no surface owns (lib/references.mjs::lintSurfaces);
@@ -96,11 +97,19 @@ export function lintFolder( root ) {
 	return problems;
 }
 
-// R-47-10 on a tree the route writes: no core style attribute, no native_wp setting.
+// An HTML tag carrying a style attribute inside a rich-text string (`<span style=…>`, `<img STYLE = …>`).
+const INLINE_STYLE_TAG = /<[a-z][^>]*\sstyle\s*=/i;
+
+// R-47-10 on a tree the route writes: no core style attribute, no native_wp setting, and no inline style inside a
+// `content` or `text` markup string (rich-text formats are class-only, Spec 02 FR-2-4 and FR-2-5).
 export function lintTree( tree, db, label = 'tree' ) {
 	const problems = [];
 	walk( tree, ( n, i ) => {
 		for ( const k of Object.keys( n.attributes || {} ) ) {
+			const v = n.attributes[ k ];
+			if ( ( 'content' === k || 'text' === k ) && 'string' === typeof v && INLINE_STYLE_TAG.test( v ) ) {
+				problems.push( `${ label } node ${ i } (${ n.name }) writes an inline style attribute inside its ${ k } markup` );
+			}
 			if ( 'style' === k ) {
 				problems.push( `${ label } node ${ i } (${ n.name }) carries a core style attribute` );
 			} else if ( 'native_wp' === attrRow( db, n.name, k )?.source && attrRow( db, n.name, k )?.css_property ) {

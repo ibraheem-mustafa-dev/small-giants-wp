@@ -467,6 +467,21 @@
         "thumbOnDark": "#e7d768",
         "track": "transparent"
       },
+      "highlight": {
+        "colour": "var(--wp--preset--color--accent)",
+        "thickness": "0.2em",
+        "lift": "0.02em",
+        "overhang": "4%",
+        "tilt": "0deg"
+      },
+      "inlinePhoto": {
+        "width": "1.55em",
+        "height": "0.78em",
+        "borderWidth": "0",
+        "borderColour": "currentColor",
+        "radius": "999px",
+        "tilt": "0deg"
+      },
       "shadowColour": "var(--wp--preset--color--text)",
       "shadowHover": {
         "whisper": "soft",

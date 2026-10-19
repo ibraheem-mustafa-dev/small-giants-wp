@@ -59,6 +59,8 @@
     "selftest:snapshot-focus-tokens": "python scripts/check-snapshot-focus-tokens.py --self-test",
     "survey:snapshot-scrollbar-tokens": "python scripts/check-snapshot-scrollbar-tokens.py --survey",
     "selftest:snapshot-scrollbar-tokens": "python scripts/check-snapshot-scrollbar-tokens.py --self-test",
+    "survey:snapshot-inline-format-tokens": "python scripts/check-snapshot-inline-format-tokens.py --survey",
+    "selftest:snapshot-inline-format-tokens": "python scripts/check-snapshot-inline-format-tokens.py --self-test",
     "check:hardcoded-defaults": "node scripts/check-hardcoded-render-defaults.js --check",
     "check:block-asset-targets": "node scripts/check-block-asset-targets.js --check",
     "check:shared-css-state": "node scripts/check-shared-css-state-rules.js --check && node scripts/inspector-scan/run.js --check",

@@ -15,6 +15,7 @@ import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderCont
 import { fontFamilyCssValue } from '../../utils/typography-preview';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -672,7 +673,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						? __( 'Subheading copy…', 'sgs-blocks' )
 						: __( 'Section heading…', 'sgs-blocks' )
 				}
-				allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
+				allowedFormats={ RICH_TEXT_BODY }
 			/>
 		</>
 	);

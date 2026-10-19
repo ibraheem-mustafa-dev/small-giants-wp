@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "purpose": "Which shared format list (src/utils/rich-text-formats.js) each SGS RichText takes, and which kses arguments in those blocks print RichText (Spec 02 FR-2-4, FR-2-5). Read by scripts/survey-rich-text-formats.js.",
+    "fields": "file -> the source text of the RichText's value prop -> constant. A RichText missing here is listed for a decision, never guessed.",
+    "render": "PHP file -> the kses call's argument text -> \"rich-text\" (printed through sgs_rich_text_kses) or the reason it is not RichText (left alone).",
+    "allowlist": "block folder -> why its PHP keeps its own sanitiser.",
+    "undecided": "Open decisions, not read by the detector: these fields stay unmapped until decided, and --check lists them."
+  },
+  "fields": {
+    "src/blocks/accordion-item/edit.js": { "title": "RICH_TEXT_BODY_NO_LINK" },
+    "src/blocks/button/edit.js": { "label": "RICH_TEXT_EMPHASIS" },
+    "src/blocks/choice-flow-result/edit.js": { "heading": "RICH_TEXT_PLAIN", "body": "RICH_TEXT_BODY" },
+    "src/blocks/collapsible-text/edit.js": { "text": "RICH_TEXT_BODY" },
+    "src/blocks/counter/edit.js": { "label": "RICH_TEXT_BODY" },
+    "src/blocks/form-field-consent/edit.js": { "consentText": "RICH_TEXT_BODY" },
+    "src/blocks/heading/edit.js": { "content": "RICH_TEXT_BODY" },
+    "src/blocks/label/edit.js": { "text": "RICH_TEXT_LINK_ONLY" },
+    "src/blocks/pricing-table/edit.js": {
+      "plan.name": "RICH_TEXT_PLAIN",
+      "plan.price": "RICH_TEXT_PLAIN",
+      "plan.priceYearly || ''": "RICH_TEXT_PLAIN",
+      "feature.text": "RICH_TEXT_PLAIN"
+    },
+    "src/blocks/product-card/edit.js": { "productName || ''": "RICH_TEXT_PLAIN", "description || ''": "RICH_TEXT_BODY" },
+    "src/blocks/product-faq/edit.js": { "heading": "RICH_TEXT_PLAIN" },
+    "src/blocks/product-faq-item/edit.js": { "question": "RICH_TEXT_PLAIN" },
+    "src/blocks/quote/edit.js": { "attribution": "RICH_TEXT_BODY" },
+    "src/blocks/team-member/edit.js": { "name": "RICH_TEXT_BODY", "role": "RICH_TEXT_BODY", "bio": "RICH_TEXT_BODY" },
+    "src/blocks/testimonial/edit.js": {
+      "quote": "RICH_TEXT_BODY",
+      "summaryPhrase": "RICH_TEXT_EMPHASIS",
+      "reviewerName": "RICH_TEXT_PLAIN",
+      "reviewerRole": "RICH_TEXT_PLAIN",
+      "orgName": "RICH_TEXT_PLAIN"
+    },
+    "src/blocks/text/edit.js": { "text": "RICH_TEXT_BODY" },
+    "src/blocks/timeline/edit.js": { "entry.description || ''": "RICH_TEXT_BODY" },
+    "src/blocks/trust-bar/edit.js": { "title": "RICH_TEXT_BODY" },
+    "src/blocks/whatsapp-cta/card-fields.js": {
+      "label": "RICH_TEXT_BODY_NO_LINK",
+      "cardTitle": "RICH_TEXT_BODY_NO_LINK",
+      "cardSubline": "RICH_TEXT_BODY_NO_LINK"
+    }
+  },
+  "undecided": {},
+  "render": {
+    "src/blocks/accordion-item/render.php": { "$sgs_title": "rich-text" },
+    "src/blocks/choice-flow-result/render.php": { "$heading": "rich-text", "$body": "rich-text" },
+    "src/blocks/collapsible-text/render.php": { "$text": "rich-text" },
+    "src/blocks/counter/render.php": { "$label": "rich-text" },
+    "src/blocks/form-field-consent/render.php": { "$text": "rich-text" },
+    "src/blocks/heading/render.php": { "$content": "rich-text" },
+    "src/blocks/label/render.php": { "$text": "rich-text" },
+    "src/blocks/product-card/render.php": {
+      "$sgs_resolved_desc": "rich-text",
+      "$data['price_from_html']": "WooCommerce price markup (wc_price), not RichText",
+      "$data['price_html']": "WooCommerce price markup (get_price_html), not RichText"
+    },
+    "src/blocks/product-faq-item/render.php": { "$question": "rich-text" },
+    "src/blocks/quote/render.php": { "$attribution": "rich-text" },
+    "src/blocks/team-member/render.php": { "$bio": "rich-text", "$name": "rich-text", "$sgs_role": "rich-text" },
+    "src/blocks/testimonial/render.php": { "$summary_phrase": "rich-text", "$quote": "rich-text" },
+    "src/blocks/text/render.php": { "$text": "rich-text" },
+    "src/blocks/timeline/render.php": { "$description": "rich-text" },
+    "src/blocks/trust-bar/render.php": { "$block_title": "rich-text" },
+    "src/blocks/whatsapp-cta/variant-render.php": { "$title": "rich-text", "$subline": "rich-text" }
+  },
+  "allowlist": {
+    "button": "The label keeps its own narrower wp_kses() allowlist (no link, no style) in render.php.",
+    "pricing-table": "Every RichText field is printed through wp_strip_all_tags() and esc_html().",
+    "product-faq": "The heading is printed through esc_html()."
+  }
+}

@@ -167,6 +167,8 @@ function makeChangeHandler( { linked, colours, onChange } ) {
  *                                    wins over the flat `value` at render time — see
  *                                    `sgs_background_paint_value()` in `helpers-tokens.php`.
  * @param {boolean} props.clearable          Forwarded to `ColorPalette`.
+ * @param {boolean} [props.disableCustomColors] Forwarded to `ColorPalette`: hides its custom-colour picker so only
+ *                                            palette swatches can be picked (a value that must stay a palette slug).
  * @param {boolean} props.enableAlpha        Forwarded to the solid `ColorPalette`.
  * @param {boolean} [props.gradientEnableAlpha] Forwarded to the gradient bar's stop editor
  *                                            instead of `enableAlpha` when a caller needs the
@@ -180,6 +182,7 @@ function SgsColourStateControl( {
 	label,
 	states,
 	clearable,
+	disableCustomColors = false,
 	enableAlpha,
 	// Independent alpha policy for the gradient bar's stop editor, falling
 	// back to `enableAlpha` when omitted (byte-identical behaviour for every
@@ -261,7 +264,7 @@ function SgsColourStateControl( {
 				onChange: s.onChange,
 			} ) }
 			clearable={ clearable }
-			disableCustomColors={ false }
+			disableCustomColors={ disableCustomColors }
 			enableAlpha={ enableAlpha }
 			// Verified honoured, NOT assumed: @wordpress/components
 			// color-palette/index.tsx destructures `aria-label` at line 190
@@ -464,6 +467,8 @@ export default function DesignTokenPicker( {
 	value,
 	onChange,
 	clearable = true,
+	// Hides the palette's custom-colour picker: only a swatch can be picked, so a linked value is always a slug.
+	disableCustomColors = false,
 	linked = false,
 	enableAlpha = true,
 	gradientEnableAlpha,
@@ -541,6 +546,7 @@ export default function DesignTokenPicker( {
 			label={ label }
 			states={ rowStates }
 			clearable={ clearable }
+			disableCustomColors={ disableCustomColors }
 			enableAlpha={ enableAlpha }
 			gradientEnableAlpha={ gradientEnableAlpha }
 			colours={ colours }
