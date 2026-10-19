@@ -804,4 +804,21 @@ Every focusable element in the framework shows one keyboard focus look, defined 
 
   Status: BUILT and live on sandybrown at `a6abdc916` (2026-10-17). Measured live (`reports/2026-10-17-focus-system/after3/` at 1440, `after4/` at 768 and 375): the fixture page 5389 PASSES at 1440, 768 and 375 with looks 1, minimum contrast 3.16, clipped 0 and zero radius changes on focus; home, shop, product and cart PASS at 1440 and 375 (home 6.66, shop 3.08, product 3.11, cart 9.40), clipped 0, 320 of 320 token matches. The narrow-width run found two real defects, both fixed: the selected inset tab below 768px kept dark-ground tokens on a light box (now `--sgs-focus-ring-on-light`), and G2 on a dark photo drew its core and hairline in the same tone (now `--sgs-focus-hairline`, the opposite tone, with a contract-test rule and a negative control). Probe limits, each proved by a live screenshot: the skip link, the before-after handle and the Trustpilot logo link read `unmeasurable` (covered or zero-size), and the product-card swatches read `unmeasurable` under the card's link overlay yet draw a solid 2px ring. Earlier runs: forced colours 94 of 95 and axe no new violation on the fixture. The CSS-bytes criterion cannot be re-measured (its pre-change home figure no longer exists after later deploys); it holds by construction, because one file replaced about 330 scattered rules. A real Windows High Contrast pass is a go-live item (`.claude/specs/go-live-checklist.md`).
 
+- **FR-32-23 — Text can have an outline.** The shared typography settings gain an outline width (per device) and an outline colour (normal and hover) for every prefix with the full typography set; hollow letters are the text colour at opacity 0. *Done when:* `vendor/bin/phpunit --filter TypographyTextStrokeTest` passes and `node scripts/audit-typography-attr-declarations.js --check` exits 0 (in `plugins/sgs-blocks/`).
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G2); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-32-24 — A link underline can have its own colour, gap and a hover-only mode.** The shared link underline settings gain an underline colour (normal and hover), an underline gap and a "Shows on hover" mode, on every block with link underline settings. *Done when:* `vendor/bin/phpunit --filter LinkUnderlineTest` passes and `node scripts/survey-link-underline-family.js --check` exits 0.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G11); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-32-25 — Text can be cut to a set number of lines.** The shared typography settings gain "Cut long text" with lines shown per device (1 ends in an ellipsis on one line; 2 or more clamp; 0 shows everything again at that size). *Done when:* `vendor/bin/phpunit --filter TypographyTextLinesTest` passes.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G12); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-32-26 — Every scrollbar on the site follows the brand.** One theme stylesheet colours every scrollbar from `settings.custom.scrollbar` (thumb defaults to primary, an on-dark thumb to accent, track transparent); blocks that hide their bars keep them hidden; sgs/google-reviews keeps Google's look; a snapshot thumb under 3:1 against its ground is refused. *Done when:* `npx wp-scripts test-unit-js tests/js/scrollbar-contract.test.js` and `python scripts/check-snapshot-scrollbar-tokens.py --self-test` pass (in `plugins/sgs-blocks/`).
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G3); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+
 Part D (the draft-to-snapshot extractor, §15, FR-33-1 to FR-33-10 and FR-33-12 to FR-33-19) is in Spec 48 §11 (`.claude/specs/48-CLONING-SYSTEM.md`).

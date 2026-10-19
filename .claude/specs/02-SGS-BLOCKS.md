@@ -1124,3 +1124,27 @@ Universal extensions ship globally via an `addFilter` on `editor.BlockEdit` in `
 ## Block variations
 
 PHP block variations are registered via `plugins/sgs-blocks/includes/variations/sgs-*.php` files auto-discovered by `plugins/sgs-blocks/includes/variations/class-sgs-block-variations.php`.
+
+## Control gap requirements
+
+Features the client drafts use that no block setting reproduced (the CSS equivalence audit's real control gaps). Each is built by `.claude/plans/2026-10-19-control-gaps-build.md`.
+
+- **FR-2-1 — A pinned container can stop below the sticky header.** `sgs/container`'s pin edge gains a per-device "Stop below the site header" toggle and a gap (`pinBelowHeader`, `pinGap`), so a sticky side column clears a sticky header instead of sliding under it; the offset never applies inside a drawer or dialog. *Done when:* `vendor/bin/phpunit --filter ContainerPinBelowHeaderTest` (in `plugins/sgs-blocks/`) passes and the live column's top equals the header's bottom plus the gap at 1440.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G1); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-2-2 — A label can take a ribbon, ticket or arrow shape with an outline that follows the cut.** `sgs/label` gains `shape` (none, ribbon-right, ribbon-left, ticket, arrow-right, chevron), `shapeNotch` and a border (width, style, colour), drawn through the shared `includes/helpers-shape-preset.php`; the tilt is the existing Motion rest rotate. *Done when:* `vendor/bin/phpunit --filter LabelShapeTest` passes and a cropped screenshot shows the outline along the V edge in Chromium, Firefox and WebKit.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G5); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-2-3 — A buybox can show a phone add-to-basket bar once its Add button scrolls away.** `sgs/buybox` gains a per-device `stickyBar` (off, or after the Add button leaves the screen): a fixed bottom bar with the price, the chosen options and an Add button that submits the buybox's own cart form. *Done when:* `vendor/bin/phpunit --filter BuyboxStickyBarTest` passes and, live at 375, the bar appears after scrolling past the Add button and adding from it changes the basket count.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G6); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-2-4 — A word in a heading or text can carry a highlighter stripe.** A `sgs/highlight` rich-text format on `sgs/heading` and `sgs/text` saves class-only markup; the block's highlight colour, thickness, lift, overhang and tilt settings paint every highlight in it; inline `style` in the text is stripped at render. *Done when:* `vendor/bin/phpunit --filter InlineFormatsTest` passes and live at 375, 768 and 1440 the stripe sits behind the word with no element in the heading carrying a `style` attribute.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G7); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-2-5 — A small photo can sit inside a heading's or text's line.** A `sgs/inline-photo` rich-text format on `sgs/heading` and `sgs/text` inserts a Media Library image with class-only markup; the block's width, height, tilt and border settings style it; alt text is required unless it is marked decorative. *Done when:* `vendor/bin/phpunit --filter InlineFormatsTest` passes and live the photo measures the set width and height in em at 375, 768 and 1440.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G8); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".

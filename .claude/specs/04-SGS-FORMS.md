@@ -300,3 +300,13 @@ These items are specified above and have no implementation yet. Each stays in th
 | Multi-file upload cap (`maxFiles` on `sgs/form-field-file`) | Not built. |
 | Retention auto-delete (GDPR) | Not built. Data export and erasure are built. |
 | Admin bulk actions | Not built. |
+
+## Control gap requirements
+
+- **FR-4-1 — A long uploaded file name stays inside its box.** The file preview, its error, the field and the review step's values wrap long unbroken text (`overflow-wrap: anywhere`, `min-width: 0`). *Done when:* `npx wp-scripts test-unit-js tests/js/form-file-wrap.test.js` passes and live at 375 a 120-character file name causes no horizontal overflow.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G9); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
+
+- **FR-4-2 — Option tiles can show a description line under the label.** `sgs/form-field-tiles` gains a description per tile (inside the label, so it is part of the accessible name) and typography and colour settings for the tile label and the description. *Done when:* `vendor/bin/phpunit --filter FormFieldTilesDescriptionTest` passes.
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G10); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".

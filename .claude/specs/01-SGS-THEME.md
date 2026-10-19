@@ -314,3 +314,9 @@ The WP Browse-styles picker is hidden unless `apply_filters( 'sgs_show_browse_st
 ### WP 7.0 button preset alignment
 
 WP 7.0 adds native pseudo-element support for `core/button` at theme.json level: `styles.elements.button:hover`, `:focus`, `:focus-visible`, `:active`. The Customiser panel `sgs_button_presets` (`plugins/sgs-blocks/includes/class-button-presets-customiser.php`) edits the three `sgs/button` presets' roles and stores them in the `wp_global_styles` user layer (`settings.custom.buttonPresets`). Spec 11 owns the button architecture.
+
+## Requirements
+
+- **FR-1-1 — Text renders with greyscale antialiasing on macOS and iOS.** `theme/sgs-theme/assets/css/core-blocks-critical.css` sets `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale` on `html`, always on. *Done when:* `npx wp-scripts test-unit-js tests/js/font-smoothing.test.js` passes (in `plugins/sgs-blocks/`).
+
+  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G4); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
