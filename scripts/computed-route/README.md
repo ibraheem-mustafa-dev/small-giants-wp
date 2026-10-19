@@ -165,6 +165,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-motion.mjs` | The motion cloning writer (Spec 48 FR-48-78): each skeleton node's inventory motion records as its `sgsMotion`, on the root or the declared part a slot names, render-checked, token-snapped and validated before it is written. |
 | `lib/motion-layers.mjs` | One element's motion records as `entrance.base` (from and to, or `values.keyframes` for a record with more than two keyframes) and `hover.state` layers, and the match of a run-time-picked entrance to a measured pose. |
 | `lib/motion-check.mjs` | The motion writer's render check: a sampled entrance against the draft's code for duration and delay (device overrides) and for the from-pose and easing (reported only). |
+| `lib/motion-sample.mjs` | The sampled-pose check (FR-48-47): the pose the draft's code states at 0, half and all of an entrance's run (its keyframes, easing and direction), against the pose the probe read after pausing and seeking each animation there. |
 | `lib/css-matrix.mjs` | A CSS transform list as the 4x4 matrix a browser draws it with, in the list's own order, so the render check compares the code's from transform with the transform the render drew; a percentage or unknown function is unreadable (null). |
 | `lib/motion-clip.mjs` | A clip-path `inset()` as the entrance clip channel, one inset edge as `clipEdge`; other shapes are unsupported. |
 | `lib/motion-shadow.mjs` | A box-shadow's parts (inset, offsets, blur, spread, colour), so a ring or an accent-line hover is told from a drop shadow. |
@@ -303,6 +304,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/motion-effects.test.mjs` | FR-48-78, FR-38A-44: loops as effects (marquee px/s, per-width track, float phase, pulse, gaps), the effect writer's placement and field checks, run-time loop match, `<marquee>` and SVG animation, intensity presets (MUST FAIL each). |
 | `tests/motion-planted-draft.test.mjs` | FR-48-78 done-when: a planted draft using the motion writer's capabilities (a `<marquee>`, an SVG `<animate>`) raises no seen-but-unsupported row through the real usage read and coverage map, raises each again with the writer's entry removed, and its marquee and pulse are written as validated effect layers. |
 | `tests/motion-order.test.mjs` | FR-48-78, from the step 4.0 council: a loop is an effect only when endless and started at load or in view (a draft-started one when the render confirms it); a counted repeat is reported; a reversed one-shot is written as it plays; a move after a flat turn or resize is rewritten exactly, one after a tilt reported; the clip-path inset channel (MUST FAIL each). |
+| `tests/motion-sample.test.mjs` | lib/motion-sample.mjs: easing curves, transform interpolation, a Web animation eased over its run and a CSS animation per stretch, and in a real browser the probe's seeks agree with the code while a misread curve, travel or animation kind does not (MUST FAIL). |
 | `tests/css-matrix.test.mjs` | lib/css-matrix.mjs against Chromium's computed transform for every kind of function in mixed orders; an unreadable list is null (MUST FAIL). |
 | `tests/fill-site-info.test.mjs` | A link setting bound to Site Info keeps the draft address as its fallback and yields one `site-info` handover entry (MUST FAIL without it); an unbound node, a bound node with no draft link and a non-Site-Info binding yield none. |
 | `tests/fill-site-rows.test.mjs` | A `sgs/social-icons` skeleton node with `siteInfoRow` expands to the Site Info-bound icons the committed Eye Care footer and drawer trees hold; the Fill-only keys are stripped; an unknown slug is a skeleton problem. |
@@ -860,7 +862,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/motion-check.mjs`
 
-- `entranceCheck(layer, record, sampled)` → `{ devices, differences }`: per width the duration and delay (overrides) and the from-pose (translate, scale, rotate, opacity) and easing (reported only); `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `WIDTH_TIER`: 375 mobile, 768 tablet, 1440 desktop.
+- `entranceCheck(layer, record, sampled)` → `{ devices, differences }`: per width the duration and delay (overrides) and the from-pose (translate, scale, rotate, opacity) and easing (reported only), and the pose sampled at 0, half and all of the run (`lib/motion-sample.mjs`, reported only); `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `WIDTH_TIER`: 375 mobile, 768 tablet, 1440 desktop.
 
 ### `lib/motion-channels.mjs`
 - `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `round`; `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf` (the from and to channels of a record's properties).
@@ -875,6 +877,10 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `loopEffect(record, measuredByWidth, { mdb })`, `chooseEffect(loop, narrow, { mdb })` → `{ effect, values, devices, trigger, notes }` or `{ unmapped }`; `LOOP_BUILDERS`: marquee, ambient-float, svg-loop, ken-burns.
 - `loopCheck(record, measuredByWidth)` → one line per width where the measured loop differs from the code's duration or keyframes, `[]` when every width agrees.
 - `resolvedLoop(record, measured)` (values from the code, else the measured animation; random values refused), `measuredLoopOf(record, measured)`, `loopFamilies(loop)`, `runtimeLoopsFor(candidates, measured)`; `smilLoop(animate, box)`, `marqueeTag(attrs)`.
+
+### `lib/motion-sample.mjs`
+- `sampledPoseDifferences(width, record, samples)` → one line per sampled fraction and channel (opacity, the composed transform) off the code's pose, a line when an animated entrance had nothing to sample, `[]` for an older probe; `SAMPLE_FRACTIONS`.
+- `codePoseAt(record, f)` → `{ opacity, transform, animates }` the code states at fraction f (a Web Animation eased over the run, a CSS animation per keyframe stretch, a reverse run backwards); `easingAt(easing, x)` (linear, the keywords, `cubic-bezier()`; null otherwise); `lerpTransform(from, to, p)` (function by function, null where CSS interpolates matrices); `measuredTransform(pose, animates)`.
 
 ### `lib/css-matrix.mjs`
 - `transformMatrix(value)` → the 16 numbers (column-major) of a transform list, or null; `sameMatrix(a, b, { tol, tolPx })` → whether two matrices draw the same.

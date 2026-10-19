@@ -5,6 +5,7 @@ import { delayOf } from './motion-layers.mjs';
 import { poseOf, keyframeStops } from './motion-channels.mjs';
 import { STEP_MS } from './fill-entrance.mjs';
 import { transformMatrix, sameMatrix } from './css-matrix.mjs';
+import { sampledPoseDifferences } from './motion-sample.mjs';
 
 export const WIDTH_TIER = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 
@@ -88,7 +89,8 @@ function transformDifference( record, measured ) {
 // measured exactly (exactFor) or the code computes it. A render that plays an
 // entrance on scroll where the code plays it at load is a difference; a scroll entrance already in view at load plays at
 // load in the draft too. The from-pose (translate, scale, rotate, opacity) and the easing are compared with the code's
-// own and reported, never written as device values. Returns { devices, differences }: the tablet and mobile overrides
+// own and reported, never written as device values, and so is the pose sampled at 0, half and all of the run
+// (lib/motion-sample.mjs::sampledPoseDifferences). Returns { devices, differences }: the tablet and mobile overrides
 // the render forces, and one line per width and field that differs by more than the tolerance.
 export function entranceCheck( layer, record, sampledByWidth ) {
 	const devices = {};
@@ -118,6 +120,7 @@ export function entranceCheck( layer, record, sampledByWidth ) {
 			differences.push( `${ width }: the render plays it on ${ measured.trigger }, the code on ${ layer.trigger }` );
 		}
 		differences.push( ...poseDifferences( width, record, measured ) );
+		differences.push( ...sampledPoseDifferences( width, record, measured.samples ) );
 	}
 	return { devices, differences };
 }

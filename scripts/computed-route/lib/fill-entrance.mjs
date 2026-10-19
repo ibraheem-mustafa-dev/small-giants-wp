@@ -12,7 +12,7 @@ import { loadChromium, routeDraft } from './fill-read.mjs';
 const RESOLVE = resolveFinder.toString();
 
 // In-page. Starts polling every frame for every job (jobs: [{ id, finder }]) and stores a promise on window.__fillProbe
-// that resolves with { id: { seenAt, visibleAt, first, firstChange, start, secondAt, end, loop } } for each element found. With a
+// that resolves with { id: { seenAt, visibleAt, first, firstChange, start, secondAt, end, loop, samples } } for each element found. With a
 // sweep, from sweep.afterMs on the page scrolls down by sweep.step of the viewport height every sweep.everyMs until it
 // reaches the bottom; the probe ends windowMs after it starts and sweep.settleMs after the last scroll, whichever is
 // later. `visibleAt` is the first frame the element's box meets the viewport. A pose is the element's own opacity,
@@ -58,9 +58,14 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 					const el = resolve( j.finder );
 					if ( el ) {
 						const p = poseOf( el );
-						seen.set( j.id, { el, seenAt: now, visibleAt: inView( el ) ? now : null, first: p, lastKey: p.key, firstChange: null, easing: null, start: null, secondAt: null, end: null } );
+						seen.set( j.id, { el, seenAt: now, visibleAt: inView( el ) ? now : null, first: p, lastKey: p.key, firstChange: null, easing: null, start: null, secondAt: null, end: null, anims: new Set() } );
 					}
 					continue;
+				}
+				for ( const a of s.el.getAnimations ? s.el.getAnimations() : [] ) {
+					if ( Number.isFinite( a.effect?.getComputedTiming?.().activeDuration ) ) {
+						s.anims.add( a );
+					}
 				}
 				if ( null === s.visibleAt && inView( s.el ) ) {
 					s.visibleAt = now;
@@ -103,10 +108,26 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 				marquee: 'MARQUEE' === el.tagName ? Object.fromEntries( [ 'direction', 'scrollamount', 'scrolldelay', 'truespeed', 'behavior' ].map( ( k ) => [ k, el.getAttribute( k ) ] ) ) : null,
 				smil: [ ...el.querySelectorAll( 'animate, animateTransform' ) ].map( ( a ) => Object.fromEntries( [ [ 'tag', a.localName ], ...ATTRS.map( ( k ) => [ k, a.getAttribute( k ) ] ) ] ) ),
 			} );
+			const strip = ( p ) => p && { opacity: p.opacity, transform: p.transform, translate: p.translate, scale: p.scale, rotate: p.rotate, filter: p.filter, clipPath: p.clipPath };
+			// Sample mode (FR-48-28, FR-48-47): every finite animation the element ran, paused and sought to 0, half and
+			// all of its own duration (a hair before the end, which is past the active phase), with the pose read at each.
+			const samplesOf = ( s ) => {
+				const list = [ ...s.anims ].filter( ( a ) => a.effect.getComputedTiming().duration > 0 );
+				return list.length ? [ 0, 0.5, 1 ].map( ( f ) => {
+					for ( const a of list ) {
+						const t = a.effect.getComputedTiming();
+						a.pause();
+						a.currentTime = t.delay + Math.min( f * t.duration, t.duration - 0.01 );
+					}
+					return { f, pose: strip( poseOf( s.el ) ) };
+				} ) : [];
+			};
 			const out = {};
 			for ( const [ id, s ] of seen ) {
-				const strip = ( p ) => p && { opacity: p.opacity, transform: p.transform, translate: p.translate, scale: p.scale, rotate: p.rotate, filter: p.filter, clipPath: p.clipPath };
 				out[ id ] = { seenAt: s.seenAt, visibleAt: s.visibleAt, first: strip( s.first ), firstChange: strip( s.firstChange ), easing: s.easing, start: s.start, secondAt: s.secondAt, end: s.end, loop: null !== s.end && now - s.end < 120, loops: loopsOf( s.el ), ...mediaOf( s.el ) };
+			}
+			for ( const [ id, s ] of seen ) {
+				out[ id ].samples = samplesOf( s );
 			}
 			done( out );
 		};
@@ -219,7 +240,8 @@ const atRest = ( p ) => p.opacity >= 0.95 && 0 === translationOf( p ).x && 0 ===
 // the first frame that moved is used. An element that jumps from rest to its from-pose and holds there (a backwards fill
 // through a delay) starts moving a frame before its second change, and the jump is its trigger, so the hold is its
 // delay. `exactDelay` is false for a scroll entrance with no hold. Returns { trigger, delayMs, durationMs, delayRawMs, durationRawMs, distancePx, x,
-// y, scale, opacityFrom, from: { opacity, transform, translate, filter, clipPath }, fromFirstChange }.
+// y, scale, opacityFrom, from: { opacity, transform, translate, filter, clipPath }, fromFirstChange, samples }; `samples`
+// is the probe's [{ f, pose }] at 0, half and all of each finite animation's run (null from an older probe).
 export function shapeEntrance( raw ) {
 	if ( ! raw || null === raw.start || raw.loop ) {
 		return null;
@@ -251,6 +273,7 @@ export function shapeEntrance( raw ) {
 		opacityFrom: from.opacity,
 		from: { opacity: String( from.opacity ), transform: from.transform, translate: from.translate, filter: from.filter ?? 'none', clipPath: from.clipPath ?? 'none' },
 		fromFirstChange: !! useChange,
+		samples: raw.samples ?? null,
 		held,
 		exactDelay: held || 'load' === trigger,
 	};
