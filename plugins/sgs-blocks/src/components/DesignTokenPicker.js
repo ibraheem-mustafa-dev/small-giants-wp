@@ -2,71 +2,41 @@
  * Colour picker that reads the active theme.json palette.
  *
  * Uses useSettings() so it always reflects the current style variation.
- * Blocks never need to know the actual hex values — they get the
- * palette from the theme automatically.
+ * Blocks never need to know the actual hex values: they get the palette from
+ * the theme automatically.
  *
- * Two storage modes:
- *  - default (hex): ColorPalette's picked CSS value is stored verbatim.
- *  - `linked` (D288): when a global-palette SWATCH is picked, the theme token
- *    SLUG is stored (e.g. `primary`) so a palette/brand change recolours the
- *    element automatically; a CUSTOM colour is stored as its hex. This matches
- *    Spectra's "global default" behaviour and keeps the button consistent with
- *    the cloning converter (which also writes slugs). `render.php`'s
- *    sgs_colour_value() resolves both a slug and a raw hex.
+ * ONE SHAPE. Every colour control renders `SgsColourStateControl`: a thin
+ * swatch row (one `ColorIndicator` and the label) that opens a popover holding
+ * the palette. Contract: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`
+ * PART O §1 field 9. An inline palette in the sidebar, a panel or a fine-tune
+ * panel is never rendered.
  *
- * Alpha (Spec 35A Part I action item): `enableAlpha` (default true — "almost
- * always" per the standard) lets the operator pick a translucent colour.
- * ColorPalette's custom picker returns hex8 (#RRGGBBAA) or a functional
- * `rgba()` string depending on the copy format in use — either way,
- * `sgs_colour_value()` in `includes/helpers-tokens.php` already normalises
- * functional notation to hex8 before it reaches a `style`/scoped-CSS
- * declaration (WordPress's `safecss_filter_attr()` silently strips raw
- * `rgba()`/`hsla()` values — D302 / `safecss-strips-inline-functional-colours`
- * — hex survives), so no extra JS-side conversion is needed here.
+ *  - `states={[{ key, label, value, onChange, linked? }, ...]}` lists the
+ *    pickable states. One state renders the palette directly in the popover;
+ *    two or more add an in-popover tab toggle and a layered swatch cluster.
+ *  - Without `states`, the picker builds one state from `value`, `onChange`
+ *    and `linked`, so a single-value caller gets the same row with no tabs.
  *
- * ── D609 (2026-08-13) — THE STATE + SHAPE RULE ─────────────────────────────
- * Contract: `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` PART O §1 field 9.
- * Bean, from a manual inspector review: "any element specific colour that
- * ends up staying in its element … should still use the same thin
- * rectangular control that shows the number of states pickable per setting
- * that has its colour picker pop out" — and states are reached by "a tab
- * toggle in pop up colour picker between states", never a sibling control,
- * never a second panel, and NEVER behind an optional "+" disclosure.
+ * Two storage modes, per state:
+ *  - default (hex): the palette's picked CSS value is stored verbatim.
+ *  - `linked`: when a global-palette SWATCH is picked, the theme token SLUG is
+ *    stored (e.g. `primary`) so a palette or brand change recolours the
+ *    element automatically; a CUSTOM colour is stored as its hex. The cloning
+ *    converter also writes slugs, and `render.php`'s sgs_colour_value()
+ *    resolves both a slug and a raw hex.
  *
- * This file now serves TWO shapes from ONE default export, chosen by whether
- * the caller passes `states`:
- *
- *  - No `states` prop → THE LEGACY SHAPE, byte-identical rendering to every
- *    existing call site — a labelled `ColorPalette` inline in the sidebar.
- *    Only change: the long-standing missing-`id` defect (field 2) is fixed
- *    here, for every caller, via `useInstanceId` + a verified-honoured
- *    `aria-label` on `ColorPalette` (see the comment on that prop below for
- *    why `id` alone does not fix this).
- *  - `states={[{ key, label, value, onChange, linked? }, …]}` → THE NEW
- *    D609 ROW SHAPE (`SgsColourStateControl` below): a thin swatch row that
- *    opens a popover; a single state renders the palette directly, 2+ states
- *    add an in-popover tab toggle. This is the shape every colour control
- *    should eventually carry (9a).
- *
- *    ⚠ CORRECTED 2026-08-19 — the two paragraphs above used to quote fixed
- *    counts ("43 blocks / 214 instances" for the legacy shape; "today only
- *    the pilot block sgs/icon opts in… the other 42 call sites") that were
- *    true only at D609 (2026-08-13), before `SgsColourPanel` (added
- *    2026-08-19, contract §1 field 1) became the 61-block adoption route.
- *    Both shapes are now live across many more callers and the split is a
- *    moving target — Spec 35 PART O §1 field 9 records the current rollout
- *    as "only 17% of colour rows carry 2+ states… the other 83% still call
- *    the component with no `states` prop", itself flagged there as due for
- *    re-measurement. Do not requote a fixed block/instance count here —
- *    re-derive from `golden-controls.json` or the spec field above, which
- *    are the sources this number is meant to track.
+ * Alpha: `enableAlpha` (default true) lets the operator pick a translucent
+ * colour. The palette's custom picker returns hex8 (#RRGGBBAA) or a
+ * functional `rgba()` string; `sgs_colour_value()` in
+ * `includes/helpers-tokens.php` normalises functional notation to hex8 before
+ * it reaches a style declaration (WordPress's `safecss_filter_attr()`
+ * silently strips raw `rgba()`/`hsla()`), so no JS-side conversion is needed.
  */
 import { useSettings } from '@wordpress/block-editor';
 import { useInstanceId } from '@wordpress/compose';
 import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
-	BaseControl,
 	Button,
 	ColorIndicator,
 	Dropdown,
@@ -106,10 +76,9 @@ export function resolveColourToken( value, palette ) {
 }
 
 /**
- * Build the onChange handler for one colour slot, sharing the exact
- * slug-vs-hex storage logic the single-value control has always used
- * (D288 `linked` mode) — extracted so both the legacy branch and every
- * state tab in the new row shape apply it identically.
+ * Build the onChange handler for one colour slot, sharing the
+ * slug-vs-hex storage logic of `linked` mode, applied identically by every
+ * state tab.
  *
  * @param {Object}   args
  * @param {boolean}  args.linked   Whether picking a palette swatch stores its slug.
@@ -247,8 +216,7 @@ function SgsColourStateControl( {
 	// FUNCTION (not the value) marks a state gradient-capable — mirrors
 	// `GradientOverlayControl.js`'s existing Solid/Gradient UX exactly, just
 	// per-state so a row with Normal + Hover toggles each independently. When
-	// absent, a state renders exactly as before this patch — zero behaviour
-	// change for the 43 existing non-gradient call sites.
+	// absent, the state shows the solid palette only.
 	const [ gradientModeOverride, setGradientModeOverride ] = useState( {} );
 	const isGradientCapable = ( s ) => typeof s.onGradientChange === 'function';
 	const isGradientMode = ( s ) =>
@@ -522,11 +490,10 @@ export default function DesignTokenPicker( {
 	statesProvidedByParent,
 	// ⛔ CAPTURED FOR THE WARNING BELOW, NEVER FORWARDED. This is deliberately
 	// NOT a `{...rest}` passthrough — see the borderStyle comment above for why
-	// this component forwards an explicit list. It serves TWO different render
-	// shapes, so blanket-spreading a caller's props would land them on whichever
-	// control happens to be rendering, or onto a DOM node as an invalid
-	// attribute. Collecting the leftovers lets an unknown prop FAIL LOUDLY
-	// instead of vanishing, which is the actual defect: both incidents were
+	// this component forwards an explicit list, so blanket-spreading a
+	// caller's props would land them on the control as unknown props.
+	// Collecting the leftovers lets an unknown prop FAIL LOUDLY instead of
+	// vanishing, which is the actual defect: both incidents were
 	// silent, and both were found by a human noticing missing UI rather than by
 	// anything in the toolchain.
 	...unrecognisedProps
@@ -547,69 +514,39 @@ export default function DesignTokenPicker( {
 	}
 
 	const [ colours ] = useSettings( 'color.palette' );
-	// Hook order must stay unconditional (both branches below return from the
-	// same component), so this is computed once regardless of which shape
-	// renders — fixes contract §1 field 2 (missing id) for every one of the
-	// 43 existing call sites, not only the new row shape.
 	const instanceId = useInstanceId(
 		DesignTokenPicker,
 		'sgs-design-token-picker'
 	);
 	const id = `sgs-design-token-picker-${ instanceId }`;
 
-	if ( states && states.length > 0 ) {
-		return (
-			<SgsColourStateControl
-				id={ id }
-				label={ label }
-				states={ states }
-				clearable={ clearable }
-				enableAlpha={ enableAlpha }
-				gradientEnableAlpha={ gradientEnableAlpha }
-				colours={ colours }
-				borderStyle={ borderStyle }
-				onBorderStyleChange={ onBorderStyleChange }
-				help={ help }
-			/>
-		);
-	}
-
-	// In linked mode the stored value may be a token slug — resolve it to a CSS
-	// colour so ColorPalette highlights the matching swatch.
-	const displayValue = linked ? resolveColourToken( value, colours ) : value;
-
-	const handleChange = makeChangeHandler( { linked, colours, onChange } );
-
-	// `${id}__help` matches the id BaseControl's own `help` paragraph gets via
-	// useBaseControlProps() (the same convention every native self-wiring
-	// control relies on). ColorPalette renders MULTIPLE swatch buttons, not
-	// one focusable control, so aria-describedby can't be pointed at a single
-	// child the way the trigger-Button controls in this file do — it lands
-	// on a `role="group"` wrapper instead, the same ARIA-group pattern
-	// CircularOptionPicker/IconPicker already use elsewhere in this codebase
-	// for exactly this multi-widget-swatch shape.
-	const helpId = help ? `${ id }__help` : undefined;
+	// A caller with a single value passes no `states`: build the one state the
+	// row needs from `value`, `onChange` and `linked`.
+	const rowStates =
+		states && states.length > 0
+			? states
+			: [
+					{
+						key: 'normal',
+						label: label || __( 'Normal', 'sgs-blocks' ),
+						value,
+						onChange,
+						linked,
+					},
+			  ];
 
 	return (
-		<BaseControl
+		<SgsColourStateControl
 			id={ id }
 			label={ label }
+			states={ rowStates }
+			clearable={ clearable }
+			enableAlpha={ enableAlpha }
+			gradientEnableAlpha={ gradientEnableAlpha }
+			colours={ colours }
+			borderStyle={ borderStyle }
+			onBorderStyleChange={ onBorderStyleChange }
 			help={ help }
-			__nextHasNoMarginBottom
-		>
-			<div role="group" aria-describedby={ helpId }>
-				<ColorPalette
-					colors={ colours }
-					value={ displayValue }
-					onChange={ handleChange }
-					clearable={ clearable }
-					disableCustomColors={ false }
-					enableAlpha={ enableAlpha }
-					// See the comment on the identical prop in SgsColourStateControl
-					// above — verified honoured at color-palette/index.tsx:190.
-					aria-label={ label }
-				/>
-			</div>
-		</BaseControl>
+		/>
 	);
 }

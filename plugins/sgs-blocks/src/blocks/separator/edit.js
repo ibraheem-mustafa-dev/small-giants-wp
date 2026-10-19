@@ -23,7 +23,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { LogicalAlignControl, IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
+import { LogicalAlignControl, IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle,  tierBoxLonghands, resolveTier } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -218,21 +218,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			   "Colour" DesignTokenPicker in the "Line" ToolsPanel and the
 			   "Icon colour"/"Text colour" DesignTokenPicker in the "Content"
 			   panel below (both single-state — neither has a hover pair).
-			   The line gradient stays OUT of this panel: DesignTokenPicker's
-			   `states` shape is one flat colour per state and cannot represent
-			   a gradient, so `lineGradient` lives in its own "Gradient line"
-			   ToolsPanelItem below, on the canonical SgsGradientPicker.
-			   Updated 2026-08-16 (D643) — the previous note described the
-			   since-deleted gradientColourStart/End scalars and called the
-			   migration "out of scope"; it is this session's work and is done.
-			   When the shared Solid/Gradient opt-in lands on DesignTokenPicker
-			   (D636 rollout), the `colour` row absorbs it and the standalone
-			   item folds in. */ }
+			   The line colour row is gradient-capable: a Solid/Gradient toggle in
+			   the popover writes `colour` (solid) or `lineGradient` (one complete
+			   CSS gradient string; non-empty wins, as render.php reads it). */ }
 			<SgsColourPanel
 				rows={ [
 					{
 						key: 'colour',
 						label: __( 'Line colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -240,6 +234,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: colour,
 								onChange: ( val ) => setAttributes( { colour: val ?? '' } ),
 								linked: true,
+								gradientValue: lineGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { lineGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -487,30 +484,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							step={ 1 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Gradient line', 'sgs-blocks' ) }
-						hasValue={ () => !! lineGradient }
-						onDeselect={ () => setAttributes( { lineGradient: '' } ) }
-					>
-						{ /* D643 — the 4-scalar toggle + 2 colour pickers + angle
-						   slider are replaced by the canonical SgsGradientPicker,
-						   which stores ONE complete CSS gradient string (D636
-						   storage contract; Spec 35 control-type contract field 8
-						   makes SgsGradientPicker the canonical gradient control
-						   and bans the native GradientPicker). A non-empty value
-						   IS the "on" state — the old `gradientEnabled` boolean
-						   was a second source of truth that could disagree with
-						   the colours it gated. */ }
-						<SgsGradientPicker
-							value={ lineGradient }
-							onChange={ ( val ) =>
-								setAttributes( { lineGradient: val ?? '' } )
-							}
-							enableAlpha
-							__experimentalIsRenderedInSidebar
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

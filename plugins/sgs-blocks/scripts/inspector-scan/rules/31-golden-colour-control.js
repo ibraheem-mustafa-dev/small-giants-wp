@@ -555,6 +555,7 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 		line,
 		statesCountOverride = null,
 		hasGradientOverride = null,
+		skipStateCount = false,
 	} ) {
 		const statesCount =
 			statesCountOverride !== null
@@ -568,7 +569,7 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 		const required = 2;
 		const mountedByText = mountedByList.join( ', ' );
 
-		if ( statesCount < required ) {
+		if ( ! skipStateCount && statesCount < required ) {
 			findings.push( {
 				...makeFinding( {
 					rule: ruleId,
@@ -670,7 +671,9 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 				// are separate code paths over the same question, which is exactly the
 				// duplication describeRow() was introduced to end. Until they share a
 				// walker, a guard added to one must be added to both.
-				if ( findJsxAttr( node, 'statesProvidedByParent' ) ) return;
+				// The marker waives the STATE-COUNT check only: gradient and mechanism
+				// checks still run on the row.
+				const skipStateCount = !! findJsxAttr( node, 'statesProvidedByParent' );
 				const statesExpr = jsxAttrExpr( node, 'states' );
 				const labelExpr = jsxAttrExpr( node, 'label' );
 				let labelText = null;
@@ -690,6 +693,7 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 						statesArray: statesExpr,
 						gradientCapable: name === 'GradientCapableColourControl',
 						line,
+						skipStateCount,
 					} );
 				} else if ( statesExpr ) {
 					// A `states=` attribute IS present but isn't a literal array — try
@@ -713,12 +717,12 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 							line: descriptor.line || line,
 							statesCountOverride: descriptor.statesCount,
 							hasGradientOverride: descriptor.hasGradient,
+							skipStateCount,
 						} );
 					}
 				} else {
-					// No `states` attr at all — the legacy single-value API
-					// (value=/onChange=), structurally always 1 state. Unambiguous,
-					// unchanged from before this fix.
+					// No `states` attr at all — a single value (value=/onChange=),
+					// structurally always 1 state.
 					const hasDirectGradient =
 						!! findJsxAttr( node, 'gradientValue' ) || !! findJsxAttr( node, 'onGradientChange' );
 					emitSharedRow( {
@@ -726,6 +730,7 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 						statesArray: null,
 						gradientCapable: hasDirectGradient || name === 'GradientCapableColourControl',
 						line,
+						skipStateCount,
 					} );
 				}
 			}
@@ -852,7 +857,7 @@ module.exports = {
 		// survey use, so they cannot drift on what a row is.
 		function checkRow( { rowKey, statesArray, gradientCapable, line,
 			statesCountOverride = null, hasGradientOverride = null,
-			attrNameOverride = null, gradientAttrNameOverride = null } ) {
+			attrNameOverride = null, gradientAttrNameOverride = null, skipStateCount = false } ) {
 			const statesCount =
 				statesCountOverride !== null
 					? statesCountOverride
@@ -931,7 +936,7 @@ module.exports = {
 			// three-state-required-below-minimum` for the proof it can still
 			// fail, and `three-state-required-by-element` for the conformant
 			// boundary it must NOT flag.
-			if ( statesCount < required && required > 2 && ! statesExempt && ! soleStateKey ) {
+			if ( ! skipStateCount && statesCount < required && required > 2 && ! statesExempt && ! soleStateKey ) {
 				findings.push( {
 					...makeFinding( {
 						rule: ruleId,
@@ -1315,13 +1320,14 @@ module.exports = {
 					// A literal JSX marker, statically resolvable, never a runtime
 					// predicate (D738). It asserts WHERE the states live, not that the
 					// requirement is waived.
-					if ( findJsxAttr( node, 'statesProvidedByParent' ) ) {
-						return;
-					}
+					// The marker waives the STATE-COUNT check only: gradient and
+					// mechanism checks still run on the row.
+					const skipStateCount = !! findJsxAttr( node, 'statesProvidedByParent' );
 					if ( statesExpr && statesExpr.type === 'ArrayExpression' ) {
 						checkRow( {
 							rowKey,
 							statesArray: statesExpr,
+							skipStateCount,
 							// NOT hardcoded false: mounting GradientCapableColourControl
 							// directly (bypassing SgsColourPanel's row-level flag) IS the
 							// text-gradient mechanism declaration for THIS row — see the
@@ -1362,6 +1368,7 @@ module.exports = {
 								hasGradientOverride: descriptor.hasGradient,
 								attrNameOverride: descriptor.attrName,
 								gradientAttrNameOverride: descriptor.gradientAttrName,
+								skipStateCount,
 							} );
 						}
 					} else {
@@ -1377,6 +1384,7 @@ module.exports = {
 							statesArray: null,
 							gradientCapable: hasDirectGradient || name === 'GradientCapableColourControl',
 							line,
+							skipStateCount,
 						} );
 					}
 				}

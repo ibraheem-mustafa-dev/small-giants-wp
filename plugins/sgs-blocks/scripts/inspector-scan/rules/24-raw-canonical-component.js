@@ -1,141 +1,71 @@
 'use strict';
 
 // GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 COLOUR /
-// §2 LINK (read live 2026-08-10). §1.1/§1.3: canonical = `DesignTokenPicker`,
-// banned lookalikes = `ColorPalette`/`ColorGradientControl`/`GradientPicker`/
-// `PanelColorGradientSettings`. §2.1/§2.3: canonical = `SgsLinkControl`,
-// banned lookalikes include `<TextControl type="url">` and `<URLInput>`
-// (`button/edit.js:311`, cited by the contract itself as a MISSED violator —
-// §2.6 "Conformance — 10 conform. Violators: sgs/button, 67 via the
-// extension, 2 baselined").
+// §2 LINK. Canonical colour control = `DesignTokenPicker` (the thin swatch row whose picker
+// pops out); canonical link control = `LinkPopoverControl`. Everything underneath them is
+// banned in any other file: a raw palette, picker or gradient control renders inline in the
+// sidebar, which is the shape Bean ruled out for every colour control.
 //
-// WHY THIS RULE EXISTS, and why it is not a duplicate of 04/08. Both existing
-// rules were read in full before writing this one (04-colour-alpha.js,
-// 08-raw-url-link.js). Neither enforces the contract's COMPONENT ban:
-//   - 04-colour-alpha.js:92 — `if ( hasJsxAttr( node, 'enableAlpha' ) ) return;`
-//     flags a raw colour picker ONLY when `enableAlpha` is missing. A raw
-//     `<ColorPalette enableAlpha>` in a block's edit.js passes it clean, even
-//     though the contract bans the COMPONENT outright, not just an
-//     under-configured one.
-//   - 08-raw-url-link.js:99-101 — matches `TextControl` with
-//     `type="url"` ONLY. `<URLInput>` and bare core `<LinkControl>` are
-//     invisible to it by construction (it never looks at the JSX tag name for
-//     anything but `TextControl`).
-// This rule asks a DIFFERENT question of the SAME two contracts: not "does
-// this raw picker have alpha" / "is this TextControl typed url", but "why is
-// a component the contract explicitly bans here at all". It deliberately
-// OVERLAPS 04 and 08 rather than widening them in place — both are live
-// `gate`s at 0 net backlog (rules.json _meta.note), and widening a passing
-// gate's condition in place would fail the build on its first finding. This
-// rule starts `mode:"advisory"` per rules.json _meta.note ("every GENUINELY
-// NEW rule starts advisory"); promotion is a later, separate, one-line edit.
-// 04 and 08 are NOT touched by this change.
+// WHAT IT READS. Every `.js`/`.jsx` file under `src/` (blocks, components at any depth,
+// shared, utils, extensions), skipping `node_modules`, `build`, `__tests__`, `__mocks__`
+// and test files. The roster is not consulted: a shared component reached by thirty blocks
+// is as much a violation as a block's own edit.js.
 //
-// ── EXPECTED POPULATION, stated BEFORE trusting a live run (rules.json
-// _meta.zeroIsAClaim) ──────────────────────────────────────────────────────
-// Method: independent of this rule's own AST-walking code — a plain-text
-// `grep` over `src/blocks/*/edit.js` (not this file, not Babel, not the
-// scanner's cache), run live 2026-08-10:
-//   grep -rn "<ColorPalette"              src/blocks/*/edit.js  -> 0 hits
-//   grep -rln "<ColorGradientControl"     src/blocks/*/edit.js  -> 0 hits
-//   grep -rln "<GradientPicker"           src/blocks/*/edit.js  -> 0 hits
-//   grep -rln "<PanelColorGradientSettings" src/blocks/*/edit.js -> 0 hits
-//   grep -rln "<URLInput"                 src/blocks/*/edit.js  -> 1 hit:
-//       src/blocks/button/edit.js (line 312)
-//   grep -rn  "<LinkControl" src/blocks/*/edit.js | grep -v SgsLinkControl
-//                                                              -> 0 hits
-// EXPECTED POPULATION: 1 raw finding tree-wide (sgs/button's `<URLInput>`).
-// This is a SMALL number and is treated as a red flag rather than a free
-// pass, per zeroIsAClaim point (2): it is not trusted on its own smallness.
-// It is corroborated by a SECOND, independent source that was never derived
-// from this rule or its grep — the contract document itself, written before
-// this rule existed, names the identical single violator at the identical
-// file: "§2.6 Conformance — 10 conform. Violators: sgs/button, 67 via the
-// extension, 2 baselined." The "67 via the extension" is
-// `extensions/hover-effects.js:388`'s raw URL field, injected into every
-// non-opted-out block at runtime — explicitly OUT OF SCOPE here (see BLIND
-// SPOTS). The "2 baselined" are rule 08's own two `TextControl type="url"`
-// entries (google-reviews/trustpilot-reviews), which this rule does not
-// duplicate — it matches JSX COMPONENT NAMES only, never a `type="url"`
-// attribute value, so it cannot re-flag what rule 08 already owns.
-// Zero colour hits corroborates rule 04's own independently-stated
-// population for the same four names ("0 raw <ColorPalette|...> tags found
-// anywhere", 04-colour-alpha.js header) — this rule's colour-name matching is
-// therefore expected to find nothing live, and DOES: a genuinely small number
-// with two independent sources agreeing, not an unverified assumption.
+// WHAT IT FLAGS (by import, so an alias cannot hide it, plus JSX):
+//   - an import of a banned core colour component from `@wordpress/components` or
+//     `@wordpress/block-editor`, under any local name (`ColorPicker as P` is flagged);
+//   - an import from an SGS fork module (`components/colour-picker/**`,
+//     `components/gradient-picker/**`), except a style asset (`.css`/`.scss`) or the fork's
+//     own `utils` helpers, which are not controls;
+//   - an import, from any module, of a name the SGS forks export through the components
+//     index (`SgsGradientPicker`, `CustomColorPickerDropdown`, and every other name
+//     `components/index.js` re-exports from a fork), so the index is no back door;
+//   - a JSX tag whose name is a banned colour component (covers `<wp.components.ColorPicker>`
+//     and a component pulled off a namespace import) when the same file did not already
+//     get an import finding for it;
+//   - `<input type="color">`;
+//   - a `URLInput` / `LinkControl` tag in a block's `edit.js` (the link contract).
 //
-// ── BLIND SPOTS (declared, not fixed here) ───────────────────────────────
-//   - `src/blocks/extensions/` is OUT OF SCOPE, by design, for THIS rule.
-//     `core/roster.js:69-82` (`scanDisk`) only admits a directory containing
-//     a `block.json` into the roster, and `extensions/` holds none — so
-//     every roster-keyed rule (this one included, `scope:'per-block'`) is
-//     structurally blind to it, the same way rule 04/08/21 already are
-//     (run.js:32-42 documents this as a NAMED separate surface, reachable
-//     only via `ctx.extensionsDir`, which this rule does not read). The
-//     contract's own §2.3/§2.6 names the cost precisely: 67 blocks receive a
-//     raw URL field from `extensions/hover-effects.js:388` at runtime, and
-//     none of them show up here. Scanning `extensionsDir` is unbuilt
-//     plumbing and a separate job — not attempted in this rule.
-//   - A colour/link control wrapping one of the banned components INDIRECTLY
-//     (via a block's own local `components/` subfolder, or a SHARED
-//     `src/components/*.js` file other than the two canonical wrappers
-//     themselves) is invisible — this rule only reads each block's own
-//     `edit.js` text, exactly like rules 04/08/18 (18's header documents the
-//     identical class of gap for `<img>`/MediaPicker.js). The contract names
-//     a live instance of exactly this: `GradientOverlayControl.js:191`
-//     renders a raw `GradientPicker` reaching `container`/`hero`/
-//     `trust-bar` indirectly (§1.3/§1.7) — that file lives in
-//     `src/components/`, not `src/blocks/*/edit.js`, so it is out of this
-//     rule's scope by the same per-block-edit.js boundary rules 04/08 use,
-//     not by an oversight.
-//   - `src/components/DesignTokenPicker.js` and `src/components/
-//     SgsLinkControl.js` are the two canonical wrappers and legitimately
-//     render the raw components internally (DesignTokenPicker.js:87 renders
-//     `<ColorPalette>`; SgsLinkControl.js:29 imports core `LinkControl`).
-//     Neither lives under `src/blocks/`, so per-block scoping already
-//     excludes both WITHOUT a name-based exemption — verified live
-//     2026-08-10 (`ls src/components/ | grep -iE
-//     'designtoken|linkcontrol'` -> both files listed under
-//     `src/components/`, confirming they sit outside `ctx.blocksDir`).
-//   - A dynamically-computed JSX tag name (`<Comp />` where `Comp` is a
-//     variable, not a literal tag) is invisible — `jsxName()` below only
-//     resolves a literal `JSXIdentifier`/`JSXMemberExpression`, same
-//     limitation as rules 04/08's identical helper.
+// ALLOWLIST (relative to `src/components/`): `DesignTokenPicker.js`,
+// `GradientCapableColourControl.js`, `colour-picker/**`, `gradient-picker/**` and
+// `index.js`. They are the helpers' own internals; `index.js` only re-exports.
+//
+// BLIND SPOTS, declared: a component selected at run time from a registry, a `require()`
+// call, and a dynamic JSX tag held in a variable are not seen; an unparseable file is
+// reported as a finding rather than skipped.
 
+const fs = require( 'fs' );
+const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
-// Exact JSX tag names only — a Babel `JSXIdentifier.name` is the WHOLE
-// identifier token (JS identifiers cannot contain a literal `<` or space), so
-// matching it against a `Set` is an EXACT match, never a substring match. A
-// component named e.g. `MyColorPaletteButton` or `CustomLinkControlBox`
-// tokenises to that single, different, identifier and will never be a member
-// of either Set below — proven by the `substring-name-not-banned` fixture
-// (mustNotFlag). Anchoring on the exact tag name, not a text/`includes()`
-// scan, is deliberate: a `.includes('ColorPalette')` style check would false-
-// positive on exactly that fixture, and a substring match is a real recorded
-// failure mode in this codebase (see rule 23's header, D539's
-// `columns`/`listColumns` miss).
+const REAL_COMPONENTS_INDEX = path.resolve( __dirname, '..', '..', '..', 'src', 'components', 'index.js' );
+
+const WP_SOURCES = new Set( [ '@wordpress/components', '@wordpress/block-editor' ] );
+
 const RAW_COLOUR_COMPONENT_NAMES = new Set( [
 	'ColorPalette',
-	'ColorGradientControl',
+	'ColorPicker',
 	'GradientPicker',
+	'ColorGradientControl',
+	'__experimentalColorGradientControl',
+	'PanelColorSettings',
 	'PanelColorGradientSettings',
+	'__experimentalPanelColorGradientSettings',
 ] );
 
 const RAW_LINK_COMPONENT_NAMES = new Set( [ 'URLInput', 'LinkControl' ] );
 
-// Which canonical wrapper each banned name should have been instead —
-// COLOUR names all route to DesignTokenPicker; LINK names all route to
-// SgsLinkControl (spec-35-control-type-contract.md §1.1 / §2.1).
+// Exports of the SGS fork modules that are always banned outside the allowlist.
+const FORK_EXPORT_NAMES = [ 'SgsGradientPicker', 'CustomColorPickerDropdown' ];
+
+const FORK_PATH_RE = /(^|\/)(colour-picker|gradient-picker)(\/|$)/;
+const STYLE_ASSET_RE = /\.s?css$/i;
+const FORK_HELPER_RE = /(colour-picker|gradient-picker)\/(?:.*\/)?utils(?:\/.*|\.js)?$/;
+
+const SKIPPED_DIRS = new Set( [ 'node_modules', 'build', '__tests__', '__mocks__' ] );
+const TEST_FILE_RE = /\.(test|spec)\.[jt]sx?$/;
+
 const CANONICAL_FOR = new Map( [
-	[ 'ColorPalette', 'DesignTokenPicker' ],
-	[ 'ColorGradientControl', 'DesignTokenPicker' ],
-	[ 'GradientPicker', 'DesignTokenPicker' ],
-	[ 'PanelColorGradientSettings', 'DesignTokenPicker' ],
-	// Repointed 2026-08-24: SgsLinkControl.js was DELETED as vestigial (0 mounts;
-	// LinkPopoverControl supersedes it and its own docblock says so). A canonical
-	// mapping must name a component that EXISTS, or this rule tells a developer
-	// to adopt a deleted file.
 	[ 'URLInput', 'LinkPopoverControl' ],
 	[ 'LinkControl', 'LinkPopoverControl' ],
 ] );
@@ -150,63 +80,228 @@ function jsxName( openingElement ) {
 	return null;
 }
 
+function importedName( specifier ) {
+	if ( specifier.type !== 'ImportSpecifier' ) return null;
+	const imported = specifier.imported;
+	if ( ! imported ) return null;
+	return imported.type === 'StringLiteral' ? imported.value : imported.name;
+}
+
+function walk( dir, out ) {
+	let entries;
+	try {
+		entries = fs.readdirSync( dir, { withFileTypes: true } );
+	} catch ( e ) {
+		return;
+	}
+	entries.sort( ( a, b ) => ( a.name < b.name ? -1 : 1 ) );
+	for ( const entry of entries ) {
+		const full = path.join( dir, entry.name );
+		if ( entry.isDirectory() ) {
+			if ( ! SKIPPED_DIRS.has( entry.name ) ) walk( full, out );
+		} else if ( /\.jsx?$/.test( entry.name ) && ! TEST_FILE_RE.test( entry.name ) ) {
+			out.push( full );
+		}
+	}
+}
+
+// Names `components/index.js` re-exports from an SGS fork module, read from the real index
+// (never a fixture) so a newly re-exported fork control is banned without editing this rule.
+function forkNamesFromIndex( ctx ) {
+	const names = new Set( FORK_EXPORT_NAMES );
+	if ( ! fs.existsSync( REAL_COMPONENTS_INDEX ) ) return names;
+	ctx.cache.traverse( REAL_COMPONENTS_INDEX, {
+		ExportNamedDeclaration( nodePath ) {
+			const node = nodePath.node;
+			if ( ! node.source || ! FORK_PATH_RE.test( node.source.value ) ) return;
+			if ( FORK_HELPER_RE.test( node.source.value ) ) return;
+			for ( const spec of node.specifiers || [] ) {
+				if ( spec.exported ) names.add( spec.exported.name || spec.exported.value );
+			}
+		},
+	} );
+	return names;
+}
+
+function isAllowlisted( file, componentsDir ) {
+	const rel = path.relative( componentsDir, file ).split( path.sep ).join( '/' );
+	if ( rel.startsWith( '..' ) ) return false;
+	return (
+		'DesignTokenPicker.js' === rel ||
+		'GradientCapableColourControl.js' === rel ||
+		'index.js' === rel ||
+		rel.startsWith( 'colour-picker/' ) ||
+		rel.startsWith( 'gradient-picker/' )
+	);
+}
+
+function blockOf( file, blocksDir ) {
+	const rel = path.relative( blocksDir, file ).split( path.sep );
+	if ( rel.length < 2 || rel[ 0 ] === '..' ) return null;
+	return fs.existsSync( path.join( blocksDir, rel[ 0 ], 'block.json' ) ) ? `sgs/${ rel[ 0 ] }` : null;
+}
+
 module.exports = {
 	id: '24-raw-canonical-component',
 	checklistItem: null,
 	title:
-		'A raw component the control-type contract BANS (Spec 35 §1/§2) must not appear in a ' +
-		'block\'s own edit.js — the canonical wrapper (DesignTokenPicker / LinkPopoverControl) exists ' +
-		'precisely so callers never reach for the lookalike underneath it',
-	scope: 'per-block',
-	needs: [ 'ast:edit.js' ],
-	run( ctx, block ) {
-		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+		'A raw colour / gradient / link component the control-type contract BANS (Spec 35 §1/§2) must not be ' +
+		'imported or rendered outside DesignTokenPicker and the shared colour helpers — every colour control is ' +
+		'the swatch row whose picker pops out',
+	scope: 'global',
+	needs: [ 'ast:src/**/*.js' ],
+	run( ctx ) {
+		if ( ! ctx.componentsDir ) return [];
+		const srcDir = path.dirname( ctx.componentsDir );
+		const files = [];
+		walk( srcDir, files );
+		const forkNames = forkNamesFromIndex( ctx );
+		return files
+			.filter( ( file ) => ! isAllowlisted( file, ctx.componentsDir ) )
+			.flatMap( ( file ) => this.runFile( ctx, file, forkNames ) );
 	},
-	runFile( ctx, block, editFile ) {
-		// See 04-colour-alpha.js's identical comment: `this.id` is not usable
-		// inside a nested Babel visitor callback (Babel invokes visitor methods
-		// as plain functions, so `this` there resolves to the Node.js global
-		// object, confirmed empirically) — captured here instead.
+	runFile( ctx, file, forkNames ) {
 		const ruleId = this.id;
 		const findings = [];
-		const ok = ctx.cache.traverse( editFile, {
+		const block = blockOf( file, ctx.blocksDir );
+		const isEditFile = 'edit.js' === path.basename( file );
+		const importFlagged = new Set();
+
+		const push = ( kind, name, line, detail, fix ) =>
+			findings.push(
+				makeFinding( {
+					rule: ruleId,
+					block,
+					file,
+					line,
+					severity: 'warn',
+					detail: `${ file }:${ line } — ${ detail }`,
+					fix,
+					keyParts: [ 'raw-canonical-component', kind, name, String( line ) ],
+				} )
+			);
+
+		const colourFix = ( name ) =>
+			`Replace ${ name } with the shared DesignTokenPicker (a thin swatch row whose palette pops out; ` +
+			'pass `states` for several states) or SgsColourPanel / GradientCapableColourControl for a gradient ' +
+			'(src/components/). If this really is a deliberate, reasoned exception, register it in ' +
+			'baselines/24-raw-canonical-component.json with a specific reason.';
+
+		const ok = ctx.cache.traverse( file, {
+			ImportDeclaration( nodePath ) {
+				const node = nodePath.node;
+				const source = node.source.value;
+				const line = node.loc ? node.loc.start.line : 0;
+
+				if ( WP_SOURCES.has( source ) ) {
+					for ( const spec of node.specifiers ) {
+						const name = importedName( spec );
+						if ( ! name || ! RAW_COLOUR_COMPONENT_NAMES.has( name ) ) continue;
+						importFlagged.add( name );
+						push(
+							'wp-import',
+							name,
+							line,
+							`${ name } is imported from ${ source }. It is a BANNED raw colour component under the COLOUR control-type contract (Spec 35 §1.3): it renders an inline palette instead of the swatch row whose picker pops out.`,
+							colourFix( name )
+						);
+					}
+					return;
+				}
+
+				if ( FORK_PATH_RE.test( source ) ) {
+					if ( STYLE_ASSET_RE.test( source ) || FORK_HELPER_RE.test( source ) ) return;
+					push(
+						'fork-import',
+						source,
+						line,
+						`an import from the SGS colour/gradient fork "${ source }". The forks are the internals of DesignTokenPicker and GradientCapableColourControl; mounting them elsewhere renders an inline palette or gradient bar.`,
+						colourFix( source )
+					);
+					return;
+				}
+
+				for ( const spec of node.specifiers ) {
+					const name = importedName( spec );
+					if ( ! name || ! forkNames.has( name ) ) continue;
+					importFlagged.add( name );
+					push(
+						'fork-name-import',
+						name,
+						line,
+						`${ name } (an SGS colour/gradient fork export) is imported from "${ source }". It renders an inline picker; only the shared colour controls may mount it.`,
+						colourFix( name )
+					);
+				}
+			},
 			JSXOpeningElement( nodePath ) {
 				const node = nodePath.node;
 				const name = jsxName( node );
 				if ( ! name ) return;
-
-				const isColour = RAW_COLOUR_COMPONENT_NAMES.has( name );
-				const isLink = RAW_LINK_COMPONENT_NAMES.has( name );
-				if ( ! isColour && ! isLink ) return;
-
-				const canonical = CANONICAL_FOR.get( name );
-				const contract = isColour ? 'COLOUR' : 'LINK';
 				const line = node.loc ? node.loc.start.line : 0;
 
+				if ( 'input' === name ) {
+					const isColourInput = ( node.attributes || [] ).some(
+						( attr ) =>
+							attr.type === 'JSXAttribute' &&
+							attr.name &&
+							'type' === attr.name.name &&
+							attr.value &&
+							'color' === attr.value.value
+					);
+					if ( isColourInput ) {
+						push(
+							'input-color',
+							'input',
+							line,
+							'a raw <input type="color"> is a browser colour well, not the swatch row whose picker pops out.',
+							colourFix( '<input type="color">' )
+						);
+					}
+					return;
+				}
+
+				if ( RAW_COLOUR_COMPONENT_NAMES.has( name ) && ! importFlagged.has( name ) ) {
+					push(
+						'jsx',
+						name,
+						line,
+						`raw <${ name }> is a BANNED lookalike under the COLOUR control-type contract (Spec 35 §1.3).`,
+						colourFix( name )
+					);
+					return;
+				}
+
+				if ( isEditFile && RAW_LINK_COMPONENT_NAMES.has( name ) ) {
+					const canonical = CANONICAL_FOR.get( name );
+					push(
+						'jsx',
+						name,
+						line,
+						`raw <${ name }> is a BANNED lookalike under the LINK control-type contract (Spec 35 §2.3). It renders directly here instead of going through the canonical ${ canonical } wrapper component.`,
+						`Replace <${ name }> with the shared ${ canonical } component (src/components/${ canonical }.js) — it already carries the required props, accessibility and internal-content search, new-tab and rel handling that a raw <${ name }> lacks. If this really is a deliberate, reasoned exception, register it in baselines/24-raw-canonical-component.json with a specific reason.`
+					);
+				}
+			},
+		} );
+
+		if ( ! ok ) {
+			const parsed = ctx.cache.parse( file );
+			if ( parsed.error && 'file-not-found' !== parsed.error ) {
 				findings.push(
 					makeFinding( {
 						rule: ruleId,
-						block: block.slug,
-						file: editFile,
-						line,
+						block,
+						file,
+						line: 0,
 						severity: 'warn',
-						detail:
-							`${ editFile }:${ line } — raw <${ name }> is a BANNED lookalike under the ` +
-							`${ contract } control-type contract (Spec 35 §${ isColour ? '1' : '2' }.3). ` +
-							`It renders directly here instead of going through the canonical ` +
-							`${ canonical } wrapper component.`,
-						fix:
-							`Replace <${ name }> with the shared ${ canonical } component ` +
-							`(src/components/${ canonical }.js) — it already carries the required props, ` +
-							`accessibility (an \`id\` bound to its label) and the ${ contract === 'COLOUR' ? 'enableAlpha/clearable defaults' : 'internal-content search + new-tab + rel nofollow/sponsored handling' } ` +
-							`that a raw <${ name }> lacks. If this really is a deliberate, reasoned exception, ` +
-							`register it in baselines/24-raw-canonical-component.json with a specific reason.`,
-						keyParts: [ 'raw-canonical-component', name, String( line ) ],
+						detail: `${ file } could not be parsed (${ parsed.error }); a banned component in it would be invisible to this rule.`,
+						fix: 'Fix the syntax error so the file parses.',
+						keyParts: [ 'raw-canonical-component', 'unparseable' ],
 					} )
 				);
-			},
-		} );
-		if ( ! ok ) return []; // parse-error is its own first-class finding via core/sources.js cache
+			}
+		}
 		return findings;
 	},
 	selfTest: {
@@ -216,6 +311,13 @@ module.exports = {
 			'colorpalette-raw-with-alpha',
 			'urlinput-raw',
 			'linkcontrol-raw',
+			'shadow-like-palette',
+			'aliased-colour-picker',
+			'gradient-index-import',
+			'raw-colour-input',
+			'fork-module-import',
+			'panel-colour-settings',
+			'shared-colour-user',
 		],
 		mustNotFlag: [
 			'designtokenpicker-used',
@@ -223,6 +325,12 @@ module.exports = {
 			'substring-name-not-banned',
 			'comment-mentions-banned-names',
 			'no-relevant-control',
+			'DesignTokenPicker',
+			'color-palette',
+			'uses-token-picker-only',
+			'style-asset-import',
+			'fork-utils-import',
+			'text-input-not-colour',
 		],
 	},
 };

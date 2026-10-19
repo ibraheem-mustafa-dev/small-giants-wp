@@ -13,6 +13,7 @@ import {
 	ResponsiveBoxControl,
 	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
+	DesignTokenPicker,
 	SgsColourPanel,
 	SgsLengthControl,
 	SgsBorderControl,
@@ -1082,8 +1083,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	// Mirrors the simple array-of-objects shape sgs/option-picker's own
 	// optionItems uses (key + label), with a colour value added. Each
 	// swatch's colour is DATA, not an operator styling property (see the
-	// block.json 'swatch' element's own note) — a plain colour input, not
-	// SgsColourPanel/DesignTokenPicker.
+	// block.json 'swatch' element's own note) — so it is edited with a
+	// hex-storing DesignTokenPicker row, not SgsColourPanel.
 	function onSwatchChange( index, field, value ) {
 		const next = ( colourSwatches || [] ).map( ( item, i ) =>
 			i === index ? { ...item, [ field ]: value } : item
@@ -2372,17 +2373,17 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								__next40pxDefaultSize
 								__nextHasNoMarginBottom
 							/>
-							<input
-								type="color"
-								aria-label={ __( 'Swatch colour', 'sgs-blocks' ) }
-								value={ item.colour || '#000000' }
-								onChange={ ( e ) =>
-									onSwatchChange(
-										index,
-										'colour',
-										e.target.value
-									)
-								}
+							<DesignTokenPicker
+								label={ __( 'Swatch colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: item.colour || '#000000',
+										onChange: ( v ) =>
+											onSwatchChange( index, 'colour', v ),
+									},
+								] }
 							/>
 							<Button
 								variant="secondary"
