@@ -34,6 +34,22 @@ const em = ( v ) => {
 	}
 	return 'em' === n[ 2 ] ? Number( n[ 1 ] ) : Number( n[ 1 ] ) / 16;
 };
+const DECORATION_TAGS = new Set( [ 'img', 'iframe', 'video', 'input', 'textarea', 'select', 'hr' ] );
+
+// A small marker that holds nothing, in the flow of the text beside it: a dot (both sides at most D.maxDotPx) or a short
+// bar (at most D.maxBarHeightPx tall and D.maxBarWidthPx wide). D is the decisions entry rules.dotMarker; none, never.
+export function isMarker( e, m, D ) {
+	const st = declared( e );
+	if ( ! D || m.words( e ) || m.blockKids( e ).length || m.kids( e ).some( ( k ) => 'svg' === k.tag ) || DECORATION_TAGS.has( e.tag ) || [ 'absolute', 'fixed' ].includes( st.position ) ) {
+		return false;
+	}
+	const w = px( st.width );
+	const h = px( st.height );
+	if ( null == w || null == h ) {
+		return false;
+	}
+	return ( w <= D.maxDotPx && h <= D.maxDotPx ) || ( h <= D.maxBarHeightPx && w <= D.maxBarWidthPx );
+}
 // One or more emoji (each optionally followed by a variation selector or a zero-width joiner), spaces removed first.
 const EMOJI = /^(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+$/u;
 const HEADING = /^h[1-6]$/;
@@ -137,6 +153,67 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		return null;
 	};
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
+	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
+	// by its rendered input type; null for anything else.
+	const controlBlock = ( e ) => {
+		const F = R.formControl;
+		if ( ! F || ! ( F.tags || [] ).includes( e.tag ) ) {
+			return null;
+		}
+		if ( 'input' !== e.tag ) {
+			return F.byTag?.[ e.tag ] || null;
+		}
+		const type = String( e.attrs?.type || 'text' ).toLowerCase();
+		// A lone required checkbox (a consent tick) is the consent field; a checkbox among others is a checkbox group.
+		if ( 'checkbox' === type && required( e ) ) {
+			return F.consent || null;
+		}
+		return F.byType?.[ type ] || null;
+	};
+	// Whether a control is required: its rendered attribute, else the template's own (a literal or `{{ true }}`, never a
+	// binding that may be false).
+	const required = ( e ) => {
+		if ( null != e.attrs?.required ) {
+			return 'false' !== String( e.attrs.required );
+		}
+		const open = /^<[^>]*>/.exec( e.snippet || '' )?.[ 0 ] || '';
+		return /\srequired(?=[\s>/])/.test( open ) || /\srequired="(?:required|true|\{\{\s*true\s*\}\})?"/.test( open );
+	};
+	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( ( k ) => controlBlock( k ) );
+	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
+	// field's wrapper beside the control, or in a <label> there (two levels up at most).
+	const fieldText = ( e ) => {
+		if ( ! R.formControl || controlBlock( e ) || ! all( e ) || 'button' === e.tag || m.blockKids( e ).some( ( k ) => controlBlock( k ) ) ) {
+			return false;
+		}
+		const p = m.byKey[ e.parentKey ];
+		return holdsControl( p ) || ( !! p && 'label' === p.tag && holdsControl( m.byKey[ p.parentKey ] ) ) || ( 'label' === e.tag && holdsControl( p ) );
+	};
+	const markerShape = ( e ) => isMarker( e, m, R.dotMarker );
+	// The first piece of text in a card that is not a bare number, set bold and larger than the next piece of text: the
+	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text.
+	const headsCard = ( e, st ) => {
+		const C = R.cardHeading;
+		if ( ! C || ! /\p{L}/u.test( m.words( e ) ) || m.blockKids( e ).length || HEADING.test( e.tag ) || 'a' === e.tag || 'label' === e.tag || interactive( e ) || numberOnly( e ) || hooks.siteInfoKinds( e ).size ) {
+			return false;
+		}
+		const size = px( st[ 'font-size' ] );
+		if ( ( Number( st[ 'font-weight' ] ) || 0 ) < C.minWeight || null == size || size < C.minSizePx || m.words( e ).split( ' ' ).length > C.maxWords ) {
+			return false;
+		}
+		let card = m.byKey[ e.parentKey ];
+		for ( let i = 0; card && i < 2 && textLeaves( card ).length < 2; i++ ) {
+			card = m.byKey[ card.parentKey ];
+		}
+		const texts = card ? textLeaves( card ).filter( ( k ) => ! numberOnly( k ) ) : [];
+		const next = texts[ texts.indexOf( e ) + 1 ];
+		if ( texts[ 0 ] !== e || ! next ) {
+			return false;
+		}
+		const ns = declared( next );
+		const nextSize = px( ns[ 'font-size' ] );
+		return null != nextSize ? nextSize < size : ( Number( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
+	};
 
 	// The link source a Site Info kind becomes on a link (tel: is phone, a maps host is directions), or null.
 	const linkKindOf = ( e ) => {
@@ -159,7 +236,6 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 		}
 		return realHref( e ) ? { sgsBlockLink: realHref( e ) } : {};
 	};
-	const DECORATION_TAGS = new Set( [ 'img', 'iframe', 'video', 'input', 'textarea', 'select', 'hr' ] );
 
 	// The rules in precedence order; the first verdict wins. Each takes x: { e, st (declared style), text (all its
 	// words), kidsB (block children), parentBlock }.
@@ -182,6 +258,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			return ring ? v( 'decorativeShape', { block: R.decorativeShape?.block || null } ) : v( 'decorationLayer', { action: 'remove' } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
+		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
+		// settings, and a <label> wrapped around the control goes so the field takes its place.
+		( { e } ) => {
+			const block = controlBlock( e );
+			if ( block ) {
+				return v( 'formControl', { block, absorb: true } );
+			}
+			if ( R.formControl && 'label' === e.tag && m.blockKids( e ).some( ( k ) => controlBlock( k ) ) ) {
+				return v( 'formControl', { action: 'unwrap' } );
+			}
+			return fieldText( e ) ? v( 'formControl', { action: 'remove', reason: R.formControl.fieldTextReason } ) : null;
+		},
+		// A small dot or short bar beside text is the marker of the block that holds the text (a label's dot, a list
+		// item's marker, the separator between a row's items): it gets no block of its own.
+		( { e } ) => ( markerShape( e ) ? v( 'dotMarker', { action: 'remove' } ) : null ),
 		// A custom element named as a logo (<brand-logo>) is the logo block, which reads the site logo.
 		( { e } ) => ( e.tag.includes( '-' ) && specHit( facts.decisions.logoImage, e.tag ) && facts.logoBlocks.length ? v( 'logoElement', { block: facts.logoBlocks[ 0 ], absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: 'the logo image: choose the site logo in the editor' } } ) : null ),
 		// A custom element the draft uses as an image placeholder (<image-slot>) is the media block.
@@ -284,6 +375,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set() }
 			}
 			return titlesCard( e ) ? v( 'cardTitle', { block: R.cardTitle?.block } ) : null;
 		},
+		// The bold, larger first text of a card (not a link) titles it.
+		( { e, st } ) => ( headsCard( e, st ) ? v( 'cardHeading', { block: R.cardHeading?.block } ) : null ),
 	];
 
 	// The blocks already proposed for the element's ancestors, nearest first (an unwrapped ancestor has none).

@@ -1,17 +1,17 @@
 {
-	"generated": "2026-10-18T09:58:39.300Z",
+	"generated": "2026-10-19T02:34:17.390Z",
 	"client": "indus-foods",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
 	"picksShape": "{ \"<surface>\": [ <one answerShape entry per row of that surface> ] }",
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
-		"surfaces": 17,
-		"rows": 82
+		"surfaces": 13,
+		"rows": 55
 	},
 	"surfaces": {
 		"top-bar": {
-			"generated": "2026-10-18T09:58:39.298Z",
+			"generated": "2026-10-19T02:34:17.388Z",
 			"surface": "top-bar",
 			"source": "intake.json skeletons[\"top-bar\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -96,7 +96,7 @@
 			]
 		},
 		"footer": {
-			"generated": "2026-10-18T09:58:39.298Z",
+			"generated": "2026-10-19T02:34:17.389Z",
 			"surface": "footer",
 			"source": "intake.json skeletons[\"footer\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -348,7 +348,7 @@
 			]
 		},
 		"page-home": {
-			"generated": "2026-10-18T09:58:39.298Z",
+			"generated": "2026-10-19T02:34:17.389Z",
 			"surface": "page-home",
 			"source": "intake.json skeletons[\"page-home\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -523,88 +523,6 @@
 					]
 				},
 				{
-					"key": "Indus Foods Website v2/263",
-					"element": {
-						"tag": "span",
-						"words": "A shop on Ladypool Road",
-						"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:18px;color:#2C3E50;line-height:1.25;\" data-dc-tpl=\"263\">{{ ms.title }}<"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:262",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:264",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "4 copies of one template element",
-					"rowId": "skeleton:page-home:Indus Foods Website v2/263",
-					"draftId": "Indus Foods Website v2:263",
-					"action": null,
-					"copies": 4,
-					"keys": [
-						"Indus Foods Website v2/263#0",
-						"Indus Foods Website v2/263#1",
-						"Indus Foods Website v2/263#2",
-						"Indus Foods Website v2/263#3"
-					],
-					"otherWords": [
-						"Indus Foods is formed",
-						"Packing in Birmingham",
-						"5,000+ customers"
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/262",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2/264",
-							"tag": "span",
-							"words": "One of the UK’s first halal butchers and greengrocers.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 569.1,
-							"y": 2623,
-							"w": 157.7,
-							"h": 45
-						},
-						{
-							"width": 768,
-							"x": 32,
-							"y": 3659.4,
-							"w": 342,
-							"h": 22.5
-						},
-						{
-							"width": 375,
-							"x": 92,
-							"y": 4719.5,
-							"w": 263,
-							"h": 22.5
-						}
-					]
-				},
-				{
 					"key": "Indus Foods Website v2/264",
 					"element": {
 						"tag": "span",
@@ -620,7 +538,7 @@
 						{
 							"draftId": "Indus Foods Website v2:263",
 							"tag": "span",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						}
 					],
 					"confidence": 0.25,
@@ -652,7 +570,7 @@
 							"key": "Indus Foods Website v2/263",
 							"tag": "span",
 							"words": "A shop on Ladypool Road",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						},
 						{
 							"key": "Indus Foods Website v2/265#0",
@@ -763,77 +681,6 @@
 					]
 				},
 				{
-					"key": "Indus Foods Website v2/281#0",
-					"element": {
-						"tag": "span",
-						"words": "Purchasing manager",
-						"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;color:#0A6E93;\" data-dc-tpl=\"281\">{{ tCur.name }}</span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:280",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:282",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home:Indus Foods Website v2/281#0",
-					"draftId": "Indus Foods Website v2:281",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/280#0",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2/282#0",
-							"tag": "span",
-							"words": "Wholesale customer",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 449.4,
-							"y": 3297.7,
-							"w": 154,
-							"h": 26.3
-						},
-						{
-							"width": 768,
-							"x": 343,
-							"y": 4329.1,
-							"w": 154,
-							"h": 26.3
-						},
-						{
-							"width": 375,
-							"x": 158,
-							"y": 5555.8,
-							"w": 131,
-							"h": 52.7
-						}
-					]
-				},
-				{
 					"key": "Indus Foods Website v2/282#0",
 					"element": {
 						"tag": "span",
@@ -849,7 +696,7 @@
 						{
 							"draftId": "Indus Foods Website v2:281",
 							"tag": "span",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						}
 					],
 					"confidence": 0.25,
@@ -870,7 +717,7 @@
 							"key": "Indus Foods Website v2/281#0",
 							"tag": "span",
 							"words": "Purchasing manager",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						},
 						{
 							"key": "Indus Foods Website v2/283#0",
@@ -901,82 +748,6 @@
 							"y": 5608.5,
 							"w": 131,
 							"h": 20.9
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/284#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"display:flex;justify-content:center;gap:8px;margin-top:22px;\" data-dc-tpl=\"284\"> <sc-for list=\"{{ tDots }}\" as=\"dt\" hint-placeholder-count=\"4\" data-"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:270",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:271",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.51,
-					"candidates": [
-						{
-							"block": "sgs/multi-button",
-							"score": 0.75,
-							"share": 0.682
-						},
-						{
-							"block": "sgs/container",
-							"score": 0.35,
-							"share": 0.318
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home:Indus Foods Website v2/284#0",
-					"draftId": "Indus Foods Website v2:284",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/283#0",
-							"tag": "button",
-							"words": "",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Indus Foods Website v2/286",
-							"tag": "button",
-							"words": "",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 200,
-							"y": 3404.3,
-							"w": 580.8,
-							"h": 8
-						},
-						{
-							"width": 768,
-							"x": 32,
-							"y": 4435.8,
-							"w": 704,
-							"h": 8
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 5673.4,
-							"w": 335,
-							"h": 8
 						}
 					]
 				},
@@ -1063,7 +834,7 @@
 			]
 		},
 		"page-about": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.389Z",
 			"surface": "page-about",
 			"source": "intake.json skeletons[\"page-about\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1841,7 +1612,7 @@
 							"key": "Indus Foods Website v2/444#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/brand-strip"
+							"block": "sgs/container"
 						}
 					],
 					"siblingCount": 2,
@@ -1852,6 +1623,92 @@
 							"y": 1349.9,
 							"w": 104.8,
 							"h": 23.3
+						}
+					]
+				},
+				{
+					"key": "Indus Foods Website v2/448",
+					"element": {
+						"tag": "div",
+						"words": "1962",
+						"snippet": "<div data-pin-year=\"\" style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:{{ R.hsYear }};line-height:.9;letter-spacing:-.04em;color:transparent"
+					},
+					"parent": {
+						"draftId": "Indus Foods Website v2:447",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Indus Foods Website v2:449",
+							"tag": "h3",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Indus Foods Website v2:450",
+							"tag": "p",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": "10 copies of one template element on 2 surfaces",
+					"rowId": "skeleton:page-about:Indus Foods Website v2/448",
+					"draftId": "Indus Foods Website v2:448",
+					"action": null,
+					"copies": 10,
+					"keys": [
+						"Indus Foods Website v2/448#0",
+						"Indus Foods Website v2/448#1",
+						"Indus Foods Website v2/448#2",
+						"Indus Foods Website v2/448#3",
+						"Indus Foods Website v2/448#4"
+					],
+					"otherWords": [
+						"1972",
+						"1975",
+						"2019"
+					],
+					"alsoIn": [
+						{
+							"surface": "page-our-story",
+							"keys": [
+								"Indus Foods Website v2/448#0",
+								"Indus Foods Website v2/448#1",
+								"Indus Foods Website v2/448#2",
+								"Indus Foods Website v2/448#3",
+								"Indus Foods Website v2/448#4"
+							]
+						}
+					],
+					"neighbours": [
+						{
+							"key": "Indus Foods Website v2/447",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Indus Foods Website v2/449",
+							"tag": "h3",
+							"words": "A shop in the Balti Triangle",
+							"block": "sgs/heading"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 170.4,
+							"y": 1551.5,
+							"w": 446.3,
+							"h": 128.6
 						}
 					]
 				},
@@ -2077,11 +1934,11 @@
 							"share": 1
 						}
 					],
-					"reason": "55 copies of one template element on 11 surfaces",
+					"reason": "12 copies of one template element on 2 surfaces",
 					"rowId": "skeleton:page-about:Indus Foods Website v2/490",
 					"draftId": "Indus Foods Website v2:490",
 					"action": null,
-					"copies": 55,
+					"copies": 12,
 					"keys": [
 						"Indus Foods Website v2/490#0",
 						"Indus Foods Website v2/490#1",
@@ -2105,94 +1962,6 @@
 								"Indus Foods Website v2/490#1",
 								"Indus Foods Website v2/490#2",
 								"Indus Foods Website v2/490#3"
-							]
-						},
-						{
-							"surface": "page-community",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2",
-								"Indus Foods Website v2/490#3"
-							]
-						},
-						{
-							"surface": "page-careers",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2",
-								"Indus Foods Website v2/490#3"
-							]
-						},
-						{
-							"surface": "page-food-service",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2",
-								"Indus Foods Website v2/490#3",
-								"Indus Foods Website v2/490#4",
-								"Indus Foods Website v2/490#5"
-							]
-						},
-						{
-							"surface": "page-manufacturing",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2",
-								"Indus Foods Website v2/490#3",
-								"Indus Foods Website v2/490#4"
-							]
-						},
-						{
-							"surface": "page-brand-sanam",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2",
-								"Indus Foods Website v2/490#3",
-								"Indus Foods Website v2/490#4"
-							]
-						},
-						{
-							"surface": "page-brand-shan",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2"
-							]
-						},
-						{
-							"surface": "page-brand-green-leaf",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2"
-							]
-						},
-						{
-							"surface": "page-brand-lemon-tree",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2"
-							]
-						},
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/490#0",
-								"Indus Foods Website v2/490#1",
-								"Indus Foods Website v2/490#2",
-								"Indus Foods Website v2/490#3",
-								"Indus Foods Website v2/490#4",
-								"Indus Foods Website v2/490#5",
-								"Indus Foods Website v2/490#6",
-								"Indus Foods Website v2/490#7",
-								"Indus Foods Website v2/490#8",
-								"Indus Foods Website v2/490#9"
 							]
 						}
 					],
@@ -2645,182 +2414,8 @@
 				}
 			]
 		},
-		"page-our-story": {
-			"generated": "2026-10-18T09:58:39.299Z",
-			"surface": "page-our-story",
-			"source": "intake.json skeletons[\"page-our-story\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Indus Foods Website v2/391",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:390",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "47 copies of one template element on 12 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-our-story:Indus Foods Website v2/391",
-					"draftId": "Indus Foods Website v2:391",
-					"action": "unresolved",
-					"copies": 47,
-					"keys": [
-						"Indus Foods Website v2/391#0",
-						"Indus Foods Website v2/391#1",
-						"Indus Foods Website v2/391#2",
-						"Indus Foods Website v2/391#3"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-sustainability",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2"
-							]
-						},
-						{
-							"surface": "page-food-service",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-manufacturing",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-retail",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-wholesale",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-brands",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-brand-sanam",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-brand-shan",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-brand-green-leaf",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-brand-lemon-tree",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						},
-						{
-							"surface": "page-delivery",
-							"keys": [
-								"Indus Foods Website v2/391#0",
-								"Indus Foods Website v2/391#1",
-								"Indus Foods Website v2/391#2",
-								"Indus Foods Website v2/391#3"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/390",
-							"tag": "div",
-							"words": "Today’s Group member",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2/393#0",
-							"tag": "a",
-							"words": "See our certifications",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 100,
-							"y": 6053.2,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 768,
-							"x": 32,
-							"y": 3231.4,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 3275,
-							"w": 8,
-							"h": 8
-						}
-					]
-				}
-			]
-		},
 		"page-certifications": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-certifications",
 			"source": "intake.json skeletons[\"page-certifications\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -2970,143 +2565,6 @@
 					]
 				},
 				{
-					"key": "Indus Foods Website v2/414",
-					"element": {
-						"tag": "div",
-						"words": "Supplier approval",
-						"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:413",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "28 copies of one template element on 8 surfaces",
-					"rowId": "skeleton:page-certifications:Indus Foods Website v2/414",
-					"draftId": "Indus Foods Website v2:414",
-					"action": null,
-					"copies": 28,
-					"keys": [
-						"Indus Foods Website v2/414#0",
-						"Indus Foods Website v2/414#1",
-						"Indus Foods Website v2/414#2",
-						"Indus Foods Website v2/414#3"
-					],
-					"otherWords": [
-						"Controlled storage",
-						"On-site packing",
-						"Traceability"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-sustainability",
-							"keys": [
-								"Indus Foods Website v2/414#0",
-								"Indus Foods Website v2/414#1",
-								"Indus Foods Website v2/414#2",
-								"Indus Foods Website v2/414#3"
-							]
-						},
-						{
-							"surface": "page-careers",
-							"keys": [
-								"Indus Foods Website v2/414#0",
-								"Indus Foods Website v2/414#1",
-								"Indus Foods Website v2/414#2",
-								"Indus Foods Website v2/414#3"
-							]
-						},
-						{
-							"surface": "page-food-service",
-							"keys": [
-								"Indus Foods Website v2/414#0",
-								"Indus Foods Website v2/414#1",
-								"Indus Foods Website v2/414#2"
-							]
-						},
-						{
-							"surface": "page-manufacturing",
-							"keys": [
-								"Indus Foods Website v2/414#0",
-								"Indus Foods Website v2/414#1",
-								"Indus Foods Website v2/414#2"
-							]
-						},
-						{
-							"surface": "page-retail",
-							"keys": [
-								"Indus Foods Website v2/414#0",
-								"Indus Foods Website v2/414#1",
-								"Indus Foods Website v2/414#2"
-							]
-						},
-						{
-							"surface": "page-wholesale",
-							"keys": [
-								"Indus Foods Website v2/414#0",
-								"Indus Foods Website v2/414#1",
-								"Indus Foods Website v2/414#2"
-							]
-						},
-						{
-							"surface": "page-delivery",
-							"keys": [
-								"Indus Foods Website v2/414#0",
-								"Indus Foods Website v2/414#1",
-								"Indus Foods Website v2/414#2",
-								"Indus Foods Website v2/414#3"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/413",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2/420",
-							"tag": "div",
-							"words": "We vet the producers we import from before their products join our range.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 730.4,
-							"y": 1633.3,
-							"w": 170.1,
-							"h": 29.4
-						},
-						{
-							"width": 768,
-							"x": 94,
-							"y": 2339.4,
-							"w": 170.1,
-							"h": 29.4
-						},
-						{
-							"width": 375,
-							"x": 82,
-							"y": 2721.4,
-							"w": 170.1,
-							"h": 29.4
-						}
-					]
-				},
-				{
 					"key": "Indus Foods Website v2/420",
 					"element": {
 						"tag": "div",
@@ -3215,7 +2673,7 @@
 							"key": "Indus Foods Website v2/414",
 							"tag": "div",
 							"words": "Supplier approval",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						}
 					],
 					"siblingCount": 1,
@@ -3245,800 +2703,8 @@
 				}
 			]
 		},
-		"page-community": {
-			"generated": "2026-10-18T09:58:39.299Z",
-			"surface": "page-community",
-			"source": "intake.json skeletons[\"page-community\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Indus Foods Website v2/332#0",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:331",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "3 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-community:Indus Foods Website v2/332#0",
-					"draftId": "Indus Foods Website v2:332",
-					"action": "unresolved",
-					"copies": 3,
-					"alsoIn": [
-						{
-							"surface": "page-delivery",
-							"keys": [
-								"Indus Foods Website v2/332#0"
-							]
-						},
-						{
-							"surface": "page-terms",
-							"keys": [
-								"Indus Foods Website v2/332#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/331#0",
-							"tag": "span",
-							"words": "About · Community & Charity",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 116,
-							"y": 295.7,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 768,
-							"x": 48,
-							"y": 242.3,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 375,
-							"x": 36,
-							"y": 218.3,
-							"w": 8,
-							"h": 8
-						}
-					]
-				}
-			]
-		},
-		"page-careers": {
-			"generated": "2026-10-18T09:58:39.299Z",
-			"surface": "page-careers",
-			"source": "intake.json skeletons[\"page-careers\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Indus Foods Website v2/556=sgs/text",
-					"element": {
-						"tag": "span",
-						"words": "Phone",
-						"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\""
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:555",
-						"tag": "label",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:560",
-							"tag": "input",
-							"block": null
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "12 copies of one template element on 4 surfaces",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/556=sgs/text",
-					"draftId": "Indus Foods Website v2:556",
-					"action": null,
-					"copies": 12,
-					"keys": [
-						"Indus Foods Website v2/556#2",
-						"Indus Foods Website v2/556#4",
-						"Indus Foods Website v2/556#5",
-						"Indus Foods Website v2/556#6"
-					],
-					"otherWords": [
-						"Role",
-						"CV",
-						"About you"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/556#3",
-								"Indus Foods Website v2/556#6"
-							]
-						},
-						{
-							"surface": "inline-form-careers",
-							"keys": [
-								"Indus Foods Website v2/556#2",
-								"Indus Foods Website v2/556#4",
-								"Indus Foods Website v2/556#5",
-								"Indus Foods Website v2/556#6"
-							]
-						},
-						{
-							"surface": "inline-form-catalogue",
-							"keys": [
-								"Indus Foods Website v2/556#3",
-								"Indus Foods Website v2/556#6"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/556=sgs/container",
-							"tag": "span",
-							"words": "Full name",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2/558",
-							"tag": "span",
-							"words": "*",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 3333.9,
-							"w": 347.8,
-							"h": 20.9
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 4008.2,
-							"w": 302,
-							"h": 20.9
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 4596.2,
-							"w": 285,
-							"h": 20.9
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/558",
-					"element": {
-						"tag": "span",
-						"words": "*",
-						"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:556",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "16 copies of one template element on 4 surfaces",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/558",
-					"draftId": "Indus Foods Website v2:558",
-					"action": null,
-					"copies": 16,
-					"keys": [
-						"Indus Foods Website v2/558#0",
-						"Indus Foods Website v2/558#1",
-						"Indus Foods Website v2/558#2"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/558#0",
-								"Indus Foods Website v2/558#1",
-								"Indus Foods Website v2/558#2",
-								"Indus Foods Website v2/558#3",
-								"Indus Foods Website v2/558#4"
-							]
-						},
-						{
-							"surface": "inline-form-careers",
-							"keys": [
-								"Indus Foods Website v2/558#0",
-								"Indus Foods Website v2/558#1",
-								"Indus Foods Website v2/558#2"
-							]
-						},
-						{
-							"surface": "inline-form-catalogue",
-							"keys": [
-								"Indus Foods Website v2/558#0",
-								"Indus Foods Website v2/558#1",
-								"Indus Foods Website v2/558#2",
-								"Indus Foods Website v2/558#3",
-								"Indus Foods Website v2/558#4"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/556=sgs/text",
-							"tag": "span",
-							"words": "Phone",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Indus Foods Website v2/560",
-							"tag": "input",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 199.3,
-							"y": 3238,
-							"w": 8.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 131.3,
-							"y": 3912.2,
-							"w": 8.9,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 103.3,
-							"y": 4404.4,
-							"w": 8.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/560",
-					"element": {
-						"tag": "input",
-						"words": "",
-						"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:555",
-						"tag": "label",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:556",
-							"tag": "span",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "14 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/560",
-					"draftId": "Indus Foods Website v2:560",
-					"action": "unresolved",
-					"copies": 14,
-					"keys": [
-						"Indus Foods Website v2/560#0",
-						"Indus Foods Website v2/560#1",
-						"Indus Foods Website v2/560#2"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/560#0",
-								"Indus Foods Website v2/560#1",
-								"Indus Foods Website v2/560#2",
-								"Indus Foods Website v2/560#3"
-							]
-						},
-						{
-							"surface": "inline-form-careers",
-							"keys": [
-								"Indus Foods Website v2/560#0",
-								"Indus Foods Website v2/560#1",
-								"Indus Foods Website v2/560#2"
-							]
-						},
-						{
-							"surface": "inline-form-catalogue",
-							"keys": [
-								"Indus Foods Website v2/560#0",
-								"Indus Foods Website v2/560#1",
-								"Indus Foods Website v2/560#2",
-								"Indus Foods Website v2/560#3"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/558",
-							"tag": "span",
-							"words": "*",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Indus Foods Website v2/562",
-							"tag": "select",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 3266.9,
-							"w": 347.8,
-							"h": 49
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 3941.2,
-							"w": 302,
-							"h": 49
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 4433.3,
-							"w": 285,
-							"h": 49
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/562",
-					"element": {
-						"tag": "select",
-						"words": "",
-						"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:555",
-						"tag": "label",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:556",
-							"tag": "span",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "8 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/562",
-					"draftId": "Indus Foods Website v2:562",
-					"action": "unresolved",
-					"copies": 8,
-					"keys": [
-						"Indus Foods Website v2/562#0",
-						"Indus Foods Website v2/562#1"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/562#0",
-								"Indus Foods Website v2/562#1"
-							]
-						},
-						{
-							"surface": "inline-form-careers",
-							"keys": [
-								"Indus Foods Website v2/562#0",
-								"Indus Foods Website v2/562#1"
-							]
-						},
-						{
-							"surface": "inline-form-catalogue",
-							"keys": [
-								"Indus Foods Website v2/562#0",
-								"Indus Foods Website v2/562#1"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/560",
-							"tag": "input",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Indus Foods Website v2/568#0",
-							"tag": "input",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 506.8,
-							"y": 3362.8,
-							"w": 347.8,
-							"h": 51
-						},
-						{
-							"width": 768,
-							"x": 393,
-							"y": 4037.1,
-							"w": 302,
-							"h": 51
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 4721.1,
-							"w": 285,
-							"h": 51
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/568#0",
-					"element": {
-						"tag": "input",
-						"words": "",
-						"snippet": "<input type=\"file\" style=\"width:100%;font-size:14px;padding:14px;border:1.5px dashed rgba(10,126,168,.4);border-radius:10px;background:#F4F9FB;color:#1E2A3C;\" d"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:555",
-						"tag": "label",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:556",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/568#0",
-					"draftId": "Indus Foods Website v2:568",
-					"action": "unresolved",
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "inline-form-careers",
-							"keys": [
-								"Indus Foods Website v2/568#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/562",
-							"tag": "select",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Indus Foods Website v2/566#0",
-							"tag": "textarea",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 3558.7,
-							"w": 713.6,
-							"h": 52
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 4232.9,
-							"w": 622,
-							"h": 52
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 4916.9,
-							"w": 285,
-							"h": 52
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/566#0",
-					"element": {
-						"tag": "textarea",
-						"words": "",
-						"snippet": "<textarea rows=\"5\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);borde"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:555",
-						"tag": "label",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:556",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "4 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/566#0",
-					"draftId": "Indus Foods Website v2:566",
-					"action": "unresolved",
-					"copies": 4,
-					"alsoIn": [
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/566#0"
-							]
-						},
-						{
-							"surface": "inline-form-careers",
-							"keys": [
-								"Indus Foods Website v2/566#0"
-							]
-						},
-						{
-							"surface": "inline-form-catalogue",
-							"keys": [
-								"Indus Foods Website v2/566#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/568#0",
-							"tag": "input",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Indus Foods Website v2/569#0",
-							"tag": "label",
-							"words": "I agree to Indus Foods contacting me about this enquiry.",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 3657.6,
-							"w": 713.6,
-							"h": 133
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 4331.8,
-							"w": 622,
-							"h": 133
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 5015.8,
-							"w": 285,
-							"h": 133
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/570#0",
-					"element": {
-						"tag": "input",
-						"words": "",
-						"snippet": "<input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\">"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:569",
-						"tag": "label",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "4 copies of one template element on 4 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/570#0",
-					"draftId": "Indus Foods Website v2:570",
-					"action": "unresolved",
-					"copies": 4,
-					"alsoIn": [
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/570#0"
-							]
-						},
-						{
-							"surface": "inline-form-careers",
-							"keys": [
-								"Indus Foods Website v2/570#0"
-							]
-						},
-						{
-							"surface": "inline-form-catalogue",
-							"keys": [
-								"Indus Foods Website v2/570#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/569#0",
-							"tag": "label",
-							"words": "I agree to Indus Foods contacting me about this enquiry.",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2/571#0",
-							"tag": "button",
-							"words": "Send application",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 3813.6,
-							"w": 18,
-							"h": 18
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 4487.8,
-							"w": 18,
-							"h": 18
-						},
-						{
-							"width": 375,
-							"x": 45,
-							"y": 5171.8,
-							"w": 18,
-							"h": 18
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/581",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"width:8px;height:8px;background:#D8CA50;border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"581\"></span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:580",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "5 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-careers:Indus Foods Website v2/581",
-					"draftId": "Indus Foods Website v2:581",
-					"action": "unresolved",
-					"copies": 5,
-					"keys": [
-						"Indus Foods Website v2/581#0",
-						"Indus Foods Website v2/581#1",
-						"Indus Foods Website v2/581#2"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-catalogue",
-							"keys": [
-								"Indus Foods Website v2/581#0",
-								"Indus Foods Website v2/581#1"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/580",
-							"tag": "div",
-							"words": "Call our office during working hours",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2/582#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 947.6,
-							"y": 3225.8,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 768,
-							"x": 64,
-							"y": 4785.8,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 375,
-							"x": 52,
-							"y": 5474.8,
-							"w": 8,
-							"h": 8
-						}
-					]
-				}
-			]
-		},
 		"page-food-service": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-food-service",
 			"source": "intake.json skeletons[\"page-food-service\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -4060,7 +2726,7 @@
 						{
 							"draftId": "Indus Foods Website v2:375",
 							"tag": "div",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						},
 						{
 							"draftId": "Indus Foods Website v2:376",
@@ -4132,7 +2798,7 @@
 							"key": "Indus Foods Website v2/375",
 							"tag": "div",
 							"words": "Manufacturing",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						}
 					],
 					"siblingCount": 3,
@@ -4161,122 +2827,6 @@
 					]
 				},
 				{
-					"key": "Indus Foods Website v2/375",
-					"element": {
-						"tag": "div",
-						"words": "Manufacturing",
-						"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;color:inherit;letter-spacing:-.02em;margin-top:6px;\" data-dc-tpl=\"375\">{{ c.label"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:373",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:374",
-							"tag": "span",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Indus Foods Website v2:376",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Indus Foods Website v2:377",
-							"tag": "span",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "12 copies of one template element on 4 surfaces",
-					"rowId": "skeleton:page-food-service:Indus Foods Website v2/375",
-					"draftId": "Indus Foods Website v2:375",
-					"action": null,
-					"copies": 12,
-					"keys": [
-						"Indus Foods Website v2/375#0",
-						"Indus Foods Website v2/375#1",
-						"Indus Foods Website v2/375#2"
-					],
-					"otherWords": [
-						"Retail",
-						"Wholesale"
-					],
-					"alsoIn": [
-						{
-							"surface": "page-manufacturing",
-							"keys": [
-								"Indus Foods Website v2/375#0",
-								"Indus Foods Website v2/375#1",
-								"Indus Foods Website v2/375#2"
-							]
-						},
-						{
-							"surface": "page-retail",
-							"keys": [
-								"Indus Foods Website v2/375#0",
-								"Indus Foods Website v2/375#1",
-								"Indus Foods Website v2/375#2"
-							]
-						},
-						{
-							"surface": "page-wholesale",
-							"keys": [
-								"Indus Foods Website v2/375#0",
-								"Indus Foods Website v2/375#1",
-								"Indus Foods Website v2/375#2"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/374",
-							"tag": "span",
-							"words": "02",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Indus Foods Website v2/376",
-							"tag": "div",
-							"words": "Bulk spices, pulses, nuts and flours supplied consistently to specification.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 3,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 120,
-							"y": 3208.3,
-							"w": 361.3,
-							"h": 37.2
-						},
-						{
-							"width": 768,
-							"x": 52,
-							"y": 3483.4,
-							"w": 182.7,
-							"h": 37.2
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 4223.6,
-							"w": 295,
-							"h": 37.2
-						}
-					]
-				},
-				{
 					"key": "Indus Foods Website v2/376",
 					"element": {
 						"tag": "div",
@@ -4297,7 +2847,7 @@
 						{
 							"draftId": "Indus Foods Website v2:375",
 							"tag": "div",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						},
 						{
 							"draftId": "Indus Foods Website v2:377",
@@ -4358,7 +2908,7 @@
 							"key": "Indus Foods Website v2/375",
 							"tag": "div",
 							"words": "Manufacturing",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						},
 						{
 							"key": "Indus Foods Website v2/377",
@@ -4394,70 +2944,8 @@
 				}
 			]
 		},
-		"page-wholesale": {
-			"generated": "2026-10-18T09:58:39.299Z",
-			"surface": "page-wholesale",
-			"source": "intake.json skeletons[\"page-wholesale\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Indus Foods Website v2/402#0",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"402\"></span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:401",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-wholesale:Indus Foods Website v2/402#0",
-					"draftId": "Indus Foods Website v2:402",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/401#0",
-							"tag": "div",
-							"words": "Why wholesalers work with us",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 100,
-							"y": 1550.6,
-							"w": 28,
-							"h": 2
-						},
-						{
-							"width": 768,
-							"x": 32,
-							"y": 1897.4,
-							"w": 28,
-							"h": 2
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 2018.9,
-							"w": 27,
-							"h": 2
-						}
-					]
-				}
-			]
-		},
 		"page-brands": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-brands",
 			"source": "intake.json skeletons[\"page-brands\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -4548,79 +3036,12 @@
 			]
 		},
 		"page-apply": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-apply",
 			"source": "intake.json skeletons[\"page-apply\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
-				{
-					"key": "Indus Foods Website v2>TradeApplication@466#0/13#0",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:#6EC07A;\" data-dc-tpl=\"13\"></span>"
-					},
-					"parent": {
-						"draftId": "TradeApplication:12",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/13#0",
-					"draftId": "TradeApplication:13",
-					"action": "unresolved",
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "trade-account-application",
-							"keys": [
-								"Indus Foods Website v2>TradeApplication@466#0/13#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466#0/12#0",
-							"tag": "span",
-							"words": "Saves as you go",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466#0/14#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 821.2,
-							"y": 644.2,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 768,
-							"x": 581.2,
-							"y": 653.2,
-							"w": 8,
-							"h": 8
-						},
-						{
-							"width": 375,
-							"x": 43,
-							"y": 662.8,
-							"w": 8,
-							"h": 8
-						}
-					]
-				},
 				{
 					"key": "Indus Foods Website v2>TradeApplication@466#0/14#0",
 					"element": {
@@ -4886,7 +3307,7 @@
 					"key": "Indus Foods Website v2>TradeApplication@466/33=sgs/text",
 					"element": {
 						"tag": "label",
-						"words": "Registered business name",
+						"words": "Food hygiene rating",
 						"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if val"
 					},
 					"parent": {
@@ -4896,9 +3317,14 @@
 					},
 					"siblings": [
 						{
-							"draftId": "TradeApplication:39",
-							"tag": "input",
-							"block": null
+							"draftId": "TradeApplication:47",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						},
+						{
+							"draftId": "TradeApplication:64",
+							"tag": "span",
+							"block": "sgs/text"
 						}
 					],
 					"confidence": 0.25,
@@ -4909,71 +3335,63 @@
 							"share": 1
 						}
 					],
-					"reason": "6 copies of one template element on 2 surfaces",
+					"reason": "2 copies of one template element on 2 surfaces",
 					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/33=sgs/text",
 					"draftId": "TradeApplication:33",
 					"action": null,
-					"copies": 6,
+					"copies": 2,
 					"keys": [
-						"Indus Foods Website v2>TradeApplication@466#0/33#2",
-						"Indus Foods Website v2>TradeApplication@466#0/33#4",
 						"Indus Foods Website v2>TradeApplication@466#0/33#6"
-					],
-					"otherWords": [
-						"VAT number",
-						"Food hygiene rating"
 					],
 					"alsoIn": [
 						{
 							"surface": "trade-account-application",
 							"keys": [
-								"Indus Foods Website v2>TradeApplication@466#0/33#2",
-								"Indus Foods Website v2>TradeApplication@466#0/33#4",
 								"Indus Foods Website v2>TradeApplication@466#0/33#6"
 							]
 						}
 					],
 					"neighbours": [
 						{
-							"key": "Indus Foods Website v2>TradeApplication@466/33=sgs/container",
+							"key": "Indus Foods Website v2>TradeApplication@466/33=remove",
 							"tag": "label",
-							"words": "What kind of business are you?",
-							"block": "sgs/container"
+							"words": "Trading name",
+							"block": null
 						},
 						{
-							"key": "Indus Foods Website v2>TradeApplication@466/35",
+							"key": "Indus Foods Website v2>TradeApplication@466/35=sgs/text",
 							"tag": "span",
 							"words": "*",
 							"block": "sgs/text"
 						}
 					],
-					"siblingCount": 1,
+					"siblingCount": 2,
 					"boxes": [
 						{
 							"width": 1440,
-							"x": 547,
-							"y": 1022.1,
-							"w": 388,
+							"x": 141,
+							"y": 1376.6,
+							"w": 794,
 							"h": 24
 						},
 						{
 							"width": 768,
-							"x": 393,
-							"y": 1073.9,
-							"w": 302,
+							"x": 73,
+							"y": 1428.4,
+							"w": 622,
 							"h": 24
 						},
 						{
 							"width": 375,
 							"x": 43,
-							"y": 1378.8,
+							"y": 1841.3,
 							"w": 289,
 							"h": 24
 						}
 					]
 				},
 				{
-					"key": "Indus Foods Website v2>TradeApplication@466/35",
+					"key": "Indus Foods Website v2>TradeApplication@466/35=sgs/text",
 					"element": {
 						"tag": "span",
 						"words": "*",
@@ -4993,25 +3411,19 @@
 							"share": 1
 						}
 					],
-					"reason": "8 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/35",
+					"reason": "2 copies of one template element on 2 surfaces",
+					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/35=sgs/text",
 					"draftId": "TradeApplication:35",
 					"action": null,
-					"copies": 8,
+					"copies": 2,
 					"keys": [
-						"Indus Foods Website v2>TradeApplication@466#0/35#0",
-						"Indus Foods Website v2>TradeApplication@466#0/35#1",
-						"Indus Foods Website v2>TradeApplication@466#0/35#2",
-						"Indus Foods Website v2>TradeApplication@466#0/35#3"
+						"Indus Foods Website v2>TradeApplication@466#0/35#0"
 					],
 					"alsoIn": [
 						{
 							"surface": "trade-account-application",
 							"keys": [
-								"Indus Foods Website v2>TradeApplication@466#0/35#0",
-								"Indus Foods Website v2>TradeApplication@466#0/35#1",
-								"Indus Foods Website v2>TradeApplication@466#0/35#2",
-								"Indus Foods Website v2>TradeApplication@466#0/35#3"
+								"Indus Foods Website v2>TradeApplication@466#0/35#0"
 							]
 						}
 					],
@@ -5019,14 +3431,14 @@
 						{
 							"key": "Indus Foods Website v2>TradeApplication@466/33=sgs/text",
 							"tag": "label",
-							"words": "Registered business name",
+							"words": "Food hygiene rating",
 							"block": "sgs/text"
 						},
 						{
-							"key": "Indus Foods Website v2>TradeApplication@466/47",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/multi-button"
+							"key": "Indus Foods Website v2>TradeApplication@466/35=remove",
+							"tag": "span",
+							"words": "*",
+							"block": null
 						}
 					],
 					"siblingCount": 0,
@@ -5106,10 +3518,10 @@
 					],
 					"neighbours": [
 						{
-							"key": "Indus Foods Website v2>TradeApplication@466/35",
+							"key": "Indus Foods Website v2>TradeApplication@466/35=remove",
 							"tag": "span",
 							"words": "*",
-							"block": "sgs/text"
+							"block": null
 						},
 						{
 							"key": "Indus Foods Website v2>TradeApplication@466/49",
@@ -5144,168 +3556,10 @@
 					]
 				},
 				{
-					"key": "Indus Foods Website v2>TradeApplication@466/39",
-					"element": {
-						"tag": "input",
-						"words": "",
-						"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style="
-					},
-					"parent": {
-						"draftId": "TradeApplication:28",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "TradeApplication:33",
-							"tag": "label",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "6 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/39",
-					"draftId": "TradeApplication:39",
-					"action": "unresolved",
-					"copies": 6,
-					"keys": [
-						"Indus Foods Website v2>TradeApplication@466#0/39#0",
-						"Indus Foods Website v2>TradeApplication@466#0/39#1",
-						"Indus Foods Website v2>TradeApplication@466#0/39#2"
-					],
-					"alsoIn": [
-						{
-							"surface": "trade-account-application",
-							"keys": [
-								"Indus Foods Website v2>TradeApplication@466#0/39#0",
-								"Indus Foods Website v2>TradeApplication@466#0/39#1",
-								"Indus Foods Website v2>TradeApplication@466#0/39#2"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466/49",
-							"tag": "button",
-							"words": "Restaurant or takeaway",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466/41",
-							"tag": "select",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 1054.1,
-							"w": 388,
-							"h": 56
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 1105.9,
-							"w": 302,
-							"h": 56
-						},
-						{
-							"width": 375,
-							"x": 43,
-							"y": 1302.8,
-							"w": 289,
-							"h": 56
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2>TradeApplication@466/41",
-					"element": {
-						"tag": "select",
-						"words": "",
-						"snippet": "<sc-raw-select id=\"{{ f.id }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px sol"
-					},
-					"parent": {
-						"draftId": "TradeApplication:28",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "TradeApplication:33",
-							"tag": "label",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "4 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/41",
-					"draftId": "TradeApplication:41",
-					"action": "unresolved",
-					"copies": 4,
-					"keys": [
-						"Indus Foods Website v2>TradeApplication@466#0/41#0",
-						"Indus Foods Website v2>TradeApplication@466#0/41#1"
-					],
-					"alsoIn": [
-						{
-							"surface": "trade-account-application",
-							"keys": [
-								"Indus Foods Website v2>TradeApplication@466#0/41#0",
-								"Indus Foods Website v2>TradeApplication@466#0/41#1"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466/39",
-							"tag": "input",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466/64",
-							"tag": "span",
-							"words": "Leave blank if you are not VAT registered.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 1162.1,
-							"w": 388,
-							"h": 56
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 1213.9,
-							"w": 302,
-							"h": 56
-						},
-						{
-							"width": 375,
-							"x": 43,
-							"y": 1518.8,
-							"w": 289,
-							"h": 56
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2>TradeApplication@466/64",
+					"key": "Indus Foods Website v2>TradeApplication@466/64=sgs/text",
 					"element": {
 						"tag": "span",
-						"words": "Leave blank if you are not VAT registered.",
+						"words": "From your local authority (Food Standards Agency scheme).",
 						"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"64\">{{ f.hint }}</span>"
 					},
 					"parent": {
@@ -5320,9 +3574,9 @@
 							"block": "sgs/text"
 						},
 						{
-							"draftId": "TradeApplication:39",
-							"tag": "input",
-							"block": null
+							"draftId": "TradeApplication:47",
+							"tag": "div",
+							"block": "sgs/multi-button"
 						}
 					],
 					"confidence": 0.25,
@@ -5333,32 +3587,27 @@
 							"share": 1
 						}
 					],
-					"reason": "4 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/64",
+					"reason": "2 copies of one template element on 2 surfaces",
+					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466/64=sgs/text",
 					"draftId": "TradeApplication:64",
 					"action": null,
-					"copies": 4,
+					"copies": 2,
 					"keys": [
-						"Indus Foods Website v2>TradeApplication@466#0/64#0",
 						"Indus Foods Website v2>TradeApplication@466#0/64#1"
-					],
-					"otherWords": [
-						"From your local authority (Food Standards Agency scheme)."
 					],
 					"alsoIn": [
 						{
 							"surface": "trade-account-application",
 							"keys": [
-								"Indus Foods Website v2>TradeApplication@466#0/64#0",
 								"Indus Foods Website v2>TradeApplication@466#0/64#1"
 							]
 						}
 					],
 					"neighbours": [
 						{
-							"key": "Indus Foods Website v2>TradeApplication@466/41",
-							"tag": "select",
-							"words": "",
+							"key": "Indus Foods Website v2>TradeApplication@466/64=remove",
+							"tag": "span",
+							"words": "Leave blank if you are not VAT registered.",
 							"block": null
 						},
 						{
@@ -5372,24 +3621,24 @@
 					"boxes": [
 						{
 							"width": 1440,
-							"x": 547,
-							"y": 1226.1,
-							"w": 388,
+							"x": 141,
+							"y": 1462.6,
+							"w": 794,
 							"h": 22.5
 						},
 						{
 							"width": 768,
-							"x": 393,
-							"y": 1277.9,
-							"w": 302,
+							"x": 73,
+							"y": 1514.4,
+							"w": 622,
 							"h": 22.5
 						},
 						{
 							"width": 375,
 							"x": 43,
-							"y": 1690.8,
+							"y": 2039.3,
 							"w": 289,
-							"h": 22.5
+							"h": 45
 						}
 					]
 				},
@@ -5464,81 +3713,11 @@
 							"h": 22.5
 						}
 					]
-				},
-				{
-					"key": "Indus Foods Website v2>TradeApplication@466#0/99#0",
-					"element": {
-						"tag": "span",
-						"words": "Need a hand?",
-						"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;\" data-dc-tpl=\"99\">Need a hand?</span>"
-					},
-					"parent": {
-						"draftId": "TradeApplication:98",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "TradeApplication:100",
-							"tag": "p",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "TradeApplication:101",
-							"tag": "a",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/99#0",
-					"draftId": "TradeApplication:99",
-					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "trade-account-application",
-							"keys": [
-								"Indus Foods Website v2>TradeApplication@466#0/99#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466#0/98#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2>TradeApplication@466#0/100#0",
-							"tag": "p",
-							"words": "Our trade team can complete the application with you over the phone.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1026,
-							"y": 1021.5,
-							"w": 144.6,
-							"h": 24
-						}
-					]
 				}
 			]
 		},
 		"page-delivery": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-delivery",
 			"source": "intake.json skeletons[\"page-delivery\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5628,7 +3807,7 @@
 			]
 		},
 		"page-terms": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-terms",
 			"source": "intake.json skeletons[\"page-terms\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -5860,7 +4039,7 @@
 			]
 		},
 		"page-blog": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-blog",
 			"source": "intake.json skeletons[\"page-blog\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6227,7 +4406,7 @@
 			]
 		},
 		"page-contact": {
-			"generated": "2026-10-18T09:58:39.299Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-contact",
 			"source": "intake.json skeletons[\"page-contact\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6560,103 +4739,6 @@
 					]
 				},
 				{
-					"key": "Indus Foods Website v2>EnquiryForm@468/14",
-					"element": {
-						"tag": "span",
-						"words": "New trade account",
-						"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>"
-					},
-					"parent": {
-						"draftId": "EnquiryForm:13",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "EnquiryForm:15",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "12 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/14",
-					"draftId": "EnquiryForm:14",
-					"action": null,
-					"copies": 12,
-					"keys": [
-						"Indus Foods Website v2>EnquiryForm@468#0/14#0",
-						"Indus Foods Website v2>EnquiryForm@468#0/14#1",
-						"Indus Foods Website v2>EnquiryForm@468#0/14#2",
-						"Indus Foods Website v2>EnquiryForm@468#0/14#3",
-						"Indus Foods Website v2>EnquiryForm@468#0/14#4",
-						"Indus Foods Website v2>EnquiryForm@468#0/14#5"
-					],
-					"otherWords": [
-						"Existing order",
-						"Product enquiry",
-						"White label"
-					],
-					"alsoIn": [
-						{
-							"surface": "contact-enquiry",
-							"keys": [
-								"Indus Foods Website v2>EnquiryForm@468#0/14#0",
-								"Indus Foods Website v2>EnquiryForm@468#0/14#1",
-								"Indus Foods Website v2>EnquiryForm@468#0/14#2",
-								"Indus Foods Website v2>EnquiryForm@468#0/14#3",
-								"Indus Foods Website v2>EnquiryForm@468#0/14#4",
-								"Indus Foods Website v2>EnquiryForm@468#0/14#5"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468/13",
-							"tag": "button",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468/15",
-							"tag": "span",
-							"words": "Open an account with us",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 163,
-							"y": 1476.1,
-							"w": 336,
-							"h": 20
-						},
-						{
-							"width": 768,
-							"x": 95,
-							"y": 1351.3,
-							"w": 263,
-							"h": 20
-						},
-						{
-							"width": 375,
-							"x": 65,
-							"y": 1683.6,
-							"w": 247,
-							"h": 20
-						}
-					]
-				},
-				{
 					"key": "Indus Foods Website v2>EnquiryForm@468/15",
 					"element": {
 						"tag": "span",
@@ -6672,7 +4754,7 @@
 						{
 							"draftId": "EnquiryForm:14",
 							"tag": "span",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						}
 					],
 					"confidence": 0.25,
@@ -6719,7 +4801,7 @@
 							"key": "Indus Foods Website v2>EnquiryForm@468/14",
 							"tag": "span",
 							"words": "New trade account",
-							"block": "sgs/text"
+							"block": "sgs/heading"
 						},
 						{
 							"key": "Indus Foods Website v2>EnquiryForm@468#0/20#0",
@@ -6829,427 +4911,6 @@
 							"y": 2277.6,
 							"w": 19.2,
 							"h": 22.5
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2>EnquiryForm@468/26",
-					"element": {
-						"tag": "input",
-						"words": "",
-						"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ "
-					},
-					"parent": {
-						"draftId": "EnquiryForm:25",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "EnquiryForm:27",
-							"tag": "label",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "8 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/26",
-					"draftId": "EnquiryForm:26",
-					"action": "unresolved",
-					"copies": 8,
-					"keys": [
-						"Indus Foods Website v2>EnquiryForm@468#0/26#0",
-						"Indus Foods Website v2>EnquiryForm@468#0/26#1",
-						"Indus Foods Website v2>EnquiryForm@468#0/26#2",
-						"Indus Foods Website v2>EnquiryForm@468#0/26#3"
-					],
-					"alsoIn": [
-						{
-							"surface": "contact-enquiry",
-							"keys": [
-								"Indus Foods Website v2>EnquiryForm@468#0/26#0",
-								"Indus Foods Website v2>EnquiryForm@468#0/26#1",
-								"Indus Foods Website v2>EnquiryForm@468#0/26#2",
-								"Indus Foods Website v2>EnquiryForm@468#0/26#3"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468/25",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468/27",
-							"tag": "label",
-							"words": "Your name",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 1731.1,
-							"w": 570,
-							"h": 62
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 1697.3,
-							"w": 302,
-							"h": 62
-						},
-						{
-							"width": 375,
-							"x": 43,
-							"y": 2320.6,
-							"w": 289,
-							"h": 62
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2>EnquiryForm@468/27",
-					"element": {
-						"tag": "label",
-						"words": "Your name",
-						"snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;tra"
-					},
-					"parent": {
-						"draftId": "EnquiryForm:25",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "EnquiryForm:26",
-							"tag": "input",
-							"block": null
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "8 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468/27",
-					"draftId": "EnquiryForm:27",
-					"action": null,
-					"copies": 8,
-					"keys": [
-						"Indus Foods Website v2>EnquiryForm@468#0/27#0",
-						"Indus Foods Website v2>EnquiryForm@468#0/27#1",
-						"Indus Foods Website v2>EnquiryForm@468#0/27#2",
-						"Indus Foods Website v2>EnquiryForm@468#0/27#3"
-					],
-					"otherWords": [
-						"Business name (optional)",
-						"Email",
-						"Phone (optional)"
-					],
-					"alsoIn": [
-						{
-							"surface": "contact-enquiry",
-							"keys": [
-								"Indus Foods Website v2>EnquiryForm@468#0/27#0",
-								"Indus Foods Website v2>EnquiryForm@468#0/27#1",
-								"Indus Foods Website v2>EnquiryForm@468#0/27#2",
-								"Indus Foods Website v2>EnquiryForm@468#0/27#3"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468/26",
-							"tag": "input",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468#0/30#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 160,
-							"y": 1751.1,
-							"w": 77.5,
-							"h": 25.5
-						},
-						{
-							"width": 768,
-							"x": 92,
-							"y": 1717.3,
-							"w": 77.5,
-							"h": 25.5
-						},
-						{
-							"width": 375,
-							"x": 62,
-							"y": 2340.6,
-							"w": 77.5,
-							"h": 25.5
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2>EnquiryForm@468#0/31#0",
-					"element": {
-						"tag": "textarea",
-						"words": "",
-						"snippet": "<textarea id=\"enq-msg\" value=\"{{ msg.value }}\" sc-camel-on-change=\"{{ msg.onChange }}\" sc-camel-on-focus=\"{{ msg.onFocus }}\" sc-camel-on-blur=\"{{ msg.onBlur }}\""
-					},
-					"parent": {
-						"draftId": "EnquiryForm:30",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "EnquiryForm:32",
-							"tag": "label",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "EnquiryForm:33",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/31#0",
-					"draftId": "EnquiryForm:31",
-					"action": "unresolved",
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "contact-enquiry",
-							"keys": [
-								"Indus Foods Website v2>EnquiryForm@468#0/31#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468#0/30#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468#0/32#0",
-							"tag": "label",
-							"words": "How can we help?",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 141,
-							"y": 1891.1,
-							"w": 1158,
-							"h": 166
-						},
-						{
-							"width": 768,
-							"x": 73,
-							"y": 1857.3,
-							"w": 622,
-							"h": 166
-						},
-						{
-							"width": 375,
-							"x": 43,
-							"y": 2640.6,
-							"w": 289,
-							"h": 166
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2>EnquiryForm@468#0/32#0",
-					"element": {
-						"tag": "label",
-						"words": "How can we help?",
-						"snippet": "<label for=\"enq-msg\" style=\"position:absolute;left:19px;top:{{ msg.lTop }};font-size:{{ msg.lSize }};font-weight:600;color:{{ msg.lColor }};pointer-events:none;"
-					},
-					"parent": {
-						"draftId": "EnquiryForm:30",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "EnquiryForm:31",
-							"tag": "textarea",
-							"block": null
-						},
-						{
-							"draftId": "EnquiryForm:33",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/32#0",
-					"draftId": "EnquiryForm:32",
-					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "contact-enquiry",
-							"keys": [
-								"Indus Foods Website v2>EnquiryForm@468#0/32#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468#0/31#0",
-							"tag": "textarea",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468#0/33#0",
-							"tag": "span",
-							"words": "0 / 800",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 160,
-							"y": 1913.1,
-							"w": 130.1,
-							"h": 25.5
-						},
-						{
-							"width": 768,
-							"x": 92,
-							"y": 1879.3,
-							"w": 130.1,
-							"h": 25.5
-						},
-						{
-							"width": 375,
-							"x": 62,
-							"y": 2662.6,
-							"w": 130.1,
-							"h": 25.5
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2>EnquiryForm@468#0/33#0",
-					"element": {
-						"tag": "span",
-						"words": "0 / 800",
-						"snippet": "<span style=\"position:absolute;right:16px;bottom:14px;font-size:14px;color:#8793A0;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"33\">{{ msg.count }}</span>"
-					},
-					"parent": {
-						"draftId": "EnquiryForm:30",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "EnquiryForm:31",
-							"tag": "textarea",
-							"block": null
-						},
-						{
-							"draftId": "EnquiryForm:32",
-							"tag": "label",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element on 2 surfaces",
-					"rowId": "skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/33#0",
-					"draftId": "EnquiryForm:33",
-					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "contact-enquiry",
-							"keys": [
-								"Indus Foods Website v2>EnquiryForm@468#0/33#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468#0/32#0",
-							"tag": "label",
-							"words": "How can we help?",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Indus Foods Website v2>EnquiryForm@468#0/36#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1244.7,
-							"y": 2030.6,
-							"w": 38.3,
-							"h": 21
-						},
-						{
-							"width": 768,
-							"x": 640.7,
-							"y": 1996.8,
-							"w": 38.3,
-							"h": 21
-						},
-						{
-							"width": 375,
-							"x": 277.7,
-							"y": 2780.1,
-							"w": 38.3,
-							"h": 21
 						}
 					]
 				},
@@ -7424,7 +5085,7 @@
 			]
 		},
 		"page-post-post-1": {
-			"generated": "2026-10-18T09:58:39.300Z",
+			"generated": "2026-10-19T02:34:17.390Z",
 			"surface": "page-post-post-1",
 			"source": "intake.json skeletons[\"page-post-post-1\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -7554,123 +5215,6 @@
 					]
 				},
 				{
-					"key": "Indus Foods Website v2/621#0",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"width:4px;height:4px;border-radius:50%;background:#A3ADB7;\" data-dc-tpl=\"621\"></span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:618",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:619",
-							"tag": "span",
-							"block": "sgs/label"
-						},
-						{
-							"draftId": "Indus Foods Website v2:620",
-							"tag": "span",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Indus Foods Website v2:622",
-							"tag": "span",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Indus Foods Website v2:623",
-							"tag": "span",
-							"block": null
-						},
-						{
-							"draftId": "Indus Foods Website v2:624",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "6 copies of one template element on 6 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-post-post-1:Indus Foods Website v2/621#0",
-					"draftId": "Indus Foods Website v2:621",
-					"action": "unresolved",
-					"copies": 6,
-					"alsoIn": [
-						{
-							"surface": "page-post-post-2",
-							"keys": [
-								"Indus Foods Website v2/621#0"
-							]
-						},
-						{
-							"surface": "page-post-post-3",
-							"keys": [
-								"Indus Foods Website v2/621#0"
-							]
-						},
-						{
-							"surface": "page-post-post-4",
-							"keys": [
-								"Indus Foods Website v2/621#0"
-							]
-						},
-						{
-							"surface": "page-post-post-5",
-							"keys": [
-								"Indus Foods Website v2/621#0"
-							]
-						},
-						{
-							"surface": "page-post-post-6",
-							"keys": [
-								"Indus Foods Website v2/621#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/620#0",
-							"tag": "span",
-							"words": "Feb 2026",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Indus Foods Website v2/622#0",
-							"tag": "span",
-							"words": "2 min read",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 5,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 524.1,
-							"y": 820.6,
-							"w": 4,
-							"h": 4
-						},
-						{
-							"width": 768,
-							"x": 206.1,
-							"y": 1147.1,
-							"w": 4,
-							"h": 4
-						},
-						{
-							"width": 375,
-							"x": 194.1,
-							"y": 863.3,
-							"w": 4,
-							"h": 4
-						}
-					]
-				},
-				{
 					"key": "Indus Foods Website v2/622#0",
 					"element": {
 						"tag": "span",
@@ -7790,123 +5334,6 @@
 							"y": 853.6,
 							"w": 67.7,
 							"h": 23.3
-						}
-					]
-				},
-				{
-					"key": "Indus Foods Website v2/623#0",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"width:4px;height:4px;border-radius:50%;background:#A3ADB7;\" data-dc-tpl=\"623\"></span>"
-					},
-					"parent": {
-						"draftId": "Indus Foods Website v2:618",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Indus Foods Website v2:619",
-							"tag": "span",
-							"block": "sgs/label"
-						},
-						{
-							"draftId": "Indus Foods Website v2:620",
-							"tag": "span",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Indus Foods Website v2:621",
-							"tag": "span",
-							"block": null
-						},
-						{
-							"draftId": "Indus Foods Website v2:622",
-							"tag": "span",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "Indus Foods Website v2:624",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "6 copies of one template element on 6 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-post-post-1:Indus Foods Website v2/623#0",
-					"draftId": "Indus Foods Website v2:623",
-					"action": "unresolved",
-					"copies": 6,
-					"alsoIn": [
-						{
-							"surface": "page-post-post-2",
-							"keys": [
-								"Indus Foods Website v2/623#0"
-							]
-						},
-						{
-							"surface": "page-post-post-3",
-							"keys": [
-								"Indus Foods Website v2/623#0"
-							]
-						},
-						{
-							"surface": "page-post-post-4",
-							"keys": [
-								"Indus Foods Website v2/623#0"
-							]
-						},
-						{
-							"surface": "page-post-post-5",
-							"keys": [
-								"Indus Foods Website v2/623#0"
-							]
-						},
-						{
-							"surface": "page-post-post-6",
-							"keys": [
-								"Indus Foods Website v2/623#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Indus Foods Website v2/622#0",
-							"tag": "span",
-							"words": "2 min read",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Indus Foods Website v2/624#0",
-							"tag": "span",
-							"words": "By the Indus Foods team",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 5,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 631.9,
-							"y": 820.6,
-							"w": 4,
-							"h": 4
-						},
-						{
-							"width": 768,
-							"x": 313.9,
-							"y": 1147.1,
-							"w": 4,
-							"h": 4
-						},
-						{
-							"width": 375,
-							"x": 301.9,
-							"y": 863.3,
-							"w": 4,
-							"h": 4
 						}
 					]
 				},

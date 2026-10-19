@@ -321,20 +321,22 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps };
 }
 
-// Problems with a page map: schema violations (data/page-map.schema.json), duplicate slugs and parents that name
-// no row. Empty when the map is valid.
+// Problems with a page map: schema violations (data/page-map.schema.json), a slug used twice within one post type
+// (WordPress keeps slugs unique per post type, so a page and a form may share one) and parents that name no row of
+// the same post type. Empty when the map is valid.
 export function pageMapProblems( rows, ajv = loadAjv() ) {
 	const out = [ ...schemaProblems( ajv, PAGE_MAP_SCHEMA, rows ) ];
 	const slugs = new Set();
+	const key = ( type, slug ) => `${ type ?? '' } ${ slug }`;
 	for ( const r of Array.isArray( rows ) ? rows : [] ) {
-		if ( slugs.has( r?.slug ) ) {
-			out.push( `slug "${ r.slug }" is used by more than one row` );
+		if ( slugs.has( key( r?.postType, r?.slug ) ) ) {
+			out.push( `slug "${ r.slug }" is used by more than one ${ r.postType ?? '' } row` );
 		}
-		slugs.add( r?.slug );
+		slugs.add( key( r?.postType, r?.slug ) );
 	}
 	for ( const r of Array.isArray( rows ) ? rows : [] ) {
-		if ( r?.parent && ! slugs.has( r.parent ) ) {
-			out.push( `${ r.slug }: parent "${ r.parent }" names no row` );
+		if ( r?.parent && ! slugs.has( key( r.postType, r.parent ) ) ) {
+			out.push( `${ r.slug }: parent "${ r.parent }" names no ${ r.postType ?? '' } row` );
 		}
 	}
 	return out;

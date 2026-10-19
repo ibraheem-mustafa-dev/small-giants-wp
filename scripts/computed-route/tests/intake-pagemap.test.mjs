@@ -97,12 +97,22 @@ test( 'MUST FAIL: the page map validates against its schema; a bad slug, a missi
 	rows[ 0 ].slug = 'Bad Slug';
 	delete rows[ 1 ].id;
 	rows[ 2 ].slug = rows[ 3 ].slug;
+	rows[ 2 ].postType = rows[ 3 ].postType;
 	rows[ 4 ].parent = 'nowhere';
 	const p = pageMapProblems( rows, ajv );
 	assert.ok( p.some( ( x ) => x.startsWith( '/0/slug' ) ), p.join( '\n' ) );
 	assert.ok( p.some( ( x ) => x.startsWith( '/1 ' ) && x.includes( "'id'" ) ), p.join( '\n' ) );
-	assert.ok( p.some( ( x ) => x.includes( 'used by more than one row' ) ), p.join( '\n' ) );
-	assert.ok( p.some( ( x ) => x.includes( 'parent "nowhere" names no row' ) ), p.join( '\n' ) );
+	assert.ok( p.some( ( x ) => x.includes( 'used by more than one' ) ), p.join( '\n' ) );
+	assert.ok( p.some( ( x ) => x.includes( 'parent "nowhere" names no' ) ), p.join( '\n' ) );
+	// A page and a form (another post type) may share a slug; two pages may not, and a page's parent is a page.
+	const shared = structuredClone( hashMap.rows );
+	shared.push( { ...structuredClone( shared[ 3 ] ), postType: 'sgs_form', parent: null } );
+	assert.deepEqual( pageMapProblems( shared, ajv ), [] );
+	shared.push( structuredClone( shared[ 3 ] ) );
+	assert.ok( pageMapProblems( shared, ajv ).some( ( x ) => x.includes( 'used by more than one' ) ) );
+	const orphan = [ ...structuredClone( hashMap.rows ), { ...structuredClone( hashMap.rows[ 3 ] ), slug: 'only-a-form', postType: 'sgs_form', parent: null } ];
+	orphan[ 4 ].parent = 'only-a-form';
+	assert.ok( pageMapProblems( orphan, ajv ).some( ( x ) => x.includes( 'parent "only-a-form" names no' ) ) );
 } );
 
 test( 'MUST FAIL: a surface one source lacks is still a row plus a surfaces-disagree gap row; with no hint there are none', () => {

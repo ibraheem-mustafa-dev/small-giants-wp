@@ -8,6 +8,7 @@ import { lintSkeleton } from '../lint.mjs';
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, finish, W } from './skeleton-classify.mjs';
+import { isMarker } from './skeleton-rules.mjs';
 
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
@@ -73,7 +74,12 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	};
 	// A list item link: words of its own, or one piece of text beside bare decorations only (a marker dot, a glyph), which
 	// the list block draws as its marker. One such link alone is a pill button; two or more stacked are a list.
-	const listLink = ( e ) => m.isTextLink( e ) || ( 'a' === e.tag && !! String( e.allText ?? '' ).trim() && m.blockKids( e ).every( ( k ) => ! m.blockKids( k ).length ) && m.blockKids( e ).filter( ( k ) => m.words( k ) ).length <= 1 );
+	const listLink = ( e ) => m.isTextLink( e ) || ( 'a' === e.tag && !! String( e.allText ?? '' ).trim() && m.blockKids( e ).every( ( k ) => ! m.blockKids( k ).length ) && m.blockKids( e ).filter( ( k ) => m.words( k ) ).length <= 1 ) || markerRow( e );
+	// A bullet row that is not a link: a marker (rules.dotMarker) beside one piece of text and nothing else.
+	const markerRow = ( e ) => {
+		const kids = m.blockKids( e );
+		return 'a' !== e.tag && ! m.words( e ) && kids.some( ( k ) => isMarker( k, m, R.dotMarker ) ) && 1 === kids.filter( ( k ) => ! isMarker( k, m, R.dotMarker ) ).length && kids.every( ( k ) => isMarker( k, m, R.dotMarker ) || ( m.words( k ) && ! m.blockKids( k ).length ) );
+	};
 	// A run of list links: stacked one above the next, or every child of a grid (a list laid out in columns).
 	const linkRun = ( list, i, parent = null ) => {
 		const span = [];
@@ -135,7 +141,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 				const owner = facts.brands.find( ( b ) => b.slug === kind );
 				return { [ li.text ]: '', [ li.siteInfoSource ]: kind, ...( real && li.siteInfoLink && ! ( owner && brandOwnsAddress( owner, href ) ) ? { [ li.siteInfoLink ]: true } : {} ) };
 			}
-			if ( ! real ) {
+			if ( ! real && 'a' === l.tag ) {
 				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link "${ m.words( l ) }" is "#": its destination is not in the draft, url left empty` } );
 			}
 			return { [ li.text ]: m.words( l ) || String( l.allText ?? '' ).replace( /\s+/g, ' ' ).trim(), ...( real ? { [ li.url ]: href } : {} ) };

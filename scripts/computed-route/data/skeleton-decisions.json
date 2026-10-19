@@ -351,6 +351,46 @@
 			"block": "sgs/button",
 			"maxWords": 4,
 			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
+		},
+		"formControl": {
+			"tags": [
+				"input",
+				"select",
+				"sc-raw-select",
+				"textarea"
+			],
+			"byTag": {
+				"select": "sgs/form-field-select",
+				"sc-raw-select": "sgs/form-field-select",
+				"textarea": "sgs/form-field-textarea"
+			},
+			"byType": {
+				"text": "sgs/form-field-text",
+				"email": "sgs/form-field-email",
+				"tel": "sgs/form-field-phone",
+				"number": "sgs/form-field-number",
+				"date": "sgs/form-field-date",
+				"file": "sgs/form-field-file",
+				"checkbox": "sgs/form-field-checkbox",
+				"radio": "sgs/form-field-radio",
+				"hidden": "sgs/form-field-hidden"
+			},
+			"consent": "sgs/form-field-consent",
+			"reason": "a form control is the SGS field block for its rendered type (a lone required checkbox is the consent field); a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"fieldTextReason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)"
+		},
+		"cardHeading": {
+			"block": "sgs/heading",
+			"minWeight": 700,
+			"minSizePx": 17,
+			"maxWords": 12,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+		},
+		"dotMarker": {
+			"maxDotPx": 12,
+			"maxBarHeightPx": 3,
+			"maxBarWidthPx": 40,
+			"reason": "a small dot or short bar beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)"
 		}
 	}
 }

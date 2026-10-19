@@ -133,7 +133,7 @@
   {
     "route": "food-service",
     "slug": "food-service",
-    "title": "Food service supply for kitchens that never stop.",
+    "title": "Food Service",
     "parent": null,
     "template": null,
     "menus": [
@@ -156,7 +156,7 @@
   {
     "route": "manufacturing",
     "slug": "manufacturing",
-    "title": "Bulk ingredients for food manufacturers.",
+    "title": "Manufacturing",
     "parent": null,
     "template": null,
     "menus": [
@@ -174,7 +174,7 @@
   {
     "route": "retail",
     "slug": "retail",
-    "title": "Retail-ready ranges your customers look for.",
+    "title": "Retail",
     "parent": null,
     "template": null,
     "menus": [
@@ -192,7 +192,7 @@
   {
     "route": "wholesale",
     "slug": "wholesale",
-    "title": "Pallet volumes for wholesalers and cash & carries.",
+    "title": "Wholesale",
     "parent": null,
     "template": null,
     "menus": [
@@ -237,7 +237,7 @@
   },
   {
     "route": "brand-sanam",
-    "slug": "brand-sanam",
+    "slug": "sanam",
     "title": "Sanam",
     "parent": "brands",
     "template": null,
@@ -255,7 +255,7 @@
   },
   {
     "route": "brand-shan",
-    "slug": "brand-shan",
+    "slug": "shan",
     "title": "Shan",
     "parent": "brands",
     "template": null,
@@ -273,7 +273,7 @@
   },
   {
     "route": "brand-green-leaf",
-    "slug": "brand-green-leaf",
+    "slug": "green-leaf",
     "title": "Green Leaf",
     "parent": "brands",
     "template": null,
@@ -291,7 +291,7 @@
   },
   {
     "route": "brand-lemon-tree",
-    "slug": "brand-lemon-tree",
+    "slug": "lemon-tree",
     "title": "The Lemon Tree",
     "parent": "brands",
     "template": null,
@@ -403,7 +403,7 @@
     "route": "blog",
     "slug": "blog",
     "title": "Blog",
-    "parent": "about",
+    "parent": null,
     "template": null,
     "menus": [
       {
@@ -531,7 +531,7 @@
     "id": null
   },
   {
-    "slug": "form-enquiry-form",
+    "slug": "enquiry",
     "title": "Enquiry Form",
     "parent": null,
     "template": null,
@@ -542,7 +542,7 @@
     "id": null
   },
   {
-    "slug": "form-careers",
+    "slug": "careers",
     "title": "Register your interest",
     "parent": null,
     "template": null,
@@ -553,7 +553,7 @@
     "id": null
   },
   {
-    "slug": "form-catalogue",
+    "slug": "catalogue",
     "title": "Where should we send it?",
     "parent": null,
     "template": null,
@@ -575,7 +575,7 @@
     "id": null
   },
   {
-    "slug": "drawer-site-menu",
+    "slug": "site-menu",
     "title": "Site menu",
     "parent": null,
     "template": null,
@@ -597,7 +597,7 @@
     "id": null
   },
   {
-    "slug": "mega-menu-about",
+    "slug": "about",
     "title": "About mega menu",
     "parent": null,
     "template": null,
@@ -614,7 +614,7 @@
     "id": null
   },
   {
-    "slug": "mega-menu-sectors",
+    "slug": "sectors",
     "title": "Sectors mega menu",
     "parent": null,
     "template": null,
@@ -631,7 +631,7 @@
     "id": null
   },
   {
-    "slug": "mega-menu-brands",
+    "slug": "brands",
     "title": "Brands mega menu",
     "parent": null,
     "template": null,
@@ -648,7 +648,7 @@
     "id": null
   },
   {
-    "slug": "mega-menu-trade",
+    "slug": "trade",
     "title": "Trade mega menu",
     "parent": null,
     "template": null,
@@ -665,7 +665,7 @@
     "id": null
   },
   {
-    "slug": "form-trade-application",
+    "slug": "trade-application",
     "title": "Trade Application",
     "parent": null,
     "template": null,

@@ -1024,6 +1024,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/skeleton-rules.mjs`
 - `declared(element)` → its inline style as `{ property: value }`.
+- `isMarker(element, m, D)` → whether the element is a small marker that holds nothing, in the flow of its text: a dot or a short bar within the sizes of `D` (`rules.dotMarker`); `lib/skeleton-propose.mjs` reads it to take stacked rows of a marker and one piece of text as one list.
 - `makeRules({ m, facts, surface: { slug, kind, name }, hooks: { siteInfoKinds, isColumnLabel, topBlock, blockOfKey } })` → `{ ruleFor(element, parentBlock), drawsChildren(block), declared }`. `ruleFor` returns the first verdict in precedence order (`{ rule, reason, action?: 'remove'|'unwrap'|'absorbed', into?, block?, attributes?, absorb?, handover? }`) or null; a rule with no entry in `rules` never fires. `drawsChildren` gives why a block draws an element's children (a leaf, an `array_item_schema` block, or `rules.drawsChildren`), else null.
 
 ### `lib/skeleton-rerun.mjs`
@@ -1032,7 +1033,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `rerunSkeletons({ client, db, repo?, skeletons, picks?, useBuilt? })` → `{ surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton } }, missing }` from the saved inventories; `skeletons` is `intake.json`'s, for each surface's id, kind and name; `useBuilt: false` proposes even a surface the client built. Throws when the decisions data is not sound.
 
 ### `lib/skeleton-propose.mjs`
-- `proposeSkeleton({ inventory, facts, surface, surfaceKind?, surfaceName?, built?, clientDecisions?, picks?, calKeys?, db? })` → `{ skeleton, proposal, problems }`; the skeleton passes `skeletonProblems` and `lintSkeleton`. Each row carries `rule` (the standing rule that settled it, or null) and, for an absorbed row, `into`; a bare wrapper holding exactly one list is unwrapped into it (`listWrapper`); with `built` (`sites/<client>/build/skeleton/built-surfaces.json`) every row is settled by that post (`clientBuiltSurface`). `proposal.counts.byRule` counts rows per rule.
+- `proposeSkeleton({ inventory, facts, surface, surfaceKind?, surfaceName?, built?, clientDecisions?, picks?, calKeys?, db? })` → `{ skeleton, proposal, problems }`; the skeleton passes `skeletonProblems` and `lintSkeleton`. Each row carries `rule` (the standing rule that settled it, or null) and, for an absorbed row, `into`; stacked text links, or stacked rows of a marker (`isMarker`) and one piece of text, are one list; a bare wrapper holding exactly one list is unwrapped into it (`listWrapper`); with `built` (`sites/<client>/build/skeleton/built-surfaces.json`) every row is settled by that post (`clientBuiltSurface`). `proposal.counts.byRule` counts rows per rule.
 
 ### `lib/skeleton-review.mjs`
 - `decisionCell(key, surface, clientDecisions, picks)` → the recorded decision for a key, or null. `reviewHtml({ inventory, proposal, surface, clientDecisions, picks })` → the review page.

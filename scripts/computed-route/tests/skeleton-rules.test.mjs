@@ -374,3 +374,52 @@ test( 'every fixture skeleton passes the skeleton rules (no style value, valid h
 	const trees = [ section( [ E( 'iframe', { snippet: '<iframe src="https://maps.google.com/maps?q=B11" data-dc-tpl="2"></iframe>' } ), E( 'acme-logo' ) ] ) ];
 	trees.forEach( ( t ) => assert.deepEqual( skeletonProblems( run( t ).skeleton ), [] ) );
 } );
+
+test( 'formControl: each control is the field block for its rendered type, its label, star and hint go, a wrapping <label> unwraps; MUST FAIL without the rule', () => {
+	const field = ( type, words, y ) => E( 'div', { style: 'display:flex;flex-direction:column;gap:8px', y }, [ E( 'label', { words, attrs: { for: `f-${ type }` } }, [ E( 'span', { words: '*', style: 'color:#C8412B' } ) ] ), E( 'input', { attrs: { id: `f-${ type }`, type } } ), E( 'span', { words: `Hint for ${ type }`, style: 'font-size:15px' } ) ] );
+	const consent = E( 'label', { style: 'display:flex;gap:10px', y: 200 }, [ E( 'input', { attrs: { type: 'checkbox', required: '' } } ), E( 'span', { words: 'I agree to the terms' } ) ] );
+	const form = E( 'form', {}, [ field( 'text', 'Business name', 0 ), field( 'email', 'Email', 60 ), field( 'tel', 'Phone', 120 ), E( 'select', { y: 160 } ), E( 'textarea', { y: 180 } ), consent ] );
+	const r = run( section( [ form ] ) );
+	const types = r.proposal.rows.filter( ( x ) => [ 'input', 'select', 'textarea' ].includes( x.tag ) ).map( ( x ) => [ x.block, x.rule ] );
+	assert.deepEqual( types, [ [ 'sgs/form-field-text', 'formControl' ], [ 'sgs/form-field-email', 'formControl' ], [ 'sgs/form-field-phone', 'formControl' ], [ 'sgs/form-field-select', 'formControl' ], [ 'sgs/form-field-textarea', 'formControl' ], [ 'sgs/form-field-consent', 'formControl' ] ] );
+	assert.deepEqual( settled( byWords( r, 'Hint for email' ) ), { block: null, action: 'remove', rule: 'formControl' } );
+	assert.equal( byWords( r, 'Business name' ).action, 'remove' );
+	assert.deepEqual( settled( row( r, ( x ) => 'label' === x.tag && ! x.words ) ), { block: null, action: 'unwrap', rule: 'formControl' } );
+	// A consent tick whose required flag is only in the template (`required="{{ true }}"`) is still the consent field.
+	const tick = E( 'label', {}, [ E( 'input', { attrs: { type: 'checkbox' }, snippet: '<input type="checkbox" required="{{ true }}" data-dc-tpl="2">' } ), E( 'span', { words: 'I agree' } ) ] );
+	assert.equal( byTag( run( section( [ tick ] ) ), 'input' ).block, 'sgs/form-field-consent' );
+	const off = run( section( [ form ] ), { facts: facts( 'formControl' ) } );
+	assert.ok( off.proposal.rows.filter( ( x ) => 'input' === x.tag ).every( ( x ) => 'formControl' !== x.rule && ! /form-field/.test( x.block || '' ) ) );
+	assert.notEqual( byWords( off, 'Hint for email' ).action, 'remove' );
+} );
+
+test( 'cardHeading: a card\'s bold, larger first text (after its number) is a heading; a bold line beside a same-size line is not; MUST FAIL without the rule', () => {
+	const card = ( y ) => E( 'div', { style: 'padding:24px;display:flex;flex-direction:column', y }, [ E( 'span', { words: '01', style: 'font-weight:700;font-size:13px' } ), E( 'div', { words: `Food Service ${ y }`, style: 'font-weight:700;font-size:19px' } ), E( 'div', { words: 'Quality ingredients for venues and caterers.', style: 'font-size:15px' } ) ] );
+	const grid = E( 'div', { display: 'grid', style: 'display:grid;grid-template-columns:repeat(2,1fr)' }, [ card( 0 ), card( 1 ) ] );
+	const flat = E( 'div', {}, [ E( 'div', { words: 'Same size line', style: 'font-weight:700;font-size:16px' } ), E( 'div', { words: 'Its neighbour', style: 'font-size:16px' } ) ] );
+	const r = run( section( [ grid, flat ] ) );
+	assert.deepEqual( settled( byWords( r, 'Food Service 0' ) ), { block: 'sgs/heading', action: null, rule: 'cardHeading' } );
+	assert.equal( byWords( r, '01' ).rule, null );
+	assert.notEqual( byWords( r, 'Same size line' ).rule, 'cardHeading' );
+	const quote = E( 'div', {}, [ E( 'span', { words: '“', style: 'font-weight:800;font-size:60px' } ), E( 'p', { words: 'Reliable every week.', style: 'font-size:18px' } ) ] );
+	assert.notEqual( byWords( run( section( [ quote ] ) ), '“' ).rule, 'cardHeading' );
+	assert.notEqual( byWords( run( section( [ grid ] ), { facts: facts( 'cardHeading' ) } ), 'Food Service 0' ).rule, 'cardHeading' );
+} );
+
+test( 'dotMarker: a dot or short bar beside text is removed, stacked dot rows are one list, an absolute glow is not a marker; MUST FAIL without the rule', () => {
+	const dot = ( s = 'width:8px;height:8px;border-radius:50%;background:#D8CA50' ) => E( 'span', { style: s } );
+	const bullet = ( w, y ) => E( 'div', { style: 'display:flex;gap:12px', y }, [ dot(), E( 'span', { words: w } ) ] );
+	const list = E( 'div', {}, [ bullet( 'Halal certified', 0 ), bullet( 'Next-day delivery', 30 ), bullet( 'Trade prices', 60 ) ] );
+	const meta = E( 'div', { display: 'flex' }, [ E( 'span', { words: 'Feb 2026' } ), dot( 'width:4px;height:4px;border-radius:50%' ), E( 'span', { words: '2 min read' } ) ] );
+	const kicker = E( 'div', { display: 'flex' }, [ dot( 'width:28px;height:2px;background:#D8CA50;display:inline-block' ), E( 'span', { words: 'Accreditations' } ) ] );
+	const r = run( section( [ list, meta, kicker ] ) );
+	assert.equal( r.skeleton[ 0 ].innerBlocks[ 0 ].name, facts().listSlug );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks[ 0 ].attributes.items.map( ( i ) => i.text ), [ 'Halal certified', 'Next-day delivery', 'Trade prices' ] );
+	const removed = r.proposal.rows.filter( ( x ) => 'span' === x.tag && ! x.words && 'remove' === x.action && 'dotMarker' === x.rule );
+	assert.equal( removed.length, 2 );
+	const off = run( section( [ list, meta, kicker ] ), { facts: facts( 'dotMarker' ) } );
+	assert.ok( off.proposal.rows.every( ( x ) => 'dotMarker' !== x.rule ) );
+	assert.notEqual( off.skeleton[ 0 ].innerBlocks[ 0 ].name, facts().listSlug );
+	const glow = run( section( [ E( 'div', {}, [ dot( 'position:absolute;width:8px;height:8px;background:#fff' ), E( 'p', { words: 'Body' } ) ] ) ] ) );
+	assert.notEqual( row( glow, ( x ) => 'span' === x.tag ).rule, 'dotMarker' );
+} );

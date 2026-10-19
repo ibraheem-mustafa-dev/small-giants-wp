@@ -2085,6 +2085,34 @@
     "2. Those selling point badges are not a trust bar because trust bars are a section class block. They are 3 label blocks placed next to eachother.",
     "yes to all 3"
    ]
+  },
+  "review20261019": {
+   "decided": "2026-10-19",
+   "beanQuote": "All recommended (Recommended)",
+   "scope": "Every remaining review row at once: the standing-rule groups, the individual skeleton rows (including the page surfaces), missing features, page map, palette roles, Site Info, flags, draft defects, not-defects, notices and inventory diffs.",
+   "newRules": [
+    "formControl: a form control is the SGS field block for its rendered type (a lone required checkbox is consent); its label, required marker, hint and character count are that block's settings; a <label> wrapped round it goes",
+    "cardHeading: the bold, larger first text of a card (not a bare number) is sgs/heading, link or not",
+    "dotMarker: a small dot or short bar beside text is the marker of the block holding the text; stacked rows of a marker and one piece of text are one list"
+   ],
+   "blockUpgrades": {
+    "page-about 444 (pinned heritage track)": "sgs/timeline, its cards removed",
+    "page-home 258 (milestones)": "sgs/timeline",
+    "page-home 298 (numbered steps)": "sgs/process-steps",
+    "page-home 270 (testimonial)": "sgs/testimonial-slider",
+    "page-blog 604 (post list)": "sgs/post-grid",
+    "page-about 323 (crumb trail)": "sgs/breadcrumbs",
+    "page-post 633 (blockquote)": "sgs/quote",
+    "page-terms 650": "sgs/heading (its number 651 typed in)",
+    "page-contact 535 (detail value)": "sgs/business-info",
+    "EnquiryForm 11 (topic tiles)": "sgs/form-field-tiles"
+   },
+   "pageMap": "no brand, site-part or surface prefixes in slugs (brands/sanam, careers form, about mega menu, site-menu drawer); sector page titles are the nav labels; blog is top level",
+   "palette": "same-hex tokens dedupe onto the slug of that value (border-accent and selection-bg to accent, topbar and section-blue to primary, surface-header to surface, selection-fg to custom-ink); --slate is footer-bg; --tint-on-blue is primary-text; --text-muted is text-muted; social brand colours are one-off",
+   "siteInfo": "address#1 kept, the long-form address#2 dropped, socials.google is the Google Business Profile https://share.google/llQBqDGp0tMA9EtAS; directions https://maps.app.goo.gl/JV4nsGnV4EkxMoz36 go to maps_url when Site Info is applied",
+   "missingFeatures": "rows duplicating skeleton rows follow the skeleton (map to the field block, difference when removed); the label bar (402) is built as a bar shape for sgs/label's dot; the form submit lift is built and the scatter hover is a difference (category 2)",
+   "inventoryDiffs": "125 rows theirs where the draft code proves Claude Design right (scroll, route, validation, pointer-leave, parent-driven hover and logo triggers; reduced-motion end states; the scatter status; the 6 post routes; toggling sc-ifs; formulas ours left null), the rest ours; the reader bugs behind them are fixed in a dedicated intake session before step 20",
+   "footerCredit": "723 stays sgs/business-info as decided in batch 4 (credit lines are business details); the 2026-10-19 recommendation of a button contradicted that and was not applied"
   }
  },
  "batch5RowIds": [
@@ -2240,18 +2268,6 @@
   {
    "what": "Batch 2 row 97 vs drawer copy",
    "why": "Batch 2 revised table sets 'Our Brands' hidden on tablet/mobile; batch 3 content notes say un-hide it on mobile/tablet in the drawer copy of post 4440. Both stand: desktop hidden below desktop in the panel, shown in the drawer copy."
-  },
-  {
-   "what": "Category 3 rows not presented in batches 1-4",
-   "why": "Only the surfaces top-bar, scroll-progress-bar, sticky-header, the three mega menus, mobile-tablet-drawer and footer were reviewed; whatsapp-button and all page-* surfaces have no approved decision. Review rows for those are not recorded."
-  },
-  {
-   "what": "Inventory diffs, page map, palette, Site Info, flags, notices",
-   "why": "Not reached in this session (categories 4 onward); only the 'ours' meaning and Site Info facts (GBP, directions, address, social placeholders need real URLs) were discussed."
-  },
-  {
-   "what": "Batch 5 not decided",
-   "why": "Bean: 'Batch 5 next session'. Presented rows listed in batch5RowIds only."
   }
  ]
 }

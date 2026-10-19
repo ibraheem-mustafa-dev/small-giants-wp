@@ -1,0 +1,2706 @@
+{
+	"surfaces": {
+		"footer": {
+			"Indus Foods Website v2/663#0": {
+				"block": "sgs/text",
+				"signature": "span|Speak to our sales team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			},
+			"Indus Foods Website v2/669#0": {
+				"block": "sgs/text",
+				"signature": "span|We reply within one working day",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			},
+			"Indus Foods Website v2/723#0": {
+				"block": "sgs/business-info",
+				"attributes": {
+					"displayType": "attribution"
+				},
+				"signature": "a|Website by Ibraheem Mustafa",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A website-credit link is Site Info attribution; sgs/business-info has displayType attribution and is the top candidate."
+			}
+		},
+		"page-home": {
+			"Indus Foods Website v2/208#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			},
+			"Indus Foods Website v2/258#0": {
+				"block": "sgs/timeline",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/timeline in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/260#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/260#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/260#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/260#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/261#0": {
+				"remove": true,
+				"signature": "span|1962",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/262#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/262#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/262#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/262#3": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/263#0": {
+				"remove": true,
+				"signature": "span|A shop on Ladypool Road",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/264#0": {
+				"remove": true,
+				"signature": "span|One of the UK’s first halal butchers and greengrocers.",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/270#0": {
+				"block": "sgs/testimonial-slider",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/testimonial-slider in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/271#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/272#0": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/273#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/274#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/275#0": {
+				"remove": true,
+				"signature": "span|“",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/276#0": {
+				"remove": true,
+				"signature": "p|Brilliant customer service. Our account manager knows our order patterns and always keeps us informed about new products.",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/277#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/278#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/279#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/280#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/281#0": {
+				"remove": true,
+				"signature": "span|Purchasing manager",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/282#0": {
+				"remove": true,
+				"signature": "span|Wholesale customer",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/283#0": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/284#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/286#0": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/286#1": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/286#2": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/286#3": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/298#0": {
+				"block": "sgs/process-steps",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/process-steps in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/300#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/300#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/300#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/301#0": {
+				"remove": true,
+				"signature": "span|1",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/302#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/302#1": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/302#2": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/303#0": {
+				"remove": true,
+				"signature": "h3|Apply online",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/304#0": {
+				"remove": true,
+				"signature": "p|Tell us about your business in a short form. It takes about five minutes.",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-about": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			},
+			"Indus Foods Website v2/362#0": {
+				"block": "sgs/counter",
+				"signature": "div|1962",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A large stat number paired with a short label in a repeated stat item; sgs/counter (number with prefix, suffix and label) fits the pattern, but a year like 1962 may not suit a counting animation."
+			},
+			"Indus Foods Website v2/363#0": {
+				"remove": true,
+				"signature": "div|Family-run since",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/440#0": {
+				"remove": true,
+				"signature": "span|01 / 05",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/441#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/443#0": {
+				"block": "sgs/text",
+				"signature": "span|Scroll to explore",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short instruction line beside the pinned-section progress bar; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/444#0": {
+				"block": "sgs/timeline",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/timeline in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/446#0": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#1": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#2": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#3": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#4": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#4": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/448#0": {
+				"remove": true,
+				"signature": "div|1962",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/449#0": {
+				"remove": true,
+				"signature": "h3|A shop in the Balti Triangle",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/450#0": {
+				"remove": true,
+				"signature": "p|Our founders open one of the UK’s first halal butchers and greengrocers on Ladypool Road, Sparkbrook.",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#4": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#3": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#4": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/487#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			},
+			"Indus Foods Website v2/490#0": {
+				"block": "sgs/heading",
+				"signature": "div|Our Story",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The bold title of a repeated card or item; sgs/heading (replaces core/heading) carries a title role better than body text, but the draft tag is a div so the level is unconfirmed."
+			},
+			"Indus Foods Website v2/491#0": {
+				"block": "sgs/text",
+				"signature": "div|Three generations and six decades of family heritage.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			}
+		},
+		"page-our-story": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/440#0": {
+				"remove": true,
+				"signature": "span|01 / 05",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/441#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/443#0": {
+				"block": "sgs/text",
+				"signature": "span|Scroll to explore",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short instruction line beside the pinned-section progress bar; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/444#0": {
+				"block": "sgs/timeline",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/timeline in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/446#0": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#1": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#2": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#3": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/446#4": {
+				"remove": true,
+				"signature": "article|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/447#4": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/451#4": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#3": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/452#4": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-certifications": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/411#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			},
+			"Indus Foods Website v2/420#0": {
+				"block": "sgs/text",
+				"signature": "div|We vet the producers we import from before their products join our range.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			}
+		},
+		"page-community": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-sustainability": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-careers": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-food-service": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			},
+			"Indus Foods Website v2/374#0": {
+				"block": "sgs/text",
+				"signature": "span|02",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			},
+			"Indus Foods Website v2/376#0": {
+				"block": "sgs/text",
+				"signature": "div|Bulk spices, pulses, nuts and flours supplied consistently to specification.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			}
+		},
+		"page-manufacturing": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			}
+		},
+		"page-retail": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			}
+		},
+		"page-wholesale": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			}
+		},
+		"page-brands": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/506#0": {
+				"block": "sgs/text",
+				"signature": "div|Own brand · rice, flour & quality foods",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+			}
+		},
+		"page-brand-sanam": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			}
+		},
+		"page-brand-shan": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			}
+		},
+		"page-brand-green-leaf": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			}
+		},
+		"page-brand-lemon-tree": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/336#0": {
+				"block": "sgs/multi-button",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A flex-wrap group whose children are proposed as sgs/button; sgs/multi-button is the DB container for one or more SGS Buttons and outranks a plain container."
+			}
+		},
+		"page-apply": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/14#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A 6px track with a fill bar showing form step progress; sgs/form has progress bar settings (progressBarColour in block_attributes), so its multi-step mode draws this bar."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/16#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#0": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#1": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#2": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#3": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#4": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/19#0": {
+				"remove": true,
+				"signature": "span|1",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/21#0": {
+				"remove": true,
+				"signature": "span|Business",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/33#6": {
+				"remove": true,
+				"signature": "label|Food hygiene rating",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#0": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/47#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A wrapped group of looped option chips that each pick a business type in the application form; sgs/form-field-tiles (visual tile selection, parent_block sgs/form) fits a choice field better than the multi-button candidate, but I cannot see whether one or several can be chosen."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/47#1": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A wrapped group of looped option chips that each pick a business type in the application form; sgs/form-field-tiles (visual tile selection, parent_block sgs/form) fits a choice field better than the multi-button candidate, but I cannot see whether one or several can be chosen."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/64#1": {
+				"remove": true,
+				"signature": "span|From your local authority (Food Standards Agency scheme).",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/84#0": {
+				"block": "sgs/text",
+				"signature": "span|Takes about 5 minutes · Your progress saves automatically",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short reassurance line beside the Continue button; sgs/text is the only candidate."
+			}
+		},
+		"page-catalogue": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-delivery": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/590#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			}
+		},
+		"page-terms": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/641#0": {
+				"remove": true,
+				"signature": "div|Layout draft: these summaries are placeholders. Replace them with Indus Foods’ approved trade terms before launch.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: \"Layout draft: these summaries are placeholders...\" is the designer's brief note, not site content."
+			},
+			"Indus Foods Website v2/646#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			},
+			"Indus Foods Website v2/650#0": {
+				"block": "sgs/heading",
+				"signature": "h3|Trade accounts",
+				"reason": "Bean marked block:sgs/heading in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/651#0": {
+				"remove": true,
+				"signature": "span|01",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-blog": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/601#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/604#0": {
+				"block": "sgs/post-grid",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/606#0": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#1": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#2": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#3": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#4": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#5": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#4": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#5": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#3": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#4": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#5": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#4": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#5": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#3": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#4": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#5": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/611#0": {
+				"remove": true,
+				"signature": "span|Seasonal",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/612#0": {
+				"remove": true,
+				"signature": "span|Feb 2026",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/613#0": {
+				"remove": true,
+				"signature": "div|Supporting the trade through Ramadan",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/614#0": {
+				"remove": true,
+				"signature": "div|How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year.",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#0": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#1": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#2": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#3": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#4": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#5": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			}
+		},
+		"page-contact": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/535#0": {
+				"block": "sgs/business-info",
+				"signature": "span|55–58 Stratford Street North",
+				"reason": "Bean marked block:sgs/business-info in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/536#2": {
+				"block": "sgs/text",
+				"signature": "span|We’ll route your message to the right team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short note under a contact detail (\"Sales, orders and accounts\"); sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/8#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A step number beside a form section heading; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/10#0": {
+				"remove": true,
+				"signature": "span|Choose all that apply",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/11#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/form-field-tiles in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#0": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#1": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#2": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#3": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#4": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#5": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/14#0": {
+				"remove": true,
+				"signature": "span|New trade account",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/15#0": {
+				"remove": true,
+				"signature": "span|Open an account with us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/21#0": {
+				"block": "sgs/text",
+				"signature": "span|02",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A step number beside a form section heading; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/37#0": {
+				"remove": true,
+				"signature": "span|Reply by",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/41#0": {
+				"block": "sgs/text",
+				"signature": "span|We reply within one working day. Your details are only used to answer your enquiry.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A privacy reassurance line beside the submit button; sgs/text is the only candidate."
+			}
+		},
+		"page-faqs": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/590#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			},
+			"Indus Foods Website v2/590#1": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			},
+			"Indus Foods Website v2/590#2": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A small tabular index number in a repeated item; kept as sgs/text (the only candidate) since no counter or list block owns it here."
+			}
+		},
+		"page-post-post-1": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/604#0": {
+				"block": "sgs/post-grid",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/606#0": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#1": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#2": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#0": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#1": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#2": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/620#0": {
+				"block": "sgs/text",
+				"signature": "span|Feb 2026",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The post date in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/622#0": {
+				"block": "sgs/text",
+				"signature": "span|2 min read",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The reading time in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/624#0": {
+				"block": "sgs/text",
+				"signature": "span|By the Indus Foods team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The byline in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/633#0": {
+				"block": "sgs/quote",
+				"signature": "blockquote|",
+				"reason": "Bean marked block:sgs/quote in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/634#0": {
+				"remove": true,
+				"signature": "span|“",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/635#0": {
+				"block": "sgs/text",
+				"signature": "span|The aim is simple: nobody should run short in the busiest weeks of their year.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The pull-quote words inside a blockquote; sgs/text is the only candidate, though the blockquote parent fits sgs/quote."
+			}
+		},
+		"page-post-post-2": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/604#0": {
+				"block": "sgs/post-grid",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/606#0": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#1": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#2": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#0": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#1": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#2": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/620#0": {
+				"block": "sgs/text",
+				"signature": "span|Feb 2026",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The post date in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/622#0": {
+				"block": "sgs/text",
+				"signature": "span|2 min read",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The reading time in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/624#0": {
+				"block": "sgs/text",
+				"signature": "span|By the Indus Foods team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The byline in the article meta row; sgs/text is the only candidate."
+			}
+		},
+		"page-post-post-3": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/604#0": {
+				"block": "sgs/post-grid",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/606#0": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#1": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#2": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#0": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#1": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#2": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/620#0": {
+				"block": "sgs/text",
+				"signature": "span|Feb 2026",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The post date in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/622#0": {
+				"block": "sgs/text",
+				"signature": "span|2 min read",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The reading time in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/624#0": {
+				"block": "sgs/text",
+				"signature": "span|By the Indus Foods team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The byline in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/633#0": {
+				"block": "sgs/quote",
+				"signature": "blockquote|",
+				"reason": "Bean marked block:sgs/quote in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/634#0": {
+				"remove": true,
+				"signature": "span|“",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/635#0": {
+				"block": "sgs/text",
+				"signature": "span|The aim is simple: nobody should run short in the busiest weeks of their year.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The pull-quote words inside a blockquote; sgs/text is the only candidate, though the blockquote parent fits sgs/quote."
+			}
+		},
+		"page-post-post-4": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/604#0": {
+				"block": "sgs/post-grid",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/606#0": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#1": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#2": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#0": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#1": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#2": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/620#0": {
+				"block": "sgs/text",
+				"signature": "span|Feb 2026",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The post date in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/622#0": {
+				"block": "sgs/text",
+				"signature": "span|2 min read",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The reading time in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/624#0": {
+				"block": "sgs/text",
+				"signature": "span|By the Indus Foods team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The byline in the article meta row; sgs/text is the only candidate."
+			}
+		},
+		"page-post-post-5": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/604#0": {
+				"block": "sgs/post-grid",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/606#0": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#1": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#2": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#0": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#1": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#2": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/620#0": {
+				"block": "sgs/text",
+				"signature": "span|Feb 2026",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The post date in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/622#0": {
+				"block": "sgs/text",
+				"signature": "span|2 min read",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The reading time in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/624#0": {
+				"block": "sgs/text",
+				"signature": "span|By the Indus Foods team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The byline in the article meta row; sgs/text is the only candidate."
+			}
+		},
+		"page-post-post-6": {
+			"Indus Foods Website v2/323#0": {
+				"block": "sgs/breadcrumbs",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/324#0": {
+				"remove": true,
+				"signature": "a|Home",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/325#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/326#0": {
+				"remove": true,
+				"signature": "a|About",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/327#0": {
+				"remove": true,
+				"signature": "span|/",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/328#0": {
+				"remove": true,
+				"signature": "span|About Us",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/604#0": {
+				"block": "sgs/post-grid",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2/606#0": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#1": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/606#2": {
+				"remove": true,
+				"signature": "a|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/607#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#0": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#1": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/608#2": {
+				"remove": true,
+				"signature": "image-slot|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/609#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#1": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/610#2": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#0": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#1": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/615#2": {
+				"remove": true,
+				"signature": "span|Read article",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2/620#0": {
+				"block": "sgs/text",
+				"signature": "span|Feb 2026",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The post date in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/622#0": {
+				"block": "sgs/text",
+				"signature": "span|2 min read",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The reading time in the article meta row; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2/624#0": {
+				"block": "sgs/text",
+				"signature": "span|By the Indus Foods team",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The byline in the article meta row; sgs/text is the only candidate."
+			}
+		},
+		"trade-account-application": {
+			"Indus Foods Website v2>TradeApplication@466#0/14#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A 6px track with a fill bar showing form step progress; sgs/form has progress bar settings (progressBarColour in block_attributes), so its multi-step mode draws this bar."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/16#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#0": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#1": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#2": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#3": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/18#4": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/33#6": {
+				"remove": true,
+				"signature": "label|Food hygiene rating",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: The visible label of a form input; SGS form-field blocks own a label attribute (block_attributes) and render it, so a separate text block would duplicate it, but I cannot confirm the field block will receive these words."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/35#0": {
+				"remove": true,
+				"signature": "span|*",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/47#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A wrapped group of looped option chips that each pick a business type in the application form; sgs/form-field-tiles (visual tile selection, parent_block sgs/form) fits a choice field better than the multi-button candidate, but I cannot see whether one or several can be chosen."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/47#1": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A wrapped group of looped option chips that each pick a business type in the application form; sgs/form-field-tiles (visual tile selection, parent_block sgs/form) fits a choice field better than the multi-button candidate, but I cannot see whether one or several can be chosen."
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/64#1": {
+				"remove": true,
+				"signature": "span|From your local authority (Food Standards Agency scheme).",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>TradeApplication@466#0/84#0": {
+				"block": "sgs/text",
+				"signature": "span|Takes about 5 minutes · Your progress saves automatically",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A short reassurance line beside the Continue button; sgs/text is the only candidate."
+			}
+		},
+		"contact-enquiry": {
+			"Indus Foods Website v2>EnquiryForm@468#0/8#0": {
+				"block": "sgs/text",
+				"signature": "span|01",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A step number beside a form section heading; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/10#0": {
+				"remove": true,
+				"signature": "span|Choose all that apply",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/11#0": {
+				"block": "sgs/form-field-tiles",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/form-field-tiles in the intake review on 2026-10-19"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#0": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#1": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#2": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#3": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#4": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/13#5": {
+				"remove": true,
+				"signature": "button|",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/21#0": {
+				"block": "sgs/text",
+				"signature": "span|02",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A step number beside a form section heading; sgs/text is the only candidate."
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/37#0": {
+				"remove": true,
+				"signature": "span|Reply by",
+				"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block"
+			},
+			"Indus Foods Website v2>EnquiryForm@468#0/41#0": {
+				"block": "sgs/text",
+				"signature": "span|We reply within one working day. Your details are only used to answer your enquiry.",
+				"reason": "Bean accepted the finaliser's pick in the intake review on 2026-10-19: A privacy reassurance line beside the submit button; sgs/text is the only candidate."
+			}
+		}
+	}
+}
