@@ -182,16 +182,20 @@ function testedKeys( p, n, stop ) {
 // listeners passed], members: [member names passed], called: bool }. `called` is false when the code sits in a member
 // nothing calls, wires or references (METHOD.md §5.6 dead code).
 export function triggerOf( model, comp, node, seen = new Set() ) {
+	const t = triggerWalk( model, comp, node, seen );
+	// A write behind an early return on a constant, or in a loop over a list only such code fills, never runs: it keeps the
+	// trigger its code is wired to (a scroll listener) and is dead code.
+	const p = model.progs.get( comp );
+	const dead = constantReturn( p, node ) || emptyLoop( p, node );
+	return dead ? { ...t, called: false, detail: `${ t.detail } (never runs: ${ dead.detail })` } : t;
+}
+
+function triggerWalk( model, comp, node, seen ) {
 	const p = model.progs.get( comp );
 	const via = [];
 	const members = [];
 	let delay = null;
 	const done = ( t ) => ( { ...t, via, members, delay: t.delay ?? delay, called: false !== t.called } );
-	// A write behind an early return on a constant never runs, whatever listener or timer it also sits in.
-	const dead = constantReturn( p, node ) || emptyLoop( p, node );
-	if ( dead ) {
-		return done( { type: 'state', detail: dead.detail, called: false } );
-	}
 	for ( const a of [ node, ...ancestors( p, node ) ] ) {
 		if ( ! isFn( a ) ) {
 			continue;
