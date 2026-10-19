@@ -237,5 +237,102 @@ class Apply(unittest.TestCase):
         self.assertEqual(site.option["phone"], "0121 729 8233")
 
 
+def intake_file(rows, review):
+    p = Path(tempfile.mkdtemp()) / "intake.json"
+    p.write_text(json.dumps({"siteInfo": {"rows": rows, "refused": []}, "review": review}), encoding="utf-8")
+    return p
+
+
+def si_row(row_id, key, value, normalised=None):
+    return {"rowId": row_id, "key": key, "value": value, "normalised": value if normalised is None else normalised,
+            "sources": [], "valid": True, "reason": None}
+
+
+def mark(row_id, value):
+    return {"rowId": row_id, "rowType": "site-info", "contentHash": "x", "mark": value}
+
+
+class IntakeInput(unittest.TestCase):
+    """--intake: only marked rows reach the handover; drop and unmarked rows never do; edit replaces the value."""
+
+    def read(self, rows, review):
+        return mod.site_info_intake.read_intake(intake_file(rows, review))
+
+    def test_accept_uses_row_value_and_email_normalised(self):
+        entries, refused = self.read(
+            [si_row("siteinfo:phone", "phone", "0121 771 4330", "01217714330"),
+             si_row("siteinfo:email", "email", "Amir@Indus.com ", "amir@indus.com")],
+            [mark("siteinfo:phone", "accept"), mark("siteinfo:email", "accept")])
+        self.assertEqual({e["key"]: e["address"] for e in entries}, {"phone": "0121 771 4330", "email": "amir@indus.com"})
+        self.assertEqual(refused, [])
+
+    def test_edit_mark_replaces_the_value(self):
+        entries, _ = self.read([si_row("siteinfo:socials.google", "socials.google", "https://www.google.com/maps/dir/?api=1")],
+                               [mark("siteinfo:socials.google", "edit:https://share.google/abc123")])
+        self.assertEqual([(e["key"], e["address"]) for e in entries], [("socials.google", "https://share.google/abc123")])
+
+    def test_dropped_row_never_reaches_the_handover(self):
+        entries, refused = self.read(
+            [si_row("siteinfo:address#1", "address", "55-58 Stratford St N"), si_row("siteinfo:address#2", "address", "55-58 Stratford Street North")],
+            [mark("siteinfo:address#1", "accept"), mark("siteinfo:address#2", "drop")])
+        self.assertEqual([e["address"] for e in entries], ["55-58 Stratford St N"])
+        self.assertEqual([(r["rowId"], r["reason"]) for r in refused], [("siteinfo:address#2", "dropped in review")])
+
+    def test_unmarked_and_missing_rows_are_refused(self):
+        entries, refused = self.read(
+            [si_row("siteinfo:phone", "phone", "0121 771 4330"), si_row("siteinfo:email", "email", "a@indus.com"),
+             si_row("siteinfo:copyright", "copyright", "(c) 2026 Indus")],
+            [mark("siteinfo:phone", None), mark("siteinfo:email", "  ")])
+        self.assertEqual(entries, [])
+        self.assertEqual({r["rowId"]: r["reason"] for r in refused}, {
+            "siteinfo:phone": "not marked in review", "siteinfo:email": "not marked in review",
+            "siteinfo:copyright": "no review entry"})
+
+    def test_other_row_types_marks_do_not_count(self):
+        entries, refused = self.read([si_row("siteinfo:phone", "phone", "0121 771 4330")],
+                                     [{"rowId": "siteinfo:phone", "rowType": "palette", "mark": "accept"}])
+        self.assertEqual((entries, refused[0]["reason"]), ([], "no review entry"))
+
+    def test_unknown_mark_and_empty_edit_refused(self):
+        entries, refused = self.read([si_row("a", "phone", "0121 771 4330"), si_row("b", "email", "a@indus.com")],
+                                     [mark("a", "maybe"), mark("b", "edit:  ")])
+        self.assertEqual(entries, [])
+        self.assertIn("unknown review mark", refused[0]["reason"])
+        self.assertIn("no value", refused[1]["reason"])
+
+    def test_hours_keys_map_to_site_info_days(self):
+        entries, _ = self.read([si_row("h1", "hours.monday", "09:30–17:00"), si_row("h2", "hours.sunday", "closed")],
+                               [mark("h1", "accept"), mark("h2", "accept")])
+        self.assertEqual([e["key"] for e in entries], ["opening_hours.mon", "opening_hours.sun"])
+        rows = mod.plan(entries, {})
+        self.assertEqual([r["action"] for r in rows], ["WRITE", "WRITE"])
+
+    def test_missing_site_info_section_raises(self):
+        p = Path(tempfile.mkdtemp()) / "intake.json"
+        p.write_text(json.dumps({"review": []}), encoding="utf-8")
+        with self.assertRaises(ValueError):
+            mod.site_info_intake.read_intake(p)
+
+
+class SetInput(unittest.TestCase):
+    def test_set_builds_an_entry_and_maps_url_is_writable(self):
+        entries = mod.site_info_intake.parse_sets(["maps_url=https://maps.app.goo.gl/JV4nsGnV4EkxMoz36"])
+        self.assertEqual(entries[0]["key"], "maps_url")
+        self.assertEqual(mod.plan(entries, {})[0]["action"], "WRITE")
+
+    def test_malformed_set_raises(self):
+        for item in ("maps_url", "=x", "maps_url="):
+            with self.subTest(item=item), self.assertRaises(ValueError):
+                mod.site_info_intake.parse_sets([item])
+
+    def test_new_keys_validated(self):
+        self.assertIsNotNone(mod.address_problem("maps_url", "javascript:alert(1)"))
+        self.assertIsNotNone(mod.address_problem("maps_url", "https://example.com/x"))
+        self.assertIsNotNone(mod.address_problem("copyright", "javascript:alert(1)"))
+        self.assertIsNotNone(mod.address_problem("opening_hours.mon", "9-5\r\nX"))
+        self.assertIsNone(mod.address_problem("copyright", "© 2026 Indus Foods Ltd"))
+        self.assertIn("not a Site Info key", mod.address_problem("opening_hours.monday", "9-5"))
+
+
 if __name__ == "__main__":
     unittest.main()

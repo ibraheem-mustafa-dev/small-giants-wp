@@ -1394,7 +1394,7 @@ Status: not built.
 
 *Done when:* the Indus test site's Site Info holds the confirmed values and the header and footer render them.
 
-Status: the script is built; it has run only on test data. Taking the intake proposal as input is not built.
+Status: built and run on Indus 2026-10-19. `--intake <intake.json>` reads the confirmed proposal (`plugins/sgs-blocks/scripts/site_info_intake.py`: `accept` takes the row's value, `edit:<value>` replaces it, `drop`, an unmarked row or an unknown mark is refused and listed; intake's `hours.<day>` maps to `opening_hours.<mon..sun>`), `--set key=value` adds a fact Bean gives outside the draft (`maps_url`), and `copyright`, `opening_hours.*` and `maps_url` are accepted keys (`scripts/tests/test_provision_site_info_from_draft.py`, 42 pass; the refusal tests fail against a copy that treats unmarked or dropped rows as accepted). On `indus-test` the dry run proposed 14 writes and 0 skips, and `--apply` wrote and read back all 14 (backup `.claude/backups/2026-10-19/indus-test/sgs_site_info.json`); the live header and footer render the phone, email, address and Google Business Profile link. Open: intake's own dry run (`lib/intake-siteinfo.mjs::handoverFor`) still hands over contact and social keys only.
 
 ## 13. Shop surfaces
 

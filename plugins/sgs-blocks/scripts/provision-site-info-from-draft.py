@@ -21,11 +21,17 @@ Rules (the dry run prints every decision):
     than http(s) for a social link, tel: for a phone, mailto: for an email);
   - two entries for one key with different addresses are both skipped (conflicting addresses).
 
+A second input is the confirmed Site Info proposal from intake (FR-48-59): --intake <intake.json> reads
+siteInfo.rows[] with Bean's review marks (accept, edit:<value>, drop; an unmarked row is refused and listed),
+see site_info_intake.py. Facts Bean gives outside the draft arrive as --set key=value.
+
 Usage:
   python plugins/sgs-blocks/scripts/provision-site-info-from-draft.py --site eye-care-test \\
       --handover sites/eye-care-ward-end/build/qa/header/handover.json            # dry run
   python plugins/sgs-blocks/scripts/provision-site-info-from-draft.py --site eye-care-test \\
       --handover <path> [--handover <path> ...] --apply
+  python plugins/sgs-blocks/scripts/provision-site-info-from-draft.py --site indus-test \
+      --intake sites/indus-foods/build/intake/intake.json --set maps_url=https://maps.app.goo.gl/...  # dry run
 
 --apply first backs the whole option up to .claude/backups/<today>/<site>/sgs_site_info.json
 (md5 printed), writes each proposed key through Sgs_Site_Info::set() under `wp --user=Claude`
@@ -47,16 +53,24 @@ import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import site_info_intake  # noqa: E402  (beside this script)
+
 SCRIPTS = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPTS.parents[2]
 DEFAULT_BACKUP_ROOT = REPO_ROOT / ".claude" / "backups"
 WP_USER = "Claude"
 
-# Mirrors Sgs_Site_Info_Binding::EDITOR_KEYS (the contact and social keys a draft can show).
+# Sgs_Site_Info_Binding::EDITOR_KEYS (the contact and social keys a draft can show), plus the text and link keys
+# intake proposes or Bean confirms (Sgs_Site_Info::build_sanitisers): copyright, per-day hours and maps_url.
+OPENING_HOURS_KEYS = tuple(f"opening_hours.{d}" for d in ("mon", "tue", "wed", "thu", "fri", "sat", "sun"))
+TEXT_KEYS = ("copyright", *OPENING_HOURS_KEYS)
+LINK_KEYS = ("maps_url",)
 ALLOWED_KEYS = (
     "phone", "email", "address",
     "socials.whatsapp", "socials.facebook", "socials.instagram", "socials.twitter",
     "socials.linkedin", "socials.youtube", "socials.tiktok", "socials.google",
+    *TEXT_KEYS, *LINK_KEYS,
 )
 MAX_URL = 2000
 MAX_TEXT = 300
@@ -159,16 +173,16 @@ def address_problem(key: str, address: str) -> str | None:
     value = raw.strip()
     if value in ("", "#"):
         return "empty address"
-    if len(value) > (MAX_TEXT if key in ("phone", "email", "address") else MAX_URL):
+    if len(value) > (MAX_TEXT if key in ("phone", "email", "address", *TEXT_KEYS) else MAX_URL):
         return "address too long"
     if key == "phone":
         return _phone_problem(value)
     if key == "email":
         return _email_problem(value)
-    if key == "address":
+    if key == "address" or key in TEXT_KEYS:
         scheme = _scheme(value)
         if scheme in DANGEROUS_SCHEMES:
-            return f"scheme {scheme} is not a postal address"
+            return f"scheme {scheme} is not {'a postal address' if key == 'address' else 'text'}"
         return None
     return _social_problem(key, value)
 
@@ -392,18 +406,37 @@ def main() -> int:
         sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--site", "--target", dest="site", required=True, help="a build-deploy.py TARGETS key")
-    parser.add_argument("--handover", type=Path, action="append", required=True, nargs="+",
+    parser.add_argument("--handover", type=Path, action="append", default=[], nargs="+",
                         help="one or more handover.json paths")
+    parser.add_argument("--intake", type=Path, help="intake.json: the confirmed siteInfo rows with Bean's review marks")
+    parser.add_argument("--set", dest="sets", action="append", default=[], metavar="KEY=VALUE",
+                        help="a confirmed fact the draft does not hold (repeatable), e.g. maps_url=https://...")
     parser.add_argument("--apply", action="store_true", help="write the proposed keys (default: dry run)")
     parser.add_argument("--backup-root", type=Path, default=DEFAULT_BACKUP_ROOT, help=argparse.SUPPRESS)
     args = parser.parse_args()
 
     paths = [p for group in args.handover for p in group]
-    missing = [str(p) for p in paths if not p.is_file()]
+    if not paths and not args.intake and not args.sets:
+        parser.error("give --handover, --intake or --set")
+    missing = [str(p) for p in [*paths, *([args.intake] if args.intake else [])] if not p.is_file()]
     if missing:
-        sys.exit(f"ERROR: handover file not found: {', '.join(missing)}")
+        sys.exit(f"ERROR: input file not found: {', '.join(missing)}")
     entries, ignored = read_entries(paths)
-    print(f"{len(entries)} site-info entries with a key and an address ({ignored} other entries ignored)")
+    if paths:
+        print(f"{len(entries)} site-info entries with a key and an address ({ignored} other entries ignored)")
+    try:
+        if args.intake:
+            intake_entries, refused = site_info_intake.read_intake(args.intake)
+            entries += intake_entries
+            print(f"{len(intake_entries)} confirmed intake rows from {args.intake}; {len(refused)} not applied")
+            if refused:
+                print(site_info_intake.format_refused(refused))
+        set_entries = site_info_intake.parse_sets(args.sets)
+    except ValueError as error:
+        sys.exit(f"ERROR: {error}")
+    entries += set_entries
+    if set_entries:
+        print(f"{len(set_entries)} --set entries")
     if not entries:
         return 0
 
