@@ -77,7 +77,7 @@ export function OptionDescriptionPreview( { description, colour } ) {
 	}
 	return (
 		<span className="sgs-choice-flow-question__option-description" style={ textPaintPreview( colour, '', palette ) }>
-			{ description.slice( 0, 140 ) }
+			{ Array.from( description ).slice( 0, 140 ).join( '' ) }
 		</span>
 	);
 }

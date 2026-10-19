@@ -250,11 +250,13 @@ $radius_value = $has_radius ? $border_radius : '';
 // Box-present = either background channel (native style.color.background OR the
 // custom backgroundColour attr), a base padding with at least one valid side
 // (sgs_box_object_longhand_list() lists only the set sides), or a meaningful
-// border-radius. Drives the display model.
+// border-radius, or an end shape (the shape cuts a box, so the label hugs its
+// text instead of spanning the row). Drives the display model.
 $box_present = ( '' !== $style_color_bg )
 	|| ( '' !== $background_colour )
 	|| ( array() !== sgs_box_object_longhand_list( $padding_obj, 'padding' ) )
-	|| $has_radius;
+	|| $has_radius
+	|| $has_end_shape;
 
 // Display model (contract §C): a bare eyebrow renders display:block (so its
 // margin-bottom paints); a boxed label hugs at inline-block; a full-width label

@@ -382,7 +382,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label={ __( 'Description', 'sgs-blocks' ) }
 								value={ tile.description || '' }
 								onChange={ ( val ) =>
-									updateTile( index, 'description', val.slice( 0, DESCRIPTION_MAX_LENGTH ) )
+									updateTile( index, 'description', Array.from( val ).slice( 0, DESCRIPTION_MAX_LENGTH ).join( '' ) )
 								}
 								maxLength={ DESCRIPTION_MAX_LENGTH }
 								help={ __(
@@ -526,7 +526,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								<span className="sgs-form-tile__label" style={ tileLabelPaint }>{ tile.label || '' }</span>
 								{ tile.description && (
 									<span className="sgs-form-tile__description" style={ tileDescriptionPaint }>
-										{ tile.description.slice( 0, DESCRIPTION_MAX_LENGTH ) }
+										{ Array.from( tile.description ).slice( 0, DESCRIPTION_MAX_LENGTH ).join( '' ) }
 									</span>
 								) }
 								<span className="sgs-form-tile__check" aria-hidden="true"></span>

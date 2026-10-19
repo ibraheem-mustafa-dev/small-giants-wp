@@ -46,8 +46,9 @@ def check_snapshot(snapshot: dict) -> list[str]:
     for key, tone in THUMB_TONES.items():
         if key in absent:
             continue
-        value = ft.resolve(scrollbar[key], palette)
-        if value is None:
+        # The ratio is measured on the colour as written: an alpha thumb is composited over each ground.
+        value = roster.resolve_colour(scrollbar[key], palette)
+        if ft.norm_hex(value) is None:
             problems.append(f"{key} does not resolve to a colour ({scrollbar[key]})")
             continue
         low, slug = ft.min_ratio(value, [(s, h) for s, h, t in grounds if t == tone])

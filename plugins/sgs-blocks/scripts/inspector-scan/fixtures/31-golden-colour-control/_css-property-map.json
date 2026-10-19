@@ -24,5 +24,13 @@
 	"sgs/prefixed-shared-row-wrong-mechanism": {
 		"headingFixtureColour": "color",
 		"headingFixtureColourHover": "color"
+	},
+	"sgs/mixed-mount-decoration": {
+		"headingFixtureColour": "-webkit-text-stroke-color",
+		"headingFixtureColourHover": "-webkit-text-stroke-color"
+	},
+	"sgs/mixed-mount-text": {
+		"bodyFixtureColour": "color",
+		"bodyFixtureColourHover": "color"
 	}
 }

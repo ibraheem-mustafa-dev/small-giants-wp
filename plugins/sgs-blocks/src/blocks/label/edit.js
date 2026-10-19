@@ -160,7 +160,7 @@ function buildStyle( attributes, tier ) {
 	const hasStyleVariant = typeof className === 'string' &&
 		className.includes( 'is-style-' );
 	if ( ! hasStyleVariant ) {
-		// render.php's `null !== $base_padding_shorthand`: true when any padding side is set.
+		// render.php's `$box_present`: a padding side, a fill, a radius or an end shape.
 		const boxPresent = Object.keys( paddingLonghands ).length > 0 || !! backgroundColour || hasRadius || hasEndShape;
 		if ( fullWidth ) {
 			previewStyle.display = 'block';
@@ -170,6 +170,13 @@ function buildStyle( attributes, tier ) {
 		} else {
 			previewStyle.display = 'block';
 		}
+	} else if (
+		hasEndShape &&
+		! className.includes( 'is-style-pill-fill' ) &&
+		! className.includes( 'is-style-pill-wrap' )
+	) {
+		// render.php's shaped root: a variant other than the pills sits inline-block.
+		previewStyle.display = 'inline-block';
 	}
 
 	// Remove undefined values so the DOM stays clean.

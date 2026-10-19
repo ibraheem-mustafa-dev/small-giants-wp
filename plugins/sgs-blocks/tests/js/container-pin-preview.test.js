@@ -25,6 +25,12 @@ describe( 'pinEdgeTopPreview', () => {
 		);
 	} );
 
+	it( 'maps a non-numeric preset slug to its spacing custom property', () => {
+		expect( pinEdgeTopPreview( { ...BASE, pinGap: { desktop: 'var:preset|spacing|x-large' } }, 'desktop' ) ).toBe(
+			'calc(var(--sgs-header-height, 0px) + var(--wp--preset--spacing--x-large))'
+		);
+	} );
+
 	it( 'falls back to the shop filter spacing when no gap is set', () => {
 		expect( pinEdgeTopPreview( { ...BASE, pinGap: {} }, 'desktop' ) ).toBe(
 			'calc(var(--sgs-header-height, 0px) + var(--wp--preset--spacing--40, 1.5rem))'

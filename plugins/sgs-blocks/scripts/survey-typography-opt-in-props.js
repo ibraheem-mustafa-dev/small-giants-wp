@@ -353,6 +353,10 @@ function main() {
 		console.error( `\n[survey-typography-opt-in-props] GATE FAILED: ${ c.todo } site(s). Run --fix --apply.` );
 		process.exit( 1 );
 	}
+	if ( c.unrecognised > 0 ) {
+		console.error( `\n[survey-typography-opt-in-props] GATE FAILED: ${ c.unrecognised } site(s) the survey cannot read (a dynamic value or a bare mention); make each a literal so it can be judged.` );
+		process.exit( 1 );
+	}
 	console.log( `[survey-typography-opt-in-props] GATE PASS (${ c.targets + c.optOuts } site(s), unrecognised=${ c.unrecognised }).` );
 }
 

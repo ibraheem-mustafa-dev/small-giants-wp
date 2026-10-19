@@ -12,7 +12,7 @@
  * core block that allows every format never shows them.
  */
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { registerFormatType, insertObject } from '@wordpress/rich-text';
 import {
@@ -67,6 +67,12 @@ function HighlightEdit( {
 } ) {
 	const inSgsBlock = useInSgsBlock();
 	const [ isOpen, setOpen ] = useState( false );
+	// The popover unmounts without onClose when the highlight goes away; close it so it cannot reopen unprompted.
+	useEffect( () => {
+		if ( ! isActive ) {
+			setOpen( false );
+		}
+	}, [ isActive ] );
 	if ( ! inSgsBlock ) {
 		return null;
 	}
@@ -130,6 +136,7 @@ function InlinePhotoEdit( {
 						/>
 						{ isObjectActive && (
 							<PhotoPopover
+								key={ `${ photoId( activeObjectAttributes ) ?? '' }-${ value.start }` }
 								value={ value }
 								onChange={ onChange }
 								settings={ inlinePhotoFormat }

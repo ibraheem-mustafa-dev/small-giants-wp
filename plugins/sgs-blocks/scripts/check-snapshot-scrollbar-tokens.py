@@ -116,6 +116,12 @@ def self_test() -> int:
     problems = st.check_snapshot(make_snapshot({**good, "thumbOnDark": dim}))
     expect(any("thumbOnDark" in p and "under 2.0:1" in p for p in problems), "refuse: a dim thumbOnDark on a dark ground fails --check")
 
+    # 3b. negative control: a translucent thumb is measured composited, never as its opaque hex
+    faint = "#00000010"
+    expect(ft.ratio(ft.norm_hex(faint), "#ffffff") > 2.0, f"control: {faint} with its alpha dropped would read as black")
+    problems = st.check_snapshot(make_snapshot({**good, "thumb": faint}))
+    expect(any("thumb" in p and "under 2.0:1" in p for p in problems), "refuse: a translucent 1.1:1 thumb fails --check")
+
     # 4. the boundary: exactly the floor passes, just under fails
     expect(st.MIN_THUMB == 2.0, "floor: the thumb minimum is 2:1, never 3:1")
     grey_ok = "#8a8a8a"

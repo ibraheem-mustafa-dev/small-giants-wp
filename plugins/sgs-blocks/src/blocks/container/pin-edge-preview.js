@@ -7,7 +7,7 @@
  */
 
 import { resolveTier, tierValueOf } from '../../utils/responsive';
-import { gapVar } from '../../utils/tokens';
+import { gapVar, spacingVar } from '../../utils/tokens';
 
 /** The gap when none is set: the shop filter's default spacing. */
 const DEFAULT_GAP = 'var(--wp--preset--spacing--40, 1.5rem)';
@@ -32,6 +32,6 @@ export function pinEdgeTopPreview( attributes, tier ) {
 	const stored = tierValueOf( attributes.pinGap, tier );
 	const reference =
 		'string' === typeof stored ? stored.match( PRESET_REFERENCE ) : null;
-	const gap = reference ? gapVar( reference[ 1 ] ) : gapVar( stored );
+	const gap = reference ? spacingVar( reference[ 1 ] ) : gapVar( stored );
 	return `calc(var(--sgs-header-height, 0px) + ${ gap || DEFAULT_GAP })`;
 }

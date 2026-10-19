@@ -39,9 +39,9 @@ describe( 'layerPreviewStyle', () => {
 		expect( style.maxWidth ).toBe( '30%' );
 	} );
 
-	it( 'a layer with content takes pointer events, an image alone does not', () => {
+	it( 'the canvas layer always takes pointer events so an empty layer keeps a clickable appender', () => {
 		expect( layerPreviewStyle( {}, 'desktop', true ).pointerEvents ).toBe( 'auto' );
-		expect( layerPreviewStyle( {}, 'desktop', false ).pointerEvents ).toBe( 'none' );
+		expect( layerPreviewStyle( {}, 'desktop', false ).pointerEvents ).toBe( 'auto' );
 	} );
 
 	it( 'opacity defaults to fully opaque and flip joins the transform', () => {

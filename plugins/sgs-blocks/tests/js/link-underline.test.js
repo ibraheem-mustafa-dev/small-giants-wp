@@ -52,6 +52,15 @@ describe( 'linkUnderlinePreviewCss', () => {
 		expect( css ).toContain( 'background-image:linear-gradient(currentColor,currentColor);' );
 	} );
 
+	it( 'restores the underline in forced-colours mode for none and hover, and the sweep uses the easing token', () => {
+		const forced = `@media (forced-colors: active){${ SEL } a{text-decoration:underline;}}`;
+		expect( linkUnderlinePreviewCss( SEL, { mode: 'none' } ) ).toBe( `${ SEL } a{text-decoration:none;}${ forced }` );
+		expect( linkUnderlinePreviewCss( SEL, { mode: 'hover' } ) ).toContain( `@media (forced-colors: active){${ SEL } a{text-decoration-line:underline;}}` );
+		const sweep = linkUnderlinePreviewCss( SEL, { mode: 'sweep' } );
+		expect( sweep ).toContain( 'var(--wp--custom--easing--ease-out, ease-out);}' );
+		expect( sweep.endsWith( forced ) ).toBe( true );
+	} );
+
 	it( 'prints nothing for an unset mode, a colour with no mode, or an unknown mode', () => {
 		expect( linkUnderlinePreviewCss( SEL, {} ) ).toBe( '' );
 		expect( linkUnderlinePreviewCss( SEL, { colour: '#FFFAF0', offset: '4px' } ) ).toBe( '' );

@@ -26,8 +26,10 @@ export function linkUnderlinePreviewCss( selector, { mode = '', thickness = '', 
 		return '';
 	}
 	const link = `${ selector } a`;
+	// Forced-colours mode paints links in the system colour only: the line comes back at rest.
+	const forced = `@media (forced-colors: active){${ link }{text-decoration:underline;}}`;
 	if ( 'none' === mode ) {
-		return `${ link }{text-decoration:none;}`;
+		return `${ link }{text-decoration:none;}${ forced }`;
 	}
 	const size = thickness ? bareLength( thickness ) : '';
 	const gap = offset ? bareLength( offset ) : '';
@@ -42,7 +44,11 @@ export function linkUnderlinePreviewCss( selector, { mode = '', thickness = '', 
 		if ( 'always' === mode ) {
 			return rest + ( inkHover ? `${ link }:hover,${ link }:focus-visible{text-decoration-color:${ inkHover };}` : '' );
 		}
-		return rest + `${ link }:hover,${ link }:focus-visible{text-decoration-line:underline;${ inkHover ? `text-decoration-color:${ inkHover };` : '' }}`;
+		return (
+			rest +
+			`${ link }:hover,${ link }:focus-visible{text-decoration-line:underline;${ inkHover ? `text-decoration-color:${ inkHover };` : '' }}` +
+			`@media (forced-colors: active){${ link }{text-decoration-line:underline;}}`
+		);
 	}
 	if ( linkGradient ) {
 		return '';
@@ -51,9 +57,10 @@ export function linkUnderlinePreviewCss( selector, { mode = '', thickness = '', 
 	const line = ink || 'currentColor';
 	return (
 		`${ link }{text-decoration:none;background-image:linear-gradient(${ line },${ line });background-repeat:no-repeat;background-origin:content-box;` +
-		`background-position:0 100%;background-size:0 ${ sweep };transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;}` +
+		`background-position:0 100%;background-size:0 ${ sweep };transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) var(--wp--custom--easing--ease-out, ease-out);}` +
 		`${ link }:dir(rtl){background-position:100% 100%;}` +
 		`${ link }:hover,${ link }:focus-visible{background-size:100% ${ sweep };${ inkHover ? `background-image:linear-gradient(${ inkHover },${ inkHover });` : '' }}` +
-		`@media (prefers-reduced-motion: reduce){${ link }{transition:none;}}`
+		`@media (prefers-reduced-motion: reduce){${ link }{transition:none;}}` +
+		forced
 	);
 }

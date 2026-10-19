@@ -406,18 +406,30 @@ function checkResponsiveSwitcher( blockName, blockDir, attrs ) {
  *
  * Returns an array of finding objects.
  */
-const CSS_UNIT_RE = /^(px|%|em|rem|ch|ex|vw|vh|vmin|vmax|svh|lvh|dvh|cqi|cqb|fr|deg|ms|s)$/;
+// Sizing-mode words a *Unit enum may carry beside real units. An explicit allowlist: any other
+// value (a unit such as cqw, pt or dvh included) is treated as a unit, so an all-unit enum is
+// never exempted.
+const SIZING_MODE_WORDS = new Set( [
+	'auto',
+	'fit',
+	'fit-content',
+	'max-content',
+	'min-content',
+	'full',
+	'none',
+	'inherit',
+] );
 
 /**
- * Whether an attribute's block.json enum includes a value that is not a CSS
- * unit (a sizing mode such as 'auto' or 'fit').
+ * Whether an attribute's block.json enum includes a sizing-mode word from
+ * SIZING_MODE_WORDS (such as 'auto' or 'fit').
  *
  * @param {Object|undefined} def The attribute's block.json definition.
- * @return {boolean} True when the enum names at least one non-unit, non-empty value.
+ * @return {boolean} True when the enum names at least one sizing-mode word.
  */
 function hasNonUnitMode( def ) {
 	const values = def && Array.isArray( def.enum ) ? def.enum : [];
-	return values.some( ( v ) => 'string' === typeof v && '' !== v && ! CSS_UNIT_RE.test( v ) );
+	return values.some( ( v ) => 'string' === typeof v && '' !== v && SIZING_MODE_WORDS.has( v ) );
 }
 
 function checkUnitSelectControl( blockName, blockDir, attrs ) {
@@ -688,6 +700,13 @@ function runSelfTest() {
 			name: 'SelectControl writes a Unit attr whose enum is units only -> FLAGGED (negative control)',
 			fixture: UNIT_FAIL_FIXTURE,
 			attrs: { fontSizeUnit: { type: 'string', enum: [ 'px', '%' ] } },
+			fn: checkUnitSelectControl,
+			expectViolations: [ 'UNIT-VIA-SELECTCONTROL' ],
+		},
+		{
+			name: 'SelectControl writes a Unit attr whose enum is units only, including container-query units -> FLAGGED (negative control)',
+			fixture: UNIT_FAIL_FIXTURE,
+			attrs: { fontSizeUnit: { type: 'string', enum: [ 'px', 'cqw', 'pt', 'dvh' ] } },
 			fn: checkUnitSelectControl,
 			expectViolations: [ 'UNIT-VIA-SELECTCONTROL' ],
 		},

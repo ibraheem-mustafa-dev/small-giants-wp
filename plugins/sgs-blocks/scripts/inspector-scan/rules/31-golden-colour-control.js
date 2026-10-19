@@ -615,8 +615,11 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 				: gradientCapable === true || statesArrayHasGradient( statesArray );
 		const sharedMechanism = resolveSharedRowMechanism( ctx, file, mountedByList, statesArray );
 		// Shadow and underline colours take no gradient, so a missing gradient path is no finding.
+		// The exemption holds only when EVERY resolved mount paints shadow or decoration: one
+		// mounting block that paints text or a fill still needs the gradient path.
 		const sharedShadowExempt =
-			sharedMechanism.mechanisms.includes( 'shadow' ) || sharedMechanism.mechanisms.includes( 'decoration' );
+			sharedMechanism.mechanisms.length > 0 &&
+			sharedMechanism.mechanisms.every( ( m ) => 'shadow' === m || 'decoration' === m );
 		if ( ! hasGradient && ! sharedShadowExempt ) {
 			findings.push( {
 				...makeFinding( {
@@ -1474,6 +1477,9 @@ module.exports = {
 			// attribute paints text (a mechanism that needs a gradient path), so the shared row
 			// must still flag. Pairs with 'FixturePrefixedColourPanel' (mustNotFlag, below).
 			'FixturePrefixedWrongMechanismPanel',
+			// One shared prefixed row mounted by a decoration block AND a text block: the text
+			// mount needs the gradient path, so the decoration mount must not exempt the row.
+			'FixturePrefixedMixedPanel',
 		],
 		mustNotFlag: [
 			// A row whose SOLE state is a declared, admitted, non-normal state IS

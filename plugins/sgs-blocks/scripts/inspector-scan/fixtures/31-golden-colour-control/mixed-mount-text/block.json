@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/mixed-mount-text",
+	"title": "Fixture: mounts the shared prefixed component that another block mounts with a different mechanism",
+	"category": "sgs",
+	"attributes": {
+		"bodyFixtureColour": { "type": "string", "default": "" },
+		"bodyFixtureColourHover": { "type": "string", "default": "" }
+	}
+}

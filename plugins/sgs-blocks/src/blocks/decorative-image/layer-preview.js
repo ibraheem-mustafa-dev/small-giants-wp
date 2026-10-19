@@ -12,7 +12,7 @@ import { resolveTier } from '../../utils/responsive';
 /**
  * @param {Object}  attributes Block attributes.
  * @param {string}  tier       Previewed tier: 'desktop' | 'tablet' | 'mobile'.
- * @param {boolean} hasContent Whether the layer holds inner blocks (they need pointer events in the canvas).
+ * @param {boolean} hasContent Whether the layer holds inner blocks; the canvas layer is always interactive so the empty layer's appender stays clickable.
  * @return {Object} React style object for the positioned element.
  */
 export function layerPreviewStyle( attributes, tier, hasContent ) {
@@ -53,7 +53,7 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 		opacity: ( opacity ?? 100 ) / 100,
 		zIndex: zIndex ?? 1,
 		overflow: overflow ?? 'visible',
-		pointerEvents: hasContent ? 'auto' : 'none',
+		pointerEvents: 'auto',
 		transform: [
 			'translate(-50%, -50%)',
 			Number( degrees ) !== 0 && `rotate(${ degrees }deg)`,

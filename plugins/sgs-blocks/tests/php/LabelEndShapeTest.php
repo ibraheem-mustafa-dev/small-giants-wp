@@ -160,6 +160,12 @@ final class LabelEndShapeTest extends TestCase {
 		$this->assertStringContainsString( 'background-color:#EE8088', $out['css'] );
 	}
 
+	public function test_a_shaped_label_with_no_fill_hugs_its_text(): void {
+		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'backgroundColour' => '' ) ) );
+		$this->assertStringContainsString( 'display:inline-block', $out['css'] );
+		$this->assertStringNotContainsString( 'display:block', $out['css'] );
+	}
+
 	public function test_edge_is_the_first_child_of_the_label(): void {
 		$out = $this->render_block( 'sgs/label', $this->tag_attributes() );
 		$this->assertMatchesRegularExpression( '/<span[^>]*wp-block-sgs-label[^>]*><span class="sgs-label__edge"/', $out['html'] );

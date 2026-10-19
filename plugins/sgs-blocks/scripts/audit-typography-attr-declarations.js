@@ -122,10 +122,9 @@ const SUFFIX_SHAPES = {
 	// attribute of their own to check.
 };
 
-// Declarations that were already missing when the audit began to read every file of a block
-// (not just edit.js) and every target descriptor (not just a literal `targets` array). Each is
-// a real silent-discard defect in another surface's work, reported here but neither fixed nor
-// failing --check. An entry whose attribute becomes declared fails --check until it is removed.
+// Known missing declarations, keyed by block, each { reason, attrs }: reported but not failing
+// --check. Empty: every typography attribute a control writes is declared. An entry whose
+// attribute becomes declared fails --check until it is removed.
 const BASELINE = {};
 
 function listBlockDirs() {
