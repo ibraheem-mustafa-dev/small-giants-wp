@@ -6,6 +6,7 @@
 // draft.
 import { walkAst } from './intake-census-logic.mjs';
 import { buildModel } from './intake-census-map.mjs';
+import { routeKeys } from './intake-inventory-keys.mjs';
 
 const FN = /^(ArrowFunctionExpression|FunctionExpression|FunctionDeclaration|ClassMethod|ClassPrivateMethod|ObjectMethod)$/;
 export const isFn = ( n ) => Boolean( n && FN.test( n.type ) );
@@ -168,7 +169,7 @@ function testedKeys( p, n, stop ) {
 		const test = /^(IfStatement|ConditionalExpression)$/.test( a.type ) ? a.test : 'LogicalExpression' === a.type ? a.left : null;
 		if ( test ) {
 			walkAst( test, ( x ) => {
-				if ( 'MemberExpression' === x.type && ! x.computed && ( prop( x.object ) === 'state' || /^(ps|prevState|prev)$/.test( x.object?.name ?? '' ) ) ) {
+				if ( 'MemberExpression' === x.type && ! x.computed && ( prop( x.object ) === 'state' || /^(ps|prevState|prev)$/.test( x.object?.name ?? '' ) ) && 'state' !== prop( x ) ) {
 					keys.add( prop( x ) );
 				}
 			} );
@@ -191,6 +192,17 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 			continue;
 		}
 		const up = p.parents.get( a );
+		// A handler assigned to `this.X` (a scroll or resize handler kept on the instance) runs as that listener, whatever
+		// method its assignment sits in: the listener that receives `this.X` decides the trigger (a scroll handler kept on the instance).
+		const kept = 'AssignmentExpression' === up?.type && up.right === a && isThis( up.left ) ? prop( up.left ) : null;
+		if ( kept ) {
+			const wired = ( p.refs.get( kept ) || [] ).map( ( r ) => p.parents.get( r ) ).find( ( x ) => 'CallExpression' === x?.type && x.arguments.some( ( y ) => isThis( y ) && prop( y ) === kept ) );
+			if ( wired && 'addEventListener' === prop( wired.callee ) ) {
+				via.push( wired.start );
+				const ev = literalOf( wired.arguments[ 0 ] );
+				return done( { type: eventTrigger( ev ), detail: `${ ev } listener on ${ textOf( p, wired.callee.object ) } (this.${ kept })` } );
+			}
+		}
 		if ( 'CallExpression' === up?.type && up.arguments.includes( a ) ) {
 			const g = globalName( up.callee );
 			if ( 'setInterval' === g ) {
@@ -212,7 +224,8 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 			if ( 'addEventListener' === prop( up.callee ) ) {
 				via.push( up.start );
 				const ev = literalOf( up.arguments[ 0 ] );
-				return done( { type: eventTrigger( ev ), detail: `${ ev } listener on ${ textOf( p, up.callee.object ) }` } );
+				const g = guardTrigger( p, node );
+			return done( g ?? { type: eventTrigger( ev ), detail: `${ ev } listener on ${ textOf( p, up.callee.object ) }` } );
 			}
 		}
 		if ( 'NewExpression' === up?.type && OBSERVERS[ globalName( up.callee ) ] ) {
@@ -220,6 +233,10 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 			const [ type, detail ] = OBSERVERS[ globalName( up.callee ) ];
 			return done( { type, detail } );
 		}
+	}
+	const dead = constantReturn( p, node );
+	if ( dead ) {
+		return done( { type: 'state', detail: dead.detail, called: false } );
 	}
 	const m = memberOf( p, node );
 	if ( ! m ) {
@@ -231,12 +248,15 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 	}
 	if ( 'componentDidUpdate' === m.name ) {
 		const keys = testedKeys( p, node, m.node );
-		return done( { type: 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }`, state_keys: keys } );
+		// A key that only a hashchange or popstate listener writes is the route: the change is a navigation.
+		const routed = keys.length && [ ...routeKeys( p ) ].length && keys.every( ( k ) => routeKeys( p ).has( k ) );
+		return done( { type: routed ? 'route' : 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }${ routed ? ' (set by a hash-route listener)' : '' }`, state_keys: keys } );
 	}
 	const rows = model.rowsByComp.get( comp ) || [];
 	const tpl = rows.find( ( r ) => 'handler' === r.kind && 'template' === r.detail.wiring && r.detail.method === m.name );
 	if ( tpl ) {
-		return done( { type: eventTrigger( tpl.detail.event ), detail: `${ tpl.detail.event } on ${ tpl.draftId } (${ m.name })` } );
+		const g = guardTrigger( p, node );
+		return done( g ?? { type: eventTrigger( tpl.detail.event ), detail: `${ tpl.detail.event } on ${ tpl.draftId } (${ m.name })` } );
 	}
 	const keyOf = rows.find( ( r ) => 'renderVals-key' === r.kind && r.detail.value?.method === m.name );
 	const ref = keyOf && rows.find( ( r ) => 'ref' === r.kind && r.detail.expression === keyOf.detail.name );
@@ -271,6 +291,52 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 		}
 	}
 	return done( { type: 'state', detail: `in ${ m.name }, which nothing calls, wires or references`, called: false } );
+}
+
+// The trigger an enclosing guard sets on a code path, or null. An `if` on an error map (`Object.keys( errs ).length`,
+// `errs.x`, `!!err`) runs only when validation fails; an `if` that compares the element it tracks with the one just
+// hit (`this._tiltEl !== t`) runs only when the pointer leaves that element.
+function guardTrigger( p, node ) {
+	for ( const a of ancestors( p, node ) ) {
+		if ( ! /^(IfStatement|ConditionalExpression)$/.test( a.type ) ) {
+			continue;
+		}
+		const test = textOf( p, a.test );
+		if ( /\b(errs?|errors?|err|invalid)\b/i.test( test ) ) {
+			return { type: 'validation-fail', detail: `guarded by ${ test }` };
+		}
+		if ( /this\.\w+\s*!==?\s*\w+|\w+\s*!==?\s*this\.\w+/.test( test ) ) {
+			return { type: 'pointer-leave', detail: `runs when the tracked element changes: ${ test }` };
+		}
+	}
+	return null;
+}
+
+// True when an early return on a constant makes the node unreachable: an enclosing function's body holds, before the
+// node, `if ( X === 'value' ) return;` where X is a local initialised to that same literal (a density
+// of 'Off' returns before the scatter writes). Only a literal-initialised local is decided; anything else is live.
+function constantReturn( p, node ) {
+	for ( const a of ancestors( p, node ) ) {
+		if ( ! isFn( a ) ) {
+			continue;
+		}
+		const body = a.body?.body ?? [];
+		const idx = body.findIndex( ( s ) => s.start <= node.start && node.end <= s.end );
+		for ( const s of body.slice( 0, idx < 0 ? 0 : idx ) ) {
+			if ( 'IfStatement' !== s.type || ! ( 'ReturnStatement' === s.consequent.type || s.consequent.body?.some?.( ( x ) => 'ReturnStatement' === x.type ) ) ) {
+				continue;
+			}
+			const t = s.test;
+			if ( 'BinaryExpression' !== t.type || '===' !== t.operator || 'Identifier' !== t.left.type || 'StringLiteral' !== t.right.type ) {
+				continue;
+			}
+			const decl = declaratorsOf( p ).get( t.left.name )?.find( ( d ) => d.start < s.start && 'StringLiteral' === d.init?.type );
+			if ( decl && decl.init.value === t.right.value ) {
+				return { detail: `returns early when ${ textOf( p, t ) } (a constant ${ JSON.stringify( decl.init.value ) })` };
+			}
+		}
+	}
+	return null;
 }
 
 // True when a function calls or references `this.<name>` (an animation frame callback that runs its scheduling method
@@ -327,6 +393,14 @@ function readsReducedMotion( test ) {
 // it in an enclosing function, that reads reduced motion. { behaviour: 'skip'|'unchanged', detail }.
 export function reducedMotionOf( p, node ) {
 	const chain = [ node, ...ancestors( p, node ) ];
+	// A reduced-motion read inside the write's own arguments (`duration: this.rm ? 0 : 600`) decides the value there.
+	let own = false;
+	walkAst( node, ( x ) => {
+		own ||= 'ConditionalExpression' === x.type && readsReducedMotion( x.test );
+	} );
+	if ( own ) {
+		return { behaviour: 'skip', detail: "the write's own value depends on reduced motion" };
+	}
 	for ( let i = 1; i < chain.length; i++ ) {
 		const a = chain[ i ];
 		const test = /^(IfStatement|ConditionalExpression)$/.test( a.type ) ? a.test : 'LogicalExpression' === a.type && a.right === chain[ i - 1 ] ? a.left : null;
@@ -337,11 +411,27 @@ export function reducedMotionOf( p, node ) {
 			const before = a.body.slice( 0, a.body.indexOf( chain[ i - 1 ] ) );
 			const guard = before.find( ( s ) => 'IfStatement' === s.type && readsReducedMotion( s.test ) && ( 'ReturnStatement' === s.consequent.type || s.consequent.body?.some?.( ( x ) => 'ReturnStatement' === x.type ) ) );
 			if ( guard ) {
-				return { behaviour: 'skip', detail: `returns early under ${ textOf( p, guard.test ) }` };
+				// A block that writes the end value before it returns leaves the element on its final state, not untouched.
+				const writes = ( guard.consequent.body ?? [] ).some( ( x ) => 'ExpressionStatement' === x.type && 'AssignmentExpression' === x.expression.type && /style/.test( textOf( p, x.expression.left ) ) );
+				return writes
+					? { behaviour: 'final-state', detail: `returns early under ${ textOf( p, guard.test ) } after writing the end value` }
+					: { behaviour: 'skip', detail: `returns early under ${ textOf( p, guard.test ) }` };
 			}
 		}
 		if ( /^(ClassMethod|ClassPrivateMethod|ClassProperty)$/.test( a.type ) ) {
 			break;
+		}
+	}
+	// A guard in a caller of the write's method (a caller returns early under reduced motion before the call runs).
+	const m = memberOf( p, node );
+	for ( const call of m ? [ ...( p.calls.get( m.name ) || [] ), ...( p.refs.get( m.name ) || [] ).map( ( r ) => p.parents.get( r ) ).filter( ( x ) => 'CallExpression' === x?.type ) ] : [] ) {
+		const caller = memberOf( p, call );
+		if ( ! caller || caller.name === m.name ) {
+			continue;
+		}
+		const g = reducedMotionOf( p, call );
+		if ( 'skip' === g.behaviour ) {
+			return { behaviour: 'skip', detail: `${ caller.name } calls ${ m.name } past its guard: ${ g.detail }` };
 		}
 	}
 	return { behaviour: 'unchanged', detail: 'no reduced-motion guard on this code path' };

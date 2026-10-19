@@ -19,6 +19,22 @@ export function elementStyles( e ) {
 	};
 }
 
+// The value a property takes when an ancestor's `style-hover` sets the custom property its inline value reads:
+// { name, to } (the inline value with the var() replaced by the ancestor's hover value), or null.
+function ancestorHover( elOf, comp, e, from ) {
+	const m = /var\(\s*(--[\w-]+)\s*(?:,[^()]*(?:\([^()]*\))?[^()]*)?\)/.exec( from || '' );
+	if ( ! m ) {
+		return null;
+	}
+	for ( let p = e?.parent ? elOf.get( `${ comp }:${ e.parent }` ) : null, guard = 0; p && guard < 100; p = p.parent ? elOf.get( `${ comp }:${ p.parent }` ) : null, guard++ ) {
+		const hit = p.attrs.filter( ( [ a ] ) => a.startsWith( 'style-' ) ).map( ( [ , v ] ) => new Map( cssDecls( v || '' ) ) ).find( ( d ) => d.has( m[ 1 ] ) );
+		if ( hit ) {
+			return { name: m[ 1 ], to: from.replace( m[ 0 ], hit.get( m[ 1 ] ) ) };
+		}
+	}
+	return null;
+}
+
 // A short description of a stamped element: its tag and the first words of its static text.
 export function describeElement( comp, e ) {
 	const words = ( e?.texts || [] ).map( ( t ) => t.replace( /\{\{[\s\S]*?\}\}/g, '' ).trim() ).filter( Boolean ).join( ' ' ).slice( 0, 40 );
@@ -78,14 +94,19 @@ export function templateRecords( census, add ) {
 			for ( const it of items ) {
 				const names = 'all' === it.property ? [ ...new Set( st.pseudo.flatMap( ( [ , m ] ) => [ ...m.keys() ] ) ) ] : [ it.property ];
 				( names.length ? names : [ 'all' ] ).forEach( ( name ) => {
-					const to = st.pseudo.find( ( [ , m ] ) => m.has( name ) )?.[ 1 ].get( name ) ?? null;
-					props.push( { property: name, from: st.inline.get( name ) ?? null, to, duration_ms: it.duration_ms, delay_ms: it.delay_ms, easing: it.easing, ...( it.raw ? { formula: it.raw } : {} ) } );
+					const from = st.inline.get( name ) ?? null;
+					const own = st.pseudo.find( ( [ , m ] ) => m.has( name ) )?.[ 1 ].get( name ) ?? null;
+					const via = null === own ? ancestorHover( elOf, comp, e, from ) : null;
+					props.push( { property: name, from, to: own ?? via?.to ?? null, ...( via ? { viaVar: via.name } : {} ), duration_ms: it.duration_ms, delay_ms: it.delay_ms, easing: it.easing, ...( it.raw ? { formula: it.raw } : {} ) } );
 				} );
 			}
 			const pseudo = st.pseudo.find( ( [ , m ] ) => props.some( ( x ) => m.has( x.property ) ) )?.[ 0 ];
 			const uniform = ( k ) => props.every( ( x ) => x[ k ] === props[ 0 ][ k ] );
 			const one = 1 === props.length || ( uniform( 'duration_ms' ) && uniform( 'delay_ms' ) && uniform( 'easing' ) );
-			const trigger = pseudo ? { type: PSEUDO_TRIGGER[ pseudo ] ?? 'state', detail: `style-${ pseudo } rule on the same element (!important)` }
+			const viaVar = props.find( ( x ) => x.viaVar )?.viaVar;
+				props.forEach( ( x ) => delete x.viaVar );
+				const trigger = pseudo ? { type: PSEUDO_TRIGGER[ pseudo ] ?? 'state', detail: `style-${ pseudo } rule on the same element (!important)` }
+				: viaVar ? { type: 'hover', detail: `the parent's style-hover sets ${ viaVar }` }
 				: bound ? { type: 'state', detail: 'state-bound inline value ({{ }})' } : { type: 'state', detail: 'no template trigger: the value is changed by code' };
 			const rec = add( 'TR', {
 				name: `Transition on ${ base.description }`, mechanism: 'css-transition', element: base,
@@ -130,7 +151,8 @@ export function templateRecords( census, add ) {
 		const groups = new Map();
 		l.rows.forEach( ( r ) => groups.set( r.detail.selector, [ ...( groups.get( r.detail.selector ) || [] ), r ] ) );
 		for ( const [ selector, rows ] of groups ) {
-			const media = blocks.find( ( b ) => sameSelector( b.selector, selector ) && rows.every( ( r ) => b.decls.some( ( [ p ] ) => p === r.detail.property ) ) )?.media ?? null;
+			const block = blocks.find( ( b ) => sameSelector( b.selector, selector ) && rows.every( ( r ) => b.decls.some( ( [ p ] ) => p === r.detail.property ) ) );
+			const media = block?.media ?? null;
 			const src = census.sources.find( ( s ) => s.component === l.comp );
 			const m = matchSelector( src?.stamped.elements || [], selector );
 			const element = { dc: l.comp, template_tpl_id: m.tpl.length ? m.tpl : null, selector: `helmet <style> ${ selector }`, selection_rule: `${ media ? `@media ${ media } ` : '' }${ selector }`, description: `elements matching ${ selector }` };
@@ -138,7 +160,7 @@ export function templateRecords( census, add ) {
 			if ( reducedMotionMedia( media ) ) {
 				rmRecords.push( add( 'RM', {
 					name: `Reduced-motion override ${ selector }`, mechanism: 'css-media', element, source: l.source( code ), trigger: { type: 'media-query', detail: media },
-					properties: rows.map( ( r ) => ( { property: r.detail.property, from: 'as declared', to: r.detail.value } ) ), duration_ms: null, delay_ms: 0, stagger: null, easing: null,
+					properties: ( block ? block.decls.map( ( [ property, value ] ) => ( { property, from: 'as declared', to: rows.find( ( r ) => r.detail.property === property )?.detail.value ?? value } ) ) : rows.map( ( r ) => ( { property: r.detail.property, from: 'as declared', to: r.detail.value } ) ) ), duration_ms: null, delay_ms: 0, stagger: null, easing: null,
 					iterations: 1, direction: null, fill: null, reduced_motion: { behaviour: 'final-state', detail: 'this rule is the reduced-motion behaviour' }, status: 'active', trace: traceOf( rows ),
 				}, rows, { tpl: ( m.tpl ).map( ( n ) => `${ l.comp }:${ n }` ), selector } ) );
 			} else if ( rows.some( ( r ) => 'transition' === r.kind ) ) {

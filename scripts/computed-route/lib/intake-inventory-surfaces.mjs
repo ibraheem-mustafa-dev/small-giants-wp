@@ -27,7 +27,7 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 	const m = logicModel( source );
 	const declarators = declaratorsOf( m );
 	const alias = new Set( [ ...m.locals ].filter( ( [ , l ] ) => 'MemberExpression' === l.node?.type && ! l.node.computed && 'ThisExpression' === l.node.object.type && 'state' === l.node.property.name ).map( ( [ k ] ) => k ) );
-	const reads = ( start, onlyField ) => {
+	const reads = ( start, onlyField, within = start ) => {
 		const seen = new Set();
 		const hit = new Set();
 		const fieldValues = [];
@@ -41,6 +41,14 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 					fieldValues.push( n.value );
 				} else if ( 'MemberExpression' === n.type && ! n.computed && 'MemberExpression' === n.object?.type && 'ThisExpression' === n.object.object?.type && 'state' === n.object.property?.name ) {
 					hit.add( n.property.name );
+				} else if ( 'CallExpression' === n.type && 'MemberExpression' === n.callee?.type && 'ThisExpression' === n.callee.object?.type && m.members.has( n.callee.property.name ) ) {
+					// A this.state (or an alias of it) passed to a helper method is state inside that method under its parameter's name.
+					n.arguments.forEach( ( a, i ) => {
+						const param = m.members.get( n.callee.property.name ).params?.[ i ];
+						if ( 'Identifier' === param?.type && ( alias.has( a.name ) || ( 'MemberExpression' === a.type && 'ThisExpression' === a.object?.type && 'state' === a.property?.name ) ) ) {
+							alias.add( param.name );
+						}
+					} );
 				} else if ( 'MemberExpression' === n.type && ! n.computed && alias.has( n.object?.name ) ) {
 					hit.add( n.property.name );
 				} else if ( 'Identifier' === n.type && m.locals.has( n.name ) ) {
@@ -51,7 +59,7 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 						visit( l.node, depth + 1 );
 					}
 				} else if ( 'Identifier' === n.type ) {
-					const d = declarators.get( n.name )?.find( ( x ) => x.init !== node && start.start <= x.start && x.end <= start.end );
+					const d = declarators.get( n.name )?.find( ( x ) => x.init !== node && within.start <= x.start && x.end <= within.end );
 					if ( d ) {
 						visit( d.init, depth + 1 );
 					}
@@ -71,11 +79,11 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 	let keys = reads( node, field ).hit;
 	if ( field ) {
 		const r = reads( node, field );
-		keys = new Set( r.fieldValues.flatMap( ( v ) => [ ...reads( v, null ).hit ] ) );
+		keys = new Set( r.fieldValues.flatMap( ( v ) => [ ...reads( v, null, node ).hit ] ) );
 		if ( ! r.fieldValues.length ) {
 			const scope = m.members.get( 'renderVals' );
 			const all = scope ? reads( scope.body ?? scope, field ).fieldValues : [];
-			keys = new Set( all.flatMap( ( v ) => [ ...reads( v, null ).hit ] ) );
+			keys = new Set( all.flatMap( ( v ) => [ ...reads( v, null, scope.body ?? scope ).hit ] ) );
 		}
 	}
 	return [ ...keys ].filter( ( k ) => ! m.viewport.has( k ) && ! viewport.has( k ) );
@@ -83,9 +91,10 @@ function readsState( source, root, field = null, viewport = new Set() ) {
 
 // The surfaces records of a census. `model` is lib/intake-inventory-code.mjs::codeModel's; `anim` the animations
 // result (records and meta, for each state's animation IDs); `routing` the adapter's result (or null); `props` the
-// FR-48-29 list (lib/intake-props.mjs). Returns { records, counts, unresolved, scIf: Map(sc-if row id → S id),
+// FR-48-29 list (lib/intake-props.mjs); `pageRows` the page map's resolved rows (lib/intake-pagemap.mjs, which include
+// the routes a draft adds at runtime): their `route` values are the routes when given, routing.routes otherwise. Returns { records, counts, unresolved, scIf: Map(sc-if row id → S id),
 // componentSurface: Map(component → S id), keySurfaces: Map(`<component>:<state key>` → [S id]) }.
-export function surfaceRecords( census, { model, anim = { records: [] }, routing = null, props = [] } ) {
+export function surfaceRecords( census, { model, anim = { records: [] }, routing = null, props = [], pageRows = null } ) {
 	const list = [];
 	const unresolved = [];
 	const scIf = new Map();
@@ -103,6 +112,7 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 	};
 	const entries = census.sources.filter( ( s ) => 'entry' === s.via ).map( ( s ) => s.component );
 	const files = 'files' === routing?.adapter;
+	const routes = pageRows && ! files ? pageRows.map( ( r ) => ( { key: r.route, source: 'page map' } ) ) : routing?.routes;
 	const routeByFile = new Map( files ? routing.routes.map( ( r ) => [ r.key, r ] ) : [] );
 
 	// One record per component: the entry's app shell (or, for one file per page, the page), an import its parent mounts.
@@ -136,13 +146,13 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 
 	// One record per route (hash and state routers: a page of the entry draft).
 	const routeCover = {};
-	if ( routing?.routes && ! files ) {
+	if ( routes && ! files ) {
 		const entry = entries[ 0 ];
-		for ( const r of routing.routes ) {
-			const href = routing.links?.find( ( l ) => l.route === r.key && /^#/.test( l.href || '' ) )?.href ?? `#/${ r.key }`;
+		for ( const r of routes ) {
+			const href = routing?.links?.find( ( l ) => l.route === r.key && /^#/.test( l.href || '' ) )?.href ?? `#/${ r.key }`;
 			const rec = add( {
 				kind: 'page', name: `route ${ r.key }`, dc: entry, template_tpl_id: null, route: href, page_key: r.key, parent: componentSurface.get( entry ) ?? null,
-				opened_by: `${ routing.links?.filter( ( l ) => l.route === r.key ).length ?? 0 } link(s) to ${ href } (${ routing.adapter } adapter)`, closed_by: 'navigating to another route',
+				opened_by: `${ routing?.links?.filter( ( l ) => l.route === r.key ).length ?? 0 } link(s) to ${ href } (${ routing?.adapter ?? 'page map' } adapter)`, closed_by: 'navigating to another route',
 				states: [ { name: 'default', state_keys: {}, how_to_reach: `open ${ href }` } ], time_dependent: timeOf( entry ), source: r.source,
 			} );
 			routeCover[ r.key ] = rec.id;
@@ -223,6 +233,28 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 		g.rows.forEach( ( r ) => scIf.set( r.id, rec.id ) );
 		keys.forEach( ( k ) => keySurfaces.set( `${ g.comp }:${ k }`, [ ...( keySurfaces.get( `${ g.comp }:${ k }` ) || [] ), rec.id ] ) );
 	}
+
+	// A breakpoint sc-if is a state of the page it sits on: the nearest route sc-if above it names the route (its
+	// condition holds the route key), or, for one file per page, the page is the component itself.
+	const breakpointStates = new Map();
+	for ( const r of census.rows.filter( ( x ) => 'sc-if' === x.kind && x.draftId in other.breakpoint ) ) {
+		const elements = model.sourceOf.get( r.component )?.stamped?.elements ?? [];
+		const byN = new Map( elements.map( ( e ) => [ e.n, e ] ) );
+		let page = files ? list.find( ( x ) => x.id === componentSurface.get( r.component ) && 'page' === x.kind ) : null;
+		for ( let e = byN.get( byN.get( nOf( r.draftId ) )?.parent ); ! page && e; e = byN.get( e.parent ) ) {
+			const gate = census.rows.find( ( x ) => 'sc-if' === x.kind && x.draftId === `${ r.component }:${ e.n }` && x.draftId in other.route );
+			const text = String( gate?.detail.value ?? '' ).toLowerCase().replace( /[^a-z0-9]/g, '' );
+			const key = Object.keys( routeCover ).filter( ( k ) => text.includes( k.toLowerCase().replace( /[^a-z0-9]/g, '' ) ) ).sort( ( a, b ) => b.length - a.length )[ 0 ];
+			page = key ? list.find( ( x ) => x.id === routeCover[ key ] ) : null;
+		}
+		if ( page ) {
+			const name = `breakpoint ${ r.detail.value.replace( /^\s*\{\{\s*|\s*\}\}\s*$/g, '' ) }`;
+			const st = breakpointStates.get( page )?.get( name ) ?? { name, state_keys: {}, sc_if_tpl_ids: [], how_to_reach: `open ${ page.route === '*' ? 'the page' : page.route ?? page.name } at a viewport width that makes ${ r.detail.value.trim() } true (the harness widths set it)` };
+			st.sc_if_tpl_ids.push( nOf( r.draftId ) );
+			breakpointStates.set( page, ( breakpointStates.get( page ) ?? new Map() ).set( name, st ) );
+		}
+	}
+	breakpointStates.forEach( ( byName, page ) => page.states.push( ...byName.values() ) );
 
 	const scIfs = census.rows.filter( ( x ) => 'sc-if' === x.kind );
 	const toggling = scIfs.filter( ( r ) => ! Object.values( other ).some( ( o ) => r.draftId in o ) );

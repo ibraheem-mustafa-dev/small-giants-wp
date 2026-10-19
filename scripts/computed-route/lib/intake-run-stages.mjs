@@ -129,6 +129,7 @@ export const STAGES = [
 	} ],
 	[ 'page map', ( job, ctx ) => {
 		const p = proposePageMap( { folder: job.folder, routing: ctx.routing, census: ctx.censusFull } );
+		ctx.pageMap = p.rows;
 		return { pageMap: p.rows, linkMap: p.linkMap, gaps: p.gaps, note: `${ p.rows.length } rows` };
 	} ],
 	[ 'tokens and palette', async ( job, ctx ) => {
@@ -277,7 +278,7 @@ export const STAGE_NEEDS = Object.freeze( {
 	'site info': [ 'routing', 'census' ],
 	flags: [ 'census', 'site info' ],
 	'draft defects': [ 'replay', 'census', 'flags' ],
-	inventory: [ 'routing', 'census', 'draft defects' ],
+	inventory: [ 'routing', 'census', 'draft defects', 'page map' ],
 	skeletons: [ 'routing', 'census' ],
 	'missing features': [ 'census', 'skeletons' ],
 	'replay top-up': [ '*' ],

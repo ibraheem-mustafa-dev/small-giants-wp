@@ -80,10 +80,10 @@ export function occurrences( census, model, anim, surf ) {
 }
 
 // The two inventories of a census, without sampling or files: the shared core of buildInventory and readInventory.
-export function inventoryCore( census, { routing = null, notDefects = [], props = [] } = {} ) {
+export function inventoryCore( census, { routing = null, notDefects = [], props = [], pageRows = null } = {} ) {
 	const model = codeModel( census );
 	const anim = animationRecords( census, { notDefects } );
-	const surf = surfaceRecords( census, { model, anim, routing, props } );
+	const surf = surfaceRecords( census, { model, anim, routing, props, pageRows } );
 	return { model, anim, surf, occurrences: occurrences( census, model, anim, surf ) };
 }
 
@@ -144,10 +144,10 @@ export function validateInventory( inv, { schemas = MASTER_SCHEMAS } = {} ) {
 
 // The unsampled inventory of a census, built once: { head, census, pv, core }. `folder` (the export) gives the hashes,
 // the project and the drafts' data-props. withSamples turns it into the inventory.
-export function inventoryBase( { census, folder, routing = null, notDefects = [], generated = new Date().toISOString().slice( 0, 10 ) } ) {
+export function inventoryBase( { census, folder, routing = null, pageRows = null, notDefects = [], generated = new Date().toISOString().slice( 0, 10 ) } ) {
 	const manifest = readJson( path.join( folder, 'MANIFEST.json' ) ).data || {};
 	const pv = propVariants( { folder, census } );
-	const core = inventoryCore( census, { routing, notDefects, props: pv.props } );
+	const core = inventoryCore( census, { routing, notDefects, props: pv.props, pageRows } );
 	const hash = ( f ) => sha256( fs.readFileSync( path.join( folder, f ) ) );
 	const head = { schema_version: '1.0', project: manifest.project ?? path.basename( path.dirname( folder ) ), generated, runtime_sha256: hash( 'support.js' ) };
 	return { head, drafts: census.sources.map( ( s ) => ( { dc: s.component, file: s.file, sha256: hash( s.file ) } ) ), pv, core };
@@ -210,7 +210,7 @@ export function readInventory( row, ctx ) {
 export async function inventoryStage( job, ctx ) {
 	const census = await inventoryCensus( { folder: job.folder, entry: job.entry, routing: ctx.routing, census: ctx.censusFull, harPath: job.harPath } );
 	const gaps = [ ...census.gaps ];
-	const base = inventoryBase( { census, folder: job.folder, routing: ctx.routing, notDefects: ctx.notDefects || [] } );
+	const base = inventoryBase( { census, folder: job.folder, routing: ctx.routing, pageRows: ctx.pageMap ?? null, notDefects: ctx.notDefects || [] } );
 	const sampled = await sampleWriters( { folder: job.folder, index: job.entry, harPath: job.harPath, targets: sampleTargets( base.core.anim.records, base.core.anim.meta ), widths: job.widths } );
 	gaps.push( ...sampled.gaps );
 	const inv = withSamples( base, sampled.samples );
