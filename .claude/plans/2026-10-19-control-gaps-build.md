@@ -642,7 +642,7 @@ Two cold reviewers (Sonnet builder lens, Haiku junior lens, 2026-10-19) read the
 
 ## Parking lot
 
-- `tests/php/BorderElementParityTest.php` fails 11 card-grid and brand-strip cases on main since `7c9fe9fa9` (another session moved their transition pair into the hover model; the test still expects `--sgs-transition-duration` / `--sgs-transition-easing` on the wrapper). Not this build's; owned by the motion hover-model work.
+- `tests/php/BorderElementParityTest.php` fails 20 cases (11 card-grid, 9 brand-strip) on main since `7c9fe9fa9` (another session moved their transition pair into the hover model; the test still expects `--sgs-transition-duration` / `--sgs-transition-easing` on the wrapper). Not this build's; owned by the motion hover-model work.
 
 - The route's writer and detector for every new attribute and the two inline formats (Spec 48; recorded in the coverage plan at step 10).
 - The Indus timeline years' outline colour follows the current card (a Current state), owned by the pinned timeline build.

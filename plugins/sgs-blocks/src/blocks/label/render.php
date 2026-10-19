@@ -336,17 +336,19 @@ $border_parts = sgs_border_element_decls(
 	'',
 	$root_sel,
 	array(
-		'colour' => $has_end_shape ? array() : array(
+		'colour'          => array(
 			'base'     => 'borderColour',
 			'gradient' => 'borderColourGradient',
 		),
-		'radius' => false,
+		'colour_as_paint' => $has_end_shape,
+		'facts'           => true,
+		'radius'          => false,
 	)
 );
 
-$border_style_keyword = sgs_border_style_keyword( $attributes['borderStyle'] ?? '' );
-$border_width_box     = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_top           = is_scalar( $border_width_box['top'] ?? null ) ? sgs_css_length_value( $border_width_box['top'] ) : '';
+// The outline reads the assembler's resolved facts: the top width, the style keyword and the colour paint.
+$border_style_keyword = $border_parts['facts']['style'];
+$border_top           = $border_parts['facts']['width_top'];
 $border_has_width     = ( '' !== $border_top && 1 !== preg_match( '/^0+(?:\.0+)?[a-z%]*$/i', $border_top ) );
 $border_stroke_px     = ( $border_has_width && 1 === preg_match( '/^(\d+(?:\.\d+)?)px$/', $border_top, $stroke_match ) ) ? (float) $stroke_match[1] : null;
 $has_outline          = $has_end_shape && $border_has_width && 'none' !== $border_style_keyword;
@@ -380,11 +382,7 @@ if ( $has_end_shape ) {
 	$scoped_css[] = "{$root_sel}::after{inset:{$edge_inset};z-index:-2;" . sgs_end_shape_mask_decls( $end_ends ) . '}';
 }
 if ( $has_outline ) {
-	$outline_paint = sgs_background_paint_decl(
-		(string) ( $attributes['borderColour'] ?? '' ),
-		(string) ( $attributes['borderColourGradient'] ?? '' )
-	);
-	$outline_paint = '' !== $outline_paint ? $outline_paint : 'background-color:currentColor';
+	$outline_paint = '' !== $border_parts['facts']['paint'] ? $border_parts['facts']['paint'] : 'background-color:currentColor';
 	$scoped_css[]  = "{$root_sel} .sgs-label__edge{position:absolute;inset:calc(-1 * {$border_top});z-index:-1;pointer-events:none;border-radius:inherit;" . sgs_end_shape_mask_decls( $end_ends ) . '}';
 	$scoped_css[]  = "{$root_sel} .sgs-label__edge-line{position:absolute;inset:0;border-radius:inherit;{$outline_paint};" . sgs_end_shape_ring_decls( $end_ends, $border_top, $border_stroke_px ) . '}';
 }

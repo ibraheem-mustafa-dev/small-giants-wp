@@ -282,4 +282,90 @@ final class BorderElementDeclsTest extends TestCase {
 			$r['prefix']['base']
 		);
 	}
+
+	/**
+	 * Without the `facts` option the result has no facts entry.
+	 */
+	public function test_facts_are_absent_unless_asked_for(): void {
+		$out = $this->decls( array( 'borderWidth' => array( 'top' => '2px' ) ) );
+		$this->assertArrayNotHasKey( 'facts', $out );
+	}
+
+	/**
+	 * The facts carry the resolved top width, style keyword and colour paint.
+	 */
+	public function test_facts_report_width_style_and_paint(): void {
+		$out = $this->decls(
+			array(
+				'borderWidth'  => array( 'top' => '2px', 'right' => '2px', 'bottom' => '2px', 'left' => '2px' ),
+				'borderStyle'  => 'dashed',
+				'borderColour' => '#3A2A22',
+			),
+			array( 'facts' => true )
+		);
+		$this->assertSame(
+			array(
+				'width_top' => '2px',
+				'style'     => 'dashed',
+				'paint'     => 'background-color:#3A2A22',
+			),
+			$out['facts']
+		);
+		$this->assertSame( array( 'border-style:dashed', 'border-width:2px 2px 2px 2px', 'border-color:#3A2A22' ), $out['base'] );
+	}
+
+	/**
+	 * A gradient wins the paint; an unset style reads solid; nothing set reads empty.
+	 */
+	public function test_facts_gradient_wins_and_empty_reads_empty(): void {
+		$out = $this->decls(
+			array(
+				'borderWidth'          => array( 'top' => '3px' ),
+				'borderColour'         => '#111111',
+				'borderColourGradient' => 'linear-gradient(90deg,#ff0000,#0000ff)',
+			),
+			array( 'facts' => true )
+		);
+		$this->assertSame( 'solid', $out['facts']['style'] );
+		$this->assertSame( 'background-image:linear-gradient(90deg,#ff0000,#0000ff)', $out['facts']['paint'] );
+
+		$empty = $this->decls( array(), array( 'facts' => true ) );
+		$this->assertSame( '', $empty['facts']['width_top'] );
+		$this->assertSame( '', $empty['facts']['paint'] );
+	}
+
+	/**
+	 * A style of none reports none and no paint.
+	 */
+	public function test_facts_style_none_has_no_paint(): void {
+		$out = $this->decls(
+			array(
+				'borderWidth'  => array( 'top' => '2px' ),
+				'borderStyle'  => 'none',
+				'borderColour' => '#111111',
+			),
+			array( 'facts' => true )
+		);
+		$this->assertSame( 'none', $out['facts']['style'] );
+		$this->assertSame( '', $out['facts']['paint'] );
+	}
+
+	/**
+	 * `colour_as_paint` keeps the colour out of the border: no border-color, no ring, no hover; the paint is still reported.
+	 */
+	public function test_colour_as_paint_prints_no_border_colour(): void {
+		$out = $this->decls(
+			array(
+				'borderWidth'          => array( 'top' => '2px' ),
+				'borderColour'         => '#3A2A22',
+				'borderColourHover'    => '#ff0000',
+				'borderColourGradient' => 'linear-gradient(90deg,#ff0000,#0000ff)',
+			),
+			array( 'facts' => true, 'colour_as_paint' => true )
+		);
+		$this->assertSame( array( 'border-style:solid', 'border-width:2px 0 0 0' ), $out['base'] );
+		$this->assertSame( array(), $out['rules'] );
+		$this->assertSame( array(), $out['hover'] );
+		$this->assertSame( 'background-image:linear-gradient(90deg,#ff0000,#0000ff)', $out['facts']['paint'] );
+	}
 }

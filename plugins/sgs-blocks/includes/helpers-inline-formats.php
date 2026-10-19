@@ -20,6 +20,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-tokens.php';
+
 if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 	/**
 	 * Sanitise RichText markup for output: the post allowlist without inline style.

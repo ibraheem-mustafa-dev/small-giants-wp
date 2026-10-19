@@ -75,6 +75,7 @@ HAND_VAR_RE = re.compile(r"""var\(--wp--preset--color--(?:['"]\s*\.|%s)""")
 HAND_VAR_OK = {
     "includes/helpers-tokens.php": "sgs_colour_value()'s slug branch, reached only after sgs_is_css_colour()",
     "includes/class-button-preset-control.php": "lists the theme palette's own slugs, never an attribute value",
+    "includes/helpers-inline-formats.php": "sgs_inline_format_palette_css() lists the theme palette's own [a-z0-9-] slugs, never an attribute value; sgs_colour_value() would turn a slug named black or white into the CSS keyword",
     "includes/fx-cursor-field.php": "a hex returns before the [a-z0-9-] slug branch",
     "includes/shape-dividers.php": "sgs_sanitise_colour(): a '#' or '(' value never matches its slug pattern",
     "includes/motion/field-types/class-sgs-motion-field-css.php": "the colourReference schema pattern admits only a slug or a hex, and a hex returns first",

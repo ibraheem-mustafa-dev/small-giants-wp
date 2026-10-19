@@ -136,11 +136,20 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	 *                           thickness when no top width is set, default
 	 *                           '1px'); `radius` (true for `{prefix}BorderRadius`,
 	 *                           a literal attribute name for another, false for
-	 *                           none; default true).
-	 * @return array{base: string[], tablet: string[], mobile: string[], hover: string[], rules: string[]}
+	 *                           none; default true); `facts` (true adds the `facts`
+	 *                           entry to the result, default false);
+	 *                           `colour_as_paint` (true keeps the colour out of the
+	 *                           border: no border-color, ring or hover, for an
+	 *                           element that paints the colour itself from
+	 *                           `facts.paint`; default false).
+	 * @return array{base: string[], tablet: string[], mobile: string[], hover: string[], rules: string[], facts?: array{width_top: string, style: string, paint: string}}
 	 *         Declarations without trailing semicolons; tablet and mobile are for
 	 *         the caller's max-width 1023px and 767px queries; hover is for the
-	 *         caller's guarded hover rule; rules are complete CSS rules.
+	 *         caller's guarded hover rule; rules are complete CSS rules. `facts`
+	 *         (only with the `facts` option) is the resolved top width as a CSS
+	 *         length or '', the style keyword, and the background-paint
+	 *         declaration for the colour map's `base` and `gradient` ('' when
+	 *         none or the style is none).
 	 */
 	function sgs_border_element_decls( array $attributes, string $prefix, string $selector, array $options = array() ): array {
 		$out = array(
@@ -153,7 +162,13 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 
 		$width_raw = $attributes[ sgs_typography_attr( $prefix, 'BorderWidth' ) ] ?? null;
 		$style_raw = $attributes[ sgs_typography_attr( $prefix, 'BorderStyle' ) ] ?? '';
-		$is_none   = 'none' === sgs_border_style_keyword( $style_raw );
+		$style_kw  = sgs_border_style_keyword( $style_raw );
+		$is_none   = 'none' === $style_kw;
+		$facts     = array(
+			'width_top' => '',
+			'style'     => $style_kw,
+			'paint'     => '',
+		);
 
 		// A width box, or a tier object holding one box per device.
 		$is_tiered = is_array( $width_raw ) && ( isset( $width_raw['desktop'] ) || isset( $width_raw['tablet'] ) || isset( $width_raw['mobile'] ) );
@@ -164,6 +179,10 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 		$out['tablet'] = $is_tiered ? sgs_border_box_decls( $width_raw['tablet'] ?? null, $style_raw ) : array();
 		$out['mobile'] = $is_tiered ? sgs_border_box_decls( $width_raw['mobile'] ?? null, $style_raw ) : array();
 		$has_width     = $width_decls || $out['tablet'] || $out['mobile'];
+		$facts_box     = is_array( $width_box ) ? $width_box : array();
+		if ( is_scalar( $facts_box['top'] ?? null ) ) {
+			$facts['width_top'] = sgs_css_length_value( $facts_box['top'] );
+		}
 
 		if ( $is_none ) {
 			$out['rules'][] = $selector . '{border-style:none;border-width:0;}';
@@ -183,6 +202,16 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 			$ring_width  = '' !== $top_width ? $top_width : (string) ( $options['ring_width'] ?? '1px' );
 			$hover_paint = '' !== $hover_grad ? $hover_grad : ( '' !== $hover_flat ? sgs_colour_value( $hover_flat ) : '' );
 
+			$facts['paint'] = sgs_background_paint_decl( $flat, $gradient );
+
+			if ( ! empty( $options['colour_as_paint'] ) ) {
+				// The element paints the colour itself; the border carries none.
+				$hover_paint = '';
+				$hover_flat  = '';
+				$hover_grad  = '';
+				$flat        = '';
+				$gradient    = '';
+			}
 			if ( '' !== $gradient ) {
 				$out['rules'][] = sgs_border_gradient_css( $selector, $gradient, '' !== $hover_paint ? $hover_paint : null, $ring_width );
 			} else {
@@ -222,6 +251,10 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 			if ( null !== $mobile ) {
 				$out['mobile'][] = $mobile;
 			}
+		}
+
+		if ( ! empty( $options['facts'] ) ) {
+			$out['facts'] = $facts;
 		}
 
 		return $out;

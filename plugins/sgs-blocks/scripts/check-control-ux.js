@@ -406,6 +406,20 @@ function checkResponsiveSwitcher( blockName, blockDir, attrs ) {
  *
  * Returns an array of finding objects.
  */
+const CSS_UNIT_RE = /^(px|%|em|rem|ch|ex|vw|vh|vmin|vmax|svh|lvh|dvh|cqi|cqb|fr|deg|ms|s)$/;
+
+/**
+ * Whether an attribute's block.json enum includes a value that is not a CSS
+ * unit (a sizing mode such as 'auto' or 'fit').
+ *
+ * @param {Object|undefined} def The attribute's block.json definition.
+ * @return {boolean} True when the enum names at least one non-unit, non-empty value.
+ */
+function hasNonUnitMode( def ) {
+	const values = def && Array.isArray( def.enum ) ? def.enum : [];
+	return values.some( ( v ) => 'string' === typeof v && '' !== v && ! CSS_UNIT_RE.test( v ) );
+}
+
 function checkUnitSelectControl( blockName, blockDir, attrs ) {
 	const findings = [];
 	const editJs = stripComments( readIfExists( path.join( blockDir, 'edit.js' ) ) );
@@ -435,6 +449,12 @@ function checkUnitSelectControl( blockName, blockDir, attrs ) {
 	}
 
 	for ( const { attrName, matchIndex } of unitWrites ) {
+		// A "unit" whose block.json enum also holds a sizing MODE (e.g. 'auto' for
+		// fit-the-content) is a choice between modes, which a UnitControl cannot
+		// express; a SelectControl is the right control for it.
+		if ( hasNonUnitMode( attrs[ attrName ] ) ) {
+			continue;
+		}
 		// Grab the ~300 characters before the setAttributes call to find the
 		// surrounding JSX context.
 		const precedingSlice = blockOwnSrc.slice( Math.max( 0, matchIndex - 300 ), matchIndex );
@@ -663,6 +683,20 @@ function runSelfTest() {
 			attrs: { fontSizeUnit: { type: 'string' } },
 			fn: checkUnitSelectControl,
 			expectViolations: [ 'UNIT-VIA-SELECTCONTROL' ],
+		},
+		{
+			name: 'SelectControl writes a Unit attr whose enum is units only -> FLAGGED (negative control)',
+			fixture: UNIT_FAIL_FIXTURE,
+			attrs: { fontSizeUnit: { type: 'string', enum: [ 'px', '%' ] } },
+			fn: checkUnitSelectControl,
+			expectViolations: [ 'UNIT-VIA-SELECTCONTROL' ],
+		},
+		{
+			name: 'SelectControl writes a Unit attr whose enum holds a sizing mode (auto) -> pass',
+			fixture: UNIT_FAIL_FIXTURE,
+			attrs: { fontSizeUnit: { type: 'string', enum: [ 'px', '%', 'auto' ] } },
+			fn: checkUnitSelectControl,
+			expectViolations: [],
 		},
 		{
 			name: 'TextControl (not SelectControl) writes a Unit attr -> pass',

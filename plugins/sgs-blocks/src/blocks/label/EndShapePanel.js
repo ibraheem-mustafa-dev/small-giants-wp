@@ -41,7 +41,11 @@ export default function EndShapePanel( { attributes, setAttributes } ) {
 		borderStyle,
 		borderColour,
 		borderColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
+	const labelContrastAgainst =
+		backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 	const shaped = !! endShapeLeft || !! endShapeRight;
 
 	return (
@@ -91,6 +95,7 @@ export default function EndShapePanel( { attributes, setAttributes } ) {
 				colourGradientValue={ borderColourGradient }
 				onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 				colourLinked={ true }
+				contrastAgainst={ labelContrastAgainst }
 			/>
 			<p className="components-base-control__help">
 				{ __(
