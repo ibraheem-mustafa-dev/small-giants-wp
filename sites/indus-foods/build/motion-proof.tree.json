@@ -383,5 +383,37 @@
 				}
 			}
 		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"effects": [
+							{
+								"id": "svg-loop-1",
+								"effect": "svg-loop",
+								"trigger": "load",
+								"values": {
+									"motion": "pulse",
+									"duration": 2000,
+									"amplitude": 1.2
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "SVG pulse (planted draft: opacity 1 to 0.4 and back over 2s)"
+				}
+			}
+		]
 	}
 ]

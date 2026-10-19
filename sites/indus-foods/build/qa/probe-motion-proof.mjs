@@ -67,6 +67,29 @@ try {
 		} );
 		const mqOk = mq && Math.abs( mq.pxPerS - 45 ) <= 0.9 && 'left' === mq.dir;
 		failures += mqOk ? 0 : 1;
+		// The planted draft's SVG pulse: opacity 1 to 0.4 and back every 2000ms, read every 25ms over 4.2s with the block
+		// on screen (the loop control pauses an off-screen loop).
+		const pulse = await page.evaluate( async () => {
+			const label = [ ...document.querySelectorAll( 'p' ) ].find( ( e ) => e.textContent.startsWith( 'SVG pulse' ) );
+			const el = label?.closest( '[data-sgs-fx~="svg-loop"]' );
+			if ( ! el ) {
+				return null;
+			}
+			el.scrollIntoView( { block: 'center', behavior: 'instant' } );
+			await new Promise( ( r ) => setTimeout( r, 300 ) );
+			const samples = [];
+			const t0 = performance.now();
+			while ( performance.now() - t0 < 4200 ) {
+				samples.push( [ performance.now() - t0, parseFloat( getComputedStyle( el ).opacity ) ] );
+				await new Promise( ( r ) => setTimeout( r, 25 ) );
+			}
+			const min = Math.min( ...samples.map( ( s ) => s[ 1 ] ) );
+			const dips = samples.filter( ( s, i ) => i > 0 && i < samples.length - 1 && s[ 1 ] <= samples[ i - 1 ][ 1 ] && s[ 1 ] < samples[ i + 1 ][ 1 ] && s[ 1 ] < min + 0.05 ).map( ( s ) => s[ 0 ] );
+			return { fx: el.getAttribute( 'data-sgs-fx' ), min: Math.round( min * 100 ) / 100, max: Math.round( Math.max( ...samples.map( ( s ) => s[ 1 ] ) ) * 100 ) / 100, periodMs: dips.length > 1 ? Math.round( dips[ dips.length - 1 ] - dips[ dips.length - 2 ] ) : null };
+		} );
+		const pulseOk = pulse && Math.abs( pulse.min - 0.4 ) <= 0.05 && pulse.max >= 0.95 && Math.abs( pulse.periodMs - 2000 ) <= 100;
+		failures += pulseOk ? 0 : 1;
+		console.log( `${ pulseOk ? 'PASS' : 'FAIL' } svg pulse: ${ JSON.stringify( pulse ) } (draft: opacity 1 to 0.4 every 2000ms)` );
 		console.log( `${ mqOk ? 'PASS' : 'FAIL' } marquee: ${ JSON.stringify( mq ) } (draft 45px/s left, within 2%)` );
 		await page.close();
 	}

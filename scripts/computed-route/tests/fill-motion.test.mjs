@@ -217,6 +217,8 @@ test( 'MUST FAIL: a per-item delay the code computes snaps the measured delay to
 	assert.equal( delaySteps( 'later()' ), null );
 	assert.equal( delayOf( { delay_ms: '80 + i * 110' }, { delayRawMs: 305 } ), 300, 'item 2: 80 + 2 x 110' );
 	assert.equal( delayOf( { delay_ms: '80 + i * 110' }, { delayRawMs: 60 } ), 80, 'never below the offset' );
+	// The Indus grid on a loaded machine (2026-10-19): item 0 and item 1 measured 51ms and 119ms for 0 and 80.
+	assert.deepEqual( [ 51, 119, 205, 80 ].map( ( raw ) => delayOf( { delay_ms: '(rv.i || 0) * 80' }, { delayRawMs: raw } ) ), [ 0, 80, 160, 80 ], 'a measured delay carries the page\'s start-up lag, never less' );
 	const keys = [ ...recordsByElement( [ rec( 'A', { element: { dc: 'Site', template_tpl_id: [ '78', '89' ] } } ) ] ).keys() ];
 	assert.deepEqual( keys, [ 'Site/78', 'Site/89' ] );
 } );

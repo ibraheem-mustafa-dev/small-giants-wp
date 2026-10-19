@@ -128,7 +128,9 @@ export function delayOf( record, measured, step = 50 ) {
 		return null;
 	}
 	const k = delaySteps( record.delay_ms ) || { offset: 0, step };
-	return k.offset + Math.max( 0, Math.round( ( measured.delayRawMs - k.offset ) / k.step ) ) * k.step;
+	// A measured delay is the code's delay plus the time the page took to start the animation, never less, so it snaps to
+	// the step it has reached, allowing up to three quarters of a step of that lag (51ms on an 80ms step is 0; 119 is 80).
+	return k.offset + Math.max( 0, Math.floor( ( ( measured.delayRawMs - k.offset ) / k.step ) + 0.25 ) ) * k.step;
 }
 
 // The element's one perspective (Spec 38A §10) as { perspective } when the layer takes it and the value is within the
