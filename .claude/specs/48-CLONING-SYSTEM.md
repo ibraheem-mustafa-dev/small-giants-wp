@@ -738,7 +738,7 @@ Status: the command is built 2026-10-12 (`intake.mjs`, `lib/intake-run*.mjs`, `l
 
 **Exit:** every page-map row carries a WordPress ID. The menus, front page, permalinks and WooCommerce page options read back as the page map says. The snapshot's palette custom properties resolve at `:root` on the live site. Every block the skeletons use has a default paint whose `paintKey` matches the pushed snapshot.
 
-Status: not built (the checklist, extractor, push and Site Info scripts exist; the site-build script and the per-site default paint do not).
+Status: partly built. On Indus (2026-10-19): the snapshot from the confirmed palette roles is pushed and its palette resolves at `:root` (FR-33-2 Status), Site Info is applied (FR-48-59 Status), and the default paint of every block the confirmed skeletons use is measured with the pushed snapshot's `paintKey` (Indus build plan step 19). Not built: the site-build script (FR-48-55) and the media upload (FR-48-58), so no page-map row carries a WordPress ID yet.
 
 ### FR-48-19 — Stage 3: trees
 **Entry:** stage 2's exit test passes.
@@ -1612,10 +1612,10 @@ One pass is about 10 minutes of agent time and 20 minutes of machine time.
 
 *Stage 2: site build (steps 16 and the environment parts of Appendix A may start after step 4)*
 
-16. **Appendix A on `indus-test`** (agent, 30 min): the steps not already done. Steps 7 and 9 done 2026-10-12; 5, 10, 11 and 12 wait on stage 1.
-17. **Snapshot** (agent, 1 h). The extractor reads `tokens/*.css` with the confirmed roles and the `border` vocabulary; the Indus snapshot carries the new palette slugs, fluid presets, per-tier padding tokens and `buttonPresets.default.hover-transform`; dry run, then push. Needs 12 and 15.
-18. **Site build** (agent 1 h 30 min, Bean 5 min). The site-build script (FR-48-55), media upload (FR-48-58), and Site Info's first real run (FR-48-59), whose dry-run table Bean sees. Needs 15 and 16.
-19. **Default-paint step** (machine 20 min): stage 2's exit (FR-48-18), as the framework refresh loop's step 4 after the push. Needs 17.
+16. **Appendix A on `indus-test`** (agent, 30 min): the steps not already done. Steps 7 and 9 done 2026-10-12; 5, 10 and 12 done 2026-10-19; 11 is step 18.
+17. **Snapshot** (agent, 1 h; done for Indus 2026-10-19). The extractor reads `tokens/*.css` with the confirmed roles and the `border` vocabulary; the Indus snapshot carries the new palette slugs, fluid presets, per-tier padding tokens and `buttonPresets.default.hover-transform`; dry run, then push. Needs 12 and 15.
+18. **Site build** (agent 1 h 30 min, Bean 5 min). The site-build script (FR-48-55), media upload (FR-48-58), and Site Info's first real run (FR-48-59, done in step 16 for Indus). Needs 15 and 16.
+19. **Default-paint step** (machine 20 min; done for Indus 2026-10-19): stage 2's exit (FR-48-18), as the framework refresh loop's step 4 after the push. Needs 17.
 
 *Stages 3 to 5 for the header first (the vertical slice)*
 
