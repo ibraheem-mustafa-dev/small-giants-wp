@@ -96,6 +96,14 @@ test( 'MUST FAIL: an opacity pulse is svg-loop\'s pulse, its amplitude the dip o
 	assert.match( loopEffect( { ...pulse, easing: 'linear' }, {}, { mdb } ).notes.join( ' ' ), /linear is not kept/ );
 } );
 
+test( 'MUST FAIL: an endless CSS animation record with literal properties is the same pulse from its own values, with no measurement', () => {
+	const css = rec( 'K', { mechanism: 'css-animation', duration_ms: 1000, easing: 'ease', properties: [ { property: 'animation-name', from: null, to: 'throb' }, { property: 'opacity', from: '1', to: '0.4' } ] } );
+	assert.deepEqual( loopEffect( css, {}, { mdb } ).values, { motion: 'pulse', duration: 2000, amplitude: 1.2 } );
+	assert.equal( resolvedLoop( css, null ).unmapped, undefined );
+	const nameOnly = { ...css, properties: [ css.properties[ 0 ] ] };
+	assert.match( loopEffect( nameOnly, {}, { mdb } ).unmapped, /computed in the code/, 'control: a name row alone still needs the measured animation' );
+} );
+
 test( 'MUST FAIL: a loop no effect draws is a named Spec 38 gap, never the nearest effect', () => {
 	const spin = rec( 'S', { duration_ms: 40000, easing: 'linear', direction: 'normal', properties: [ { property: 'rotate', from: '0deg', to: '360deg' } ] } );
 	assert.match( loopEffect( spin, {}, { mdb } ).unmapped, /no effect draws this loop.*svg-loop.*Spec 38 gap/ );

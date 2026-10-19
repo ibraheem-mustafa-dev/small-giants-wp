@@ -1282,7 +1282,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `readTheirs(folder)` → Claude Design's `{ animations, surfaces }`; `readInventory(row, { rows, sources })` → the registry reading `{ recordIds, role, why? }` or null (the inventory is built once per pair of rows and sources lists); `inventoryStage(job, ctx)` → the intake stage's parts.
 
 ### `lib/intake-inventory-anim.mjs`
-- `CATEGORIES` (the master schema's counted categories as census-row tests); `animationRecords(census, { notDefects? })` → `{ records, census: Map(row id → record IDs), sites, counts, unresolved, meta }`.
+- `CATEGORIES` (the master schema's counted categories as census-row tests); `animationRecords(census, { notDefects? })` → `{ records, census: Map(row id → record IDs), sites, counts, unresolved, meta }`; `keyframeProperties(stops)` → one `{ property, from, to, keyframes? }` per property an `@keyframes` rule animates (a K record carries them after its `animation-name` row).
 
 ### `lib/intake-inventory-tpl.mjs`
 - `elementStyles(element)`, `describeElement(comp, element)`, `traceOf(rows, { pseudo? })`; `templateRecords(census, add)` → TR, PS, K and RM records through `add`; `animationRecord(add, row, element, source, opts)`; `applyReducedMotion(records, rmRecords, metaOf)`.

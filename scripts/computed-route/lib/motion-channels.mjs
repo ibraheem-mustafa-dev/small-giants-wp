@@ -245,7 +245,7 @@ const IDENTITY = { opacity: 1, translateX: 0, translateY: 0, scale: 1, scaleX: 1
 // the to side leaves out (or sets to `none`) goes to its identity.
 export function poseOf( properties ) {
 	const out = { from: {}, to: {}, unsupported: [], other: [] };
-	for ( const p of properties || [] ) {
+	for ( const p of ( properties || [] ).filter( ( x ) => 'animation-name' !== x.property ) ) {
 		const f = propertyChannels( p.property, p.from );
 		const t = propertyChannels( p.property, p.to );
 		if ( f.other ) {
@@ -271,7 +271,7 @@ export function poseOf( properties ) {
 // property with just a from and a to stands at 0 and 100); `computed` lists the stop values the code computes, which
 // no literal channel can hold.
 export function keyframeStops( properties ) {
-	const list = properties || [];
+	const list = ( properties || [] ).filter( ( x ) => 'animation-name' !== x.property );
 	if ( ! list.some( ( p ) => Array.isArray( p.keyframes ) && p.keyframes.length > 2 ) ) {
 		return null;
 	}

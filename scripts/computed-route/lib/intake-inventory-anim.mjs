@@ -140,13 +140,18 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		const r = d.rows[ 0 ];
 		const name = r.detail.name ?? /@keyframes\s+([\w-]+)/.exec( r.detail.value || '' )?.[ 1 ] ?? null;
 		const users = named.filter( ( k ) => metaOf.get( k ).names?.includes( name ) );
+		const animated = keyframeProperties( r.detail.stops );
 		if ( users.length ) {
-			users.forEach( ( k ) => add.map( k, [ r ] ) );
+			users.forEach( ( k ) => {
+				add.map( k, [ r ] );
+				k.properties = [ k.properties[ 0 ], ...animated ];
+			} );
 		} else {
 			const element = { dc: d.comp, template_tpl_id: null, selector: `@keyframes ${ name }`, description: `keyframes ${ name }` };
 			animationRecord( add, { ...r, detail: { property: 'animation-name', value: name ?? 'unnamed' } }, element, d.source( `@keyframes ${ name }` ), { status: 'dead-code' } );
 			add.map( list[ list.length - 1 ], [ r ] );
 			list[ list.length - 1 ].notes = `no animation declaration names @keyframes ${ name }`;
+			list[ list.length - 1 ].properties.push( ...animated );
 		}
 	}
 
@@ -167,6 +172,37 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 	}
 	counts.js_style_writers = countOf( sites.map( ( s ) => [ s.comp, [ s.rec.id ] ] ) );
 	return { records, census: ids, sites: sites.map( ( s ) => ( { key: s.key, comp: s.comp, recordId: s.rec.id } ) ), counts, unresolved, meta };
+}
+
+// The animated properties of an @keyframes rule's stops (census detail `stops`: [ { key, decls: [[property, value]] } ]):
+// one { property, from, to } per CSS property in order of first appearance, from the property's first and last stop;
+// a property with more than two stops also carries `keyframes`: [ { offset (0 to 1), value } ] in offset order. `from`
+// and `to` are offsets 0 and 1, a percentage is percent / 100, and a comma list (`0%, 100%`) gives every offset the
+// block. A stop that sets the property twice at one offset keeps the later value. A property with a single stop is
+// `from` at offset 0 and `to` at offset 1 (the other end is the element's own value, so null); a single stop between
+// them keeps `keyframes` so the offset is not lost. `animation-*` declarations inside a stop are not animated values.
+export function keyframeProperties( stops = [] ) {
+	const offsetOf = ( key ) => ( 'from' === key ? 0 : 'to' === key ? 1 : parseFloat( key ) / 100 );
+	const by = new Map();
+	for ( const stop of stops ) {
+		const offsets = String( stop.key ).split( ',' ).map( ( k ) => k.trim().toLowerCase() ).filter( Boolean ).map( offsetOf ).filter( Number.isFinite );
+		for ( const [ property, value ] of stop.decls ) {
+			if ( /^-?(?:webkit-)?animation/.test( property ) ) {
+				continue;
+			}
+			const seen = by.get( property ) || new Map();
+			offsets.forEach( ( o ) => seen.set( Math.round( o * 10000 ) / 10000, value ) );
+			by.set( property, seen );
+		}
+	}
+	return [ ...by ].map( ( [ property, seen ] ) => {
+		const frames = [ ...seen ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ).map( ( [ offset, value ] ) => ( { offset, value } ) );
+		if ( 1 === frames.length ) {
+			const [ f ] = frames;
+			return { property, from: 0 === f.offset ? f.value : null, to: 1 === f.offset ? f.value : null, ...( 0 === f.offset || 1 === f.offset ? {} : { keyframes: frames } ) };
+		}
+		return { property, from: frames[ 0 ].value, to: frames[ frames.length - 1 ].value, ...( frames.length > 2 ? { keyframes: frames } : {} ) };
+	} );
 }
 
 // A count object of the master schema from [component, record IDs] per occurrence.

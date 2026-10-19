@@ -101,6 +101,26 @@ test( 'keyframes: an @keyframes rule maps to the record that names it; one nothi
 	assert.match( spin.reduced_motion.detail, new RegExp( `^${ rm.id } ` ) );
 } );
 
+test( 'MUST FAIL: a K record carries its @keyframes rule\'s animated properties after the animation-name row', () => {
+	const inv = build();
+	const spin = rec( inv, ( r ) => 'css-animation' === r.mechanism && '5' === r.element.template_tpl_id );
+	assert.deepEqual( spin.properties, [ { property: 'animation-name', from: null, to: 'inv-spin' }, { property: 'transform', from: 'rotate(0deg)', to: 'rotate(360deg)' } ], 'two stops: from and to, no keyframes key' );
+	assert.deepEqual( rec( inv, ( r ) => '@keyframes inv-unused' === r.element.selector ).properties.map( ( p ) => p.property ), [ 'animation-name', 'opacity' ], 'the dead-code record carries them too' );
+	const stopped = clone( census );
+	const row = stopped.rows.find( ( r ) => 'keyframes' === r.kind && 'inv-spin' === r.detail.name );
+	row.detail.stops = [ { key: 'from', decls: [ [ 'opacity', '0' ], [ 'transform', 'scale(0.5)' ] ] }, { key: '50%', decls: [ [ 'transform', 'scale(1.2)' ] ] }, { key: 'to', decls: [ [ 'opacity', '1' ], [ 'transform', 'scale(1)' ], [ 'animation-timing-function', 'ease' ] ] } ];
+	const three = rec( build( stopped ), ( r ) => 'css-animation' === r.mechanism && '5' === r.element.template_tpl_id );
+	assert.deepEqual( three.properties, [
+		{ property: 'animation-name', from: null, to: 'inv-spin' },
+		{ property: 'opacity', from: '0', to: '1' },
+		{ property: 'transform', from: 'scale(0.5)', to: 'scale(1)', keyframes: [ { offset: 0, value: 'scale(0.5)' }, { offset: 0.5, value: 'scale(1.2)' }, { offset: 1, value: 'scale(1)' } ] },
+	], 'three stops on one property give keyframes at 0, 0.5 and 1; a property missing at a stop is absent from it; animation-* is not a value' );
+	row.detail.stops = [ { key: '0%, 100%', decls: [ [ 'opacity', '1' ] ] }, { key: '50%', decls: [ [ 'opacity', '0.3' ] ] } ];
+	const comma = rec( build( stopped ), ( r ) => 'css-animation' === r.mechanism && '5' === r.element.template_tpl_id );
+	assert.deepEqual( comma.properties[ 1 ], { property: 'opacity', from: '1', to: '1', keyframes: [ { offset: 0, value: '1' }, { offset: 0.5, value: '0.3' }, { offset: 1, value: '1' } ] }, 'a comma list applies one block to both offsets' );
+	assert.deepEqual( build( stopped ).problems, [], 'the record still validates against the animations schema' );
+} );
+
 test( 'Web Animations: the ref target, the componentDidUpdate state key and the reduced-motion guard; the observer callback is a scroll-into-view trigger', () => {
 	const inv = build();
 	const panel = rec( inv, ( r ) => 'waapi' === r.mechanism && 'componentDidUpdate' === r.source.function );

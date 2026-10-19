@@ -56,8 +56,9 @@ export function cutDraft( text ) {
 // In-page: the stamped template parsed in a <template>; one record per element in document order:
 // { n, parent (the nearest enclosing element's n, null at the top), tag, attrs: [[name, value]], texts: [string], inFor,
 // inHelmet, svg? (an SVG element's own-case name: HTML parsing lower-cases `tag`), body?, css? } (css: the rules of a <style>,
-// parsed by the browser: { type: keyframes|font-face|import|style, name?, selector?, decls?, cssText? }; a style rule
-// is kept only when it sets a transition or animation property).
+// parsed by the browser: { type: keyframes|font-face|import|style, name?, selector?, decls?, cssText?, stops? }; a style rule
+// is kept only when it sets a transition or animation property; a keyframes rule carries `stops`: [ { key (the
+// keyText: `from`, `50%`, `0%, 100%`), decls: [[property, value]] } ] in source order).
 // The runtime strips `name`, `component` and `style` from a dc-import (and `style` from an x-import) while compiling,
 // before it keeps the stamped text, so those are restored from the decoded template source (`source`), pairing the
 // k-th import of each tag in both parses; unequal counts are returned as `pairError`, never guessed.
@@ -88,7 +89,8 @@ function readStamped( [ html, source ] ) {
 		const go = ( list ) => {
 			for ( const r of list ) {
 				if ( r instanceof CSSKeyframesRule ) {
-					rules.push( { type: 'keyframes', name: r.name, decls: [] } );
+					const stops = [ ...r.cssRules ].filter( ( k ) => k instanceof CSSKeyframeRule ).map( ( k ) => ( { key: k.keyText, decls: [ ...k.style ].map( ( p ) => [ p, k.style.getPropertyValue( p ) ] ) } ) );
+					rules.push( { type: 'keyframes', name: r.name, decls: [], stops } );
 				} else if ( r instanceof CSSFontFaceRule ) {
 					rules.push( { type: 'font-face', name: r.style.getPropertyValue( 'font-family' ), decls: [ [ 'src', r.style.getPropertyValue( 'src' ) ] ] } );
 				} else if ( r instanceof CSSImportRule ) {
@@ -304,7 +306,7 @@ export function templateRows( source, { handlerOf = () => null } = {} ) {
 		}
 		for ( const r of e.css || [] ) {
 			if ( 'keyframes' === r.type ) {
-				add( 'keyframes', e.n, { via: '@keyframes', name: r.name } );
+				add( 'keyframes', e.n, { via: '@keyframes', name: r.name, stops: r.stops || [] } );
 			} else if ( 'font-face' === r.type ) {
 				add( 'helmet-font', e.n, { via: '@font-face', family: r.name, src: r.decls[ 0 ][ 1 ] } );
 			} else if ( 'import' === r.type && isFontUrl( r.name ) ) {

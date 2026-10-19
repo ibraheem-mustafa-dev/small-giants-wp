@@ -42,6 +42,13 @@ export function measuredLoopOf( record, measured ) {
 	return loops.find( ( l ) => ! l.css && props.every( ( p ) => l.frames.some( ( f ) => p in f ) ) ) || null;
 }
 
+// Whether the code states the record's values: no property is a formula, and a CSS animation names a rule whose
+// keyframes the record also lists (an `animation-name` row with no other property means the keyframes were not read).
+function statesValues( record ) {
+	const props = record.properties || [];
+	return ! props.some( ( p ) => null !== ( p.formula ?? null ) ) && ( ! props.some( ( p ) => 'animation-name' === p.property ) || props.some( ( p ) => 'animation-name' !== p.property ) );
+}
+
 // A record's loop with every value known: from the code where it states them, else (a value the code computes at run
 // time, a CSS animation's keyframes) from the animation the draft's code made, read at one width. { loop } or
 // { unmapped }. A loop: { frames: [channels], duration, delay, direction, easing, box, other, unsupported }.
@@ -50,7 +57,7 @@ export function resolvedLoop( record, measured ) {
 	if ( texts.some( ( t ) => RANDOM.test( t ) ) ) {
 		return { unmapped: 'the draft randomises this loop per element (Math.random in its values or timing); no effect randomises its values, a Spec 38 gap' };
 	}
-	const computed = ( record.properties || [] ).some( ( p ) => null !== ( p.formula ?? null ) || 'animation-name' === p.property ) || 'number' !== typeof record.duration_ms;
+	const computed = ! statesValues( record ) || 'number' !== typeof record.duration_ms;
 	const m = measuredLoopOf( record, measured );
 	if ( computed && ! m ) {
 		return { unmapped: 'its values are computed in the code and the render showed no matching endless animation on this element' };
@@ -68,7 +75,7 @@ export function resolvedLoop( record, measured ) {
 	} else {
 		const from = {};
 		const to = {};
-		for ( const p of record.properties || [] ) {
+		for ( const p of ( record.properties || [] ).filter( ( x ) => 'animation-name' !== x.property ) ) {
 			const f = propertyChannels( p.property, p.from );
 			const t = propertyChannels( p.property, p.to );
 			if ( f.other ) {
@@ -236,7 +243,7 @@ export function loopEffect( record, measuredByWidth, { mdb } ) {
 // against the code's duration and keyframes. Returns one line per width that differs (by more than 100ms or 10% in
 // duration, or in any keyframe channel), [] when every measured width agrees or nothing was measured.
 export function loopCheck( record, measuredByWidth ) {
-	const literal = ! ( record.properties || [] ).some( ( p ) => null !== ( p.formula ?? null ) || 'animation-name' === p.property ) && 'number' === typeof record.duration_ms;
+	const literal = statesValues( record ) && 'number' === typeof record.duration_ms;
 	if ( ! literal ) {
 		return [];
 	}
@@ -269,7 +276,7 @@ export function runtimeLoopsFor( candidates, measured ) {
 			return false;
 		}
 		const own = resolvedLoop( r, { loops: [ m ], box: measured.box } ).loop;
-		const literal = ! ( r.properties || [] ).some( ( p ) => null !== ( p.formula ?? null ) || 'animation-name' === p.property );
+		const literal = statesValues( r );
 		return ! literal || ! own || ( sameFrames( own.frames, m.frames.map( ( f ) => frameChannels( f ).channels ) ) && ( 'number' !== typeof r.duration_ms || Math.abs( r.duration_ms - m.duration ) < 1 ) );
 	} );
 }

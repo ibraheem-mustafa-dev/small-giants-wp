@@ -75,6 +75,7 @@ test( 'template details: bound style-* rules, handlers wired to methods, the sc-
 	assert.deepEqual( of( 'sc-for' ).map( ( r ) => r.detail ), [ { list: '{{ links }}', as: 'item' } ] );
 	assert.deepEqual( of( 'helmet-font' ).map( ( r ) => r.detail.via ), [ 'stylesheet', '@font-face' ] );
 	assert.deepEqual( of( 'keyframes' ).map( ( r ) => r.detail.via ), [ '@keyframes', 'stylesheet' ] );
+	assert.deepEqual( of( 'keyframes' )[ 0 ].detail.stops, [ { key: '0%', decls: [ [ 'opacity', '0.6' ] ] }, { key: '100%', decls: [ [ 'opacity', '1' ] ] } ], 'the @keyframes row (the browser reads from and to as 0% and 100%) carries its stops' );
 	assert.ok( of( 'binding' ).some( ( r ) => 'attr:style-hover' === r.detail.where && 'hoverColour' === r.detail.expression ) );
 } );
 

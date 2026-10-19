@@ -263,6 +263,29 @@ test( 'MUST FAIL (Spec 38A §6.2): a keyframe the code computes is never written
 	assert.equal( flagged.out.writes.length, 0, 'a stop flagged computed is unmapped even with no formula on the property' );
 } );
 
+// A CSS entrance (`animation: rise 600ms` over an @keyframes rule): the name row first, then one row per animated property.
+const rise = ( properties, over = {} ) => rec( 'K-01', { mechanism: 'css-animation', trigger: { type: 'mount' }, properties: [ { property: 'animation-name', from: null, to: 'rise' }, ...properties ], duration_ms: 600, ...over } );
+
+test( 'MUST FAIL: a CSS animation record with its name row and opacity and transform stops writes an entrance from the stops', () => {
+	const { flat, out } = run( [ node( 0, 'sgs/card', '10' ) ], [ rise( [ { property: 'opacity', from: '0', to: '1' }, { property: 'transform', from: 'translateY(24px)', to: 'translateY(0px)' } ] ) ] );
+	assert.equal( out.writes.length, 1, JSON.stringify( out.unmapped ) );
+	const base = flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base;
+	assert.deepEqual( base.values.from, { opacity: 0, translateY: 24 } );
+	assert.deepEqual( base.values.to, { opacity: 1, translateY: 0 } );
+	assert.equal( validateMotionWrite( flat[ 0 ].attributes.sgsMotion, schema ).valid, true );
+	assert.doesNotMatch( JSON.stringify( out.unmapped ), /animation-name/ );
+} );
+
+test( 'MUST FAIL: a CSS animation record with a three-stop keyframes property writes values.keyframes', () => {
+	const frames = [ { offset: 0, value: 'translateY(0px)' }, { offset: 0.5, value: 'translateY(-12px)' }, { offset: 1, value: 'translateY(0px)' } ];
+	const { flat, out } = run( [ node( 0, 'sgs/card', '10' ) ], [ rise( [ { property: 'transform', from: 'translateY(0px)', to: 'translateY(0px)', keyframes: frames } ] ) ] );
+	assert.equal( out.writes.length, 1, JSON.stringify( out.unmapped ) );
+	const base = flat[ 0 ].attributes.sgsMotion.elements.root.entrance.base;
+	assert.deepEqual( base.values.keyframes, [ { offset: 0, translateY: 0 }, { offset: 50, translateY: -12 }, { offset: 100, translateY: 0 } ] );
+	assert.equal( 'from' in base.values || 'to' in base.values, false );
+	assert.doesNotMatch( out.notes.map( ( n ) => n.text ).join( ' ' ), /animation-name/, 'the name row is not reported as an unmapped property' );
+} );
+
 test( 'a two-frame entrance still writes from and to, with no keyframes (control)', () => {
 	const two = rec( 'A-41', { trigger: { type: 'scroll-into-view' }, properties: [ { property: 'opacity', from: 0, to: 1 } ], duration_ms: 600 } );
 	const { flat } = run( [ node( 0, 'sgs/card', '10' ) ], [ two ] );
