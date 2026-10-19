@@ -1,24 +1,24 @@
-# Clone coverage gap list: 1890 capabilities neither covered nor excluded
+# Clone coverage gap list: 1811 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
 | content, media and icons | 798 |
-| draft reading | 351 |
+| draft reading | 352 |
 | shop, forms and data | 179 |
-| modes and values with no CSS property | 170 |
-| motion writer (4.0) | 163 |
-| site and surfaces | 96 |
-| behaviour recognisers | 73 |
-| states | 60 |
+| modes and values with no CSS property | 175 |
+| behaviour recognisers | 126 |
+| site and surfaces | 106 |
+| states | 69 |
+| motion model additions | 6 |
 
-## block-setting (87)
+## block-setting (86)
 
 - `block-setting:a11y-text:string`: block settings, role a11y-text, string (8); has nothing; wave content, media and icons; e.g. sgs/before-after.afterVideoAlt, sgs/before-after.beforeVideoAlt, sgs/button.ariaLabel, sgs/cart.ariaLabel, sgs/form.formName
 - `block-setting:behaviour:array`: block settings, role behaviour, array (194); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionDays, sgs/accordion-item.sgsConditionUserRole, sgs/accordion.sgsConditionDays, sgs/accordion.sgsConditionUserRole, sgs/account.sgsConditionDays
 - `block-setting:behaviour:boolean`: block settings, role behaviour, boolean (37); has nothing; wave behaviour recognisers; e.g. sgs/accordion.allowMultiple, sgs/container.bgSvgTextShadow, sgs/container.sgsBlockLinkTarget, sgs/counter.accentStroke, sgs/form-field-address.required
 - `block-setting:behaviour:integer`: block settings, role behaviour, integer (1); has nothing; wave behaviour recognisers; e.g. sgs/form.rateLimit
 - `block-setting:behaviour:mode`: block settings, role behaviour, mode (232); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionLoggedIn, sgs/accordion-item.sgsConditionProductReviews, sgs/accordion.sgsConditionLoggedIn, sgs/accordion.sgsConditionProductReviews, sgs/account.sgsConditionLoggedIn
-- `block-setting:behaviour:motion`: block settings, role behaviour, motion (16, motion); has nothing; wave motion writer (4.0); e.g. sgs/buybox.dragMomentum, sgs/buybox.dragToScroll, sgs/buybox.loopCarousel, sgs/gallery.dragMomentum, sgs/gallery.dragToScroll
+- `block-setting:behaviour:motion`: block settings, role behaviour, motion (16, motion); has nothing; wave behaviour recognisers; e.g. sgs/buybox.dragMomentum, sgs/buybox.dragToScroll, sgs/buybox.loopCarousel, sgs/gallery.dragMomentum, sgs/gallery.dragToScroll
 - `block-setting:behaviour:number`: block settings, role behaviour, number (118); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsConditionCollectionQueryId, sgs/accordion.defaultOpen, sgs/accordion.sgsConditionCollectionQueryId, sgs/account.sgsConditionCollectionQueryId, sgs/audio.sgsConditionCollectionQueryId
 - `block-setting:behaviour:object`: block settings, role behaviour, object (13); has nothing; wave behaviour recognisers; e.g. sgs/google-reviews.arrowStep, sgs/nav-bar-menu.triggerDetachAfter, sgs/nav-drawer-menu.itemOrnamentFramePlay, sgs/site-footer-row.rowHideOnScroll, sgs/site-footer-row.rowShrink
 - `block-setting:behaviour:string`: block settings, role behaviour, string (742); has nothing; wave behaviour recognisers; e.g. sgs/accordion-item.sgsCollapseVisibility, sgs/accordion-item.sgsConditionDateEnd, sgs/accordion-item.sgsConditionDateStart, sgs/accordion-item.sgsConditionReferrer, sgs/accordion-item.sgsConditionUrlParam
@@ -30,7 +30,6 @@
 - `block-setting:content:number`: block settings, role content, number (6); has nothing; wave content, media and icons; e.g. sgs/counter.number, sgs/product-card.indexVariationUrl, sgs/star-rating.schemaReviewCount, sgs/trustpilot-reviews.reviewsAverage, sgs/trustpilot-reviews.totalReviews
 - `block-setting:content:object`: block settings, role content, object (1); has nothing; wave content, media and icons; e.g. sgs/choice-flow.stageNoteLink
 - `block-setting:content:string`: block settings, role content, string (48); has nothing; wave content, media and icons; e.g. sgs/audio.audioUrl, sgs/before-after.afterImageUrlMobile, sgs/before-after.afterImageUrlTablet, sgs/before-after.afterVideoUrl, sgs/before-after.beforeImageUrlMobile
-- `block-setting:css-gate:styling`: block settings, role css-gate, styling (4); has nothing; wave motion writer (4.0); e.g. sgs/card-grid.grayscaleHover, sgs/gallery.grayscaleHover, sgs/info-box.grayscaleHover, sgs/team-member.grayscaleHover
 - `block-setting:css-modifier:mode`: block settings, role css-modifier, mode (3); has nothing; wave modes and values with no CSS property; e.g. sgs/google-reviews.logoPosition, sgs/google-reviews.navPosition, sgs/testimonial.ratingType
 - `block-setting:enum-class-probe:integer`: block settings, role enum-class-probe, integer (27); has nothing; wave content, media and icons; e.g. sgs/audio.audioId, sgs/before-after.afterImageId, sgs/before-after.afterImageIdMobile, sgs/before-after.afterImageIdTablet, sgs/before-after.afterVideoId
 - `block-setting:enum-class-probe:mode`: block settings, role enum-class-probe, mode (2); has nothing; wave content, media and icons; e.g. sgs/audio.toggleIcon, sgs/choice-flow.stageNoteIcon
@@ -62,7 +61,7 @@
 - `block-setting:link-content:string`: block settings, role link-content, string (2); has nothing; wave content, media and icons; e.g. sgs/whatsapp-cta.message, sgs/whatsapp-cta.phoneNumber
 - `block-setting:link-href:array`: block settings, role link-href, array (1); has nothing; wave content, media and icons; e.g. sgs/social-icons.hiddenLinks
 - `block-setting:link-href:mode`: block settings, role link-href, mode (1); has nothing; wave content, media and icons; e.g. sgs/icon.linkTarget
-- `block-setting:motion:motion`: block settings, role motion, motion (52, motion); has nothing; wave motion writer (4.0); e.g. sgs/brand-strip.transitionDuration, sgs/brand-strip.transitionEasing, sgs/card-grid.transitionDuration, sgs/card-grid.transitionEasing, sgs/cart.freeDeliveryFillDuration
+- `block-setting:motion:motion`: block settings, role motion, motion (48, motion); has nothing; wave states; e.g. sgs/cart.freeDeliveryFillDuration, sgs/cart.freeDeliveryFillEasing, sgs/cart.panelSlideDuration, sgs/cart.panelSlideEasing, sgs/counter.duration
 - `block-setting:number-css-px:string`: block settings, role number-css-px, string (9); has nothing; wave modes and values with no CSS property; e.g. sgs/container.surfaceBlur, sgs/hero.surfaceBlur, sgs/mega-panel.surfaceBlur, sgs/multi-button.surfaceBlur, sgs/nav-drawer.surfaceBlur
 - `block-setting:numeric-content:number`: block settings, role numeric-content, number (3); has nothing; wave content, media and icons; e.g. sgs/google-reviews.averageRating, sgs/google-reviews.reviewCount, sgs/testimonial.ratingScale
 - `block-setting:position:object`: block settings, role position, object (2); has nothing; wave modes and values with no CSS property; e.g. sgs/site-header.headerFloatInset, sgs/site-header.zIndex
@@ -89,113 +88,75 @@
 - `block-setting:text-content:number`: block settings, role text-content, number (1); has nothing; wave content, media and icons; e.g. sgs/nav-drawer-menu.itemMagnetStrength
 - `block-setting:text-content:object`: block settings, role text-content, object (3); has nothing; wave content, media and icons; e.g. sgs/business-info.separators, sgs/cart.separators, sgs/pricing-table.featureSeparators
 - `block-setting:typography:mode`: block settings, role typography, mode (5); has nothing; wave modes and values with no CSS property; e.g. sgs/button.textDecorationHover, sgs/nav-bar-menu.itemTextAlign, sgs/nav-bar-menu.itemTextWrap, sgs/nav-drawer-menu.itemTextAlign, sgs/nav-drawer-menu.itemTextWrap
-- `block-setting:typography:string`: block settings, role typography, string (500); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion.fontSizeUnit, sgs/accordion.letterSpacingUnit, sgs/accordion.lineHeightUnit, sgs/account.cardDescFontSizeUnit, sgs/account.cardDescLetterSpacingUnit
+- `block-setting:typography:string`: block settings, role typography, string (503); has nothing; wave modes and values with no CSS property; e.g. sgs/accordion.fontSizeUnit, sgs/accordion.letterSpacingUnit, sgs/accordion.lineHeightUnit, sgs/account.cardDescFontSizeUnit, sgs/account.cardDescLetterSpacingUnit
 - `block-setting:unclassified:array`: block settings, role unclassified, array (11); has nothing; wave behaviour recognisers; e.g. sgs/account.hiddenEndpoints, sgs/buybox.pickerAlwaysShowAxes, sgs/choice-flow-question.options, sgs/choice-flow-result.matchTags, sgs/language-switch.languages
 - `block-setting:unclassified:integer`: block settings, role unclassified, integer (4); has nothing; wave behaviour recognisers; e.g. sgs/choice-flow-result.rateLimit, sgs/google-rating-badge.compactBelow, sgs/google-rating-badge.hideBelow, sgs/google-rating-badge.reviewCount
 - `block-setting:unclassified:number`: block settings, role unclassified, number (25); has nothing; wave behaviour recognisers; e.g. sgs/audio.reactiveSensitivity, sgs/brand-strip.brandMaxItems, sgs/container.surfaceSaturate, sgs/diagram-dimension.extOvershoot, sgs/diagram-dimension.extReach
 - `block-setting:unclassified:object`: block settings, role unclassified, object (21); has nothing; wave behaviour recognisers; e.g. sgs/account.cardDescriptions, sgs/account.navIcons, sgs/account.statusStepLabels, sgs/card-grid.separators, sgs/choice-flow.headerLogo
 - `block-setting:unclassified:string`: block settings, role unclassified, string (73); has nothing; wave behaviour recognisers; e.g. sgs/account.greeting, sgs/account.latestOrderHeading, sgs/account.parcelTrackingLabel, sgs/account.shopLinkLabel, sgs/account.viewOrderLabel
-- `block-setting:visual:boolean`: block settings, role visual, boolean (5); has nothing; wave motion writer (4.0); e.g. sgs/multi-button.bgSvgTextShadow, sgs/physics-canvas.bgSvgTextShadow, sgs/product-card.showShadow, sgs/site-footer.bgSvgTextShadow, sgs/site-header.bgSvgTextShadow
-- `block-setting:visual:mode`: block settings, role visual, mode (5); has nothing; wave motion writer (4.0); e.g. sgs/container.backgroundAttachment, sgs/hero.backgroundAttachment, sgs/multi-button.backgroundAttachment, sgs/nav-drawer.backgroundAttachment, sgs/physics-canvas.backgroundAttachment
-- `block-setting:visual:number`: block settings, role visual, number (16); has nothing; wave motion writer (4.0); e.g. sgs/media.overlayOpacity, sgs/mega-panel.surfaceOpacity, sgs/multi-button.bgSvgOpacity, sgs/nav-bar-menu.submenuCaretOpacity, sgs/nav-bar-menu.submenuCaretOpacityHover
-- `block-setting:visual:object`: block settings, role visual, object (7); has nothing; wave motion writer (4.0); e.g. sgs/brand-strip.separators, sgs/container.separators, sgs/icon-list.separators, sgs/nav-bar-menu.separators, sgs/nav-bar-menu.submenuSeparators
-- `block-setting:visual:string`: block settings, role visual, string (1); has nothing; wave motion writer (4.0); e.g. sgs/google-rating-badge.shadow
+- `block-setting:visual:boolean`: block settings, role visual, boolean (5); has nothing; wave modes and values with no CSS property; e.g. sgs/multi-button.bgSvgTextShadow, sgs/physics-canvas.bgSvgTextShadow, sgs/product-card.showShadow, sgs/site-footer.bgSvgTextShadow, sgs/site-header.bgSvgTextShadow
+- `block-setting:visual:mode`: block settings, role visual, mode (5); has nothing; wave modes and values with no CSS property; e.g. sgs/container.backgroundAttachment, sgs/hero.backgroundAttachment, sgs/multi-button.backgroundAttachment, sgs/nav-drawer.backgroundAttachment, sgs/physics-canvas.backgroundAttachment
+- `block-setting:visual:number`: block settings, role visual, number (16); has nothing; wave modes and values with no CSS property; e.g. sgs/media.overlayOpacity, sgs/mega-panel.surfaceOpacity, sgs/multi-button.bgSvgOpacity, sgs/nav-bar-menu.submenuCaretOpacity, sgs/nav-bar-menu.submenuCaretOpacityHover
+- `block-setting:visual:object`: block settings, role visual, object (7); has nothing; wave modes and values with no CSS property; e.g. sgs/brand-strip.separators, sgs/container.separators, sgs/icon-list.separators, sgs/nav-bar-menu.separators, sgs/nav-bar-menu.submenuSeparators
+- `block-setting:visual:string`: block settings, role visual, string (1); has nothing; wave modes and values with no CSS property; e.g. sgs/google-rating-badge.shadow
 
-## fx (33)
+## fx (29)
 
-- `fx:ambient-float`: fx effect ambient-float (V, load,visible) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:carousel-loop`: fx effect carousel-loop (V, load) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:cursor-field`: fx effect cursor-field (V, hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:curtain`: fx effect curtain (V, open) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:draggable`: fx effect draggable (G, load) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:draw`: fx effect draw (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:flip`: fx effect flip (G, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:follow-pointer`: fx effect follow-pointer (V, hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:generative-background`: fx effect generative-background (W, load) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:glare`: fx effect glare (V, hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:grid-dots`: fx effect grid-dots (V, hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:horizontal-panel`: fx effect horizontal-panel (G, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:image-sequence`: fx effect image-sequence (G, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:ken-burns`: fx effect ken-burns (V, load,visible) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:lottie`: fx effect lottie (H, load,visible,hover,scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:magnet`: fx effect magnet (V, hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:marquee`: fx effect marquee (V, load,visible) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:morph`: fx effect morph (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:motion-path`: fx effect motion-path (G, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:page-transitions`: fx effect page-transitions (V, load) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:parallax`: fx effect parallax (V, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:particles`: fx effect particles (V, hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:pin-scrub`: fx effect pin-scrub (G, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:ripple`: fx effect ripple (V, pointerdown,click) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:scramble`: fx effect scramble (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:scroll-progress`: fx effect scroll-progress (V, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:scroll-smoother`: fx effect scroll-smoother (H, scroll) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:scrub`: fx effect scrub (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:sheen`: fx effect sheen (V, hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:split-reveal`: fx effect split-reveal (G, scroll,load,hover) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:surface-treatment`: fx effect surface-treatment (W, load) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:svg-loop`: fx effect svg-loop (V, load,visible) (1, motion); has nothing; wave motion writer (4.0)
-- `fx:wave-gradient`: fx effect wave-gradient (W, load) (1, motion); has nothing; wave motion writer (4.0)
+- `fx:carousel-loop`: fx effect carousel-loop (V, load) (1, motion); has nothing; wave behaviour recognisers
+- `fx:cursor-field`: fx effect cursor-field (V, hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:curtain`: fx effect curtain (V, open) (1, motion); has write, check; wave behaviour recognisers
+- `fx:draggable`: fx effect draggable (G, load) (1, motion); has write, check; wave behaviour recognisers
+- `fx:draw`: fx effect draw (G, scroll,load,hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:flip`: fx effect flip (G, scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:follow-pointer`: fx effect follow-pointer (V, hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:generative-background`: fx effect generative-background (W, load) (1, motion); has write, check; wave behaviour recognisers
+- `fx:glare`: fx effect glare (V, hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:grid-dots`: fx effect grid-dots (V, hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:horizontal-panel`: fx effect horizontal-panel (G, scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:image-sequence`: fx effect image-sequence (G, scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:lottie`: fx effect lottie (H, load,visible,hover,scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:magnet`: fx effect magnet (V, hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:morph`: fx effect morph (G, scroll,load,hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:motion-path`: fx effect motion-path (G, scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:page-transitions`: fx effect page-transitions (V, load) (1, motion); has nothing; wave site and surfaces
+- `fx:parallax`: fx effect parallax (V, scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:particles`: fx effect particles (V, hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:pin-scrub`: fx effect pin-scrub (G, scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:ripple`: fx effect ripple (V, pointerdown,click) (1, motion); has write, check; wave behaviour recognisers
+- `fx:scramble`: fx effect scramble (G, scroll,load,hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:scroll-progress`: fx effect scroll-progress (V, scroll) (1, motion); has write, check; wave behaviour recognisers
+- `fx:scroll-smoother`: fx effect scroll-smoother (H, scroll) (1, motion); has nothing; wave site and surfaces
+- `fx:scrub`: fx effect scrub (G, scroll,load,hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:sheen`: fx effect sheen (V, hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:split-reveal`: fx effect split-reveal (G, scroll,load,hover) (1, motion); has write, check; wave behaviour recognisers
+- `fx:surface-treatment`: fx effect surface-treatment (W, load) (1, motion); has write, check; wave behaviour recognisers
+- `fx:wave-gradient`: fx effect wave-gradient (W, load) (1, motion); has write, check; wave behaviour recognisers
 
-## motion-preset (57)
+## motion-preset (23)
 
-- `motion-preset:effects:ambient-float`: effects presets, family ambient-float (3, motion); has nothing; wave motion writer (4.0); e.g. ambient-float-bold, ambient-float-standard, ambient-float-subtle
-- `motion-preset:effects:cursor-field`: effects presets, family cursor-field (3, motion); has nothing; wave motion writer (4.0); e.g. cursor-field-bold, cursor-field-standard, cursor-field-subtle
-- `motion-preset:effects:draw-hover`: effects presets, family draw-hover (3, motion); has nothing; wave motion writer (4.0); e.g. draw-hover-bold, draw-hover-standard, draw-hover-subtle
-- `motion-preset:effects:ken-burns`: effects presets, family ken-burns (3, motion); has nothing; wave motion writer (4.0); e.g. ken-burns-bold, ken-burns-standard, ken-burns-subtle
-- `motion-preset:effects:morph`: effects presets, family morph (3, motion); has nothing; wave motion writer (4.0); e.g. morph-bold, morph-standard, morph-subtle
-- `motion-preset:effects:motion-path`: effects presets, family motion-path (3, motion); has nothing; wave motion writer (4.0); e.g. motion-path-bold, motion-path-standard, motion-path-subtle
-- `motion-preset:effects:parallax`: effects presets, family parallax (3, motion); has nothing; wave motion writer (4.0); e.g. parallax-bold, parallax-standard, parallax-subtle
-- `motion-preset:effects:particles`: effects presets, family particles (3, motion); has nothing; wave motion writer (4.0); e.g. particles-bold, particles-standard, particles-subtle
-- `motion-preset:effects:pin-scrub`: effects presets, family pin-scrub (3, motion); has nothing; wave motion writer (4.0); e.g. pin-scrub-bold, pin-scrub-standard, pin-scrub-subtle
-- `motion-preset:effects:ripple`: effects presets, family ripple (3, motion); has nothing; wave motion writer (4.0); e.g. ripple-bold, ripple-standard, ripple-subtle
-- `motion-preset:effects:scramble-hover`: effects presets, family scramble-hover (3, motion); has nothing; wave motion writer (4.0); e.g. scramble-hover-bold, scramble-hover-standard, scramble-hover-subtle
-- `motion-preset:effects:scrub`: effects presets, family scrub (3, motion); has nothing; wave motion writer (4.0); e.g. scrub-bold, scrub-standard, scrub-subtle
-- `motion-preset:effects:svg-loop`: effects presets, family svg-loop (3, motion); has nothing; wave motion writer (4.0); e.g. svg-loop-bold, svg-loop-standard, svg-loop-subtle
-- `motion-preset:entrance:draw`: entrance presets, family draw (3, motion); has nothing; wave motion writer (4.0); e.g. draw-bold, draw-standard, draw-subtle
-- `motion-preset:entrance:entrance-blur-in`: entrance presets, family entrance-blur-in (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-blur-in, entrance-blur-in-bold, entrance-blur-in-standard, entrance-blur-in-subtle
-- `motion-preset:entrance:entrance-bounce-in`: entrance presets, family entrance-bounce-in (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-bounce-in, entrance-bounce-in-bold, entrance-bounce-in-standard, entrance-bounce-in-subtle
-- `motion-preset:entrance:entrance-fade-down`: entrance presets, family entrance-fade-down (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-fade-down, entrance-fade-down-bold, entrance-fade-down-standard, entrance-fade-down-subtle
-- `motion-preset:entrance:entrance-fade-in`: entrance presets, family entrance-fade-in (1, motion); has nothing; wave motion writer (4.0); e.g. entrance-fade-in
-- `motion-preset:entrance:entrance-fade-left`: entrance presets, family entrance-fade-left (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-fade-left, entrance-fade-left-bold, entrance-fade-left-standard, entrance-fade-left-subtle
-- `motion-preset:entrance:entrance-fade-right`: entrance presets, family entrance-fade-right (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-fade-right, entrance-fade-right-bold, entrance-fade-right-standard, entrance-fade-right-subtle
-- `motion-preset:entrance:entrance-fade-up`: entrance presets, family entrance-fade-up (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-fade-up, entrance-fade-up-bold, entrance-fade-up-standard, entrance-fade-up-subtle
-- `motion-preset:entrance:entrance-reveal-up`: entrance presets, family entrance-reveal-up (1, motion); has nothing; wave motion writer (4.0); e.g. entrance-reveal-up
-- `motion-preset:entrance:entrance-rotate-in`: entrance presets, family entrance-rotate-in (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-rotate-in, entrance-rotate-in-bold, entrance-rotate-in-standard, entrance-rotate-in-subtle
-- `motion-preset:entrance:entrance-scale-in`: entrance presets, family entrance-scale-in (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-scale-in, entrance-scale-in-bold, entrance-scale-in-standard, entrance-scale-in-subtle
-- `motion-preset:entrance:entrance-scale-out`: entrance presets, family entrance-scale-out (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-scale-out, entrance-scale-out-bold, entrance-scale-out-standard, entrance-scale-out-subtle
-- `motion-preset:entrance:entrance-slide-down`: entrance presets, family entrance-slide-down (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-slide-down, entrance-slide-down-bold, entrance-slide-down-standard, entrance-slide-down-subtle
-- `motion-preset:entrance:entrance-slide-left`: entrance presets, family entrance-slide-left (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-slide-left, entrance-slide-left-bold, entrance-slide-left-standard, entrance-slide-left-subtle
-- `motion-preset:entrance:entrance-slide-right`: entrance presets, family entrance-slide-right (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-slide-right, entrance-slide-right-bold, entrance-slide-right-standard, entrance-slide-right-subtle
-- `motion-preset:entrance:entrance-slide-up`: entrance presets, family entrance-slide-up (4, motion); has nothing; wave motion writer (4.0); e.g. entrance-slide-up, entrance-slide-up-bold, entrance-slide-up-standard, entrance-slide-up-subtle
-- `motion-preset:entrance:keyframe-bounce`: entrance presets, family keyframe-bounce (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-bounce
-- `motion-preset:entrance:keyframe-fade-in`: entrance presets, family keyframe-fade-in (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-fade-in
-- `motion-preset:entrance:keyframe-fade-out`: entrance presets, family keyframe-fade-out (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-fade-out
-- `motion-preset:entrance:keyframe-fade-up`: entrance presets, family keyframe-fade-up (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-fade-up
-- `motion-preset:entrance:keyframe-pulse`: entrance presets, family keyframe-pulse (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-pulse
-- `motion-preset:entrance:keyframe-slide-up`: entrance presets, family keyframe-slide-up (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-slide-up
-- `motion-preset:entrance:keyframe-spin`: entrance presets, family keyframe-spin (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-spin
-- `motion-preset:entrance:keyframe-zoom-in`: entrance presets, family keyframe-zoom-in (1, motion); has nothing; wave motion writer (4.0); e.g. keyframe-zoom-in
-- `motion-preset:entrance:nav-panel-item`: entrance presets, family nav-panel-item (3, motion); has nothing; wave motion writer (4.0); e.g. nav-panel-item-bold, nav-panel-item-standard, nav-panel-item-subtle
-- `motion-preset:entrance:scramble`: entrance presets, family scramble (3, motion); has nothing; wave motion writer (4.0); e.g. scramble-bold, scramble-standard, scramble-subtle
-- `motion-preset:entrance:split-reveal`: entrance presets, family split-reveal (3, motion); has nothing; wave motion writer (4.0); e.g. split-reveal-bold, split-reveal-standard, split-reveal-subtle
-- `motion-preset:entrance:state-burger-morph`: entrance presets, family state-burger-morph (1, motion); has nothing; wave motion writer (4.0); e.g. state-burger-morph
-- `motion-preset:entrance:state-count-pop`: entrance presets, family state-count-pop (1, motion); has nothing; wave motion writer (4.0); e.g. state-count-pop
-- `motion-preset:entrance:state-icon-turn`: entrance presets, family state-icon-turn (1, motion); has nothing; wave motion writer (4.0); e.g. state-icon-turn
-- `motion-preset:entrance:state-result-scale-in`: entrance presets, family state-result-scale-in (1, motion); has nothing; wave motion writer (4.0); e.g. state-result-scale-in
-- `motion-preset:entrance:state-shake`: entrance presets, family state-shake (1, motion); has nothing; wave motion writer (4.0); e.g. state-shake
-- `motion-preset:entrance:state-step-slide`: entrance presets, family state-step-slide (1, motion); has nothing; wave motion writer (4.0); e.g. state-step-slide
-- `motion-preset:hover:follow-pointer`: hover presets, family follow-pointer (4, motion); has nothing; wave motion writer (4.0); e.g. follow-pointer-bold, follow-pointer-standard, follow-pointer-subtle, hover-follow-pointer
-- `motion-preset:hover:hover-border-accent`: hover presets, family hover-border-accent (1, motion); has nothing; wave motion writer (4.0); e.g. hover-border-accent
-- `motion-preset:hover:hover-grayscale-to-colour`: hover presets, family hover-grayscale-to-colour (1, motion); has nothing; wave motion writer (4.0); e.g. hover-grayscale-to-colour
-- `motion-preset:hover:hover-indent`: hover presets, family hover-indent (1, motion); has nothing; wave motion writer (4.0); e.g. hover-indent
-- `motion-preset:hover:hover-lift`: hover presets, family hover-lift (4, motion); has nothing; wave motion writer (4.0); e.g. hover-lift, hover-lift-bold, hover-lift-standard, hover-lift-subtle
-- `motion-preset:hover:hover-none`: hover presets, family hover-none (1, motion); has nothing; wave motion writer (4.0); e.g. hover-none
-- `motion-preset:hover:hover-rotate`: hover presets, family hover-rotate (4, motion); has nothing; wave motion writer (4.0); e.g. hover-rotate, hover-rotate-bold, hover-rotate-standard, hover-rotate-subtle
-- `motion-preset:hover:hover-scale`: hover presets, family hover-scale (5, motion); has nothing; wave motion writer (4.0); e.g. hover-image-zoom, hover-scale, hover-scale-bold, hover-scale-standard, hover-scale-subtle
-- `motion-preset:hover:hover-translate`: hover presets, family hover-translate (4, motion); has nothing; wave motion writer (4.0); e.g. hover-translate, hover-translate-bold, hover-translate-standard, hover-translate-subtle
-- `motion-preset:hover:magnet`: hover presets, family magnet (3, motion); has nothing; wave motion writer (4.0); e.g. magnet-bold, magnet-standard, magnet-subtle
-- `motion-preset:hover:sheen`: hover presets, family sheen (3, motion); has nothing; wave motion writer (4.0); e.g. sheen-bold, sheen-standard, sheen-subtle
+- `motion-preset:effects:cursor-field`: effects presets, family cursor-field (3, motion); has write, check; wave behaviour recognisers; e.g. cursor-field-bold, cursor-field-standard, cursor-field-subtle
+- `motion-preset:effects:draw-hover`: effects presets, family draw-hover (3, motion); has write, check; wave behaviour recognisers; e.g. draw-hover-bold, draw-hover-standard, draw-hover-subtle
+- `motion-preset:effects:morph`: effects presets, family morph (3, motion); has write, check; wave behaviour recognisers; e.g. morph-bold, morph-standard, morph-subtle
+- `motion-preset:effects:motion-path`: effects presets, family motion-path (3, motion); has write, check; wave behaviour recognisers; e.g. motion-path-bold, motion-path-standard, motion-path-subtle
+- `motion-preset:effects:parallax`: effects presets, family parallax (3, motion); has write, check; wave behaviour recognisers; e.g. parallax-bold, parallax-standard, parallax-subtle
+- `motion-preset:effects:particles`: effects presets, family particles (3, motion); has write, check; wave behaviour recognisers; e.g. particles-bold, particles-standard, particles-subtle
+- `motion-preset:effects:pin-scrub`: effects presets, family pin-scrub (3, motion); has write, check; wave behaviour recognisers; e.g. pin-scrub-bold, pin-scrub-standard, pin-scrub-subtle
+- `motion-preset:effects:ripple`: effects presets, family ripple (3, motion); has write, check; wave behaviour recognisers; e.g. ripple-bold, ripple-standard, ripple-subtle
+- `motion-preset:effects:scramble-hover`: effects presets, family scramble-hover (3, motion); has write, check; wave behaviour recognisers; e.g. scramble-hover-bold, scramble-hover-standard, scramble-hover-subtle
+- `motion-preset:effects:scrub`: effects presets, family scrub (3, motion); has write, check; wave behaviour recognisers; e.g. scrub-bold, scrub-standard, scrub-subtle
+- `motion-preset:entrance:draw`: entrance presets, family draw (3, motion); has write, check; wave behaviour recognisers; e.g. draw-bold, draw-standard, draw-subtle
+- `motion-preset:entrance:nav-panel-item`: entrance presets, family nav-panel-item (3, motion); has write, check; wave states; e.g. nav-panel-item-bold, nav-panel-item-standard, nav-panel-item-subtle
+- `motion-preset:entrance:scramble`: entrance presets, family scramble (3, motion); has write, check; wave behaviour recognisers; e.g. scramble-bold, scramble-standard, scramble-subtle
+- `motion-preset:entrance:split-reveal`: entrance presets, family split-reveal (3, motion); has write, check; wave behaviour recognisers; e.g. split-reveal-bold, split-reveal-standard, split-reveal-subtle
+- `motion-preset:entrance:state-burger-morph`: entrance presets, family state-burger-morph (1, motion); has write, check; wave states; e.g. state-burger-morph
+- `motion-preset:entrance:state-count-pop`: entrance presets, family state-count-pop (1, motion); has write, check; wave states; e.g. state-count-pop
+- `motion-preset:entrance:state-icon-turn`: entrance presets, family state-icon-turn (1, motion); has write, check; wave states; e.g. state-icon-turn
+- `motion-preset:entrance:state-result-scale-in`: entrance presets, family state-result-scale-in (1, motion); has write, check; wave states; e.g. state-result-scale-in
+- `motion-preset:entrance:state-shake`: entrance presets, family state-shake (1, motion); has write, check; wave states; e.g. state-shake
+- `motion-preset:entrance:state-step-slide`: entrance presets, family state-step-slide (1, motion); has write, check; wave states; e.g. state-step-slide
+- `motion-preset:hover:follow-pointer`: hover presets, family follow-pointer (4, motion); has write, check; wave behaviour recognisers; e.g. follow-pointer-bold, follow-pointer-standard, follow-pointer-subtle, hover-follow-pointer
+- `motion-preset:hover:magnet`: hover presets, family magnet (3, motion); has write, check; wave behaviour recognisers; e.g. magnet-bold, magnet-standard, magnet-subtle
+- `motion-preset:hover:sheen`: hover presets, family sheen (3, motion); has write, check; wave behaviour recognisers; e.g. sheen-bold, sheen-standard, sheen-subtle
 
 ## extension (8)
 
@@ -314,7 +275,7 @@
 - `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave site and surfaces
 - `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave site and surfaces
 
-## html (68)
+## html (67)
 
 - `html:acronym`: <acronym> (1); has nothing; wave content, media and icons
 - `html:area`: <area> (1); has nothing; wave content, media and icons
@@ -349,7 +310,6 @@
 - `html:link`: <link> (1); has nothing; wave draft reading
 - `html:listing`: <listing> (1); has nothing; wave content, media and icons
 - `html:map`: <map> (1); has nothing; wave content, media and icons
-- `html:marquee`: <marquee> (1); has nothing; wave motion writer (4.0)
 - `html:math`: <math> (1); has nothing; wave draft reading
 - `html:menu`: <menu> (1); has nothing; wave behaviour recognisers
 - `html:meta`: <meta> (1); has nothing; wave draft reading
@@ -385,7 +345,7 @@
 - `html:tt`: <tt> (1); has nothing; wave content, media and icons
 - `html:video`: <video> (1); has nothing; wave content, media and icons
 
-## html-attr (378)
+## html-attr (372)
 
 - `html-attr:a.attributionsourceid`: <a attributionsourceid> (1); has nothing; wave content, media and icons
 - `html-attr:a.download`: <a download> (1); has nothing; wave content, media and icons
@@ -614,13 +574,7 @@
 - `html-attr:link.sizes`: <link sizes> (1); has nothing; wave draft reading
 - `html-attr:link.type`: <link type> (1); has nothing; wave draft reading
 - `html-attr:map.name`: <map name> (1); has nothing; wave content, media and icons
-- `html-attr:marquee.behavior`: <marquee behavior> (1); has nothing; wave motion writer (4.0)
-- `html-attr:marquee.direction`: <marquee direction> (1); has nothing; wave motion writer (4.0)
 - `html-attr:marquee.height`: <marquee height> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:marquee.loop`: <marquee loop> (1); has nothing; wave motion writer (4.0)
-- `html-attr:marquee.scrollamount`: <marquee scrollamount> (1); has nothing; wave motion writer (4.0)
-- `html-attr:marquee.scrolldelay`: <marquee scrolldelay> (1); has nothing; wave motion writer (4.0)
-- `html-attr:marquee.truespeed`: <marquee truespeed> (1); has nothing; wave motion writer (4.0)
 - `html-attr:menu.compact`: <menu compact> (1); has nothing; wave behaviour recognisers
 - `html-attr:meta.charset`: <meta charset> (1); has nothing; wave draft reading
 - `html-attr:meta.content`: <meta content> (1); has nothing; wave draft reading
@@ -791,12 +745,10 @@
 - `input-type:url`: <input type="url"> (1); has nothing; wave shop, forms and data
 - `input-type:week`: <input type="week"> (1); has nothing; wave shop, forms and data
 
-## svg (62)
+## svg (60)
 
 - `svg:a`: SVG <a> (1); has nothing; wave content, media and icons
-- `svg:animate`: SVG <animate> (1, motion); has nothing; wave motion writer (4.0)
-- `svg:animateMotion`: SVG <animateMotion> (1, motion); has nothing; wave motion writer (4.0)
-- `svg:animateTransform`: SVG <animateTransform> (1, motion); has nothing; wave motion writer (4.0)
+- `svg:animateMotion`: SVG <animateMotion> (1, motion); has write, check; wave behaviour recognisers
 - `svg:circle`: SVG <circle> (1); has nothing; wave content, media and icons
 - `svg:clipPath`: SVG <clipPath> (1); has nothing; wave content, media and icons
 - `svg:defs`: SVG <defs> (1); has nothing; wave content, media and icons
@@ -836,14 +788,14 @@
 - `svg:marker`: SVG <marker> (1); has nothing; wave content, media and icons
 - `svg:mask`: SVG <mask> (1); has nothing; wave content, media and icons
 - `svg:metadata`: SVG <metadata> (1); has nothing; wave content, media and icons
-- `svg:mpath`: SVG <mpath> (1, motion); has nothing; wave motion writer (4.0)
+- `svg:mpath`: SVG <mpath> (1, motion); has write, check; wave behaviour recognisers
 - `svg:path`: SVG <path> (1); has nothing; wave content, media and icons
 - `svg:pattern`: SVG <pattern> (1); has nothing; wave content, media and icons
 - `svg:polygon`: SVG <polygon> (1); has nothing; wave content, media and icons
 - `svg:polyline`: SVG <polyline> (1); has nothing; wave content, media and icons
 - `svg:radialGradient`: SVG <radialGradient> (1); has nothing; wave content, media and icons
 - `svg:rect`: SVG <rect> (1); has nothing; wave content, media and icons
-- `svg:set`: SVG <set> (1, motion); has nothing; wave motion writer (4.0)
+- `svg:set`: SVG <set> (1, motion); has nothing; wave states
 - `svg:stop`: SVG <stop> (1); has nothing; wave content, media and icons
 - `svg:style`: SVG <style> (1); has nothing; wave content, media and icons
 - `svg:svg`: SVG <svg> (1); has nothing; wave content, media and icons
@@ -1246,24 +1198,23 @@
 - `embed:znipe.tv`: ZnipeTV embed (znipe.tv) (1); has nothing; wave content, media and icons
 - `embed:zoomable.ca`: Zoomable embed (zoomable.ca) (1); has nothing; wave content, media and icons
 
-## css-at (14)
+## css-at (13)
 
 - `css-at:container`: @container (1); has nothing; wave draft reading
 - `css-at:counter-style`: @counter-style (1); has nothing; wave draft reading
 - `css-at:font-face`: @font-face (1); has nothing; wave site and surfaces
 - `css-at:font-feature-values`: @font-feature-values (1); has nothing; wave draft reading
 - `css-at:font-palette-values`: @font-palette-values (1); has nothing; wave draft reading
-- `css-at:keyframes`: @keyframes (1); has nothing; wave motion writer (4.0)
 - `css-at:layer`: @layer (1); has nothing; wave draft reading
 - `css-at:media`: @media (1); has nothing; wave modes and values with no CSS property
 - `css-at:position-try`: @position-try (1); has nothing; wave draft reading
 - `css-at:property`: @property (1); has nothing; wave draft reading
 - `css-at:scope`: @scope (1); has nothing; wave draft reading
-- `css-at:starting-style`: @starting-style (1); has nothing; wave motion writer (4.0)
+- `css-at:starting-style`: @starting-style (1); has write, check; wave draft reading
 - `css-at:supports`: @supports (1); has nothing; wave draft reading
-- `css-at:view-transition`: @view-transition (1); has nothing; wave motion writer (4.0)
+- `css-at:view-transition`: @view-transition (1); has nothing; wave site and surfaces
 
-## css-media-feature (39)
+## css-media-feature (38)
 
 - `css-media-feature:-moz-device-pixel-ratio`: @media (-moz-device-pixel-ratio) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:-webkit-device-pixel-ratio`: @media (-webkit-device-pixel-ratio) (1); has nothing; wave modes and values with no CSS property
@@ -1295,7 +1246,6 @@
 - `css-media-feature:prefers-color-scheme`: @media (prefers-color-scheme) (1); has nothing; wave site and surfaces
 - `css-media-feature:prefers-contrast`: @media (prefers-contrast) (1); has nothing; wave site and surfaces
 - `css-media-feature:prefers-reduced-data`: @media (prefers-reduced-data) (1); has nothing; wave modes and values with no CSS property
-- `css-media-feature:prefers-reduced-motion`: @media (prefers-reduced-motion) (1, motion); has nothing; wave motion writer (4.0)
 - `css-media-feature:prefers-reduced-transparency`: @media (prefers-reduced-transparency) (1); has nothing; wave site and surfaces
 - `css-media-feature:resolution`: @media (resolution) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:scan`: @media (scan) (1); has nothing; wave modes and values with no CSS property
@@ -1305,10 +1255,9 @@
 - `css-media-feature:video-dynamic-range`: @media (video-dynamic-range) (1); has nothing; wave modes and values with no CSS property
 - `css-media-feature:width`: @media (width) (1); has nothing; wave modes and values with no CSS property
 
-## css-group (50)
+## css-group (48)
 
 - `css-group:anchor-positioning`: CSS properties: CSS Anchor Positioning (16); has nothing; wave draft reading; e.g. anchor-name, anchor-scope, bottom, left, margin-bottom
-- `css-group:animations`: CSS properties: CSS Animations (22, motion); has nothing; wave motion writer (4.0); e.g. animation, animation-composition, animation-delay, animation-direction, animation-duration
 - `css-group:backgrounds-and-borders`: CSS properties: CSS Backgrounds and Borders (61); has nothing; wave draft reading; e.g. background, background-attachment, background-clip, background-color, background-image
 - `css-group:basic-user-interface`: CSS properties: CSS Basic User Interface (22); has nothing; wave draft reading; e.g. accent-color, appearance, caret, caret-animation, caret-color
 - `css-group:box-alignment`: CSS properties: CSS Box Alignment (12); has nothing; wave draft reading; e.g. align-content, align-items, align-self, column-gap, gap
@@ -1332,7 +1281,7 @@
 - `css-group:lists-and-counters`: CSS properties: CSS Lists and Counters (7); has nothing; wave draft reading; e.g. counter-increment, counter-reset, counter-set, list-style, list-style-image
 - `css-group:logical-properties-and-values`: CSS properties: CSS Logical Properties and Values (53); has nothing; wave draft reading; e.g. block-size, border-block, border-block-color, border-block-end, border-block-end-color
 - `css-group:masking`: CSS properties: CSS Masking (20); has nothing; wave draft reading; e.g. clip, clip-path, clip-rule, mask, mask-border
-- `css-group:motion-path`: CSS properties: Motion Path (6, motion); has nothing; wave motion writer (4.0); e.g. offset, offset-anchor, offset-distance, offset-path, offset-position
+- `css-group:motion-path`: CSS properties: Motion Path (6, motion); has write, check; wave behaviour recognisers; e.g. offset, offset-anchor, offset-distance, offset-path, offset-position
 - `css-group:multi-column-layout`: CSS properties: CSS Multi-column Layout (12); has nothing; wave draft reading; e.g. column-count, column-fill, column-gap, column-height, column-rule
 - `css-group:overflow`: CSS properties: CSS Overflow (15); has nothing; wave draft reading; e.g. -webkit-line-clamp, line-clamp, max-lines, overflow, overflow-block
 - `css-group:overscroll-behavior`: CSS properties: CSS Overscroll Behavior (5); has nothing; wave draft reading; e.g. overscroll-behavior, overscroll-behavior-block, overscroll-behavior-inline, overscroll-behavior-x, overscroll-behavior-y
@@ -1342,7 +1291,7 @@
 - `css-group:ruby`: CSS properties: CSS Ruby (4); has nothing; wave draft reading; e.g. ruby-align, ruby-merge, ruby-overhang, ruby-position
 - `css-group:scalable-vector-graphics`: CSS properties: Scalable Vector Graphics (34); has nothing; wave draft reading; e.g. cx, cy, d, dominant-baseline, fill
 - `css-group:scroll-anchoring`: CSS properties: CSS Scroll Anchoring (1); has nothing; wave draft reading; e.g. overflow-anchor
-- `css-group:scroll-driven-animations`: CSS properties: Scroll-driven Animations (11, motion); has nothing; wave motion writer (4.0); e.g. animation-range, animation-range-end, animation-range-start, scroll-timeline, scroll-timeline-axis
+- `css-group:scroll-driven-animations`: CSS properties: Scroll-driven Animations (11, motion); has write, check; wave behaviour recognisers; e.g. animation-range, animation-range-end, animation-range-start, scroll-timeline, scroll-timeline-axis
 - `css-group:scroll-snap`: CSS properties: CSS Scroll Snap (32); has nothing; wave draft reading; e.g. scroll-initial-target, scroll-margin, scroll-margin-block, scroll-margin-block-end, scroll-margin-block-start
 - `css-group:scrollbars-styling`: CSS properties: CSS Scrollbars Styling (2); has nothing; wave draft reading; e.g. scrollbar-color, scrollbar-width
 - `css-group:shapes`: CSS properties: CSS Shapes (3); has nothing; wave draft reading; e.g. shape-image-threshold, shape-margin, shape-outside
@@ -1350,9 +1299,8 @@
 - `css-group:text`: CSS properties: CSS Text (24); has nothing; wave draft reading; e.g. hanging-punctuation, hyphenate-character, hyphenate-limit-chars, hyphens, letter-spacing
 - `css-group:text-decoration`: CSS properties: CSS Text Decoration (15); has nothing; wave draft reading; e.g. text-decoration, text-decoration-color, text-decoration-inset, text-decoration-line, text-decoration-skip
 - `css-group:transforms`: CSS properties: CSS Transforms (10); has nothing; wave draft reading; e.g. backface-visibility, perspective, perspective-origin, rotate, scale
-- `css-group:transitions`: CSS properties: CSS Transitions (6, motion); has nothing; wave motion writer (4.0); e.g. transition, transition-behavior, transition-delay, transition-duration, transition-property
 - `css-group:values-and-units`: CSS properties: CSS Values and Units (2); has nothing; wave draft reading; e.g. interpolate-size, link-parameters
-- `css-group:view-transitions`: CSS properties: CSS View Transitions (3, motion); has nothing; wave motion writer (4.0); e.g. view-transition-class, view-transition-name, view-transition-scope
+- `css-group:view-transitions`: CSS properties: CSS View Transitions (3, motion); has nothing; wave site and surfaces; e.g. view-transition-class, view-transition-name, view-transition-scope
 - `css-group:viewport`: CSS properties: CSS Viewport (1); has nothing; wave draft reading; e.g. zoom
 - `css-group:webkit-extensions`: CSS properties: WebKit Extensions (50); has nothing; wave draft reading; e.g. -moz-appearance, -webkit-appearance, -webkit-border-after, -webkit-border-after-color, -webkit-border-after-style
 - `css-group:will-change`: CSS properties: CSS Will Change (1); has nothing; wave draft reading; e.g. will-change
@@ -1578,22 +1526,22 @@
 - `css-pseudo-element:picker`: ::picker() (1); has nothing; wave modes and values with no CSS property
 - `css-pseudo-element:picker-icon`: ::picker-icon (1); has nothing; wave modes and values with no CSS property
 - `css-pseudo-element:placeholder`: ::placeholder (1); has nothing; wave modes and values with no CSS property
-- `css-pseudo-element:scroll-button`: ::scroll-button (1); has nothing; wave motion writer (4.0)
-- `css-pseudo-element:scroll-marker`: ::scroll-marker (1); has nothing; wave motion writer (4.0)
-- `css-pseudo-element:scroll-marker-group`: ::scroll-marker-group (1); has nothing; wave motion writer (4.0)
+- `css-pseudo-element:scroll-button`: ::scroll-button (1); has nothing; wave behaviour recognisers
+- `css-pseudo-element:scroll-marker`: ::scroll-marker (1); has nothing; wave behaviour recognisers
+- `css-pseudo-element:scroll-marker-group`: ::scroll-marker-group (1); has nothing; wave behaviour recognisers
 - `css-pseudo-element:search-text`: ::search-text (1); has nothing; wave modes and values with no CSS property
 - `css-pseudo-element:selection`: ::selection (1); has nothing; wave modes and values with no CSS property
 - `css-pseudo-element:slotted`: ::slotted() (1); has nothing; wave modes and values with no CSS property
 - `css-pseudo-element:spelling-error`: ::spelling-error (1); has nothing; wave modes and values with no CSS property
 - `css-pseudo-element:target-text`: ::target-text (1); has nothing; wave modes and values with no CSS property
-- `css-pseudo-element:view-transition`: ::view-transition (1); has nothing; wave motion writer (4.0)
-- `css-pseudo-element:view-transition-group`: ::view-transition-group() (1); has nothing; wave motion writer (4.0)
-- `css-pseudo-element:view-transition-group-children`: ::view-transition-group-children (1); has nothing; wave motion writer (4.0)
-- `css-pseudo-element:view-transition-image-pair`: ::view-transition-image-pair() (1); has nothing; wave motion writer (4.0)
-- `css-pseudo-element:view-transition-new`: ::view-transition-new() (1); has nothing; wave motion writer (4.0)
-- `css-pseudo-element:view-transition-old`: ::view-transition-old() (1); has nothing; wave motion writer (4.0)
+- `css-pseudo-element:view-transition`: ::view-transition (1); has nothing; wave site and surfaces
+- `css-pseudo-element:view-transition-group`: ::view-transition-group() (1); has nothing; wave site and surfaces
+- `css-pseudo-element:view-transition-group-children`: ::view-transition-group-children (1); has nothing; wave site and surfaces
+- `css-pseudo-element:view-transition-image-pair`: ::view-transition-image-pair() (1); has nothing; wave site and surfaces
+- `css-pseudo-element:view-transition-new`: ::view-transition-new() (1); has nothing; wave site and surfaces
+- `css-pseudo-element:view-transition-old`: ::view-transition-old() (1); has nothing; wave site and surfaces
 
-## css-function (112)
+## css-function (94)
 
 - `css-function:abs`: abs() (1); has nothing; wave modes and values with no CSS property
 - `css-function:acos`: acos() (1); has nothing; wave draft reading
@@ -1618,7 +1566,6 @@
 - `css-function:counter`: counter() (1); has nothing; wave draft reading
 - `css-function:counters`: counters() (1); has nothing; wave draft reading
 - `css-function:cross-fade`: cross-fade() (1); has nothing; wave draft reading
-- `css-function:cubic-bezier`: cubic-bezier() (1, motion); has nothing; wave motion writer (4.0)
 - `css-function:drop-shadow`: drop-shadow() (1); has nothing; wave draft reading
 - `css-function:dynamic-range-limit-mix`: dynamic-range-limit-mix() (1); has nothing; wave draft reading
 - `css-function:element`: element() (1); has nothing; wave draft reading
@@ -1636,11 +1583,9 @@
 - `css-function:layer`: layer() (1); has nothing; wave draft reading
 - `css-function:leader`: leader() (1); has nothing; wave draft reading
 - `css-function:light-dark`: light-dark() (1); has nothing; wave site and surfaces
-- `css-function:linear`: linear() (1, motion); has nothing; wave motion writer (4.0)
 - `css-function:linear-gradient`: linear-gradient() (1); has nothing; wave draft reading
 - `css-function:log`: log() (1); has nothing; wave draft reading
-- `css-function:matrix`: matrix() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:matrix3d`: matrix3d() (1, motion); has nothing; wave motion writer (4.0)
+- `css-function:matrix3d`: matrix3d() (1, motion); has recognise; wave motion model additions
 - `css-function:max`: max() (1); has nothing; wave modes and values with no CSS property
 - `css-function:min`: min() (1); has nothing; wave modes and values with no CSS property
 - `css-function:minmax`: minmax() (1); has nothing; wave draft reading
@@ -1651,7 +1596,6 @@
 - `css-function:palette-mix`: palette-mix() (1); has nothing; wave draft reading
 - `css-function:param`: param() (1); has nothing; wave draft reading
 - `css-function:path`: path() (1); has nothing; wave draft reading
-- `css-function:perspective`: perspective() (1, motion); has nothing; wave motion writer (4.0)
 - `css-function:polygon`: polygon() (1); has nothing; wave draft reading
 - `css-function:pow`: pow() (1); has nothing; wave draft reading
 - `css-function:radial-gradient`: radial-gradient() (1); has nothing; wave draft reading
@@ -1663,32 +1607,23 @@
 - `css-function:repeating-linear-gradient`: repeating-linear-gradient() (1); has nothing; wave draft reading
 - `css-function:repeating-radial-gradient`: repeating-radial-gradient() (1); has nothing; wave draft reading
 - `css-function:reversed`: reversed() (1); has nothing; wave draft reading
-- `css-function:rotate`: rotate() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:rotate3d`: rotate3d() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:rotatex`: rotateX() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:rotatey`: rotateY() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:rotatez`: rotateZ() (1, motion); has nothing; wave motion writer (4.0)
+- `css-function:rotate3d`: rotate3d() (1, motion); has recognise; wave motion model additions
 - `css-function:round`: round() (1); has nothing; wave modes and values with no CSS property
 - `css-function:saturate`: saturate() (1); has nothing; wave draft reading
-- `css-function:scale`: scale() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:scale3d`: scale3d() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:scalex`: scaleX() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:scaley`: scaleY() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:scalez`: scaleZ() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:scroll`: scroll() (1, motion); has nothing; wave motion writer (4.0)
+- `css-function:scroll`: scroll() (1, motion); has write, check; wave behaviour recognisers
 - `css-function:scroll-state`: scroll-state() (1); has nothing; wave draft reading
 - `css-function:selector`: selector() (1); has nothing; wave draft reading
 - `css-function:sepia`: sepia() (1); has nothing; wave draft reading
 - `css-function:shape`: shape() (1); has nothing; wave draft reading
 - `css-function:sign`: sign() (1); has nothing; wave modes and values with no CSS property
 - `css-function:sin`: sin() (1); has nothing; wave draft reading
-- `css-function:skew`: skew() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:skewx`: skewX() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:skewy`: skewY() (1, motion); has nothing; wave motion writer (4.0)
+- `css-function:skew`: skew() (1, motion); has recognise; wave motion model additions
+- `css-function:skewx`: skewX() (1, motion); has recognise; wave motion model additions
+- `css-function:skewy`: skewY() (1, motion); has recognise; wave motion model additions
 - `css-function:snapinterval`: snapinterval() (1); has nothing; wave draft reading
 - `css-function:snaplist`: snaplist() (1); has nothing; wave draft reading
 - `css-function:sqrt`: sqrt() (1); has nothing; wave draft reading
-- `css-function:steps`: steps() (1, motion); has nothing; wave motion writer (4.0)
+- `css-function:steps`: steps() (1, motion); has recognise; wave motion model additions
 - `css-function:style`: style() (1); has nothing; wave draft reading
 - `css-function:styleset`: styleset() (1); has nothing; wave draft reading
 - `css-function:stylistic`: stylistic() (1); has nothing; wave draft reading
@@ -1699,16 +1634,11 @@
 - `css-function:target-counter`: target-counter() (1); has nothing; wave draft reading
 - `css-function:target-counters`: target-counters() (1); has nothing; wave draft reading
 - `css-function:target-text`: target-text() (1); has nothing; wave draft reading
-- `css-function:translate`: translate() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:translate3d`: translate3d() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:translatex`: translateX() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:translatey`: translateY() (1, motion); has nothing; wave motion writer (4.0)
-- `css-function:translatez`: translateZ() (1, motion); has nothing; wave motion writer (4.0)
 - `css-function:type`: type() (1); has nothing; wave draft reading
-- `css-function:view`: view() (1, motion); has nothing; wave motion writer (4.0)
+- `css-function:view`: view() (1, motion); has write, check; wave behaviour recognisers
 - `css-function:xywh`: xywh() (1); has nothing; wave draft reading
 
-## css-unit (59)
+## css-unit (53)
 
 - `css-unit:cap`: cap (1); has nothing; wave draft reading
 - `css-unit:ch`: ch (1); has nothing; wave draft reading
@@ -1719,7 +1649,6 @@
 - `css-unit:cqmax`: cqmax (1); has nothing; wave draft reading
 - `css-unit:cqmin`: cqmin (1); has nothing; wave draft reading
 - `css-unit:cqw`: cqw (1); has nothing; wave draft reading
-- `css-unit:deg`: deg (1); has nothing; wave motion writer (4.0)
 - `css-unit:dpcm`: dpcm (1); has nothing; wave draft reading
 - `css-unit:dpi`: dpi (1); has nothing; wave draft reading
 - `css-unit:dppx`: dppx (1); has nothing; wave draft reading
@@ -1731,7 +1660,6 @@
 - `css-unit:dvw`: dvw (1); has nothing; wave modes and values with no CSS property
 - `css-unit:ex`: ex (1); has nothing; wave draft reading
 - `css-unit:fr`: fr (1); has nothing; wave draft reading
-- `css-unit:grad`: grad (1); has nothing; wave motion writer (4.0)
 - `css-unit:hz`: hz (1); has nothing; wave draft reading
 - `css-unit:ic`: ic (1); has nothing; wave draft reading
 - `css-unit:in`: in (1); has nothing; wave draft reading
@@ -1744,24 +1672,20 @@
 - `css-unit:lvmin`: lvmin (1); has nothing; wave modes and values with no CSS property
 - `css-unit:lvw`: lvw (1); has nothing; wave modes and values with no CSS property
 - `css-unit:mm`: mm (1); has nothing; wave draft reading
-- `css-unit:ms`: ms (1); has nothing; wave motion writer (4.0)
 - `css-unit:pc`: pc (1); has nothing; wave draft reading
 - `css-unit:pt`: pt (1); has nothing; wave draft reading
 - `css-unit:q`: q (1); has nothing; wave draft reading
-- `css-unit:rad`: rad (1); has nothing; wave motion writer (4.0)
 - `css-unit:rcap`: rcap (1); has nothing; wave draft reading
 - `css-unit:rch`: rch (1); has nothing; wave draft reading
 - `css-unit:rex`: rex (1); has nothing; wave draft reading
 - `css-unit:ric`: ric (1); has nothing; wave draft reading
 - `css-unit:rlh`: rlh (1); has nothing; wave draft reading
-- `css-unit:s`: s (1); has nothing; wave motion writer (4.0)
 - `css-unit:svb`: svb (1); has nothing; wave modes and values with no CSS property
 - `css-unit:svh`: svh (1); has nothing; wave modes and values with no CSS property
 - `css-unit:svi`: svi (1); has nothing; wave modes and values with no CSS property
 - `css-unit:svmax`: svmax (1); has nothing; wave modes and values with no CSS property
 - `css-unit:svmin`: svmin (1); has nothing; wave modes and values with no CSS property
 - `css-unit:svw`: svw (1); has nothing; wave modes and values with no CSS property
-- `css-unit:turn`: turn (1); has nothing; wave motion writer (4.0)
 - `css-unit:vb`: vb (1); has nothing; wave modes and values with no CSS property
 - `css-unit:vh`: vh (1); has nothing; wave modes and values with no CSS property
 - `css-unit:vi`: vi (1); has nothing; wave modes and values with no CSS property
@@ -1954,7 +1878,7 @@
 - `aria-attr:aria-valuenow`: aria-valuenow (1); has nothing; wave content, media and icons
 - `aria-attr:aria-valuetext`: aria-valuetext (1); has nothing; wave content, media and icons
 
-## construct (19)
+## construct (16)
 
 - `construct:binding`: runtime construct binding (1); has nothing; wave draft reading
 - `construct:data-hook`: runtime construct data-hook (1); has recognise; wave behaviour recognisers
@@ -1963,7 +1887,6 @@
 - `construct:handler`: runtime construct handler (1); has recognise; wave behaviour recognisers
 - `construct:helmet-font`: runtime construct helmet-font (1); has nothing; wave site and surfaces
 - `construct:helmet-script`: runtime construct helmet-script (1); has nothing; wave draft reading
-- `construct:keyframes`: runtime construct keyframes (1, motion); has recognise; wave motion writer (4.0)
 - `construct:link`: runtime construct link (1); has nothing; wave draft reading
 - `construct:observer`: runtime construct observer (1); has recognise; wave behaviour recognisers
 - `construct:ref`: runtime construct ref (1); has recognise; wave behaviour recognisers
@@ -1973,6 +1896,4 @@
 - `construct:style-hover`: runtime construct style-hover (1); has nothing; wave draft reading
 - `construct:template-element`: runtime construct template-element (1); has nothing; wave draft reading
 - `construct:timer`: runtime construct timer (1); has recognise; wave behaviour recognisers
-- `construct:transition`: runtime construct transition (1, motion); has recognise; wave motion writer (4.0)
-- `construct:waapi`: runtime construct waapi (1, motion); has recognise; wave motion writer (4.0)
 

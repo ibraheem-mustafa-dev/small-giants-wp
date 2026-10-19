@@ -73,7 +73,9 @@ function matrixChannels( m, f, set, unsupported ) {
 }
 
 // A CSS transform list as schema channels: { channels: { translateX, translateY, scale, scaleX, scaleY, rotate, rotateX,
-// rotateY }, unsupported: [function names no channel holds] }. `none` is no channels.
+// rotateY }, unsupported: [function names no channel holds], perspective? }. `none` is no channels. A depth
+// (translateZ) under the element's own perspective() becomes the scale and translate it draws as (projectDepth); a
+// scaleZ, or scale3d's third value, stretches a depth a flat element does not have and is left out.
 export function transformChannels( value ) {
 	const out = { channels: {}, unsupported: [] };
 	const s = String( value ?? '' ).trim();
@@ -87,6 +89,7 @@ export function transformChannels( value ) {
 			out.channels[ k ] = v;
 		}
 	};
+	let depth = 0;
 	for ( const [ , fn, inner ] of s.matchAll( /([a-zA-Z0-9]+)\(([^)]*)\)/g ) ) {
 		const a = args( inner );
 		const f = fn.toLowerCase();
@@ -95,9 +98,14 @@ export function transformChannels( value ) {
 			if ( a[ 1 ] !== undefined ) {
 				set( 'translateY', lengthOf( a[ 1 ] ) );
 			}
-			if ( 'translate3d' === f && 0 !== lengthOf( a[ 2 ] ?? '0' ) ) {
-				out.unsupported.push( 'translateZ' );
+			if ( 'translate3d' === f ) {
+				depth = addDepth( depth, a[ 2 ] ?? '0', out.unsupported );
 			}
+		} else if ( 'translatez' === f ) {
+			depth = addDepth( depth, a[ 0 ], out.unsupported );
+		} else if ( 'scalez' === f ) {
+			// A flat element has no depth for scaleZ to stretch, so it changes nothing drawn.
+			continue;
 		} else if ( 'translatex' === f ) {
 			set( 'translateX', lengthOf( a[ 0 ] ) );
 		} else if ( 'translatey' === f ) {
@@ -107,9 +115,6 @@ export function transformChannels( value ) {
 		} else if ( 'scale' === f || 'scale3d' === f ) {
 			const x = num( a[ 0 ] );
 			const y = undefined === a[ 1 ] ? x : num( a[ 1 ] );
-			if ( 'scale3d' === f && 1 !== num( a[ 2 ] ?? '1' ) ) {
-				out.unsupported.push( 'scaleZ' );
-			}
 			if ( x === y ) {
 				set( 'scale', x );
 			} else {
@@ -139,7 +144,45 @@ export function transformChannels( value ) {
 			out.unsupported.push( f );
 		}
 	}
+	if ( 0 !== depth ) {
+		projectDepth( out, depth );
+	}
 	return out;
+}
+
+// A translateZ or translate3d depth added to the running total, in px; a depth that is not a px length is reported.
+function addDepth( total, value, unsupported ) {
+	const z = lengthOf( value );
+	if ( 'number' !== typeof z ) {
+		unsupported.push( 'translateZ' );
+		return total;
+	}
+	return total + z;
+}
+
+// A move of `depth` px toward the viewer under the element's own perspective p draws the element p / (p - depth) times
+// its size and its offset, about its own centre, so it is that scale and translate exactly. It is reported instead when
+// there is no perspective of the element's own in the list (a parent's perspective, unseen here, would also shift it),
+// when the element also turns about X or Y (no longer a plain scale), or when the depth reaches the viewer.
+function projectDepth( out, depth ) {
+	const p = out.perspective;
+	const c = out.channels;
+	if ( ! p || depth >= p || 'rotateX' in c || 'rotateY' in c || [ c.translateX, c.translateY ].some( ( v ) => undefined !== v && 'number' !== typeof v ) ) {
+		out.unsupported.push( 'translateZ' );
+		return;
+	}
+	const k = p / ( p - depth );
+	for ( const ch of [ 'translateX', 'translateY' ] ) {
+		if ( 'number' === typeof c[ ch ] ) {
+			c[ ch ] = round( c[ ch ] * k, 2 );
+		}
+	}
+	if ( 'scaleX' in c || 'scaleY' in c ) {
+		c.scaleX = round( ( c.scaleX ?? 1 ) * k );
+		c.scaleY = round( ( c.scaleY ?? 1 ) * k );
+	} else {
+		c.scale = round( ( c.scale ?? 1 ) * k );
+	}
 }
 
 // rotate3d() about one of the three axes is rotateX, rotateY or rotate (a negative axis turns the other way); a turn

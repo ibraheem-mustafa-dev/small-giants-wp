@@ -1289,8 +1289,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion settings: the cloning writer for sgsMotion is plan step 4.0 (Spec 38A M7)"
+			"wave": "behaviour recognisers",
+			"note": "dragToScroll, dragMomentum and loopCarousel are carousel and track behaviours (their css_property names fx:draggable, fx:momentum, fx:loop); FR-48-80 recognises them"
 		},
 		"block-setting:behaviour:number": {
 			"recognise": null,
@@ -1394,11 +1394,10 @@
 			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
 		},
 		"block-setting:css-gate:styling": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "hover grayscale gate: a hover effect, folds into the motion model"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a grayscale-to-colour hover is written as hover.state grayscale with restGrayscale (the hover-grayscale-to-colour preset), the motion model's form of the blocks' grayscaleHover toggle"
 		},
 		"block-setting:css-modifier:mode": {
 			"recognise": null,
@@ -1639,8 +1638,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion settings: the cloning writer for sgsMotion is plan step 4.0 (Spec 38A M7)"
+			"wave": "states",
+			"note": "the blocks' own transition timings (panelSlideDuration, scrimFadeDuration, submenu and item motion) time open, close and hover states; the states wave (FR-48-81) reads the state transitions (classify names it for every state transition record)"
 		},
 		"block-setting:number-css-percent:styling": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -1930,36 +1929,36 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
+			"wave": "modes and values with no CSS property",
+			"note": "role visual, kind boolean: settings with no css_property (bgSvgTextShadow, showShadow, backgroundAttachment where unmapped, overlayOpacity, surfaceOpacity, separators, google-rating-badge.shadow), not motion; FR-48-79 owns values with no CSS property"
 		},
 		"block-setting:visual:mode": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
+			"wave": "modes and values with no CSS property",
+			"note": "role visual, kind mode: settings with no css_property (bgSvgTextShadow, showShadow, backgroundAttachment where unmapped, overlayOpacity, surfaceOpacity, separators, google-rating-badge.shadow), not motion; FR-48-79 owns values with no CSS property"
 		},
 		"block-setting:visual:number": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
+			"wave": "modes and values with no CSS property",
+			"note": "role visual, kind number: settings with no css_property (bgSvgTextShadow, showShadow, backgroundAttachment where unmapped, overlayOpacity, surfaceOpacity, separators, google-rating-badge.shadow), not motion; FR-48-79 owns values with no CSS property"
 		},
 		"block-setting:visual:object": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
+			"wave": "modes and values with no CSS property",
+			"note": "role visual, kind object: settings with no css_property (bgSvgTextShadow, showShadow, backgroundAttachment where unmapped, overlayOpacity, surfaceOpacity, separators, google-rating-badge.shadow), not motion; FR-48-79 owns values with no CSS property"
 		},
 		"block-setting:visual:string": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "hover toggles and amounts from the old hover extension: fold into the motion model"
+			"wave": "modes and values with no CSS property",
+			"note": "role visual, kind string: settings with no css_property (bgSvgTextShadow, showShadow, backgroundAttachment where unmapped, overlayOpacity, surfaceOpacity, separators, google-rating-badge.shadow), not motion; FR-48-79 owns values with no CSS property"
 		},
 		"block-setting:visual:styling": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -2018,10 +2017,9 @@
 		},
 		"construct:keyframes": {
 			"recognise": "construct:keyframes",
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "CSS animations: entrances as entrance.base (keyframes when there are more than two stops), endless ones as effects"
 		},
 		"construct:link": {
 			"recognise": null,
@@ -2088,17 +2086,15 @@
 		},
 		"construct:transition": {
 			"recognise": "construct:transition",
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "CSS transitions: hover transitions become hover.state, checked by the walker's hover pass; state transitions belong to the states wave (classify names it)"
 		},
 		"construct:waapi": {
 			"recognise": "construct:waapi",
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "read by the construct registry's reader; no writer or check yet"
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "Web Animations calls: entrances, hovers and loops written as sgsMotion; entrances checked against the render at 375/768/1440, loops by lib/motion-loops.mjs::loopCheck"
 		},
 		"css-at:charset": {
 			"excluded": {
@@ -2157,11 +2153,10 @@
 			}
 		},
 		"css-at:keyframes": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "keyframes: the motion writer"
+			"recognise": "construct:keyframes",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "@keyframes stops become entrance values or an effect loop"
 		},
 		"css-at:layer": {
 			"recognise": null,
@@ -2214,10 +2209,10 @@
 		},
 		"css-at:starting-style": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "entry styles: the motion writer"
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "draft reading",
+			"note": "an @starting-style block holds a CSS-only entrance's from values; the inventory does not read it yet (draft reading, FR-48-85), and the writer writes it as entrance.base once it does"
 		},
 		"css-at:supports": {
 			"recognise": null,
@@ -2230,8 +2225,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "view transitions: page transitions are an fx effect"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-function:abs": {
 			"recognise": null,
@@ -2413,11 +2408,10 @@
 			"note": "cross-fade(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:cubic-bezier": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "cubic-bezier(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#easingOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a cubic-bezier() curve is written as the layer's easing, or as the client's easing token when it equals one"
 		},
 		"css-function:drop-shadow": {
 			"recognise": null,
@@ -2569,11 +2563,10 @@
 			"note": "light-dark(): dark-mode colours; no dark token set yet (CR12, parked)"
 		},
 		"css-function:linear": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "linear(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#easingOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a linear() curve is written as the layer's easing (the schema takes linear())"
 		},
 		"css-function:linear-gradient": {
 			"recognise": null,
@@ -2590,18 +2583,17 @@
 			"note": "log(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:matrix": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "matrix(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "matrix() inside an animated transform: the translate, scale and rotate decomposed from the matrix (a skew is reported) channel"
 		},
 		"css-function:matrix3d": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "matrix3d(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "motion model additions",
+			"note": "a true 3D matrix (a flat one is already written as translate, scale and rotate); it decomposes into turns, slant and the axis angle; the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:max": {
 			"recognise": null,
@@ -2686,11 +2678,10 @@
 			"note": "path(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:perspective": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "perspective(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "perspective() inside an animated transform: the the element's one perspective (100 to 5000px) channel"
 		},
 		"css-function:polygon": {
 			"recognise": null,
@@ -2782,39 +2773,35 @@
 			"note": "rgba(): its result is a computed colour or value Fill reads per width and resolves to a token or literal"
 		},
 		"css-function:rotate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "rotate(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "rotate() inside an animated transform: the rotate channel"
 		},
 		"css-function:rotate3d": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "rotate3d(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "motion model additions",
+			"note": "a turn about a slanted flat axis (a turn about X, Y or Z is already written as rotateX, rotateY or rotate); the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:rotatex": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "rotatex(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "rotatex() inside an animated transform: the rotateX channel"
 		},
 		"css-function:rotatey": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "rotatey(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "rotatey() inside an animated transform: the rotateY channel"
 		},
 		"css-function:rotatez": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "rotatez(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "rotatez() inside an animated transform: the rotate channel"
 		},
 		"css-function:round": {
 			"recognise": null,
@@ -2831,46 +2818,41 @@
 			"note": "saturate(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:scale": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "scale(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "scale() inside an animated transform: the scale channel"
 		},
 		"css-function:scale3d": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "scale3d(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "scale3d() inside an animated transform: the scale (a depth other than 1 is reported) channel"
 		},
 		"css-function:scalex": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "scalex(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "scalex() inside an animated transform: the scaleX channel"
 		},
 		"css-function:scaley": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "scaley(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "scaley() inside an animated transform: the scaleY channel"
 		},
 		"css-function:scalez": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "scalez(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "scaleZ stretches a depth a flat element does not have, so it draws nothing and nothing is written"
 		},
 		"css-function:scroll": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "scroll(): transform, timing or scroll-timeline function: the motion writer"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a scroll- or view-timeline animation is a scrub (an effect in proportion to scroll progress, FR-48-77); the writer writes the scrub effect through writeEffect once it is recognised"
 		},
 		"css-function:scroll-state": {
 			"recognise": null,
@@ -2915,25 +2897,25 @@
 			"note": "sin(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:skew": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "skew(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "motion model additions",
+			"note": "a slant (a parallelogram, which a perspective tilt cannot draw); the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:skewx": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "skewx(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "motion model additions",
+			"note": "a horizontal slant; the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:skewy": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "skewy(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "motion model additions",
+			"note": "a vertical slant; the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:snapinterval": {
 			"recognise": null,
@@ -2957,11 +2939,11 @@
 			"note": "sqrt(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:steps": {
-			"recognise": null,
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "steps(): transform, timing or scroll-timeline function: the motion writer"
+			"wave": "motion model additions",
+			"note": "stepped timing: a typing cursor's hard blink is the split-reveal cursor option (letter-by-letter typing is split-reveal already, a sprite sheet is the image-sequence block, both recognised by FR-48-77); the value is Spec 38A FR-38A-57, built after the three test sites are fully cloned (Bean, 2026-10-19), and until then the writer reports it by name"
 		},
 		"css-function:style": {
 			"recognise": null,
@@ -3034,39 +3016,34 @@
 			"note": "target-text(): not read as itself (gradients, filters, shapes, images, counters and the rest)"
 		},
 		"css-function:translate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "translate(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "translate() inside an animated transform: the translateX and translateY channel"
 		},
 		"css-function:translate3d": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "translate3d(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "translate3d() inside an animated transform: the translateX and translateY (a non-zero depth is reported) channel"
 		},
 		"css-function:translatex": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "translatex(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "translatex() inside an animated transform: the translateX channel"
 		},
 		"css-function:translatey": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "translatey(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "translatey() inside an animated transform: the translateY channel"
 		},
 		"css-function:translatez": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "translatez(): transform, timing or scroll-timeline function: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a move toward the viewer under the element's own perspective is written as the scale and slide it draws as, p / (p - z) (lib/motion-channels.mjs::projectDepth, measured equal within 0.01px in Chromium); with a tilt or no perspective of its own it is reported"
 		},
 		"css-function:type": {
 			"recognise": null,
@@ -3083,10 +3060,10 @@
 		},
 		"css-function:view": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "view(): transform, timing or scroll-timeline function: the motion writer"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a scroll- or view-timeline animation is a scrub (an effect in proportion to scroll progress, FR-48-77); the writer writes the scrub effect through writeEffect once it is recognised"
 		},
 		"css-function:xywh": {
 			"recognise": null,
@@ -3103,11 +3080,10 @@
 			"note": "Fill reads 6 of 16 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:animations": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "Fill reads 0 of 22 of these properties (lib/fill-read.mjs PROPS)"
+			"recognise": "construct:keyframes",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "animation-* properties: name, duration, delay, timing, iteration count and direction read into the inventory record and written as entrance or effect"
 		},
 		"css-group:backgrounds-and-borders": {
 			"recognise": null,
@@ -3293,10 +3269,10 @@
 		},
 		"css-group:motion-path": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "Fill reads 0 of 6 of these properties (lib/fill-read.mjs PROPS)"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "movement along a path is the motion-path effect; recognising the draft's path is FR-48-77"
 		},
 		"css-group:mozilla-extensions": {
 			"excluded": {
@@ -3377,10 +3353,10 @@
 		},
 		"css-group:scroll-driven-animations": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "Fill reads 0 of 11 of these properties (lib/fill-read.mjs PROPS)"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a scroll- or view-timeline animation is a scrub (an effect in proportion to scroll progress, FR-48-77); the writer writes the scrub effect through writeEffect once it is recognised"
 		},
 		"css-group:scroll-snap": {
 			"recognise": null,
@@ -3439,11 +3415,10 @@
 			"note": "Fill reads 4 of 10 of these properties (lib/fill-read.mjs PROPS)"
 		},
 		"css-group:transitions": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "Fill reads 3 of 6 of these properties (lib/fill-read.mjs PROPS)"
+			"recognise": "construct:transition",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "transition-* properties: duration, delay and timing of each hover transition written on hover.state"
 		},
 		"css-group:values-and-units": {
 			"recognise": null,
@@ -3456,8 +3431,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "Fill reads 0 of 3 of these properties (lib/fill-read.mjs PROPS)"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-group:viewport": {
 			"recognise": null,
@@ -3740,11 +3715,10 @@
 			"note": "(prefers-reduced-data): conditional styling for a kind of screen or device (colour range, print or e-ink, installed app, foldable); the clone cannot express it yet"
 		},
 		"css-media-feature:prefers-reduced-motion": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "(prefers-reduced-motion): the motion model handles reduced motion itself"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#classify",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
+			"note": "a draft's reduced-motion rule is recognised and not copied: every sgsMotion layer the writer writes gets the motion model's own reduced-motion behaviour (Spec 38A §12), which the live reduced-motion probe checks"
 		},
 		"css-media-feature:prefers-reduced-transparency": {
 			"recognise": null,
@@ -5465,22 +5439,22 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "scroll-button: transition or scroll-marker part: the motion writer"
+			"wave": "behaviour recognisers",
+			"note": "CSS carousel buttons and dots are a carousel's controls, which FR-48-80 recognises"
 		},
 		"css-pseudo-element:scroll-marker": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "::scroll-marker: transition or scroll-marker part: the motion writer"
+			"wave": "behaviour recognisers",
+			"note": "CSS carousel buttons and dots are a carousel's controls, which FR-48-80 recognises"
 		},
 		"css-pseudo-element:scroll-marker-group": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "::scroll-marker-group: transition or scroll-marker part: the motion writer"
+			"wave": "behaviour recognisers",
+			"note": "CSS carousel buttons and dots are a carousel's controls, which FR-48-80 recognises"
 		},
 		"css-pseudo-element:search-text": {
 			"recognise": null,
@@ -5521,43 +5495,43 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "::view-transition: transition or scroll-marker part: the motion writer"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-pseudo-element:view-transition-group": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "::view-transition-group: transition or scroll-marker part: the motion writer"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-pseudo-element:view-transition-group-children": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "view-transition-group-children: transition or scroll-marker part: the motion writer"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-pseudo-element:view-transition-image-pair": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "::view-transition-image-pair: transition or scroll-marker part: the motion writer"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-pseudo-element:view-transition-new": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "::view-transition-new: transition or scroll-marker part: the motion writer"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-pseudo-element:view-transition-old": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "::view-transition-old: transition or scroll-marker part: the motion writer"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"css-unit:cap": {
 			"recognise": null,
@@ -5623,11 +5597,10 @@
 			"note": "cqw: a container query unit; container queries are not read"
 		},
 		"css-unit:deg": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "deg: time or angle unit: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "angles in deg, written in degrees"
 		},
 		"css-unit:dpcm": {
 			"recognise": null,
@@ -5713,11 +5686,10 @@
 			"note": "fr: not read as itself (print, resolution, frequency, font-relative and grid units)"
 		},
 		"css-unit:grad": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "grad: time or angle unit: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "angles in grad, written in degrees"
 		},
 		"css-unit:hz": {
 			"recognise": null,
@@ -5804,11 +5776,10 @@
 			"note": "mm: not read as itself (print, resolution, frequency, font-relative and grid units)"
 		},
 		"css-unit:ms": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "ms: time or angle unit: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#msOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "durations and delays in ms"
 		},
 		"css-unit:pc": {
 			"recognise": null,
@@ -5844,11 +5815,10 @@
 			"note": "q: not read as itself (print, resolution, frequency, font-relative and grid units)"
 		},
 		"css-unit:rad": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "rad: time or angle unit: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "angles in rad, written in degrees"
 		},
 		"css-unit:rcap": {
 			"recognise": null,
@@ -5892,11 +5862,10 @@
 			"note": "rlh: not read as itself (print, resolution, frequency, font-relative and grid units)"
 		},
 		"css-unit:s": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "s: time or angle unit: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#msOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "durations and delays in seconds, written in ms"
 		},
 		"css-unit:svb": {
 			"recognise": null,
@@ -5941,11 +5910,10 @@
 			"note": "svw: a viewport unit; Fill reads the computed px per width, so it becomes three steps (FR-48-44)"
 		},
 		"css-unit:turn": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "turn: time or angle unit: the motion writer"
+			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "angles in turn, written in degrees"
 		},
 		"css-unit:vb": {
 			"recognise": null,
@@ -8769,235 +8737,231 @@
 			"note": "extension settings: shop, forms and data"
 		},
 		"fx:ambient-float": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-loops.mjs#loopCheck",
+			"note": "an endless animation that ambient-float reproduces is written as the ambient-float effect"
 		},
 		"fx:carousel-loop": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"wave": "behaviour recognisers",
+			"note": "a carousel's loop is a setting of the carousel (fx_effects.panels is empty: no motion panel holds it); FR-48-80 recognises the carousel"
 		},
 		"fx:cursor-field": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds cursor-field in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:curtain": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds curtain in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:draggable": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds draggable in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:draw": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds draw in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:flip": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds flip in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:follow-pointer": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds follow-pointer in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:generative-background": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds generative-background in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:glare": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds glare in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:grid-dots": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds grid-dots in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:horizontal-panel": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds horizontal-panel in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:image-sequence": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds image-sequence in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:ken-burns": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-loops.mjs#loopCheck",
+			"note": "an endless animation that ken-burns reproduces is written as the ken-burns effect"
 		},
 		"fx:lottie": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds lottie in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:magnet": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds magnet in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:marquee": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-loops.mjs#loopCheck",
+			"note": "an endless animation that marquee reproduces is written as the marquee effect"
 		},
 		"fx:morph": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds morph in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:motion-path": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds motion-path in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:page-transitions": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"wave": "site and surfaces",
+			"note": "view transitions are page transitions, a site-level setting (fx_effects page-transitions lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"fx:parallax": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds parallax in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:particles": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds particles in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:pin-scrub": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds pin-scrub in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:ripple": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds ripple in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:scramble": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds scramble in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:scroll-progress": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds scroll-progress in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:scroll-smoother": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"wave": "site and surfaces",
+			"note": "smooth scrolling is a site-level setting (fx_effects scroll-smoother lists no panel); the site wave (FR-48-84) writes it"
 		},
 		"fx:scrub": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds scrub in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:sheen": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds sheen in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:split-reveal": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds split-reveal in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:surface-treatment": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds surface-treatment in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"fx:svg-loop": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-loops.mjs#loopCheck",
+			"note": "an endless animation that svg-loop reproduces is written as the svg-loop effect"
 		},
 		"fx:wave-gradient": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "a draft builds wave-gradient in its own script; recognising it is FR-48-77, and the writer writes it through writeEffect (Bean, 2026-10-18: \"Writer for all\")"
 		},
 		"html-attr:a.attributionsourceid": {
 			"recognise": null,
@@ -11204,11 +11168,10 @@
 			"note": "<map name>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:marquee.behavior": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "<marquee behavior>: a scrolling-text setting: the motion writer (marquee effect)"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-loops.mjs#marqueeTag",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "marquee behavior: read into the marquee effect's speed (px/s) or direction; behavior other than scroll is reported"
 		},
 		"html-attr:marquee.bgcolor": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -11217,11 +11180,10 @@
 			"note": "<marquee bgcolor>: a presentational attribute the browser turns into background-color (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:marquee.direction": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "<marquee direction>: a scrolling-text setting: the motion writer (marquee effect)"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-loops.mjs#marqueeTag",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "marquee direction: read into the marquee effect's speed (px/s) or direction; behavior other than scroll is reported"
 		},
 		"html-attr:marquee.height": {
 			"recognise": null,
@@ -11237,32 +11199,29 @@
 			"note": "<marquee hspace>: a presentational attribute the browser turns into margin-left, margin-right (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:marquee.loop": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "<marquee loop>: a scrolling-text setting: the motion writer (marquee effect)"
+			"excluded": {
+				"reason": "a marquee that stops after a set number of passes: SGS marquees run until paused by design (FR-38A-44, WCAG pause), and the attribute is obsolete HTML no draft has used",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:marquee.scrollamount": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "<marquee scrollamount>: a scrolling-text setting: the motion writer (marquee effect)"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-loops.mjs#marqueeTag",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "marquee scrollamount: read into the marquee effect's speed (px/s) or direction; behavior other than scroll is reported"
 		},
 		"html-attr:marquee.scrolldelay": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "<marquee scrolldelay>: a scrolling-text setting: the motion writer (marquee effect)"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-loops.mjs#marqueeTag",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "marquee scrolldelay: read into the marquee effect's speed (px/s) or direction; behavior other than scroll is reported"
 		},
 		"html-attr:marquee.truespeed": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "<marquee truespeed>: a scrolling-text setting: the motion writer (marquee effect)"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-loops.mjs#marqueeTag",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "marquee truespeed: read into the marquee effect's speed (px/s) or direction; behavior other than scroll is reported"
 		},
 		"html-attr:marquee.vspace": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -13212,11 +13171,10 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:marquee": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "<marquee>: obsolete, still rendered as scrolling text: the motion writer (marquee effect) (re-opened by Bean 2026-10-18)"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "a <marquee> becomes the marquee effect from its attributes (lib/motion-loops.mjs::marqueeTag)"
 		},
 		"html:math": {
 			"recognise": null,
@@ -13826,403 +13784,369 @@
 			"note": "<input type=\"week\">: no form-field writer (FR-48-48)"
 		},
 		"motion-preset:effects:ambient-float": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "a written ambient-float layer names the intensity preset whose values it holds"
 		},
 		"motion-preset:effects:cursor-field": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the cursor-field presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:draw-hover": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the draw-hover presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:ken-burns": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "a written ken-burns layer names the intensity preset whose values it holds"
 		},
 		"motion-preset:effects:morph": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the morph presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:motion-path": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the motion-path presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:parallax": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the parallax presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:particles": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the particles presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:pin-scrub": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the pin-scrub presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:ripple": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the ripple presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:scramble-hover": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the scramble-hover presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:scrub": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "the scrub presets name a script-built effect FR-48-77 recognises; the writer names the preset when it writes the effect"
 		},
 		"motion-preset:effects:svg-loop": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-loops.mjs#loopEffect",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "a written svg-loop layer names the intensity preset whose values it holds"
 		},
 		"motion-preset:entrance:draw": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "draw is a text or SVG entrance effect a draft builds in script; FR-48-77 recognises it and the writer writes it through writeEffect in the entrance panel"
 		},
 		"motion-preset:entrance:entrance-blur-in": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-blur-in preset names it"
 		},
 		"motion-preset:entrance:entrance-bounce-in": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-bounce-in preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-down": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-fade-down preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-in": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-fade-in preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-left": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-fade-left preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-right": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-fade-right preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-up": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-fade-up preset names it"
 		},
 		"motion-preset:entrance:entrance-reveal-up": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-reveal-up preset names it"
 		},
 		"motion-preset:entrance:entrance-rotate-in": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-rotate-in preset names it"
 		},
 		"motion-preset:entrance:entrance-scale-in": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-scale-in preset names it"
 		},
 		"motion-preset:entrance:entrance-scale-out": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-scale-out preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-down": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-slide-down preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-left": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-slide-left preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-right": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-slide-right preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-up": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a entrance-slide-up preset names it"
 		},
 		"motion-preset:entrance:keyframe-bounce": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-bounce preset names it"
 		},
 		"motion-preset:entrance:keyframe-fade-in": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-fade-in preset names it"
 		},
 		"motion-preset:entrance:keyframe-fade-out": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-fade-out preset names it"
 		},
 		"motion-preset:entrance:keyframe-fade-up": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-fade-up preset names it"
 		},
 		"motion-preset:entrance:keyframe-pulse": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-pulse preset names it"
 		},
 		"motion-preset:entrance:keyframe-slide-up": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-slide-up preset names it"
 		},
 		"motion-preset:entrance:keyframe-spin": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-spin preset names it"
 		},
 		"motion-preset:entrance:keyframe-zoom-in": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"note": "a written entrance whose values equal a keyframe-zoom-in preset names it"
 		},
 		"motion-preset:entrance:nav-panel-item": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "states",
+			"note": "nav-panel-item plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:scramble": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "scramble is a text or SVG entrance effect a draft builds in script; FR-48-77 recognises it and the writer writes it through writeEffect in the entrance panel"
 		},
 		"motion-preset:entrance:split-reveal": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "split-reveal is a text or SVG entrance effect a draft builds in script; FR-48-77 recognises it and the writer writes it through writeEffect in the entrance panel"
 		},
 		"motion-preset:entrance:state-burger-morph": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "states",
+			"note": "state-burger-morph plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-count-pop": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "states",
+			"note": "state-count-pop plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-icon-turn": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "states",
+			"note": "state-icon-turn plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-result-scale-in": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "states",
+			"note": "state-result-scale-in plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-shake": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "states",
+			"note": "state-shake plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-step-slide": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"wave": "states",
+			"note": "state-step-slide plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:hover:follow-pointer": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "follow-pointer is a pointer-driven hover effect a draft builds in script; FR-48-77 recognises it"
 		},
 		"motion-preset:hover:hover-border-accent": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a written hover state whose values equal a hover-border-accent preset names it"
 		},
 		"motion-preset:hover:hover-grayscale-to-colour": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a written hover state whose values equal a hover-grayscale-to-colour preset names it"
 		},
 		"motion-preset:hover:hover-indent": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a written hover state whose values equal a hover-indent preset names it"
 		},
 		"motion-preset:hover:hover-lift": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a written hover state whose values equal a hover-lift preset names it"
 		},
 		"motion-preset:hover:hover-none": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a draft element with no hover motion gets no hover layer, which is the hover-none preset's meaning"
 		},
 		"motion-preset:hover:hover-rotate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a written hover state whose values equal a hover-rotate preset names it"
 		},
 		"motion-preset:hover:hover-scale": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a written hover state whose values equal a hover-scale preset names it"
 		},
 		"motion-preset:hover:hover-translate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
+			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
+			"note": "a written hover state whose values equal a hover-translate preset names it"
 		},
 		"motion-preset:hover:magnet": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "magnet is a pointer-driven hover effect a draft builds in script; FR-48-77 recognises it"
 		},
 		"motion-preset:hover:sheen": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "motion model effect or preset: the cloning writer is plan step 4.0"
+			"write": "scripts/computed-route/lib/motion-tokens.mjs#effectPresetFor",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "sheen is a pointer-driven hover effect a draft builds in script; FR-48-77 recognises it"
 		},
 		"part:footer": {
 			"recognise": null,
@@ -15436,25 +15360,23 @@
 			"note": "SVG <a>: inline SVG drawing (icons, illustrations, filters); no SVG writer"
 		},
 		"svg:animate": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "SVG <animate>: SVG animation: the motion writer"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-loops.mjs#smilLoop",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "an endlessly repeating <animate> of opacity is the svg-loop pulse; one no effect draws is reported"
 		},
 		"svg:animateMotion": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "SVG <animateMotion>: SVG animation: the motion writer"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "movement along a path is the motion-path effect; recognising the draft's path is FR-48-77"
 		},
 		"svg:animateTransform": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "SVG <animateTransform>: SVG animation: the motion writer"
+			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
+			"write": "scripts/computed-route/lib/motion-loops.mjs#smilLoop",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"note": "an endlessly repeating <animateTransform> is read as a loop of its transform channels and written as the effect that draws it, or reported"
 		},
 		"svg:circle": {
 			"recognise": null,
@@ -15731,10 +15653,10 @@
 		},
 		"svg:mpath": {
 			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "SVG <mpath>: SVG animation: the motion writer"
+			"write": "scripts/computed-route/lib/motion-effects.mjs#writeEffect",
+			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
+			"wave": "behaviour recognisers",
+			"note": "movement along a path is the motion-path effect; recognising the draft's path is FR-48-77"
 		},
 		"svg:path": {
 			"recognise": null,
@@ -15789,8 +15711,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "motion writer (4.0)",
-			"note": "SVG <set>: SVG animation: the motion writer"
+			"wave": "states",
+			"note": "an SVG <set> switches a value at a moment: a timed state change, not motion"
 		},
 		"svg:stop": {
 			"recognise": null,

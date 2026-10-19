@@ -78,7 +78,7 @@ test( 'MUST FAIL: a flat matrix is translate, scale and rotate; a skewing or 3D 
 	assert.deepEqual( transformChannels( 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 5, 6, 0, 1)' ).channels, { translateX: 5, translateY: 6 } );
 	assert.deepEqual( transformChannels( 'matrix(1, 0, 0.3, 1, 0, 0)' ).unsupported, [ 'skew' ] );
 	assert.deepEqual( transformChannels( 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.002, 0, 0, 0, 1)' ).unsupported, [ 'matrix3d' ] );
-	assert.deepEqual( transformChannels( 'scale3d(1.1, 1.1, 2)' ).unsupported, [ 'scaleZ' ] );
+	assert.deepEqual( transformChannels( 'scale3d(1.1, 1.1, 2) scaleZ(3)' ), { channels: { scale: 1.1 }, unsupported: [] }, 'a depth stretch draws nothing on a flat element' );
 	assert.deepEqual( transformChannels( 'scale3d(1.1, 1.1, 1)' ), { channels: { scale: 1.1 }, unsupported: [] } );
 } );
 
@@ -346,4 +346,17 @@ test( 'MUST FAIL: a ring or an accent-line hover is the hover state\'s ring or a
 	motionWrites( { nodes: [ node( 0, 'sgs/card', '10' ) ], flat, refOf: ( x ) => x.ref, records: [ hover( 'none', 'inset 0 -3px 0 0 #D8CA50' ) ], mdb, schema, rawSnapshot: { settings: { ...SNAPSHOT.settings, color: { palette: [ { slug: 'accent', color: '#D8CA50' } ] } } } } );
 	assert.equal( flat[ 0 ].attributes.sgsMotion.elements.root.hover.state.values.accentColour, 'accent' );
 	assert.equal( validateMotionWrite( flat[ 0 ].attributes.sgsMotion, schema ).valid, true );
+} );
+
+test( 'MUST FAIL: a move toward the viewer under the element\'s own perspective is the scale and slide it draws as, p / (p - z); otherwise it is reported', () => {
+	// Measured in Chromium 2026-10-19: perspective(1100px) translateZ(50px) and scale(1.0476) draw the same box within 0.01px,
+	// as do perspective(800px) translate3d(10px, 20px, 200px) scale(1.1) and translate(13.33px, 26.67px) scale(1.4667).
+	assert.deepEqual( transformChannels( 'perspective(1100px) translateZ(50px)' ).channels, { scale: 1.0476 } );
+	assert.deepEqual( transformChannels( 'perspective(800px) translate3d(10px, 20px, 200px) scale(1.1)' ).channels, { translateX: 13.33, translateY: 26.67, scale: 1.4667 } );
+	assert.deepEqual( transformChannels( 'perspective(800px) translateZ(-160px) scaleX(2)' ).channels, { scaleX: 1.6667, scaleY: 0.8333 } );
+	assert.deepEqual( transformChannels( 'translateZ(40px)' ).unsupported, [ 'translateZ' ], 'no perspective of its own: a parent\'s could move it too' );
+	assert.deepEqual( transformChannels( 'perspective(800px) rotateX(10deg) translateZ(40px)' ).unsupported, [ 'translateZ' ], 'with a tilt it is no longer a plain scale' );
+	assert.deepEqual( transformChannels( 'perspective(500px) translateZ(600px)' ).unsupported, [ 'translateZ' ], 'past the viewer' );
+	const lift = rec( 'L', { mechanism: 'css-transition', trigger: { type: 'hover' }, duration_ms: 250, properties: [ { property: 'transform', from: 'perspective(1100px) translateZ(0)', to: 'perspective(1100px) translateZ(50px)' } ] } );
+	assert.equal( hoverLayer( [ lift ], mdb ).layer.values.scale, 1.0476 );
 } );

@@ -152,11 +152,14 @@ document.getElementById('host').attachShadow({ mode: 'open' }).innerHTML = '<sty
 	}
 } );
 
-test( 'DONE-WHEN: each listed capability a draft uses raises a seen-but-unsupported row (none is covered yet)', () => {
+test( 'DONE-WHEN: each listed capability a draft uses raises a seen-but-unsupported row until its wave covers it', () => {
 	const usage = new Map( DONE_WHEN.map( ( id, i ) => [ id, { count: 1, draftId: `Home:${ i + 1 }` } ] ) );
 	usage.set( 'css-property:-sgs-planted', { count: 1, draftId: 'Home:9', runtimeOnly: true } );
-	const rows = coverageMissing( { coverage: loadCoverage(), usage } );
-	assert.deepEqual( rows.map( ( r ) => r.construct ).sort(), [ ...DONE_WHEN, 'css-property:-sgs-planted' ].sort() );
+	const coverage = loadCoverage();
+	const covered = ( id ) => Boolean( coverage.entries[ id ]?.recognise && coverage.entries[ id ]?.write && coverage.entries[ id ]?.check );
+	const rows = coverageMissing( { coverage, usage } );
+	assert.deepEqual( rows.map( ( r ) => r.construct ).sort(), [ ...DONE_WHEN.filter( ( id ) => ! covered( id ) ), 'css-property:-sgs-planted' ].sort() );
+	assert.ok( covered( 'svg:animate' ) && ! rows.some( ( r ) => 'svg:animate' === r.construct ), 'svg:animate is the motion writer\'s (step 4.0; tests/motion-planted-draft.test.mjs raises its row again with the writer removed)' );
 	const planted = rows.find( ( r ) => 'css-property:-sgs-planted' === r.construct );
 	assert.match( planted.why, /not in the clone coverage map/ );
 	assert.match( planted.why, /the file read missed it/ );
