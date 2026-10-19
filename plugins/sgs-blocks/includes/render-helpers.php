@@ -45,6 +45,11 @@
  *   helpers-value-ladder.php        — sgs_saving_display, sgs_value_ladder
  *                                     (also requires helpers-configurator-pricing.php)
  *
+ *   helpers-end-shape.php           — sgs_end_shape_allowed, sgs_end_shape_edge_path,
+ *                                     sgs_end_shape_cut_svg, sgs_end_shape_mask_decls,
+ *                                     sgs_end_shape_ring_decls (label end shapes cut
+ *                                     from the shape-divider library)
+ *
  *   helpers-css-safety.php          — sgs_css_length_value (shared CSS-length
  *                                     safety primitive; required by
  *                                     helpers-container.php's
@@ -199,6 +204,7 @@ require_once __DIR__ . '/helpers-site-info-binding.php';
 require_once __DIR__ . '/helpers-site-info-items.php';
 require_once __DIR__ . '/helpers-icon.php';
 require_once __DIR__ . '/helpers-icon-shadow.php';
+require_once __DIR__ . '/helpers-end-shape.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';

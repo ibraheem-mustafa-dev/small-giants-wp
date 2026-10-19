@@ -6,7 +6,6 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	SelectControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, fillRow, SgsLengthControl, SpacingControl, LinkUnderlineControl } from '../../components';
@@ -21,91 +20,61 @@ import {
 	linkUnderlinePreviewCss,
 	usePreviewTier,
 	tierBoxLonghands,
-	
 	isCssGradient,
+	sgsBorderPreview,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { labelDotPreviewCss } from './dot-preview';
-
-const TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
-	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
-	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-];
-
-const FONT_STYLE_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
-];
-
-const TEXT_ALIGN_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-];
-
-const FONT_WEIGHT_OPTIONS = [
-	{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-	{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-	{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-	{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-];
-
-const LETTER_SPACING_UNITS = [
-	{ value: 'em', label: 'em', default: 0.08 },
-	{ value: 'rem', label: 'rem', default: 0.08 },
-	{ value: 'px', label: 'px', default: 1 },
-];
-
-const LINE_HEIGHT_UNITS = [
-	{ value: '', label: '—', default: 1.2 },
-	{ value: 'em', label: 'em', default: 1.2 },
-	{ value: 'rem', label: 'rem', default: 1.2 },
-	{ value: 'px', label: 'px', default: 18 },
-];
+import EndShapePanel from './EndShapePanel';
+import {
+	labelEndShapeEnds,
+	labelEndShapePreviewCss,
+	labelHasEndOutline,
+} from './end-shape-preview';
 
 /**
- * Build the fontSize reset value for the font-size responsive family owned by
- * <TypographyControls>. fontSize is an OBJECT-typed {desktop,tablet,mobile}
- * attr (Spec 35 tier-object migration) — resetting a Tablet/Mobile sibling
- * individually would silently no-op (WP discards a write to an undeclared
- * attr), so the WHOLE object resets to the block's own default
- * (block.json: `{"desktop":12}`) instead.
+ * The typography attributes the shared panel owns, at their block.json defaults.
+ * The Typography item's reset writes these; its `hasValue` compares against them.
+ * `textColumns` has no default, so a reset clears it.
  */
-function resetFontSizeResponsive() {
-	return {
-		fontSize: { desktop: 12 },
-	};
-}
+const TYPOGRAPHY_DEFAULTS = {
+	fontFamily: '',
+	fontSize: { desktop: 12 },
+	fontSizeUnit: 'px',
+	fontWeight: '600',
+	fontStyle: '',
+	lineHeight: 1.2,
+	lineHeightUnit: 'em',
+	letterSpacing: 0.08,
+	letterSpacingUnit: 'em',
+	textTransform: 'uppercase',
+	textDecoration: '',
+	textAlign: '',
+	textWrap: '',
+	textColumns: undefined,
+	writingMode: '',
+};
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function composeUnit( num, unit ) {
-	if ( num === undefined || num === null || num === '' ) {
-		return '';
-	}
-	return `${ num }${ unit || '' }`;
-}
-
-function parseUnit( raw, currentUnit ) {
-	if ( ! raw && raw !== 0 ) {
-		return { num: undefined, unit: currentUnit || 'em' };
-	}
-	const str = String( raw ).trim();
-	if ( '' === str ) {
-		return { num: undefined, unit: currentUnit || 'em' };
-	}
-	const match = str.match( /^([\d.+-][\d.]*)\s*([a-z%]*)$/i );
-	if ( match ) {
-		const num = parseFloat( match[ 1 ] );
-		const unit = match[ 2 ] !== undefined ? match[ 2 ] : ( currentUnit || 'em' );
-		return { num: isNaN( num ) ? undefined : num, unit };
-	}
-	return { num: undefined, unit: currentUnit || 'em' };
+/**
+ * Whether any typography attribute differs from its default. fontSize is a
+ * { desktop, tablet, mobile } object, so it is compared by tier.
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {boolean} True when the Typography item holds a value.
+ */
+function hasTypographyValue( attributes ) {
+	return Object.keys( TYPOGRAPHY_DEFAULTS ).some( ( key ) => {
+		if ( 'fontSize' === key ) {
+			const size = attributes.fontSize && 'object' === typeof attributes.fontSize ? attributes.fontSize : {};
+			return 12 !== size.desktop || !! size.tablet || !! size.mobile;
+		}
+		const value = attributes[ key ];
+		const fallback = TYPOGRAPHY_DEFAULTS[ key ];
+		if ( undefined === fallback ) {
+			return undefined !== value && null !== value && '' !== value;
+		}
+		return value !== fallback;
+	} );
 }
 
 /**
@@ -125,7 +94,12 @@ function buildStyle( attributes, tier ) {
 		borderRadius,
 		fullWidth,
 		className,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderColourGradient,
 	} = attributes;
+	const hasEndShape = Object.keys( labelEndShapeEnds( attributes ) ).length > 0;
 
 	// margin and padding are TIER-OF-BOXES OBJECTS {desktop,tablet,mobile};
 	// the preview shows the tier the editor is previewing.
@@ -141,12 +115,35 @@ function buildStyle( attributes, tier ) {
 	};
 
 	// Box (padding / background / radius) paints on VALUE-PRESENCE — mirrors
-	// render.php's ungated helper (no pill gate).
-	previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
-	// Gradient sibling preview (colour-conformance FILL closeout, 2026-09-06) —
-	// mirrors render.php's sgs_background_paint_decl() gradient-wins-when-set.
-	if ( isCssGradient( backgroundColourGradient ) ) {
-		previewStyle.backgroundImage = backgroundColourGradient;
+	// render.php's ungated helper (no pill gate). A shaped label paints its fill on
+	// the cut `::after` layer instead (labelEndShapePreviewCss), so the root has none.
+	if ( ! hasEndShape ) {
+		previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+		// Gradient sibling preview (colour-conformance FILL closeout, 2026-09-06) —
+		// mirrors render.php's sgs_background_paint_decl() gradient-wins-when-set.
+		if ( isCssGradient( backgroundColourGradient ) ) {
+			previewStyle.backgroundImage = backgroundColourGradient;
+		}
+	}
+	// The border, as the shared border panel's twin paints it. With an end shape the
+	// root's border only reserves room for the outline element, so its colour is clear.
+	Object.assign(
+		previewStyle,
+		sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+			},
+			tier
+		)
+	);
+	if ( hasEndShape ) {
+		delete previewStyle.borderImage;
+		if ( previewStyle.borderStyle ) {
+			previewStyle.borderColor = 'transparent';
+		}
 	}
 	// borderRadius is a CSS-length STRING (2026-08-13). The old check used
 	// `Number( borderRadius ) !== 0`, which is NaN for '1.5rem' — and the old
@@ -163,7 +160,7 @@ function buildStyle( attributes, tier ) {
 		className.includes( 'is-style-' );
 	if ( ! hasStyleVariant ) {
 		// render.php's `null !== $base_padding_shorthand`: true when any padding side is set.
-		const boxPresent = Object.keys( paddingLonghands ).length > 0 || !! backgroundColour || hasRadius;
+		const boxPresent = Object.keys( paddingLonghands ).length > 0 || !! backgroundColour || hasRadius || hasEndShape;
 		if ( fullWidth ) {
 			previewStyle.display = 'block';
 			previewStyle.width = '100%';
@@ -187,17 +184,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkUnderlineThickness,
 		backgroundColour,
 		backgroundColourGradient,
-		fontSize,
-		fontSizeUnit,
-		fontWeight,
-		lineHeight,
-		lineHeightUnit,
-		letterSpacing,
-		letterSpacingUnit,
-		textTransform,
-		textDecoration,
-		fontStyle,
-		textAlign,
 		// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} — ONE attr;
 		// each tier is a {top,right,bottom,left} box.
 		padding,
@@ -210,8 +196,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const previewTier = usePreviewTier();
+	const hasEndShape = Object.keys( labelEndShapeEnds( attributes ) ).length > 0;
+	const hasOutline = labelHasEndOutline( attributes );
 	const blockProps = useBlockProps( {
-		className: `sgs-lbl-ed-${ clientId }`,
+		className: `sgs-lbl-ed-${ clientId }${ hasEndShape ? ' has-end-shape' : '' }`,
 		style: buildStyle( attributes, previewTier ),
 	} );
 	// How a link inside the label is underlined: the same rules render.php prints (includes/helpers-link-underline.php).
@@ -221,6 +209,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} );
 	// The leading dot: the same `::before` rule render.php prints, scoped to this canvas element.
 	const dotCss = labelDotPreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
+	// The end shapes: the cut fill layer and, with an outline, its edge element (the rules render.php prints).
+	const endShapeCss = labelEndShapePreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
+	const richText = (
+		<RichText
+			tagName="span"
+			value={ text }
+			onChange={ ( val ) => setAttributes( { text: val } ) }
+			placeholder={ __( 'Label text…', 'sgs-blocks' ) }
+			allowedFormats={ [ 'core/link' ] }
+		/>
+	);
 
 	return (
 		<>
@@ -281,181 +280,40 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanel
 						className="sgs-nested-tools-panel"
 						label={ __( 'Typography', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								...resetFontSizeResponsive(),
-								fontWeight: '600',
-								textTransform: 'uppercase',
-								lineHeight: 1.2,
-								lineHeightUnit: 'em',
-								letterSpacing: 0.08,
-								letterSpacingUnit: 'em',
-								textDecoration: '',
-								fontStyle: '',
-								textAlign: '',
-							} )
-						}
+						resetAll={ () => setAttributes( { ...TYPOGRAPHY_DEFAULTS } ) }
 					>
-						{ /*
-						 * Font size (responsive: desktop/tablet/mobile) via TypographyControls.
-						 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
-						 * showWeight=false because label uses its own weight SelectControl below
-						 * (fontWeight options are a restricted subset, not the full weight set).
-						 * showLineHeight=false / showStyle=false because those use UnitControl below.
-						 */ }
+						{ /* One item for the whole shared panel: font family, size (all devices),
+						   weight, style, line height, letter spacing, transform, decoration,
+						   alignment, wrapping, columns and writing mode. */ }
 						<ToolsPanelItem
-							label={ __( 'Font size', 'sgs-blocks' ) }
-							hasValue={ () => {
-								// fontSize is OBJECT-typed {desktop,tablet,mobile}; compare
-								// against the whole default shape, not a bare number.
-								const fsObj = fontSize && 'object' === typeof fontSize ? fontSize : {};
-								return (
-									fsObj.desktop !== 12 ||
-									!! fsObj.tablet ||
-									!! fsObj.mobile
-								);
-							} }
-							onDeselect={ () =>
-								setAttributes( {
-									...resetFontSizeResponsive(),
-								} )
-							}
+							label={ __( 'Typography', 'sgs-blocks' ) }
+							hasValue={ () => hasTypographyValue( attributes ) }
+							onDeselect={ () => setAttributes( { ...TYPOGRAPHY_DEFAULTS } ) }
 							isShownByDefault
 						>
-							<TypographyControls fontSizePresets showFontFamily showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
+							<TypographyControls
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix=""
-								showSize={ true }
-								showDecoration={ true }
-								showResponsive={ true }
-							/>
-						</ToolsPanelItem>
-
-						<ToolsPanelItem
-							label={ __( 'Font weight', 'sgs-blocks' ) }
-							hasValue={ () => fontWeight !== '600' }
-							onDeselect={ () => setAttributes( { fontWeight: '600' } ) }
-							isShownByDefault
-						>
-							<SelectControl
-								label={ __( 'Font weight', 'sgs-blocks' ) }
-								value={ fontWeight }
-								options={ FONT_WEIGHT_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { fontWeight: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Text transform', 'sgs-blocks' ) }
-							hasValue={ () => textTransform !== 'uppercase' }
-							onDeselect={ () => setAttributes( { textTransform: 'uppercase' } ) }
-						>
-							<SelectControl
-								label={ __( 'Text transform', 'sgs-blocks' ) }
-								value={ textTransform }
-								options={ TEXT_TRANSFORM_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { textTransform: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-
-						{ /* Line height — UnitControl (number + unit in one input) */ }
-						<ToolsPanelItem
-							label={ __( 'Line height', 'sgs-blocks' ) }
-							hasValue={ () => lineHeight !== 1.2 || lineHeightUnit !== 'em' }
-							onDeselect={ () =>
-								setAttributes( { lineHeight: 1.2, lineHeightUnit: 'em' } )
-							}
-						>
-							{ /* SgsLengthControl adoption (Gate B, presets={false}) — split-scalar
-							   case (composeUnit builds a display string from two separate
-							   attrs, lineHeight+lineHeightUnit; parseUnit splits the raw
-							   string back on change). Safe: SgsLengthControl's presets=false
-							   branch forwards the raw UnitControl string unchanged to
-							   onChange, so this caller's own split-and-setAttributes logic
-							   is untouched — see Branch 2 report. */ }
-							<SgsLengthControl
-								label={ __( 'Line height', 'sgs-blocks' ) }
-								value={ composeUnit( lineHeight, lineHeightUnit ) }
-								units={ LINE_HEIGHT_UNITS }
-								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit( raw, lineHeightUnit !== undefined ? lineHeightUnit : '' );
-									setAttributes( { lineHeight: num, lineHeightUnit: unit } );
-								} }
-								presets={ false }
-							/>
-						</ToolsPanelItem>
-
-						{ /* Letter spacing — UnitControl (number + unit in one input) */ }
-						<ToolsPanelItem
-							label={ __( 'Letter spacing', 'sgs-blocks' ) }
-							hasValue={ () =>
-								letterSpacing !== 0.08 || letterSpacingUnit !== 'em'
-							}
-							onDeselect={ () =>
-								setAttributes( { letterSpacing: 0.08, letterSpacingUnit: 'em' } )
-							}
-						>
-							{ /* SgsLengthControl adoption (Gate B, presets={false}) — same
-							   split-scalar shape as Line height above (composeUnit/parseUnit),
-							   safe passthrough, see Branch 2 report. */ }
-							<SgsLengthControl
-								label={ __( 'Letter spacing', 'sgs-blocks' ) }
-								value={ composeUnit( letterSpacing, letterSpacingUnit ) }
-								units={ LETTER_SPACING_UNITS }
-								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
-									setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
-								} }
-								presets={ false }
-							/>
-						</ToolsPanelItem>
-
-						{ /* Text decoration now lives inside the TypographyControls mount
-						   above (showDecoration) — a restricted 4-value dropdown matching
-						   the shared sgs_typography_css_rule() helper's allowlist, not the
-						   previous free-text control (D971/D972 full-replacement track). */ }
-						<ToolsPanelItem
-							label={ __( 'Font style', 'sgs-blocks' ) }
-							hasValue={ () => !! fontStyle }
-							onDeselect={ () => setAttributes( { fontStyle: '' } ) }
-						>
-							<SelectControl
-								label={ __( 'Font style', 'sgs-blocks' ) }
-								value={ fontStyle }
-								options={ FONT_STYLE_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { fontStyle: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Text align', 'sgs-blocks' ) }
-							hasValue={ () => !! textAlign }
-							onDeselect={ () => setAttributes( { textAlign: '' } ) }
-						>
-							<SelectControl
-								label={ __( 'Text align', 'sgs-blocks' ) }
-								value={ textAlign }
-								options={ TEXT_ALIGN_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { textAlign: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								showSize
+								showResponsive
+								fontSizePresets
+								showFontFamily
+								showWeight
+								showStyle
+								showLineHeight
+								showLetterSpacing
+								showTransform
+								showDecoration
+								showTextAlign
+								showTextWrap
+								showTextColumns
+								showWritingMode
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
 				</PanelBody>
+				<EndShapePanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			{ /* ── Settings tab (structural — no CSS property) ─────────────── */ }
@@ -585,17 +443,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			{ linkUnderlineCss && <style>{ linkUnderlineCss }</style> }
 			{ dotCss && <style>{ dotCss }</style> }
-			<RichText
-				{ ...blockProps }
-				tagName="span"
-				value={ text }
-				onChange={ ( val ) => setAttributes( { text: val } ) }
-				placeholder={ __(
-					'Label text…',
-					'sgs-blocks'
-				) }
-				allowedFormats={ [ 'core/link' ] }
-			/>
+			{ endShapeCss && <style>{ endShapeCss }</style> }
+			{ hasOutline ? (
+				// The outline element is the label's first child, as render.php prints it.
+				<span { ...blockProps }>
+					<span className="sgs-label__edge" aria-hidden="true">
+						<span className="sgs-label__edge-line" />
+					</span>
+					{ richText }
+				</span>
+			) : (
+				<RichText
+					{ ...blockProps }
+					tagName="span"
+					value={ text }
+					onChange={ ( val ) => setAttributes( { text: val } ) }
+					placeholder={ __( 'Label text…', 'sgs-blocks' ) }
+					allowedFormats={ [ 'core/link' ] }
+				/>
+			) }
 		</>
 	);
 }

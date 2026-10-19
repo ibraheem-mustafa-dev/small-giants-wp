@@ -67,6 +67,18 @@ $background_colour    = $attributes['backgroundColour'] ?? '';
 // track) — no local variables needed for them any more.
 $border_radius = $attributes['borderRadius'] ?? '';
 
+// End shapes: each end of the label may be cut into a shape from the shape-divider
+// library (includes/helpers-end-shape.php). A shape outside the allowed list is Straight.
+$end_depth = sgs_end_shape_depth( $attributes['endDepth'] ?? 45 );
+$end_ends  = array();
+foreach ( array( 'left' => 'endShapeLeft', 'right' => 'endShapeRight' ) as $end_side => $end_attr ) {
+	$end_shape = sgs_end_shape_normalise( $attributes[ $end_attr ] ?? '' );
+	if ( '' !== $end_shape ) {
+		$end_ends[ $end_side ] = array( $end_shape, $end_depth );
+	}
+}
+$has_end_shape = array() !== $end_ends;
+
 // Style-variant detection. Padding / background / radius paint on VALUE-
 // PRESENCE: the pill block-styles are one-click convenience presets that SET
 // those values, not a gate on whether they render. The only thing still keyed
@@ -313,6 +325,70 @@ if ( ! empty( $attributes['dot'] ) ) {
 	$scoped_css[] = "{$root_sel}::before{content:\"\";display:inline-block;flex-shrink:0;width:{$dot_size};height:{$dot_size};border-radius:50%;vertical-align:middle;margin-inline-end:{$dot_gap};{$dot_paint};}";
 }
 
+// --- Border and end shapes. ---
+// No end shape: an ordinary border on the root through the shared border assembler.
+// With an end shape the root's border only reserves the outline's room (its colour is
+// transparent); the fill is the `::after` layer cut by a mask, and the outline is a
+// first-child element carrying the same cut, painted as a ring plus the stroked edge of
+// each shaped end. The label itself is never masked, so its text, dot and focus ring stay.
+$border_parts = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => $has_end_shape ? array() : array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+		'radius' => false,
+	)
+);
+
+$border_style_keyword = sgs_border_style_keyword( $attributes['borderStyle'] ?? '' );
+$border_width_box     = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_top           = is_scalar( $border_width_box['top'] ?? null ) ? sgs_css_length_value( $border_width_box['top'] ) : '';
+$border_has_width     = ( '' !== $border_top && 1 !== preg_match( '/^0+(?:\.0+)?[a-z%]*$/i', $border_top ) );
+$border_stroke_px     = ( $border_has_width && 1 === preg_match( '/^(\d+(?:\.\d+)?)px$/', $border_top, $stroke_match ) ) ? (float) $stroke_match[1] : null;
+$has_outline          = $has_end_shape && $border_has_width && 'none' !== $border_style_keyword;
+
+$border_base = $border_parts['base'];
+if ( $has_end_shape ) {
+	if ( array() !== $border_base ) {
+		$border_base[] = 'border-color:transparent';
+	}
+	$shape_root = array( 'background-color:transparent', 'position:relative', 'isolation:isolate' );
+	if ( $has_style_variant && false === strpos( $extra_classes, 'is-style-pill-fill' ) && false === strpos( $extra_classes, 'is-style-pill-wrap' ) ) {
+		$shape_root[] = 'display:inline-block';
+	}
+	$border_base = array_merge( $shape_root, $border_base );
+}
+if ( array() !== $border_base ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $border_base ) . ';}';
+}
+if ( array() !== $border_parts['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border_parts['tablet'] ) . ';}}';
+}
+if ( array() !== $border_parts['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border_parts['mobile'] ) . ';}}';
+}
+foreach ( $border_parts['rules'] as $border_rule ) {
+	$scoped_css[] = $border_rule;
+}
+
+if ( $has_end_shape ) {
+	$edge_inset   = $border_has_width ? "calc(-1 * {$border_top})" : '0';
+	$scoped_css[] = "{$root_sel}::after{inset:{$edge_inset};z-index:-2;" . sgs_end_shape_mask_decls( $end_ends ) . '}';
+}
+if ( $has_outline ) {
+	$outline_paint = sgs_background_paint_decl(
+		(string) ( $attributes['borderColour'] ?? '' ),
+		(string) ( $attributes['borderColourGradient'] ?? '' )
+	);
+	$outline_paint = '' !== $outline_paint ? $outline_paint : 'background-color:currentColor';
+	$scoped_css[]  = "{$root_sel} .sgs-label__edge{position:absolute;inset:calc(-1 * {$border_top});z-index:-1;pointer-events:none;border-radius:inherit;" . sgs_end_shape_mask_decls( $end_ends ) . '}';
+	$scoped_css[]  = "{$root_sel} .sgs-label__edge-line{position:absolute;inset:0;border-radius:inherit;{$outline_paint};" . sgs_end_shape_ring_decls( $end_ends, $border_top, $border_stroke_px ) . '}';
+}
+
 // --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
 // (contract §B2: tablet max-width:1023px, mobile max-width:767px). Margin tiers
 // are never gated. (Padding tiers are handled inside the box helper above.) ---
@@ -357,6 +433,9 @@ if ( ! empty( $color_args ) ) {
 // ---------------------------------------------------------------------------
 
 $root_classes = array( 'wp-block-sgs-label', $uid );
+if ( $has_end_shape ) {
+	$root_classes[] = 'has-end-shape';
+}
 
 // Preset TEXT colour slug re-adds the standard has-* class (it sets colour
 // from the theme palette). The background preset slug does NOT get its
@@ -382,9 +461,12 @@ if ( $scoped_css ) :
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <?php
+// The outline element is the first child, decorative only.
+$edge_markup = $has_outline ? '<span class="sgs-label__edge" aria-hidden="true"><span class="sgs-label__edge-line"></span></span>' : '';
 printf(
-	'<%1$s %2$s>%3$s</%1$s>',
+	'<%1$s %2$s>%3$s%4$s</%1$s>',
 	tag_escape( $tag_name ),
 	$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	$edge_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup.
 	wp_kses_post( $text )
 );

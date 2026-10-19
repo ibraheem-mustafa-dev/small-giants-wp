@@ -56,6 +56,18 @@
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #ffffff));
 }
 
+/* ----- End shapes: the pill variants' fill moves to the cut `::after` layer ----- */
+/* render.php clears the root's own background for a shaped label and cuts the
+   `::after` layer with a mask, so a variant's default fill is painted there.
+   Inside :where() so a chosen background colour (the scoped .uid rule) wins. */
+:where(.is-style-pill-fill, .is-style-pill-wrap).wp-block-sgs-label.has-end-shape::after {
+	content: "";
+	position: absolute;
+	border-radius: inherit;
+	pointer-events: none;
+	background-color: var(--wp--preset--color--primary);
+}
+
 /* ----- Responsive font size overrides (tablet / mobile) ----- */
 /* Scoped per-instance via a <style> block emitted by render.php using       */
 /* .{uid}.wp-block-sgs-label selectors — mirrors the sgs/heading pattern.    */
