@@ -110,3 +110,10 @@ test( '(d4) MUST FAIL: a field spread from a helper method\'s result is read thr
 renderVals() { const { tab } = this.state; return { items: [ 'a', 'b' ].map( ( n ) => ( { id: n, ...this.float( n, tab ) } ) ) }; }` ), '{{ it.hasErr }}' );
 	assert.deepEqual( kinds( c ), [ 'App', 'App: tab (read through items)' ] );
 } );
+
+test( '(e) MUST FAIL: a page map row with no route (a menu-only or unrouted row) is not a route of the surfaces list', () => {
+	const c = { sources: [ source( ROUTER ) ], rows: [] };
+	const routing = { adapter: 'hash', routes: [ { key: 'home', source: 'pages' } ], links: [] };
+	const pageRows = [ { route: 'home' }, { route: null }, { route: 'home' }, { route: 'about' }, {} ];
+	assert.deepEqual( run( c, { routing, pageRows } ).records.filter( ( r ) => 'page' === r.kind ).map( ( r ) => r.page_key ), [ 'home', 'about' ] );
+} );

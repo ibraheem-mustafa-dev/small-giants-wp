@@ -184,3 +184,97 @@ test( 'MUST FAIL (FR-48-25): a shared helper gives one animation record per call
 	assert.equal( recs.length, 2, recs.map( ( r ) => r.trigger.detail ).join( ' | ' ) );
 	assert.equal( new Set( recs.map( ( r ) => r.id ) ).size, 2 );
 } );
+
+// The Indus re-run (2026-10-19) showed the first fixes did not hold on the draft's real shapes. Each case below is one of
+// those shapes, reduced.
+const appModel = ( logic, rows = [] ) => codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ], rows } );
+const firstCall = ( m, name ) => m.progs.get( 'App' ).nodes.find( ( n ) => 'CallExpression' === n.type && name === n.callee?.property?.name );
+
+test( 'MUST FAIL (FR-48-25): a class method in a standalone script is the trigger of the caller whose argument can reach the write (hover vs observer)', () => {
+	const script = `(() => { class Logo extends HTMLElement {
+connectedCallback() { this._enter = () => this.play( true ); this.addEventListener( 'mouseenter', this._enter ); this._io = new IntersectionObserver( () => this.play( false ) ); }
+play( hover ) {
+if ( hover ) { this._a.animate( [ { scale: '1' }, { scale: '1.1' } ], { duration: 900 } ); return; }
+this._b.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 700 } );
+}
+} })();`;
+	const m = codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic: 'class Component {}', logicLine: 1, logicColumn: 0, scripts: [ { src: 'logo.js', file: 'logo.js', text: script } ], stamped: { elements: [] } } ], rows: [] } );
+	const p = m.progs.get( 'logo.js' );
+	const at = ( v ) => p.nodes.find( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name && v === n.callee.object?.property?.name );
+	const hover = triggerOf( m, 'logo.js', at( '_a' ) );
+	const seen = triggerOf( m, 'logo.js', at( '_b' ) );
+	assert.equal( hover.type, 'hover', hover.detail );
+	assert.equal( seen.type, 'scroll-into-view', seen.detail );
+	assert.equal( hover.others?.length ?? 0, 0, 'the observer call passes false, so it cannot reach the hover branch' );
+} );
+
+test( 'MUST FAIL (FR-48-25): a behavior picked by reduced motion (scrollTo auto vs smooth) is final-state, not skip', () => {
+	const m = appModel( `class Component extends DCComponent {
+toTop() { window.scrollTo( { top: 0, behavior: this.rm ? 'auto' : 'smooth' } ); }
+}` );
+	const call = firstCall( m, 'scrollTo' );
+	assert.equal( reducedMotionOf( m.progs.get( 'App' ), call ).behaviour, 'final-state' );
+} );
+
+test( 'MUST FAIL (FR-48-25): an early return under reduced motion whose block writes styles inside a callback is final-state', () => {
+	const m = appModel( `class Component extends DCComponent {
+start( els ) {
+if ( this.rm ) { els.forEach( ( p ) => p && ( p.style.strokeDashoffset = '0' ) ); return; }
+this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 600 } );
+}
+}` );
+	assert.equal( reducedMotionOf( m.progs.get( 'App' ), firstCall( m, 'animate' ) ).behaviour, 'final-state' );
+} );
+
+test( 'MUST FAIL (FR-48-25): a write inside a listener behind a constant early return is dead code, not the listener\'s trigger', () => {
+	const m = appModel( `class Component extends DCComponent {
+build() { const density = 'Off'; if ( density === 'Off' ) return; const w = this.mk(); w.addEventListener( 'mouseenter', () => { this._img.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } ); }
+}` );
+	assert.equal( triggerOf( m, 'App', firstCall( m, 'animate' ) ).called, false );
+} );
+
+test( 'MUST FAIL (FR-48-25): a loop over a list only dead code fills never runs, so its write is dead code', () => {
+	const m = appModel( `class Component extends DCComponent {
+build() { const density = 'Off'; this._items = []; if ( density === 'Off' ) return; this._items.push( { el: 1 } ); }
+componentDidMount() { this.update(); }
+update() { for ( const it of this._items ) { it.el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } }
+}` );
+	assert.equal( triggerOf( m, 'App', firstCall( m, 'animate' ) ).called, false );
+	const live = appModel( `class Component extends DCComponent {
+build() { this._items = []; this._items.push( { el: 1 } ); }
+componentDidMount() { this.update(); }
+update() { for ( const it of this._items ) { it.el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } }
+}` );
+	assert.notEqual( triggerOf( live, 'App', firstCall( live, 'animate' ) ).called, false, 'the control: a list that is filled live runs' );
+} );
+
+test( 'a helper reached by five handlers of the same kind is one trigger naming them, not five', () => {
+	const calls = [ 'a', 'b', 'c', 'd', 'e' ].map( ( n ) => `on${ n }() { this.go(); }` ).join( '\n' );
+	const rows = [ 'a', 'b', 'c', 'd', 'e' ].map( ( n, i ) => ( { id: `h${ i }`, kind: 'handler', component: 'App', draftId: `App:${ i }`, detail: { wiring: 'template', event: 'onClick', method: `on${ n }` } } ) );
+	const m = appModel( `class Component extends DCComponent {
+${ calls }
+go() { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); }
+}`, rows );
+	const t = triggerOf( m, 'App', firstCall( m, 'animate' ) );
+	assert.equal( t.others?.length ?? 0, 0 );
+	assert.match( t.detail, /and 4 more/ );
+} );
+
+test( 'MUST FAIL (FR-48-25): an unguarded JS style write the CSS smooths lands instantly under the reduced-motion rule (final-state) and takes the transition\'s duration', () => {
+	const logic = `class Component extends DCComponent {
+componentDidMount() { window.addEventListener( 'scroll', this.onScroll ); }
+onScroll = () => { this._head.style.boxShadow = window.scrollY > 8 ? '0 1px 2px #000' : 'none'; };
+}`;
+	const src = { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } };
+	const rule = ( property, value ) => ( { kind: 'transition', component: 'App', draftId: 'App:6', detail: { via: 'stylesheet', selector: '*, ::before, ::after', property, value } } );
+	const header = { id: 'transition@App:36/style:transition', kind: 'transition', component: 'App', draftId: 'App:36', detail: { via: 'style', property: 'transition', value: 'box-shadow .3s ease' } };
+	const m = codeModel( { sources: [ src ], rows: [] } );
+	const write = m.progs.get( 'App' ).nodes.find( ( n ) => 'AssignmentExpression' === n.type && /boxShadow/.test( m.progs.get( 'App' ).text.slice( n.left.start, n.left.end ) ) );
+	const line = write.loc.start.line, col = write.loc.start.column;
+	const records = ( rows ) => animationRecords( { sources: [ src ], rows: rows.map( ( r, i ) => ( { id: r.id ?? `r${ i }`, ...r } ) ) } ).records.filter( ( r ) => 'J' === r.id[ 0 ] );
+	const withRule = records( [ rule( 'transition-duration', '0.01ms !important' ), header ] );
+	assert.equal( withRule[ 0 ].reduced_motion.behaviour, 'final-state', withRule[ 0 ].reduced_motion.detail );
+	assert.equal( records( [ header ] )[ 0 ].reduced_motion.behaviour, 'unchanged', 'the control: no reduced-motion rule, no smoothing claim' );
+	assert.equal( withRule[ 0 ].duration_ms, 300 );
+	assert.ok( line > 0 && col >= 0 );
+} );

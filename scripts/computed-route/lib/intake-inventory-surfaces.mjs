@@ -159,7 +159,7 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 	};
 	const entries = census.sources.filter( ( s ) => 'entry' === s.via ).map( ( s ) => s.component );
 	const files = 'files' === routing?.adapter;
-	const routes = pageRows && ! files ? pageRows.map( ( r ) => ( { key: r.route, source: 'page map' } ) ) : routing?.routes;
+	const routes = pageRows && ! files ? [ ...new Set( pageRows.map( ( r ) => r.route ).filter( ( r ) => 'string' === typeof r && r ) ) ].map( ( key ) => ( { key, source: 'page map' } ) ) : routing?.routes;
 	const routeByFile = new Map( files ? routing.routes.map( ( r ) => [ r.key, r ] ) : [] );
 
 	// One record per component: the entry's app shell (or, for one file per page, the page), an import its parent mounts.

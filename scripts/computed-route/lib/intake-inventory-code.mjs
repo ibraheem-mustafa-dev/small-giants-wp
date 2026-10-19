@@ -187,6 +187,11 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 	const members = [];
 	let delay = null;
 	const done = ( t ) => ( { ...t, via, members, delay: t.delay ?? delay, called: false !== t.called } );
+	// A write behind an early return on a constant never runs, whatever listener or timer it also sits in.
+	const dead = constantReturn( p, node ) || emptyLoop( p, node );
+	if ( dead ) {
+		return done( { type: 'state', detail: dead.detail, called: false } );
+	}
 	for ( const a of [ node, ...ancestors( p, node ) ] ) {
 		if ( ! isFn( a ) ) {
 			continue;
@@ -234,11 +239,36 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 			return done( { type, detail } );
 		}
 	}
-	const dead = constantReturn( p, node );
-	if ( dead ) {
-		return done( { type: 'state', detail: dead.detail, called: false } );
-	}
 	const m = memberOf( p, node );
+	const cm = ! m && p.file ? ancestors( p, node ).find( ( a ) => 'ClassMethod' === a.type ) : null;
+	const cname = cm && ( cm.key?.name ?? cm.key?.value );
+	if ( cname && ! seen.has( `${ comp }:${ cname }` ) ) {
+		// A class method in a standalone script runs as whatever calls it (`this.play( true )` from a mouseenter handler kept on
+		// the instance, `this.play( false )` from an IntersectionObserver), limited to the callers whose argument can reach the node.
+		seen.add( `${ comp }:${ cname }` );
+		members.push( cname );
+		const need = paramNeeds( p, cm, node );
+		const fit = ( call ) => need.every( ( [ i, v ] ) => {
+			const arg = call.arguments[ i ];
+			return ! arg ? ! v : 'BooleanLiteral' !== arg.type || arg.value === v;
+		} );
+		const heard = [];
+		for ( const r of ( p.refs.get( cname ) || [] ).filter( ( x ) => ! ( cm.start <= x.start && x.end <= cm.end ) ) ) {
+			const call = p.parents.get( r );
+			if ( 'CallExpression' === call?.type && call.callee === r && ! fit( call ) ) {
+				continue;
+			}
+			const t = triggerOf( model, comp, r, seen );
+			if ( t.called ) {
+				for ( const u of [ t, ...( t.others || [] ) ] ) {
+					heard.push( { ...u, others: undefined, via: [ ...via, ...u.via ], members: [ ...members, ...u.members ], detail: `${ u.detail } via ${ cname }`, delay: u.delay ?? delay } );
+				}
+			}
+		}
+		if ( heard.length ) {
+			return pickTriggers( heard );
+		}
+	}
 	if ( ! m ) {
 		return done( p.file ? { type: 'load', detail: `runs when ${ comp } loads (${ functionName( p, node ) })` } : { type: 'state', detail: 'outside the logic class' } );
 	}
@@ -297,14 +327,64 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 		}
 	}
 	if ( found.length ) {
-		// A shared helper has one trigger per caller, each its own record. The primary is the first caller that is not a
-		// state change (a ref callback or an event outranks a componentDidUpdate); the rest follow in source order.
-		const seenKey = new Set();
-		const all = found.filter( ( t ) => ! seenKey.has( `${ t.type }|${ t.detail }` ) && seenKey.add( `${ t.type }|${ t.detail }` ) );
-		all.sort( ( x, y ) => ( 'state' === x.type ) - ( 'state' === y.type ) );
-		return { ...all[ 0 ], others: all.slice( 1 ) };
+		return pickTriggers( found );
 	}
 	return done( { type: 'state', detail: `in ${ m.name }, which nothing calls, wires or references`, called: false } );
+}
+
+// A shared helper has one trigger per caller, each its own record. The primary is the first caller that is not a
+// state change (a ref callback or an event outranks a componentDidUpdate); the rest follow in source order.
+function pickTriggers( found ) {
+	const seenKey = new Set();
+	const distinct = found.filter( ( t ) => ! seenKey.has( `${ t.type }|${ t.detail }` ) && seenKey.add( `${ t.type }|${ t.detail }` ) );
+	// One record per kind of trigger: callers that start it the same way (five pointer handlers) are named in one detail.
+	const all = [];
+	for ( const t of distinct ) {
+		const same = all.find( ( x ) => x.type === t.type );
+		if ( same ) {
+			same.also = [ ...( same.also || [] ), t.detail ];
+			same.via = [ ...same.via, ...t.via ];
+			same.members = [ ...same.members, ...t.members ];
+		} else {
+			all.push( { ...t } );
+		}
+	}
+	for ( const t of all.filter( ( x ) => x.also ) ) {
+		t.detail = `${ t.detail } (and ${ t.also.length } more: ${ t.also.slice( 0, 3 ).join( '; ' ) }${ t.also.length > 3 ? '; …' : '' })`;
+		delete t.also;
+	}
+	all.sort( ( x, y ) => ( 'state' === x.type ) - ( 'state' === y.type ) );
+	return { ...all[ 0 ], others: all.slice( 1 ) };
+}
+
+// The values of a method's boolean parameters a node needs to run: inside `if ( hover ) { … }` the parameter is true, in its
+// `else` or after an `if ( hover ) { … return; }` it is false (`!hover` flips). [ [ parameter index, value ] ].
+function paramNeeds( p, method, node ) {
+	const names = method.params.map( ( x ) => x.name );
+	const test = ( t ) => {
+		const neg = 'UnaryExpression' === t?.type && '!' === t.operator;
+		const id = neg ? t.argument : t;
+		return 'Identifier' === id?.type && names.includes( id.name ) ? [ names.indexOf( id.name ), ! neg ] : null;
+	};
+	const returns = ( c ) => 'ReturnStatement' === c.type || c.body?.some?.( ( x ) => 'ReturnStatement' === x.type );
+	const need = [];
+	for ( let a = node, up = p.parents.get( a ); up && a !== method; a = up, up = p.parents.get( up ) ) {
+		const t = 'IfStatement' === up.type ? test( up.test ) : null;
+		if ( t && up.consequent === a ) {
+			need.push( t );
+		} else if ( t && up.alternate === a ) {
+			need.push( [ t[ 0 ], ! t[ 1 ] ] );
+		}
+		if ( 'BlockStatement' === up.type ) {
+			for ( const st of up.body ) {
+				const e = 'IfStatement' === st.type && st.end <= a.start && ! st.alternate ? test( st.test ) : null;
+				if ( e && returns( st.consequent ) ) {
+					need.push( [ e[ 0 ], ! e[ 1 ] ] );
+				}
+			}
+		}
+	}
+	return need;
 }
 
 // The trigger an enclosing guard sets on a code path, or null. An `if` on an error map (`Object.keys( errs ).length`,
@@ -348,6 +428,33 @@ function constantReturn( p, node ) {
 			if ( decl && decl.init.value === t.right.value ) {
 				return { detail: `returns early when ${ textOf( p, t ) } (a constant ${ JSON.stringify( decl.init.value ) })` };
 			}
+		}
+	}
+	return null;
+}
+
+// True when the node sits in `for ( x of this.F )` and every write to this.F leaves it empty: it is only ever set to `[]`,
+// and each `this.F.push( … )` is itself behind a constant early return (a list only dead code fills never has an item).
+function emptyLoop( p, node ) {
+	for ( const a of ancestors( p, node ) ) {
+		if ( 'ForOfStatement' !== a.type || ! isThis( a.right ) ) {
+			continue;
+		}
+		const name = prop( a.right );
+		const fills = [];
+		for ( const r of p.refs.get( name ) || [] ) {
+			const up = p.parents.get( r );
+			const call = 'MemberExpression' === up?.type ? p.parents.get( up ) : null;
+			if ( 'AssignmentExpression' === up?.type && up.left === r ) {
+				if ( 'ArrayExpression' !== up.right.type || up.right.elements.length ) {
+					return null;
+				}
+			} else if ( 'CallExpression' === call?.type && 'push' === prop( up ) ) {
+				fills.push( call );
+			}
+		}
+		if ( fills.every( ( f ) => constantReturn( p, f ) ) ) {
+			return { detail: `loops over this.${ name }, which only code behind a constant early return ever fills` };
 		}
 	}
 	return null;
@@ -408,12 +515,16 @@ function readsReducedMotion( test ) {
 export function reducedMotionOf( p, node ) {
 	const chain = [ node, ...ancestors( p, node ) ];
 	// A reduced-motion read inside the write's own arguments (`duration: this.rm ? 0 : 600`) decides the value there.
-	let own = false;
+	let own = null;
 	walkAst( node, ( x ) => {
-		own ||= 'ConditionalExpression' === x.type && readsReducedMotion( x.test );
+		own ||= 'ConditionalExpression' === x.type && readsReducedMotion( x.test ) ? x : null;
 	} );
 	if ( own ) {
-		return { behaviour: 'skip', detail: "the write's own value depends on reduced motion" };
+		// `behavior: this.rm ? 'auto' : 'smooth'` still scrolls, instantly; any other value that depends on it is a skipped effect.
+		const inRm = 'UnaryExpression' === own.test.type && '!' === own.test.operator ? own.alternate : own.consequent;
+		return 'StringLiteral' === inRm.type && /^(auto|instant)$/.test( inRm.value )
+			? { behaviour: 'final-state', detail: `behavior '${ inRm.value }' under reduced motion` }
+			: { behaviour: 'skip', detail: "the write's own value depends on reduced motion" };
 	}
 	for ( let i = 1; i < chain.length; i++ ) {
 		const a = chain[ i ];
@@ -426,7 +537,10 @@ export function reducedMotionOf( p, node ) {
 			const guard = before.find( ( s ) => 'IfStatement' === s.type && readsReducedMotion( s.test ) && ( 'ReturnStatement' === s.consequent.type || s.consequent.body?.some?.( ( x ) => 'ReturnStatement' === x.type ) ) );
 			if ( guard ) {
 				// A block that writes the end value before it returns leaves the element on its final state, not untouched.
-				const writes = ( guard.consequent.body ?? [] ).some( ( x ) => 'ExpressionStatement' === x.type && 'AssignmentExpression' === x.expression.type && /style/.test( textOf( p, x.expression.left ) ) );
+				let writes = false;
+				walkAst( guard.consequent, ( x ) => {
+					writes ||= 'AssignmentExpression' === x.type && /style/.test( textOf( p, x.left ) );
+				} );
 				return writes
 					? { behaviour: 'final-state', detail: `returns early under ${ textOf( p, guard.test ) } after writing the end value` }
 					: { behaviour: 'skip', detail: `returns early under ${ textOf( p, guard.test ) }` };
