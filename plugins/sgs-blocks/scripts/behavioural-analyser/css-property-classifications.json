@@ -15199,6 +15199,14 @@
     },
     {
       "slug": "sgs/nav-bar-menu",
+      "attr": "burgerFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
       "attr": "burgerFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -15220,6 +15228,14 @@
       "attr": "burgerLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerLineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "burger"
       }
     },
@@ -26936,6 +26952,7 @@
       "attr": "textStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -27723,6 +27740,7 @@
       "attr": "textStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -27838,6 +27856,7 @@
       "attr": "textStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -27940,6 +27959,7 @@
       "attr": "guidedGroupTitleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "guidedGroupTitle"
       }
     },
@@ -27956,6 +27976,7 @@
       "attr": "guidedMeterTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "guidedMeter"
       }
     },
@@ -27972,6 +27993,7 @@
       "attr": "notifyHeadingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "notifyHeading"
       }
     },
@@ -27988,6 +28010,7 @@
       "attr": "notifyInputTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "notifyInput"
       }
     },
@@ -28004,6 +28027,7 @@
       "attr": "notifyLabelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "notifyLabel"
       }
     },
@@ -28020,6 +28044,7 @@
       "attr": "notifyStatusTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "notifyStatus"
       }
     },
@@ -28036,6 +28061,7 @@
       "attr": "notifySubmitTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "notifySubmit"
       }
     },
@@ -28052,6 +28078,7 @@
       "attr": "savingBadgeTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "savingBadge"
       }
     },
@@ -28122,6 +28149,7 @@
       "attr": "stockTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "stock"
       }
     },
@@ -28937,6 +28965,7 @@
       "attr": "expiredTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "expired"
       }
     },
@@ -28961,6 +28990,7 @@
       "attr": "labelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "label"
       }
     },
@@ -28993,6 +29023,7 @@
       "attr": "numberTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "number"
       }
     },
@@ -29248,6 +29279,7 @@
       "attr": "consentTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "consent-text"
       }
     },
@@ -29264,6 +29296,7 @@
       "attr": "errorTextTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "error-text"
       }
     },
@@ -29321,6 +29354,7 @@
       "attr": "fileButtonTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "file-button"
       }
     },
@@ -29337,6 +29371,7 @@
       "attr": "filePromptTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "file-prompt"
       }
     },
@@ -29353,6 +29388,7 @@
       "attr": "fileStatusTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "file-status"
       }
     },
@@ -29369,6 +29405,7 @@
       "attr": "gridColHeadingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "grid-column-heading"
       }
     },
@@ -29385,6 +29422,7 @@
       "attr": "gridRowHeadingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "grid-row-heading"
       }
     },
@@ -29410,6 +29448,7 @@
       "attr": "helpTextTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "help-text"
       }
     },
@@ -29426,6 +29465,7 @@
       "attr": "navButtonTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "nav-button"
       }
     },
@@ -29478,6 +29518,7 @@
       "attr": "reviewDetailTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "review-detail"
       }
     },
@@ -29494,6 +29535,7 @@
       "attr": "reviewHeadingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "review-heading"
       }
     },
@@ -29510,6 +29552,7 @@
       "attr": "reviewTermTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "review-term"
       }
     },
@@ -29526,6 +29569,7 @@
       "attr": "stepLabelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "step-label"
       }
     },
@@ -29542,6 +29586,7 @@
       "attr": "stepNumberTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "step-number"
       }
     },
@@ -29602,6 +29647,7 @@
       "attr": "submitTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "submit-button"
       }
     },
@@ -29618,6 +29664,7 @@
       "attr": "tileIconTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "tile-icon"
       }
     },
@@ -29634,6 +29681,7 @@
       "attr": "tileLabelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "tile-label"
       }
     },
@@ -30822,6 +30870,7 @@
       "attr": "textStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -31466,6 +31515,7 @@
       "attr": "captionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "caption"
       }
     },
@@ -31532,6 +31582,7 @@
       "attr": "valueTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "value"
       }
     },
@@ -35068,6 +35119,7 @@
       "attr": "descriptionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "description"
       }
     },
@@ -35092,6 +35144,7 @@
       "attr": "iconTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "icon"
       }
     },
@@ -35134,6 +35187,7 @@
       "attr": "numberTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "number"
       }
     },
@@ -35228,6 +35282,7 @@
       "attr": "attributeTagTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "attributeTag"
       }
     },
@@ -35269,6 +35324,7 @@
       "attr": "brandTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "brand"
       }
     },
@@ -35360,6 +35416,7 @@
       "attr": "priceFromLabelTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "priceFromLabel"
       }
     },
@@ -35376,6 +35433,7 @@
       "attr": "ratingStarsTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "ratingStars"
       }
     },
@@ -35392,6 +35450,7 @@
       "attr": "ratingTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "rating"
       }
     },
@@ -35408,6 +35467,7 @@
       "attr": "rrpTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "rrp"
       }
     },
@@ -35441,6 +35501,7 @@
       "attr": "savingBadgeTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "savingBadge"
       }
     },
@@ -35457,6 +35518,7 @@
       "attr": "swatchMoreTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "swatchMore"
       }
     },
@@ -35586,6 +35648,7 @@
       "attr": "questionTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "question"
       }
     },
@@ -36935,6 +36998,7 @@
       "attr": "titleTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "title"
       }
     },
@@ -37132,6 +37196,7 @@
       "attr": "socialLinkTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "social"
       }
     },
@@ -37566,6 +37631,7 @@
       "attr": "textStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
