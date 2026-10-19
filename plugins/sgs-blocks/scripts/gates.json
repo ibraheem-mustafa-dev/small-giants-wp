@@ -1764,6 +1764,24 @@
     "order": 202
   },
   {
+    "id": "survey-link-underline-family",
+    "cmd": "node scripts/survey-link-underline-family.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 203
+  },
+  {
+    "id": "survey-link-underline-family-self-test",
+    "cmd": "node scripts/survey-link-underline-family.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 204
+  },
+  {
     "id": "check-motion-literals",
     "cmd": "python scripts/check-motion-literals.py --check",
     "tier": "fast",

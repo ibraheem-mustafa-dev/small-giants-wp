@@ -303,6 +303,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkColourHoverGradient,
 		linkUnderline,
 		linkUnderlineThickness,
+		linkUnderlineColour,
+		linkUnderlineColourHover,
+		linkUnderlineOffset,
 		customWidth,
 		customWidthUnit,
 		inheritStyle,
@@ -334,6 +337,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkUnderlinePreviewCss( `.${ linkPreviewUid }`, {
 			mode: linkUnderline,
 			thickness: linkUnderlineThickness,
+			colour: linkUnderlineColour,
+			colourHover: linkUnderlineColourHover,
+			offset: linkUnderlineOffset,
 			linkGradient: linkColourGradient,
 		} );
 
@@ -430,8 +436,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<LinkUnderlineControl
 								mode={ linkUnderline }
 								thickness={ linkUnderlineThickness }
+								colour={ linkUnderlineColour }
+								colourHover={ linkUnderlineColourHover }
+								offset={ linkUnderlineOffset }
 								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
 								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
+								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
+								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
 							/>
 						),
 					},

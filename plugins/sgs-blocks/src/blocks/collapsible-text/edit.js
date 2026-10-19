@@ -23,7 +23,7 @@ import { textPaintPreview, linkColourPreviewCss, linkUnderlinePreviewCss, backgr
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient, linkUnderline, linkUnderlineThickness } = attributes;
+	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient, linkUnderline, linkUnderlineThickness, linkUnderlineColour, linkUnderlineColourHover, linkUnderlineOffset } = attributes;
 
 	// Editor-canvas preview scope for the link-colour CSS below (Task 3,
 	// 2026-09-07) — mirrors render.php's uid scope, matching product-card's
@@ -40,7 +40,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// The block's own fill and spacing sit on the root, at the previewed tier;
 	// its typography sits on the body (render.php's `.sgs-collapsible-text__body`).
 	const previewTier = usePreviewTier();
-	const scopedPreviewCss = linkPreviewCss + linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-collapsible-text__body`, { mode: linkUnderline, thickness: linkUnderlineThickness, linkGradient: linkColourGradient } ) + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid } .sgs-collapsible-text__body`, previewTier );
+	const scopedPreviewCss = linkPreviewCss + linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-collapsible-text__body`, { mode: linkUnderline, thickness: linkUnderlineThickness, colour: linkUnderlineColour, colourHover: linkUnderlineColourHover, offset: linkUnderlineOffset, linkGradient: linkColourGradient } ) + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid } .sgs-collapsible-text__body`, previewTier );
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-collapsible-text', linkPreviewUid ].join( ' ' ),
@@ -117,8 +117,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<LinkUnderlineControl
 								mode={ linkUnderline }
 								thickness={ linkUnderlineThickness }
+								colour={ linkUnderlineColour }
+								colourHover={ linkUnderlineColourHover }
+								offset={ linkUnderlineOffset }
 								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
 								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
+								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
+								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
 							/>
 						),
 					},

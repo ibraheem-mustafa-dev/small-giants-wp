@@ -2747,6 +2747,37 @@
 			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-thickness on `{selector} a` via sgs_link_underline_css() (includes/helpers-link-underline.php), called from render.php as sgs_link_underline_css( $attributes, '', $scope ). The attribute key is built by sgs_typography_attr() inside the shared helper, the same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
 		},
 		{
+			"slug": "sgs/text",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "text-link",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the text-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/text",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "text-link",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the text-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/text",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "text-link",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the text-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/heading",
 			"attr": "linkUnderline",
 			"fields": {
@@ -2765,6 +2796,37 @@
 				"role": "typography"
 			},
 			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-thickness on `{selector} a` via sgs_link_underline_css() (includes/helpers-link-underline.php), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). The attribute key is built by sgs_typography_attr() inside the shared helper, the same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+		},
+		{
+			"slug": "sgs/heading",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "content-link",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the content-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/heading",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "content-link",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the content-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/heading",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "content-link",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the content-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
 			"slug": "sgs/business-info",
@@ -2787,6 +2849,37 @@
 			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-thickness on the block's links (`{selector} a`, the phone, email and linked address) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
 		},
 		{
+			"slug": "sgs/business-info",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "link",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/business-info",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "link",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/business-info",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "link",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/icon-list",
 			"attr": "linkUnderline",
 			"fields": {
@@ -2805,6 +2898,37 @@
 				"role": "typography"
 			},
 			"_why": "2026-10-09, CR6 P2-n batch 2. Paints text-decoration-thickness on the list's links (`{selector} a`, the per-item links) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel . $root_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline above."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "item-link",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the item-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "item-link",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the item-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "item-link",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the item-link element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
 			"slug": "sgs/label",
@@ -2827,6 +2951,37 @@
 			"_why": "2026-10-09, CR6 P2-n batch 2. Paints text-decoration-thickness on a link inside the label (`{selector} a`) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
+			"slug": "sgs/label",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "label",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the label element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/label",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "label",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the label element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/label",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "label",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the label element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/collapsible-text",
 			"attr": "linkUnderline",
 			"fields": {
@@ -2845,6 +3000,37 @@
 				"role": "typography"
 			},
 			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on a link in the body text (`{selector} a`) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $typography_selector ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/collapsible-text",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "body",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the body element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/collapsible-text",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "body",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the body element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/collapsible-text",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "body",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the body element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
 			"slug": "sgs/quote",
@@ -2867,6 +3053,37 @@
 			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on a link in the attribution (`{selector} a`) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, 'attribution', $attrib_scope ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
+			"slug": "sgs/quote",
+			"attr": "attributionLinkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "attribution",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the attribution element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'attribution'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/quote",
+			"attr": "attributionLinkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "attribution",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the attribution element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'attribution'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/quote",
+			"attr": "attributionLinkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "attribution",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the attribution element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'attribution'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/testimonial",
 			"attr": "quoteLinkUnderline",
 			"fields": {
@@ -2885,6 +3102,37 @@
 				"role": "typography"
 			},
 			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on a link in the quote (`{selector} a`) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, 'quote', $quote_colour_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "quoteLinkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "quote-text",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the quote-text element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'quote'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "quoteLinkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "quote-text",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the quote-text element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'quote'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "quoteLinkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "quote-text",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the quote-text element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'quote'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
 			"slug": "sgs/timeline",
@@ -2907,6 +3155,37 @@
 			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on a link in an entry's description (`{selector} a`) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, 'description', $description_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
+			"slug": "sgs/timeline",
+			"attr": "descriptionLinkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "entry",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the entry element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'description'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/timeline",
+			"attr": "descriptionLinkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "entry",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the entry element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'description'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/timeline",
+			"attr": "descriptionLinkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "entry",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the entry element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'description'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/product-card",
 			"attr": "descLinkUnderline",
 			"fields": {
@@ -2927,6 +3206,37 @@
 			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on a link in the description (`{selector} a`) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, 'desc', ... ) once per description element. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
+			"slug": "sgs/product-card",
+			"attr": "descLinkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "desc",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the desc element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'desc'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "descLinkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "desc",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the desc element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'desc'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "descLinkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "desc",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the desc element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'desc'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/testimonial",
 			"attr": "linkUnderline",
 			"fields": {
@@ -2945,6 +3255,37 @@
 				"role": "typography"
 			},
 			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on every link in the card (`{root} a`, quote and summary) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "linkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "quote-box",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the quote-box element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "linkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "quote-box",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-decoration-color on a link in the quote-box element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "linkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "quote-box",
+				"role": "typography"
+			},
+			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the quote-box element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix ''. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
 			"slug": "sgs/timeline",

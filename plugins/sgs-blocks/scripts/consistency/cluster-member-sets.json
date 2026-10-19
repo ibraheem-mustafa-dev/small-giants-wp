@@ -156,7 +156,7 @@
 					"suffixes": [
 						"LinkUnderline"
 					],
-					"note": "Added 2026-10-08 (CR6 P2-n). How the links inside an element's text are underlined: theme default, none, always, or a line that sweeps in on hover. A SEPARATE member from css:text-decoration, which decorates the element itself: a block-root text-decoration does not reach a descendant link's own underline. Emitter: sgs_link_underline_css() (includes/helpers-link-underline.php), scoped to `{selector} a`."
+					"note": "Added 2026-10-08 (CR6 P2-n). How the links inside an element's text are underlined: theme default, none, always, a plain underline that appears on hover, or a line that sweeps in on hover. A SEPARATE member from css:text-decoration, which decorates the element itself: a block-root text-decoration does not reach a descendant link's own underline. Emitter: sgs_link_underline_css() (includes/helpers-link-underline.php), scoped to `{selector} a`."
 				},
 				{
 					"key": "css:text-decoration-thickness-link",
@@ -165,6 +165,22 @@
 						"LinkUnderlineThickness"
 					],
 					"note": "Added 2026-10-08 (CR6 P2-n). Thickness of the css:text-decoration-link line (text-decoration-thickness for 'always', the background line's height for 'sweep'). Emitter: sgs_link_underline_css()."
+				},
+				{
+					"key": "css:text-decoration-color-link",
+					"label": "Link underline colour",
+					"suffixes": [
+						"LinkUnderlineColour"
+					],
+					"note": "Added 2026-10-19 (G11, Spec 32 FR-32-24). The colour of the css:text-decoration-link line: text-decoration-color for 'always' and 'hover', the background line's colour for 'sweep'. The hover colour is the same member under `states.hover` (`LinkUnderlineColourHover`). A SEPARATE member from css:color-link, which colours the link's text; unset, the line takes the link's own colour. Emitter: sgs_link_underline_css()."
+				},
+				{
+					"key": "css:text-decoration-offset-link",
+					"label": "Link underline gap",
+					"suffixes": [
+						"LinkUnderlineOffset"
+					],
+					"note": "Added 2026-10-19 (G11, Spec 32 FR-32-24). The gap between the link's text and the css:text-decoration-link line (text-underline-offset for 'always' and 'hover'; the sweep is a background line, so it ignores the gap). Emitter: sgs_link_underline_css()."
 				},
 				{
 					"key": "css:text-align",

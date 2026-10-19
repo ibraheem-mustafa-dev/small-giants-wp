@@ -364,7 +364,7 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	$sgs_ilist_link_underline = sgs_link_underline_css( $attributes, '', $root_sel . $root_sel );
 	if ( '' !== $sgs_ilist_link_underline ) {
 		$scoped_css[] = $sgs_ilist_link_underline;
-		if ( in_array( $attributes['linkUnderline'] ?? '', array( 'none', 'always' ), true ) ) {
+		if ( in_array( $attributes['linkUnderline'] ?? '', array( 'none', 'always', 'hover' ), true ) ) {
 			$scoped_css[] = $root_sel . $root_sel . ' .sgs-icon-list__item-link{--sgs-sweep-thickness:0px;}';
 		}
 	}

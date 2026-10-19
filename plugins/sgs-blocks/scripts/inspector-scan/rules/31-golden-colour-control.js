@@ -603,7 +603,9 @@ function scanSharedOwnerRows( ctx, ruleId, file, mountedByList ) {
 				? hasGradientOverride
 				: gradientCapable === true || statesArrayHasGradient( statesArray );
 		const sharedMechanism = resolveSharedRowMechanism( ctx, file, mountedByList );
-		const sharedShadowExempt = sharedMechanism.mechanisms.includes( 'shadow' );
+		// Shadow and underline colours take no gradient, so a missing gradient path is no finding.
+		const sharedShadowExempt =
+			sharedMechanism.mechanisms.includes( 'shadow' ) || sharedMechanism.mechanisms.includes( 'decoration' );
 		if ( ! hasGradient && ! sharedShadowExempt ) {
 			findings.push( {
 				...makeFinding( {
@@ -1003,7 +1005,9 @@ module.exports = {
 				hasGradientOverride !== null
 					? hasGradientOverride
 					: gradientCapable === true || statesHasGradient;
-			const isShadowMechanism = mechanismInfo.mechanisms.includes( 'shadow' );
+			// Shadow and underline colours take no gradient (the same exemption as the shared-row walk).
+			const isShadowMechanism =
+				mechanismInfo.mechanisms.includes( 'shadow' ) || mechanismInfo.mechanisms.includes( 'decoration' );
 
 			if ( ! isShadowMechanism ) {
 				const mechanismKnown = ! mechanismInfo.unresolved;

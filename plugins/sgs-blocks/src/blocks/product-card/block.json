@@ -219,12 +219,15 @@
 					"attrMap": {
 						"css:text-decoration-link": "descLinkUnderline",
 						"css:text-decoration-thickness-link": "descLinkUnderlineThickness",
+						"css:text-decoration-color-link": "descLinkUnderlineColour",
+						"css:text-decoration-offset-link": "descLinkUnderlineOffset",
 						"css:color-link-gradient": "descLinkColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color-link-gradient": "descLinkColourHoverGradient"
+								"css:color-link-gradient": "descLinkColourHoverGradient",
+								"css:text-decoration-color-link": "descLinkUnderlineColourHover"
 							}
 						}
 					},
@@ -634,14 +637,29 @@
 	"attributes": {
 		"descLinkUnderline": {
 			"type": "string",
-			"enum": [ "", "none", "always", "sweep" ],
+			"enum": [ "", "none", "always", "hover", "sweep" ],
 			"default": "",
-			"description": "How a link inside the text is underlined: '' the theme's underline, none, always, or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+			"description": "How a link inside the text is underlined: '' the theme's underline, none, always, hover (an underline on hover and keyboard focus), or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
 		},
 		"descLinkUnderlineThickness": {
 			"type": "string",
 			"default": "",
-			"description": "Thickness of the link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+			"description": "Thickness of the link underline for always, hover and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
+		"descLinkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour for always, hover and sweep (a palette slug or any CSS colour); empty draws it in the link's own colour. sgs_link_underline_css()."
+		},
+		"descLinkUnderlineColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour while the link is hovered or focused with the keyboard (a palette slug or any CSS colour); empty keeps the colour it has at rest. sgs_link_underline_css()."
+		},
+		"descLinkUnderlineOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between the link text and its underline for always and hover (a CSS length); empty uses the browser's. The sweep is a background line, so it ignores the gap. sgs_link_underline_css()."
 		},
 		"sourceMode": {
 			"type": "string",

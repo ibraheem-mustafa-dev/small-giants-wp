@@ -3,10 +3,10 @@
 		"purpose": "Spec 35 Phase 2 — optimal-control registry (golden master). One row per genuine setting.",
 		"spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Part B) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Parts H/I)",
 		"design_spine": ".claude/plans/spec-35-setting-registry-design.md",
-		"total_rows": 103,
+		"total_rows": 105,
 		"by_category": {
 			"behaviour-family": 14,
-			"css-property": 78,
+			"css-property": 80,
 			"input-type": 11
 		},
 		"by_severity": {
@@ -1372,13 +1372,13 @@
 			"category": "css-property",
 			"label": "Link underline",
 			"optimal_control": {
-				"component": "LinkUnderlineControl (SelectControl: Theme default / None / Always / Sweep in on hover), in the after slot of SgsColourPanel's Link colour row",
+				"component": "LinkUnderlineControl (SelectControl: Theme default / None / Always / Shows on hover / Slides in on hover), in the after slot of SgsColourPanel's Link colour row",
 				"props": {},
 				"preset_layer": null,
 				"units": "n/a",
 				"responsive_device_tier": false,
 				"multi_value": "n/a",
-				"dropdown_completeness": "four modes: '', none, always, sweep",
+				"dropdown_completeness": "five modes: '', none, always, hover, sweep",
 				"alpha_clearable": "n/a",
 				"reset_disclosure": "Theme default option",
 				"a11y": "help text warns that None and Sweep leave links in running text relying on colour (WCAG 1.4.1)"
@@ -1395,7 +1395,7 @@
 			"category": "css-property",
 			"label": "Link underline thickness",
 			"optimal_control": {
-				"component": "SgsLengthControl (px), shown by LinkUnderlineControl for Always and Sweep",
+				"component": "SgsLengthControl (px), shown by LinkUnderlineControl for Always, Shows on hover and Slides in on hover",
 				"props": {},
 				"preset_layer": null,
 				"units": "px",
@@ -1411,6 +1411,52 @@
 			"divergence": "none — first rollout",
 			"divergence_severity": "low",
 			"notes": "Thickness of the css:text-decoration-link line. Emitter: sgs_link_underline_css()."
+		},
+		{
+			"setting_key": "css:text-decoration-color-link",
+			"category": "css-property",
+			"label": "Link underline colour",
+			"optimal_control": {
+				"component": "DesignTokenPicker with states (Normal, Hover; linked), shown by LinkUnderlineControl for Always, Shows on hover and Slides in on hover",
+				"props": {
+					"linked": true
+				},
+				"preset_layer": "palette",
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "n/a",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "empty field draws the underline in the link's own colour"
+			},
+			"shared_component": "LinkUnderlineControl",
+			"spec_ref": "Spec 32 FR-32-24, G11, 2026-10-19",
+			"current_state": "sgs/text, sgs/heading, sgs/business-info, sgs/icon-list, sgs/label, sgs/collapsible-text, sgs/quote, sgs/testimonial, sgs/timeline, sgs/product-card, 2026-10-19 build",
+			"divergence": "none - first rollout",
+			"divergence_severity": "low",
+			"notes": "The colour of the css:text-decoration-link line, at rest and on hover or keyboard focus (`LinkUnderlineColourHover` under `states.hover`). A SEPARATE member from css:color-link, which colours the link's text. Emitter: sgs_link_underline_css()."
+		},
+		{
+			"setting_key": "css:text-decoration-offset-link",
+			"category": "css-property",
+			"label": "Link underline gap",
+			"optimal_control": {
+				"component": "SgsLengthControl (px), shown by LinkUnderlineControl for Always and Shows on hover",
+				"props": {},
+				"preset_layer": null,
+				"units": "px",
+				"responsive_device_tier": false,
+				"multi_value": "n/a",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "empty field falls back to the browser's gap"
+			},
+			"shared_component": "LinkUnderlineControl",
+			"spec_ref": "Spec 32 FR-32-24, G11, 2026-10-19",
+			"current_state": "sgs/text, sgs/heading, sgs/business-info, sgs/icon-list, sgs/label, sgs/collapsible-text, sgs/quote, sgs/testimonial, sgs/timeline, sgs/product-card, 2026-10-19 build",
+			"divergence": "none - first rollout",
+			"divergence_severity": "low",
+			"notes": "The gap between the link's text and the css:text-decoration-link line (text-underline-offset). The sweep is a background line, so it ignores the gap. Emitter: sgs_link_underline_css()."
 		},
 		{
 			"setting_key": "css:display",

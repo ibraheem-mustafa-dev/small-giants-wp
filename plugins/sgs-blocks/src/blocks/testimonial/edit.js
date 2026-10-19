@@ -204,6 +204,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		quoteLinkColourHoverGradient,
 		quoteLinkUnderline,
 		quoteLinkUnderlineThickness,
+		quoteLinkUnderlineColour,
+		quoteLinkUnderlineColourHover,
+		quoteLinkUnderlineOffset,
 		quoteColourGradient,
 		quoteFontStyle,
 		quoteLineHeight,
@@ -270,7 +273,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	// Editor-canvas preview scope for the quote link-colour CSS below (Task 3,
 	// 2026-09-07).
 	const linkPreviewUid = `sgs-testimonial-link-preview-${ clientId }`;
-	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-testimonial__quote`, { mode: quoteLinkUnderline, thickness: quoteLinkUnderlineThickness, linkGradient: quoteLinkColourGradient } ) + linkColourPreviewCss(
+	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-testimonial__quote`, { mode: quoteLinkUnderline, thickness: quoteLinkUnderlineThickness, colour: quoteLinkUnderlineColour, colourHover: quoteLinkUnderlineColourHover, offset: quoteLinkUnderlineOffset, linkGradient: quoteLinkColourGradient } ) + linkColourPreviewCss(
 		`.${ linkPreviewUid } .sgs-testimonial__quote`,
 		quoteLinkColour,
 		quoteLinkColourHover,
@@ -281,6 +284,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const rootLinkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid }`, {
 		mode: attributes.linkUnderline,
 		thickness: attributes.linkUnderlineThickness,
+		colour: attributes.linkUnderlineColour,
+		colourHover: attributes.linkUnderlineColourHover,
+		offset: attributes.linkUnderlineOffset,
 		linkGradient: attributes.linkColourGradient,
 	} ) + linkColourPreviewCss(
 		`.${ linkPreviewUid }`,
@@ -440,8 +446,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							<LinkUnderlineControl
 								mode={ attributes.linkUnderline }
 								thickness={ attributes.linkUnderlineThickness }
+								colour={ attributes.linkUnderlineColour }
+								colourHover={ attributes.linkUnderlineColourHover }
+								offset={ attributes.linkUnderlineOffset }
 								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
 								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
+								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
+								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
 							/>
 						),
 					},
@@ -1291,8 +1303,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						<LinkUnderlineControl
 							mode={ quoteLinkUnderline }
 							thickness={ quoteLinkUnderlineThickness }
+							colour={ quoteLinkUnderlineColour }
+							colourHover={ quoteLinkUnderlineColourHover }
+							offset={ quoteLinkUnderlineOffset }
 							onModeChange={ ( val ) => setAttributes( { quoteLinkUnderline: val } ) }
 							onThicknessChange={ ( val ) => setAttributes( { quoteLinkUnderlineThickness: val } ) }
+							onColourChange={ ( val ) => setAttributes( { quoteLinkUnderlineColour: val } ) }
+							onColourHoverChange={ ( val ) => setAttributes( { quoteLinkUnderlineColourHover: val } ) }
+							onOffsetChange={ ( val ) => setAttributes( { quoteLinkUnderlineOffset: val } ) }
 						/>
 						{ showSummary && (
 							<>

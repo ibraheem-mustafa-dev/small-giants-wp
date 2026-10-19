@@ -196,6 +196,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		attributionLinkColourHoverGradient,
 		attributionLinkUnderline,
 		attributionLinkUnderlineThickness,
+		attributionLinkUnderlineColour,
+		attributionLinkUnderlineColourHover,
+		attributionLinkUnderlineOffset,
 		// attributionFontSize / attributionMarginTop are TIER OBJECTS
 		// {desktop,tablet,mobile} as of Spec 35 pass 3b (2026-08-11) — the
 		// *Tablet/*Mobile siblings no longer exist.
@@ -244,7 +247,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-canvas preview scope for the attribution link-colour CSS below
 	// (Task 3, 2026-09-07). Extended to include gradient params (2026-09-07).
 	const linkPreviewUid = `sgs-quote-link-preview-${ clientId }`;
-	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .wp-block-sgs-quote__attribution`, { mode: attributionLinkUnderline, thickness: attributionLinkUnderlineThickness, linkGradient: attributionLinkColourGradient } ) + linkColourPreviewCss(
+	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .wp-block-sgs-quote__attribution`, { mode: attributionLinkUnderline, thickness: attributionLinkUnderlineThickness, colour: attributionLinkUnderlineColour, colourHover: attributionLinkUnderlineColourHover, offset: attributionLinkUnderlineOffset, linkGradient: attributionLinkColourGradient } ) + linkColourPreviewCss(
 		`.${ linkPreviewUid } .wp-block-sgs-quote__attribution`,
 		attributionLinkColour,
 		attributionLinkColourHover,
@@ -422,8 +425,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<LinkUnderlineControl
 								mode={ attributionLinkUnderline }
 								thickness={ attributionLinkUnderlineThickness }
+								colour={ attributionLinkUnderlineColour }
+								colourHover={ attributionLinkUnderlineColourHover }
+								offset={ attributionLinkUnderlineOffset }
 								onModeChange={ ( val ) => setAttributes( { attributionLinkUnderline: val } ) }
 								onThicknessChange={ ( val ) => setAttributes( { attributionLinkUnderlineThickness: val } ) }
+								onColourChange={ ( val ) => setAttributes( { attributionLinkUnderlineColour: val } ) }
+								onColourHoverChange={ ( val ) => setAttributes( { attributionLinkUnderlineColourHover: val } ) }
+								onOffsetChange={ ( val ) => setAttributes( { attributionLinkUnderlineOffset: val } ) }
 							/>
 						),
 					},

@@ -449,6 +449,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		descriptionLinkColourHoverGradient,
 		descriptionLinkUnderline,
 		descriptionLinkUnderlineThickness,
+		descriptionLinkUnderlineColour,
+		descriptionLinkUnderlineColourHover,
+		descriptionLinkUnderlineOffset,
 		scrollEffect,
 		milestoneMediaWidth,
 		milestoneMediaDecorative,
@@ -511,7 +514,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-canvas preview CSS for the per-entry description link colour
 	// (Task 3, 2026-09-07) — applies block-wide, matching the frontend.
 	// Extended with gradient support (CHECK A, 2026-09-07).
-	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-timeline__description`, { mode: descriptionLinkUnderline, thickness: descriptionLinkUnderlineThickness, linkGradient: descriptionLinkColourGradient } ) + linkColourPreviewCss(
+	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-timeline__description`, { mode: descriptionLinkUnderline, thickness: descriptionLinkUnderlineThickness, colour: descriptionLinkUnderlineColour, colourHover: descriptionLinkUnderlineColourHover, offset: descriptionLinkUnderlineOffset, linkGradient: descriptionLinkColourGradient } ) + linkColourPreviewCss(
 		`.${ linkPreviewUid } .sgs-timeline__description`,
 		descriptionLinkColour,
 		descriptionLinkColourHover,
@@ -902,8 +905,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<LinkUnderlineControl
 								mode={ descriptionLinkUnderline }
 								thickness={ descriptionLinkUnderlineThickness }
+								colour={ descriptionLinkUnderlineColour }
+								colourHover={ descriptionLinkUnderlineColourHover }
+								offset={ descriptionLinkUnderlineOffset }
 								onModeChange={ ( val ) => setAttributes( { descriptionLinkUnderline: val } ) }
 								onThicknessChange={ ( val ) => setAttributes( { descriptionLinkUnderlineThickness: val } ) }
+								onColourChange={ ( val ) => setAttributes( { descriptionLinkUnderlineColour: val } ) }
+								onColourHoverChange={ ( val ) => setAttributes( { descriptionLinkUnderlineColourHover: val } ) }
+								onOffsetChange={ ( val ) => setAttributes( { descriptionLinkUnderlineOffset: val } ) }
 							/>
 						),
 					},

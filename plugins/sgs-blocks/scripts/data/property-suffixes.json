@@ -1434,6 +1434,24 @@
       null,
       "A person photo. Added 2026-08-06 when sgs/team-member.memberMedia was renamed to photo: its role came from neither a property suffix nor an override, so the new photoTablet/photoMobile tier siblings inherited NO role and the cloning pipeline could not route to them. APPENDED, not inserted — property_suffixes resolves first-row-wins with LIMIT 1, so appending cannot shadow an existing suffix.",
       null
+    ],
+    [
+      "LinkUnderlineColour",
+      "color",
+      "text-decoration-color",
+      1,
+      "palette",
+      "2026-10-19 (Spec 32 FR-32-24). The colour of a link underline, set by {prefix}LinkUnderlineColour (and its Hover sibling) through sgs_link_underline_css(). Appended at the END: no other row maps text-decoration-color, and every attribute of this family also has an attr-classification-overrides.json row, which wins over the suffix guess.",
+      null
+    ],
+    [
+      "LinkUnderlineOffset",
+      "typography",
+      "text-underline-offset",
+      0,
+      null,
+      "2026-10-19 (Spec 32 FR-32-24). The gap between a link's text and its underline, set by {prefix}LinkUnderlineOffset through sgs_link_underline_css(). Appended at the END: no other row maps text-underline-offset.",
+      null
     ]
   ]
 }

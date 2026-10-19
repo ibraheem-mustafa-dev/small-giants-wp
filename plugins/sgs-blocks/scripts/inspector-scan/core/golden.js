@@ -892,6 +892,9 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	'border-bottom-color': 'border',
 	'outline-color': 'border',
 	'box-shadow-color': 'shadow',
+	// A link underline's own colour (helpers-link-underline.php): text-decoration-color takes
+	// no gradient, so, like a shadow colour, its row needs no gradient path.
+	'text-decoration-color': 'decoration',
 	fill: 'fill',
 	stroke: 'stroke',
 };

@@ -291,6 +291,9 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     numberFontWeight,
     linkUnderline,
     linkUnderlineThickness,
+    linkUnderlineColour,
+    linkUnderlineColourHover,
+    linkUnderlineOffset,
   } = attributes;
 
   // Contrast check for border — warn if border fails WCAG contrast against
@@ -525,6 +528,9 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   const linkUnderlineCss = linkUnderlinePreviewCss(`.sgs-ed-sep-${clientId}`, {
     mode: linkUnderline,
     thickness: linkUnderlineThickness,
+    colour: linkUnderlineColour,
+    colourHover: linkUnderlineColourHover,
+    offset: linkUnderlineOffset,
   });
 
   // Lines between items: the canvas mirrors render.php's item-drawn rules for the
@@ -936,8 +942,14 @@ export default function Edit({ attributes, setAttributes, clientId }) {
           <LinkUnderlineControl
             mode={linkUnderline}
             thickness={linkUnderlineThickness}
+            colour={linkUnderlineColour}
+            colourHover={linkUnderlineColourHover}
+            offset={linkUnderlineOffset}
             onModeChange={(val) => setAttributes({ linkUnderline: val })}
             onThicknessChange={(val) => setAttributes({ linkUnderlineThickness: val })}
+            onColourChange={(val) => setAttributes({ linkUnderlineColour: val })}
+            onColourHoverChange={(val) => setAttributes({ linkUnderlineColourHover: val })}
+            onOffsetChange={(val) => setAttributes({ linkUnderlineOffset: val })}
           />
         </PanelBody>
 

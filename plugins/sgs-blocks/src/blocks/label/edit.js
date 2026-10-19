@@ -183,6 +183,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		text,
 		linkUnderline,
 		linkUnderlineThickness,
+		linkUnderlineColour,
+		linkUnderlineColourHover,
+		linkUnderlineOffset,
 		backgroundColour,
 		backgroundColourGradient,
 		// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} — ONE attr;
@@ -207,6 +210,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const linkUnderlineCss = linkUnderlinePreviewCss( `.sgs-lbl-ed-${ clientId }`, {
 		mode: linkUnderline,
 		thickness: linkUnderlineThickness,
+		colour: linkUnderlineColour,
+		colourHover: linkUnderlineColourHover,
+		offset: linkUnderlineOffset,
 	} );
 	// The leading dot: the same `::before` rule render.php prints, scoped to this canvas element.
 	const dotCss = labelDotPreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
@@ -436,8 +442,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<LinkUnderlineControl
 						mode={ linkUnderline }
 						thickness={ linkUnderlineThickness }
+						colour={ linkUnderlineColour }
+						colourHover={ linkUnderlineColourHover }
+						offset={ linkUnderlineOffset }
 						onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
 						onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+						onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
+						onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
+						onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

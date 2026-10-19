@@ -712,6 +712,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		descLinkColourHoverGradient,
 		descLinkUnderline,
 		descLinkUnderlineThickness,
+		descLinkUnderlineColour,
+		descLinkUnderlineColourHover,
+		descLinkUnderlineOffset,
 		priceNoteColour,
 		priceNoteColourGradient,
 		// Frame Card component (Task 4, 2026-09-14) — operator-authored,
@@ -1012,8 +1015,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	// `core/link`) and the paragraph-after-paragraph text indent render.php
 	// emits on both description markups, in the same clientId-derived scope
 	// as the CTA hover CSS above.
-	const descLinkPreviewCss = linkUnderlinePreviewCss( `.${ ctaPreviewUid } .sgs-product-card__description`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, linkGradient: descLinkColourGradient } )
-		+ linkUnderlinePreviewCss( `.${ ctaPreviewUid } .product-desc`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, linkGradient: descLinkColourGradient } )
+	const descLinkPreviewCss = linkUnderlinePreviewCss( `.${ ctaPreviewUid } .sgs-product-card__description`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, colour: descLinkUnderlineColour, colourHover: descLinkUnderlineColourHover, offset: descLinkUnderlineOffset, linkGradient: descLinkColourGradient } )
+		+ linkUnderlinePreviewCss( `.${ ctaPreviewUid } .product-desc`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, colour: descLinkUnderlineColour, colourHover: descLinkUnderlineColourHover, offset: descLinkUnderlineOffset, linkGradient: descLinkColourGradient } )
 		+ linkColourPreviewCss(
 		`.${ ctaPreviewUid } .sgs-product-card__description`,
 		descLinkColour,
@@ -1257,8 +1260,14 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 				<LinkUnderlineControl
 					mode={ descLinkUnderline }
 					thickness={ descLinkUnderlineThickness }
+					colour={ descLinkUnderlineColour }
+					colourHover={ descLinkUnderlineColourHover }
+					offset={ descLinkUnderlineOffset }
 					onModeChange={ ( val ) => setAttributes( { descLinkUnderline: val } ) }
 					onThicknessChange={ ( val ) => setAttributes( { descLinkUnderlineThickness: val } ) }
+					onColourChange={ ( val ) => setAttributes( { descLinkUnderlineColour: val } ) }
+					onColourHoverChange={ ( val ) => setAttributes( { descLinkUnderlineColourHover: val } ) }
+					onOffsetChange={ ( val ) => setAttributes( { descLinkUnderlineOffset: val } ) }
 				/>
 			),
 		} );

@@ -46,6 +46,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		addressLink,
 		linkUnderline,
 		linkUnderlineThickness,
+		linkUnderlineColour,
+		linkUnderlineColourHover,
+		linkUnderlineOffset,
 		separators,
 		copyrightPrefix,
 		textBefore,
@@ -114,8 +117,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							<LinkUnderlineControl
 								mode={ linkUnderline }
 								thickness={ linkUnderlineThickness }
+								colour={ linkUnderlineColour }
+								colourHover={ linkUnderlineColourHover }
+								offset={ linkUnderlineOffset }
 								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
 								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+								onColourChange={ ( val ) => setAttributes( { linkUnderlineColour: val } ) }
+								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
+								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
 							/>
 						),
 					},

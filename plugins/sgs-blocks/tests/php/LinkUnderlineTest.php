@@ -71,4 +71,51 @@ final class LinkUnderlineTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/ a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);/', $out['css'] );
 		$this->assertStringNotContainsString( 'style="', $out['html'] );
 	}
+
+	public function test_shows_on_hover_draws_a_coloured_offset_underline_only_on_hover(): void {
+		$css = $this->text( array( 'linkUnderline' => 'hover', 'linkUnderlineThickness' => '2px', 'linkUnderlineOffset' => '4px', 'linkUnderlineColour' => '#FFFAF0' ) )['css'];
+
+		$this->assertMatchesRegularExpression( '/ a\{text-decoration-line:none;text-decoration-thickness:2px;text-decoration-color:#FFFAF0;text-underline-offset:4px;\}/', $css, 'no line at rest, the longhands set' );
+		$this->assertMatchesRegularExpression( '/@media \(hover: hover\)[^{]*\{[^{]* a:hover\{text-decoration-line:underline;?\}/', $css, 'hover sits behind the touch guard' );
+		$this->assertMatchesRegularExpression( '/ a:focus-visible\{text-decoration-line:underline;?\}/', $css, 'keyboard focus shows the line too' );
+		$this->assertMatchesRegularExpression( '/@media \(forced-colors: active\)\{[^{]* a\{text-decoration-line:underline;\}\}/', $css, 'forced colours: the line shows at rest, as longhands' );
+	}
+
+	public function test_shows_on_hover_without_a_colour_prints_no_colour_or_offset(): void {
+		$css = $this->text( array( 'linkUnderline' => 'hover' ) )['css'];
+
+		$this->assertMatchesRegularExpression( '/ a\{text-decoration-line:none;\}/', $css, 'positive control: the mode printed' );
+		$this->assertStringNotContainsString( 'text-decoration-color', $css );
+		$this->assertStringNotContainsString( 'text-underline-offset', $css );
+	}
+
+	public function test_a_hover_colour_changes_only_the_line_on_hover(): void {
+		$hover = $this->text( array( 'linkUnderline' => 'hover', 'linkUnderlineColour' => '#111111', 'linkUnderlineColourHover' => '#FFFAF0' ) )['css'];
+		$this->assertMatchesRegularExpression( '/ a:hover\{text-decoration-line:underline;text-decoration-color:#FFFAF0;?\}/', $hover );
+
+		$always = $this->text( array( 'linkUnderline' => 'always', 'linkUnderlineColour' => '#111111', 'linkUnderlineColourHover' => '#FFFAF0', 'linkUnderlineOffset' => '3px' ) )['css'];
+		$this->assertMatchesRegularExpression( '/ a\{text-decoration-line:underline;text-decoration-color:#111111;text-underline-offset:3px;\}/', $always );
+		$this->assertMatchesRegularExpression( '/ a:hover\{text-decoration-color:#FFFAF0;?\}/', $always );
+	}
+
+	public function test_sweep_takes_the_line_colour_and_ignores_the_offset(): void {
+		$css = $this->text( array( 'linkUnderline' => 'sweep', 'linkUnderlineColour' => '#111111', 'linkUnderlineColourHover' => '#FFFAF0', 'linkUnderlineOffset' => '4px' ) )['css'];
+
+		$this->assertStringContainsString( 'background-image:linear-gradient(#111111,#111111);', $css );
+		$this->assertMatchesRegularExpression( '/ a:hover\{background-size:100% [^;}]+;background-image:linear-gradient\(#FFFAF0,#FFFAF0\);?\}/', $css );
+		$this->assertStringNotContainsString( 'text-underline-offset', $css, 'the sweep is a background line, so an offset does not apply' );
+	}
+
+	public function test_a_colour_with_no_mode_prints_nothing(): void {
+		$css = $this->text( array( 'linkUnderlineColour' => '#FFFAF0', 'linkUnderlineOffset' => '4px' ) )['css'];
+
+		$this->assertStringNotContainsString( 'text-decoration', $css );
+		$this->assertStringNotContainsString( 'text-underline-offset', $css );
+	}
+
+	public function test_a_prefixed_block_reads_its_own_prefix(): void {
+		$out = $this->render_block( 'sgs/quote', array( 'attributionEnabled' => true, 'attribution' => 'By <a href="/offers/">see offers</a>', 'attributionLinkUnderline' => 'hover', 'attributionLinkUnderlineColour' => '#FFFAF0' ) );
+
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-quote__attribution a\{text-decoration-line:none;text-decoration-color:#FFFAF0;\}/', $out['css'] );
+	}
 }
