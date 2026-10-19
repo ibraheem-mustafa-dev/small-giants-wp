@@ -14,6 +14,7 @@ import {
 import { IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, boxPreview } from "../../utils";
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 
 function formatNumber(num, separator) {
@@ -252,6 +253,7 @@ export default function Edit({ attributes, setAttributes, name }) {
           onChange={(val) => setAttributes({ label: val })}
           placeholder={__("Label text…", "sgs-blocks")}
           style={labelStyle}
+          allowedFormats={ RICH_TEXT_BODY }
         />
       </div>
     </>

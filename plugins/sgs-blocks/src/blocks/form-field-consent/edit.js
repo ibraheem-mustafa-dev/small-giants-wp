@@ -6,6 +6,7 @@ import {
 	TextareaControl,
 	SelectControl,
 } from '@wordpress/components';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -115,6 +116,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Enter consent text…',
 							'sgs-blocks'
 						) }
+						allowedFormats={ RICH_TEXT_BODY }
 					/>
 				</label>
 				{ helpText && (

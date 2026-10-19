@@ -84,10 +84,10 @@ function sgs_whatsapp_cta_card_markup( array $attributes, string $whatsapp_svg )
 	$out  = '<span class="sgs-whatsapp-cta__icon-badge">' . $whatsapp_svg . '</span>';
 	$out .= '<span class="sgs-whatsapp-cta__card-text">';
 	if ( $title ) {
-		$out .= '<span class="sgs-whatsapp-cta__card-title">' . wp_kses_post( $title ) . '</span>';
+		$out .= '<span class="sgs-whatsapp-cta__card-title">' . sgs_rich_text_kses( $title ) . '</span>';
 	}
 	if ( $subline ) {
-		$out .= '<span class="sgs-whatsapp-cta__card-subline">' . wp_kses_post( $subline ) . '</span>';
+		$out .= '<span class="sgs-whatsapp-cta__card-subline">' . sgs_rich_text_kses( $subline ) . '</span>';
 	}
 	$out .= '</span>';
 

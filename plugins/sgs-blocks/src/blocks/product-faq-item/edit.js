@@ -12,6 +12,7 @@ import { SgsColourPanel, fillRow, textRow,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, sgsBorderPreview } from '../../utils';
+import { RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
 const CHEVRON_SVG = (
 	<svg
@@ -229,7 +230,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 							setAttributes( { question: val } )
 						}
 						placeholder={ __( 'Type the question…', 'sgs-blocks' ) }
-						allowedFormats={ [] }
+						allowedFormats={ RICH_TEXT_PLAIN }
 						onClick={ ( e ) => e.stopPropagation() }
 					/>
 					{ iconPosition === 'right' && chevron }

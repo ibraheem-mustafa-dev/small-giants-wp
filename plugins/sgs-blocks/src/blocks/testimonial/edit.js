@@ -40,6 +40,7 @@ import {
 	gapVar,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { RICH_TEXT_BODY, RICH_TEXT_EMPHASIS, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
 // Variants whose stylesheet already paints a border: a chosen colour, style or
 // width overrides it part by part, as render.php emits each alone.
@@ -1710,7 +1711,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							'Short summary phrase…',
 							'sgs-blocks'
 						) }
-						allowedFormats={ [ 'core/bold', 'core/italic' ] }
+						allowedFormats={ RICH_TEXT_EMPHASIS }
 					/>
 				) }
 
@@ -1724,7 +1725,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						'Write the testimonial quote…',
 						'sgs-blocks'
 					) }
-					allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
+					allowedFormats={ RICH_TEXT_BODY }
 				/>
 
 				<footer className="sgs-testimonial__footer">
@@ -1770,7 +1771,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								setAttributes( { reviewerName: val } )
 							}
 							placeholder={ __( 'Reviewer name', 'sgs-blocks' ) }
-							allowedFormats={ [] }
+							allowedFormats={ RICH_TEXT_PLAIN }
 						/>
 						<RichText
 							tagName="span"
@@ -1781,7 +1782,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								setAttributes( { reviewerRole: val } )
 							}
 							placeholder={ __( 'Role / job title', 'sgs-blocks' ) }
-							allowedFormats={ [] }
+							allowedFormats={ RICH_TEXT_PLAIN }
 						/>
 						<RichText
 							tagName="span"
@@ -1792,7 +1793,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								setAttributes( { orgName: val } )
 							}
 							placeholder={ __( 'Organisation', 'sgs-blocks' ) }
-							allowedFormats={ [] }
+							allowedFormats={ RICH_TEXT_PLAIN }
 						/>
 					</div>
 				</footer>

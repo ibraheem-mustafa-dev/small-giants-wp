@@ -51,6 +51,7 @@ import {
 	ShapeDividersPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 // GridItemDefaultsPanel deliberately NOT imported — see the withdrawal note
 // beside its former mount point below (D-pending, 2026-08-30). This block
 // never renders a direct-child `.sgs-container` element, so the panel's
@@ -1314,6 +1315,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( val ) => setAttributes( { title: val } ) }
 						placeholder={ __( 'Trusted certifications & memberships', 'sgs-blocks' ) }
 						style={ { ...titleTypography, ...titleStyle } }
+						allowedFormats={ RICH_TEXT_BODY }
 					/>
 				) }
 

@@ -18,6 +18,7 @@ import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
+import { RICH_TEXT_BODY_NO_LINK } from '../../utils/rich-text-formats';
 
 // The chevron glyph; a parsed icon gradient paints its stroke through a
 // <linearGradient>/<radialGradient> def, as sgs_icon_gradient_css() does.
@@ -275,6 +276,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					) }
 					onClick={ ( e ) => e.stopPropagation() }
 					style={ head.title }
+					allowedFormats={ RICH_TEXT_BODY_NO_LINK }
 				/>
 				{ iconPosition === 'right' && chevron }
 			</div>

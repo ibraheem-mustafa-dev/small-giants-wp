@@ -466,5 +466,5 @@ printf(
 	tag_escape( $tag_name ),
 	$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	$edge_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup.
-	wp_kses_post( $text )
+	sgs_rich_text_kses( $text )
 );

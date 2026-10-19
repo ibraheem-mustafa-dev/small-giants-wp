@@ -20,6 +20,7 @@ import {
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, textRow, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import { textPaintPreview, linkColourPreviewCss, linkUnderlinePreviewCss, backgroundPaintPreview, typographyPreviewStyle, textIndentPreviewCss, usePreviewTier, tierBoxLonghands } from '../../utils';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient, linkUnderline, linkUnderlineThickness } = attributes;
@@ -226,13 +227,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						'Add your copy here — describe the category or shop section for visitors.',
 						'sgs-blocks'
 					) }
-					allowedFormats={ [
-						'core/bold',
-						'core/italic',
-						'core/link',
-						'core/strikethrough',
-						'core/underline',
-					] }
+					allowedFormats={ RICH_TEXT_BODY }
 				/>
 			</div>
 		</>

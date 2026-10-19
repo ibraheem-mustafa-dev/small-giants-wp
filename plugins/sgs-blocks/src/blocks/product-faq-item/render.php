@@ -234,7 +234,7 @@ $scoped_css = array_merge( $scoped_css, $border['rules'] );
 		<?php if ( 'left' === $icon_pos ) : ?>
 			<?php echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static SVG built above. ?>
 		<?php endif; ?>
-		<span class="sgs-product-faq-item__question-text"><?php echo wp_kses_post( $question ); ?></span>
+		<span class="sgs-product-faq-item__question-text"><?php echo sgs_rich_text_kses( $question ); ?></span>
 		<?php if ( 'right' === $icon_pos ) : ?>
 			<?php echo $icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static SVG built above. ?>
 		<?php endif; ?>

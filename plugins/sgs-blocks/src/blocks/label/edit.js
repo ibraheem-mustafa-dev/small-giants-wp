@@ -31,6 +31,7 @@ import {
 	labelEndShapePreviewCss,
 	labelHasEndOutline,
 } from './end-shape-preview';
+import { RICH_TEXT_LINK_ONLY } from '../../utils/rich-text-formats';
 
 /**
  * The typography attributes the shared panel owns, at their block.json defaults.
@@ -217,7 +218,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			value={ text }
 			onChange={ ( val ) => setAttributes( { text: val } ) }
 			placeholder={ __( 'Label text…', 'sgs-blocks' ) }
-			allowedFormats={ [ 'core/link' ] }
+			allowedFormats={ RICH_TEXT_LINK_ONLY }
 		/>
 	);
 
@@ -459,7 +460,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value={ text }
 					onChange={ ( val ) => setAttributes( { text: val } ) }
 					placeholder={ __( 'Label text…', 'sgs-blocks' ) }
-					allowedFormats={ [ 'core/link' ] }
+					allowedFormats={ RICH_TEXT_LINK_ONLY }
 				/>
 			) }
 		</>

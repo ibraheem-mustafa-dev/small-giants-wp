@@ -59,6 +59,7 @@ import {
 } from '../../utils';
 import { composeShadow } from '../../utils/shadow-layers';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -834,7 +835,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ attribution }
 						onChange={ ( val ) => setAttributes( { attribution: val } ) }
 						placeholder={ __( '— Attribution…', 'sgs-blocks' ) }
-						allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
+						allowedFormats={ RICH_TEXT_BODY }
 					/>
 				) }
 			</blockquote>

@@ -425,7 +425,7 @@ $block_title_plain = trim( wp_strip_all_tags( $block_title ) );
 if ( $block_title_plain ) {
 	$title_html = sprintf(
 		'<p class="sgs-trust-bar__title">%s</p>',
-		wp_kses_post( $block_title )
+		sgs_rich_text_kses( $block_title )
 	);
 }
 

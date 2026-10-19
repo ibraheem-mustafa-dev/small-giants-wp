@@ -1126,7 +1126,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			?>
 		</div>
 		<?php if ( '' !== $sgs_resolved_desc ) : ?>
-			<div class="product-desc sgs-product-card__description"><?php echo wp_kses_post( $sgs_resolved_desc ); ?></div>
+			<div class="product-desc sgs-product-card__description"><?php echo sgs_rich_text_kses( $sgs_resolved_desc ); ?></div>
 		<?php endif; ?>
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
@@ -1606,7 +1606,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 
 				<?php if ( '' !== $sgs_resolved_desc ) : ?>
 				<div class="product-desc sgs-product-card__description">
-					<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
+					<?php echo sgs_rich_text_kses( $sgs_resolved_desc ); ?>
 				</div>
 				<?php endif; ?>
 
@@ -1991,7 +1991,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 
 	<?php if ( '' !== $sgs_resolved_desc ) : ?>
 		<div class="product-desc sgs-product-card__description">
-			<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
+			<?php echo sgs_rich_text_kses( $sgs_resolved_desc ); ?>
 		</div>
 	<?php endif; ?>
 

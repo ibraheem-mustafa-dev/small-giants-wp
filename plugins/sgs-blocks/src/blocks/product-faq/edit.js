@@ -38,6 +38,7 @@ import {
 	typographyPreviewCss,
 	boxPreview,
 } from '../../utils';
+import { RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
 const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Heading 2', 'sgs-blocks' ), value: 'h2' },
@@ -348,7 +349,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						'Frequently Asked Questions',
 						'sgs-blocks'
 					) }
-					allowedFormats={ [] }
+					allowedFormats={ RICH_TEXT_PLAIN }
 				/>
 				<div { ...innerBlocksProps } />
 			</section>

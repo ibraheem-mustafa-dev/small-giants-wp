@@ -20,6 +20,7 @@ import { SgsBorderControl } from '../../components';
 import textRow from '../../components/colour-variants/textRow';
 import { typographyPreviewStyle, usePreviewTier, textPaintPreview } from '../../utils';
 import WhatsappIcon from './icon';
+import { RICH_TEXT_BODY_NO_LINK } from '../../utils/rich-text-formats';
 
 // Same allow-list as render.php's card-text wrap custom property.
 const cardTextWrapAllowed = [ 'wrap', 'nowrap', 'balance', 'pretty', 'stable' ];
@@ -66,6 +67,7 @@ export function VariantContent( { attributes, setAttributes } ) {
 				value={ label }
 				onChange={ ( val ) => setAttributes( { label: val } ) }
 				placeholder={ __( 'Chat on WhatsApp', 'sgs-blocks' ) }
+				allowedFormats={ RICH_TEXT_BODY_NO_LINK }
 			/>
 		</>
 	);
@@ -106,6 +108,7 @@ export function CardFields( { attributes, setAttributes } ) {
 					value={ cardTitle }
 					onChange={ ( val ) => setAttributes( { cardTitle: val } ) }
 					placeholder={ __( 'Questions? Chat to an optician', 'sgs-blocks' ) }
+					allowedFormats={ RICH_TEXT_BODY_NO_LINK }
 				/>
 				<RichText
 					tagName="span"
@@ -114,6 +117,7 @@ export function CardFields( { attributes, setAttributes } ) {
 					value={ cardSubline }
 					onChange={ ( val ) => setAttributes( { cardSubline: val } ) }
 					placeholder={ __( 'We reply within the hour', 'sgs-blocks' ) }
+					allowedFormats={ RICH_TEXT_BODY_NO_LINK }
 				/>
 			</span>
 		</>

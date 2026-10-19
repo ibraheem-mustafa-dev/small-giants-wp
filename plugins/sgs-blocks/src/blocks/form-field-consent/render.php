@@ -30,7 +30,7 @@ if ( $is_required ) {
 }
 echo ' aria-describedby="' . esc_attr( $fid ) . '-error"';
 echo ' />';
-echo '<span class="sgs-form-field__consent-text">' . wp_kses_post( $text ) . '</span>';
+echo '<span class="sgs-form-field__consent-text">' . sgs_rich_text_kses( $text ) . '</span>';
 echo '</label>';
 
 echo field_error( $fid );

@@ -402,7 +402,7 @@ $summary_open  = sprintf(
 	esc_attr( $aria_expanded )
 );
 $summary_left  = 'left' === $icon_pos ? $icon_html : '';
-$summary_title = sprintf( '<span class="sgs-accordion-item__title">%s</span>', wp_kses_post( $sgs_title ) );
+$summary_title = sprintf( '<span class="sgs-accordion-item__title">%s</span>', sgs_rich_text_kses( $sgs_title ) );
 $summary_right = 'right' === $icon_pos ? $icon_html : '';
 $summary_close = '</summary>';
 $content_panel = sprintf(

@@ -47,6 +47,7 @@ import { usePreviewTier, typographyPreviewStyle } from '../../utils';
 import { buildWrapperStyle, textSurfaceStyle } from './preview-style';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { CSS_EASING_OPTIONS_IN_OUT_FIRST as EASING_OPTIONS } from '../../components/motion/easing-master-list';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -828,6 +829,7 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 					onChange={ ( val ) => setAttributes( { name: val } ) }
 					placeholder={ __( 'Name', 'sgs-blocks' ) }
 					style={ textSurfaceStyle( attributes, 'name', previewTier ) }
+					allowedFormats={ RICH_TEXT_BODY }
 				/>
 				<RichText
 					tagName="p"
@@ -836,6 +838,7 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 					onChange={ ( val ) => setAttributes( { role: val } ) }
 					placeholder={ __( 'Role / Title', 'sgs-blocks' ) }
 					style={ textSurfaceStyle( attributes, 'role', previewTier ) }
+					allowedFormats={ RICH_TEXT_BODY }
 				/>
 				{ ! isCompact && (
 					<RichText
@@ -845,6 +848,7 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 						onChange={ ( val ) => setAttributes( { bio: val } ) }
 						placeholder={ __( 'Short bio…', 'sgs-blocks' ) }
 						style={ textSurfaceStyle( attributes, 'bio', previewTier ) }
+						allowedFormats={ RICH_TEXT_BODY }
 					/>
 				) }
 				{ /* Social links preview in editor — shown only in full mode. */ }

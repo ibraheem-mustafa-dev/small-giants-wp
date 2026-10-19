@@ -34,6 +34,7 @@ import {
 	wrapperPreview,
 } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
 // ⛔ `templateMode` (the container-family allowed-children preset) was
 // declared in block.json but REMOVED (was never wired): this block has no
@@ -802,6 +803,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											titleColourGradient,
 											colourVar
 										) } }
+										allowedFormats={ RICH_TEXT_PLAIN }
 									/>
 									<div className="sgs-pricing-table__price-wrapper">
 										<RichText
@@ -824,6 +826,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 												priceColourGradient,
 												colourVar
 											) } }
+											allowedFormats={ RICH_TEXT_PLAIN }
 										/>
 										{ billingToggle !== 'none' && billingToggle !== 'monthly-only' && (
 											<>
@@ -847,6 +850,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 														priceColourGradient,
 														colourVar
 													) } }
+													allowedFormats={ RICH_TEXT_PLAIN }
 												/>
 												<TextControl
 													label={ __( 'Savings badge (yearly)', 'sgs-blocks' ) }
@@ -969,6 +973,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 														),
 														opacity: feature.included ? 1 : 0.5,
 													} }
+													allowedFormats={ RICH_TEXT_PLAIN }
 												/>
 												<Button
 													icon={ close }

@@ -309,7 +309,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 // Sanitise the rich-text copy. wp_kses_post() is the correct pass for
 // operator-entered HTML (allows p, strong, em, a, ul, ol, li, br — keeps
 // the full post subset while stripping any unsafe tags).
-$safe_text = wp_kses_post( $text );
+$safe_text = sgs_rich_text_kses( $text );
 
 // -------------------------------------------------------------------------
 // Build output.

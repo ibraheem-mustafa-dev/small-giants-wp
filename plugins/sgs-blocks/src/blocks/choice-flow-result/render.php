@@ -112,11 +112,11 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() pre-escapes.
 
 if ( '' !== trim( wp_strip_all_tags( $heading ) ) ) {
-	echo '<h3 class="sgs-choice-flow-result__heading">' . wp_kses_post( $heading ) . '</h3>';
+	echo '<h3 class="sgs-choice-flow-result__heading">' . sgs_rich_text_kses( $heading ) . '</h3>';
 }
 
 if ( '' !== trim( wp_strip_all_tags( $body ) ) ) {
-	echo '<div class="sgs-choice-flow-result__body">' . wp_kses_post( $body ) . '</div>';
+	echo '<div class="sgs-choice-flow-result__body">' . sgs_rich_text_kses( $body ) . '</div>';
 }
 
 if ( 'add-to-bag' === $result_action ) {

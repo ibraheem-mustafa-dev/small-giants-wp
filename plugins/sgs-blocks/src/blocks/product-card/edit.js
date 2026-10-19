@@ -49,6 +49,7 @@ import {
 import { colourVar, SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, textIndentPreviewCss, typographyPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
 import { typedCardPreview, TypedMediaOverlays, TypedRating, TypedSwatches, attributeTagText } from './typed-canvas';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { RICH_TEXT_BODY, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -1607,7 +1608,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 			value={ productName || '' }
 			onChange={ ( v ) => setAttributes( { productName: v } ) }
 			placeholder={ __( 'Product name…', 'sgs-blocks' ) }
-			allowedFormats={ [] }
+			allowedFormats={ RICH_TEXT_PLAIN }
 		/>
 	);
 
@@ -3574,11 +3575,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								'Short description…',
 								'sgs-blocks'
 							) }
-							allowedFormats={ [
-								'core/bold',
-								'core/italic',
-								'core/link',
-							] }
+							allowedFormats={ RICH_TEXT_BODY }
 						/>
 
 						<TypedRating attributes={ attributes } styles={ typedParts } />

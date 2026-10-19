@@ -34,6 +34,7 @@ import { LINK_SOURCE_OPTIONS, FIXED_DESTINATION_LINK_SOURCES, LINK_SOURCE_HELP }
 import { CUSTOM_WIDTH_UNITS, MIN_HEIGHT_UNITS, LINE_HEIGHT_UNITS, composeUnit, parseUnit } from './units';
 import { buttonFocusState, focusHostBorder } from './focus-style';
 import { useFocusPreview } from './components/FocusPreviewToggle';
+import { RICH_TEXT_EMPHASIS } from '../../utils/rich-text-formats';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -999,7 +1000,7 @@ export default function Edit( { attributes, setAttributes, clientId, isSelected 
 						value={ label }
 						onChange={ ( val ) => setAttributes( { label: val } ) }
 						placeholder={ __( 'Click Here', 'sgs-blocks' ) }
-						allowedFormats={ [ 'core/bold', 'core/italic' ] }
+						allowedFormats={ RICH_TEXT_EMPHASIS }
 						withoutInteractiveFormatting
 					/>
 				) }

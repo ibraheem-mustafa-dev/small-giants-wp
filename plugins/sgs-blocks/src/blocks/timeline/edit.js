@@ -18,6 +18,7 @@ import {
 import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, ShadowLiftControls, LinkUnderlineControl } from '../../components';
 import { colourVar, linkColourPreviewCss, linkUnderlinePreviewCss, resolveTextColourPreviewStyle,  tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
 import { sanitiseSvg, gapVar } from '../../utils';
+import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -281,12 +282,7 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 					value={ entry.description || '' }
 					onChange={ ( val ) => update( 'description', val ) }
 					placeholder={ __( 'Entry description…', 'sgs-blocks' ) }
-					allowedFormats={ [
-						'core/bold',
-						'core/italic',
-						'core/link',
-						'core/text-color',
-					] }
+					allowedFormats={ RICH_TEXT_BODY }
 					style={ {
 						border: '1px solid #ddd',
 						borderRadius: '2px',

@@ -1755,6 +1755,15 @@
     "order": 201
   },
   {
+    "id": "survey-rich-text-formats",
+    "cmd": "node scripts/survey-rich-text-formats.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 202
+  },
+  {
     "id": "check-motion-literals",
     "cmd": "python scripts/check-motion-literals.py --check",
     "tier": "fast",

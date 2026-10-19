@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { NumberControl } from '../../components/primitives';
+import { RICH_TEXT_BODY, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -158,7 +159,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					value={ heading }
 					onChange={ ( val ) => setAttributes( { heading: val } ) }
 					placeholder={ __( 'Your recommended result…', 'sgs-blocks' ) }
-					allowedFormats={ [] }
+					allowedFormats={ RICH_TEXT_PLAIN }
 				/>
 				<RichText
 					tagName="div"
@@ -169,7 +170,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						'Explain the recommendation to your visitor…',
 						'sgs-blocks'
 					) }
-					allowedFormats={ [ 'core/bold', 'core/italic', 'core/link' ] }
+					allowedFormats={ RICH_TEXT_BODY }
 					multiline="p"
 				/>
 				{ /* Canvas preview only (D3) — the real "Add to basket"/"Buy now"
