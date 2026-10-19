@@ -23,7 +23,7 @@
 			"motionItems": "tile",
 			"motion": true,
 			"iconPicker": true,
-			"imageControls": false,
+			"imageControls": false,
 			"elements": {
 				"tile": {
 					"label": "Each tile",
@@ -31,6 +31,38 @@
 					"order": 1,
 					"selector": ".sgs-form-tile",
 					"clusters": []
+				},
+				"tile-label": {
+					"selector": ".sgs-form-tile__label",
+					"label": "Tile label",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "tileLabel",
+					"attrMap": {
+						"css:font-size": "tileLabelFontSize",
+						"css:font-weight": "tileLabelFontWeight",
+						"css:line-height": "tileLabelLineHeight",
+						"css:color": "tileLabelColour"
+					},
+					"_note": "Each tile's label text (render.php); typography and colour from the Tile text panel and the tileLabelColour row."
+				},
+				"tile-description": {
+					"selector": ".sgs-form-tile__description",
+					"label": "Tile description",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "tileDescription",
+					"attrMap": {
+						"css:font-size": "tileDescriptionFontSize",
+						"css:font-weight": "tileDescriptionFontWeight",
+						"css:line-height": "tileDescriptionLineHeight",
+						"css:color": "tileDescriptionColour"
+					},
+					"_note": "The optional line under a tile's label (render.php, printed only when the tile has a description)."
 				},
 				"wrapper": {
 					"label": "Wrapper",

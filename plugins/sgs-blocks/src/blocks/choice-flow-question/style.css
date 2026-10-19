@@ -92,6 +92,10 @@
 .sgs-choice-flow-question__intro {
 	margin: 0 0 16px;
 	color: var( --wp--preset--color--text-muted, #6b7280 );
+}
+
+/* Zero specificity, so a typography control on any text inside the block wins. */
+:where(.sgs-choice-flow-question__intro) {
 	font-size: 0.95em;
 	line-height: 1.5;
 }
@@ -164,15 +168,19 @@
 	padding: 14px 16px;
 	border: 2px solid var( --wp--preset--color--border, #d4dbe5 );
 	border-radius: var( --wp--custom--border-radius--medium, 8px );
-	background-color: #fff;
 	font-family: inherit;
 	font-size: inherit;
 	color: inherit;
-	text-align: left;
 	cursor: pointer;
 	transition: border-color var( --wp--custom--transition--fast, 0.15s ease ),
 		transform var( --wp--custom--transition--fast, 0.15s ease ),
 		box-shadow var( --wp--custom--transition--fast, 0.15s ease );
+}
+
+/* Defaults at zero specificity, so the option and description controls win. */
+:where(.sgs-choice-flow-question__option-button) {
+	background-color: #fff;
+	text-align: left;
 }
 
 .sgs-choice-flow-question__option-button:hover {
