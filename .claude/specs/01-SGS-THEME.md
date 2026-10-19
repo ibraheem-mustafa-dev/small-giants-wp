@@ -317,6 +317,6 @@ WP 7.0 adds native pseudo-element support for `core/button` at theme.json level:
 
 ## Requirements
 
-- **FR-1-1 — Text renders with greyscale antialiasing on macOS and iOS.** `theme/sgs-theme/assets/css/core-blocks-critical.css` sets `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale` on `html`, always on. *Done when:* `npx wp-scripts test-unit-js tests/js/font-smoothing.test.js` passes (in `plugins/sgs-blocks/`).
+- **FR-1-1 — Text on Mac browsers matches the drafts' weight.** `theme/sgs-theme/assets/css/core-blocks-critical.css` sets `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale` on `html`, always on: Mac browsers then draw text slightly thinner and lighter, as the drafts do; other platforms ignore it. *Done when:* `npx wp-scripts test-unit-js tests/js/font-smoothing.test.js` passes (in `plugins/sgs-blocks/`).
 
   Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G4); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".

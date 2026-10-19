@@ -1585,7 +1585,7 @@
    }
   ],
   "verdict": "missing",
-  "note": "Plumbing for the marker stripe behind one word of the Mama's home heading: gap 7, a highlight text format for sgs/heading and sgs/text."
+  "note": "Plumbing for the marker stripe behind one word of the Mama's home heading: gap 7, a highlight toolbar format in every SGS text element."
  },
  {
   "property": "resize",
@@ -2002,7 +2002,7 @@
    }
   ],
   "verdict": "partial",
-  "note": "The Indus top-bar call to action is a theme match and the form step labels hide at narrow widths by design. The one-line cut on the product sticky bar subtitle is gap 12, a truncate option in the shared typography settings."
+  "note": "The Indus top-bar call to action is a theme match and the form step labels hide at narrow widths by design. The one-line cut on the product's phone bar subtitle is a built-in default of that bar (gap 6), since the buybox draws it."
  },
  {
   "property": "text-wrap",
@@ -2236,7 +2236,7 @@
    }
   ],
   "verdict": "missing",
-  "note": "Gap 8: a small rounded photo inside the line of the Mama's home heading needs an inline-photo text format; vertical-align: middle is that format's default."
+  "note": "Gap 8: a small rounded photo inside the line of the Mama's home heading needs an inline-photo toolbar format; vertical-align: middle is that format's default."
  },
  {
   "property": "direction",
@@ -3074,7 +3074,7 @@
    }
   ],
   "verdict": "partial",
-  "note": "Scroll inset reveal is the motion model; the pointer-following circular reveal is the cursor-field effect's image-reveal (fx-cursor-field.css); the logo road and image-slot are prototype plumbing. The tilted pink ribbon tag with a V-cut right end ('baked with love') is gap 5: a shape preset, rotation and border on sgs/label."
+  "note": "Scroll inset reveal is the motion model; the pointer-following circular reveal is the cursor-field effect's image-reveal (fx-cursor-field.css); the logo road and image-slot are prototype plumbing. The tilted pink ribbon tag with a V-cut end ('baked with love') is gap 5: left and right end shapes from the shape-divider library plus the shared border panel on sgs/label."
  },
  {
   "property": "stroke",

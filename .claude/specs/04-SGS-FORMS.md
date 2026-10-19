@@ -307,6 +307,6 @@ These items are specified above and have no implementation yet. Each stays in th
 
   Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G9); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
 
-- **FR-4-2 — Option tiles can show a description line under the label.** `sgs/form-field-tiles` gains a description per tile (inside the label, so it is part of the accessible name) and typography and colour settings for the tile label and the description. *Done when:* `vendor/bin/phpunit --filter FormFieldTilesDescriptionTest` passes.
+- **FR-4-2 — Option tiles and choice-flow options show a description line with its own controls.** `sgs/form-field-tiles` gains a description per tile, copied from `sgs/choice-flow-question`'s option description (a plain-text field capped at 140 characters, shown under the label inside it, so it is part of the accessible name); both blocks gain typography and colour controls for the description, and tiles for the label too. *Done when:* `vendor/bin/phpunit --filter "FormFieldTilesDescriptionTest|ChoiceFlowQuestionDescriptionTest"` passes.
 
   Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G10); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".

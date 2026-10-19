@@ -29,7 +29,7 @@ lock_reason: null
 
 | Part | Sections | Owns |
 |---|---|---|
-| **A. Component styling and token contract** | §0 to §12 | How a block styles itself: BEM classes consuming per-client tokens, no inline styling, scoped CSS, box objects, the CSS collector, grid-item defaults, the palette colour-role contract. FR-32-1 to FR-32-13, FR-32-20 and FR-32-23 to FR-32-25 (FR-32-7 lives in Spec 48). |
+| **A. Component styling and token contract** | §0 to §12 | How a block styles itself: BEM classes consuming per-client tokens, no inline styling, scoped CSS, box objects, the CSS collector, grid-item defaults, the palette colour-role contract. FR-32-1 to FR-32-13, FR-32-20, FR-32-23 and FR-32-24 (FR-32-7 lives in Spec 48). |
 | **B. Global styles and theming** | §13 | The WordPress layer model (theme.json seed, `wp_global_styles` post), how a push reaches the live layer, the block-editor styling model. FR-26-A3, A4, B1 to B4, B6, D2, D3. |
 | **C. The theme-snapshot format** | §14 | `sites/<client>/theme-snapshot.json`: its keys, the target slots and token vocabulary, the `settings.custom.{component}Presets` contract, internal keys, how it is deployed. FR-33-11, FR-33-20, FR-32-14 to FR-32-19, FR-32-21, FR-32-22, FR-32-26. |
 
@@ -812,11 +812,7 @@ Every focusable element in the framework shows one keyboard focus look, defined 
 
   Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G11); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
 
-- **FR-32-25 — Text can be cut to a set number of lines.** The shared typography settings gain "Cut long text" with lines shown per device (1 ends in an ellipsis on one line; 2 or more clamp; 0 shows everything again at that size). *Done when:* `vendor/bin/phpunit --filter TypographyTextLinesTest` passes.
-
-  Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G12); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
-
-- **FR-32-26 — Every scrollbar on the site follows the brand.** One theme stylesheet colours every scrollbar from `settings.custom.scrollbar` (thumb defaults to primary, an on-dark thumb to accent, track transparent); blocks that hide their bars keep them hidden; sgs/google-reviews keeps Google's look; a snapshot thumb under 3:1 against its ground is refused. *Done when:* `npx wp-scripts test-unit-js tests/js/scrollbar-contract.test.js` and `python scripts/check-snapshot-scrollbar-tokens.py --self-test` pass (in `plugins/sgs-blocks/`).
+- **FR-32-26 — Every scrollbar on the site follows the brand.** One theme stylesheet colours every scrollbar from `settings.custom.scrollbar` (thumb defaults to primary, an on-dark thumb to accent, track transparent); the page's own scrollbar keeps the arrow buttons the visitor's platform draws, while inner scrollers are slim with none; blocks that hide their bars keep them hidden; sgs/google-reviews keeps Google's look; a snapshot thumb under 2:1 against its ground is refused. The floor is 2:1, not WCAG 1.4.11's 3:1 for a restyled bar, by Bean's ruling (2026-10-19): the leading browsers' own bars sit below 3:1, and the standard is applied to secure good UX. *Done when:* `npx wp-scripts test-unit-js tests/js/scrollbar-contract.test.js` and `python scripts/check-snapshot-scrollbar-tokens.py --self-test` pass (in `plugins/sgs-blocks/`), and on Windows Chrome the page bar keeps its arrows while the drawer shows none.
 
   Status: not built. Designed in `.claude/plans/2026-10-19-control-gaps-build.md` (Design G3); found by `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps".
 
