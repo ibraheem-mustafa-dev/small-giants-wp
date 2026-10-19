@@ -289,3 +289,30 @@ test( 'MUST FAIL (dead field): every way of writing the field, a `this` alias or
 		assert.equal( why( setter ), null, `${ shape }: the field is written in live code, or may be` );
 	}
 } );
+
+// Visits side by side (INTAKE_PARALLEL_VISITS, INTAKE_PARALLEL_WIDTHS): the same verdicts as the one-at-a-time run.
+test( 'MUST FAIL (FR-48-28): visits and widths run side by side give the one-at-a-time run\'s verdicts, and really run as more units', async () => {
+	const visits = [ 'a', 'b', 'c', 'd' ].map( ( h ) => `${ ENTRY }#/${ h }` );
+	const base = { folder: FOLDER, entry: ENTRY, harPath: fx.harPath, census: fx.census, flags: fx.flags, visits };
+	const saved = { ...process.env };
+	try {
+		process.env.INTAKE_POOL = '4';
+		delete process.env.INTAKE_PARALLEL_VISITS;
+		delete process.env.INTAKE_PARALLEL_WIDTHS;
+		const one = await unreachedDefects( base );
+		process.env.INTAKE_PARALLEL_VISITS = '2';
+		const side = await unreachedDefects( base );
+		process.env.INTAKE_PARALLEL_WIDTHS = '1';
+		const both = await unreachedDefects( base );
+		const pick = ( r ) => JSON.stringify( { rows: r.rows, notDefects: r.notDefects, gaps: r.gaps } );
+		assert.equal( one.units, 3, 'the one-at-a-time run: one page group at three widths' );
+		assert.equal( side.units, 6, 'two slices of the four visits at each of three widths' );
+		assert.equal( both.units, 6 );
+		assert.equal( pick( side ), pick( one ), 'visit slices give the same verdicts' );
+		assert.equal( pick( both ), pick( one ), 'slices and widths together give the same verdicts' );
+	} finally {
+		for ( const k of [ 'INTAKE_POOL', 'INTAKE_PARALLEL_VISITS', 'INTAKE_PARALLEL_WIDTHS' ] ) {
+			undefined === saved[ k ] ? delete process.env[ k ] : ( process.env[ k ] = saved[ k ] );
+		}
+	}
+} );

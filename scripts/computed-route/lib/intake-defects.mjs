@@ -44,7 +44,8 @@ export const motionModifier = ( r ) => [ 'transition', 'keyframes' ].includes( r
 // exists only for the tests' negative
 // controls. `only` (a Set of census row IDs) limits the candidates, for a second pass over more visits. `flags`
 // (lib/intake-flags.mjs::proposeFlags rows, optional) lets a construct be prototype-only (FR-48-33). Returns { rows,
-// notDefects, gaps, blocked } (`blocked`: every forced page's aborted requests).
+// notDefects, gaps, blocked, units } (`blocked`: every forced page's aborted requests; `units`: how many width-and-visit-run units ran, which
+// INTAKE_PARALLEL_VISITS and INTAKE_PARALLEL_WIDTHS raise).
 export async function unreachedDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, onPage = null, reads = null, force = {}, only = null, flags = null } ) {
 	const out = { rows: [], notDefects: [], gaps: [], blocked: [] };
 	const unreached = census.rows.filter( ( r ) => true === r.unreached );
@@ -78,34 +79,34 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 	// One width: every page group in order on `on` (the plan the width's forceVisit calls read and mark), with onPage
 	// writing into `into`. Returns the width's gap rows, blocked requests and whether a visit failed.
 	const groups = groupVisits( visits, entry );
-	const runWidth = async ( width, on, into ) => {
+	// One unit of work: a run of a page group's visits (all of them, or a slice) at one width, on the plan `on`, with onPage
+	// writing into `into`. Returns the unit's gap rows, blocked requests and whether a visit failed.
+	const runUnit = async ( { width, group, slice, last }, on, into ) => {
 		const u = { gaps: [], blocked: [], failed: false };
 		let call = 0;
-		for ( const group of groups ) {
-			let s = null;
-			try {
-				s = await openForcedPage( { folder, entry, harPath, file: group.file, hash: group.visits[ 0 ].hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
-				for ( const [ i, v ] of group.visits.entries() ) {
-					if ( i ) {
-						await s.page.evaluate( ( h ) => {
-							window.location.hash = h;
-						}, v.hash );
-						await s.settle();
-					}
-					if ( onPage ) {
-						await onPage( s, { width, visit: v.label }, into );
-					}
-					await forceVisit( s, { plan: on, source, texts, files, selectors, triggers, width, force, last: i === group.visits.length - 1, call: call++ } );
+		let s = null;
+		try {
+			s = await openForcedPage( { folder, entry, harPath, file: group.file, hash: slice[ 0 ].hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
+			for ( const [ i, v ] of slice.entries() ) {
+				if ( i ) {
+					await s.page.evaluate( ( h ) => {
+						window.location.hash = h;
+					}, v.hash );
+					await s.settle();
 				}
-			} catch ( e ) {
-				u.failed = true;
-				u.blocked.push( ...( e.blocked || [] ) );
-				u.gaps.push( { construct: 'defect-visit', draftId: `${ group.file }@${ width }`, error: e.message.split( '\n' ).slice( 0, 3 ).join( ' ' ) } );
-			} finally {
-				if ( s ) {
-					await s.close();
-					u.blocked.push( ...s.blocked );
+				if ( onPage ) {
+					await onPage( s, { width, visit: v.label }, into );
 				}
+				await forceVisit( s, { plan: on, source, texts, files, selectors, triggers, width, force, last: last && i === slice.length - 1, call: call++ } );
+			}
+		} catch ( e ) {
+			u.failed = true;
+			u.blocked.push( ...( e.blocked || [] ) );
+			u.gaps.push( { construct: 'defect-visit', draftId: `${ group.file }@${ width }`, error: e.message.split( '\n' ).slice( 0, 3 ).join( ' ' ) } );
+		} finally {
+			if ( s ) {
+				await s.close();
+				u.blocked.push( ...s.blocked );
 			}
 		}
 		return u;
@@ -115,42 +116,63 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 		out.blocked.push( ...u.blocked );
 		u.failed && failed.add( width );
 	};
+	// Every width's page groups in order, each as one unit (the one-at-a-time run).
+	const wholeUnits = ( width ) => groups.map( ( group ) => ( { width, group, slice: group.visits, last: true } ) );
 	const sequential = async () => {
 		for ( const width of widths ) {
-			fold( await runWidth( width, plan, reads ), width );
+			const folded = { gaps: [], blocked: [], failed: false };
+			for ( const unit of wholeUnits( width ) ) {
+				const u = await runUnit( unit, plan, reads );
+				folded.gaps.push( ...u.gaps );
+				folded.blocked.push( ...u.blocked );
+				folded.failed ||= u.failed;
+			}
+			fold( folded, width );
 		}
 	};
-	// The widths run side by side only when INTAKE_PARALLEL_WIDTHS=1: on a real export the side-by-side run reached
-	// constructs at one width that the one-at-a-time run reached nowhere, so its output is not yet proven equal (FR-48-28).
-	if ( '1' !== process.env.INTAKE_PARALLEL_WIDTHS || 1 === poolSize() || widths.length < 2 || ( onPage && ! reads ) ) {
+	// Side by side (FR-48-28): the widths when INTAKE_PARALLEL_WIDTHS=1, and the visits of a page group in INTAKE_PARALLEL_VISITS
+	// slices. Each unit runs on its own copy of the plan (its own reach marks, patches, gaps and readiness; the row, target,
+	// props gating, dead and prototype verdicts shared) and the copies are merged in the order a one-at-a-time run visits
+	// them. A one-at-a-time run carries one thing across visits: a row's sc-if patches, props and gaps are read once, at the
+	// first visit whose page knows its template (p.ready), and later visits reuse them. That reading comes from the
+	// component's template, the same at every width and route, so the copies are merged as that run would hold them only
+	// when every copy that read them read the same; otherwise everything is run again one at a time.
+	const slices = Math.max( 1, Number.parseInt( process.env.INTAKE_PARALLEL_VISITS || '1', 10 ) || 1 );
+	const sideWidths = '1' === process.env.INTAKE_PARALLEL_WIDTHS;
+	const sliceOf = ( g ) => {
+		const size = Math.ceil( g.visits.length / slices );
+		return Array.from( { length: Math.ceil( g.visits.length / size ) }, ( _, i ) => g.visits.slice( i * size, ( i + 1 ) * size ) );
+	};
+	const unitList = widths.flatMap( ( width ) => groups.flatMap( ( group ) => ( slices > 1 ? sliceOf( group ) : [ group.visits ] ).map( ( slice ) => ( { width, group, slice, last: true } ) ) ) );
+	out.units = widths.length * groups.length;
+	if ( 1 === poolSize() || unitList.length < 2 || ( ! sideWidths && slices < 2 ) || ( onPage && ! reads ) ) {
 		await sequential();
 	} else {
-		// The widths side by side, each on its own copy of the plan (its own reach marks, patches, gaps and readiness;
-		// the row, target, props gating, dead and prototype verdicts shared). A one-at-a-time run carries one thing across
-		// widths: a row's sc-if patches, props and gaps are read once, at the first visit whose page knows its template
-		// (p.ready), and later widths reuse them. That reading comes from the component's template, the same at every
-		// width, so the copies are merged as that run would hold them only when every later width read the same patches,
-		// props and gaps at its very first visit (before anything used them); otherwise the widths are run again one at
-		// a time.
-		const copies = widths.map( () => new Map( [ ...plan ].map( ( [ id, p ] ) => [ id, { ...p, patches: [], gaps: [], props: new Set( p.props ), at: new Map(), ready: false } ] ) ) );
-		const intos = widths.map( () => new Map() );
-		const units = await mapPool( widths, poolSize(), ( width, i ) => runWidth( width, copies[ i ], intos[ i ] ) );
+		const copies = unitList.map( () => new Map( [ ...plan ].map( ( [ id, p ] ) => [ id, { ...p, patches: [], gaps: [], props: new Set( p.props ), at: new Map(), ready: false } ] ) ) );
+		const intos = unitList.map( () => new Map() );
+		const units = new Array( unitList.length );
+		// Without side-by-side widths the units of one width run together and the next width follows.
+		const batches = sideWidths ? [ unitList.map( ( _, i ) => i ) ] : widths.map( ( w ) => unitList.map( ( u, i ) => i ).filter( ( i ) => unitList[ i ].width === w ) );
+		for ( const batch of batches ) {
+			const done = await mapPool( batch, poolSize(), ( i ) => runUnit( unitList[ i ], copies[ i ], intos[ i ] ) );
+			batch.forEach( ( i, k ) => ( units[ i ] = done[ k ] ) );
+		}
 		const readGaps = ( q ) => q.gaps.slice( q.readyAt.gaps[ 0 ], q.readyAt.gaps[ 1 ] );
 		const sig = ( q ) => JSON.stringify( [ q.patches, [ ...q.props ], readGaps( q ) ] );
 		const firstReady = ( id ) => copies.findIndex( ( c ) => c.get( id ).ready );
 		const same = [ ...plan.keys() ].every( ( id ) => {
 			const f = firstReady( id );
-			return f < 0 || copies.slice( f + 1 ).every( ( c ) => c.get( id ).ready && 0 === c.get( id ).readyAt.call && sig( c.get( id ) ) === sig( copies[ f ].get( id ) ) );
+			return f < 0 || copies.every( ( c ) => ! c.get( id ).ready || sig( c.get( id ) ) === sig( copies[ f ].get( id ) ) );
 		} );
 		if ( same ) {
 			for ( const [ id, p ] of plan ) {
 				const f = firstReady( id );
 				copies.forEach( ( c, i ) => {
 					const q = c.get( id );
-					if ( q.at.get( widths[ i ] ) ) {
-						p.at.set( widths[ i ], true );
+					if ( q.at.get( unitList[ i ].width ) ) {
+						p.at.set( unitList[ i ].width, true );
 					}
-					const skip = f >= 0 && i > f ? q.readyAt.gaps : [ 0, 0 ];
+					const skip = f >= 0 && i > f && q.ready ? q.readyAt.gaps : [ 0, 0 ];
 					p.gaps.push( ...q.gaps.filter( ( g, k ) => k < skip[ 0 ] || k >= skip[ 1 ] ) );
 				} );
 				if ( f >= 0 ) {
@@ -158,10 +180,22 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 					Object.assign( p, { ready: true, readyAt: q.readyAt, patches: q.patches, props: q.props } );
 				}
 			}
-			units.forEach( ( u, i ) => fold( u, widths[ i ] ) );
+			// Each width's units are folded as one, so a failed visit marks its width once.
+			widths.forEach( ( width ) => {
+				const folded = { gaps: [], blocked: [], failed: false };
+				units.forEach( ( u, i ) => {
+					if ( unitList[ i ].width === width ) {
+						folded.gaps.push( ...u.gaps );
+						folded.blocked.push( ...u.blocked );
+						folded.failed ||= u.failed;
+					}
+				} );
+				fold( folded, width );
+			} );
 			for ( const into of reads ? intos : [] ) {
 				into.forEach( ( list, id ) => reads.set( id, [ ...( reads.get( id ) || [] ), ...list ] ) );
 			}
+			out.units = unitList.length;
 		} else {
 			await sequential();
 		}

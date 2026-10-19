@@ -1152,7 +1152,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/intake-pool.mjs`
 - `poolSize(env?)` → `INTAKE_POOL` as a positive integer (default 4; anything else throws).
-- `INTAKE_PARALLEL_WIDTHS=1` runs test 2's three widths side by side (off by default; `lib/intake-defects.mjs::unreachedDefects`): on Indus it reached six mega-menu constructs at 768 that the one-at-a-time run does not, cause unproven (Spec 48 FR-48-28).
+- `INTAKE_PARALLEL_WIDTHS=1` runs test 2's three widths side by side and `INTAKE_PARALLEL_VISITS=<n>` runs each page group's visits in n slices side by side (both off by default; `lib/intake-defects.mjs::unreachedDefects`, which returns `units`, the number it ran). Each unit has its own copy of the work list, merged in the order a one-at-a-time run visits; if the copies that read a row's state disagree, everything runs one at a time. The earlier difference on Indus (six mega-menu constructs reached only side by side) was the chain's leaked drawer timer (`lib/intake-defects-chain.mjs`), now fixed. Use them with `INTAKE_POOL=4` (more browsers at once hit Windows `ENOBUFS` socket errors when other sessions are busy). On Indus (2026-10-19) `INTAKE_POOL=4 INTAKE_PARALLEL_VISITS=6 INTAKE_PARALLEL_WIDTHS=1` gave `draftDefects`, `notDefects`, census and inventory identical to the one-at-a-time run and pass B 2.2 times faster with both runs sharing the machine (Spec 48 FR-48-28).
 - `mapPool(items, n, fn)` → `fn(item, index)` for every item, at most `n` of the call and the pool's slots in all at once, results in input order (a plain loop when the pool or `n` is 1 or inside a slot); `withSlot(fn)` → `fn()` run in one slot.
 
 ### `lib/intake-process.mjs`
