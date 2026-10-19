@@ -117,3 +117,21 @@ test( '(e) MUST FAIL: a page map row with no route (a menu-only or unrouted row)
 	const pageRows = [ { route: 'home' }, { route: null }, { route: 'home' }, { route: 'about' }, {} ];
 	assert.deepEqual( run( c, { routing, pageRows } ).records.filter( ( r ) => 'page' === r.kind ).map( ( r ) => r.page_key ), [ 'home', 'about' ] );
 } );
+
+test( 'MUST FAIL (QC): page-map rows that carry no route leave the adapter\'s routes in place', () => {
+	const c = { sources: [ source( ROUTER ) ], rows: [] };
+	const routing = { adapter: 'hash', routes: [ { key: 'home', source: 'pages' } ], links: [] };
+	assert.deepEqual( run( c, { routing, pageRows: [ { route: null }, {} ] } ).records.filter( ( r ) => 'page' === r.kind ).map( ( r ) => r.page_key ), [ 'home' ] );
+} );
+
+test( 'MUST FAIL (QC): a breakpoint sc-if under a negated or only partly matching route gate is not put on that page', () => {
+	const logic = `class Component extends DCComponent {
+state = { route: 'home', wide: false };
+go() { this.setState( { route: location.hash, wide: window.innerWidth > 900 } ); }
+renderVals() { return { notHome: this.state.route !== '#home', R: { pin: this.state.wide } }; }
+}`;
+	const c = { sources: [ source( logic, [ el( '1', null, 'sc-if' ), el( '2', '1', 'sc-if' ) ] ) ], rows: [ ifRow( '1', '{{ !notHome }}' ), ifRow( '2', '{{ R.pin }}' ) ] };
+	const routing = { adapter: 'hash', routes: [ { key: 'home', source: 'pages' } ], links: [] };
+	const home = run( c, { routing } ).records.find( ( r ) => 'home' === r.page_key );
+	assert.deepEqual( home.states.map( ( x ) => x.name ), [ 'default' ] );
+} );

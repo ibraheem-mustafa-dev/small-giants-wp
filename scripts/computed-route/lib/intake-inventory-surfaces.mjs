@@ -159,7 +159,8 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 	};
 	const entries = census.sources.filter( ( s ) => 'entry' === s.via ).map( ( s ) => s.component );
 	const files = 'files' === routing?.adapter;
-	const routes = pageRows && ! files ? [ ...new Set( pageRows.map( ( r ) => r.route ).filter( ( r ) => 'string' === typeof r && r ) ) ].map( ( key ) => ( { key, source: 'page map' } ) ) : routing?.routes;
+	const mapRoutes = pageRows && ! files ? [ ...new Set( pageRows.map( ( r ) => r.route ).filter( ( r ) => 'string' === typeof r && r ) ) ].map( ( key ) => ( { key, source: 'page map' } ) ) : [];
+	const routes = mapRoutes.length ? mapRoutes : routing?.routes;
 	const routeByFile = new Map( files ? routing.routes.map( ( r ) => [ r.key, r ] ) : [] );
 
 	// One record per component: the entry's app shell (or, for one file per page, the page), an import its parent mounts.
@@ -293,8 +294,15 @@ export function surfaceRecords( census, { model, anim = { records: [] }, routing
 		let page = files ? list.find( ( x ) => x.id === componentSurface.get( r.component ) && 'page' === x.kind ) : null;
 		for ( let e = byN.get( byN.get( nOf( r.draftId ) )?.parent ); ! page && e; e = byN.get( e.parent ) ) {
 			const gate = census.rows.find( ( x ) => 'sc-if' === x.kind && x.draftId === `${ r.component }:${ e.n }` && x.draftId in other.route );
-			const text = String( gate?.detail.value ?? '' ).toLowerCase().replace( /[^a-z0-9]/g, '' );
-			const key = Object.keys( routeCover ).filter( ( k ) => text.includes( k.toLowerCase().replace( /[^a-z0-9]/g, '' ) ) ).sort( ( a, b ) => b.length - a.length )[ 0 ];
+			// The route key as whole words of the condition (`isHome` holds `home`; `faq` is not in `faqs`), and a negated gate names none.
+			const words = ( v ) => String( v ).replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( Boolean );
+			const negated = /^\s*\{\{\s*!(?!=)/.test( gate?.detail.value ?? '' );
+			const have = words( gate?.detail.value ?? '' );
+			const holds = ( k ) => {
+				const need = words( k );
+				return need.length > 0 && have.some( ( _, i ) => need.every( ( w, j ) => have[ i + j ] === w ) );
+			};
+			const key = negated ? undefined : Object.keys( routeCover ).filter( holds ).sort( ( a, b ) => b.length - a.length )[ 0 ];
 			page = key ? list.find( ( x ) => x.id === routeCover[ key ] ) : null;
 		}
 		if ( page ) {

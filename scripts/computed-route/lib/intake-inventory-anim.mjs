@@ -57,7 +57,13 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 	const triggerField = ( tr ) => ( { type: tr.type, detail: tr.detail, ...( tr.state_keys?.length ? { state_keys: tr.state_keys } : {} ) } );
 	// The reduced-motion rule that forces every transition to about zero, and the properties each component transitions: a
 	// JS style write with no guard of its own still lands, instantly, when its property is transitioned (a smoothing).
-	const zeroed = census.rows.some( ( x ) => 'transition' === x.kind && 'stylesheet' === x.detail?.via && /^\*/.test( x.detail.selector || '' ) && 'transition-duration' === x.detail.property && /^0*\.?0*1?m?s?$/.test( String( x.detail.value ).replace( /\s*!important/, '' ) ) );
+	// A universal rule that forces transitions to about nothing (the census rows carry no @media, so `!important` marks the
+	// reduced-motion override): a duration of at most one millisecond.
+	const tiny = ( v ) => {
+		const m = /^\s*(\d*\.?\d+)(ms|s)\b\s*!important\s*$/.exec( String( v ) );
+		return !! m && Number( m[ 1 ] ) * ( 's' === m[ 2 ] ? 1000 : 1 ) <= 1;
+	};
+	const zeroed = census.rows.some( ( x ) => 'transition' === x.kind && 'stylesheet' === x.detail?.via && /^\s*\*/.test( x.detail.selector || '' ) && 'transition-duration' === x.detail.property && tiny( x.detail.value ) );
 	const transitioned = new Map();
 	const timings = new Map();
 	for ( const x of census.rows.filter( ( y ) => 'transition' === y.kind && 'transition' === y.detail?.property ) ) {
@@ -89,8 +95,13 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 		};
 		return { duration_ms: pick( 0 ), easing: pick( 1 ) };
 	};
-	const smoothed = ( rm, comp, props ) => 'unchanged' === rm.behaviour && zeroed && props.some( ( q ) => transitioned.get( comp )?.has( q.property ) || transitioned.get( comp )?.has( 'all' ) )
-		? { behaviour: 'final-state', detail: 'still written; its CSS transition is forced to about zero by the reduced-motion rule' } : rm;
+	// On a known template element only its own transitions count; with none known, the component's.
+	const smoothed = ( rm, comp, props, tpls = [] ) => {
+		const covers = ( q ) => tpls.length ? tpls.some( ( n ) => timings.get( `${ comp }:${ n }` )?.has( q.property ) || timings.get( `${ comp }:${ n }` )?.has( 'all' ) )
+			: transitioned.get( comp )?.has( q.property ) || transitioned.get( comp )?.has( 'all' );
+		return 'unchanged' === rm.behaviour && zeroed && props.some( covers )
+			? { behaviour: 'final-state', detail: 'still written; its CSS transition is forced to about zero by the reduced-motion rule' } : rm;
+	};
 	// A helper called from several triggers is one record per caller.
 	const triggersOf = ( tr ) => [ { ...tr, others: undefined }, ...( tr.others || [] ) ];
 	const statusOf = ( tr ) => ( false === tr.called ? 'dead-code' : 'active' );
@@ -141,7 +152,7 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 				source: { file, function: fn, ref: /^ref /.test( t.selector ) ? t.selector.slice( 4 ) : null, line: lineOf( w.node ), code: textOf( p, w.node ) },
 				trigger: triggerField( trg ), properties: w.properties.map( ( x ) => ( { property: x.property, from: null, to: x.to ?? null, ...( x.formula ? { formula: x.formula } : {} ) } ) ),
 				duration_ms: smoothing( comp, w.properties, t.tpl )?.duration_ms ?? 0, delay_ms: 'number' === typeof trg.delay ? trg.delay : 0, stagger: null, easing: smoothing( comp, w.properties, t.tpl )?.easing ?? null, iterations: 'interval' === trg.type || 'loop' === trg.type ? 'infinite' : 1,
-				direction: null, fill: null, reduced_motion: smoothed( reducedMotionOf( p, w.node ), comp, w.properties ), status: statusOf( trg ),
+				direction: null, fill: null, reduced_motion: smoothed( reducedMotionOf( p, w.node ), comp, w.properties, t.tpl ), status: statusOf( trg ),
 				trace: { observed: 'not-instrumented', note: 'the census does not trace style writes; timer and frame writers are sampled (inventory.samples)' },
 			}, inside, { comp, tpl: t.tpl.map( ( n ) => `${ t.comp }:${ n }` ), via: trg.via.map( ( o ) => `${ comp }@${ o }` ), members: trg.members.map( ( m ) => `${ comp }:${ m }` ), trigger: trg } ) );
 			const rec = recs[ 0 ];

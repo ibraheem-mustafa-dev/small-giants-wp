@@ -278,3 +278,103 @@ onScroll = () => { this._head.style.boxShadow = window.scrollY > 8 ? '0 1px 2px 
 	assert.equal( withRule[ 0 ].duration_ms, 300 );
 	assert.ok( line > 0 && col >= 0 );
 } );
+
+// QC council (2026-10-19): the cases a cold reviewer reproduced against the first version of these fixes.
+test( 'MUST FAIL (QC): two methods that call each other with no guard do not overflow the stack and read unchanged', () => {
+	const m = appModel( `class Component extends DCComponent {
+next() { this.show(); }
+show() { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); setTimeout( () => this.next(), 100 ); }
+}` );
+	assert.equal( reducedMotionOf( m.progs.get( 'App' ), firstCall( m, 'animate' ) ).behaviour, 'unchanged' );
+} );
+
+test( 'MUST FAIL (QC): one unguarded caller keeps the write live under reduced motion', () => {
+	const m = appModel( `class Component extends DCComponent {
+tick() { if ( this.rm ) return; this.step(); }
+onClick() { this.step(); }
+step() { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); }
+}` );
+	assert.equal( reducedMotionOf( m.progs.get( 'App' ), firstCall( m, 'animate' ) ).behaviour, 'unchanged' );
+} );
+
+test( 'MUST FAIL (QC): a dead write is dead for every trigger of the helper, not only the first', () => {
+	const rows = [ { id: 'h0', kind: 'handler', component: 'App', draftId: 'App:3', detail: { wiring: 'template', event: 'onMouseEnter', method: 'onEnter' } } ];
+	const m = appModel( `class Component extends DCComponent {
+componentDidMount() { this.go(); }
+onEnter() { this.go(); }
+go() { const d = 'Off'; if ( d === 'Off' ) return; this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); }
+}`, rows );
+	const t = triggerOf( m, 'App', firstCall( m, 'animate' ) );
+	assert.deepEqual( [ t.called, ...( t.others || [] ).map( ( x ) => x.called ) ], [ false, false ] );
+} );
+
+test( 'MUST FAIL (QC): a list set as a class field, or filled any way but a guarded push, is not an empty loop', () => {
+	const field = appModel( `class Component extends DCComponent {
+items = [ 1, 2 ];
+componentDidMount() { this.update(); }
+update() { for ( const it of this.items ) { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } }
+}` );
+	assert.notEqual( triggerOf( field, 'App', firstCall( field, 'animate' ) ).called, false );
+	const spliced = appModel( `class Component extends DCComponent {
+componentDidMount() { this._items = []; this._items.splice( 0, 0, 1 ); this.update(); }
+update() { for ( const it of this._items ) { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } }
+}` );
+	assert.notEqual( triggerOf( spliced, 'App', firstCall( spliced, 'animate' ) ).called, false );
+} );
+
+test( 'MUST FAIL (QC): a parameter or let of the same name elsewhere does not make a constant early return', () => {
+	const m = appModel( `class Component extends DCComponent {
+a() { const mode = 'Off'; return mode; }
+componentDidMount() { this.b( 'On' ); }
+b( mode ) { if ( mode === 'Off' ) return; this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); }
+}` );
+	assert.notEqual( triggerOf( m, 'App', firstCall( m, 'animate' ) ).called, false );
+} );
+
+test( 'MUST FAIL (QC): a null check is not pointer-leave and the else branch of an error test is not validation-fail', () => {
+	const nul = appModel( `class Component extends DCComponent {
+componentDidMount() { window.addEventListener( 'scroll', () => { if ( this._el !== null ) { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } } ); }
+}` );
+	assert.equal( triggerOf( nul, 'App', firstCall( nul, 'animate' ) ).type, 'scroll-position' );
+	const ok = appModel( `class Component extends DCComponent {
+componentDidMount() { window.addEventListener( 'click', () => { if ( Object.keys( errs ).length === 0 ) { this._ok.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } } ); }
+}` );
+	assert.equal( triggerOf( ok, 'App', firstCall( ok, 'animate' ) ).type, 'press' );
+	const bad = appModel( `class Component extends DCComponent {
+componentDidMount() { window.addEventListener( 'click', () => { if ( Object.keys( errs ).length ) { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); } } ); }
+}` );
+	assert.equal( triggerOf( bad, 'App', firstCall( bad, 'animate' ) ).type, 'validation-fail', 'the control: the non-empty error map is still validation-fail' );
+} );
+
+test( 'MUST FAIL (QC): removeEventListener before addEventListener of the same handler still finds the listener', () => {
+	const m = appModel( `class Component extends DCComponent {
+componentDidMount() { this._s = () => { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); }; window.removeEventListener( 'scroll', this._s ); window.addEventListener( 'scroll', this._s ); }
+}` );
+	assert.equal( triggerOf( m, 'App', firstCall( m, 'animate' ) ).type, 'scroll-position' );
+} );
+
+test( 'MUST FAIL (QC): a diamond of callers does not invent a recursive state trigger', () => {
+	const rows = [ { id: 'h0', kind: 'handler', component: 'App', draftId: 'App:3', detail: { wiring: 'template', event: 'onClick', method: 'd' } } ];
+	const m = appModel( `class Component extends DCComponent {
+d() { this.b(); this.c(); }
+b() { this.h(); }
+c() { this.h(); }
+h() { this._el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 300 } ); }
+}`, rows );
+	const t = triggerOf( m, 'App', firstCall( m, 'animate' ) );
+	assert.deepEqual( [ t, ...( t.others || [] ) ].map( ( x ) => x.type ), [ 'press' ] );
+} );
+
+test( 'MUST FAIL (QC): a global transition-duration that is not the reduced-motion override (no !important, or over a millisecond) is no smoothing claim', () => {
+	const logic = `class Component extends DCComponent {
+componentDidMount() { window.addEventListener( 'scroll', this.onScroll ); }
+onScroll = () => { this._head.style.boxShadow = window.scrollY > 8 ? '0 1px 2px #000' : 'none'; };
+}`;
+	const src = { component: 'App', file: 'App.dc.html', via: 'entry', logic, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } };
+	const rule = ( value ) => ( { id: `r${ value }`, kind: 'transition', component: 'App', draftId: 'App:6', detail: { via: 'stylesheet', selector: '*, ::before', property: 'transition-duration', value } } );
+	const header = { id: 'tr', kind: 'transition', component: 'App', draftId: 'App:36', detail: { via: 'style', property: 'transition', value: 'box-shadow .3s ease' } };
+	const behaviour = ( value ) => animationRecords( { sources: [ src ], rows: [ rule( value ), header ] } ).records.find( ( r ) => 'J' === r.id[ 0 ] ).reduced_motion.behaviour;
+	assert.equal( behaviour( '1s' ), 'unchanged' );
+	assert.equal( behaviour( '0.5s !important' ), 'unchanged' );
+	assert.equal( behaviour( '0.01ms !important' ), 'final-state', 'the control: the real override' );
+} );

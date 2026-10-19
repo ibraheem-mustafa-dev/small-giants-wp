@@ -303,13 +303,13 @@ async function settlePhase( page, o, label ) {
 	}
 }
 
-// Runs the clock until no timeout (due within timeoutMaxMs) and no frame callback is pending, at most capMs of virtual
+// Runs the clock until no timeout (due within capMs) and no frame callback is pending, at most capMs of virtual
 // time; intervals keep running. The timers a forced state or event started finish, so putting the state back leaves
 // nothing queued to act on the restored page (a close animation's 420ms timer). Returns the virtual ms run.
 export async function drainTimeouts( page, opts = {}, capMs = 2000 ) {
 	const o = harnessOptions( opts );
 	const start = await page.evaluate( () => performance.now() );
-	const windowEnd = start + o.timeoutMaxMs;
+	const windowEnd = start + capMs;
 	let q = 0;
 	let now = start;
 	for ( ;; ) {

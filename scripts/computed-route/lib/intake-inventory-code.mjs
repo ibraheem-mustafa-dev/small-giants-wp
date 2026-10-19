@@ -187,7 +187,8 @@ export function triggerOf( model, comp, node, seen = new Set() ) {
 	// trigger its code is wired to (a scroll listener) and is dead code.
 	const p = model.progs.get( comp );
 	const dead = constantReturn( p, node ) || emptyLoop( p, node );
-	return dead ? { ...t, called: false, detail: `${ t.detail } (never runs: ${ dead.detail })` } : t;
+	const never = ( x ) => ( { ...x, called: false, detail: `${ x.detail } (never runs: ${ dead.detail })` } );
+	return dead ? { ...never( t ), others: t.others?.map( never ) } : t;
 }
 
 function triggerWalk( model, comp, node, seen ) {
@@ -205,8 +206,8 @@ function triggerWalk( model, comp, node, seen ) {
 		// method its assignment sits in: the listener that receives `this.X` decides the trigger (a scroll handler kept on the instance).
 		const kept = 'AssignmentExpression' === up?.type && up.right === a && isThis( up.left ) ? prop( up.left ) : null;
 		if ( kept ) {
-			const wired = ( p.refs.get( kept ) || [] ).map( ( r ) => p.parents.get( r ) ).find( ( x ) => 'CallExpression' === x?.type && x.arguments.some( ( y ) => isThis( y ) && prop( y ) === kept ) );
-			if ( wired && 'addEventListener' === prop( wired.callee ) ) {
+			const wired = ( p.refs.get( kept ) || [] ).map( ( r ) => p.parents.get( r ) ).find( ( x ) => 'CallExpression' === x?.type && 'addEventListener' === prop( x.callee ) && x.arguments.some( ( y ) => isThis( y ) && prop( y ) === kept ) );
+			if ( wired ) {
 				via.push( wired.start );
 				const ev = literalOf( wired.arguments[ 0 ] );
 				return done( { type: eventTrigger( ev ), detail: `${ ev } listener on ${ textOf( p, wired.callee.object ) } (this.${ kept })` } );
@@ -302,7 +303,7 @@ function triggerWalk( model, comp, node, seen ) {
 		return done( { type: eventTrigger( listener.detail.event ), detail: `${ listener.detail.event } listener on ${ listener.detail.target } (${ m.name })` } );
 	}
 	if ( seen.has( `${ comp }:${ m.name }` ) ) {
-		return done( { type: 'state', detail: `recursive call into ${ m.name }`, called: true } );
+		return done( { type: 'state', detail: `recursive call into ${ m.name }`, called: false } );
 	}
 	seen.add( `${ comp }:${ m.name }` );
 	const found = [];
@@ -395,19 +396,48 @@ function paramNeeds( p, method, node ) {
 // `errs.x`, `!!err`) runs only when validation fails; an `if` that compares the element it tracks with the one just
 // hit (`this._tiltEl !== t`) runs only when the pointer leaves that element.
 function guardTrigger( p, node ) {
+	let child = node;
 	for ( const a of ancestors( p, node ) ) {
-		if ( ! /^(IfStatement|ConditionalExpression)$/.test( a.type ) ) {
+		const inThen = a.consequent === child;
+		child = a;
+		if ( ! /^(IfStatement|ConditionalExpression)$/.test( a.type ) || ! inThen ) {
 			continue;
 		}
 		const test = textOf( p, a.test );
-		if ( /\b(errs?|errors?|err|invalid)\b/i.test( test ) ) {
+		// An error map that is non-empty (not `! errs`, `=== 0`, `< 1`) is the validation-fail branch.
+		if ( /\b(errs?|errors?|err|invalid)\b/i.test( test ) && ! /^\s*!(?!=)|(?:===?|<=?)\s*[01]\b/.test( test ) ) {
 			return { type: 'validation-fail', detail: `guarded by ${ test }` };
 		}
-		if ( /this\.\w+\s*!==?\s*\w+|\w+\s*!==?\s*this\.\w+/.test( test ) ) {
+		// `this.X !== t` where t is another tracked value (not null, undefined, a literal or a deeper member).
+		if ( /\bthis\.[\w$]+(?![\w$.(])\s*!==?\s*(?!null\b|undefined\b|['"\d-])[A-Za-z_$][\w$]*\b(?![.(])|\b(?!null\b|undefined\b)[A-Za-z_$][\w$]*\s*!==?\s*this\.[\w$]+(?![\w$.(])/.test( test ) ) {
 			return { type: 'pointer-leave', detail: `runs when the tracked element changes: ${ test }` };
 		}
 	}
 	return null;
+}
+
+// The string literal an expression always holds: a literal, a `const` local of its function initialised to one, or a method
+// parameter every call site passes that same constant for (followed up to three methods out); undefined otherwise.
+function constOf( p, expr, depth ) {
+	if ( 'StringLiteral' === expr?.type ) {
+		return expr.value;
+	}
+	if ( 'Identifier' !== expr?.type || depth > 3 ) {
+		return undefined;
+	}
+	const fn = ancestors( p, expr ).find( isFn );
+	const local = declaratorsOf( p ).get( expr.name )?.find( ( d ) => d.start < expr.start && 'StringLiteral' === d.init?.type && 'const' === p.parents.get( d )?.kind && ancestors( p, d ).find( isFn ) === fn );
+	if ( local ) {
+		return local.init.value;
+	}
+	const at = fn?.params?.findIndex( ( x ) => x.name === expr.name ) ?? -1;
+	const key = fn && /^(ClassMethod|ObjectMethod)$/.test( fn.type ) ? ( fn.key?.name ?? fn.key?.value ) : null;
+	if ( at < 0 || ! key ) {
+		return undefined;
+	}
+	const calls = ( p.refs.get( key ) || [] ).map( ( r ) => p.parents.get( r ) ).filter( ( c ) => 'CallExpression' === c?.type && 'MemberExpression' === c.callee?.type && prop( c.callee ) === key );
+	const values = calls.map( ( c ) => constOf( p, c.arguments[ at ], depth + 1 ) );
+	return calls.length && values.every( ( v ) => undefined !== v && v === values[ 0 ] ) ? values[ 0 ] : undefined;
 }
 
 // True when an early return on a constant makes the node unreachable: an enclosing function's body holds, before the
@@ -428,9 +458,12 @@ function constantReturn( p, node ) {
 			if ( 'BinaryExpression' !== t.type || '===' !== t.operator || 'Identifier' !== t.left.type || 'StringLiteral' !== t.right.type ) {
 				continue;
 			}
-			const decl = declaratorsOf( p ).get( t.left.name )?.find( ( d ) => d.start < s.start && 'StringLiteral' === d.init?.type );
-			if ( decl && decl.init.value === t.right.value ) {
-				return { detail: `returns early when ${ textOf( p, t ) } (a constant ${ JSON.stringify( decl.init.value ) })` };
+			// A `const` of this very function (a parameter or a `let` of the same name elsewhere says nothing).
+			const decl = declaratorsOf( p ).get( t.left.name )?.find( ( d ) => d.start < s.start && 'StringLiteral' === d.init?.type
+				&& 'const' === p.parents.get( d )?.kind && ancestors( p, d ).find( isFn ) === a );
+			const value = decl ? decl.init.value : constOf( p, t.left, 0 );
+			if ( undefined !== value && value === t.right.value ) {
+				return { detail: `returns early when ${ textOf( p, t ) } (a constant ${ JSON.stringify( value ) })` };
 			}
 		}
 	}
@@ -440,12 +473,19 @@ function constantReturn( p, node ) {
 // True when the node sits in `for ( x of this.F )` and every write to this.F leaves it empty: it is only ever set to `[]`,
 // and each `this.F.push( … )` is itself behind a constant early return (a list only dead code fills never has an item).
 function emptyLoop( p, node ) {
+	const READS = /^(length|forEach|map|filter|some|every|find|includes|indexOf|slice|join)$/;
 	for ( const a of ancestors( p, node ) ) {
 		if ( 'ForOfStatement' !== a.type || ! isThis( a.right ) ) {
 			continue;
 		}
 		const name = prop( a.right );
+		// A class field holding items fills it.
+		if ( p.nodes.some( ( n ) => /^Class(Property|PrivateProperty)$/.test( n.type ) && ( n.key?.name ?? n.key?.value ) === name && n.value && ! ( 'ArrayExpression' === n.value.type && ! n.value.elements.length ) ) ) {
+			return null;
+		}
 		const fills = [];
+		let emptied = false;
+		let known = true;
 		for ( const r of p.refs.get( name ) || [] ) {
 			const up = p.parents.get( r );
 			const call = 'MemberExpression' === up?.type ? p.parents.get( up ) : null;
@@ -453,11 +493,16 @@ function emptyLoop( p, node ) {
 				if ( 'ArrayExpression' !== up.right.type || up.right.elements.length ) {
 					return null;
 				}
-			} else if ( 'CallExpression' === call?.type && 'push' === prop( up ) ) {
+				emptied = true;
+			} else if ( 'MemberExpression' === up?.type && up.object === r && ! up.computed && 'push' === prop( up ) && 'CallExpression' === call?.type ) {
 				fills.push( call );
+			} else if ( 'MemberExpression' === up?.type && up.object === r && ! up.computed && READS.test( prop( up ) ) ) {
+				continue;
+			} else if ( ! ( ( 'ForOfStatement' === up?.type && up.right === r ) || /^(LogicalExpression|UnaryExpression)$/.test( up?.type ) || ( /^(IfStatement|ConditionalExpression)$/.test( up?.type ) && up.test === r ) ) ) {
+				known = false;
 			}
 		}
-		if ( fills.every( ( f ) => constantReturn( p, f ) ) ) {
+		if ( emptied && known && fills.every( ( f ) => constantReturn( p, f ) ) ) {
 			return { detail: `loops over this.${ name }, which only code behind a constant early return ever fills` };
 		}
 	}
@@ -516,7 +561,7 @@ function readsReducedMotion( test ) {
 
 // The reduced-motion guard on the code path of a node (METHOD.md §5.5): an enclosing test, or an early `return` before
 // it in an enclosing function, that reads reduced motion. { behaviour: 'skip'|'unchanged', detail }.
-export function reducedMotionOf( p, node ) {
+export function reducedMotionOf( p, node, seen = new Set() ) {
 	const chain = [ node, ...ancestors( p, node ) ];
 	// A reduced-motion read inside the write's own arguments (`duration: this.rm ? 0 : 600`) decides the value there.
 	let own = null;
@@ -554,16 +599,15 @@ export function reducedMotionOf( p, node ) {
 			break;
 		}
 	}
-	// A guard in a caller of the write's method (a caller returns early under reduced motion before the call runs).
+	// A guard in every caller of the write's method (each caller returns early under reduced motion before the call runs); one
+	// unguarded caller leaves the write live. A method already being read up the chain is unguarded (a cycle).
 	const m = memberOf( p, node );
-	for ( const call of m ? [ ...( p.calls.get( m.name ) || [] ), ...( p.refs.get( m.name ) || [] ).map( ( r ) => p.parents.get( r ) ).filter( ( x ) => 'CallExpression' === x?.type ) ] : [] ) {
-		const caller = memberOf( p, call );
-		if ( ! caller || caller.name === m.name ) {
-			continue;
-		}
-		const g = reducedMotionOf( p, call );
-		if ( 'skip' === g.behaviour ) {
-			return { behaviour: 'skip', detail: `${ caller.name } calls ${ m.name } past its guard: ${ g.detail }` };
+	if ( m && ! seen.has( m.name ) ) {
+		const calls = [ ...( p.calls.get( m.name ) || [] ), ...( p.refs.get( m.name ) || [] ).map( ( r ) => p.parents.get( r ) ).filter( ( x ) => 'CallExpression' === x?.type ) ]
+			.filter( ( call ) => memberOf( p, call ) && memberOf( p, call ).name !== m.name );
+		const guards = calls.map( ( call ) => reducedMotionOf( p, call, new Set( [ ...seen, m.name ] ) ) );
+		if ( guards.length && guards.every( ( g ) => 'skip' === g.behaviour ) ) {
+			return { behaviour: 'skip', detail: `${ memberOf( p, calls[ 0 ] ).name } calls ${ m.name } past its guard: ${ guards[ 0 ].detail }` };
 		}
 	}
 	return { behaviour: 'unchanged', detail: 'no reduced-motion guard on this code path' };

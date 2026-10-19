@@ -81,6 +81,8 @@ export async function chainPass( s, { triggers, patches, pending, check, rendere
 			return;
 		}
 		if ( ! await s.changed( slot ) ) {
+			// A timer may still change the state later (a setState inside a setTimeout); it ends here, not in the next attempt.
+			await s.drain();
 			return;
 		}
 		await s.nudge();

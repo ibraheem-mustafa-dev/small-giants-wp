@@ -162,7 +162,10 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 		const firstReady = ( id ) => copies.findIndex( ( c ) => c.get( id ).ready );
 		const same = [ ...plan.keys() ].every( ( id ) => {
 			const f = firstReady( id );
-			return f < 0 || copies.every( ( c ) => ! c.get( id ).ready || sig( c.get( id ) ) === sig( copies[ f ].get( id ) ) );
+			// The copies that read the state agree, and every later copy read it too whenever there is a patch to force with: a
+			// one-at-a-time run forces a row's patches on every visit after the one that read them.
+			return f < 0 || ( copies.every( ( c ) => ! c.get( id ).ready || sig( c.get( id ) ) === sig( copies[ f ].get( id ) ) )
+				&& ( 0 === copies[ f ].get( id ).patches.length || copies.slice( f + 1 ).every( ( c ) => c.get( id ).ready ) ) );
 		} );
 		if ( same ) {
 			for ( const [ id, p ] of plan ) {
