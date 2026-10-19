@@ -12,8 +12,11 @@ export const MARKER_REST_GRADIENT = 'linear-gradient(90deg, #9b1357 0%, #13579b 
 export const CAL_PREFIX = 'cr-ref-cal-';
 
 // Properties calibration reads beyond the walker's own: a setting painting one of them is still located (its slot
-// and default paint are recorded) even before the walker compares that property.
-export const CAL_EXTRA_PROPS = [ 'height', 'min-width', 'max-height', 'stroke', 'fill', 'grid-template-rows', 'grid-auto-columns', 'column-count', 'flex-basis', 'writing-mode', 'background-attachment', 'background-size', 'background-position', 'border-image-source', 'object-position', 'text-indent', 'border-bottom-style', 'border-left-style', 'border-right-style', 'text-decoration-style', 'animation-delay', 'mix-blend-mode', 'stroke-width', 'stroke-dasharray' ];
+// and default paint are recorded) even before the walker compares that property. The second line holds what a block's
+// own stylesheet, the theme or a setting under another name paints on the drafts' elements
+// (.claude/reports/2026-10-19-css-equivalence-audit.md), so a draft value equal to that paint is judged equal.
+export const CAL_EXTRA_PROPS = [ 'height', 'min-width', 'max-height', 'stroke', 'fill', 'grid-template-rows', 'grid-auto-columns', 'column-count', 'flex-basis', 'writing-mode', 'background-attachment', 'background-size', 'background-position', 'border-image-source', 'object-position', 'text-indent', 'border-bottom-style', 'border-left-style', 'border-right-style', 'text-decoration-style', 'animation-delay', 'mix-blend-mode', 'stroke-width', 'stroke-dasharray',
+	'right', 'bottom', 'flex-shrink', 'order', 'grid-auto-flow', 'overflow-x', 'overflow-y', 'overscroll-behavior-x', 'overscroll-behavior-y', 'resize', 'pointer-events', 'cursor', 'accent-color', 'scrollbar-width', 'background-clip', 'background-repeat', 'stroke-linecap', 'stroke-linejoin', 'box-sizing', 'scroll-behavior', 'scroll-margin-top', 'scroll-padding-top', 'scroll-padding-right', 'scroll-padding-bottom', 'scroll-padding-left', 'scroll-snap-align', 'scroll-snap-type', 'white-space', 'direction' ];
 
 export const READ_PROPS = [ ...new Set( [ ...DEFAULT_PROPS.filter( ( p ) => ! /^icon-/.test( p ) ), ...REF_PROPS, ...HOVER_PROPS, ...CAL_EXTRA_PROPS ] ) ];
 
@@ -27,8 +30,10 @@ export const CAL_PSEUDO_PROPS = [ ...new Set( [ ...PSEUDO_PROPS, ...CAL_EXTRA_PS
 // Properties read on ::placeholder and ::first-letter.
 export const TEXT_PSEUDO_PROPS = [ 'color', 'font-size', 'font-family', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'opacity', 'float' ];
 
-// Inherited properties are never default paint (R-47-5 compares them with the parent's live value instead).
-export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-wrap', 'text-shadow' ];
+// Inherited properties are never default paint (R-47-5 compares them with the parent's live value instead). cursor,
+// pointer-events and accent-color inherit in CSS too but are recorded as default paint: a block's own stylesheet sets
+// them on its elements (a button's pointer, a form's accent), which a comparison with the parent would miss.
+export const INHERITED = [ 'color', 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'text-align', 'text-wrap', 'text-shadow', 'white-space', 'direction' ];
 
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 

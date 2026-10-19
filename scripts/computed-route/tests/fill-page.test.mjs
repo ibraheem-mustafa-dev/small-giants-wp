@@ -60,7 +60,9 @@ test( 'an inherited property the snapshot does not set takes the CSS initial val
 	assert.equal( b.value( 'text-shadow', 1440 ), 'none' );
 	assert.equal( b.value( 'text-transform', 1440 ), 'none' );
 	assert.equal( b.value( 'letter-spacing', 1440 ), 'normal' );
-	assert.deepEqual( Object.keys( INITIAL ).sort(), [ 'font-style', 'letter-spacing', 'text-align', 'text-shadow', 'text-transform', 'text-wrap' ] );
+	assert.equal( b.value( 'white-space', 1440 ), 'normal' );
+	assert.equal( b.value( 'direction', 1440 ), 'ltr' );
+	assert.deepEqual( Object.keys( INITIAL ).sort(), [ 'direction', 'font-style', 'letter-spacing', 'text-align', 'text-shadow', 'text-transform', 'text-wrap', 'white-space' ] );
 	const fluid = pageBaseline( { ...RAW, styles: { ...RAW.styles, typography: { ...RAW.styles.typography, fontSize: 'var:preset|font-size|fluid' } } }, 'p' );
 	assert.equal( fluid.value( 'font-size', 1440 ), undefined, 'a clamp() preset is not a px baseline' );
 	assert.equal( fluid.value( 'line-height', 1440 ), undefined, 'and a ratio with no own font size is unknown' );
