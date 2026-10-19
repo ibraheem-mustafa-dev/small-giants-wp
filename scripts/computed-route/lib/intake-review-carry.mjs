@@ -1,0 +1,27 @@
+// Marks Bean wrote in review.md that were never applied to intake.json (`intake.mjs --apply-review`), kept across a
+// re-run (Spec 48 FR-48-17). A re-run carries marks from the previous intake.json's review rows (intake-review.mjs::
+// carryOver), so without this step every mark that lives only in review.md is lost when the run rewrites the file.
+import { parseReview, isoDay } from './intake-review.mjs';
+
+// The previous intake with each unmarked review row given the mark review.md holds for it (dated `markedOn`, the day
+// the file was last written), so carryOver keeps it while the row's content hash holds. Returns { intake, carried:
+// [rowIds], acceptAll: [section row types whose Accept all box is ticked] }; an Accept all tick is section-wide and has
+// no row of its own to carry, so the caller reports it. A review.md that does not parse carries nothing.
+export function withUnappliedMarks( previous, markdown, { day = isoDay() } = {} ) {
+	const out = { intake: previous, carried: [], acceptAll: [] };
+	if ( ! previous || 'string' !== typeof markdown ) {
+		return out;
+	}
+	const parsed = parseReview( markdown );
+	out.acceptAll = Object.entries( parsed.sections ).filter( ( [ , s ] ) => s.acceptAll ).map( ( [ t ] ) => t );
+	const review = ( previous.review || [] ).map( ( r ) => {
+		const mark = parsed.rowMarks[ r.rowId ];
+		if ( null !== r.mark || ! mark ) {
+			return r;
+		}
+		out.carried.push( r.rowId );
+		return { ...r, mark, markedOn: day };
+	} );
+	out.intake = { ...previous, review };
+	return out;
+}

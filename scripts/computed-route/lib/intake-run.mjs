@@ -16,6 +16,7 @@ import { runIsolated } from './intake-process.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
 import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
+import { withUnappliedMarks } from './intake-review-carry.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
@@ -215,6 +216,16 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 			previous = readJson( at.intake );
 		} catch ( e ) {
 			say( `the previous intake.json does not parse (${ e.message }); no marks are carried` );
+		}
+	}
+	if ( previous && fs.existsSync( at.review ) ) {
+		const kept = withUnappliedMarks( previous, fs.readFileSync( at.review, 'utf8' ), { day: fs.statSync( at.review ).mtime.toISOString().slice( 0, 10 ) } );
+		previous = kept.intake;
+		if ( kept.carried.length ) {
+			say( `review.md: ${ kept.carried.length } mark(s) not yet applied are carried (${ kept.carried.slice( 0, 5 ).join( ', ' ) }${ kept.carried.length > 5 ? ', …' : '' })` );
+		}
+		if ( kept.acceptAll.length ) {
+			say( `review.md: Accept all was ticked in ${ kept.acceptAll.join( ', ' ) }; a tick is not carried, so tick it again in the new review.md` );
 		}
 	}
 	const carried = carryOver( previous, record );

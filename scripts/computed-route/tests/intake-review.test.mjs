@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadAjv, schemaProblems } from '../lib/handoff.mjs';
 import { reviewRows, renderReview, parseReview, applyReview, carryOver, markProblem, notDefectLine, MARKS, ROW_TYPES, byCause, CONFIDENT_HEADING } from '../lib/intake-review.mjs';
+import { withUnappliedMarks } from '../lib/intake-review-carry.mjs';
 import { deadCodeWhy } from '../lib/intake-defects-static.mjs';
 import { deadFieldVerdict } from '../lib/intake-defects-deadfield.mjs';
 import { diffAnimations } from '../lib/intake-inventory-diff.mjs';
@@ -359,4 +360,20 @@ test( 'review.md writes each paragraph of its guide as one line (no hard wraps)'
 	const md = renderReview( fixture() );
 	const guide = md.split( '\n' ).find( ( l ) => l.startsWith( 'How to mark:' ) );
 	assert.match( guide, /Then run `node scripts\/computed-route\/intake\.mjs --apply-review acme-bakery`\.$/ );
+} );
+
+test( 'MUST FAIL: a mark written in review.md but never applied survives a re-run; a changed row drops it, and a ticked Accept all is reported', () => {
+	const prev = { ...fixture(), review: carryOver( null, fixture() ).review };
+	const [ a, b ] = prev.review;
+	const md = mark( renderReview( prev ), { accept: [ a.rowType ], rows: { [ a.rowId ]: 'gap:draft reading', [ b.rowId ]: 'gap:draft reading' } } );
+	const kept = withUnappliedMarks( prev, md, { day: '2026-10-18' } );
+	assert.deepEqual( kept.carried, [ a.rowId, b.rowId ] );
+	assert.deepEqual( kept.acceptAll, [ a.rowType ] );
+	const next = fixture();
+	const { review } = carryOver( { ...kept.intake, review: kept.intake.review.map( ( r ) => ( r.rowId === b.rowId ? { ...r, contentHash: 'old' } : r ) ) }, next );
+	assert.deepEqual( [ review.find( ( r ) => r.rowId === a.rowId ).mark, review.find( ( r ) => r.rowId === a.rowId ).markedOn ], [ 'gap:draft reading', '2026-10-18' ] );
+	assert.equal( review.find( ( r ) => r.rowId === b.rowId ).mark, null, 'a row whose content changed is unmarked, as for an applied mark' );
+	assert.equal( carryOver( prev, next ).review.find( ( r ) => r.rowId === a.rowId ).mark, null, 'control: without the review.md step the mark is lost' );
+	const applied = { ...prev, review: prev.review.map( ( r ) => ( r.rowId === a.rowId ? { ...r, mark: 'accept', markedOn: '2026-10-10' } : r ) ) };
+	assert.equal( withUnappliedMarks( applied, md ).intake.review.find( ( r ) => r.rowId === a.rowId ).mark, 'accept', 'an applied mark is never overwritten by review.md' );
 } );
