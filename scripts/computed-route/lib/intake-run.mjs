@@ -224,6 +224,9 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 		if ( kept.carried.length ) {
 			say( `review.md: ${ kept.carried.length } mark(s) not yet applied are carried (${ kept.carried.slice( 0, 5 ).join( ', ' ) }${ kept.carried.length > 5 ? ', …' : '' })` );
 		}
+		if ( kept.refused.length ) {
+			say( `review.md: ${ kept.refused.length } mark(s) --apply-review would refuse are not carried: ${ kept.refused.join( '; ' ) }` );
+		}
 		if ( kept.acceptAll.length ) {
 			say( `review.md: Accept all was ticked in ${ kept.acceptAll.join( ', ' ) }; a tick is not carried, so tick it again in the new review.md` );
 		}

@@ -6,14 +6,12 @@
 // (lib/fill-entrance.mjs) are the render check: a width whose measured delay or duration differs from the code by more
 // than one sampling step writes that tier's value, and the difference is reported.
 import { validateMotionWrite } from './motion-validate.mjs';
-import { classify, entranceLayer, hoverLayer, matchByPose, delayOf } from './motion-layers.mjs';
+import { classify, entranceLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
 import { snapToken, presetFor, effectPresetFor, tokenTypes, clientTokens, clientPalette, tokenises } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers } from './motion-effects.mjs';
-import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag } from './motion-loops.mjs';
-import { STEP_MS } from './fill-entrance.mjs';
+import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
+import { entranceCheck } from './motion-check.mjs';
 import { setAttr } from './tree.mjs';
-
-export const WIDTH_TIER = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 
 // The inventory key of a draft element: the innermost host's name and the element's tpl id, from a tpl finder
 // (`Host>Child@12#0/34#1` is `Child/34`); null for any other finder. An element of the root host takes `rootComponent`
@@ -85,52 +83,6 @@ function snapLayer( layer, fieldOf, ctx, prefer ) {
 	for ( const dev of Object.values( layer.devices || {} ) ) {
 		walkObj( dev, 'values' );
 	}
-}
-
-// How far a measured time may sit from the layer's before the render overrides it: two sampling steps or 10%, so a
-// filter's sub-pixel tail or a dropped frame never becomes a per-device value.
-export const tolerance = ( ms ) => Math.max( 2 * STEP_MS, 0.1 * ms );
-
-// Whether a measured delay times the same thing the layer's does: a held jump marks the trigger itself; a load
-// measurement of a load entrance runs from the same page start. A scroll entrance timed from first sight in view, or one
-// already in view at load (timed from the page start, before the draft attached its observer), is only an upper bound.
-const exactFor = ( measured, layer ) => true === measured.held || ( 'load' === measured.trigger && 'load' === layer.trigger );
-
-// The render check for one entrance: per sampled width, the measured duration and delay (raw; a delay snapped as the
-// code's own delay is, lib/motion-layers.mjs::delayOf) against the layer's. A delay is compared only where it was
-// measured exactly (exactFor) or the code computes it. A render that plays an
-// entrance on scroll where the code plays it at load is a difference; a scroll entrance already in view at load plays at
-// load in the draft too. Returns { devices, differences }: the tablet and mobile overrides the render forces, and one
-// line per width that differs by more than the tolerance.
-export function entranceCheck( layer, record, sampledByWidth ) {
-	const devices = {};
-	const differences = [];
-	const computed = 'number' === typeof record.delay_ms ? { ...record, delay_ms: null } : record;
-	for ( const [ width, measured ] of Object.entries( sampledByWidth || {} ) ) {
-		const tier = WIDTH_TIER[ width ];
-		if ( ! tier ) {
-			continue;
-		}
-		if ( ! measured ) {
-			differences.push( `${ width }: the render shows no entrance` );
-			continue;
-		}
-		const got = { duration: measured.durationRawMs ?? measured.durationMs, delay: delayOf( computed, measured ) };
-		const fields = exactFor( measured, layer ) || 'number' !== typeof record.delay_ms ? [ 'duration', 'delay' ] : [ 'duration' ];
-		for ( const field of fields ) {
-			const want = layer.values[ field ] ?? 0;
-			if ( 'number' === typeof want && Math.abs( got[ field ] - want ) > tolerance( want ) ) {
-				differences.push( `${ width }: ${ field } measured ${ got[ field ] }ms, the layer has ${ want }ms` );
-				if ( 'desktop' !== tier ) {
-					devices[ tier ] = { ...( devices[ tier ] || {} ), [ field ]: got[ field ] };
-				}
-			}
-		}
-		if ( 'scroll' === measured.trigger && 'load' === layer.trigger ) {
-			differences.push( `${ width }: the render plays it on ${ measured.trigger }, the code on ${ layer.trigger }` );
-		}
-	}
-	return { devices, differences };
 }
 
 // True when the element was found at some sampled width and played no entrance at any width it was found: the render
@@ -247,7 +199,13 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [] 
 	}
 	const keep = ( record, e ) => ( e.unmapped ? out.unmapped.push( { record, reason: e.unmapped } ) : out.effects.push( { record, ...e } ) );
 	for ( const r of own ) {
-		keep( r.id, loopEffect( r, loops, { mdb } ) );
+		const t = r.trigger?.type;
+		if ( classify( r ).confirm && ! measuredLoopOf( r, wide ) ) {
+			keep( r.id, { unmapped: `the draft's code starts this loop on ${ t }, and the render showed it not running on an untouched page, so nothing is written` } );
+			continue;
+		}
+		const e = loopEffect( r, loops, { mdb } );
+		keep( r.id, e.unmapped || 'scroll-into-view' !== t ? e : { ...e, trigger: 'visible' } );
 		out.notes.push( ...loopCheck( r, loops ).map( ( d ) => `${ r.id }: render check ${ d }` ) );
 	}
 	if ( wide?.marquee ) {
@@ -325,7 +283,11 @@ export function motionWrites( { nodes, flat, refOf, records, sampled = {}, loops
 			const target = targetName( n, t, targets );
 			if ( ! target ) {
 				const reason = targets.length ? `no declared part of ${ n.name } is this element (${ t.slot })` : `${ n.name } has no motion support`;
-				out.unmapped.push( ...own.filter( ( r ) => 'skip' !== classify( r ).kind ).map( ( r ) => ( { ...where, property: 'motion', value: r.id, reason } ) ) );
+				out.unmapped.push( ...own.map( ( r ) => ( { ...where, property: 'motion', value: r.id, reason: 'skip' === classify( r ).kind ? `${ reason }; the record is also skipped: ${ classify( r ).reason }` : reason } ) ) );
+				const shown = Object.values( loops[ t.id ] || {} ).some( ( l ) => l.loops?.length || l.marquee || l.smil?.length );
+				if ( shown && ! own.length ) {
+					out.unmapped.push( { ...where, property: 'motion', value: t.id, reason: `the render shows motion (an endless animation, a marquee or an SVG animation) on this element, whose block has no motion support to write it to (${ reason })` } );
+				}
 				continue;
 			}
 			const m = elementMotion( own, { mdb, ctx, sampled: sampled[ t.id ], runtime } );

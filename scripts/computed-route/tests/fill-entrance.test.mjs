@@ -7,7 +7,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { serveDraft } from '../lib/draft.mjs';
-import { sampleEntrances, sampleMotion, shapeEntrance, translationOf, scaleOf, STEP_MS, JITTER_MS } from '../lib/fill-entrance.mjs';
+import { sampleEntrances, sampleMotion, shapeEntrance, translationOf, scaleOf, rotateOf, STEP_MS, JITTER_MS } from '../lib/fill-entrance.mjs';
 
 const pose = ( opacity, transform = 'none', translate = 'none' ) => ( { opacity, transform, translate, scale: 'none', rotate: 'none' } );
 const RISE = pose( 0, 'matrix(1, 0, 0, 1, 0, 18)' );
@@ -51,12 +51,14 @@ test( 'translationOf reads matrix, matrix3d and the translate property, and adds
 
 const HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
 @keyframes rise { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
+@keyframes turn { from { opacity: 0; transform: rotate(30deg) } to { opacity: 1; transform: none } }
+.turn { animation: turn 600ms cubic-bezier(.16,.84,.32,1) 200ms both }
 @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
 .rise { animation: rise 600ms linear 200ms both }
 .late { animation: rise 600ms linear 300ms forwards }
 .loop { animation: spin 1s linear infinite }
 </style></head><body>
-<p class="rise">Rises</p><p class="late">Late</p><p class="loop">Loops</p><p class="still">Still</p>
+<p class="rise">Rises</p><p class="turn">Turns</p><p class="late">Late</p><p class="loop">Loops</p><p class="still">Still</p>
 </body></html>`;
 
 test( 'in a real browser: a keyframe entrance is sampled for delay, duration, distance and opacity; a loop and a still element are not entrances', async () => {
@@ -64,9 +66,10 @@ test( 'in a real browser: a keyframe entrance is sampled for delay, duration, di
 	fs.writeFileSync( path.join( dir, 'index.html' ), HTML );
 	const served = await serveDraft( dir );
 	try {
-		const jobs = [ 'rise', 'late', 'loop', 'still' ].map( ( id ) => ( { id, finder: `.${ id }` } ) );
+		const jobs = [ 'rise', 'turn', 'late', 'loop', 'still' ].map( ( id ) => ( { id, finder: `.${ id }` } ) );
 		const raw = await sampleEntrances( { url: served.url, jobs, windowMs: 2500 } );
 		const rise = shapeEntrance( raw.rise );
+		const turn = shapeEntrance( raw.turn );
 		// A real browser reads each time to a frame (about 17ms at 60Hz), and the measured delay runs 188-220ms against
 		// the 225ms where it rounds to 250, so one dropped frame moves the rounded value a whole step. The raw intervals
 		// are held to two frames of what the page sets; the rounding to STEP_MS is pinned by the synthetic tests above.
@@ -77,6 +80,10 @@ test( 'in a real browser: a keyframe entrance is sampled for delay, duration, di
 		assert.ok( Math.abs( rawDuration - 600 ) <= FRAMES_2, `raw duration ${ rawDuration }` );
 		assert.ok( Math.abs( rise.distancePx - 18 ) <= 1, `distance ${ rise.distancePx }` );
 		assert.equal( rise.opacityFrom, 0 );
+		assert.equal( rise.easing, 'linear', 'the CSS animation curve is read from its keyframes' );
+		assert.equal( rise.rotate, 0 );
+		assert.equal( turn.easing, 'cubic-bezier(0.16, 0.84, 0.32, 1)', 'the keyframes curve, as the browser writes it' );
+		assert.ok( Math.abs( turn.rotate - 30 ) <= 3, `rotate ${ turn.rotate }` );
 		const late = shapeEntrance( raw.late );
 		assert.equal( late.fromFirstChange, true, 'no backwards fill: the first frame is at rest' );
 		assert.ok( late.distancePx > 15 && late.distancePx <= 18, `distance from the first moving frame ${ late.distancePx }` );
@@ -142,8 +149,8 @@ test( 'MUST FAIL: a backwards fill that jumps to the from-pose and holds through
 
 const LOOP_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
 body { margin: 0; } .track { width: 3000px; height: 40px; } .ring { width: 40px; height: 40px; animation: pulse 2s linear infinite; }
-@keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } } .still { width: 40px; height: 40px; }
-</style></head><body><div class="track"></div><div class="ring"></div><div class="still"><svg width="20" height="20"><circle r="5" cx="10" cy="10"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/></circle></svg></div>
+@keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } } .still { width: 40px; height: 40px; } .wide { width: 40px; height: 40px; } @media (min-width: 1000px) { .wide { animation: pulse 2s linear infinite; } }
+</style></head><body><div class="track"></div><div class="ring"></div><div class="wide"></div><div class="still"><svg width="20" height="20"><circle r="5" cx="10" cy="10"><animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/></circle></svg></div>
 <script>const t = document.querySelector( '.track' ); const dist = 1700; t.animate( [ { transform: 'translateX(0)' }, { transform: 'translateX(-' + dist + 'px)' } ], { duration: dist / 0.045, iterations: Infinity } );</script></body></html>`;
 
 test( 'in a real browser: sampleMotion reads each element\'s endless animations as the code made them, its box and its SVG animation elements', async () => {
@@ -151,7 +158,7 @@ test( 'in a real browser: sampleMotion reads each element\'s endless animations 
 	fs.writeFileSync( path.join( dir, 'index.html' ), LOOP_HTML );
 	const served = await serveDraft( dir );
 	try {
-		const jobs = [ { id: 'track', finder: '.track' }, { id: 'ring', finder: '.ring' }, { id: 'still', finder: '.still' } ];
+		const jobs = [ { id: 'track', finder: '.track' }, { id: 'ring', finder: '.ring' }, { id: 'still', finder: '.still' }, { id: 'wide', finder: '.wide' } ];
 		const { entrances, loops } = await sampleMotion( { url: served.url, jobs, windowMs: 800, sweep: null } );
 		const track = loops.track[ 1440 ];
 		assert.equal( track.loops.length, 1 );
@@ -162,8 +169,21 @@ test( 'in a real browser: sampleMotion reads each element\'s endless animations 
 		assert.deepEqual( [ ring.css, ring.name, ring.duration, ring.frames.map( ( f ) => f.opacity ) ], [ true, 'pulse', 2000, [ '1', '0.4' ] ] );
 		assert.deepEqual( loops.still[ 768 ].loops, [], 'negative control: an element holding an SVG animation runs no endless animation itself' );
 		assert.equal( loops.still[ 768 ].smil[ 0 ].values, '1;0.4;1' );
+		assert.equal( loops.wide[ 1440 ].loops.length, 1 );
+		assert.deepEqual( [ loops.wide[ 375 ].loops, loops.wide[ 768 ].loops ], [ [], [] ], 'a loop the render shows at 1440 only has an empty entry at the other widths' );
 		assert.equal( entrances.track[ 1440 ], null, 'a loop is not an entrance' );
+		for ( const id of [ 'track', 'ring', 'still', 'wide' ] ) {
+			assert.deepEqual( Object.keys( loops[ id ] ).sort(), [ '1440', '375', '768' ], `${ id }: a loop job has an entry at every width the element was found` );
+		}
 	} finally {
 		await served.close();
 	}
+} );
+
+test( 'rotateOf reads the matrix angle and the rotate property and adds them; shapeEntrance carries the probe easing, null when none', () => {
+	assert.equal( rotateOf( pose( 1, 'matrix(0.866, 0.5, -0.5, 0.866, 0, 0)' ) ), 30 );
+	assert.equal( rotateOf( { ...pose( 1 ), rotate: '45deg' } ), 45 );
+	assert.equal( rotateOf( pose( 1 ) ), 0 );
+	assert.equal( shapeEntrance( { seenAt: 100, first: RISE, firstChange: RISE, start: 300, end: 900, loop: false, easing: 'ease-out' } ).easing, 'ease-out' );
+	assert.equal( shapeEntrance( { seenAt: 100, first: RISE, firstChange: RISE, start: 300, end: 900, loop: false } ).easing, null );
 } );

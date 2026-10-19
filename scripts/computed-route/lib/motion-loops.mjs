@@ -3,7 +3,7 @@
 // when its values reproduce the loop's motion. A one-axis, linear, one-way translate is a marquee, its speed the
 // travel over the loop time in px/s. A <marquee> element and SVG animation elements are loops too. A loop no effect
 // reproduces is reported as a Spec 38 gap. The chosen effect is written through lib/motion-effects.mjs::writeEffect.
-import { propertyChannels, transformChannels, filterChannels, keyframeStops } from './motion-channels.mjs';
+import { propertyChannels, filterChannels, keyframeStops } from './motion-channels.mjs';
 
 const RANDOM = /Math\.random|\brnd\(/;
 const camel = ( k ) => k.replace( /-([a-z])/g, ( _, c ) => c.toUpperCase() );
@@ -63,9 +63,11 @@ export function resolvedLoop( record, measured ) {
 		return { unmapped: 'its values are computed in the code and the render showed no matching endless animation on this element' };
 	}
 	let frames;
+	let offsets;
 	const other = [];
 	const unsupported = [];
 	if ( computed ) {
+		offsets = m.frames.map( ( f, i ) => ( 'number' === typeof f.offset ? f.offset : i / Math.max( 1, m.frames.length - 1 ) ) );
 		frames = m.frames.map( ( f ) => {
 			const c = frameChannels( f );
 			other.push( ...c.other );
@@ -87,15 +89,18 @@ export function resolvedLoop( record, measured ) {
 			unsupported.push( ...f.unsupported, ...t.unsupported );
 		}
 		const stops = keyframeStops( record.properties );
-		frames = stops && ! stops.computed.length ? stops.stops.map( ( s ) => s.channels ) : [ from, to ];
+		const staged = stops && ! stops.computed.length;
+		frames = staged ? stops.stops.map( ( s ) => s.channels ) : [ from, to ];
+		offsets = staged ? stops.stops.map( ( s ) => s.offset / 100 ) : [ 0, 1 ];
 	}
 	return {
 		loop: {
 			frames,
+			offsets,
 			duration: 'number' === typeof record.duration_ms ? record.duration_ms : m.duration,
 			delay: 'number' === typeof record.delay_ms ? record.delay_ms : m?.delay ?? 0,
 			direction: record.direction || m?.direction || 'normal',
-			easing: record.easing ?? m?.easing ?? null,
+			easing: record.easing ?? m?.easing ?? ( 'css-animation' === record.mechanism ? 'ease' : 'linear' ),
 			box: measured?.box || null,
 			other: [ ...new Set( other ) ],
 			unsupported: [ ...new Set( unsupported ) ],
@@ -114,6 +119,10 @@ const px = ( v, along ) => ( 'number' === typeof v ? v : /%$/.test( String( v ) 
 const round = ( n, p = 3 ) => Math.round( n * 10 ** p ) / 10 ** p;
 const isLinear = ( e ) => null === e || 'linear' === e;
 const zero = ( v ) => 0 === v || '0px' === v || '0%' === v;
+// The note for a start offset an effect with no phase or delay field cannot hold: [] when the loop starts at once.
+const delayNotes = ( loop ) => ( ! loop.delay ? [] : [ loop.delay < 0 ? `the draft's loop starts ${ -loop.delay }ms part-way through its cycle; that start offset is not kept (the effect starts at once)` : `the draft's ${ loop.delay }ms start offset is not kept (the effect starts at once)` ] );
+// A translate end as px (0 for a zero), or null for a percentage the element's size would have to resolve.
+const pxEnd = ( v ) => ( zero( v ?? 0 ) ? 0 : 'number' === typeof v ? v : null );
 
 // Each builder: a loop (and its moving channels) as the effect's values, { values, notes }, or null when the effect
 // cannot draw that loop's motion.
@@ -130,7 +139,7 @@ export const LOOP_BUILDERS = {
 		}
 		const sign = Math.sign( dist ) * ( 'reverse' === loop.direction ? -1 : 1 );
 		const direction = 'translateX' === k ? ( sign < 0 ? 'left' : 'right' ) : ( sign < 0 ? 'up' : 'down' );
-		return { values: { speed: round( Math.abs( dist ) / ( loop.duration / 1000 ), 1 ), direction }, notes: [ `marquee speed ${ round( Math.abs( dist ), 1 ) }px over ${ round( loop.duration, 0 ) }ms` ] };
+		return { values: { speed: round( Math.abs( dist ) / ( loop.duration / 1000 ), 1 ), direction }, notes: [ `marquee speed ${ round( Math.abs( dist ), 1 ) }px over ${ round( loop.duration, 0 ) }ms`, ...delayNotes( loop ) ] };
 	},
 	'ambient-float'( loop, moving ) {
 		if ( ! moving.every( ( k ) => /^translate[XY]$/.test( k ) ) || 2 !== loop.frames.length || ! /^(normal|alternate)$/.test( loop.direction ) ) {
@@ -142,12 +151,9 @@ export const LOOP_BUILDERS = {
 		}
 		const both = 2 === moving.length;
 		const axis = both ? 'both' : 'translateX' === moving[ 0 ] ? 'x' : 'y';
-		const values = { axis, travel: to[ both || 'x' === axis ? 'translateX' : 'translateY' ], period: loop.duration, direction: loop.direction };
+		const values = { axis, travel: to[ both || 'x' === axis ? 'translateX' : 'translateY' ], period: loop.duration, direction: loop.direction, easing: loop.easing };
 		if ( both ) {
 			values.travelY = to.translateY;
-		}
-		if ( loop.easing ) {
-			values.easing = loop.easing;
 		}
 		const notes = [];
 		const cycle = ( 'alternate' === loop.direction ? 2 : 1 ) * loop.duration;
@@ -165,12 +171,12 @@ export const LOOP_BUILDERS = {
 		}
 		const ops = loop.frames.map( ( f ) => f.opacity ?? 1 );
 		const two = 2 === ops.length && 'alternate' === loop.direction && 1 === ops[ 0 ] && ops[ 1 ] < 1;
-		const three = 3 === ops.length && 'normal' === loop.direction && 1 === ops[ 0 ] && 1 === ops[ 2 ] && ops[ 1 ] < 1;
+		const three = 3 === ops.length && 'normal' === loop.direction && 1 === ops[ 0 ] && 1 === ops[ 2 ] && ops[ 1 ] < 1 && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01;
 		const amplitude = round( ( 1 - ops[ 1 ] ) / 0.5 );
 		if ( ( ! two && ! three ) || amplitude > 5 ) {
 			return null;
 		}
-		const notes = 'ease' === loop.easing ? [] : [ `the pulse eases ease between its keyframes; the draft's ${ loop.easing || 'linear' } is not kept` ];
+		const notes = [ ...( 'ease' === loop.easing ? [] : [ `the pulse eases ease between its keyframes; the draft's ${ loop.easing } is not kept` ] ), ...delayNotes( loop ) ];
 		return { values: { motion: 'pulse', duration: two ? 2 * loop.duration : loop.duration, amplitude }, notes };
 	},
 	'ken-burns'( loop, moving ) {
@@ -183,16 +189,27 @@ export const LOOP_BUILDERS = {
 		if ( [ zoomStart, zoomEnd ].some( ( z ) => z < 100 || z > 200 ) ) {
 			return null;
 		}
-		const x = Number( to.translateX ) || 0;
-		const y = Number( to.translateY ) || 0;
+		// The pan is the end pose less the start pose in px; a percentage end or a start away from zero has no distance to hold.
+		const ends = [ 'translateX', 'translateY' ].map( ( k ) => [ pxEnd( from[ k ] ), pxEnd( to[ k ] ), from[ k ] !== to[ k ] ] );
+		const [ x, y ] = ends.map( ( [ a, b ] ) => ( null === a || null === b ? 0 : b - a ) );
 		const panDirection = ! x && ! y ? 'none' : Math.abs( x ) >= Math.abs( y ) ? ( x < 0 ? 'left' : 'right' ) : y < 0 ? 'up' : 'down';
-		const values = { mode: 'loop', zoomStart, zoomEnd, panDirection, duration: loop.duration };
-		if ( loop.easing ) {
-			values.easing = loop.easing;
+		const unheld = ends.some( ( [ a, b ] ) => null === a || null === b || 0 !== a );
+		if ( 'none' === panDirection && ends.some( ( [ a, b, moves ] ) => moves && ( null === a || null === b || 0 !== a || 0 !== b ) ) ) {
+			return null;
 		}
-		return { values, notes: 'none' === panDirection ? [] : [ 'Ken Burns pans by a share of the element, so the draft\'s pan distance is not kept' ] };
+		const values = { mode: 'loop', zoomStart, zoomEnd, panDirection, duration: loop.duration, easing: loop.easing };
+		const pan = 'none' === panDirection ? [] : [ unheld ? 'Ken Burns pans by a share of the element, so the draft\'s pan distance is not kept, and a percentage or non-zero start translate is not held (only the pan direction is)' : 'Ken Burns pans by a share of the element, so the draft\'s pan distance is not kept' ];
+		return { values, notes: [ ...pan, ...delayNotes( loop ) ] };
 	},
 };
+
+const IDENTITY = { opacity: 1, translateX: 0, translateY: 0, scale: 1, scaleX: 1, scaleY: 1, rotate: 0, rotateX: 0, rotateY: 0, blur: 0, grayscale: 0, brightness: 1 };
+// Notes for the channels a loop holds at one value that is not the channel's identity: no effect carries them.
+function restingNotes( loop, moving ) {
+	const keys = new Set( loop.frames.flatMap( ( f ) => Object.keys( f ) ) );
+	const resting = ( k ) => k in IDENTITY && IDENTITY[ k ] !== loop.frames[ 0 ][ k ] && ! ( 0 === IDENTITY[ k ] && zero( loop.frames[ 0 ][ k ] ) );
+	return [ ...keys ].filter( ( k ) => ! moving.includes( k ) && resting( k ) ).map( ( k ) => `a resting ${ k } of ${ loop.frames[ 0 ][ k ] } the effect does not hold (left to the block's own settings)` );
+}
 
 // The effect that draws a loop: { effect, values, devices, trigger, notes } or { unmapped }. `narrow` is { tablet,
 // mobile: the same loop at 768 and 375, or null }; a narrower width whose numbers differ by more than 2% overrides them
@@ -222,7 +239,7 @@ export function chooseEffect( loop, narrow, { mdb } ) {
 			}
 		}
 		const trigger = mdb.effect( effect ).triggers.includes( 'load' ) ? 'load' : null;
-		return { effect, values: built.values, devices, trigger, notes: built.notes };
+		return { effect, values: built.values, devices, trigger, notes: [ ...built.notes, ...restingNotes( loop, moving ) ] };
 	}
 	return { unmapped: `no effect draws this loop (${ families.join( ' and ' ) || 'nothing' } moving, ${ loop.direction }, ${ loop.duration }ms; tried ${ candidates.join( ', ' ) || 'none' }): a Spec 38 gap` };
 }
@@ -286,6 +303,26 @@ const seconds = ( t ) => {
 	return m ? Number( m[ 1 ] ) * ( { ms: 1, s: 1000, min: 60000 }[ m[ 2 ] || 's' ] ) : null;
 };
 
+// One <animateTransform> value as channels. SMIL values are unitless: rotate is degrees (about 0 0 only), translate px,
+// scale a ratio; skew, a rotate centre and anything unreadable are unsupported.
+function svgTransform( type, value ) {
+	const n = String( value ).trim().split( /[\s,]+/ ).filter( Boolean ).map( Number );
+	if ( ! n.length || ! n.every( Number.isFinite ) ) {
+		return { channels: {}, unsupported: [ String( type ) ] };
+	}
+	if ( 'rotate' === type ) {
+		return 0 === ( n[ 1 ] ?? 0 ) && 0 === ( n[ 2 ] ?? 0 ) ? { channels: { rotate: n[ 0 ] }, unsupported: [] } : { channels: {}, unsupported: [ 'rotate centre' ] };
+	}
+	if ( 'translate' === type ) {
+		return { channels: { translateX: n[ 0 ], translateY: n[ 1 ] ?? 0 }, unsupported: [] };
+	}
+	if ( 'scale' === type ) {
+		const y = n[ 1 ] ?? n[ 0 ];
+		return { channels: y === n[ 0 ] ? { scale: n[ 0 ] } : { scaleX: n[ 0 ], scaleY: y }, unsupported: [] };
+	}
+	return { channels: {}, unsupported: [ String( type ) ] };
+}
+
 // An SVG animation element (<animate>, <animateTransform>) that repeats indefinitely as a loop, or null.
 export function smilLoop( a, box = null ) {
 	if ( 'indefinite' !== a.repeatCount ) {
@@ -297,7 +334,7 @@ export function smilLoop( a, box = null ) {
 			return { channels: { opacity: Number( v ) }, unsupported: [] };
 		}
 		if ( 'animateTransform' === a.tag ) {
-			return transformChannels( `${ a.type }(${ v.replace( /\s+/g, ', ' ) })` );
+			return svgTransform( a.type, v );
 		}
 		return 'animate' === a.tag && 'filter' === a.attributeName ? filterChannels( v ) : { channels: {}, unsupported: [ a.attributeName ] };
 	};
@@ -306,19 +343,32 @@ export function smilLoop( a, box = null ) {
 	if ( vals.length < 2 || ! duration ) {
 		return null;
 	}
-	return { frames: frames.map( ( f ) => f.channels ), duration, delay: 0, direction: 'normal', easing: 'linear', box, other: [], unsupported: [ ...new Set( frames.flatMap( ( f ) => f.unsupported ) ) ] };
+	const keyTimes = a.keyTimes ? String( a.keyTimes ).split( ';' ).map( ( t ) => Number( t.trim() ) ) : null;
+	const offsets = keyTimes?.length === vals.length && keyTimes.every( Number.isFinite ) ? keyTimes : vals.map( ( _, i ) => i / ( vals.length - 1 ) );
+	return { frames: frames.map( ( f ) => f.channels ), offsets, duration, delay: 0, direction: 'normal', easing: 'linear', box, other: [], unsupported: [ ...new Set( frames.flatMap( ( f ) => f.unsupported ) ) ] };
 }
 
 // A <marquee> element's attributes as the marquee effect's values: scrollamount px every scrolldelay ms (6 and 85 by
 // default; a delay under 60 counts as 60 unless truespeed is set, as browsers run it). null for behavior="alternate" or
-// "slide", which no effect draws.
+// "slide", a scrollamount of 0 (it does not scroll) and a counted loop attribute, which no effect draws.
 export function marqueeTag( attrs ) {
 	if ( attrs.behavior && 'scroll' !== attrs.behavior ) {
 		return null;
 	}
-	const amount = Number( attrs.scrollamount ?? 6 ) || 6;
-	const raw = Number( attrs.scrolldelay ?? 85 ) || 85;
+	const given = ( v, fallback ) => ( null === v || undefined === v || '' === v || ! Number.isFinite( Number( v ) ) ? fallback : Number( v ) );
+	const counted = given( attrs.loop, -1 );
+	if ( counted > 0 && -1 !== counted ) {
+		return null;
+	}
+	const amount = given( attrs.scrollamount, 6 );
+	const raw = given( attrs.scrolldelay, 85 );
+	if ( amount <= 0 || raw < 0 ) {
+		return null;
+	}
 	const delay = null === attrs.truespeed || undefined === attrs.truespeed ? Math.max( 60, raw ) : raw;
+	if ( 0 === delay ) {
+		return null;
+	}
 	const direction = [ 'left', 'right', 'up', 'down' ].includes( attrs.direction ) ? attrs.direction : 'left';
 	return { speed: round( amount / ( delay / 1000 ), 1 ), direction };
 }

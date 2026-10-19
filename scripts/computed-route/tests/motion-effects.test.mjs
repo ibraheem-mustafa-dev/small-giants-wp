@@ -58,11 +58,15 @@ const float = ( over ) => rec( 'F', { properties: [ { property: 'transform', fro
 const MARQUEE = rec( 'M', { trigger: { type: 'state' }, easing: 'linear', direction: 'normal', duration_ms: 'dur', properties: [ { property: 'transform', from: 'translateX(0)', to: '\'translateX(-\' + dist + \'px)\'', formula: '\'translateX(-\' + dist + \'px)\'' } ] } );
 const measuredMarquee = ( dist, box = { width: 4000, height: 60 } ) => ( { loops: [ { css: false, name: null, duration: dist / 0.045, delay: 0, direction: 'normal', easing: 'linear', playbackRate: 1, frames: [ { offset: 0, transform: 'translateX(0px)' }, { offset: 1, transform: `translateX(-${ dist }px)` } ] } ], box, marquee: null, smil: [] } );
 
-test( 'MUST FAIL: an endless or repeating animation is an effect, not a skipped record', () => {
+test( 'MUST FAIL: an endless animation is an effect, one the draft\'s own state starts only when the render shows it running; a counted repeat is not', () => {
 	assert.equal( classify( float() ).kind, 'effect' );
-	assert.equal( classify( MARQUEE ).kind, 'effect', 'a loop restarted on a state change is still a loop' );
-	assert.equal( classify( float( { iterations: 3, direction: 'normal' } ) ).kind, 'effect' );
+	assert.deepEqual( classify( MARQUEE ), { kind: 'effect', confirm: true }, 'a loop the code starts on a state change is a loop the render must confirm' );
+	assert.equal( classify( float( { iterations: 3, direction: 'normal' } ) ).kind, 'skip' );
 	assert.equal( classify( float( { iterations: 1, direction: 'normal' } ) ).kind, 'entrance' );
+	const unconfirmed = elementEffects( [ MARQUEE ], { mdb, loops: { 1440: { loops: [], box: { width: 4000, height: 60 }, marquee: null, smil: [] } } } );
+	assert.deepEqual( unconfirmed.effects, [] );
+	assert.match( unconfirmed.unmapped[ 0 ].reason, /starts this loop on state.*not running on an untouched page/ );
+	assert.equal( elementEffects( [ MARQUEE ], { mdb, loops: { 1440: measuredMarquee( 1700 ) } } ).effects[ 0 ].effect, 'marquee', 'control: shown running, it is written' );
 } );
 
 test( 'MUST FAIL: a marquee is its travel over its loop time in px/s, read from the animation the code made when the code computes them', () => {
@@ -190,4 +194,86 @@ test( 'MUST FAIL: a loop the code writes with three stops is read with all three
 	const presets = [ { slug: 'pop', panel: 'entrance', trigger: 'state', values: { duration: 500, keyframes: [ { offset: 0, opacity: 0, scale: 0.6 }, { offset: 100, opacity: 1, scale: 1 } ] } } ];
 	assert.equal( presetFor( { trigger: 'state', values: { duration: 500, keyframes: [ { scale: 0.6, opacity: 0, offset: 0 }, { offset: 100, scale: 1, opacity: 1 } ] } }, presets ), 'pop' );
 	assert.equal( presetFor( { trigger: 'state', values: { duration: 500, keyframes: [ { offset: 100, opacity: 1, scale: 1 }, { offset: 0, opacity: 0, scale: 0.6 } ] } }, presets ), null, 'the order of the keyframes themselves still matters' );
+} );
+
+const KB_BOX = { 1440: { loops: [], box: { surface: true, width: 800, height: 500 } } };
+const kb = ( from, to, over ) => rec( 'KB', { duration_ms: 8000, properties: [ { property: 'transform', from, to } ], ...over } );
+const PULSE = rec( 'P', { duration_ms: 1000, easing: 'ease', properties: [ { property: 'opacity', from: '1', to: '0.4' } ] } );
+
+test( 'MUST FAIL: a start delay an effect cannot hold is named in a note, never dropped', () => {
+	assert.match( loopEffect( { ...MARQUEE, delay_ms: 500 }, { 1440: measuredMarquee( 1700 ) }, { mdb } ).notes.join( ' ' ), /500ms start offset is not kept/ );
+	assert.match( loopEffect( { ...PULSE, delay_ms: -300 }, {}, { mdb } ).notes.join( ' ' ), /part-way through.*start offset is not kept/ );
+	assert.match( loopEffect( kb( 'scale(1)', 'scale(1.2)', { delay_ms: 700 } ), KB_BOX, { mdb } ).notes.join( ' ' ), /700ms start offset is not kept/ );
+	assert.doesNotMatch( loopEffect( PULSE, {}, { mdb } ).notes.join( ' ' ), /start offset/, 'control: no delay, no note' );
+} );
+
+test( 'MUST FAIL: every loop carries an explicit easing, the draft\'s own default when the code names none', () => {
+	assert.equal( resolvedLoop( float( { easing: undefined } ), null ).loop.easing, 'linear', 'a Web Animation defaults to linear' );
+	const css = rec( 'K', { mechanism: 'css-animation', easing: undefined, duration_ms: 1000, properties: [ { property: 'animation-name', from: null, to: 'throb' }, { property: 'opacity', from: '1', to: '0.4' } ] } );
+	assert.equal( resolvedLoop( css, null ).loop.easing, 'ease', 'a CSS animation defaults to ease' );
+	assert.equal( loopEffect( float( { easing: undefined } ), {}, { mdb } ).values.easing, 'linear' );
+	assert.equal( loopEffect( kb( 'scale(1)', 'scale(1.2)', { easing: undefined } ), KB_BOX, { mdb } ).values.easing, 'linear' );
+	assert.equal( smilLoop( { tag: 'animate', attributeName: 'opacity', values: '1;0.4;1', dur: '2s', repeatCount: 'indefinite' } ).easing, 'linear' );
+	assert.match( loopEffect( { ...PULSE, easing: undefined }, {}, { mdb } ).notes.join( ' ' ), /draft's linear is not kept/, 'the svg-loop note names the real easing' );
+} );
+
+test( 'MUST FAIL: a Ken Burns pan is the end pose less the start pose; a percentage or a non-zero start keeps only the direction, or is a gap', () => {
+	assert.equal( loopEffect( kb( 'translateX(-40px) scale(1)', 'translateX(-20px) scale(1.2)' ), KB_BOX, { mdb } ).values.panDirection, 'right', 'the pan runs from -40 to -20, rightwards' );
+	assert.equal( loopEffect( kb( 'scale(1)', 'translateX(-20px) scale(1.2)' ), KB_BOX, { mdb } ).values.panDirection, 'left' );
+	const pct = loopEffect( kb( 'scale(1)', 'translateX(-5%) scale(1.2)' ), KB_BOX, { mdb } );
+	assert.match( pct.unmapped, /no effect draws this loop/, 'a percentage-only pan has no direction to keep' );
+	const mixed = loopEffect( kb( 'translateX(10px) scale(1)', 'translateX(-20px) scale(1.2)' ), KB_BOX, { mdb } );
+	assert.equal( mixed.values.panDirection, 'left' );
+	assert.match( mixed.notes.join( ' ' ), /non-zero start translate is not held/ );
+} );
+
+test( 'MUST FAIL: the pulse is accepted only when its middle frame sits at 50%', () => {
+	const stops = ( mid ) => rec( 'P3', { duration_ms: 3000, easing: 'ease', direction: 'normal', properties: [ { property: 'opacity', from: '1', to: '1', keyframes: [ { offset: 0, value: '1' }, { offset: mid, value: '0.5' }, { offset: 1, value: '1' } ] } ] } );
+	assert.equal( resolvedLoop( stops( 0.2 ), null ).loop.offsets[ 1 ], 20 / 100 );
+	assert.match( loopEffect( stops( 0.2 ), {}, { mdb } ).unmapped, /no effect draws this loop/ );
+	assert.equal( loopEffect( stops( 0.5 ), {}, { mdb } ).values.motion, 'pulse' );
+	const smil = ( keyTimes ) => smilLoop( { tag: 'animate', attributeName: 'opacity', values: '1;0.4;1', keyTimes, dur: '2s', repeatCount: 'indefinite' } );
+	assert.deepEqual( smil( undefined ).offsets, [ 0, 0.5, 1 ] );
+	assert.match( chooseEffect( smil( '0;0.25;1' ), {}, { mdb } ).unmapped, /no effect draws this loop/ );
+	const measured = ( mid ) => ( { loops: [ { css: false, duration: 2000, delay: 0, direction: 'normal', easing: 'ease', frames: [ { offset: 0, opacity: 1 }, { offset: mid, opacity: 0.4 }, { offset: 1, opacity: 1 } ] } ], box: null } );
+	const computed = rec( 'C', { duration_ms: 'dur', direction: 'normal', properties: [ { property: 'opacity', from: '1', to: 'x', formula: 'x' } ] } );
+	assert.match( loopEffect( computed, { 1440: measured( 0.3 ) }, { mdb } ).unmapped, /no effect draws this loop/ );
+	assert.equal( loopEffect( computed, { 1440: measured( 0.5 ) }, { mdb } ).values.motion, 'pulse', 'control: the same measured loop at 50%' );
+} );
+
+test( 'MUST FAIL: a constant channel that is not its identity is named as a resting value the effect does not hold', () => {
+	const scaled = rec( 'S', { duration_ms: 1000, easing: 'ease', properties: [ { property: 'opacity', from: '1', to: '0.4' }, { property: 'transform', from: 'scale(1.2)', to: 'scale(1.2)' } ] } );
+	const e = loopEffect( scaled, {}, { mdb } );
+	assert.equal( e.effect, 'svg-loop' );
+	assert.match( e.notes.join( ' ' ), /a resting scale of 1\.2 the effect does not hold \(left to the block's own settings\)/ );
+	const rotated = float( { properties: [ { property: 'transform', from: 'translateY(0) rotate(10deg)', to: 'translateY(-12px) rotate(10deg)' } ] } );
+	assert.match( loopEffect( rotated, {}, { mdb } ).notes.join( ' ' ), /a resting rotate of 10/ );
+	assert.doesNotMatch( loopEffect( float(), {}, { mdb } ).notes.join( ' ' ), /resting/, 'control: an identity channel is not noted' );
+	const identity = rec( 'I', { duration_ms: 1000, easing: 'ease', properties: [ { property: 'opacity', from: '1', to: '0.4' }, { property: 'transform', from: 'scale(1)', to: 'scale(1)' } ] } );
+	assert.doesNotMatch( loopEffect( identity, {}, { mdb } ).notes.join( ' ' ), /resting/ );
+} );
+
+test( 'MUST FAIL: a <marquee> attribute that is present is used, even at 0, and a counted loop is refused', () => {
+	assert.equal( marqueeTag( { scrollamount: '0' } ), null, 'a scrollamount of 0 does not scroll' );
+	assert.deepEqual( marqueeTag( { scrollamount: '3', scrolldelay: '0' } ), { speed: 50, direction: 'left' }, 'a delay of 0 runs as 60' );
+	assert.equal( marqueeTag( { loop: '3' } ), null, 'a counted loop is excluded' );
+	assert.deepEqual( marqueeTag( { loop: '-1' } ), { speed: 70.6, direction: 'left' } );
+	assert.equal( marqueeTag( { scrollamount: '3', scrolldelay: '0', truespeed: '' } ), null, 'truespeed with a 0 delay has no speed' );
+} );
+
+test( 'MUST FAIL: animateTransform values are unitless: rotate is degrees, translate px, a rotate centre and skew are unsupported', () => {
+	const t = ( type, values ) => smilLoop( { tag: 'animateTransform', type, values, dur: '4s', repeatCount: 'indefinite' } );
+	assert.deepEqual( t( 'rotate', '0;360' ).frames, [ { rotate: 0 }, { rotate: 360 } ] );
+	assert.deepEqual( t( 'translate', '0 0;10 20' ).frames, [ { translateX: 0, translateY: 0 }, { translateX: 10, translateY: 20 } ] );
+	assert.deepEqual( t( 'scale', '1;1.5' ).frames, [ { scale: 1 }, { scale: 1.5 } ] );
+	assert.deepEqual( t( 'rotate', '0 50 50;360 50 50' ).unsupported, [ 'rotate centre' ] );
+	assert.deepEqual( t( 'rotate', '0 0 0;360 0 0' ).unsupported, [], 'a centre of 0 0 is the default' );
+	assert.deepEqual( t( 'skewX', '0;30' ).unsupported, [ 'skewX' ] );
+	assert.match( chooseEffect( t( 'rotate', '0 50 50;360 50 50' ), {}, { mdb } ).unmapped, /rotate centre, which no effect owns/ );
+} );
+
+test( 'MUST FAIL: a loop the draft starts as its element scrolls into view is written with the effect\'s in-view trigger', () => {
+	const inView = elementEffects( [ float( { trigger: { type: 'scroll-into-view' } } ) ], { mdb, loops: null } );
+	assert.equal( inView.effects[ 0 ].trigger, 'visible' );
+	assert.equal( elementEffects( [ float() ], { mdb, loops: null } ).effects[ 0 ].trigger, 'load', 'control: a mount loop runs at load' );
 } );

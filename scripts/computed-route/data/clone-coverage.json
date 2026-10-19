@@ -1397,7 +1397,7 @@
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
 			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
-			"note": "a grayscale-to-colour hover is written as hover.state grayscale with restGrayscale (the hover-grayscale-to-colour preset), the motion model's form of the blocks' grayscaleHover toggle"
+			"note": "grayscale hover: written as hover.state grayscale with restGrayscale (the hover-grayscale-to-colour preset), the motion model's form of the blocks' grayscaleHover toggle, which the writer never sets; the walker's hover pass compares the hovered filter where the pair is marked for hover"
 		},
 		"block-setting:css-modifier:mode": {
 			"recognise": null,
@@ -2018,7 +2018,7 @@
 		"construct:keyframes": {
 			"recognise": "construct:keyframes",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "CSS animations: entrances as entrance.base (keyframes when there are more than two stops), endless ones as effects"
 		},
 		"construct:link": {
@@ -2093,7 +2093,7 @@
 		"construct:waapi": {
 			"recognise": "construct:waapi",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "Web Animations calls: entrances, hovers and loops written as sgsMotion; entrances checked against the render at 375/768/1440, loops by lib/motion-loops.mjs::loopCheck"
 		},
 		"css-at:charset": {
@@ -2155,7 +2155,7 @@
 		"css-at:keyframes": {
 			"recognise": "construct:keyframes",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "@keyframes stops become entrance values or an effect loop"
 		},
 		"css-at:layer": {
@@ -2210,7 +2210,7 @@
 		"css-at:starting-style": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "draft reading",
 			"note": "an @starting-style block holds a CSS-only entrance's from values; the inventory does not read it yet (draft reading, FR-48-85), and the writer writes it as entrance.base once it does"
 		},
@@ -2410,8 +2410,8 @@
 		"css-function:cubic-bezier": {
 			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#easingOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "a cubic-bezier() curve is written as the layer's easing, or as the client's easing token when it equals one"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "a cubic-bezier() curve is the layer's easing, or the client's easing token when it equals one; checked against the easing the render runs (lib/motion-check.mjs::entranceCheck)"
 		},
 		"css-function:drop-shadow": {
 			"recognise": null,
@@ -2565,8 +2565,8 @@
 		"css-function:linear": {
 			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#easingOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "a linear() curve is written as the layer's easing (the schema takes linear())"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "a linear() curve is the layer's easing (the schema takes linear()); checked against the easing the render runs (lib/motion-check.mjs::entranceCheck)"
 		},
 		"css-function:linear-gradient": {
 			"recognise": null,
@@ -2585,8 +2585,8 @@
 		"css-function:matrix": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "matrix() inside an animated transform: the translate, scale and rotate decomposed from the matrix (a skew is reported) channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "a flat matrix() is decomposed into translate, scale and rotate (a skewing one is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:matrix3d": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
@@ -2680,8 +2680,8 @@
 		"css-function:perspective": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "perspective() inside an animated transform: the the element's one perspective (100 to 5000px) channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "perspective() first in the list is the element's one perspective (100 to 5000px; out of range is noted, a perspective later in the list is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:polygon": {
 			"recognise": null,
@@ -2775,8 +2775,8 @@
 		"css-function:rotate": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "rotate() inside an animated transform: the rotate channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "rotate() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:rotate3d": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
@@ -2788,20 +2788,20 @@
 		"css-function:rotatex": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "rotatex() inside an animated transform: the rotateX channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "rotatex() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:rotatey": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "rotatey() inside an animated transform: the rotateY channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "rotatey() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:rotatez": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "rotatez() inside an animated transform: the rotate channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "rotatez() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:round": {
 			"recognise": null,
@@ -2820,32 +2820,32 @@
 		"css-function:scale": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "scale() inside an animated transform: the scale channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "scale() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:scale3d": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "scale3d() inside an animated transform: the scale (a depth other than 1 is reported) channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "scale3d(): its x and y are the scale channels; its third value stretches a depth a flat element does not have and is left out; checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:scalex": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "scalex() inside an animated transform: the scaleX channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "scalex() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:scaley": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "scaley() inside an animated transform: the scaleY channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "scaley() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:scalez": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "scaleZ stretches a depth a flat element does not have, so it draws nothing and nothing is written"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "scaleZ() stretches a depth a flat element does not have, so it draws nothing and nothing is written; checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:scroll": {
 			"recognise": null,
@@ -3018,32 +3018,32 @@
 		"css-function:translate": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "translate() inside an animated transform: the translateX and translateY channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "translate() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:translate3d": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "translate3d() inside an animated transform: the translateX and translateY (a non-zero depth is reported) channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "translate3d(): its x and y are channels and its depth is projected under the element's own perspective as p / (p - z) of scale and travel (reported with a tilt, with no perspective of its own, or past the viewer); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:translatex": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "translatex() inside an animated transform: the translateX channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "translatex() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:translatey": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "translatey() inside an animated transform: the translateY channel"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "translatey() inside an animated transform is written to its channel (a move written after a flat turn or resize is rewritten exactly into the model's translate, rotate, scale order; one after a tilt is reported); checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:translatez": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#transformChannels",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "a move toward the viewer under the element's own perspective is written as the scale and slide it draws as, p / (p - z) (lib/motion-channels.mjs::projectDepth, measured equal within 0.01px in Chromium); with a tilt or no perspective of its own it is reported"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "translateZ() under the element's own perspective() is written as the scale and travel it draws as, p / (p - z) (measured equal to Chromium within 0.01px); reported with a tilt, before the perspective or with no perspective; checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-function:type": {
 			"recognise": null,
@@ -3082,7 +3082,7 @@
 		"css-group:animations": {
 			"recognise": "construct:keyframes",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "animation-* properties: name, duration, delay, timing, iteration count and direction read into the inventory record and written as entrance or effect"
 		},
 		"css-group:backgrounds-and-borders": {
@@ -3717,8 +3717,8 @@
 		"css-media-feature:prefers-reduced-motion": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#classify",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "plugins/sgs-blocks/scripts/motion-qa/probe-reduced-motion.mjs",
-			"note": "a draft's reduced-motion rule is recognised and not copied: every sgsMotion layer the writer writes gets the motion model's own reduced-motion behaviour (Spec 38A §12), which the live reduced-motion probe checks"
+			"check": "plugins/sgs-blocks/scripts/motion-qa/probe-motion-model-hover.mjs#reducedMotionChecks",
+			"note": "a draft's reduced-motion rule is recognised and not copied: every layer the writer writes takes the motion model's own reduced-motion behaviour (Spec 38A §12), which the live motion-model probe's reduced-motion checks verify"
 		},
 		"css-media-feature:prefers-reduced-transparency": {
 			"recognise": null,
@@ -5599,8 +5599,8 @@
 		"css-unit:deg": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "angles in deg, written in degrees"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "an angle in deg is written in degrees; checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-unit:dpcm": {
 			"recognise": null,
@@ -5688,8 +5688,8 @@
 		"css-unit:grad": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "angles in grad, written in degrees"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "an angle in grad is written in degrees; checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-unit:hz": {
 			"recognise": null,
@@ -5778,7 +5778,7 @@
 		"css-unit:ms": {
 			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#msOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "durations and delays in ms"
 		},
 		"css-unit:pc": {
@@ -5817,8 +5817,8 @@
 		"css-unit:rad": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "angles in rad, written in degrees"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "an angle in rad is written in degrees; checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-unit:rcap": {
 			"recognise": null,
@@ -5864,7 +5864,7 @@
 		"css-unit:s": {
 			"recognise": "scripts/computed-route/lib/motion-tokens.mjs#msOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "durations and delays in seconds, written in ms"
 		},
 		"css-unit:svb": {
@@ -5912,8 +5912,8 @@
 		"css-unit:turn": {
 			"recognise": "scripts/computed-route/lib/motion-channels.mjs#angleOf",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "angles in turn, written in degrees"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "an angle in turn is written in degrees; checked as part of the from transform, whose matrix in the code's own order is compared with the matrix the render drew (lib/motion-check.mjs::entranceCheck, lib/css-matrix.mjs)"
 		},
 		"css-unit:vb": {
 			"recognise": null,
@@ -13881,145 +13881,145 @@
 		"motion-preset:entrance:entrance-blur-in": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-blur-in preset names it"
 		},
 		"motion-preset:entrance:entrance-bounce-in": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-bounce-in preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-down": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-fade-down preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-in": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-fade-in preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-left": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-fade-left preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-right": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-fade-right preset names it"
 		},
 		"motion-preset:entrance:entrance-fade-up": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-fade-up preset names it"
 		},
 		"motion-preset:entrance:entrance-reveal-up": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
-			"note": "a written entrance whose values equal a entrance-reveal-up preset names it"
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "a written entrance whose values equal the entrance-reveal-up preset names it: a clip-path inset() is the clip channel (lib/motion-channels.mjs::clipChannels)"
 		},
 		"motion-preset:entrance:entrance-rotate-in": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-rotate-in preset names it"
 		},
 		"motion-preset:entrance:entrance-scale-in": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-scale-in preset names it"
 		},
 		"motion-preset:entrance:entrance-scale-out": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-scale-out preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-down": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-slide-down preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-left": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-slide-left preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-right": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-slide-right preset names it"
 		},
 		"motion-preset:entrance:entrance-slide-up": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a entrance-slide-up preset names it"
 		},
 		"motion-preset:entrance:keyframe-bounce": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-bounce preset names it"
 		},
 		"motion-preset:entrance:keyframe-fade-in": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-fade-in preset names it"
 		},
 		"motion-preset:entrance:keyframe-fade-out": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-fade-out preset names it"
 		},
 		"motion-preset:entrance:keyframe-fade-up": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-fade-up preset names it"
 		},
 		"motion-preset:entrance:keyframe-pulse": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-pulse preset names it"
 		},
 		"motion-preset:entrance:keyframe-slide-up": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-slide-up preset names it"
 		},
 		"motion-preset:entrance:keyframe-spin": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-spin preset names it"
 		},
 		"motion-preset:entrance:keyframe-zoom-in": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#entranceLayer",
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "a written entrance whose values equal a keyframe-zoom-in preset names it"
 		},
 		"motion-preset:entrance:nav-panel-item": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "states",
 			"note": "nav-panel-item plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
@@ -14040,42 +14040,42 @@
 		"motion-preset:entrance:state-burger-morph": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "states",
 			"note": "state-burger-morph plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-count-pop": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "states",
 			"note": "state-count-pop plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-icon-turn": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "states",
 			"note": "state-icon-turn plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-result-scale-in": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "states",
 			"note": "state-result-scale-in plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-shake": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "states",
 			"note": "state-shake plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
 		"motion-preset:entrance:state-step-slide": {
 			"recognise": null,
 			"write": "scripts/computed-route/lib/motion-tokens.mjs#presetFor",
-			"check": "scripts/computed-route/lib/fill-motion.mjs#entranceCheck",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"wave": "states",
 			"note": "state-step-slide plays when a panel opens or a state changes; the states wave (FR-48-81) recognises the state, and the writer names the preset when it writes the entrance"
 		},
@@ -14114,7 +14114,7 @@
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
 			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
 			"check": "scripts/parity/lib/state-passes.mjs#hoverPass",
-			"note": "a draft element with no hover motion gets no hover layer, which is the hover-none preset's meaning"
+			"note": "a draft element whose hover moves nothing gets no hover layer, which is the hover-none preset's meaning; the walker's hover pass checks the hover end state equals the rest state"
 		},
 		"motion-preset:hover:hover-rotate": {
 			"recognise": "scripts/computed-route/lib/motion-layers.mjs#hoverLayer",
@@ -15363,7 +15363,7 @@
 			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
 			"write": "scripts/computed-route/lib/motion-loops.mjs#smilLoop",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"note": "an endlessly repeating <animate> of opacity is the svg-loop pulse; one no effect draws is reported"
+			"note": "an endlessly repeating <animate> is read as a loop (values, keyTimes, dur) and written as the effect that draws it: an opacity dip at its midpoint is the svg-loop pulse; one no effect draws is reported by name; the loop is checked against the measured animation (lib/motion-loops.mjs::loopCheck) and the layer by the schema"
 		},
 		"svg:animateMotion": {
 			"recognise": null,
@@ -15376,7 +15376,7 @@
 			"recognise": "scripts/computed-route/lib/fill-entrance.mjs#sampleMotion",
 			"write": "scripts/computed-route/lib/motion-loops.mjs#smilLoop",
 			"check": "scripts/computed-route/lib/motion-validate.mjs#validateMotionWrite",
-			"note": "an endlessly repeating <animateTransform> is read as a loop of its transform channels and written as the effect that draws it, or reported"
+			"note": "an endlessly repeating <animateTransform> is read as a loop of its unitless values (rotate in degrees, translate in px, scale as a ratio; a rotate centre other than 0 0 and skews are reported) and written as the effect that draws it, or reported by name"
 		},
 		"svg:circle": {
 			"recognise": null,

@@ -27,6 +27,17 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 		const opacity = Math.round( parseFloat( own.opacity ) * 1000 ) / 1000;
 		return { opacity, transform: own.transform, translate: own.translate, scale: own.scale, rotate: own.rotate, filter: own.filter, clipPath: own.clipPath, key: `${ Math.round( opacity * 20 ) / 20 }|${ own.transform }${ own.translate }${ own.scale }${ own.rotate }${ own.filter }${ own.clipPath }` };
 	};
+	// The timing easing of the first animation that moves the element (Web Animations, CSS animations and transitions all
+	// appear in getAnimations). A CSS animation's curve sits on its keyframes, not on its effect timing. null when none.
+	const easingOf = ( el ) => {
+		const a = ( el.getAnimations ? el.getAnimations() : [] ).find( ( x ) => x.effect?.getTiming );
+		if ( ! a ) {
+			return null;
+		}
+		const timing = a.effect.getTiming().easing;
+		const keyframe = 'string' === typeof a.animationName ? a.effect.getKeyframes()[ 0 ]?.easing : null;
+		return keyframe || timing || null;
+	};
 	const inView = ( el ) => {
 		const r = el.getBoundingClientRect();
 		return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
@@ -47,7 +58,7 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 					const el = resolve( j.finder );
 					if ( el ) {
 						const p = poseOf( el );
-						seen.set( j.id, { el, seenAt: now, visibleAt: inView( el ) ? now : null, first: p, lastKey: p.key, firstChange: null, start: null, secondAt: null, end: null } );
+						seen.set( j.id, { el, seenAt: now, visibleAt: inView( el ) ? now : null, first: p, lastKey: p.key, firstChange: null, easing: null, start: null, secondAt: null, end: null } );
 					}
 					continue;
 				}
@@ -60,7 +71,10 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 						s.secondAt = now;
 					}
 					s.start ??= now;
-					s.firstChange ??= p;
+					if ( ! s.firstChange ) {
+						s.firstChange = p;
+						s.easing = easingOf( s.el );
+					}
 					s.end = now;
 					s.lastKey = p.key;
 				}
@@ -92,7 +106,7 @@ function startProbe( [ jobs, resolveSrc, windowMs, sweep ] ) {
 			const out = {};
 			for ( const [ id, s ] of seen ) {
 				const strip = ( p ) => p && { opacity: p.opacity, transform: p.transform, translate: p.translate, scale: p.scale, rotate: p.rotate, filter: p.filter, clipPath: p.clipPath };
-				out[ id ] = { seenAt: s.seenAt, visibleAt: s.visibleAt, first: strip( s.first ), firstChange: strip( s.firstChange ), start: s.start, secondAt: s.secondAt, end: s.end, loop: null !== s.end && now - s.end < 120, loops: loopsOf( s.el ), ...mediaOf( s.el ) };
+				out[ id ] = { seenAt: s.seenAt, visibleAt: s.visibleAt, first: strip( s.first ), firstChange: strip( s.firstChange ), easing: s.easing, start: s.start, secondAt: s.secondAt, end: s.end, loop: null !== s.end && now - s.end < 120, loops: loopsOf( s.el ), ...mediaOf( s.el ) };
 			}
 			done( out );
 		};
@@ -144,6 +158,7 @@ export async function sampleWidths( { jobs, ...opts } ) {
 export async function sampleMotion( { jobs, ...opts } ) {
 	const entrances = Object.fromEntries( jobs.map( ( j ) => [ j.id, {} ] ) );
 	const loops = {};
+	const found = {};
 	for ( const width of SAMPLE_WIDTHS ) {
 		const raw = await sampleEntrances( { ...opts, jobs, width } );
 		for ( const j of jobs ) {
@@ -152,9 +167,14 @@ export async function sampleMotion( { jobs, ...opts } ) {
 				continue;
 			}
 			entrances[ j.id ][ width ] = shapeEntrance( r );
-			if ( r.loops?.length || r.marquee || r.smil?.length ) {
-				loops[ j.id ] = { ...( loops[ j.id ] || {} ), [ width ]: { loops: r.loops || [], box: r.box, marquee: r.marquee, smil: r.smil || [] } };
-			}
+			found[ j.id ] = { ...( found[ j.id ] || {} ), [ width ]: r };
+		}
+	}
+	// A job that runs motion at some width carries an entry at every width the element was found, so a width where the
+	// render shows none is visible (`loops: []`).
+	for ( const [ id, byWidth ] of Object.entries( found ) ) {
+		if ( Object.values( byWidth ).some( ( r ) => r.loops?.length || r.marquee || r.smil?.length ) ) {
+			loops[ id ] = Object.fromEntries( Object.entries( byWidth ).map( ( [ width, r ] ) => [ width, { loops: r.loops || [], box: r.box, marquee: r.marquee, smil: r.smil || [] } ] ) );
 		}
 	}
 	return { entrances, loops };
@@ -226,12 +246,29 @@ export function shapeEntrance( raw ) {
 		x,
 		y,
 		scale: scaleOf( from ),
+		rotate: rotateOf( from ),
+		easing: raw.easing ?? null,
 		opacityFrom: from.opacity,
 		from: { opacity: String( from.opacity ), transform: from.transform, translate: from.translate, filter: from.filter ?? 'none', clipPath: from.clipPath ?? 'none' },
 		fromFirstChange: !! useChange,
 		held,
 		exactDelay: held || 'load' === trigger,
 	};
+}
+
+// The rotation a pose applies, in degrees: the transform matrix's angle plus the rotate property's, 0 when none.
+export function rotateOf( pose ) {
+	let deg = 0;
+	const m = /^matrix\(([^)]+)\)$/.exec( pose.transform || '' );
+	if ( m ) {
+		const [ a, b ] = m[ 1 ].split( ',' ).map( Number );
+		deg += ( Math.atan2( b, a ) * 180 ) / Math.PI;
+	}
+	const p = /(-?[\d.]+)deg/.exec( pose.rotate || '' );
+	if ( p ) {
+		deg += Number( p[ 1 ] );
+	}
+	return Math.round( deg * 100 ) / 100;
 }
 
 // The uniform scale a pose applies (the transform matrix's x scale times the scale property), 1 when none.

@@ -164,6 +164,10 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-entrance.mjs` | Samples a draft's entrances at 375, 768 and 1440 (delay, duration, first-frame pose, load or scroll trigger), sweeping down the page so scroll reveals play, and each element's endless animations as the code made them (timing, keyframes, box, `<marquee>` attributes, SVG animation elements): the motion writer's render check and the source of the values the code computes at run time. |
 | `lib/fill-motion.mjs` | The motion cloning writer (Spec 48 FR-48-78): each skeleton node's inventory motion records as its `sgsMotion`, on the root or the declared part a slot names, render-checked, token-snapped and validated before it is written. |
 | `lib/motion-layers.mjs` | One element's motion records as `entrance.base` (from and to, or `values.keyframes` for a record with more than two keyframes) and `hover.state` layers, and the match of a run-time-picked entrance to a measured pose. |
+| `lib/motion-check.mjs` | The motion writer's render check: a sampled entrance against the draft's code for duration and delay (device overrides) and for the from-pose and easing (reported only). |
+| `lib/css-matrix.mjs` | A CSS transform list as the 4x4 matrix a browser draws it with, in the list's own order, so the render check compares the code's from transform with the transform the render drew; a percentage or unknown function is unreadable (null). |
+| `lib/motion-clip.mjs` | A clip-path `inset()` as the entrance clip channel, one inset edge as `clipEdge`; other shapes are unsupported. |
+| `lib/motion-shadow.mjs` | A box-shadow's parts (inset, offsets, blur, spread, colour), so a ring or an accent-line hover is told from a drop shadow. |
 | `lib/motion-channels.mjs` | CSS values as the motion schema's channels: lengths, angles, transform and filter lists, a record's from and to poses, and the keyframe stops of a record that has more than two. |
 | `lib/motion-effects.mjs` | The one effect writer (`writeEffect`): an effect slug and values as a layer of its panel's list, placed where the editor's Effects panel offers it (qualifying blocks, target level, part kind), every value checked against the DB's fields; FR-48-77's recognisers call it too. |
 | `lib/motion-loops.mjs` | A draft's endless animations as effects: the smallest effect whose owned channels cover the loop and whose values reproduce it (marquee px/s from travel over loop time, ambient float, SVG pulse, Ken Burns), a `<marquee>` and SVG `<animate>` as loops, and a named Spec 38 gap for a loop no effect draws. |
@@ -298,6 +302,8 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-motion.test.mjs` | FR-48-78: the motion writer's layers, tokens, presets, run-time pose match, render check and refusals (MUST FAIL each). |
 | `tests/motion-effects.test.mjs` | FR-48-78, FR-38A-44: loops as effects (marquee px/s, per-width track, float phase, pulse, gaps), the effect writer's placement and field checks, run-time loop match, `<marquee>` and SVG animation, intensity presets (MUST FAIL each). |
 | `tests/motion-planted-draft.test.mjs` | FR-48-78 done-when: a planted draft using the motion writer's capabilities (a `<marquee>`, an SVG `<animate>`) raises no seen-but-unsupported row through the real usage read and coverage map, raises each again with the writer's entry removed, and its marquee and pulse are written as validated effect layers. |
+| `tests/motion-order.test.mjs` | FR-48-78, from the step 4.0 council: a loop is an effect only when endless and started at load or in view (a draft-started one when the render confirms it); a counted repeat is reported; a reversed one-shot is written as it plays; a move after a flat turn or resize is rewritten exactly, one after a tilt reported; the clip-path inset channel (MUST FAIL each). |
+| `tests/css-matrix.test.mjs` | lib/css-matrix.mjs against Chromium's computed transform for every kind of function in mixed orders; an unreadable list is null (MUST FAIL). |
 | `tests/fill-site-info.test.mjs` | A link setting bound to Site Info keeps the draft address as its fallback and yields one `site-info` handover entry (MUST FAIL without it); an unbound node, a bound node with no draft link and a non-Site-Info binding yield none. |
 | `tests/fill-site-rows.test.mjs` | A `sgs/social-icons` skeleton node with `siteInfoRow` expands to the Site Info-bound icons the committed Eye Care footer and drawer trees hold; the Fill-only keys are stripped; an unknown slug is a skeleton problem. |
 | `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
@@ -840,16 +846,21 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `STEP_MS`, `JITTER_MS`, `FRAME_MS`: 50, 40 and 16, the probe's rounding step, jitter tolerance and one frame.
 - `SWEEP`: the page sweep (first scroll after 1.5s, 0.7 of the viewport every 700ms, 2.5s settle).
 - `sampleEntrances(options)` → the raw probe results by job id (`sweep: null` keeps the page still). `sampleWidths(options)` → `{ id: { 375, 768, 1440: shaped entrance or null } }`. `sampleMotion(options)` → `{ entrances, loops: { id: { width: { loops, box, marquee, smil } } } }` from the same page loads.
-- `translationOf(pose)` → `{ x, y }` in px. `scaleOf(pose)` → the uniform scale. `shapeEntrance(raw)` → `{ trigger, delayMs, durationMs, delayRawMs, durationRawMs, distancePx, scale, … }` or null.
+- `translationOf(pose)` → `{ x, y }` in px. `scaleOf(pose)` → the uniform scale. `rotateOf(pose)` → the rotation in degrees (matrix angle plus the `rotate` property). `shapeEntrance(raw)` → `{ trigger, delayMs, durationMs, delayRawMs, durationRawMs, distancePx, scale, … }` or null.
 
 ### `lib/fill-motion.mjs`
 - `motionWrites(options)` → `{ writes, unmapped, notes }`: every node's `sgsMotion`, validated by `lib/motion-validate.mjs`.
-- `elementMotion(records, options)` → one target's entrance and hover layers. `elementEffects(records, options)` → one target's effects from its loop records, the run-time loop records its measured animation is, its `<marquee>` and its SVG animation elements. `entranceCheck(layer, record, sampled)` → `{ devices, differences }`; `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
-- `elementKey(finder, rootComponent)`, `recordsByElement(records)`, `partForSlot(block, slot, targets)`; `WIDTH_TIER`: 375 mobile, 768 tablet, 1440 desktop.
+- `elementMotion(records, options)` → one target's entrance and hover layers. `elementEffects(records, options)` → one target's effects from its loop records, the run-time loop records its measured animation is, its `<marquee>` and its SVG animation elements. `renderRefutes(sampled)` is true when the element was found and played no entrance at any width, so the render wins and nothing is written.
+- `elementKey(finder, rootComponent)`, `recordsByElement(records)`, `partForSlot(block, slot, targets)`.
 
 ### `lib/motion-layers.mjs`
+- `asPlayed(record)` → a one-shot record as it plays (a reverse run swaps from and to and mirrors its keyframe offsets).
 - `classify(record)` → `entrance`, `hover`, `effect` (an endless or repeating animation) or `skip` with the owning wave. `entranceLayer`, `hoverLayer` → layers.
 - `poseDistance`, `matchByPose`, `delaySteps` (a per-item delay's offset and step), `delayOf`. `entranceLayer` writes `values.keyframes` (one entry per distinct offset, offsets in percent, at most 8) when a property carries more than two keyframes, and refuses a record whose stop value the code computes.
+
+### `lib/motion-check.mjs`
+
+- `entranceCheck(layer, record, sampled)` → `{ devices, differences }`: per width the duration and delay (overrides) and the from-pose (translate, scale, rotate, opacity) and easing (reported only); `tolerance(ms)` (max of 100ms and 10%) is how far a measured time may sit before the render overrides it; `WIDTH_TIER`: 375 mobile, 768 tablet, 1440 desktop.
 
 ### `lib/motion-channels.mjs`
 - `lengthOf`, `angleOf` (a length as px or its unit string, an angle in degrees); `round`; `transformChannels`, `filterChannels`, `propertyChannels`, `poseOf` (the from and to channels of a record's properties).
@@ -864,6 +875,15 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `loopEffect(record, measuredByWidth, { mdb })`, `chooseEffect(loop, narrow, { mdb })` → `{ effect, values, devices, trigger, notes }` or `{ unmapped }`; `LOOP_BUILDERS`: marquee, ambient-float, svg-loop, ken-burns.
 - `loopCheck(record, measuredByWidth)` → one line per width where the measured loop differs from the code's duration or keyframes, `[]` when every width agrees.
 - `resolvedLoop(record, measured)` (values from the code, else the measured animation; random values refused), `measuredLoopOf(record, measured)`, `loopFamilies(loop)`, `runtimeLoopsFor(candidates, measured)`; `smilLoop(animate, box)`, `marqueeTag(attrs)`.
+
+### `lib/css-matrix.mjs`
+- `transformMatrix(value)` → the 16 numbers (column-major) of a transform list, or null; `sameMatrix(a, b, { tol, tolPx })` → whether two matrices draw the same.
+
+### `lib/motion-clip.mjs`
+- `clipChannels(value)` → a clip-path `inset()` as the entrance clip channel (`clip`, and `clipEdge` for one inset edge), any other shape unsupported.
+
+### `lib/motion-shadow.mjs`
+- `shadowParts(value)` → `{ inset, x, y, blur, spread, colour }` of a single box-shadow, or null (its colour is turned to hex by `lib/tokens.mjs::colourHex`).
 
 ### `lib/motion-db.mjs`
 - `motionDb(db)` → `{ targetsOf(block), field(layer, path, effect), presets(panel), effect(slug), effects() }`. `fieldKey(layer, fieldPath)`.

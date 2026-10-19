@@ -365,15 +365,33 @@ test( 'review.md writes each paragraph of its guide as one line (no hard wraps)'
 test( 'MUST FAIL: a mark written in review.md but never applied survives a re-run; a changed row drops it, and a ticked Accept all is reported', () => {
 	const prev = { ...fixture(), review: carryOver( null, fixture() ).review };
 	const [ a, b ] = prev.review;
-	const md = mark( renderReview( prev ), { accept: [ a.rowType ], rows: { [ a.rowId ]: 'gap:draft reading', [ b.rowId ]: 'gap:draft reading' } } );
+	const md = mark( renderReview( prev ), { accept: [ a.rowType ], rows: { [ a.rowId ]: 'accept', [ b.rowId ]: 'accept' } } );
 	const kept = withUnappliedMarks( prev, md, { day: '2026-10-18' } );
 	assert.deepEqual( kept.carried, [ a.rowId, b.rowId ] );
 	assert.deepEqual( kept.acceptAll, [ a.rowType ] );
 	const next = fixture();
 	const { review } = carryOver( { ...kept.intake, review: kept.intake.review.map( ( r ) => ( r.rowId === b.rowId ? { ...r, contentHash: 'old' } : r ) ) }, next );
-	assert.deepEqual( [ review.find( ( r ) => r.rowId === a.rowId ).mark, review.find( ( r ) => r.rowId === a.rowId ).markedOn ], [ 'gap:draft reading', '2026-10-18' ] );
+	assert.deepEqual( [ review.find( ( r ) => r.rowId === a.rowId ).mark, review.find( ( r ) => r.rowId === a.rowId ).markedOn ], [ 'accept', '2026-10-18' ] );
 	assert.equal( review.find( ( r ) => r.rowId === b.rowId ).mark, null, 'a row whose content changed is unmarked, as for an applied mark' );
 	assert.equal( carryOver( prev, next ).review.find( ( r ) => r.rowId === a.rowId ).mark, null, 'control: without the review.md step the mark is lost' );
-	const applied = { ...prev, review: prev.review.map( ( r ) => ( r.rowId === a.rowId ? { ...r, mark: 'accept', markedOn: '2026-10-10' } : r ) ) };
-	assert.equal( withUnappliedMarks( applied, md ).intake.review.find( ( r ) => r.rowId === a.rowId ).mark, 'accept', 'an applied mark is never overwritten by review.md' );
+	const applied = { ...prev, review: prev.review.map( ( r ) => ( r.rowId === a.rowId ? { ...r, mark: 'drop', markedOn: '2026-10-10' } : r ) ) };
+	assert.equal( withUnappliedMarks( applied, md ).intake.review.find( ( r ) => r.rowId === a.rowId ).mark, 'drop', 'an applied mark is never overwritten by review.md' );
+} );
+
+test( 'MUST FAIL: a review.md mark --apply-review would refuse, or one on a row listed in another section, is not carried and is named', () => {
+	const prev = { ...fixture(), review: carryOver( null, fixture() ).review };
+	const [ a, b ] = prev.review.filter( ( r, i, all ) => all.findIndex( ( x ) => x.rowType === r.rowType ) === i );
+	const md = mark( renderReview( prev ), { rows: { [ a.rowId ]: 'not-a-real-mark' } } );
+	const kept = withUnappliedMarks( prev, md, { day: '2026-10-19' } );
+	assert.deepEqual( kept.carried, [] );
+	assert.equal( kept.intake.review.find( ( r ) => r.rowId === a.rowId ).mark, null );
+	assert.match( kept.refused[ 0 ], /not-a-real-mark.*not carried/ );
+	const lines = md.split( '\n' );
+	const rowLine = lines.findIndex( ( l ) => l.startsWith( `| \`${ a.rowId }\` |` ) );
+	const moved = lines.filter( ( _, i ) => i !== rowLine );
+	const target = moved.findIndex( ( l ) => l.startsWith( `| \`${ b.rowId }\` |` ) );
+	moved.splice( target + 1, 0, lines[ rowLine ].replace( /\| not-a-real-mark \|$/, '| accept |' ) );
+	const wrong = withUnappliedMarks( prev, moved.join( '\n' ), { day: '2026-10-19' } );
+	assert.ok( ! wrong.carried.includes( a.rowId ), 'a row listed in another section is not carried' );
+	assert.match( wrong.refused.join( ' ' ), /listed in the .* section, but it is a/ );
 } );

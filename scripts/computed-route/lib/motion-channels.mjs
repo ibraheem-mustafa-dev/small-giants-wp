@@ -6,6 +6,8 @@
 const num = ( s ) => ( /^-?(?:\d+(?:\.\d+)?|\.\d+)$/.test( String( s ).trim() ) ? Number( s ) : null );
 export const round = ( n, p = 4 ) => Math.round( n * 10 ** p ) / 10 ** p;
 
+import { clipChannels } from './motion-clip.mjs';
+
 // A length: px as a number, another schema unit as its string, 0 unitless; null for anything else.
 export function lengthOf( s ) {
 	const t = String( s ?? '' ).trim();
@@ -85,19 +87,54 @@ export function transformChannels( value ) {
 	const set = ( k, v ) => {
 		if ( null === v ) {
 			out.unsupported.push( k );
-		} else {
+		} else if ( ! ( k in out.channels ) ) {
 			out.channels[ k ] = v;
+		} else if ( 'number' === typeof v && 'number' === typeof out.channels[ k ] ) {
+			// The same function twice: moves and turns add, sizes multiply.
+			out.channels[ k ] = round( /^scale/.test( k ) ? out.channels[ k ] * v : out.channels[ k ] + v, 4 );
+		} else {
+			out.unsupported.push( k );
 		}
 	};
 	let depth = 0;
+	const order = { turned: false, sized: false, uneven: false, tilted: false, any: false, depthFirst: false, L: [ 1, 0, 0, 1 ] };
+	// A move written after a flat turn or resize draws as that move turned and resized, placed first (the model's
+	// order): `scale(s) translate(t)` is `translate(s·t) scale(s)` exactly. After a tilt about X or Y no flat rewrite
+	// holds, so it is reported. `L` is the flat turn and resize so far, column-major [a, b, c, d].
+	const move = ( x, y ) => {
+		const L = order.L;
+		if ( ! order.tilted && 1 === L[ 0 ] && 0 === L[ 1 ] && 0 === L[ 2 ] && 1 === L[ 3 ] ) {
+			if ( undefined !== x ) {
+				set( 'translateX', x );
+			}
+			if ( undefined !== y ) {
+				set( 'translateY', y );
+			}
+			return;
+		}
+		if ( order.tilted || [ x, y ].some( ( v ) => undefined !== v && 'number' !== typeof v ) ) {
+			out.unsupported.push( 'transform order' );
+			return;
+		}
+		const [ px, py ] = [ x ?? 0, y ?? 0 ];
+		const [ rx, ry ] = [ round( ( L[ 0 ] * px ) + ( L[ 2 ] * py ), 2 ), round( ( L[ 1 ] * px ) + ( L[ 3 ] * py ), 2 ) ];
+		if ( undefined !== x || 0 !== rx ) {
+			set( 'translateX', rx );
+		}
+		if ( undefined !== y || 0 !== ry ) {
+			set( 'translateY', ry );
+		}
+	};
 	for ( const [ , fn, inner ] of s.matchAll( /([a-zA-Z0-9]+)\(([^)]*)\)/g ) ) {
 		const a = args( inner );
 		const f = fn.toLowerCase();
+		const before = { ...out.channels };
+		const depthBefore = depth;
+		if ( 'perspective' === f && order.any ) {
+			out.unsupported.push( 'perspective position' );
+		}
 		if ( 'translate' === f || 'translate3d' === f ) {
-			set( 'translateX', lengthOf( a[ 0 ] ) );
-			if ( a[ 1 ] !== undefined ) {
-				set( 'translateY', lengthOf( a[ 1 ] ) );
-			}
+			move( lengthOf( a[ 0 ] ), undefined === a[ 1 ] ? undefined : lengthOf( a[ 1 ] ) );
 			if ( 'translate3d' === f ) {
 				depth = addDepth( depth, a[ 2 ] ?? '0', out.unsupported );
 			}
@@ -107,9 +144,9 @@ export function transformChannels( value ) {
 			// A flat element has no depth for scaleZ to stretch, so it changes nothing drawn.
 			continue;
 		} else if ( 'translatex' === f ) {
-			set( 'translateX', lengthOf( a[ 0 ] ) );
+			move( lengthOf( a[ 0 ] ), undefined );
 		} else if ( 'translatey' === f ) {
-			set( 'translateY', lengthOf( a[ 0 ] ) );
+			move( undefined, lengthOf( a[ 0 ] ) );
 		} else if ( 'matrix' === f || 'matrix3d' === f ) {
 			matrixChannels( a.map( Number ), f, set, out.unsupported );
 		} else if ( 'scale' === f || 'scale3d' === f ) {
@@ -143,11 +180,46 @@ export function transformChannels( value ) {
 		} else {
 			out.unsupported.push( f );
 		}
+		trackOrder( order, before, out, depth !== depthBefore, f );
 	}
-	if ( 0 !== depth ) {
+	if ( order.depthFirst ) {
+		out.unsupported.push( 'translateZ' );
+	} else if ( 0 !== depth ) {
 		projectDepth( out, depth );
 	}
 	return out;
+}
+
+// The motion model draws a transform as translate, then rotate, then scale (CSS's own order for those properties),
+// under one perspective applied first. A draft list in another order draws the same only where the steps commute, so
+// a move after a turn or a resize, a turn after an uneven resize, and a depth move before the perspective are reported
+// ('transform order', 'translateZ'); `before` is the channels before this function, `deeper` whether it moved in depth.
+function trackOrder( order, before, out, deeper, f ) {
+	const c = out.channels;
+	const changed = Object.keys( c ).filter( ( k ) => before[ k ] !== c[ k ] );
+	const moved = changed.some( ( k ) => /^translate/.test( k ) && 0 !== c[ k ] - ( before[ k ] ?? 0 ) );
+	const turned = changed.some( ( k ) => /^rotate/.test( k ) && 0 !== c[ k ] );
+	const sized = changed.some( ( k ) => /^scale/.test( k ) && 1 !== c[ k ] );
+	// A matrix's own move cannot be rewritten through an earlier turn or resize; a turn after an uneven resize is not
+	// the model's resize-then-turn.
+	if ( ( /^matrix/.test( f ) && moved && ( order.turned || order.sized ) ) || ( turned && order.uneven ) ) {
+		out.unsupported.push( 'transform order' );
+	}
+	if ( deeper && ! out.perspective ) {
+		order.depthFirst = true;
+	}
+	const deg = ( ( c.rotate ?? 0 ) - ( before.rotate ?? 0 ) ) * ( Math.PI / 180 );
+	const k = ( key, base ) => ( c[ key ] ?? base ) / ( before[ key ] ?? base );
+	const sx = k( 'scale', 1 ) * k( 'scaleX', 1 );
+	const sy = k( 'scale', 1 ) * k( 'scaleY', 1 );
+	const step = [ Math.cos( deg ) * sx, Math.sin( deg ) * sx, -Math.sin( deg ) * sy, Math.cos( deg ) * sy ];
+	const L = order.L;
+	order.L = [ ( L[ 0 ] * step[ 0 ] ) + ( L[ 2 ] * step[ 1 ] ), ( L[ 1 ] * step[ 0 ] ) + ( L[ 3 ] * step[ 1 ] ), ( L[ 0 ] * step[ 2 ] ) + ( L[ 2 ] * step[ 3 ] ), ( L[ 1 ] * step[ 2 ] ) + ( L[ 3 ] * step[ 3 ] ) ];
+	order.tilted ||= changed.some( ( key ) => /^rotate[XY]$/.test( key ) && 0 !== c[ key ] );
+	order.turned ||= turned;
+	order.sized ||= sized;
+	order.uneven ||= changed.some( ( key ) => /^scale[XY]$/.test( key ) ) && c.scaleX !== c.scaleY;
+	order.any ||= moved || turned || sized || deeper;
 }
 
 // A translateZ or translate3d depth added to the running total, in px; a depth that is not a px length is reported.
@@ -199,44 +271,6 @@ function rotate3dChannel( a, set, unsupported ) {
 	set( [ 'rotateX', 'rotateY', 'rotate' ][ i ], round( Math.sign( x ) * deg, 3 ) );
 }
 
-// A box-shadow value's single shadow as { inset, x, y, blur, spread, colour } (lengths in px, colour as written), or
-// null for none, a list of several shadows or a length that is not px.
-export function shadowParts( value ) {
-	const s = String( value ?? '' ).trim();
-	if ( '' === s || 'none' === s || /,(?![^(]*\))/.test( s ) ) {
-		return null;
-	}
-	const fnColour = /(?:rgba?|hsla?|oklch|color)\([^)]*\)/.exec( s );
-	const words = ( fnColour ? s.replace( fnColour[ 0 ], ' ' ) : s ).trim().split( /\s+/ ).filter( Boolean );
-	const inset = words.includes( 'inset' );
-	const rest = words.filter( ( w ) => 'inset' !== w );
-	const colour = fnColour ? fnColour[ 0 ] : rest.find( ( w ) => null === lengthOf( w ) ) ?? null;
-	const lengths = rest.filter( ( w ) => w !== colour ).map( lengthOf );
-	if ( lengths.length < 2 || lengths.length > 4 || lengths.some( ( l ) => 'number' !== typeof l ) ) {
-		return null;
-	}
-	const [ x, y, blur = 0, spread = 0 ] = lengths;
-	return { inset, x, y, blur, spread, colour };
-}
-
-// A CSS colour as lowercase hex (#rrggbb, or #rrggbbaa when not opaque), or null when it is not a plain colour (a
-// keyword such as currentColor, a variable, a colour function other than rgb() and hex).
-export function colourHex( value ) {
-	const s = String( value ?? '' ).trim().toLowerCase();
-	const two = ( n ) => Math.max( 0, Math.min( 255, Math.round( n ) ) ).toString( 16 ).padStart( 2, '0' );
-	let m = /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/.exec( s );
-	if ( m ) {
-		const h = m[ 1 ].length <= 4 ? [ ...m[ 1 ] ].map( ( c ) => c + c ).join( '' ) : m[ 1 ];
-		return 'ff' === h.slice( 6 ) ? `#${ h.slice( 0, 6 ) }` : `#${ h }`;
-	}
-	m = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:[\s,/]+([\d.]+%?))?\s*\)$/.exec( s );
-	if ( ! m ) {
-		return null;
-	}
-	const alpha = undefined === m[ 4 ] ? 1 : /%$/.test( m[ 4 ] ) ? Number( m[ 4 ].slice( 0, -1 ) ) / 100 : Number( m[ 4 ] );
-	return `#${ two( m[ 1 ] ) }${ two( m[ 2 ] ) }${ two( m[ 3 ] ) }${ alpha < 1 ? two( alpha * 255 ) : '' }`;
-}
-
 // A filter list as channels: blur (px), grayscale and brightness (ratios; 100% is 1).
 export function filterChannels( value ) {
 	const out = { channels: {}, unsupported: [] };
@@ -277,12 +311,14 @@ export function propertyChannels( property, value ) {
 			return transformChannels( `rotate(${ value })` );
 		case 'filter':
 			return filterChannels( value );
+		case 'clip-path':
+			return clipChannels( value );
 		default:
 			return { other: property };
 	}
 }
 
-const IDENTITY = { opacity: 1, translateX: 0, translateY: 0, scale: 1, scaleX: 1, scaleY: 1, rotate: 0, rotateX: 0, rotateY: 0, blur: 0, grayscale: 0, brightness: 1 };
+const IDENTITY = { opacity: 1, translateX: 0, translateY: 0, scale: 1, scaleX: 1, scaleY: 1, rotate: 0, rotateX: 0, rotateY: 0, blur: 0, grayscale: 0, brightness: 1, clip: 0 };
 
 // The from and to channels of a record's properties: { from, to, unsupported, other }. A channel the from side sets and
 // the to side leaves out (or sets to `none`) goes to its identity.
@@ -301,7 +337,7 @@ export function poseOf( properties ) {
 		out.perspective = f.perspective ?? t.perspective ?? out.perspective;
 	}
 	for ( const k of Object.keys( out.from ) ) {
-		if ( ! ( k in out.to ) ) {
+		if ( ! ( k in out.to ) && k in IDENTITY ) {
 			out.to[ k ] = IDENTITY[ k ];
 		}
 	}

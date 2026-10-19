@@ -8,7 +8,9 @@
 // is lib/motion-channels.mjs. Whether a layer takes a field, and its field type, is asked of the framework DB
 // (lib/motion-db.mjs).
 
-import { round, lengthOf, propertyChannels, poseOf, keyframeStops, shadowParts, colourHex } from './motion-channels.mjs';
+import { round, lengthOf, propertyChannels, poseOf, keyframeStops } from './motion-channels.mjs';
+import { shadowParts } from './motion-shadow.mjs';
+import { colourHex } from './tokens.mjs';
 
 // Each layer keeps only fields the framework DB lists for it; the rest are reported.
 function keepFields( mdb, layer, base, obj, dropped ) {
@@ -22,6 +24,9 @@ function keepFields( mdb, layer, base, obj, dropped ) {
 	}
 	return out;
 }
+
+// The triggers a visitor's action fires.
+const INTERACTION = /^(?:hover|pointer|press|click|focus|key|touch|drag|scroll(?!-into-view))/;
 
 // How a record is handled: { kind: 'entrance' | 'hover' | 'effect' | 'skip', reason }; an endless or repeating
 // animation is an effect (lib/motion-effects.mjs::loopEffect). `reason` names who owns a skipped record.
@@ -42,11 +47,20 @@ export function classify( record ) {
 	if ( 'css-transition' === record.mechanism || 'css-pseudo' === record.mechanism ) {
 		return { kind: 'skip', reason: `a ${ t } state transition: the states wave (FR-48-81) or the owning block's setting` };
 	}
-	const loops = 'infinite' === record.iterations || ( 'number' === typeof record.iterations && record.iterations > 1 ) || /alternate/.test( record.direction || '' );
-	if ( loops ) {
-		return { kind: 'effect' };
+	const starts = 'mount' === t || 'load' === t || 'scroll-into-view' === t;
+	if ( 'infinite' === record.iterations || Infinity === record.iterations ) {
+		if ( starts ) {
+			return { kind: 'effect' };
+		}
+		// A loop the draft's own code starts (a state change after mount, a timer) is an effect when the render shows it
+		// running on a page nobody touched (lib/fill-motion.mjs::elementEffects asks for that); one a visitor's action
+		// starts is a behaviour.
+		return INTERACTION.test( t || '' ) ? { kind: 'skip', reason: `an endless animation started on ${ t }: the visitor's ${ t } drives it, recognised by the behaviour recognisers wave (FR-48-80)` } : { kind: 'effect', confirm: true };
 	}
-	if ( 'mount' === t || 'load' === t || 'scroll-into-view' === t ) {
+	if ( 'number' === typeof record.iterations && record.iterations > 1 ) {
+		return { kind: 'skip', reason: `plays ${ record.iterations } times: no motion field holds a repeat count (a Spec 38 gap)` };
+	}
+	if ( starts ) {
 		return { kind: 'entrance' };
 	}
 	return { kind: 'skip', reason: `a one-shot animation on a ${ t } trigger: the draft's ${ t } drives it, recognised by the behaviour recognisers wave (FR-48-80)` };
@@ -70,7 +84,7 @@ export function poseDistance( record, measured ) {
 		travel: [ Math.hypot( Number( f.translateX ) || 0, Number( f.translateY ) || 0 ) > 0, measured.distancePx > 1 ],
 		scale: [ Math.abs( scaleFrom - 1 ) > 0.005, Math.abs( measured.scale - 1 ) > 0.005 ],
 		blur: [ blurFrom > 0, /blur\(/.test( measured.from.filter || '' ) && ! /blur\(0px\)/.test( measured.from.filter ) ],
-		clip: [ pose.other.includes( 'clip-path' ), 'none' !== ( measured.from.clipPath || 'none' ) ],
+		clip: [ ( Number( f.clip ) || 0 ) > 0, 'none' !== ( measured.from.clipPath || 'none' ) ],
 	};
 	if ( Object.values( has ).some( ( [ code, render ] ) => code !== render ) ) {
 		return null;
@@ -131,9 +145,20 @@ function perspectiveOf( px, mdb, layer, notes ) {
 	return { perspective: px };
 }
 
+// A one-shot record as it plays: `reverse` (and `alternate-reverse`, whose single run is backwards) plays the keyframes
+// from the last to the first, so its from and to swap and its keyframe offsets mirror.
+export function asPlayed( record ) {
+	if ( ! /reverse/.test( record.direction || '' ) ) {
+		return record;
+	}
+	const properties = ( record.properties || [] ).map( ( p ) => ( { ...p, from: p.to, to: p.from, ...( Array.isArray( p.keyframes ) ? { keyframes: p.keyframes.map( ( k ) => ( { ...k, offset: Math.round( ( 1 - Number( k.offset ) ) * 10000 ) / 10000 } ) ).reverse() } : {} ) } ) );
+	return { ...record, properties, direction: 'normal' };
+}
+
 // `entrance.base` from one entrance record: { layer, notes } or { unmapped }. `measured` (the sampled entrance at the
 // widest width) supplies a delay the code computes.
-export function entranceLayer( record, mdb, measured = null ) {
+export function entranceLayer( given, mdb, measured = null ) {
+	const record = asPlayed( given );
 	const kf = keyframeStops( record.properties );
 	const pose = poseOf( record.properties );
 	const notes = [];

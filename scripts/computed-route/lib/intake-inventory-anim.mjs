@@ -195,7 +195,7 @@ export function keyframeProperties( stops = [] ) {
 			by.set( property, seen );
 		}
 	}
-	return [ ...by ].map( ( [ property, seen ] ) => {
+	return [ ...by ].filter( ( [ , seen ] ) => seen.size ).map( ( [ property, seen ] ) => {
 		const frames = [ ...seen ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ).map( ( [ offset, value ] ) => ( { offset, value } ) );
 		if ( 1 === frames.length ) {
 			const [ f ] = frames;

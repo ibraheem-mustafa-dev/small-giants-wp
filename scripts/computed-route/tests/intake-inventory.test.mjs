@@ -219,3 +219,9 @@ test( 'the intake stage returns the inventory parts, and a missing Claude Design
 	assert.equal( rec( out.inventory, ( r ) => 'js-style-write' === r.mechanism ).trace.observed, 'yes' );
 	assert.deepEqual( out.gaps, [] );
 } );
+
+test( 'MUST FAIL: a @keyframes rule\'s stops become properties in offset order; a stop key that is not an offset is skipped, never a crash', async () => {
+	const { keyframeProperties } = await import( '../lib/intake-inventory-anim.mjs' );
+	assert.deepEqual( keyframeProperties( [ { key: '100%', decls: [ [ 'opacity', '1' ] ] }, { key: '0%', decls: [ [ 'opacity', '0' ] ] } ] ), [ { property: 'opacity', from: '0', to: '1' } ], 'source order to-then-from still reads from 0 to 1' );
+	assert.deepEqual( keyframeProperties( [ { key: 'foo', decls: [ [ 'opacity', '1' ] ] }, { key: '0%', decls: [ [ 'transform', 'none' ] ] }, { key: '100%', decls: [ [ 'transform', 'scale(2)' ] ] } ] ), [ { property: 'transform', from: 'none', to: 'scale(2)' } ] );
+} );

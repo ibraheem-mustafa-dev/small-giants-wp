@@ -10,7 +10,8 @@ import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { motionDb } from '../lib/motion-db.mjs';
 import { loadMotionSchema, enumerateFields } from '../lib/motion-schema.mjs';
-import { motionWrites, entranceCheck, partForSlot, elementKey, recordsByElement } from '../lib/fill-motion.mjs';
+import { motionWrites, partForSlot, elementKey, recordsByElement } from '../lib/fill-motion.mjs';
+import { entranceCheck } from '../lib/motion-check.mjs';
 import { classify, hoverLayer, delayOf, delaySteps, matchByPose } from '../lib/motion-layers.mjs';
 import { transformChannels } from '../lib/motion-channels.mjs';
 import { snapToken, tokenTypes, clientTokens, presetFor, easingOf } from '../lib/motion-tokens.mjs';
@@ -56,14 +57,14 @@ const ctx = { types: tokenTypes( schema ), tokens: clientTokens( SNAPSHOT ) };
 
 const rec = ( id, over ) => ( { id, mechanism: 'waapi', status: 'active', element: { dc: 'Site', template_tpl_id: '10' }, trigger: { type: 'mount' }, properties: [], duration_ms: 600, delay_ms: 0, easing: 'ease', iterations: 1, direction: 'normal', ...over } );
 const node = ( index, name, tpl, slots = {} ) => ( { index, name, targets: [ { id: `${ index }:`, slot: '', finder: { tpl: `Site/${ tpl }#0` } }, ...Object.entries( slots ).map( ( [ slot, finder ] ) => ( { id: `${ index }:${ slot }`, slot, finder } ) ) ] } );
-const run = ( nodes, records, sampled = {} ) => {
+const run = ( nodes, records, sampled = {}, loops = {} ) => {
 	const flat = nodes.map( ( n ) => ( { name: n.name, attributes: {}, ref: `r${ n.index }` } ) );
-	return { flat, out: motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records, sampled, mdb, schema, rawSnapshot: SNAPSHOT } ) };
+	return { flat, out: motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records, sampled, loops, mdb, schema, rawSnapshot: SNAPSHOT } ) };
 };
 const shaped = ( over ) => ( { trigger: 'scroll', delayMs: 0, durationMs: 800, delayRawMs: 0, durationRawMs: 800, distancePx: 39, x: 0, y: 39, scale: 0.96, opacityFrom: 0.02, from: { opacity: '0.02', transform: 'matrix(0.96, 0, 0, 0.96, 0, 39)', translate: 'none', filter: 'none', clipPath: 'none' }, fromFirstChange: true, ...over } );
 
 test( 'a CSS transform list splits into the schema channels; a function no channel holds is reported', () => {
-	assert.deepEqual( transformChannels( 'scale(1.05) translateY(-2px)' ), { channels: { scale: 1.05, translateY: -2 }, unsupported: [] } );
+	assert.deepEqual( transformChannels( 'scale(1.05) translateY(-2px)' ), { channels: { scale: 1.05, translateY: -2.1 }, unsupported: [] }, 'a lift written after the grow moves 2.1px' );
 	assert.deepEqual( transformChannels( 'translate(10px, 1.5rem) rotate(.25turn)' ).channels, { translateX: 10, translateY: '1.5rem', rotate: 90 } );
 	assert.deepEqual( transformChannels( 'scaleX(0)' ).channels, { scaleX: 0 } );
 	assert.deepEqual( transformChannels( 'skewX(-18deg)' ).unsupported, [ 'skewx' ] );
@@ -336,8 +337,8 @@ test( 'MUST FAIL: a draft\'s perspective, a straight-axis rotate3d and a resting
 
 test( 'MUST FAIL: a ring or an accent-line hover is the hover state\'s ring or accent, its colour a palette slug when it equals one; any other shadow is the block\'s', () => {
 	const hover = ( from, to ) => rec( 'H', { mechanism: 'css-transition', trigger: { type: 'hover' }, duration_ms: 250, properties: [ { property: 'box-shadow', from, to } ] } );
-	assert.deepEqual( hoverLayer( [ hover( 'none', '0 0 0 8px rgba(216, 202, 80, 0.75)' ) ], mdb ).layer.values, { ringSpread: 8, ringColour: '#d8ca50bf', duration: 250, easing: 'ease' } );
-	assert.deepEqual( hoverLayer( [ hover( '0 0 0 0 transparent', 'inset 0 -3px 0 0 #D8CA50' ) ], mdb ).layer.values, { accentWidth: 3, accentColour: '#d8ca50', duration: 250, easing: 'ease' } );
+	assert.deepEqual( hoverLayer( [ hover( 'none', '0 0 0 8px rgba(216, 202, 80, 0.75)' ) ], mdb ).layer.values, { ringSpread: 8, ringColour: '#D8CA50BF', duration: 250, easing: 'ease' } );
+	assert.deepEqual( hoverLayer( [ hover( '0 0 0 0 transparent', 'inset 0 -3px 0 0 #D8CA50' ) ], mdb ).layer.values, { accentWidth: 3, accentColour: '#D8CA50', duration: 250, easing: 'ease' } );
 	assert.deepEqual( hoverLayer( [ hover( 'none', '0 0 0 4px currentColor' ) ], mdb ).layer.values, { ringSpread: 4, duration: 250, easing: 'ease' }, 'a colour with no plain value is left to the default' );
 	const soft = hoverLayer( [ hover( 'none', '0 8px 24px rgba(0, 0, 0, 0.2)' ) ], mdb );
 	assert.equal( soft.layer, null, 'a soft drop shadow is not a ring' );
@@ -359,4 +360,69 @@ test( 'MUST FAIL: a move toward the viewer under the element\'s own perspective 
 	assert.deepEqual( transformChannels( 'perspective(500px) translateZ(600px)' ).unsupported, [ 'translateZ' ], 'past the viewer' );
 	const lift = rec( 'L', { mechanism: 'css-transition', trigger: { type: 'hover' }, duration_ms: 250, properties: [ { property: 'transform', from: 'perspective(1100px) translateZ(0)', to: 'perspective(1100px) translateZ(50px)' } ] } );
 	assert.equal( hoverLayer( [ lift ], mdb ).layer.values.scale, 1.0476 );
+} );
+
+const poseRecord = ( over ) => rec( 'P', { easing: 'cubic-bezier(.16,.84,.32,1)', properties: [ { property: 'transform', from: 'translateY(24px)', to: 'none' }, { property: 'opacity', from: '0', to: '1' } ], ...over } );
+const poseLayer = { trigger: 'scroll', values: { duration: 800 } };
+// A measured first frame that agrees with itself: its computed transform is the matrix of its own x, y, scale and rotate.
+const poseMeasured = ( over ) => {
+	const m = { x: 0, y: 24, scale: 1, rotate: 0, opacityFrom: 0, easing: 'cubic-bezier(0.16, 0.84, 0.32, 1)', ...over };
+	const r = ( m.rotate * Math.PI ) / 180;
+	const [ c, s ] = [ m.scale * Math.cos( r ), m.scale * Math.sin( r ) ];
+	return shaped( { ...m, from: { ...shaped().from, transform: `matrix(${ c }, ${ s }, ${ -s }, ${ c }, ${ m.x }, ${ m.y })` } } );
+};
+
+test( 'MUST FAIL: a measured travel the code does not state is a difference; an equal travel, and one a frame into the travel, are not', () => {
+	const bad = entranceCheck( poseLayer, poseRecord(), { 1440: poseMeasured( { y: 39 } ) } );
+	assert.deepEqual( bad.differences, [ '1440: transform measured matrix(1, 0, 0, 1, 0, 39), the code has translateY(24px)' ], 'a stated transform is compared whole, once' );
+	const byProperty = poseRecord( { properties: [ { property: 'translate', from: '0 24px', to: '0 0' }, { property: 'opacity', from: '0', to: '1' } ] } );
+	assert.deepEqual( entranceCheck( poseLayer, byProperty, { 1440: poseMeasured( { y: 39 } ) } ).differences, [ '1440: translateY measured 39px, the code has 24px' ], 'the translate property is compared channel by channel' );
+	assert.deepEqual( bad.devices, {}, 'a pose difference is reported, never written as a device value' );
+	assert.deepEqual( entranceCheck( poseLayer, poseRecord(), { 1440: poseMeasured() } ).differences, [], 'control: equal values' );
+	assert.deepEqual( entranceCheck( poseLayer, poseRecord(), { 1440: poseMeasured( { y: 22 } ) } ).differences, [], 'a frame in is within 10% of the travel' );
+} );
+
+test( 'MUST FAIL: scale, rotate and opacity that differ from the code are reported; a channel the code does not state as a number is not compared', () => {
+	const rec2 = poseRecord( { properties: [ { property: 'transform', from: 'scale(0.9) rotate(10deg)', to: 'none' }, { property: 'opacity', from: '0', to: '1' } ] } );
+	const diffs = entranceCheck( poseLayer, rec2, { 1440: poseMeasured( { y: 0, scale: 0.96, rotate: 0, opacityFrom: 0.5 } ) } ).differences;
+	assert.deepEqual( diffs, [ '1440: opacity measured 0.5, the code has 0', '1440: transform measured matrix(0.96, 0, 0, 0.96, 0, 0), the code has scale(0.9) rotate(10deg)' ] );
+	const byProperties = poseRecord( { properties: [ { property: 'scale', from: '0.9', to: '1' }, { property: 'rotate', from: '10deg', to: '0deg' }, { property: 'opacity', from: '0', to: '1' } ] } );
+	assert.deepEqual( entranceCheck( poseLayer, byProperties, { 1440: poseMeasured( { y: 0, scale: 0.96, rotate: 0, opacityFrom: 0.5 } ) } ).differences, [ '1440: scale measured 0.96, the code has 0.9', '1440: rotate measured 0deg, the code has 10deg', '1440: opacity measured 0.5, the code has 0' ] );
+	const tokened = poseRecord( { properties: [ { property: 'transform', from: 'translateY(2rem)', to: 'none' } ] } );
+	assert.deepEqual( entranceCheck( poseLayer, tokened, { 1440: poseMeasured( { y: 39 } ) } ).differences, [], 'a rem distance is not a px number the check can compare' );
+	const keyframed = poseRecord( { properties: [ { property: 'transform', from: 'translateY(24px)', to: 'none', keyframes: [ { offset: 0, value: 'translateY(24px)' }, { offset: 0.5, value: 'translateY(-4px)' }, { offset: 1, value: 'none' } ] } ] } );
+	assert.equal( entranceCheck( poseLayer, keyframed, { 1440: poseMeasured( { y: 39 } ) } ).differences.length, 1, 'a keyframed record compares its first stop' );
+} );
+
+test( 'MUST FAIL: an easing the render does not show is reported; the same curve written two ways is not', () => {
+	const bad = entranceCheck( poseLayer, poseRecord(), { 768: poseMeasured( { easing: 'ease-out' } ) } );
+	assert.deepEqual( bad.differences, [ '768: easing measured ease-out, the code has cubic-bezier(.16,.84,.32,1)' ] );
+	assert.deepEqual( entranceCheck( poseLayer, poseRecord(), { 768: poseMeasured( { easing: 'cubic-bezier(0.16, 0.84, 0.32, 1)' } ) } ).differences, [], 'control: .16 equals 0.16 and spaces do not matter' );
+	assert.deepEqual( entranceCheck( poseLayer, poseRecord( { easing: 'ease' } ), { 768: poseMeasured( { easing: 'ease' } ) } ).differences, [] );
+	assert.deepEqual( entranceCheck( poseLayer, poseRecord(), { 768: poseMeasured( { easing: null } ) } ).differences, [], 'an unknown measured easing is not a difference' );
+} );
+
+test( 'MUST FAIL: a target whose block has no motion support reports every record of the element, a skipped one with its reason, and a measured marquee with no record', () => {
+	const entrance = rec( 'E1', { properties: [ { property: 'opacity', from: '0', to: '1' } ] } );
+	const skipped = rec( 'S1', { status: 'dead' } );
+	const { out } = run( [ node( 0, 'sgs/plain', 10 ) ], [ entrance, skipped ] );
+	assert.deepEqual( out.unmapped.map( ( u ) => u.value ), [ 'E1', 'S1' ] );
+	assert.match( out.unmapped[ 0 ].reason, /sgs\/plain has no motion support$/ );
+	assert.match( out.unmapped[ 1 ].reason, /has no motion support; the record is also skipped: status dead/ );
+	const marquee = { 375: { loops: [], box: null, marquee: { direction: 'left' }, smil: [] } };
+	const bare = run( [ node( 0, 'sgs/plain', 99 ) ], [], {}, { '0:': marquee } ).out;
+	assert.equal( bare.unmapped.length, 1 );
+	assert.match( bare.unmapped[ 0 ].reason, /the render shows motion .* no motion support/ );
+	assert.deepEqual( run( [ node( 0, 'sgs/plain', 99 ) ], [], {}, { '0:': { 375: { loops: [], box: null, marquee: null, smil: [] } } } ).out.unmapped, [], 'control: no motion measured, nothing reported' );
+} );
+
+test( 'MUST FAIL: the code\'s from transform as a whole (tilt and perspective included) is checked against the matrix the render drew', () => {
+	const flip = rec( 'T', { properties: [ { property: 'transform', from: 'perspective(800px) rotateX(-70deg)', to: 'none' }, { property: 'opacity', from: '0', to: '1' } ] } );
+	const layer = { trigger: 'load', values: { duration: 600 } };
+	const drawn = ( transform ) => ( { 1440: shaped( { trigger: 'load', durationRawMs: 600, durationMs: 600, x: 0, y: 0, scale: 1, rotate: 0, opacityFrom: 0, from: { opacity: '0', transform, translate: 'none', filter: 'none', clipPath: 'none' } } ) } );
+	// Chromium's computed value of perspective(800px) rotateX(-70deg).
+	const same = 'matrix3d(1, 0, 0, 0, 0, 0.34202, -0.939693, 0.00117462, 0, 0.939693, 0.34202, -0.000427525, 0, 0, 0, 1)';
+	assert.ok( ! entranceCheck( layer, flip, drawn( same ) ).differences.some( ( d ) => /transform/.test( d ) ), 'the same tilt raises nothing' );
+	const flatter = 'matrix3d(1, 0, 0, 0, 0, 0.866025, -0.5, 0.000625, 0, 0.5, 0.866025, -0.00108253, 0, 0, 0, 1)';
+	assert.ok( entranceCheck( layer, flip, drawn( flatter ) ).differences.some( ( d ) => /1440: transform measured/.test( d ) ), 'a -30deg tilt where the code has -70deg is reported' );
 } );
