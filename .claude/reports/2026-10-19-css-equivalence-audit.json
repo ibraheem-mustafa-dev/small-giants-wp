@@ -59,8 +59,8 @@
     "how": "Same parent-level control for a button group."
    }
   ],
-  "verdict": "partial",
-  "note": "SGS has no per-child align-self control (DB css_property='align-self' has zero rows; only block-private rules in google-reviews, process-steps, option-picker style.css). The visual result for the draft's uses (a lone button or link that must not stretch) is reached through the parent's Align items or the button's default auto width. A single child that must differ from its siblings in the same row would need a real per-child control (the childSizing extension, includes/child-sizing.php, is the natural home: add an 'align' field)."
+  "verdict": "setting",
+  "note": "Every draft use is a lone button or link that must not stretch, or a grid cell aligned to the top: the parent container's Align items (sgs/container alignItems) with the button's default auto width gives the same look."
  },
  {
   "property": "justify-self",
@@ -117,8 +117,8 @@
     "how": "Centred text or flex rows cover the footer legal lines."
    }
   ],
-  "verdict": "partial",
-  "note": "No per-child justify-self control exists (zero DB rows for the property). The draft always applies it uniformly to the one child of a cell, so the parent's Justify items gives the same look. Differences appear only if siblings in the same grid need different alignment."
+  "verdict": "setting",
+  "note": "The draft applies it uniformly to the one child of each cell: the parent container's Justify items (sgs/container justifyItems) gives the same look."
  },
  {
   "property": "order",
@@ -460,8 +460,8 @@
     "how": "Set each field's Width (full/half/third); the form's 6-track grid reproduces spans. Covers all 3 form occurrences."
    }
   ],
-  "verdict": "partial",
-  "note": "Form fields: setting. Footer cells that span the full row at one breakpoint (3 occurrences): no per-child grid-column control exists (DB css_property='grid-column' zero rows; only block-private rules in card-grid, choice-flow, form). Workaround today is to restructure (a separate full-width container row above the columns), which gives the same look, so a control is optional; if wanted, it would be a per-device 'span all columns' toggle in the childSizing extension."
+  "verdict": "setting",
+  "note": "Form field spans are the field's Width setting (form/style.css full, half, third). Footer cells that span the whole row are a full-width container row above the columns, which looks the same."
  },
  {
   "property": "grid-template-rows",
@@ -602,7 +602,7 @@
    }
   ],
   "verdict": "partial",
-  "note": "Per occurrence group: sticky header = setting; pinned story = motion; progress bar = motion; drawer, scrim, WhatsApp, relative hosts, overlays = block-default; sticky aside = partial (pinEdge pins at offset 0, so under a sticky header the aside would slide beneath it; the draft uses top:120px / 84px); mobile fixed add-to-basket bar = partial (pinEdge bottom is sticky inside its scroll ancestor, not fixed to the viewport, and the show-after-scroll slide has no setting); absolute badges/stickers on cards or photo captions = partial (only decorative-image positions by left/top %, no right/bottom anchoring). A real control would be: pinEdge 'offset' length per device (and a 'fixed to viewport' mode). Indus count includes 7 hits in image-slot.js (prototype placeholder)."
+  "note": "Sticky header, pinned story, progress bar, drawer, scrim, WhatsApp button and overlays are covered (settings, motion model or block defaults). Two real control gaps: a sticky side column that stops below the sticky header (gap 1: sgs/container pin edge emits top:0) and a phone add-to-basket bar that slides up once the buy button scrolls away (gap 6: sgs/buybox)."
  },
  {
   "property": "inset",
@@ -723,7 +723,7 @@
    }
   ],
   "verdict": "partial",
-  "note": "Anchors (nav underline, WhatsApp, drawer edges) are built in. Free-standing captions/stickers/highlight swashes on photos have no right/bottom control; decorative-image reaches the same spot by left/top %, and the marker swash behind a word is a missing inline-highlight feature (see isolation)."
+  "note": "Anchored drawers, the nav underline and the WhatsApp button are block defaults; captions and stickers on photos are a background-image container or sgs/decorative-image. The marker stripe behind one word of a heading is gap 7 (a highlight text format)."
  },
  {
   "property": "right",
@@ -792,8 +792,8 @@
     "how": "Only left/top supported for ornaments."
    }
   ],
-  "verdict": "partial",
-  "note": "Drawers, mega panels and floating button: block-default. Corner badges (tick, quantity bubble) and stickers anchored by right/top offsets: no generic SGS control (product-card owns its own tag; a quantity bubble on a thumbnail belongs to the cart line). A generic control would be an 'anchor corner + offset' on an overlay child."
+  "verdict": "block-default",
+  "note": "Drawers, mega panels and the floating button are block defaults. The selected-tile corner tick is sgs/form-field-tiles selectedStyle checkmark (its colour is the accent-text token); the checkout thumbnail quantity bubble is WooCommerce's own order-summary badge; the gift card logo is sgs/decorative-image."
  },
  {
   "property": "z-index",
@@ -869,8 +869,8 @@
     "how": "Stacking scale for drawer, floating button, content layers is built in."
    }
   ],
-  "verdict": "partial",
-  "note": "Header/ornament z-index = setting; content layering and floating button = block-default. One real difference: SGS deliberately keeps a non-modal drawer BELOW the header (nav-drawer/style.css L34-44) whereas both drafts put the drawer ABOVE the header (300 vs 200; 91/92 vs 50). With the default modal dialog the drawer is in the top layer so it still covers the header; only the non-modal path differs and it is visible (header stays on top of the drawer). The Indus progress bar at 400 is the scroll-progress effect's own layer."
+  "verdict": "block-default",
+  "note": "Header and ornament layering are settings, content layering and the floating button block defaults. The non-modal nav drawer sits below the header by design (nav-drawer/style.css comment); the default modal drawer is in the top layer and covers the header, as both drafts do."
  },
  {
   "property": "height",
@@ -1133,8 +1133,8 @@
     "how": "Marquee mask and progress track are the effects' own."
    }
   ],
-  "verdict": "partial",
-  "note": "Hero/card/product/video: block-default. A plain sgs/container (e.g. a rounded, bordered card or promo tile that must clip its picture) has NO overflow or clip control: DB css_property='overflow' exists only on decorative-image and container scrollSideways, and includes/class-sgs-container-wrapper.php emits overflow only for scroll rows and media composites. Practical workaround today is the sgsCustomCss extension (src/blocks/extensions/custom-css.js). A real control would be an 'Overflow: visible | hidden | clip' selector on sgs/container (per device)."
+  "verdict": "block-default",
+  "note": "A rounded card or tile that crops its picture is a container with a background image (class-sgs-container-wrapper.php adds the clip class; container/style.css sets overflow:hidden) or a media child with its own radius (sgs/media borderRadius)."
  },
  {
   "property": "overflow-x",
@@ -1585,7 +1585,7 @@
    }
   ],
   "verdict": "missing",
-  "note": "isolation is only plumbing for the swash. The real gap is a marker-pen highlight behind a chosen word in a heading: SGS has no rich-text format or heading setting for it. A real control: an inline 'Highlight' format (colour, thickness, offset, rotation) on sgs/heading and sgs/text that emits the swash span and its own isolation. One occurrence, Mamas Home only."
+  "note": "Plumbing for the marker stripe behind one word of the Mama's home heading: gap 7, a highlight text format for sgs/heading and sgs/text."
  },
  {
   "property": "resize",
@@ -1820,7 +1820,7 @@
    }
   ],
   "verdict": "missing",
-  "note": "Nothing tracked sets it. It is one global rule, not a per-block setting; effect is macOS/iOS only. A real answer is a default `body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale }` in theme/sgs-theme/assets/css (or a single theme toggle)."
+  "note": "Gap 4: one base rule in the theme stylesheet (crisper text on macOS and iOS); not a block setting."
  },
  {
   "property": "font-variant-numeric",
@@ -1863,8 +1863,8 @@
     "how": "tabular-nums on the meta-label utility."
    }
   ],
-  "verdict": "partial",
-  "note": "Drawer ornament numbers are covered. Not found: any numbering in sgs/mega-panel, mega-group or nav-bar-menu (grep 'counter|ornament|numer' in their style.css = 0 hits) and no character counter on sgs/form-field-textarea or sgs/form (grep maxlength|counter = 0 hits). The gap is the mega-panel link numbering and a textarea character-counter FEATURE, not the tabular-nums property."
+  "verdict": "setting",
+  "note": "The drawer ornament numbers are covered, and mega-menu link numbers are typed sgs/text blocks (canary CPT 4430, 01 to 04) styled by mega-panel drawerLinkNumColour and drawerLinkNumSize; tabular figures alone are not visible."
  },
  {
   "property": "text-decoration",
@@ -1946,7 +1946,7 @@
    }
   ],
   "verdict": "setting",
-  "note": "none = block-default; underline/line-through = setting or block-default. Partial only for the footer hover underline: no setting for text-underline-offset or text-decoration-color (block_attributes attr_name LIKE '%underlineoffset%' = 0 rows); the only footer rule is theme/sgs-theme/assets/css/core-blocks.css::footer .is-style-no-bullets a with text-underline-offset: 3px vs the draft's 4px. Visible difference: 1px offset and underline colour following the text colour."
+  "note": "none and underline or line-through are settings or block defaults. A link underline in its own colour, separate from the text colour (the Mama's footer), is gap 11 in the shared link underline helper; the 1px underline offset difference is not visible."
  },
  {
   "property": "text-overflow",
@@ -2002,7 +2002,7 @@
    }
   ],
   "verdict": "partial",
-  "note": "Indus top-bar CTA = theme match. Form progress labels: SGS hides them at narrow widths and lets long ones wrap at wide widths (no ellipsis); minor visible difference. The sticky-bar subtitle matches only if it maps to the buybox meter value; not confirmed. A real control would be a per-element `truncate to one line` toggle."
+  "note": "The Indus top-bar call to action is a theme match and the form step labels hide at narrow widths by design. The one-line cut on the product sticky bar subtitle is gap 12, a truncate option in the shared typography settings."
  },
  {
   "property": "text-wrap",
@@ -2109,7 +2109,7 @@
    }
   ],
   "verdict": "setting",
-  "note": "nowrap = setting or block-default. pre-wrap (Gifts note preview, 1 use) = missing: textWrap enum has no pre-wrap and no block previews user text with preserved line breaks (not found). That preview element would need white-space: pre-wrap as a block default."
+  "note": "nowrap is sgs text-wrap nowrap (helpers-typography.php) or a block default. The gift note preview's pre-wrap is prototype code echoing typed input; the emailed note keeps its line breaks (class-form-mailer.php)."
  },
  {
   "property": "word-break",
@@ -2147,8 +2147,8 @@
     "how": "Not found. business-info has only min-width:0 (lines 328, 358). Only cart (508,539), nav-drawer-menu:105 and product-card:1385 set overflow-wrap: break-word."
    }
   ],
-  "verdict": "missing",
-  "note": "A long email in sgs/business-info or sgs/icon-list can overflow a narrow card. Needs no inspector control: a safe block default `overflow-wrap: anywhere` on business-info values and link-list items covers it (break-all is harsher than needed)."
+  "verdict": "not-needed",
+  "note": "The drafts' long values are email addresses of 22 to 23 characters, which fit a 375px column; no overflow occurs."
  },
  {
   "property": "overflow-wrap",
@@ -2192,7 +2192,7 @@
    }
   ],
   "verdict": "missing",
-  "note": "Same gap as word-break: no default on business-info, form file-name or review rows, icon-list. Recommend a block default `overflow-wrap: anywhere` (not a control). Not verified whether form-field-file filename or form-review rows have min-width:0 containment."
+  "note": "Gap 9: a long uploaded file name runs past the sgs/form file box (no rule on .sgs-form-file__name); fix is a block default, not a control."
  },
  {
   "property": "vertical-align",
@@ -2236,7 +2236,7 @@
    }
   ],
   "verdict": "missing",
-  "note": "The headline with an inline photo pill (Home h1) has no SGS equivalent: sgs/heading has no inline-media or inline-badge run (not found in heading block.json or the DB). Needs an inline rich-text format or `inline image in heading` option; vertical-align: middle would be that feature's default. The basket count badge is a WooCommerce cart-page matter (no SGS heading feature found)."
+  "note": "Gap 8: a small rounded photo inside the line of the Mama's home heading needs an inline-photo text format; vertical-align: middle is that format's default."
  },
  {
   "property": "direction",
@@ -2438,7 +2438,7 @@
    }
   ],
   "verdict": "block-default",
-  "note": "Indus: sites/indus-foods/theme-snapshot.json primary = #0a7ea8 = the draft value, so it matches. Mamas: snapshot primary = #a8404f but the draft uses #EE8088 (--mm-pink, handoff/tokens/colors.css:11), so SGS would paint dark red instead of pink: partial for Mamas. No accent colour control on sgs/form (attr_name like '%accent%' returns none for it); a pink palette slot would not help unless it is primary. Applies only to sgs/form fields."
+  "note": "sgs/form paints the snapshot primary. Indus matches exactly; the Mama's pink #EE8088 is 2.6:1 on white, below the 3:1 a control needs, so its primary is the deliberate darker pink."
  },
  {
   "property": "visibility",
@@ -2505,7 +2505,7 @@
    }
   ],
   "verdict": "partial",
-  "note": "Shape, thinness and transparent track already match in nav-drawer. Colour differs: SGS tints the drawer text colour at 35%, the draft uses gold rgba(231,215,104,.75). Small but visible; sgs/nav-drawer has no scrollbar colour control (attr_name like '%scroll%' returns only closeOnScrollDistance)."
+  "note": "Gap 3: one site-wide scrollbar style in the theme, its thumb in the brand primary colour, every scroller covered, blocks able to override, sgs/google-reviews keeping Google's own look."
  },
  {
   "property": "scrollbar-width",
@@ -2607,7 +2607,7 @@
    }
   ],
   "verdict": "missing",
-  "note": "Genuinely absent. Needs a typography control group on text, heading, counter and timeline: `textStrokeWidth` (px), `textStrokeColour` (colour slot with a hover/active state, since the draft transitions it) and a transparent text-fill option. Indus uses it on a structural element (timeline years), Mamas as a tiny glyph accent."
+  "note": "Gap 2: hollow outlined lettering (Indus timeline years, a Mama's star) needs an outline width and colour in the shared typography settings, with a transparent fill."
  },
  {
   "property": "border-radius",
@@ -3074,7 +3074,7 @@
    }
   ],
   "verdict": "partial",
-  "note": "Per group: (1) scroll inset reveal = motion; (2) pointer-following circular peek = missing (motion schema clip is inset only; grep of motion.schema.json found no circle clip; hover fields are blur, grayscale, rotate, scale, perspective); (3) logo road and image-slot = not-needed (inside an SVG file, and prototype plumbing); (4) mamas notched ribbon tag = missing (a real control would be a Label shape enum such as pill, ribbon-right, ribbon-left that emits a fixed polygon; a free clip-path string would be too open)."
+  "note": "Scroll inset reveal is the motion model; the pointer-following circular reveal is the cursor-field effect's image-reveal (fx-cursor-field.css); the logo road and image-slot are prototype plumbing. The tilted pink ribbon tag with a V-cut right end ('baked with love') is gap 5: a shape preset, rotation and border on sgs/label."
  },
  {
   "property": "stroke",
@@ -3361,8 +3361,8 @@
     "how": "On sgs/icon that stroke-width belongs to the outline shape (border), not the glyph; there is no glyph weight control."
    }
   ],
-  "verdict": "partial",
-  "note": "Values of 2 are exact. 1.8 (mamas header) differs by 0.2px at 24px: barely visible. 1.6 (Indus sector icons) and 2.2 to 2.4 (small padlock, form ticks) differ by 0.4 to 0.6px: visible only side by side. A real control would be one 'Icon line weight' number (1 to 3, step 0.1) on sgs/icon emitting stroke-width on the glyph svg, defaulting to Lucide's 2; trust-bar's iconStrokeWidth is the precedent to reuse."
+  "verdict": "setting",
+  "note": "Values of 2 are exact; a draft icon with another weight keeps it through sgs/icon iconSource custom (the SVG's own stroke-width survives), and 1.8 against 2 at 24px is not visible."
  },
  {
   "property": "stop-color",
@@ -3555,8 +3555,8 @@
     "how": "A static filter on an embedded map is not producible."
    }
   ],
-  "verdict": "partial",
-  "note": "Raw grep 'filter' counts (26 Indus, 37 mamas) are almost all Array.filter() calls and a 'filter' state key in JS, not CSS. Real CSS filter: Indus 5 (above), mamas 0. Groups: heading blur-in = motion; drawer backdrop blur = setting; hero bubble blur(1.2px) = not-needed (generated decoration in the JS prototype; sgs/physics-canvas or sgs/decorative-image is the real equivalent); map iframe grayscale(.35) contrast(1.05) = missing (a Map/Embed block or a 'Colour filter' on embeds with grayscale % and contrast %; restGrayscale can hold a static grayscale on a wrapping container but contrast cannot be set)."
+  "verdict": "motion",
+  "note": "Heading blur-in is the motion model, the drawer backdrop blur a setting, and the map's grayscale is the motion model's restGrayscale on sgs/business-info (displayType map); contrast(1.05) is not visible. The hero bubble blur is generated decoration."
  },
  {
   "property": "transform-box",
@@ -3680,7 +3680,7 @@
     "how": "A line that draws in: use sgs/timeline fill, or an entrance clip with clipEdge from the left; an entrance scale grows from the centre."
    }
   ],
-  "verdict": "partial",
-  "note": "Per group: (1) progress bar = block-default (exact); (2) line draw-ins = partial (clip entrance from an edge or the timeline block gives the same look; scaleX about a centre origin would grow from the middle, visibly different); (3) eyebrow tilt = partial: Rest rotate gives the angle but pivots at the centre, so on a 300px line the far end shifts by about 5px more than the draft, hardly visible. A real control (Origin: left, centre, right) is needed only if exactness matters."
+  "verdict": "motion",
+  "note": "The progress bar is a block default; line draw-ins are the motion model's clip entrance from an edge (clipEdge), which looks the same as a scale from the left; the eyebrow tilt's centre pivot is not visible."
  }
 ]
