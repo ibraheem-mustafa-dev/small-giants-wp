@@ -1,0 +1,387 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Hero heading (draft A-26, delay 80ms)",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "load",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": "token:entrance.distance",
+												"blur": 8
+											},
+											"to": {
+												"opacity": 1,
+												"blur": 0,
+												"translateY": 0
+											},
+											"duration": "token:entrance.duration",
+											"delay": 80,
+											"easing": "token:entrance.easing"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Hero text (delay 190ms)",
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "load",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": "token:entrance.distance",
+												"blur": 8
+											},
+											"to": {
+												"opacity": 1,
+												"blur": 0,
+												"translateY": 0
+											},
+											"duration": "token:entrance.duration",
+											"delay": 190,
+											"easing": "token:entrance.easing"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/multi-button",
+				"attributes": {
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "load",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": "token:entrance.distance",
+												"blur": 8
+											},
+											"to": {
+												"opacity": 1,
+												"blur": 0,
+												"translateY": 0
+											},
+											"duration": "token:entrance.duration",
+											"delay": 300,
+											"easing": "token:entrance.easing"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Hero button (delay 300ms)",
+							"url": "#"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "load",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": "token:entrance.distance",
+												"blur": 8
+											},
+											"to": {
+												"opacity": 1,
+												"blur": 0,
+												"translateY": 0
+											},
+											"duration": "token:entrance.duration",
+											"delay": 410,
+											"easing": "token:entrance.easing"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Hero panel (delay 410ms)"
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "sgs/brand-strip",
+		"attributes": {
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"effects": [
+							{
+								"id": "marquee-1",
+								"effect": "marquee",
+								"trigger": "load",
+								"values": {
+									"speed": 45,
+									"direction": "left"
+								}
+							}
+						]
+					}
+				}
+			},
+			"logos": [
+				{
+					"name": "Alpha",
+					"_key": "l0"
+				},
+				{
+					"name": "Bravo",
+					"_key": "l1"
+				},
+				{
+					"name": "Charlie",
+					"_key": "l2"
+				},
+				{
+					"name": "Delta",
+					"_key": "l3"
+				},
+				{
+					"name": "Echo",
+					"_key": "l4"
+				},
+				{
+					"name": "Foxtrot",
+					"_key": "l5"
+				}
+			]
+		}
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 1: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 2: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 3: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 4: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 5: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 6: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			}
+		]
+	},
+	{
+		"name": "sgs/heading",
+		"attributes": {
+			"content": "Section reveal (draft A-07, 850ms on scroll)",
+			"sgsMotion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"translateY": "token:distance.lg",
+										"blur": 6
+									},
+									"to": {
+										"opacity": 1,
+										"blur": 0,
+										"translateY": 0
+									},
+									"duration": 850,
+									"easing": "token:entrance.easing"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": "token:distance.xl",
+												"scale": 0.96
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0,
+												"scale": 1
+											},
+											"duration": 800,
+											"easing": "token:entrance.easing"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Item one (A-09, 800ms)"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"sgsMotion": {
+						"v": 1,
+						"elements": {
+							"root": {
+								"entrance": {
+									"base": {
+										"trigger": "scroll",
+										"values": {
+											"from": {
+												"opacity": 0,
+												"translateY": "token:distance.xl",
+												"scale": 0.96
+											},
+											"to": {
+												"opacity": 1,
+												"translateY": 0,
+												"scale": 1
+											},
+											"duration": 800,
+											"delay": 80,
+											"easing": "token:entrance.easing"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Item two (A-09, 800ms, delay 80ms)"
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "sgs/container",
+		"attributes": {},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 1: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 2: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Spacer paragraph 3: this page proves the motion cloning writer on the Indus draft's values. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. Reading room. "
+				}
+			}
+		]
+	}
+]
