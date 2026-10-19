@@ -151,6 +151,10 @@
 					"image": {
 						"type": "string",
 						"role": "image-object"
+					},
+					"description": {
+						"type": "string",
+						"default": ""
 					}
 				}
 			}
@@ -339,6 +343,184 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"tileLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tileLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"tileLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"tileLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"tileLabelTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"tileLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"tileDescriptionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tileDescriptionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"tileDescriptionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileDescriptionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tileDescriptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileDescriptionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"tileDescriptionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"tileDescriptionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"tileDescriptionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"tileLabelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileDescriptionColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

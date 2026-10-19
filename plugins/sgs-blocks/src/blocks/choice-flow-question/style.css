@@ -239,7 +239,7 @@
 	text-transform: uppercase;
 }
 
-.sgs-choice-flow-question__option-description {
+:where(.sgs-choice-flow-question__option-description) {
 	display: block;
 	margin-top: 4px;
 	color: var( --wp--preset--color--text-muted, #6b7280 );

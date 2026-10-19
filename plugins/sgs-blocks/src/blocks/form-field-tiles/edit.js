@@ -3,6 +3,7 @@ import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-
 import {
 	PanelBody,
 	TextControl,
+	TextareaControl,
 	ToggleControl,
 	SelectControl,
 	RangeControl,
@@ -11,6 +12,7 @@ import {
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
+	TypographyControls,
 	resolveColourToken,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -19,6 +21,7 @@ import {
 	textPaintPreview,
 	backgroundPaintPreview,
 	sgsBorderPreview,
+	typographyPreviewCss,
 	usePreviewTier,
 	BandWrap,
 	wrapperPreview,
@@ -28,6 +31,9 @@ import {
 // Wrapper declarations that belong to the field root (the border and radius), not to
 // the tile grid element the shared wrapper lays out.
 const ROOT_BORDER_KEYS = [ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS ];
+
+// A tile's description is one line of copy; the render cuts it at the same length.
+const DESCRIPTION_MAX_LENGTH = 140;
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
@@ -41,7 +47,7 @@ const SELECTED_STYLE_OPTIONS = [
 	{ label: __( 'Background', 'sgs-blocks' ), value: 'background' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		fieldName,
 		label,
@@ -56,6 +62,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourGradient,
 		textColour,
 		textColourGradient,
+		tileLabelColour,
+		tileDescriptionColour,
 	} = attributes;
 
 	// Contrast check for border — warn if border fails WCAG contrast against
@@ -106,6 +114,15 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const blockProps = useBlockProps( { className, style: rootStyle } );
 
+	// The tile label and description typography reach the canvas as one scoped rule each (the tiles are
+	// array data, painted by this block's own preview below); the colours ride on the spans.
+	const tileTextPreviewCss = [
+		typographyPreviewCss( attributes, 'tileLabel', `#block-${ clientId } .sgs-form-tile__label`, previewTier ),
+		typographyPreviewCss( attributes, 'tileDescription', `#block-${ clientId } .sgs-form-tile__description`, previewTier ),
+	].filter( Boolean ).join( '' );
+	const tileLabelPaint = textPaintPreview( tileLabelColour, '', colourPalette );
+	const tileDescriptionPaint = textPaintPreview( tileDescriptionColour, '', colourPalette );
+
 	const updateTile = ( index, key, value ) => {
 		const newTiles = [ ...tiles ];
 		newTiles[ index ] = { ...newTiles[ index ], [ key ]: value };
@@ -154,6 +171,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							gradient: 'textColourGradient',
 							hoverGradient: 'textColourHoverGradient',
 						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'tileLabel',
+						label: __( 'Tile label colour', 'sgs-blocks' ),
+						attrs: { base: 'tileLabelColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'tileDescription',
+						label: __( 'Tile description colour', 'sgs-blocks' ),
+						attrs: { base: 'tileDescriptionColour' },
 						attributes,
 						setAttributes,
 					} ),
@@ -347,6 +378,20 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							<TextareaControl
+								label={ __( 'Description', 'sgs-blocks' ) }
+								value={ tile.description || '' }
+								onChange={ ( val ) =>
+									updateTile( index, 'description', val.slice( 0, DESCRIPTION_MAX_LENGTH ) )
+								}
+								maxLength={ DESCRIPTION_MAX_LENGTH }
+								help={ __(
+									'Optional. One line shown under the tile label. Leave blank for none.',
+									'sgs-blocks'
+								) }
+								rows={ 2 }
+								__nextHasNoMarginBottom
+							/>
 							<IconPicker
 								label={ __( 'Icon', 'sgs-blocks' ) }
 								value={ {
@@ -403,8 +448,43 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Tile text', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						targets={ [
+							{
+								key: 'tileLabel',
+								label: __( 'Tile label', 'sgs-blocks' ),
+								prefix: 'tileLabel',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+							},
+							{
+								key: 'tileDescription',
+								label: __( 'Tile description', 'sgs-blocks' ),
+								prefix: 'tileDescription',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ tileTextPreviewCss && <style>{ tileTextPreviewCss }</style> }
 				{ label && (
 					<label className="sgs-form-field__label">
 						{ label }
@@ -441,7 +521,12 @@ export default function Edit( { attributes, setAttributes } ) {
 										/>
 									</span>
 								) }
-								<span className="sgs-form-tile__label">{ tile.label || '' }</span>
+								<span className="sgs-form-tile__label" style={ tileLabelPaint }>{ tile.label || '' }</span>
+								{ tile.description && (
+									<span className="sgs-form-tile__description" style={ tileDescriptionPaint }>
+										{ tile.description.slice( 0, DESCRIPTION_MAX_LENGTH ) }
+									</span>
+								) }
 								<span className="sgs-form-tile__check" aria-hidden="true"></span>
 							</label>
 						) ) }

@@ -554,6 +554,16 @@ select.sgs-form-field__input {
 	font-weight: 500;
 }
 
+/* The optional line under the label. Muted text colour with no opacity, so contrast is never reduced;
+   a lighter tone is the tileDescriptionColour control. */
+:where(.sgs-form-tile__description) {
+	display: block;
+	color: var(--wp--preset--color--text-muted, #6b7280);
+	font-size: 0.875em;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+
 .sgs-form-tile__check {
 	display: none;
 	position: absolute;
@@ -718,6 +728,22 @@ select.sgs-form-field__input {
 
 .sgs-form-file__error {
 	color: var(--sgs-error-text, #991b1b);
+}
+
+/* A long unbroken file name wraps inside its box instead of stretching the grid track. */
+.sgs-form-file__preview {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.sgs-form-file__name,
+.sgs-form-file__error,
+.sgs-form-field__error {
+	overflow-wrap: anywhere;
+}
+
+:where(.sgs-form-field) {
+	min-width: 0;
 }
 
 /* ----------------------------------------------------------------
@@ -1032,6 +1058,13 @@ select.sgs-form-field__input {
 
 :where(.sgs-form-review__detail) {
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+}
+
+/* A long unbroken answer (an uploaded file name) wraps inside its grid cell. */
+.sgs-form-review__term,
+.sgs-form-review__detail {
+	min-width: 0;
+	overflow-wrap: anywhere;
 }
 
 @container sgs-form (max-width: 480px) {

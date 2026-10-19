@@ -7,10 +7,9 @@
  * directly, no `SGS_Container_Wrapper` call), the same pattern as
  * `sgs/notice-banner`.
  *
- * Carries no colour/typography attrs beyond `questionFontWeight` (a class,
- * never inline style) and `intro` (a plain paragraph under the title, both
- * layouts — built by `includes/choice-flow-showcase.php`'s helper, this file
- * being at this codebase's 300-line cap) — no scoped `<style>` tag needed.
+ * Carries `questionFontWeight` (a class, never inline style), `intro` (a paragraph under the title, built by
+ * `includes/choice-flow-showcase.php`'s helper: this file is at the 300-line cap) and the option description's
+ * typography and colour (one scoped `<style>` from `helpers-description-style.php`, printed once for both option paths).
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32.
@@ -40,6 +39,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
 require_once __DIR__ . '/helpers-addon-pricing.php';
+require __DIR__ . '/helpers-description-style.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-product-attribute-step.php';
 // D5/D7: option-image + title-weight helpers below live in the chrome file
 // (this file was already at the 300-line cap) — required explicitly.
@@ -308,5 +308,5 @@ $sgs_cfq_html   = ob_get_clean();
 $sgs_cfq_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $sgs_cfq_html, 'sgs-choice-flow-question__option' );
 $sgs_cfq_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/choice-flow-question', $sgs_cfq_uid, $attributes, $sgs_cfq_tagged['count'], '.sgs-choice-flow-question__option' );
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- the block's own markup, escaped where it was printed; the rules come from the collector.
-echo (string) $sgs_cfq_style . ( null === $sgs_cfq_style ? $sgs_cfq_html : $sgs_cfq_tagged['html'] );
+echo sgs_choice_flow_question_description_css( $attributes, $sgs_cfq_uid ) . (string) $sgs_cfq_style . ( null === $sgs_cfq_style ? $sgs_cfq_html : $sgs_cfq_tagged['html'] );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

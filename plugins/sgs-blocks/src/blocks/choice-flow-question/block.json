@@ -199,6 +199,95 @@
 			"type": "string",
 			"default": "",
 			"description": "FR-43-19: the stage line's label for this unpriced question's answer, e.g. 'Prescription'. Empty uses the step's label."
+		},
+		"optionDescriptionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"optionDescriptionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"optionDescriptionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"optionDescriptionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"optionDescriptionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"optionDescriptionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"optionDescriptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"optionDescriptionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"optionDescriptionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"optionDescriptionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"optionDescriptionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"optionDescriptionColour": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

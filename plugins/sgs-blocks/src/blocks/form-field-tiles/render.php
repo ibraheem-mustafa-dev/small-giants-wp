@@ -208,6 +208,18 @@ if ( $border['mobile'] ) {
 }
 $sgs_ft_supports_css .= implode( '', $border['rules'] );
 
+// ── Tile text: the label and the description line each take their typography and colour from the panel. ──
+$sgs_ft_supports_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_ft_uid . ' .sgs-form-tile__label' );
+$sgs_ft_label_colour  = sgs_colour_value( (string) ( $attributes['tileLabelColour'] ?? '' ) );
+if ( '' !== $sgs_ft_label_colour ) {
+	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile__label{color:' . $sgs_ft_label_colour . ';}';
+}
+$sgs_ft_supports_css .= sgs_typography_css_rule( $attributes, 'tileDescription', '.' . $sgs_ft_uid . ' .sgs-form-tile__description' );
+$sgs_ft_description_colour = sgs_colour_value( (string) ( $attributes['tileDescriptionColour'] ?? '' ) );
+if ( '' !== $sgs_ft_description_colour ) {
+	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile__description{color:' . $sgs_ft_description_colour . ';}';
+}
+
 if ( '' !== $sgs_ft_supports_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators intact — $sgs_ft_supports_css is entirely style-engine-
@@ -286,6 +298,11 @@ foreach ( $tiles as $i => $tile ) {
 	}
 
 	echo '<span class="sgs-form-tile__label">' . esc_html( $tile['label'] ?? '' ) . '</span>';
+	// The description sits inside the label (part of the tile's accessible name, WCAG 2.5.3), cut to 140 characters.
+	$tile_description = mb_substr( (string) ( $tile['description'] ?? '' ), 0, 140 );
+	if ( '' !== $tile_description ) {
+		echo '<span class="sgs-form-tile__description">' . esc_html( $tile_description ) . '</span>';
+	}
 	echo '<span class="sgs-form-tile__check" aria-hidden="true"></span>';
 	echo '</label>';
 }

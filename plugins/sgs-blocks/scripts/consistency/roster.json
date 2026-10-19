@@ -225,7 +225,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 68,
+        "paintDeclarations": 70,
         "replacedCoreSupports": []
       }
     },
@@ -501,7 +501,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 59,
+        "paintDeclarations": 60,
         "replacedCoreSupports": [
           "anchor",
           "color",

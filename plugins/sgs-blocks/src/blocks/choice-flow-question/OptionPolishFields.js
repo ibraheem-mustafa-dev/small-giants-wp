@@ -17,7 +17,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, ToggleControl, TextControl, TextareaControl } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, TextControl, TextareaControl } from '@wordpress/components';
+import { TypographyControls, textRow } from '../../components';
 
 const BADGE_MAX_LENGTH = 20;
 const DESCRIPTION_MAX_LENGTH = 140;
@@ -94,5 +95,52 @@ export default function OptionPolishFields( { option, index, onChange } ) {
 				__next40pxDefaultSize
 			/>
 		</>
+	);
+}
+
+/**
+ * The colour rows for the option description line, for the block's one `SgsColourPanel`.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block attribute setter.
+ * @return {Array} The rows.
+ */
+export function optionDescriptionColourRows( { attributes, setAttributes } ) {
+	return [
+		textRow( {
+			key: 'optionDescription',
+			label: __( 'Option description colour', 'sgs-blocks' ),
+			attrs: { base: 'optionDescriptionColour' },
+			attributes,
+			setAttributes,
+		} ),
+	];
+}
+
+/**
+ * The Styles-tab typography panel for the option description line (the `optionDescription*` attributes).
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block attribute setter.
+ * @return {JSX.Element} The panel.
+ */
+export function OptionDescriptionPanel( { attributes, setAttributes } ) {
+	return (
+		<PanelBody title={ __( 'Option description', 'sgs-blocks' ) } initialOpen={ false }>
+			<TypographyControls
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix="optionDescription"
+				fontSizePresets
+				showFontFamily
+				showDecoration
+				showTransform
+				showLetterSpacing
+				showTextAlign
+				showTextWrap
+			/>
+		</PanelBody>
 	);
 }

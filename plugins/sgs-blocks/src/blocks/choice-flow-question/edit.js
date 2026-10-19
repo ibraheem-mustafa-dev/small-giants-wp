@@ -1,6 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import QuestionPreview from './QuestionPreview';
+import QuestionPreview, { OptionDescriptionPreview, OptionDescriptionStyle } from './QuestionPreview';
 import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
@@ -16,7 +16,8 @@ import AddonPricingPanel from './AddonPricingPanel';
 import ProductAttributePanel from './ProductAttributePanel';
 import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
-import OptionPolishFields from './OptionPolishFields';
+import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows } from './OptionPolishFields';
+import { SgsColourPanel } from '../../components';
 
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
 // result step is reachable" rather than a specific sibling sgs/form-step.
@@ -170,6 +171,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 
 	return (
 		<>
+			<SgsColourPanel rows={ optionDescriptionColourRows( { attributes, setAttributes } ) } />
 			<InspectorControls group="settings">
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>
 					<SelectControl
@@ -353,11 +355,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			</InspectorControls>
 			<InspectorControls group="styles">
 				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<OptionDescriptionPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				<VariationCoverageNotice attributes={ attributes } clientId={ clientId } context={ context } />
 				<QuestionPreview attributes={ attributes } />
+				<OptionDescriptionStyle attributes={ attributes } clientId={ clientId } />
 				<TextControl
 					label={ __( 'Question', 'sgs-blocks' ) }
 					value={ question }
@@ -373,6 +377,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					{ options.map( ( option, index ) => (
 						<li key={ index } className="sgs-choice-flow-question__option-preview">
 							{ option.label || __( '(empty option)', 'sgs-blocks' ) }
+							<OptionDescriptionPreview
+								description={ option.description }
+								colour={ attributes.optionDescriptionColour }
+							/>
 						</li>
 					) ) }
 				</ul>
