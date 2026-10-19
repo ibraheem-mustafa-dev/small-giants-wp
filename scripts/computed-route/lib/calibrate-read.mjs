@@ -195,7 +195,12 @@ async function readUnderTrigger( page, instances, n, inst ) {
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
 async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
-	await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
+	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
+	// A server error is the page failing, not the build: a PHP fatal anywhere on it (a header block, a stale build)
+	// renders no calibration wrapper either.
+	if ( response && response.status() >= 500 ) {
+		throw new Error( `the calibration page at ${ w }px returned HTTP ${ response.status() } (a server or PHP error on the page: check the site's PHP error log; a stale build/ synced to a mirror is one cause)` );
+	}
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
 	// are still read.
 	try {
