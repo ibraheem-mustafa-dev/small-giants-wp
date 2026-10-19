@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-10-18 11:07:14 UTC
+# Stage 3 Style Variation Sync — 2026-10-19 15:24:42 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 9 | Missing: 4 | Inserted: 0 | Skipped: 283 | Conflicts: 237
+Snapshots found: 9 | Missing: 4 | Inserted: 3 | Skipped: 282 | Conflicts: 238
 
 ## Per-client results
 
@@ -70,27 +70,28 @@ Inserted: 0 | Skipped: 19 | Conflicts: 23
 
 ### indus-foods
 
-Inserted: 0 | Skipped: 27 | Conflicts: 30
+Inserted: 3 | Skipped: 26 | Conflicts: 31
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#0a7ea8') → inserted as indus-foods-color-primary
-- CONFLICT: color-primary-text (framework='#FFFFFF', client='#F1F5F9') → inserted as indus-foods-color-primary-text
-- CONFLICT: color-primary-dark (framework='#060D14', client='#0F4C4C') → inserted as indus-foods-color-primary-dark
-- CONFLICT: color-accent (framework='#C9A84C', client='#F59E0B') → inserted as indus-foods-color-accent
-- CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as indus-foods-color-accent-text
-- CONFLICT: color-accent-light (framework='#F0E4C3', client='#FEF3C7') → inserted as indus-foods-color-accent-light
+- CONFLICT: color-primary-text (framework='#FFFFFF', client='#e3eff4') → inserted as indus-foods-color-primary-text
+- CONFLICT: color-primary-dark (framework='#060D14', client='#075e80') → inserted as indus-foods-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#d8ca50') → inserted as indus-foods-color-accent
+- CONFLICT: color-accent-text (framework='#7A6B00', client='#2c3e50') → inserted as indus-foods-color-accent-text
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#e7d768') → inserted as indus-foods-color-accent-light
 - CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as indus-foods-color-success
+- CONFLICT: color-whatsapp (framework='#25D366', client='#25d366') → inserted as indus-foods-color-whatsapp
 - CONFLICT: color-surface (framework='#FFFFFF', client='#ffffff') → inserted as indus-foods-color-surface
-- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F1F0EC') → inserted as indus-foods-color-surface-alt
-- CONFLICT: color-text (framework='#1a1a1a', client='#1A202C') → inserted as indus-foods-color-text
-- CONFLICT: color-text-muted (framework='#6B6B6B', client='#606D80') → inserted as indus-foods-color-text-muted
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#f2f5f7') → inserted as indus-foods-color-surface-alt
+- CONFLICT: color-text (framework='#1a1a1a', client='#4a5563') → inserted as indus-foods-color-text
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#68727c') → inserted as indus-foods-color-text-muted
 - CONFLICT: color-text-inverse (framework='#FFFFFF', client='#F1F5F9') → inserted as indus-foods-color-text-inverse
 - CONFLICT: color-border (framework='#C9A84C', client='#D4DBE5') → inserted as indus-foods-color-border
-- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#0F172A') → inserted as indus-foods-color-footer-bg
-- CONFLICT: color-heading (framework='#141414', client='#1A202C') → inserted as indus-foods-color-heading
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#2c3e50') → inserted as indus-foods-color-footer-bg
+- CONFLICT: color-heading (framework='#141414', client='#2c3e50') → inserted as indus-foods-color-heading
 - CONFLICT: color-link (framework='#141414', client='#0a7ea8') → inserted as indus-foods-color-link
-- CONFLICT: color-link-hover (framework='#0F0F0F', client='#0F4C4C') → inserted as indus-foods-color-link-hover
-- CONFLICT: color-section (framework='#FFFFFF', client='#F1F0EC') → inserted as indus-foods-color-section
-- CONFLICT: color-section-text (framework='#141414', client='#1A202C') → inserted as indus-foods-color-section-text
+- CONFLICT: color-link-hover (framework='#0F0F0F', client='#075e80') → inserted as indus-foods-color-link-hover
+- CONFLICT: color-section (framework='#FFFFFF', client='#d8ca50') → inserted as indus-foods-color-section
+- CONFLICT: color-section-text (framework='#141414', client='#2c3e50') → inserted as indus-foods-color-section-text
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='"Source Sans 3", "Source Sans Pro", system-ui, sans-serif') → inserted as indus-foods-font-family-body
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-heading
 - CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Montserrat, sans-serif') → inserted as indus-foods-font-family-display

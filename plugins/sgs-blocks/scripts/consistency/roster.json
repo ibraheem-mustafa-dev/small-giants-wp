@@ -295,7 +295,7 @@
       "has_render_php": true,
       "surfaces": {
         "styling": false,
-        "colour": false,
+        "colour": true,
         "link": false,
         "media": false,
         "animation": false
