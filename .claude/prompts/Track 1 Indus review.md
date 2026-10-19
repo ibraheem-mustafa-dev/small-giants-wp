@@ -1,6 +1,6 @@
 Invoke /autopilot before doing anything else.
 
-TRACK: Spec 48 Indus build, plan steps 15 (Bean's intake review), then 16, 17 and 19, the steps that need no clone coverage wave. It may run now, beside clone coverage step 4.0 (the coverage plan's Phase 4 "Order", lane B): the review needs no coverage wave. Previous session closed 2026-10-13 at origin/main b1e879cfb.
+TRACK: Spec 48 Indus build, plan steps 15 (Bean's intake review), then 16, 17 and 19, the steps that need no clone coverage wave. It may run now: the review needs no coverage wave. Previous session closed 2026-10-13 at origin/main b1e879cfb.
 
 CONTEXT (plain English)
 - Spec 48 turns a Claude Design export (draft pages in sites/indus-foods/handoff/) into an SGS WordPress site. Stage 1, "intake", reads the export and proposes everything Bean confirms in one review (review.md). Bean has decided category 1 (draft defects), category 2 (missing features) and skeleton batches 1 to 5 (which SGS block each draft element becomes, for the top bar, header, mega menus, drawer, footer, home hero and brand strip).
@@ -25,7 +25,7 @@ TASKS, IN ORDER
    - Step 17, the snapshot: the extractor reads `tokens/*.css` with Bean's confirmed palette roles, including the missing `settings.custom.sgs` header and footer pattern keys that fail `ThemeSnapshotManifestTest`; dry run, then push with `push-theme-snapshot.py`.
    - Step 19, the default-paint step: FR-48-18's exit, the refresh loop's step 4.
    - Done when each step's done-when in the build plan holds and is ticked there with its commit.
-4. Run /qc-council, then /handoff. Steps 18, 20 and onwards wait on clone coverage waves (the coverage plan's Phase 4 "Order": site and surfaces with media upload for step 18; step 4.0 and states for step 20), so the handoff points the next session at that order (the coverage plan, `.claude/plans/2026-10-12-clone-coverage-foundation.md`, from its step 4.0 or the wave it has reached), not at a step 16 to 20 session.
+4. Run /qc-council, then /handoff. Steps 18, 20 and onwards wait on clone coverage waves (the coverage plan's Phase 4 "Order": site and surfaces with media upload for step 18; states for step 20), so the handoff points the next session at that order (the coverage plan, `.claude/plans/2026-10-12-clone-coverage-foundation.md`, from the wave it has reached (Phase 4 "Order" item 2 onwards)), not at a step 16 to 20 session.
 
 GUARDRAILS
 - `node --test "scripts/computed-route/tests/*.test.mjs"`: only the 3 known lint.test.mjs brand failures; `node scripts/computed-route/lint.mjs` passes; `node scripts/computed-route/check-approved.mjs indus-foods` exits 0.
