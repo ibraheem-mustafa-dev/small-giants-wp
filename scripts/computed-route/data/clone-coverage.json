@@ -4539,11 +4539,11 @@
 			"note": ":default: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:defined": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":defined: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"css-pseudo-class:dir": {
 			"recognise": null,
@@ -4651,18 +4651,18 @@
 			"note": ":heading: a structural or matching selector; not read as itself"
 		},
 		"css-pseudo-class:host": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":host: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"css-pseudo-class:host-context": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": ":host-context: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"css-pseudo-class:hover": {
 			"recognise": null,
@@ -9319,18 +9319,18 @@
 			"note": "<audio src>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:base.href": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<base href>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:base.target": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<base target>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:basefont.color": {
 			"recognise": null,
@@ -10095,11 +10095,11 @@
 			"note": "form input hint; no form writer"
 		},
 		"html-attr:global.exportparts": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "exportparts: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:global.headingoffset": {
 			"recognise": null,
@@ -10143,11 +10143,11 @@
 			"note": "form input hint; no form writer"
 		},
 		"html-attr:global.is": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "is: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:global.itemid": {
 			"recognise": null,
@@ -10199,11 +10199,11 @@
 			}
 		},
 		"html-attr:global.part": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "part: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:global.popover": {
 			"recognise": null,
@@ -10213,11 +10213,11 @@
 			"note": "native popover; no behaviour writer"
 		},
 		"html-attr:global.slot": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "slot: custom elements and shadow DOM (a draft's own components, the way it styles their insides); not read as themselves"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:global.spellcheck": {
 			"recognise": null,
@@ -10304,11 +10304,11 @@
 			"note": "<h6 align>: a presentational attribute the browser turns into text-align (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:head.profile": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<head profile>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:hr.align": {
 			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
@@ -10344,11 +10344,11 @@
 			"note": "<hr width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:html.manifest": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<html manifest>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:html.version": {
 			"excluded": {
@@ -10358,11 +10358,11 @@
 			}
 		},
 		"html-attr:html.xmlns": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<html xmlns>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:iframe.align": {
 			"recognise": null,
@@ -11020,18 +11020,18 @@
 			"note": "<li value>: a presentational attribute the browser turns into counter-set (WHATWG presentational hints); Fill does not read counter-set"
 		},
 		"html-attr:link.as": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link as>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.blocking": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link blocking>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.charset": {
 			"excluded": {
@@ -11041,88 +11041,88 @@
 			}
 		},
 		"html-attr:link.color": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link color>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.crossorigin": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link crossorigin>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.disabled": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link disabled>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.fetchpriority": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link fetchpriority>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.href": {
-			"recognise": null,
+			"recognise": "construct:link",
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "<link href>: document plumbing; read by intake only where a construct reader exists"
+			"wave": "site and surfaces",
+			"note": "<link href>: the font host or stylesheet a head link loads; the fonts are the snapshot's (construct:helmet-font)"
 		},
 		"html-attr:link.hreflang": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link hreflang>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.imagesizes": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link imagesizes>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.imagesrcset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link imagesrcset>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.integrity": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link integrity>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.media": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link media>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.referrerpolicy": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link referrerpolicy>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.rel": {
-			"recognise": null,
+			"recognise": "construct:link",
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "<link rel>: document plumbing; read by intake only where a construct reader exists"
+			"wave": "site and surfaces",
+			"note": "<link rel>: preconnect or stylesheet, read by readLink as a head link; the fonts are the snapshot's"
 		},
 		"html-attr:link.rev": {
 			"excluded": {
@@ -11132,11 +11132,11 @@
 			}
 		},
 		"html-attr:link.sizes": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link sizes>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:link.target": {
 			"excluded": {
@@ -11146,11 +11146,11 @@
 			}
 		},
 		"html-attr:link.type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<link type>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:map.name": {
 			"recognise": null,
@@ -11235,39 +11235,39 @@
 			"note": "<menu compact>: native open state or behaviour; not read"
 		},
 		"html-attr:meta.charset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<meta charset>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:meta.content": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "<meta content>: document plumbing; read by intake only where a construct reader exists"
+			"wave": "site and surfaces",
+			"note": "<meta content>: the site metadata value (FR-48-84)"
 		},
 		"html-attr:meta.http-equiv": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<meta http-equiv>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:meta.media": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<meta media>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:meta.name": {
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "<meta name>: document plumbing; read by intake only where a construct reader exists"
+			"wave": "site and surfaces",
+			"note": "<meta name>: which piece of site metadata (description, theme-color) the page states (FR-48-84)"
 		},
 		"html-attr:meta.scheme": {
 			"excluded": {
@@ -11643,11 +11643,11 @@
 			"note": "<q cite>: element semantics (link target, list numbering, citation, date); no writer"
 		},
 		"html-attr:script.async": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script async>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.attributionsrc": {
 			"excluded": {
@@ -11657,81 +11657,80 @@
 			}
 		},
 		"html-attr:script.blocking": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script blocking>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.charset": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script charset>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.crossorigin": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script crossorigin>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.defer": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script defer>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.fetchpriority": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script fetchpriority>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.integrity": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script integrity>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.language": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script language>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.nomodule": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script nomodule>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.referrerpolicy": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script referrerpolicy>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:script.src": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script src>: document plumbing; read by intake only where a construct reader exists"
+			"recognise": "construct:helmet-script",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "<script src>: the export must hold the file (readHelmetScript refuses one it does not); its constructs are read under their own kinds"
 		},
 		"html-attr:script.type": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<script type>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:select.autocomplete": {
 			"recognise": null,
@@ -11783,11 +11782,11 @@
 			"note": "<select size>: form; no form-field writer (FR-48-48)"
 		},
 		"html-attr:slot.name": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<slot name>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:source.height": {
 			"recognise": null,
@@ -11839,18 +11838,17 @@
 			"note": "<source width>: media; no media upload or attachment map yet (FR-48-39)"
 		},
 		"html-attr:style.blocking": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<style blocking>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:style.media": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<style media>: document plumbing; read by intake only where a construct reader exists"
+			"recognise": "scripts/computed-route/lib/intake-inventory-css.mjs#cssBlocks",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "<style media>: the rules apply under the media query, which the render at 375, 768 and 1440 and Fill's declared read follow"
 		},
 		"html-attr:style.type": {
 			"excluded": {
@@ -12086,60 +12084,60 @@
 			"note": "<td width>: a presentational attribute the browser turns into width (WHATWG presentational hints), which Fill reads as computed values"
 		},
 		"html-attr:template.for": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template for>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:template.shadowrootclonable": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template shadowrootclonable>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:template.shadowrootcustomelementregistry": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template shadowrootcustomelementregistry>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:template.shadowrootdelegatesfocus": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template shadowrootdelegatesfocus>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:template.shadowrootmode": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template shadowrootmode>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:template.shadowrootreferencetarget": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template shadowrootreferencetarget>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:template.shadowrootserializable": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template shadowrootserializable>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:template.shadowrootslotassignment": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "<template shadowrootslotassignment>: document plumbing; read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html-attr:textarea.autocomplete": {
 			"recognise": null,
@@ -12696,11 +12694,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:base": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html:basefont": {
 			"excluded": {
@@ -12749,11 +12747,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:body": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html:br": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -12830,11 +12828,10 @@
 			}
 		},
 		"html:custom-element": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "a custom element the draft defines (an image slot, a logo component): what it renders is read through the running page, but no reader maps the component itself to a block"
+			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
+			"write": "scripts/computed-route/lib/skeleton-propose.mjs#proposeSkeleton",
+			"check": "scripts/computed-route/pairs.mjs#runPairing",
+			"note": "a custom element the draft defines: read on the render by draft identity and mapped by what it is (lib/skeleton-rules.mjs: one named as a logo is the logo block, one used as an image placeholder the media block), otherwise by its rendered role like any element; its shadow-DOM internals are the component's own"
 		},
 		"html:data": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13018,11 +13015,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:head": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html:header": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13043,11 +13040,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:html": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html:i": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13130,11 +13127,11 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:link": {
-			"recognise": null,
+			"recognise": "construct:link",
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"wave": "site and surfaces",
+			"note": "<link>: in a draft, the font host and stylesheet links of its head (lib/intake-construct-readers.mjs::readLink reads them as `head`); the fonts are the snapshot's (FR-33-18, construct:helmet-font)"
 		},
 		"html:listing": {
 			"recognise": null,
@@ -13193,8 +13190,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"wave": "site and surfaces",
+			"note": "<meta>: a meta description or theme colour is site metadata (FR-48-84); the viewport and charset are document plumbing"
 		},
 		"html:meter": {
 			"recognise": null,
@@ -13245,11 +13242,11 @@
 			}
 		},
 		"html:noscript": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html:object": {
 			"recognise": null,
@@ -13381,11 +13378,10 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:script": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"recognise": "construct:helmet-script",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "a <script>: read through the constructs the census finds in it (lib/intake-construct-readers.mjs::readHelmetScript), each written under its own kind"
 		},
 		"html:search": {
 			"recognise": null,
@@ -13415,11 +13411,11 @@
 			}
 		},
 		"html:slot": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html:small": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13461,11 +13457,10 @@
 			"note": "structural or text element: the skeleton maps it to a block by draft identity, Fill fills it, pairing checks it"
 		},
 		"html:style": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"recognise": "scripts/computed-route/lib/intake-inventory-css.mjs#cssBlocks",
+			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
+			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
+			"note": "a <style> element: its rules are read by intake's CSS readers and, per element, by Fill's declared and rendered reads (FR-48-8), written through the resolver and confirmed"
 		},
 		"html:sub": {
 			"recognise": "scripts/computed-route/lib/skeleton-inventory.mjs#readInventory",
@@ -13515,11 +13510,11 @@
 			"note": "table structure: no table writer"
 		},
 		"html:template": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"excluded": {
+				"reason": "the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block",
+				"signedBy": "Bean",
+				"date": "2026-10-19"
+			}
 		},
 		"html:textarea": {
 			"recognise": null,
@@ -13559,8 +13554,8 @@
 			"recognise": null,
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "document plumbing: read by intake only where a construct reader exists"
+			"wave": "site and surfaces",
+			"note": "the document title: the site title and tagline (Mama's redesign: \"Mama's Munches · Handmade lactation cookies\"); nothing reads it yet: Site Info (FR-48-84)"
 		},
 		"html:tr": {
 			"recognise": null,

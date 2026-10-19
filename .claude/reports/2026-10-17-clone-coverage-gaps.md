@@ -1,13 +1,13 @@
-# Clone coverage gap list: 1803 capabilities neither covered nor excluded
+# Clone coverage gap list: 1741 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
 | content, media and icons | 798 |
-| draft reading | 342 |
+| draft reading | 273 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 175 |
 | behaviour recognisers | 126 |
-| site and surfaces | 106 |
+| site and surfaces | 113 |
 | states | 71 |
 | motion model additions | 6 |
 
@@ -275,21 +275,18 @@
 - `snapshot-key:styles.spacing`: theme-snapshot styles.spacing (1); has nothing; wave site and surfaces
 - `snapshot-key:styles.typography`: theme-snapshot styles.typography (1); has nothing; wave site and surfaces
 
-## html (67)
+## html (57)
 
 - `html:acronym`: <acronym> (1); has nothing; wave content, media and icons
 - `html:area`: <area> (1); has nothing; wave content, media and icons
 - `html:audio`: <audio> (1); has nothing; wave content, media and icons
-- `html:base`: <base> (1); has nothing; wave draft reading
 - `html:big`: <big> (1); has nothing; wave content, media and icons
-- `html:body`: <body> (1); has nothing; wave draft reading
 - `html:button`: <button> (1); has nothing; wave shop, forms and data
 - `html:canvas`: <canvas> (1); has nothing; wave content, media and icons
 - `html:caption`: <caption> (1); has nothing; wave content, media and icons
 - `html:center`: <center> (1); has nothing; wave content, media and icons
 - `html:col`: <col> (1); has nothing; wave content, media and icons
 - `html:colgroup`: <colgroup> (1); has nothing; wave content, media and icons
-- `html:custom-element`: a custom element the draft defines (a hyphenated tag) (1); has nothing; wave draft reading
 - `html:datalist`: <datalist> (1); has nothing; wave shop, forms and data
 - `html:details`: <details> (1); has nothing; wave behaviour recognisers
 - `html:dialog`: <dialog> (1); has nothing; wave behaviour recognisers
@@ -300,52 +297,45 @@
 - `html:figure`: <figure> (1); has nothing; wave content, media and icons
 - `html:font`: <font> (1); has nothing; wave content, media and icons
 - `html:form`: <form> (1); has nothing; wave shop, forms and data
-- `html:head`: <head> (1); has nothing; wave draft reading
-- `html:html`: <html> (1); has nothing; wave draft reading
 - `html:iframe`: <iframe> (1); has nothing; wave content, media and icons
 - `html:img`: <img> (1); has nothing; wave content, media and icons
 - `html:input`: <input> (1); has nothing; wave shop, forms and data
 - `html:label`: <label> (1); has nothing; wave shop, forms and data
 - `html:legend`: <legend> (1); has nothing; wave shop, forms and data
-- `html:link`: <link> (1); has nothing; wave draft reading
+- `html:link`: <link> (1); has recognise; wave site and surfaces
 - `html:listing`: <listing> (1); has nothing; wave content, media and icons
 - `html:map`: <map> (1); has nothing; wave content, media and icons
 - `html:math`: <math> (1); has nothing; wave draft reading
 - `html:menu`: <menu> (1); has nothing; wave behaviour recognisers
-- `html:meta`: <meta> (1); has nothing; wave draft reading
+- `html:meta`: <meta> (1); has nothing; wave site and surfaces
 - `html:meter`: <meter> (1); has nothing; wave shop, forms and data
 - `html:nobr`: <nobr> (1); has nothing; wave content, media and icons
-- `html:noscript`: <noscript> (1); has nothing; wave draft reading
 - `html:object`: <object> (1); has nothing; wave content, media and icons
 - `html:optgroup`: <optgroup> (1); has nothing; wave shop, forms and data
 - `html:option`: <option> (1); has nothing; wave shop, forms and data
 - `html:output`: <output> (1); has nothing; wave shop, forms and data
 - `html:picture`: <picture> (1); has nothing; wave content, media and icons
 - `html:progress`: <progress> (1); has nothing; wave shop, forms and data
-- `html:script`: <script> (1); has nothing; wave draft reading
 - `html:search`: <search> (1); has nothing; wave shop, forms and data
 - `html:select`: <select> (1); has nothing; wave shop, forms and data
-- `html:slot`: <slot> (1); has nothing; wave draft reading
 - `html:source`: <source> (1); has nothing; wave content, media and icons
 - `html:strike`: <strike> (1); has nothing; wave content, media and icons
-- `html:style`: <style> (1); has nothing; wave draft reading
 - `html:summary`: <summary> (1); has nothing; wave behaviour recognisers
 - `html:svg`: <svg> (1); has nothing; wave content, media and icons
 - `html:table`: <table> (1); has nothing; wave content, media and icons
 - `html:tbody`: <tbody> (1); has nothing; wave content, media and icons
 - `html:td`: <td> (1); has nothing; wave content, media and icons
-- `html:template`: <template> (1); has nothing; wave draft reading
 - `html:textarea`: <textarea> (1); has nothing; wave shop, forms and data
 - `html:tfoot`: <tfoot> (1); has nothing; wave content, media and icons
 - `html:th`: <th> (1); has nothing; wave content, media and icons
 - `html:thead`: <thead> (1); has nothing; wave content, media and icons
-- `html:title`: <title> (1); has nothing; wave draft reading
+- `html:title`: <title> (1); has nothing; wave site and surfaces
 - `html:tr`: <tr> (1); has nothing; wave content, media and icons
 - `html:track`: <track> (1); has nothing; wave content, media and icons
 - `html:tt`: <tt> (1); has nothing; wave content, media and icons
 - `html:video`: <video> (1); has nothing; wave content, media and icons
 
-## html-attr (372)
+## html-attr (323)
 
 - `html-attr:a.attributionsourceid`: <a attributionsourceid> (1); has nothing; wave content, media and icons
 - `html-attr:a.download`: <a download> (1); has nothing; wave content, media and icons
@@ -391,8 +381,6 @@
 - `html-attr:audio.muted`: <audio muted> (1); has nothing; wave content, media and icons
 - `html-attr:audio.preload`: <audio preload> (1); has nothing; wave content, media and icons
 - `html-attr:audio.src`: <audio src> (1); has nothing; wave content, media and icons
-- `html-attr:base.href`: <base href> (1); has nothing; wave draft reading
-- `html-attr:base.target`: <base target> (1); has nothing; wave draft reading
 - `html-attr:basefont.color`: <basefont color> (1); has nothing; wave content, media and icons
 - `html-attr:basefont.face`: <basefont face> (1); has nothing; wave content, media and icons
 - `html-attr:basefont.size`: <basefont size> (1); has nothing; wave content, media and icons
@@ -451,34 +439,27 @@
 - `html-attr:global.dir`: dir (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.draggable`: draggable (any element) (1); has nothing; wave behaviour recognisers
 - `html-attr:global.enterkeyhint`: enterkeyhint (any element) (1); has nothing; wave shop, forms and data
-- `html-attr:global.exportparts`: exportparts (any element) (1); has nothing; wave draft reading
 - `html-attr:global.headingoffset`: headingoffset (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.headingreset`: headingreset (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.id`: id (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.inert`: inert (any element) (1); has nothing; wave behaviour recognisers
 - `html-attr:global.inputmode`: inputmode (any element) (1); has nothing; wave shop, forms and data
-- `html-attr:global.is`: is (any element) (1); has nothing; wave draft reading
 - `html-attr:global.itemid`: itemid (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.itemprop`: itemprop (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.itemref`: itemref (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.itemscope`: itemscope (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.itemtype`: itemtype (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.lang`: lang (any element) (1); has nothing; wave content, media and icons
-- `html-attr:global.part`: part (any element) (1); has nothing; wave draft reading
 - `html-attr:global.popover`: popover (any element) (1); has nothing; wave behaviour recognisers
-- `html-attr:global.slot`: slot (any element) (1); has nothing; wave draft reading
 - `html-attr:global.spellcheck`: spellcheck (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.tabindex`: tabindex (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.title`: title (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.translate`: translate (any element) (1); has nothing; wave content, media and icons
 - `html-attr:global.virtualkeyboardpolicy`: virtualkeyboardpolicy (any element) (1); has nothing; wave shop, forms and data
 - `html-attr:global.writingsuggestions`: writingsuggestions (any element) (1); has nothing; wave shop, forms and data
-- `html-attr:head.profile`: <head profile> (1); has nothing; wave draft reading
 - `html-attr:hr.color`: <hr color> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:hr.noshade`: <hr noshade> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:hr.size`: <hr size> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:html.manifest`: <html manifest> (1); has nothing; wave draft reading
-- `html-attr:html.xmlns`: <html xmlns> (1); has nothing; wave draft reading
 - `html-attr:iframe.align`: <iframe align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:iframe.allow`: <iframe allow> (1); has nothing; wave content, media and icons
 - `html-attr:iframe.allowfullscreen`: <iframe allowfullscreen> (1); has nothing; wave content, media and icons
@@ -557,30 +538,13 @@
 - `html-attr:legend.align`: <legend align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:li.type`: <li type> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:li.value`: <li value> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:link.as`: <link as> (1); has nothing; wave draft reading
-- `html-attr:link.blocking`: <link blocking> (1); has nothing; wave draft reading
-- `html-attr:link.color`: <link color> (1); has nothing; wave draft reading
-- `html-attr:link.crossorigin`: <link crossorigin> (1); has nothing; wave draft reading
-- `html-attr:link.disabled`: <link disabled> (1); has nothing; wave draft reading
-- `html-attr:link.fetchpriority`: <link fetchpriority> (1); has nothing; wave draft reading
-- `html-attr:link.href`: <link href> (1); has nothing; wave draft reading
-- `html-attr:link.hreflang`: <link hreflang> (1); has nothing; wave draft reading
-- `html-attr:link.imagesizes`: <link imagesizes> (1); has nothing; wave draft reading
-- `html-attr:link.imagesrcset`: <link imagesrcset> (1); has nothing; wave draft reading
-- `html-attr:link.integrity`: <link integrity> (1); has nothing; wave draft reading
-- `html-attr:link.media`: <link media> (1); has nothing; wave draft reading
-- `html-attr:link.referrerpolicy`: <link referrerpolicy> (1); has nothing; wave draft reading
-- `html-attr:link.rel`: <link rel> (1); has nothing; wave draft reading
-- `html-attr:link.sizes`: <link sizes> (1); has nothing; wave draft reading
-- `html-attr:link.type`: <link type> (1); has nothing; wave draft reading
+- `html-attr:link.href`: <link href> (1); has recognise; wave site and surfaces
+- `html-attr:link.rel`: <link rel> (1); has recognise; wave site and surfaces
 - `html-attr:map.name`: <map name> (1); has nothing; wave content, media and icons
 - `html-attr:marquee.height`: <marquee height> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:menu.compact`: <menu compact> (1); has nothing; wave behaviour recognisers
-- `html-attr:meta.charset`: <meta charset> (1); has nothing; wave draft reading
-- `html-attr:meta.content`: <meta content> (1); has nothing; wave draft reading
-- `html-attr:meta.http-equiv`: <meta http-equiv> (1); has nothing; wave draft reading
-- `html-attr:meta.media`: <meta media> (1); has nothing; wave draft reading
-- `html-attr:meta.name`: <meta name> (1); has nothing; wave draft reading
+- `html-attr:meta.content`: <meta content> (1); has nothing; wave site and surfaces
+- `html-attr:meta.name`: <meta name> (1); has nothing; wave site and surfaces
 - `html-attr:meter.high`: <meter high> (1); has nothing; wave shop, forms and data
 - `html-attr:meter.low`: <meter low> (1); has nothing; wave shop, forms and data
 - `html-attr:meter.max`: <meter max> (1); has nothing; wave shop, forms and data
@@ -616,18 +580,6 @@
 - `html-attr:progress.max`: <progress max> (1); has nothing; wave shop, forms and data
 - `html-attr:progress.value`: <progress value> (1); has nothing; wave shop, forms and data
 - `html-attr:q.cite`: <q cite> (1); has nothing; wave content, media and icons
-- `html-attr:script.async`: <script async> (1); has nothing; wave draft reading
-- `html-attr:script.blocking`: <script blocking> (1); has nothing; wave draft reading
-- `html-attr:script.charset`: <script charset> (1); has nothing; wave draft reading
-- `html-attr:script.crossorigin`: <script crossorigin> (1); has nothing; wave draft reading
-- `html-attr:script.defer`: <script defer> (1); has nothing; wave draft reading
-- `html-attr:script.fetchpriority`: <script fetchpriority> (1); has nothing; wave draft reading
-- `html-attr:script.integrity`: <script integrity> (1); has nothing; wave draft reading
-- `html-attr:script.language`: <script language> (1); has nothing; wave draft reading
-- `html-attr:script.nomodule`: <script nomodule> (1); has nothing; wave draft reading
-- `html-attr:script.referrerpolicy`: <script referrerpolicy> (1); has nothing; wave draft reading
-- `html-attr:script.src`: <script src> (1); has nothing; wave draft reading
-- `html-attr:script.type`: <script type> (1); has nothing; wave draft reading
 - `html-attr:select.autocomplete`: <select autocomplete> (1); has nothing; wave shop, forms and data
 - `html-attr:select.disabled`: <select disabled> (1); has nothing; wave shop, forms and data
 - `html-attr:select.form`: <select form> (1); has nothing; wave shop, forms and data
@@ -635,7 +587,6 @@
 - `html-attr:select.name`: <select name> (1); has nothing; wave shop, forms and data
 - `html-attr:select.required`: <select required> (1); has nothing; wave shop, forms and data
 - `html-attr:select.size`: <select size> (1); has nothing; wave shop, forms and data
-- `html-attr:slot.name`: <slot name> (1); has nothing; wave draft reading
 - `html-attr:source.height`: <source height> (1); has nothing; wave content, media and icons
 - `html-attr:source.media`: <source media> (1); has nothing; wave content, media and icons
 - `html-attr:source.sizes`: <source sizes> (1); has nothing; wave content, media and icons
@@ -643,8 +594,6 @@
 - `html-attr:source.srcset`: <source srcset> (1); has nothing; wave content, media and icons
 - `html-attr:source.type`: <source type> (1); has nothing; wave content, media and icons
 - `html-attr:source.width`: <source width> (1); has nothing; wave content, media and icons
-- `html-attr:style.blocking`: <style blocking> (1); has nothing; wave draft reading
-- `html-attr:style.media`: <style media> (1); has nothing; wave draft reading
 - `html-attr:table.align`: <table align> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:table.border`: <table border> (1); has nothing; wave modes and values with no CSS property
 - `html-attr:table.cellspacing`: <table cellspacing> (1); has nothing; wave modes and values with no CSS property
@@ -662,14 +611,6 @@
 - `html-attr:td.rowspan`: <td rowspan> (1); has nothing; wave content, media and icons
 - `html-attr:td.scope`: <td scope> (1); has nothing; wave content, media and icons
 - `html-attr:td.valign`: <td valign> (1); has nothing; wave modes and values with no CSS property
-- `html-attr:template.for`: <template for> (1); has nothing; wave draft reading
-- `html-attr:template.shadowrootclonable`: <template shadowrootclonable> (1); has nothing; wave draft reading
-- `html-attr:template.shadowrootcustomelementregistry`: <template shadowrootcustomelementregistry> (1); has nothing; wave draft reading
-- `html-attr:template.shadowrootdelegatesfocus`: <template shadowrootdelegatesfocus> (1); has nothing; wave draft reading
-- `html-attr:template.shadowrootmode`: <template shadowrootmode> (1); has nothing; wave draft reading
-- `html-attr:template.shadowrootreferencetarget`: <template shadowrootreferencetarget> (1); has nothing; wave draft reading
-- `html-attr:template.shadowrootserializable`: <template shadowrootserializable> (1); has nothing; wave draft reading
-- `html-attr:template.shadowrootslotassignment`: <template shadowrootslotassignment> (1); has nothing; wave draft reading
 - `html-attr:textarea.autocomplete`: <textarea autocomplete> (1); has nothing; wave shop, forms and data
 - `html-attr:textarea.cols`: <textarea cols> (1); has nothing; wave shop, forms and data
 - `html-attr:textarea.dirname`: <textarea dirname> (1); has nothing; wave shop, forms and data
@@ -1398,7 +1339,7 @@
 - `css-property:white-space-trim`: white-space-trim (1); has nothing; wave draft reading
 - `css-property:wrap-inside`: wrap-inside (1); has nothing; wave draft reading
 
-## css-pseudo-class (77)
+## css-pseudo-class (74)
 
 - `css-pseudo-class:active`: :active (1); has nothing; wave states
 - `css-pseudo-class:active-view-transition`: :active-view-transition (1); has nothing; wave states
@@ -1410,7 +1351,6 @@
 - `css-pseudo-class:checked`: :checked (1); has nothing; wave states
 - `css-pseudo-class:current`: :current (1); has nothing; wave states
 - `css-pseudo-class:default`: :default (1); has nothing; wave states
-- `css-pseudo-class:defined`: :defined (1); has nothing; wave draft reading
 - `css-pseudo-class:dir`: :dir() (1); has nothing; wave draft reading
 - `css-pseudo-class:disabled`: :disabled (1); has nothing; wave states
 - `css-pseudo-class:empty`: :empty (1); has nothing; wave states
@@ -1426,8 +1366,6 @@
 - `css-pseudo-class:has`: :has() (1); has nothing; wave draft reading
 - `css-pseudo-class:has-slotted`: :has-slotted (1); has nothing; wave states
 - `css-pseudo-class:heading`: :heading (1); has nothing; wave draft reading
-- `css-pseudo-class:host`: :host (1); has nothing; wave draft reading
-- `css-pseudo-class:host-context`: :host-context() (1); has nothing; wave draft reading
 - `css-pseudo-class:hover`: :hover (1); has nothing; wave states
 - `css-pseudo-class:in-range`: :in-range (1); has nothing; wave states
 - `css-pseudo-class:indeterminate`: :indeterminate (1); has nothing; wave states
