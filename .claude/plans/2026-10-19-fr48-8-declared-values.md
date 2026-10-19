@@ -17,7 +17,7 @@ spec: .claude/specs/48-CLONING-SYSTEM.md (FR-48-8, FR-48-36, FR-48-85)
 ## What exists
 - `scripts/computed-route/lib/fill-read.mjs::readDraft` already calls `scripts/parity/lib/devtools.mjs::declaredValues` (Chrome's matched rules for the element, `CSS.getMatchedStylesForNode`) per target at each read width, keeping only `DECLARED` (width and the side margins). `scripts/parity/lib/devtools.mjs::cascadeWinner` picks a property's winning author declaration (presentation attributes, author rules in cascade order, inline style, `!important`).
 - `scripts/computed-route/lib/fill-resolve.mjs::fillElement` runs every property of `PROPS` through `lib/fill-prop.mjs::resolveProperty` against the block's calibrated default; `width` is written only from a declared plain length (`usedValueTarget`).
-- Calibration reads `lib/calibrate-props.mjs::READ_PROPS`, which holds properties Fill does not read (`height`, `min-width`, `fill`, `stroke`, `stroke-width`, `stroke-dasharray`, `filter`, `mix-blend-mode`, `grid-template-rows`, `background-size`, `background-attachment`).
+- Calibration reads `lib/calibrate-props.mjs::READ_PROPS`: the walker's list plus `CAL_EXTRA_PROPS`, which holds properties Fill does not read (`height`, `min-width`, `fill`, `stroke`, `grid-template-rows`, `background-size` and others) and, since step 5, every property a block default, the theme or a setting under another name paints.
 - The draft defects intake lists (FR-48-34) are in `intake.json` → `draftDefects`.
 
 ## Steps
@@ -41,4 +41,4 @@ spec: .claude/specs/48-CLONING-SYSTEM.md (FR-48-8, FR-48-36, FR-48-85)
 Steps 1 to 3: 1 hour. Step 4: 45 minutes. Step 5: the audits plus Bean's review of the table, then 1 hour of mapping. Step 6: 45 minutes.
 
 ## Open
-- The equivalence table goes to Bean before any mapping is written (his ruling on "no setting", 2026-10-19).
+- Any framework-DB mapping for the step 5 residue is a schema change and goes to Bean for approval first.
