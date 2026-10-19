@@ -151,6 +151,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/skeleton-review.mjs` | Skeleton step 3: the review table (key, tag, words, code, screenshot, proposed block, confidence, decision). |
 | `lib/skeleton-finalise.mjs` | Client decisions and finaliser picks on disk (with the element signature that makes a stale decision visible), the finalise request for the low rows and the validated merge of the picks. |
 | `lib/fill-read.mjs` | Reads the draft in Chromium through the walker's `collectPair` and `resolveFinder` at 375, 768, 1440 and the fluid widths, plus the 16px sweep; blocks or mirrors requests beyond the draft's origin. |
+| `lib/fill-declared.mjs` | FR-48-8: what the draft's code declares on each target beyond Fill's list, read rendered too, and the declared value a used-value property (height, offsets, grid tracks) takes. |
 | `lib/fill-prop.mjs` | One property of one element: which tiers differ from what the node shows, the slots a setting could paint, `clamp()` where a setting accepts one; every write is the resolver's. |
 | `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: inherited baselines, spacing ownership, presence, words, links, the divergence ledger, UNMAPPED and handover. |
 | `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
@@ -177,6 +178,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/motion-tokens.mjs` | Token references (the field types' token patterns read from the schema, the values from the client's snapshot) and the preset match. |
 | `lib/fill-config.mjs` | Generates the walker config: one pair per node with a `draftRef`, `refPrefix: 'cr-ref-'` and the ledger path, via `pairs.mjs::configText`. |
 | `lib/fill-report.mjs` | `fill-report.md` and `fill-report.json`: UNMAPPED, handover, writes, spacing, fluid, breakpoints, entrances, ledger, snaps. |
+| `lib/fill-confirm.mjs` | FR-48-8, FR-48-36: the confirm record for every written value (declared against rendered draft by property type, the verdict; rendered live is the check's). |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, the state-conflict refusal, content rows (text, presence, link) and their resolution, the handover list, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json` (the whole-page line, content and handover counts, the handover list, the issue and cause views, and a Hardcode table with the widths that differ and the winning rule). |
 | `lib/solve-groups.mjs` | The report's two readings of the surviving style and hover rows: issues (one element, property and state, every width with its own draft and live values, and the widths that match) and causes (issues sharing a class, a property and the winning rule or the same values, every element listed with its widths). No row is merged away. |
@@ -318,6 +320,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-fixture-preconditions.test.mjs` | The footer social row keeps the 1px solid border and the background switch the social-icons fixture paints in calibration (MUST FAIL); a draft with no border writes no border settings; the fixture's preconditions are its styling settings only, and a words-and-level fixture has none. |
 | `tests/calibrate-size-box.test.mjs` | A per-device `{ width, height }` size setting gets a marker of that shape and Fill writes it in that shape; a setting's slots drop an element that changed in a variant without carrying the marker value (`sgs/icon`'s hugging root). |
 | `tests/fill-surface.test.mjs` | FR-47-4 step 5: `fillSurface` end to end over a local folder and a temp repo; an invalid skeleton is refused and only `--out` is written (MUST FAIL). |
+| `tests/fill-declared.test.mjs` | FR-48-8 (MUST FAIL): declared extras, the used-value guard, each tolerance and verdict, draft IDs and the defect index, and end to end a code value its render overrides written as rendered and reported, with properties beyond the list named from their declared values. |
 
 `cache/` (gitignored) holds the calibration: one slot map per block for the whole library (`cache/<block>.json`, recording the `site` that measured it) and one default paint per site and block (`cache/<site>/<block>.paint.json`).
 
@@ -785,12 +788,19 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `liftRow(st, rowRec, ref, cal, { fillElement, snapsOf })` → lifts the generated icons' shared look onto the row node: each icon's draft link is read as the row's shape element and its svg as the row's glyph element, and `childIcon*` is written on the row only when every copy agrees; a disagreement is reported UNMAPPED, never averaged.
 
 ### `lib/fill-read.mjs` (Playwright by path; imports `scripts/parity/lib/*`)
-- `READ_WIDTHS`: 375, 768, 1440. `DECLARED`: properties whose computed value is a used size. `PRESENT`: the render-presence sweep series. `PROPS`: the properties Fill resolves.
+- `READ_WIDTHS`: 375, 768, 1440. `PRESENT`: the render-presence sweep series. `PROPS`: the properties Fill resolves.
 - `loadChromium()` → Playwright, imported from `plugins/sgs-blocks/node_modules`.
 - `requestAllowed(url, origin, external)` → whether the draft may load a url.
 - `routeDraft(ctx, { origin, external, mirror })` → routes a context's requests (mirror, allow, abort).
 - `jobsFor(nodes)` → the collection jobs, roots before slots.
 - `readDraft(options)` → `{ origin, widths, declared, sweep }`.
+
+### `lib/fill-declared.mjs`
+- `extraProps(declared, read)` → `{ prop: declared }` the code sets beyond Fill's list (motion timings and CSS-wide keywords left out); `readExtras(page, jobs, extras, resolveSrc)` → their rendered values; `usedValueDraft(declared)` → the plain declared length a used-value property takes, or null; `USED_VALUE`, `CSS_WIDE`.
+
+### `lib/fill-confirm.mjs`
+- `confirmRecords({ writes, nodes, reads, defects, rootComponent })` → one FR-48-36 record per written value and read width (declared, emitted, rendered draft, rendered live left for the check, D–R, tolerance, verdict).
+- `compareDR(prop, declared, rendered, fontPx)` → `{ dr, type, tolerance }`; `propertyType`, `TOLERANCE`, `verdictOf(dr, defect)`, `draftIdOf(finder, rootComponent)`, `defectIndex(draftDefects)`.
 
 ### `lib/fill-prop.mjs`
 - `TIER_WIDTHS`: 1440, 768, 375. `INHERITED`: calibration's inherited list, re-exported rather than copied. `CARRIED`: properties read from a text or layout carrier.

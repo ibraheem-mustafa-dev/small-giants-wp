@@ -187,12 +187,22 @@ export function cascadeWinner( matched, prop ) {
 	return win ? String( win.value ).replace( /\s*!important\s*$/, '' ).trim() : null;
 }
 
-// The declared values of `props` on a finder's element: { prop: value } for each prop some rule declares.
+// Every longhand an author declaration names on the element (presentation attributes, author rules, inline style). A
+// shorthand is left out (Chrome lists its longhands beside it, an implied one with the value `initial`), and so are
+// custom properties: they paint nothing themselves and reach the properties that use them.
+export function declaredNames( matched ) {
+	const styles = [ matched.attributesStyle, ...( matched.matchedCSSRules || [] ).filter( ( m ) => 'user-agent' !== m.rule?.origin ).map( ( m ) => m.rule.style ), matched.inlineStyle ];
+	const names = styles.flatMap( ( s ) => ( s?.cssProperties || [] ).filter( ( p ) => ! p.disabled && false !== p.parsedOk && '' !== String( p.value ).trim() && ! p.longhandProperties ).map( ( p ) => p.name ) );
+	return [ ...new Set( names ) ].filter( ( n ) => ! n.startsWith( '--' ) ).sort();
+}
+
+// The declared values of `props` on a finder's element: { prop: value } for each prop some rule declares; `props`
+// null reads every property an author declaration names (declaredNames).
 export async function declaredValues( cdp, finder, resolveSrc, props = DECLARED_PROPS ) {
 	const ids = await nodeChain( cdp, finder, resolveSrc, false );
 	if ( ! ids ) {
 		return null;
 	}
 	const matched = await cdp.send( 'CSS.getMatchedStylesForNode', { nodeId: ids[ 0 ] } );
-	return Object.fromEntries( props.map( ( p ) => [ p, cascadeWinner( matched, p ) ] ).filter( ( [ , v ] ) => null !== v ) );
+	return Object.fromEntries( ( props ?? declaredNames( matched ) ).map( ( p ) => [ p, cascadeWinner( matched, p ) ] ).filter( ( [ , v ] ) => null !== v ) );
 }

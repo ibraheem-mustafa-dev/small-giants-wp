@@ -11,14 +11,13 @@ import { makeHelpers } from '../../parity/lib/helpers.mjs';
 import { SCOPE_ATTR, scopeFinder, scopeSelector } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
+import { extraProps, readExtras } from './fill-declared.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
 
 // The widths every property is read at, and the widths only lengths are (the fluid samples).
 export const READ_WIDTHS = [ 375, 768, 1440 ];
-// The properties whose computed value is a used size: the width, and the side margins that `auto` resolves to px.
-export const DECLARED = [ 'width', 'margin-left', 'margin-right' ];
 // The sweep series that records whether the element rendered at all at each width.
 export const PRESENT = '(rendered)';
 // The properties Fill resolves. Motion timings of an entrance are Fill's entrance step; icon sizes belong to a slot
@@ -136,7 +135,8 @@ async function openPage( browser, devices, { url, open, width, origin, external,
 // What every read of the draft returns:
 //   widths[w][targetId]   the collectPair snapshot (plus rect, inFlow, words, href); { missing: true } when the finder
 //                         found nothing visible. READ_WIDTHS carry every property, the other fluid widths only lengths.
-//   declared[w][targetId] the values the draft's matched rules declare for DECLARED (the used-size rule), at READ_WIDTHS.
+//   declared[w][targetId] every longhand the draft's matched rules declare (FR-48-8), at READ_WIDTHS; the ones beyond
+//                         PROPS (lib/fill-declared.mjs::extraProps) are read rendered into widths[w][targetId].styles too.
 //   sweep[targetId][prop] [{ width, value }] every 16px from 320 to 1920 (lengths and keywords as read).
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
@@ -154,8 +154,14 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			if ( full ) {
 				const cdp = await openDevtools( page );
 				result.declared[ width ] = {};
-				for ( const j of jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing ) ) {
-					result.declared[ width ][ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, DECLARED ).catch( () => null );
+				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
+				for ( const j of found ) {
+					result.declared[ width ][ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null ).catch( () => null );
+				}
+				// What the code declares beyond Fill's list, read rendered too (FR-48-8), into the same snapshot.
+				const extras = Object.fromEntries( found.map( ( j ) => [ j.id, extraProps( result.declared[ width ][ j.id ], PROPS ) ] ) );
+				for ( const [ id, styles ] of Object.entries( await readExtras( page, found, extras, RESOLVE ) ) ) {
+					result.widths[ width ][ id ].styles = { ...result.widths[ width ][ id ].styles, ...styles };
 				}
 			}
 			log( `read ${ width }px: ${ Object.values( result.widths[ width ] ).filter( ( s ) => ! s.missing ).length } of ${ jobs.length } targets` );

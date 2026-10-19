@@ -8,6 +8,7 @@ import { match as ledgerMatch } from './ledger.mjs';
 import { setAttr, refOf, walk } from './tree.mjs';
 import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS } from './fill-read.mjs';
+import { extraProps, usedValueDraft, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
 import { INHERITED, CARRIED, defaultPaint, knownPaths, resolveProperty, notPainted } from './fill-prop.mjs';
 import { pageBaseline } from './fill-page.mjs';
@@ -207,7 +208,9 @@ function unmapped( st, rec, ref, row ) {
 // One element's properties at one slot, every one that differs. layer: '::before' | '::after' for a painted pseudo layer.
 function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const slot = `${ target.slot }${ layer || '' }`;
-	const ids = layer ? PSEUDO_PROPS.filter( ( p ) => 'content' !== p ) : PROPS;
+	// Beyond Fill's list, every property the code declares on the element at a read width (FR-48-8).
+	const extra = layer ? [] : [ ...new Set( READ_WIDTHS.flatMap( ( w ) => Object.keys( extraProps( st.reads.declared?.[ w ]?.[ target.id ], PROPS ) ) ) ) ].sort();
+	const ids = layer ? PSEUDO_PROPS.filter( ( p ) => 'content' !== p ) : [ ...PROPS, ...extra ];
 	// A block's layout setting describes the element laying out its children: a draft wrapper around a grid reads as the grid.
 	const valueAt = ( s, p ) => ( layer ? s.pseudo?.[ layer ]?.[ p ] : ( 'display' === p && '' === target.slot && /(flex|grid)$/.test( s.layoutDisplay || '' ) ? s.layoutDisplay : s.styles?.[ p ] ) );
 	const fontPx = Object.fromEntries( Object.entries( snaps ).map( ( [ w, s ] ) => [ w, parseFloat( s.styles?.[ 'font-size' ] ) ] ).filter( ( [ , v ] ) => v ) );
@@ -252,6 +255,13 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				continue;
 			}
 			draft = t.perWidth;
+		} else if ( extra.includes( prop ) && USED_VALUE.includes( prop ) ) {
+			// A used-value property beyond Fill's list (a height, an offset, grid tracks): the declared value, never the
+			// laid-out pixels; a width whose code states no plain length is not written.
+			draft = Object.fromEntries( Object.keys( draft ).map( ( w ) => [ w, usedValueDraft( st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ) ] ).filter( ( [ , v ] ) => null !== v ) );
+			if ( ! Object.keys( draft ).length ) {
+				continue;
+			}
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid } );

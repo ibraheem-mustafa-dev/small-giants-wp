@@ -1,0 +1,3686 @@
+[
+ {
+  "property": "align-self",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 10
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Contact.dc.html:67",
+    "element": "the form's Send submit button inside a column flex form",
+    "value": "align-self:flex-start",
+    "does": "Stops the button stretching to the full form width; it keeps its natural width at the left."
+   },
+   {
+    "draft": "mamas",
+    "file": "SignIn.dc.html:76",
+    "element": "the Sign in submit button in the column form",
+    "value": "align-self:flex-start",
+    "does": "Same: button keeps natural width."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:64",
+    "element": "the mailto link ('say hello') in the footer's contact column",
+    "value": "align-self:flex-start",
+    "does": "Link does not stretch across the column."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:75",
+    "element": "the back-to-orders button above the order detail",
+    "value": "align-self:flex-start",
+    "does": "Button hugs its content."
+   },
+   {
+    "draft": "mamas",
+    "file": "Basket.dc.html:58",
+    "element": "a line-total cell in the basket row grid",
+    "value": "align-self:start",
+    "does": "Top-aligns the total with the item name in a grid row."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/src/blocks/container/block.json::attributes.alignItems (DB: sgs/container alignItems css_property=align-items, default empty)",
+    "how": "Set the parent container's Align items to start/flex-start: every child (button, link) then hugs its content, the same result as align-self:flex-start on each child."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/button/style.css (~L246-252): align-self:stretch only when the button is set to full width",
+    "how": "A default (auto-width) sgs/button is not stretched, so the draft's flex-start is the normal look."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/multi-button alignItems css_property=align-items",
+    "how": "Same parent-level control for a button group."
+   }
+  ],
+  "verdict": "partial",
+  "note": "SGS has no per-child align-self control (DB css_property='align-self' has zero rows; only block-private rules in google-reviews, process-steps, option-picker style.css). The visual result for the draft's uses (a lone button or link that must not stretch) is reached through the parent's Align items or the button's default auto width. A single child that must differ from its siblings in the same row would need a real per-child control (the childSizing extension, includes/child-sizing.php, is the natural home: add an 'align' field)."
+ },
+ {
+  "property": "justify-self",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 8
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:43",
+    "element": "the round footer logo in a one-column grid (logoJust is 'center' on mobile)",
+    "value": "justify-self:{{ logoJust }} = center",
+    "does": "Centres the logo in its grid cell."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:74",
+    "element": "the copyright line and the right-hand legal line in the footer bottom grid (leftJust/rightJust)",
+    "value": "center on mobile, start/end on desktop",
+    "does": "Centres on mobile, pushes to the left and right edges on desktop."
+   },
+   {
+    "draft": "mamas",
+    "file": "Shop.dc.html:27",
+    "element": "the sort label/select group in the shop toolbar grid (sortJust)",
+    "value": "start (mobile) etc.",
+    "does": "Aligns the sort control within its grid cell."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:182",
+    "element": "the tilted hero photo frame in a grid column",
+    "value": "justify-self:center",
+    "does": "Centres the photo in its column."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:614",
+    "element": "the role-card action button (R.roleBtnJustify)",
+    "value": "dynamic value from logic",
+    "does": "Places the button at the start or end of the card row."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "DB: sgs/container justifyItems css_property=justify-items default 'stretch'",
+    "how": "Parent-level: set Justify items to centre/start/end so grid children align in their cells, the same effect as justify-self on each child."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/container textAlign css_property=text-align; sgs/container justifyContent",
+    "how": "Centred text or flex rows cover the footer legal lines."
+   }
+  ],
+  "verdict": "partial",
+  "note": "No per-child justify-self control exists (zero DB rows for the property). The draft always applies it uniformly to the one child of a cell, so the parent's Justify items gives the same look. Differences appear only if siblings in the same grid need different alignment."
+ },
+ {
+  "property": "order",
+  "draftUses": {
+   "indus": 3,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:538",
+    "element": "split section (text/image) grid: the text column div",
+    "value": "order:{{ b.textOrder }} = 1 or 2",
+    "does": "Alternates text left/right so the picture swaps sides section by section."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:557",
+    "element": "split section: the image column div",
+    "value": "order:{{ b.imgOrder }} = 2 or 1",
+    "does": "Counterpart of the above."
+   },
+   {
+    "draft": "indus",
+    "file": "TradeApplication.dc.html:121",
+    "element": "the checklist/summary aside next to the form",
+    "value": "order:{{ L.asideOrder }} = -1 on mobile/tablet, 0 on desktop",
+    "does": "Moves the aside above the form on small screens."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/src/blocks/hero/render.php::splitContentOrder (tier object; DB sgs/hero splitContentOrder, default {mobile:'media-first'})",
+    "how": "Hero split layout: pick media-first / content-first per device; emits grid order."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/media order css_property=order (tier object {desktop,tablet,mobile}); plugins/sgs-blocks/src/blocks/media/render.php $order_tiers",
+    "how": "Set an integer order per device on the media block inside a flex/grid parent."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/mega-panel drawerAsideOrder css_property=order default 'last'",
+    "how": "Order of the aside inside the mega-panel drawer."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Split text/image swap is covered by hero splitContentOrder or media order. The tablet/mobile 'aside above form' case on a non-media block (a container) has no order control (order exists only on sgs/media, sgs/hero, sgs/mega-panel), so that one occurrence is partial. Mamas has 0 real uses (the single regex hit is the JS string 'Ordering & delivery' in Help.dc.html)."
+ },
+ {
+  "property": "flex",
+  "draftUses": {
+   "indus": 22,
+   "mamas": 37
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:653",
+    "element": "mobile horizontal-story card <article> inside the scroll row",
+    "value": "flex:{{ R.hsFlex }} = 0 0 84% (mobile) / 0 0 56%",
+    "does": "Each card is a fixed 84% or 56% wide snap slide."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:308",
+    "element": "footer/social link anchor in a row",
+    "value": "flex:0 0 auto",
+    "does": "Keeps the icon link from shrinking."
+   },
+   {
+    "draft": "indus",
+    "file": "TradeApplication.dc.html:116",
+    "element": "the Next button in the form step bar (L.nextFlex)",
+    "value": "dynamic: 1 on mobile, 0 0 auto on desktop",
+    "does": "Full-width Next button on phones."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:46",
+    "element": "the account tab pill buttons in the horizontally scrolling tab nav",
+    "value": "flex:none",
+    "does": "Pills keep their size and the nav scrolls instead of squashing them."
+   },
+   {
+    "draft": "mamas",
+    "file": "Basket.dc.html:64",
+    "element": "gift tick-box checkbox",
+    "value": "flex:none",
+    "does": "Checkbox stays 24px square."
+   },
+   {
+    "draft": "mamas",
+    "file": "Checkout.dc.html:45",
+    "element": "spacer/price span in a flex row",
+    "value": "flex:1",
+    "does": "Takes the leftover space, pushing the next item to the end."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/child-sizing.php (extension childSizing: DB sgs/*.sgsChildSizing 'fit'|'fill'|'fixed' per device + sgsChildWidth)",
+    "how": "fill emits flex:1 1 0%;min-width:0 (= flex:1); fixed emits flex:0 0 auto;width:X (= flex:0 0 auto / 84%); fit emits flex:0 1 auto."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/container scrollItemWidth css_property=flex; plugins/sgs-blocks/includes/container-scroll-row-css.php: '>*{flex:0 0 <width>;min-width:0;scroll-snap-align:start}'",
+    "how": "Container 'Scroll sideways' with item width 84% / 56% reproduces the story slider slides exactly."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/testimonial-slider slidesVisible css_property=flex",
+    "how": "Slides-per-view on the slider."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/info-box/style.css (flex-shrink:0 L174,L211), icon-list/style.css L64, process-steps/style.css L78, button/style.css",
+    "how": "Icon/badge atoms already refuse to shrink, covering flex:none/0 0 auto on icons and checkboxes."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Every flex value in the drafts maps to childSizing (fill/fixed/fit) or the Scroll sideways item width. Blocks that are not in the childSizing allowlist (supports.sgs.enabledExtensions) cannot take it; check the target block lists childSizing."
+ },
+ {
+  "property": "flex-basis",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:59",
+    "element": "the preferred-contact radio chips row (L.prefBasis)",
+    "value": "dynamic, e.g. 100% / auto",
+    "does": "Lets each chip take a full row on narrow screens."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/child-sizing.php (fixed -> flex:0 0 auto;width:X;max-width:100%)",
+    "how": "Uses width, not flex-basis, deliberately; in a row parent the result is identical."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Single, dynamic use. Same end result as childSizing 'fixed'/'fill'."
+ },
+ {
+  "property": "flex-shrink",
+  "draftUses": {
+   "indus": 49,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:40",
+    "element": "round social badge links in the top bar (LinkedIn etc.)",
+    "value": "flex-shrink:0",
+    "does": "Keeps 34px circles round when the row is tight."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:185",
+    "element": "icon span before a menu label",
+    "value": "flex-shrink:0",
+    "does": "Icon never squeezes."
+   },
+   {
+    "draft": "indus",
+    "file": "TradeApplication.dc.html:34",
+    "element": "step-number circle in the stepper buttons",
+    "value": "flex-shrink:0",
+    "does": "Number badge keeps its size beside long labels."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/info-box/style.css (icon wrapper flex-shrink:0), icon-list/style.css L64, process-steps/style.css L78, product-card/style.css (5 rules), button/style.css (3 rules), star-rating/style.css (1)",
+    "how": "Icon, number-badge and button atoms already carry flex-shrink:0."
+   },
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/child-sizing.php (fixed: flex:0 0 auto)",
+    "how": "For any other flex child that must not shrink."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "49 of 49 are 'icon, badge or round chip must not squash'. sgs/icon, social-icons and nav-bar-menu style.css have no flex-shrink rule (grep count 0); those rely on their fixed width. Check a built social-icons row at 375px if it sits in a tight flex row."
+ },
+ {
+  "property": "grid-auto-columns",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 4
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:124",
+    "element": "the 'gifts' category tile rail: grid on desktop, one-row rail on mobile",
+    "value": "grid-auto-columns:{{ L.autoCols }}",
+    "does": "Each tile is a fixed-width column in the single scrolling row on mobile."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:215",
+    "element": "the customer reviews rail",
+    "value": "grid-auto-columns:{{ L.revW }}",
+    "does": "Each review card is a fixed-width snap slide."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:123",
+    "element": "the 'What people are saying' review rail",
+    "value": "grid-auto-columns:{{ L.autoCols }}",
+    "does": "Same rail."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:24",
+    "element": "the Instagram thumbnails strip",
+    "value": "grid-auto-columns:{{ autoCols }}",
+    "does": "Square thumbs in a scrolling strip on mobile."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/container-scroll-row-css.php + DB sgs/container scrollSideways (css_property=overflow) + scrollItemWidth (css_property=flex)",
+    "how": "Container 'Scroll sideways' per device turns the item row into a flex row with fixed-width snapping slides: the end result of grid-auto-flow:column + grid-auto-columns."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/post-grid/style.css L131-145, gallery/style.css L99-109, trustpilot-reviews/style.css L178-195",
+    "how": "Carousel blocks already ship a snap rail."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Different mechanism (flex row, not grid-auto-flow) and same look. Draft's desktop state uses grid-template-columns (container gridTemplateColumns), mobile uses the rail, which is exactly the per-device split Scroll sideways offers."
+ },
+ {
+  "property": "grid-auto-flow",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 4
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:124",
+    "element": "gifts tile rail",
+    "value": "grid-auto-flow:{{ L.flow }} (column on mobile, row on desktop)",
+    "does": "Turns the grid into a one-row horizontal rail on mobile."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:215",
+    "element": "reviews rail",
+    "value": "grid-auto-flow:column",
+    "does": "Always a horizontal rail."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:123",
+    "element": "reviews rail",
+    "value": "grid-auto-flow:{{ L.flow }}",
+    "does": "Rail on mobile."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:24",
+    "element": "Instagram strip",
+    "value": "grid-auto-flow:{{ flow }}",
+    "does": "Rail on mobile."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "Same as grid-auto-columns: DB sgs/container scrollSideways + scrollItemWidth; includes/container-scroll-row-css.php",
+    "how": "Per-device sideways scroll row."
+   }
+  ],
+  "verdict": "setting",
+  "note": "See grid-auto-columns."
+ },
+ {
+  "property": "grid-column",
+  "draftUses": {
+   "indus": 5,
+   "mamas": 1
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:50",
+    "element": "the Message textarea cell (and long fields) in the 2-column enquiry form",
+    "value": "grid-column:1 / -1",
+    "does": "Field spans both columns."
+   },
+   {
+    "draft": "indus",
+    "file": "TradeApplication.dc.html:48",
+    "element": "each trade-application field cell (f.span)",
+    "value": "1 / -1 for full-width fields, auto otherwise",
+    "does": "Half- or full-width form fields."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:975",
+    "element": "footer brand column on tablet (R.footBrandSpan)",
+    "value": "1 / -1 at tablet, auto otherwise",
+    "does": "Brand block spans the whole row above the link columns on tablet."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:960",
+    "element": "footer opening-hours column on tablet",
+    "value": "1 / -1 at tablet",
+    "does": "Hours block spans full row on tablet."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:62",
+    "element": "footer 'say hello' contact cell (helloSpan)",
+    "value": "1 / -1 on mobile, auto on larger",
+    "does": "Contact cell spans full width on mobile."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/src/blocks/form/style.css (.sgs-form-field--full {grid-column:1 / -1}; --half {span 3}; --third {span 2}); DB sgs/form-field-* width default 'full'",
+    "how": "Set each field's Width (full/half/third); the form's 6-track grid reproduces spans. Covers all 3 form occurrences."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Form fields: setting. Footer cells that span the full row at one breakpoint (3 occurrences): no per-child grid-column control exists (DB css_property='grid-column' zero rows; only block-private rules in card-grid, choice-flow, form). Workaround today is to restructure (a separate full-width container row above the columns), which gives the same look, so a control is optional; if wanted, it would be a per-device 'span all columns' toggle in the childSizing extension."
+ },
+ {
+  "property": "grid-template-rows",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:193",
+    "element": "mobile-drawer accordion panel wrapper (item.accRows)",
+    "value": "grid-template-rows:0fr -> 1fr with transition .55s",
+    "does": "Smooth height open/close of a drawer submenu using the 0fr/1fr trick."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css L670-695 (.sgs-nav-drawer-menu--acc-height ::details-content block-size 0 -> auto, with overflow clip released after)",
+    "how": "Drawer submenu accordion animates height natively, plus fade-lift variants; pick the height style in the block."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/accordion/style.css L281-310 (::details-content interpolate-size) + view.js height fallback",
+    "how": "Accordion open/close animation built in."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "The DB grid-template-rows rows (16 blocks incl. container) are a track layout control, not the 0fr/1fr animation trick, but the draft only uses the trick, and the end result (smooth height reveal) is built in to nav-drawer-menu and accordion."
+ },
+ {
+  "property": "position",
+  "draftUses": {
+   "indus": 147,
+   "mamas": 77
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:45",
+    "element": "the sticky site header <header>",
+    "value": "position:sticky;top:0;z-index:200",
+    "does": "Header stays at the top while scrolling."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:44",
+    "element": "3px reading-progress bar at the top of the viewport",
+    "value": "position:fixed;left:0;top:0;width:100%;height:3px;transform:scaleX(0)->1;z-index:400;pointer-events:none",
+    "does": "Gradient bar grows as the page is scrolled."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:165",
+    "element": "mobile menu drawer (role=dialog) and its backdrop (L162, inset:0)",
+    "value": "position:fixed;top:0;right:0;bottom:0 / inset:0",
+    "does": "Right-hand slide-in menu with a dimmed page behind."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:1010",
+    "element": "WhatsApp floating button",
+    "value": "position:fixed;right:22px;bottom:22px;z-index:140",
+    "does": "Round-pill chat button stuck to the bottom right."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:626",
+    "element": "desktop pinned horizontal 'story' section",
+    "value": "position:sticky;top:84px;height:calc(100vh - 84px) inside a tall wrapper",
+    "does": "Section pins while the card strip slides sideways with scroll."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:567,829,852,926",
+    "element": "right-hand summary/aside columns (R.sticky = sticky on desktop, static otherwise)",
+    "value": "position:sticky;top:120px",
+    "does": "Aside follows the reader beside long content on desktop."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:146",
+    "element": "mobile add-to-basket bar",
+    "value": "position:fixed;left:0;right:0;bottom:0;z-index:40 with slide transform",
+    "does": "Price + Add button bar fixed to the bottom of the phone screen."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:18 (same in every page)",
+    "element": "the site header import (dc-import SiteHeader)",
+    "value": "position:sticky;top:-32px;z-index:50",
+    "does": "The 32px top strip scrolls away while the main bar sticks."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:68,116",
+    "element": "left menu drawer and right basket drawer",
+    "value": "position:fixed;top:0;left/right:0;bottom:0;z-index:91/92",
+    "does": "Side drawers over a dimmed scrim (z-index:90)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/src/blocks/site-header/render.php (headerSticky tier object, emits position:sticky); DB sgs/site-header headerSticky, zIndex, headerHideOnScroll, headerFloat",
+    "how": "Turn Sticky on per device for the header; the top:-32px 'strip scrolls away' look = a top row with site-header-row rowHideOnScroll."
+   },
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/container-pin-edge-css.php (sgs/container pinEdge, DB css_property=position): emits position:sticky;top|bottom:0;z-index:2 plus safe-area padding",
+    "how": "Pin a container to the top or bottom edge per device. Offset is fixed at 0 (no 120px/84px offset)."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/buybox stickyEnabled / stickyOffset (src/blocks/buybox/block.json)",
+    "how": "A sticky column with a live offset below the sticky header, buybox only."
+   },
+   {
+    "kind": "motion",
+    "where": "DB motion_fields effects pin-scrub, horizontal-panel, scroll-progress (ScrollProgressValues output/source); plugins/sgs-blocks/includes/container-scroll-row-css.php doc names assets/css/fx-horizontal-panel.css",
+    "how": "Desktop pinned sideways story = Horizontal scroll section effect (phones fall back to the snap row); the reading-progress bar = scroll-progress effect."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css L21-44 (position:fixed;inset:0; native dialog top layer) + includes/helpers-scrim.php L162 (position:fixed;inset:0 scrim); src/blocks/whatsapp-cta/style.css L106-110 (.sgs-whatsapp-cta--floating fixed, bottom:24px right:24px)",
+    "how": "Drawer, scrim and floating WhatsApp button are built in; offsets 24px vs the draft's 22px."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/container/style.css L57-60 (.sgs-container{position:relative}), L92 .sgs-container__overlay, L173 video-bg, L227 image-bg (position:absolute;inset:0); hero/style.css L100-108 .sgs-hero__bg-img",
+    "how": "Relative hosts and full-bleed background/overlay layers are defaults."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/decorative-image positionX/positionY (css_property left/top, percentages), zIndex, overflow; style.css .sgs-decorative-image{position:absolute;pointer-events:none}",
+    "how": "Free-floating ornaments placed by left/top %."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Per occurrence group: sticky header = setting; pinned story = motion; progress bar = motion; drawer, scrim, WhatsApp, relative hosts, overlays = block-default; sticky aside = partial (pinEdge pins at offset 0, so under a sticky header the aside would slide beneath it; the draft uses top:120px / 84px); mobile fixed add-to-basket bar = partial (pinEdge bottom is sticky inside its scroll ancestor, not fixed to the viewport, and the show-after-scroll slide has no setting); absolute badges/stickers on cards or photo captions = partial (only decorative-image positions by left/top %, no right/bottom anchoring). A real control would be: pinEdge 'offset' length per device (and a 'fixed to viewport' mode). Indus count includes 7 hits in image-slot.js (prototype placeholder)."
+ },
+ {
+  "property": "inset",
+  "draftUses": {
+   "indus": 24,
+   "mamas": 2
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:162",
+    "element": "dimmed backdrop behind the mobile drawer",
+    "value": "position:fixed;inset:0;z-index:150",
+    "does": "Full-screen click-to-close scrim."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:168",
+    "element": "gradient glare span inside the drawer / hero (several: L168,L323,L450,L521)",
+    "value": "position:absolute;inset:0;pointer-events:none",
+    "does": "Decorative gradient or SVG layer filling its parent."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:96",
+    "element": "hero cream circle behind the photo",
+    "value": "position:absolute;inset:0;background:radial-gradient(...)",
+    "does": "Soft spotlight fills the section."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:66",
+    "element": "scrim behind the mobile drawers",
+    "value": "position:fixed;inset:0;z-index:90",
+    "does": "Dims the page while a drawer is open."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/container/style.css L92 .sgs-container__overlay, L173 .sgs-container__video-bg, L227 .sgs-container__image-bg (position:absolute;inset:0); hero/style.css .sgs-hero__bg-img",
+    "how": "Full-bleed layers are the container's backgroundOverlayColour / image / video background settings."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/nav-drawer scrimColour, scrimColourGradient, scrimOpacity, scrimBlur; includes/helpers-scrim.php L162 (position:fixed;inset:0;opacity:0;pointer-events:none)",
+    "how": "Scrim colour/opacity/blur set in the drawer; the position is built in."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Both drafts use inset only for full-bleed overlays or scrims. Indus count includes 5 hits in image-slot.js comments/CSS (prototype image placeholder, plumbing)."
+ },
+ {
+  "property": "bottom",
+  "draftUses": {
+   "indus": 17,
+   "mamas": 14
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:166",
+    "element": "decorative rings inside the drawer (data-ring spans)",
+    "value": "position:absolute;right:-150px;bottom:90px",
+    "does": "Big faint ring partly off-canvas as decoration."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:63",
+    "element": "active-nav underline span under the current menu item",
+    "value": "position:absolute;left/right:{{ R.navPad }};bottom:3px;height:2px",
+    "does": "Yellow underline marker beneath the active item."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:1010",
+    "element": "WhatsApp floating button",
+    "value": "bottom:22px",
+    "does": "22px above the viewport bottom."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:25",
+    "element": "yellow highlight swash behind the word 'most' in the H1",
+    "value": "position:absolute;left:-4%;right:-4%;bottom:.02em;height:.2em;z-index:-1",
+    "does": "Marker-pen underline behind a word."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:37",
+    "element": "caption label across the bottom of the hero photo ('for a new mum')",
+    "value": "position:absolute;left:0;right:0;bottom:0",
+    "does": "Caption strip over the photo's bottom edge."
+   },
+   {
+    "draft": "mamas",
+    "file": "Gifts.dc.html:36",
+    "element": "'wrapped with love' ribbon at the photo bottom",
+    "value": "position:absolute;right:0;bottom:...",
+    "does": "Sticker overlay."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css L106-110: bottom:24px;right:24px",
+    "how": "Built-in floating button; 2px off the draft."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css (active indicator) and src/shared/effects/nav-indicator.js",
+    "how": "Active-item underline/pill indicator is a nav-bar-menu feature positioned by the block."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/decorative-image positionX/positionY (left/top %)",
+    "how": "Ornaments can be placed anywhere by percentage from the top-left; far-edge anchoring is not offered."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Anchors (nav underline, WhatsApp, drawer edges) are built in. Free-standing captions/stickers/highlight swashes on photos have no right/bottom control; decorative-image reaches the same spot by left/top %, and the marker swash behind a word is a missing inline-highlight feature (see isolation)."
+ },
+ {
+  "property": "right",
+  "draftUses": {
+   "indus": 20,
+   "mamas": 17
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:165",
+    "element": "mobile drawer panel",
+    "value": "position:fixed;top:0;right:0;bottom:0",
+    "does": "Slides in from the right edge."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:89",
+    "element": "mega-menu dropdown wrapper",
+    "value": "position:absolute;top:100%;left:0;right:0",
+    "does": "Panel spans the header width below it."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:32",
+    "element": "'selected' tick badge on topic chips",
+    "value": "position:absolute;top:14px;right:14px",
+    "does": "Corner tick on a chosen chip."
+   },
+   {
+    "draft": "mamas",
+    "file": "Checkout.dc.html:123",
+    "element": "quantity badge on the order-summary thumbnail",
+    "value": "position:absolute;top:-8px;right:-8px",
+    "does": "Round count bubble on the picture corner."
+   },
+   {
+    "draft": "mamas",
+    "file": "Gifts.dc.html:86",
+    "element": "round logo sticker on the gifts hero",
+    "value": "position:absolute;right:18px;...",
+    "does": "Sticker on the corner of the band."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:116",
+    "element": "basket drawer",
+    "value": "position:fixed;top:0;right:0;bottom:0",
+    "does": "Slides in from the right."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css L21-22 (fixed;inset:0) and includes/nav-menu-submenu-css.php L242 (.__mega-panel-wrap position:absolute;top;left;right)",
+    "how": "Drawers and mega panels are positioned by the block."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css L106-110",
+    "how": "Floating button at right:24px."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/decorative-image positionX (css_property=left)",
+    "how": "Only left/top supported for ornaments."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Drawers, mega panels and floating button: block-default. Corner badges (tick, quantity bubble) and stickers anchored by right/top offsets: no generic SGS control (product-card owns its own tag; a quantity bubble on a thumbnail belongs to the cart line). A generic control would be an 'anchor corner + offset' on an overlay child."
+ },
+ {
+  "property": "z-index",
+  "draftUses": {
+   "indus": 24,
+   "mamas": 15
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:45",
+    "element": "sticky header",
+    "value": "z-index:200",
+    "does": "Header above page content."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:165",
+    "element": "mobile drawer (300) over backdrop (150) over WhatsApp (140)",
+    "value": "z-index:300 / 150 / 140",
+    "does": "Drawer covers the header, backdrop dims everything below it."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:44",
+    "element": "scroll-progress bar",
+    "value": "z-index:400",
+    "does": "Bar above everything including the drawer."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:277",
+    "element": "main wrapper and card content layers",
+    "value": "z-index:1 / 2 / 0",
+    "does": "Local stacking so content sits above decorative layers."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:18 (all pages)",
+    "element": "sticky site header",
+    "value": "z-index:50",
+    "does": "Header over content."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:66-116",
+    "element": "scrim 90, left drawer 91, basket drawer 92",
+    "value": "z-index:90/91/92",
+    "does": "Drawers above scrim above header."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:25",
+    "element": "highlight swash behind a headline word",
+    "value": "z-index:-1",
+    "does": "Swash sits behind the text."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "DB: sgs/site-header zIndex (tier object, default 100); includes/sgs-header-z-index.php publishes --sgs-header-z",
+    "how": "Set header z-index per device."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/decorative-image zIndex css_property=z-index default 1; sgs/nav-bar-menu triggerDetachZIndex default 110",
+    "how": "Ornament and detached trigger layers."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css L44 z-index:min(90,max(2,header-z -1)); modal drawers use the browser top layer (ignores z-index); whatsapp-cta uses var(--wp--custom--z-index--floating,200); container media layers -1/0/1 (includes/class-sgs-container-wrapper.php ~L1347-1353); pin-edge z-index:2",
+    "how": "Stacking scale for drawer, floating button, content layers is built in."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Header/ornament z-index = setting; content layering and floating button = block-default. One real difference: SGS deliberately keeps a non-modal drawer BELOW the header (nav-drawer/style.css L34-44) whereas both drafts put the drawer ABOVE the header (300 vs 200; 91/92 vs 50). With the default modal dialog the drawer is in the top layer so it still covers the header; only the non-modal path differs and it is visible (header stays on top of the drawer). The Indus progress bar at 400 is the scroll-progress effect's own layer."
+ },
+ {
+  "property": "height",
+  "draftUses": {
+   "indus": 136,
+   "mamas": 228
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:34",
+    "element": "top utility bar inner row",
+    "value": "height:46px",
+    "does": "Fixed-height strip."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:47",
+    "element": "main header bar (R.headH) and logo (R.logoH: height with aspect-ratio)",
+    "value": "height:{{ R.headH }}; logo height:{{ R.logoH }}",
+    "does": "Fixed header height and logo height."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:45",
+    "element": "text inputs of the enquiry form",
+    "value": "height:62px",
+    "does": "Tall floating-label fields."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:44",
+    "element": "reading-progress bar",
+    "value": "height:3px",
+    "does": "Thin bar."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:185",
+    "element": "text input / buttons (54px inputs, 56-60px buttons)",
+    "value": "height:54px / 56px / 60px",
+    "does": "Chunky tap targets."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:61",
+    "element": "rounded thumbnail and icon boxes (width = height 48/52/64/72px)",
+    "value": "height:48px etc.",
+    "does": "Square image or icon tiles."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "DB: sgs/site-header minHeight (min-height); sgs/responsive-logo maxHeight / maxWidth; sgs/nav-bar-menu burgerSize (height), burgerIconHeight, burgerBarThickness (height), itemMinHeight",
+    "how": "Header bar height, logo height and burger geometry."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/form fieldMinHeight, fieldTextareaMinHeight, submitMinHeight (min-height, elements input/textarea/submit); sgs/button minHeight",
+    "how": "Input and button heights (min-height gives the same look at the draft's content size)."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/media height + heightUnit, maxHeight; sgs/product-card imageHeight; sgs/hero splitMediaHeight; sgs/before-after height; extension sgsHeightDesktop/Tablet/Mobile (imageControls in extension-roster.json)",
+    "how": "Image frames and thumbnails."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/icon iconSize + shapeSize (width, square); sgs/social-icons childIconSize/childIconShapeSize; sgs/whatsapp-cta iconSize/minHeight",
+    "how": "Square icon tiles."
+   },
+   {
+    "kind": "motion",
+    "where": "DB motion_fields ScrollProgressValues",
+    "how": "Progress-bar thickness belongs to the effect."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Fixed heights in the drafts are almost all controls and icon tiles; SGS offers a min-height (or height / size) setting per block family. Min-height renders identically unless content is taller than the draft's. Blocks without any height control (sgs/text, sgs/heading, sgs/label) take it through the container they sit in."
+ },
+ {
+  "property": "min-width",
+  "draftUses": {
+   "indus": 57,
+   "mamas": 73
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:35",
+    "element": "flex children in the top bar and menu rows",
+    "value": "min-width:0 (53 of 57)",
+    "does": "Lets text children ellipsize/shrink instead of overflowing the row."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:329",
+    "element": "hero call-to-action button (inline-flex)",
+    "value": "min-width:160px",
+    "does": "Button never narrower than 160px."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:628",
+    "element": "slide counter '01 / 05' in the pinned story",
+    "value": "min-width:64px",
+    "does": "Counter box stays stable as digits change."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:51",
+    "element": "tab/content column in the account grid",
+    "value": "min-width:0 (65 of 73)",
+    "does": "Grid/flex child can shrink."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:46",
+    "element": "count badge in the tab pill",
+    "value": "min-width:24px (also 22px, 20px)",
+    "does": "Round bubble keeps a minimum width for one digit."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php L2685 ':where(grid>*){min-width:0;min-height:0}' and includes/child-sizing.php ('fill' = flex:1 1 0%;min-width:0); container-scroll-row-css.php '>*{min-width:0}'",
+    "how": "Container grid children and 'fill'/rail children already carry min-width:0."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/brand-strip brandTextMinWidth (min-width); sgs/buybox stackBelow (min-width media query)",
+    "how": "Only two min-width controls exist."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/button customWidth + widthType",
+    "how": "A fixed button width reproduces min-width:160px for a single button."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "min-width:0 (118 of 130) is flexbox plumbing built into the wrapper and child-sizing. The ~12 value uses (160px button, 64px counter, 20-24px badges) are partial: no generic min-width control; sgs/button customWidth sets width not min-width. Visible effect is negligible except a button narrower than 160px."
+ },
+ {
+  "property": "box-sizing",
+  "draftUses": {
+   "indus": 10,
+   "mamas": 11
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:45",
+    "element": "enquiry text input",
+    "value": "box-sizing:border-box",
+    "does": "Padding/border inside the 62px height."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:629",
+    "element": "centred max-width wrapper with side padding",
+    "value": "box-sizing:border-box",
+    "does": "Width includes the padding."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:15",
+    "element": "per-page reset style block: *{box-sizing:border-box}",
+    "value": "*{box-sizing:border-box}",
+    "does": "Global reset for every element."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "theme",
+    "where": "theme/sgs-theme/assets/css/core-blocks-critical.css L17-25: *,*::before,*::after{box-sizing:border-box}",
+    "how": "Applies to all pages and blocks."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/container/style.css L57-60 (.sgs-container{box-sizing:border-box})",
+    "how": "Container also sets it itself."
+   }
+  ],
+  "verdict": "theme",
+  "note": "Already global. No setting needed."
+ },
+ {
+  "property": "overflow",
+  "draftUses": {
+   "indus": 58,
+   "mamas": 25
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:165",
+    "element": "mobile drawer panel",
+    "value": "overflow:hidden",
+    "does": "Clips the decorative rings to the drawer."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:443",
+    "element": "page hero section",
+    "value": "overflow:hidden",
+    "does": "Clips decorative shapes at the hero edge."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:558",
+    "element": "rounded split-section image frame (border-radius 22px, white 5px border)",
+    "value": "overflow:hidden",
+    "does": "Crops the photo to the rounded frame."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:653",
+    "element": "rounded card in the story slider",
+    "value": "overflow:hidden",
+    "does": "Clips content to the card's 24px corners."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:63",
+    "element": "rounded 28px promo card link with 2px border",
+    "value": "overflow:hidden",
+    "does": "Clips picture/content to rounded corners."
+   },
+   {
+    "draft": "mamas",
+    "file": "Basket.dc.html:41",
+    "element": "free-delivery progress bar track (14px, rounded)",
+    "value": "overflow:hidden",
+    "does": "Rounded track clips the fill."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:21",
+    "element": "hero and footer sections",
+    "value": "overflow:hidden",
+    "does": "Stops decorative shapes bleeding out sideways."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/hero/style.css L10 (overflow:hidden); card-grid/style.css L15,L59; product-card/style.css L42,L91,L827; media/style.css L107 (.sgs-video); includes/nav-drawer-chrome-extras-css.php; container/style.css L164 (shape-divider variant)",
+    "how": "Hero, card grid, product card, video box already clip."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/decorative-image overflow css_property=overflow default 'visible'; sgs/container scrollSideways (css_property=overflow)",
+    "how": "Ornament clip toggle; sideways-scroll rows set overflow-x:auto."
+   },
+   {
+    "kind": "motion",
+    "where": "DB motion_fields MarqueeValues edgeFade; ScrollProgressValues",
+    "how": "Marquee mask and progress track are the effects' own."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Hero/card/product/video: block-default. A plain sgs/container (e.g. a rounded, bordered card or promo tile that must clip its picture) has NO overflow or clip control: DB css_property='overflow' exists only on decorative-image and container scrollSideways, and includes/class-sgs-container-wrapper.php emits overflow only for scroll rows and media composites. Practical workaround today is the sgsCustomCss extension (src/blocks/extensions/custom-css.js). A real control would be an 'Overflow: visible | hidden | clip' selector on sgs/container (per device)."
+ },
+ {
+  "property": "overflow-x",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 18
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:30",
+    "element": "outermost page wrapper",
+    "value": "overflow-x:clip",
+    "does": "Blocks sideways page scroll caused by the full-bleed pinned section (width:100vw) and decorative offsets."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:651",
+    "element": "mobile story rail",
+    "value": "overflow-x:auto",
+    "does": "Native swipe row."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:15 (all 10 pages, body rule)",
+    "element": "body in each page's style block",
+    "value": "overflow-x:hidden",
+    "does": "Page never scrolls sideways."
+   },
+   {
+    "draft": "mamas",
+    "file": "Help.dc.html:29",
+    "element": "topic chip row",
+    "value": "overflow-x:auto",
+    "does": "Chips scroll sideways on a phone."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:124 / Product.dc.html:123 / SiteFooter.dc.html:24",
+    "element": "gift tile, review and Instagram rails",
+    "value": "overflow-x:{{ L.ovx }} = auto on mobile, hidden/visible on desktop",
+    "does": "Rail scrolls only on mobile."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/container-scroll-row-css.php (overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory) via DB sgs/container scrollSideways",
+    "how": "Per-device rail covers every auto row."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php L2400 ':has(.sgs-media-box){overflow-x:clip;overflow-y:visible}'; hero/style.css L303",
+    "how": "Split-media composites clip sideways overflow themselves."
+   },
+   {
+    "kind": "theme",
+    "where": "not found: theme/sgs-theme has no html/body overflow-x rule (grep 'overflow-x' finds only assets/css/woocommerce.css L186,227,255,310,2549)",
+    "how": "No page-level guard."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Rails are covered. The page-level guard (Indus wrapper clip, Mamas body hidden) is not supplied by SGS as a global rule: blocks contain their own bleed. If a cloned page scrolls sideways, the missing piece is a theme-level html{overflow-x:clip} (theme CSS, not a block setting)."
+ },
+ {
+  "property": "overflow-y",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 2
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:180",
+    "element": "scroll region of the mobile menu drawer (data-drawer-scroll)",
+    "value": "overflow-y:auto;min-height:0;flex:1",
+    "does": "Menu list scrolls inside the fixed drawer."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:68",
+    "element": "left menu drawer panel",
+    "value": "overflow-y:auto",
+    "does": "Drawer scrolls if the list is long."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:116",
+    "element": "basket drawer body",
+    "value": "overflow-y:auto",
+    "does": "Basket lines scroll inside the drawer."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css L31-33 (overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch); includes/nav-drawer-chrome-extras-css.php L44 body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}",
+    "how": "Drawer body scrolls by default."
+   }
+  ],
+  "verdict": "block-default",
+  "note": ""
+ },
+ {
+  "property": "overflow-clip-margin",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "not found: no draft uses it (searched all .dc.html, image-slot.js, indus-logo.js)",
+    "how": "Nothing to match."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "Zero occurrences in either draft; searched with the pattern 'overflow-clip-margin *:' across both handoff folders."
+ },
+ {
+  "property": "overscroll-behavior",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:180",
+    "element": "mobile drawer scroll region",
+    "value": "overscroll-behavior:contain",
+    "does": "Scrolling to the end of the menu does not scroll the page behind."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css L32; includes/nav-drawer-chrome-extras-css.php L44; includes/nav-menu-submenu-css.php L187; includes/container-scroll-row-css.php (overscroll-behavior-x:contain); theme assets/css/woocommerce.css L850,L2905",
+    "how": "Already applied to drawers, mega panels and rails."
+   }
+  ],
+  "verdict": "block-default",
+  "note": ""
+ },
+ {
+  "property": "-webkit-overflow-scrolling",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:651",
+    "element": "mobile story rail",
+    "value": "-webkit-overflow-scrolling:touch",
+    "does": "Legacy iOS momentum scrolling."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/includes/container-scroll-row-css.php (emits -webkit-overflow-scrolling:touch); src/blocks/nav-drawer/style.css L33",
+    "how": "Emitted by the sideways row and drawer."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Legacy iOS-only hint; modern iOS ignores it, so it has no visible effect either way."
+ },
+ {
+  "property": "scroll-behavior",
+  "draftUses": {
+   "indus": 3,
+   "mamas": 2
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:15 (also Indus Foods Website v2.dc.html:26, TradeApplication.dc.html:16)",
+    "element": "reduced-motion media block in each file's style block",
+    "value": "scroll-behavior:auto !important",
+    "does": "Disables smooth scroll for people who ask for less motion."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:124",
+    "element": "gifts tile rail",
+    "value": "scroll-behavior:smooth",
+    "does": "Arrow/drag scrolling glides."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:215",
+    "element": "reviews rail",
+    "value": "scroll-behavior:smooth",
+    "does": "Same."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "theme",
+    "where": "theme/sgs-theme/assets/css/core-blocks-critical.css L70-83: html{scroll-behavior:smooth} and the prefers-reduced-motion block sets scroll-behavior:auto !important",
+    "how": "Both Indus lines are already global; smooth page scrolling is on by default."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/post-grid/style.css L132, trustpilot-reviews/style.css L179 (+ L447 reduced-motion reset), timeline/style.scss L1699",
+    "how": "Carousel blocks set smooth on their own track."
+   }
+  ],
+  "verdict": "theme",
+  "note": "The Mamas rails would not get scroll-behavior:smooth from Container Scroll sideways (container-scroll-row-css.php does not emit it); this only affects programmatic scrolling (drag-to-scroll uses fx:draggable, which deliberately avoids smooth per src/shared/effects/gsap/fx-draggable.js header comment), so it is invisible to a swipe. partial for that one detail."
+ },
+ {
+  "property": "scroll-margin-top",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 10
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Gifts.dc.html:46",
+    "element": "the #results section anchor target",
+    "value": "scroll-margin-top:72px",
+    "does": "Anchor jump lands below the sticky header."
+   },
+   {
+    "draft": "mamas",
+    "file": "Help.dc.html:47",
+    "element": "the #delivery section",
+    "value": "scroll-margin-top:80px",
+    "does": "Same."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:55",
+    "element": "the #subscribe block",
+    "value": "scroll-margin-top:100px",
+    "does": "Same."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "theme",
+    "where": "theme/sgs-theme/assets/css/utilities.css L41-53: html{scroll-padding-top:var(--sgs-header-height)} (+ admin bar variants); core-blocks-critical.css L83 scroll-padding-top:5rem fallback; plugins/sgs-blocks/src/header-behaviours/view.js publishes --sgs-header-height",
+    "how": "Anchor targets already land below the sticky header by the live header height."
+   },
+   {
+    "kind": "setting",
+    "where": "DB: sgs/table-of-contents scrollOffset",
+    "how": "Per-block offset for TOC links."
+   }
+  ],
+  "verdict": "theme",
+  "note": "Different property, same end result (scroll-padding on the root instead of scroll-margin on each target), and it tracks the real header height instead of 72/80/100px magic numbers."
+ },
+ {
+  "property": "scroll-padding",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 2
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:124",
+    "element": "gifts tile rail",
+    "value": "scroll-padding:0 20px",
+    "does": "Snap stops line up with the 20px side gutter."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:215",
+    "element": "reviews rail",
+    "value": "scroll-padding:0 20px",
+    "does": "Same."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/container-scroll-row-css.php L51,L93 (the band's own side padding becomes scroll-padding-inline on the row)",
+    "how": "Set the container's padding; snap offset follows automatically."
+   }
+  ],
+  "verdict": "setting",
+  "note": ""
+ },
+ {
+  "property": "scroll-padding-inline",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:651",
+    "element": "mobile story rail",
+    "value": "scroll-padding-inline:{{ R.px }} (20px)",
+    "does": "Snap start offset matches the side padding."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/container-scroll-row-css.php L51-93 (scroll-padding-inline derived from padding)",
+    "how": "Automatic with Scroll sideways."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/buybox/style.css L810 scroll-padding-inline:var(--sgs-buybox-thumb-gutter)",
+    "how": "Thumbnail strip."
+   }
+  ],
+  "verdict": "setting",
+  "note": ""
+ },
+ {
+  "property": "scroll-snap-align",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 4
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:653",
+    "element": "each card in the mobile story rail",
+    "value": "scroll-snap-align:start",
+    "does": "Cards snap to the left edge."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:126",
+    "element": "each gift tile",
+    "value": "scroll-snap-align:start",
+    "does": "Snap to tile."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:217",
+    "element": "each review card",
+    "value": "scroll-snap-align:start",
+    "does": "Snap to card."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:26",
+    "element": "each Instagram thumbnail",
+    "value": "scroll-snap-align:start",
+    "does": "Snap to thumb."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/container-scroll-row-css.php: '>*{flex:0 0 W;min-width:0;scroll-snap-align:start}'",
+    "how": "Automatic with Scroll sideways."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/post-grid/style.css L145, gallery/style.css L109, trustpilot-reviews/style.css L195",
+    "how": "Carousel blocks."
+   }
+  ],
+  "verdict": "setting",
+  "note": ""
+ },
+ {
+  "property": "scroll-snap-type",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 4
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:651",
+    "element": "mobile story rail",
+    "value": "scroll-snap-type:x mandatory",
+    "does": "Swipe lands exactly on a card."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:124",
+    "element": "gift tile rail",
+    "value": "scroll-snap-type:x mandatory",
+    "does": "Same."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:215",
+    "element": "reviews rail",
+    "value": "scroll-snap-type:x mandatory",
+    "does": "Same."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:123 / SiteFooter.dc.html:24",
+    "element": "review rail and Instagram strip",
+    "value": "scroll-snap-type:x mandatory",
+    "does": "Same."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/container-scroll-row-css.php: row{...scroll-snap-type:x mandatory;...}",
+    "how": "Automatic with Scroll sideways."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/post-grid/style.css L131, gallery/style.css L99, trustpilot-reviews/style.css L178",
+    "how": "Carousel blocks."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Always x mandatory in both drafts, which is exactly what the row emits."
+ },
+ {
+  "property": "isolation",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 1
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:25",
+    "element": "the hero h1 that holds the word 'most' with a yellow swash behind it",
+    "value": "isolation:isolate",
+    "does": "Makes the h1 its own stacking context so the swash's z-index:-1 stays behind the word but above the section background."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/includes/helpers-tokens.php L854-894 (position:relative;isolation:isolate for border rings), includes/nav-menu-css.php L541, src/blocks/pricing-table/style.css L88, src/blocks/button/render.php L1005",
+    "how": "SGS applies isolation itself where a negative-z layer needs containing; it is never a user setting."
+   },
+   {
+    "kind": "block-default",
+    "where": "not found: no inline word-highlight in sgs/heading (DB: only linkUnderline/linkUnderlineThickness text-decoration; grep registerFormatType in plugins/sgs-blocks/src returns no files)",
+    "how": "The swash itself has no SGS equivalent."
+   }
+  ],
+  "verdict": "missing",
+  "note": "isolation is only plumbing for the swash. The real gap is a marker-pen highlight behind a chosen word in a heading: SGS has no rich-text format or heading setting for it. A real control: an inline 'Highlight' format (colour, thickness, offset, rotation) on sgs/heading and sgs/text that emits the swash span and its own isolation. One occurrence, Mamas Home only."
+ },
+ {
+  "property": "resize",
+  "draftUses": {
+   "indus": 3,
+   "mamas": 6
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:51",
+    "element": "'How can we help?' message textarea",
+    "value": "resize:vertical",
+    "does": "User can drag the textarea taller only."
+   },
+   {
+    "draft": "indus",
+    "file": "TradeApplication.dc.html (textarea field)",
+    "element": "trade application free-text textarea",
+    "value": "resize:vertical",
+    "does": "Same."
+   },
+   {
+    "draft": "mamas",
+    "file": "Contact.dc.html:67",
+    "element": "message textarea",
+    "value": "resize:vertical",
+    "does": "Same."
+   },
+   {
+    "draft": "mamas",
+    "file": "Basket.dc.html:68",
+    "element": "gift message textarea",
+    "value": "resize:vertical",
+    "does": "Same."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/form/style.css L363-367: textarea.sgs-form-field__input{resize:vertical;min-height:100px}",
+    "how": "Every sgs/form textarea."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Textareas outside sgs/form (e.g. the Basket gift note) would sit in a cart/checkout block that owns its own field CSS; not verified there."
+ },
+ {
+  "property": "touch-action",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "image-slot.js:300,310",
+    "element": "the image-slot placeholder frame and its drag handle (prototype image-reframe tool)",
+    "value": "touch-action:none",
+    "does": "Lets the designer drag to reposition a photo inside the draft; part of the design tool, not the site."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/before-after/style.css L43 touch-action:pan-y; testimonial-slider/style.css L76; brand-strip/style.css L61 (manipulation); physics-canvas/style.css L27; src/shared/effects/gsap/fx-draggable.js header (never writes touch-action)",
+    "how": "SGS sets touch-action only where a block has its own gesture."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "Appears only in image-slot.js, the prototype's drag-to-reframe component, which a WordPress build replaces with real media blocks. Zero uses in any .dc.html."
+ },
+ {
+  "property": "pointer-events",
+  "draftUses": {
+   "indus": 37,
+   "mamas": 1
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:168,521,750,830",
+    "element": "decorative gradient/ring spans over cards and the drawer",
+    "value": "pointer-events:none",
+    "does": "Overlay never swallows clicks."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:46",
+    "element": "floating label positioned over the input",
+    "value": "pointer-events:none",
+    "does": "Clicks fall through to the input."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:162",
+    "element": "drawer backdrop (backdropPE)",
+    "value": "pointer-events:{{ backdropPE }} (none when closed, auto when open)",
+    "does": "Invisible scrim does not block the page when closed."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:698",
+    "element": "card content layer (--cpe)",
+    "value": "pointer-events:var(--cpe,auto)",
+    "does": "Draft's hover-reveal plumbing."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:44",
+    "element": "scroll-progress bar",
+    "value": "pointer-events:none",
+    "does": "Bar never intercepts clicks."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:66",
+    "element": "drawer scrim (scrimPe)",
+    "value": "pointer-events:{{ scrimPe }}",
+    "does": "Same open/closed switching."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/container/style.css L92,L173,L227,L241,L264 (overlay, video, image, svg backgrounds); hero/style.css L108,L119,L135; decorative-image/style.css L10; nav-bar-menu/style.css L69,L544; form/style.css L1204 (floating label)",
+    "how": "Every overlay and decorative layer is pointer-events:none by default."
+   },
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/helpers-scrim.php L162 (opacity:0;pointer-events:none until open) driven by DB sgs/nav-drawer scrimColour/scrimOpacity/scrimBlur",
+    "how": "Scrim open/closed switching built in."
+   },
+   {
+    "kind": "motion",
+    "where": "DB motion_fields ScrollProgressValues",
+    "how": "Progress bar layer is the effect's."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "The draft uses it only to make overlays and floating labels click-through; SGS does the same by default. Indus count includes 1 hit in image-slot.js comments."
+ },
+ {
+  "property": "will-change",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:632",
+    "element": "the sliding card strip of the pinned story (data-pin-track)",
+    "value": "will-change:transform",
+    "does": "Hints the browser to composite the strip that scrolls horizontally."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "DB motion_fields effects horizontal-panel / pin-scrub (GSAP owns the transform)",
+    "how": "The Horizontal scroll section effect creates and manages its own track."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/decorative-image/style.css L12 (will-change:transform, reset to auto in reduced motion L46); site-header/render.php L535; testimonial-slider/style.css L108; physics-canvas/style.css L30",
+    "how": "Blocks add it where they animate."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "Performance hint with no visible effect; the motion model sets it where needed."
+ },
+ {
+  "property": "font",
+  "draftUses": {
+   "indus": 6,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "image-slot.js",
+    "element": "empty-state label text inside the <image-slot> editing widget",
+    "value": "13px/1.3 system-ui,... (lines 292,363,385,421)",
+    "does": "Sizes editor chrome text of the drop-an-image placeholder."
+   },
+   {
+    "draft": "indus",
+    "file": "support.js",
+    "element": "dc runtime diagnostics overlay text",
+    "value": "11px/1.4 ui-monospace,monospace (lines 103,115)",
+    "does": "Styles the prototype runtime's own overlay."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "theme",
+    "where": "none needed",
+    "how": "image-slot.js line 1 says 'omelette starter scaffold'; support.js is the dc runtime. A WordPress site renders real <img> and has no dc runtime."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "All 6 uses are in prototype scaffolding scripts; none in page markup. Pages use font-family/size/weight longhands instead."
+ },
+ {
+  "property": "font-smooth (-webkit-font-smoothing)",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 11
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:30",
+    "element": "page root wrapper div",
+    "value": "-webkit-font-smoothing:antialiased",
+    "does": "Thinner, crisper glyph rendering on macOS/iOS for the whole page."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:15 (same rule in 11 page files)",
+    "element": "<style> body rule",
+    "value": "body{...-webkit-font-smoothing:antialiased...}",
+    "does": "Same global antialiasing, repeated once per page file."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "theme",
+    "where": "searched theme/sgs-theme (theme.json, style.css, assets/css, inc) and plugins/sgs-blocks src, includes, schemas for 'font-smoothing'",
+    "how": "Only hit is theme/sgs-theme/styles/mamas-munches.css:17 `html { -webkit-font-smoothing: antialiased }`, which is gitignored (.gitignore:126 theme/sgs-theme/styles/*.css), so it is not a framework rule."
+   }
+  ],
+  "verdict": "missing",
+  "note": "Nothing tracked sets it. It is one global rule, not a per-block setting; effect is macOS/iOS only. A real answer is a default `body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale }` in theme/sgs-theme/assets/css (or a single theme toggle)."
+ },
+ {
+  "property": "font-variant-numeric",
+  "draftUses": {
+   "indus": 5,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:97",
+    "element": "numbered link list in the desktop mega-panel ('01','02' before each link)",
+    "value": "tabular-nums",
+    "does": "Keeps digits equal width so the number column lines up."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:53",
+    "element": "live character counter bottom-right of the message textarea (maxLength 800)",
+    "value": "tabular-nums",
+    "does": "Stops the counter jittering as digits change."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm / TradeApplication / main (5 total)",
+    "element": "other counters and step numbers",
+    "value": "tabular-nums",
+    "does": "Same alignment purpose."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__ornament",
+    "how": "font-variant-numeric: tabular-nums on the drawer's numbered ornament. Also countdown-timer, audio, local-time, diagram-dimension, google-rating-badge, media style.css."
+   },
+   {
+    "kind": "theme",
+    "where": "theme/sgs-theme/assets/css/utilities.css::.sgs-u-meta-label",
+    "how": "tabular-nums on the meta-label utility."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Drawer ornament numbers are covered. Not found: any numbering in sgs/mega-panel, mega-group or nav-bar-menu (grep 'counter|ornament|numer' in their style.css = 0 hits) and no character counter on sgs/form-field-textarea or sgs/form (grep maxlength|counter = 0 hits). The gap is the mega-panel link numbering and a textarea character-counter FEATURE, not the tabular-nums property."
+ },
+ {
+  "property": "text-decoration",
+  "draftUses": {
+   "indus": 6,
+   "mamas": 91
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:48-49 (21 in file)",
+    "element": "header nav links (Shop, Gifts) styled as pills",
+    "value": "text-decoration:none",
+    "does": "Removes the underline so the pill reads as a button."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:36-37",
+    "element": "hero primary and secondary CTA links",
+    "value": "text-decoration:none",
+    "does": "Same, on the CTA buttons (65 'none' uses overall)."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:48",
+    "element": "'Sign out' text button",
+    "value": "text-decoration:underline",
+    "does": "Underlined text-style button (24 underline uses)."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteHeader.dc.html:141",
+    "element": "'Remove' text button in the mini-basket drawer",
+    "value": "text-decoration:underline",
+    "does": "Underlined text-style button."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:49 (10 in file)",
+    "element": "footer link list item 'All Zookies', hover",
+    "value": "text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:4px; text-decoration-color:#FFFAF0 (style-hover)",
+    "does": "Plain at rest; on hover a 2px underline, offset 4px, in a chosen colour."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:103 and Product.dc.html:56",
+    "element": "struck-through 'was' price beside the subscribe price",
+    "value": "text-decoration:line-through",
+    "does": "Shows the original price crossed out."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:13",
+    "element": "<style> a rule",
+    "value": "a{color:#0A7EA8;text-decoration:none}",
+    "does": "Links have no underline (5 of 6 Indus uses; the 6th, underline, is image-slot.js:391 scaffolding)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/button/style.css (text-decoration: none at lines 71,121,145) and nav-bar-menu/style.css (147,169)",
+    "how": "Button and nav links ship with no underline, matching every `none` use."
+   },
+   {
+    "kind": "setting",
+    "where": "sgs/button.textDecoration (css_element wrapper, role typography); sgs/heading, sgs/text, sgs/accordion, sgs/container etc. (146 text-decoration rows over 45 blocks; enum '', none, underline, line-through)",
+    "how": "underline for Sign out / Remove text buttons."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/product-card/style.css (line-through at 406, 539) and buybox/style.css:63",
+    "how": "Struck-through was-price is already the default on product-card and buybox prices."
+   },
+   {
+    "kind": "setting",
+    "where": "sgs/text.linkUnderline (css_property text-decoration-line, enum '', none, always, sweep) + linkUnderlineThickness (text-decoration-thickness); same pair on heading, label, business-info, icon-list, collapsible-text, quote, testimonial, timeline, product-card",
+    "how": "Hover underline with a thickness: choose sweep or always, set thickness 2px. Line is currentColor (includes/helpers-link-underline.php header)."
+   }
+  ],
+  "verdict": "setting",
+  "note": "none = block-default; underline/line-through = setting or block-default. Partial only for the footer hover underline: no setting for text-underline-offset or text-decoration-color (block_attributes attr_name LIKE '%underlineoffset%' = 0 rows); the only footer rule is theme/sgs-theme/assets/css/core-blocks.css::footer .is-style-no-bullets a with text-underline-offset: 3px vs the draft's 4px. Visible difference: 1px offset and underline colour following the text colour."
+ },
+ {
+  "property": "text-overflow",
+  "draftUses": {
+   "indus": 3,
+   "mamas": 1
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:270",
+    "element": "'Become A Trade Customer' label inside the mobile top-bar CTA pill",
+    "value": "white-space:nowrap;overflow:hidden;text-overflow:ellipsis",
+    "does": "Truncates the label with an ellipsis when narrow."
+   },
+   {
+    "draft": "indus",
+    "file": "TradeApplication.dc.html:35",
+    "element": "step label beside each numbered step in the application progress bar",
+    "value": "white-space:nowrap;overflow:hidden;text-overflow:ellipsis",
+    "does": "Long step names are cut with an ellipsis."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:147",
+    "element": "sticky add-to-basket bar subtitle under the price",
+    "value": "white-space:nowrap;overflow:hidden;text-overflow:ellipsis",
+    "does": "Truncates the variant summary to one line."
+   },
+   {
+    "draft": "indus",
+    "file": "image-slot.js:386",
+    "element": "scaffold label",
+    "value": "ellipsis",
+    "does": "Prototype plumbing (1 of 3)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "theme",
+    "where": "theme/sgs-theme/assets/css/core-blocks.css::.sgs-top-bar-mobile-cta .wp-block-button__link",
+    "how": "white-space:nowrap; overflow:hidden; text-overflow:ellipsis: the same recipe on the mobile top-bar CTA."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/buybox/style.css::.sgs-buybox-guided__meter-value; option-picker/style.css:489; choice-flow/style.css:368; google-reviews/style.css:500",
+    "how": "Ellipsis is the default on those value lines."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form__progress-step-label (@container sgs-form max-width 480px => display:none)",
+    "how": "Different treatment: step labels are hidden on narrow forms, not ellipsised."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Indus top-bar CTA = theme match. Form progress labels: SGS hides them at narrow widths and lets long ones wrap at wide widths (no ellipsis); minor visible difference. The sticky-bar subtitle matches only if it maps to the buybox meter value; not confirmed. A real control would be a per-element `truncate to one line` toggle."
+ },
+ {
+  "property": "text-wrap",
+  "draftUses": {
+   "indus": 36,
+   "mamas": 4
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:284",
+    "element": "hero h1 'Leading Indian Food & Drinks Wholesaler'",
+    "value": "text-wrap:balance",
+    "does": "Balances heading line lengths (13 uses, all headings)."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:328",
+    "element": "category card description paragraph",
+    "value": "text-wrap:pretty",
+    "does": "Avoids an orphan word on the last line (23 uses, body and card copy)."
+   },
+   {
+    "draft": "mamas",
+    "file": "Confirmation.dc.html:24 and Gifts.dc.html:24",
+    "element": "page h1",
+    "value": "text-wrap:balance",
+    "does": "Balanced heading wrap (3 uses)."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:26",
+    "element": "hero lead paragraph",
+    "value": "text-wrap:pretty",
+    "does": "Orphan control on the lead (1 use)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "theme",
+    "where": "theme/sgs-theme/assets/css/core-blocks-critical.css::h1, h2, h3, h4, h5, h6, .wp-block-heading",
+    "how": "text-wrap: balance on every heading; covers all 16 balance uses with no setting."
+   },
+   {
+    "kind": "setting",
+    "where": "sgs/text.textWrap (css_property text-wrap, enum '', wrap, nowrap, balance, pretty, stable); 136 rows over 43 blocks incl. heading, button, container, accordion, business-info",
+    "how": "Set textWrap = pretty on body and description text; no theme-wide pretty rule exists (grep text-wrap in theme finds only the heading balance rule)."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Headings = theme default; paragraphs 'pretty' = per-block setting `textWrap: pretty`. 24 of 40 uses are `pretty`; a theme rule `p { text-wrap: pretty }` would remove them (a default decision for Bean)."
+ },
+ {
+  "property": "white-space",
+  "draftUses": {
+   "indus": 19,
+   "mamas": 11
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:36",
+    "element": "'Trade' pill link in the top bar",
+    "value": "white-space:nowrap",
+    "does": "Keeps pill text on one line (15 uses in the main file: pills, chips, CTA links)."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:46,48",
+    "element": "account nav tab buttons and 'Sign out'",
+    "value": "white-space:nowrap",
+    "does": "Keeps tab labels on one line in a scrolling nav (10 uses)."
+   },
+   {
+    "draft": "mamas",
+    "file": "Gifts.dc.html:88",
+    "element": "handwritten-style gift note preview",
+    "value": "white-space:pre-wrap",
+    "does": "Preserves the customer's line breaks and spaces in the typed note."
+   },
+   {
+    "draft": "indus",
+    "file": "support.js:116,1289; image-slot.js:351,386",
+    "element": "runtime and scaffold text",
+    "value": "pre-wrap / nowrap",
+    "does": "Prototype plumbing (4 of the 19)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "sgs/button.textWrap, sgs/text.textWrap etc. (css_property text-wrap, enum includes nowrap)",
+    "how": "text-wrap: nowrap is the modern equivalent of white-space: nowrap for wrapping; set textWrap = nowrap."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/tabs/style.css:89; option-picker/style.css (35,86,105,655); nav-bar-menu/style.css (121,158); account/style.css:145",
+    "how": "Tabs, pills and nav items already nowrap by default."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/button/style.css:73",
+    "how": "white-space: normal by default, so a nowrap button needs the textWrap setting."
+   }
+  ],
+  "verdict": "setting",
+  "note": "nowrap = setting or block-default. pre-wrap (Gifts note preview, 1 use) = missing: textWrap enum has no pre-wrap and no block previews user text with preserved line breaks (not found). That preview element would need white-space: pre-wrap as a block default."
+ },
+ {
+  "property": "word-break",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 2
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Contact.dc.html:47",
+    "element": "email address in the contact card",
+    "value": "word-break:break-all",
+    "does": "Wraps the long email at any character instead of overflowing the card."
+   },
+   {
+    "draft": "mamas",
+    "file": "SiteFooter.dc.html:64",
+    "element": "footer mailto link",
+    "value": "word-break:break-all",
+    "does": "Same overflow protection on narrow screens."
+   },
+   {
+    "draft": "indus",
+    "file": "support.js:104",
+    "element": "runtime overlay",
+    "value": "word-break:break-word",
+    "does": "Prototype plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "searched business-info, text, icon-list, container style.css and theme assets/css, style.css, theme.json for word-break/overflow-wrap/word-wrap",
+    "how": "Not found. business-info has only min-width:0 (lines 328, 358). Only cart (508,539), nav-drawer-menu:105 and product-card:1385 set overflow-wrap: break-word."
+   }
+  ],
+  "verdict": "missing",
+  "note": "A long email in sgs/business-info or sgs/icon-list can overflow a narrow card. Needs no inspector control: a safe block default `overflow-wrap: anywhere` on business-info values and link-list items covers it (break-all is harsher than needed)."
+ },
+ {
+  "property": "overflow-wrap",
+  "draftUses": {
+   "indus": 4,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:773",
+    "element": "contact card value (phone/email) in the contact section",
+    "value": "overflow-wrap:anywhere",
+    "does": "Long values break inside the card."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:841",
+    "element": "footer email link with a mail icon",
+    "value": "overflow-wrap:anywhere",
+    "does": "Same, for the footer email."
+   },
+   {
+    "draft": "indus",
+    "file": "TradeApplication.dc.html:82,103",
+    "element": "uploaded file name and review-step row values",
+    "value": "overflow-wrap:anywhere",
+    "does": "Long file names and values wrap inside the card."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/cart/style.css (508,539); nav-drawer-menu/style.css:105; product-card/style.css:1385",
+    "how": "overflow-wrap: break-word on those blocks only."
+   },
+   {
+    "kind": "theme",
+    "where": "theme/sgs-theme assets/css, style.css, theme.json",
+    "how": "No overflow-wrap rule found."
+   }
+  ],
+  "verdict": "missing",
+  "note": "Same gap as word-break: no default on business-info, form file-name or review rows, icon-list. Recommend a block default `overflow-wrap: anywhere` (not a control). Not verified whether form-field-file filename or form-review rows have min-width:0 containment."
+ },
+ {
+  "property": "vertical-align",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 2
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Basket.dc.html:22",
+    "element": "item-count badge pill inline beside the 'Your basket' h1",
+    "value": "vertical-align:middle",
+    "does": "Centres the pill on the heading line."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:25",
+    "element": "small rotated photo pill set inline inside the hero h1 text",
+    "value": "vertical-align:middle",
+    "does": "Puts an image capsule in the middle of the headline."
+   },
+   {
+    "draft": "indus",
+    "file": "support.js:106",
+    "element": "runtime overlay",
+    "value": "vertical-align:text-bottom",
+    "does": "Prototype plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/icon/style.css:49 (middle); option-picker/style.css:375; nav-bar-menu/style.css:531",
+    "how": "Inline icons already align middle."
+   },
+   {
+    "kind": "setting",
+    "where": "block_attributes attr_name like '%verticalalign%'",
+    "how": "Only core columns/media-text verticalAlignment and sgs/hero.verticalAlignment (justify-content): block-level, not inline."
+   }
+  ],
+  "verdict": "missing",
+  "note": "The headline with an inline photo pill (Home h1) has no SGS equivalent: sgs/heading has no inline-media or inline-badge run (not found in heading block.json or the DB). Needs an inline rich-text format or `inline image in heading` option; vertical-align: middle would be that feature's default. The basket count badge is a WooCommerce cart-page matter (no SGS heading feature found)."
+ },
+ {
+  "property": "direction",
+  "draftUses": {
+   "indus": 4,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:1184",
+    "element": "ambient floating avatars in a section (Web Animations call)",
+    "value": "el.animate([...],{iterations:Infinity, direction:'alternate'})",
+    "does": "This is animation-direction inside a JS animate() call, not CSS `direction`: the float goes out and back (4 such uses)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "motion_fields def AmbientFloatValues.direction (css_property --sgs-float-direction, enum normal, alternate) + fx_effects row ambient-float",
+    "how": "Set the ambient-float effect, direction alternate, with period, phase and travel to match."
+   }
+  ],
+  "verdict": "setting",
+  "note": "There is no CSS `direction` (text direction) use in either draft. The 4 hits are animation options, covered by the motion model's ambient-float effect."
+ },
+ {
+  "property": "content",
+  "draftUses": {
+   "indus": 4,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:710",
+    "element": "mega-menu tile hover overlay (style-after pseudo-element on the peek layer)",
+    "value": "content:''; position:absolute; inset:0; linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.3))",
+    "does": "Adds a pale white wash over the tile during the circular reveal."
+   },
+   {
+    "draft": "indus",
+    "file": "image-slot.js:377 and support.js:96",
+    "element": "scaffold spinner and streaming placeholder pseudo-elements",
+    "value": "content:\"\"",
+    "does": "Prototype plumbing (2 of 4)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "sgs/container.backgroundOverlayColour (background-color, css_element overlay) + backgroundOverlayOpacity (opacity) + backgroundOverlayBlendMode",
+    "how": "The overlay layer is the framework's equivalent of a decorative ::after wash; set a white overlay at about 0.3 to 0.5 opacity."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__ornament::before",
+    "how": "content: var(--sgs-ndm-orn-content, none) for ornament glyphs."
+   }
+  ],
+  "verdict": "setting",
+  "note": "`content` is only used as an empty pseudo-element for decoration; no draft uses it for text. The draft overlay is a vertical gradient, the SGS overlay a flat colour at opacity: nearest visible difference is gradient vs flat (not verified whether the overlay accepts a gradient). Other 'content:' hits were the JS key `content: p.body` and are excluded."
+ },
+ {
+  "property": "cursor",
+  "draftUses": {
+   "indus": 41,
+   "mamas": 108
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:46,48 (106 uses over 12 files)",
+    "element": "buttons, chips, pills, checkbox labels, steppers",
+    "value": "cursor:pointer",
+    "does": "Hand cursor on clickable controls."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:215",
+    "element": "reviews carousel track (scroll-snap grid with pointer drag)",
+    "value": "cursor:grab",
+    "does": "Open-hand cursor signalling the strip can be dragged."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:581",
+    "element": "rows list item",
+    "value": "cursor:{{ r.cursor }} = pointer if the row has a CTA, else default",
+    "does": "Pointer only when the row is clickable."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:29,61 (30 pointer uses)",
+    "element": "buttons, option pills, submit",
+    "value": "cursor:pointer",
+    "does": "Hand cursor on controls."
+   },
+   {
+    "draft": "indus",
+    "file": "image-slot.js:310-321",
+    "element": "scaffold drag and resize handles",
+    "value": "grab, grabbing, nwse-resize, nesw-resize",
+    "does": "Prototype plumbing (9 of the 41)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/button/style.css:72; accordion/style.css:20; tabs/style.css:83; testimonial-slider/style.css (172,241,302); gallery/style.css (129,184); form/style.css:438,741",
+    "how": "cursor: pointer already set on SGS controls (45 block style.css files contain a cursor rule)."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css::.sgs-testimonial-slider__track.is-dragging; physics-canvas/style.css:29",
+    "how": "cursor: grabbing only while dragging on the slider; physics-canvas has grab at rest. No resting `grab` on sliders."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Pointer = block-default (links get the UA hand anyway). Only partial: resting `cursor: grab` on a draggable carousel (1 Mamas use) is not set by testimonial-slider. Visible only on desktop hover; a block default, no setting needed."
+ },
+ {
+  "property": "user-select",
+  "draftUses": {
+   "indus": 5,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "image-slot.js:300,313,326,420; support.js:108",
+    "element": "scaffold drag handles and overlay labels",
+    "value": "user-select:none",
+    "does": "Stops text selection while dragging prototype handles."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/before-after/style.css:68; option-picker/style.css:117; pricing-table/style.css:412; decorative-image/style.css:11",
+    "how": "SGS applies it where dragging or toggling needs it."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "All 5 uses are in image-slot.js and support.js scaffolding; none in page markup. Mamas: 0."
+ },
+ {
+  "property": "appearance",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "image-slot.js:362",
+    "element": "scaffold control reset",
+    "value": "appearance:none",
+    "does": "Prototype plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/form/style.css (241 textfield, 247 none, 370 auto); audio/style.css:81; before-after/style.css:364",
+    "how": "SGS resets appearance where it restyles native controls."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "The single use is inside image-slot.js. The pages tint native checkboxes with accent-color, not appearance."
+ },
+ {
+  "property": "accent-color",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 6
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:822",
+    "element": "consent checkbox in the contact form",
+    "value": "accent-color:#0A7EA8",
+    "does": "Tints the native checkbox tick brand blue."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:210 and Basket.dc.html:64 (6 uses)",
+    "element": "marketing opt-in and gift checkboxes (24x24)",
+    "value": "accent-color:#EE8088",
+    "does": "Tints native checkboxes in the logo pink."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/form/style.css:437 and :740 (.sgs-form-field__option input[type=checkbox] / radio)",
+    "how": "accent-color: var(--wp--preset--color--primary, #0f7e80)."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Indus: sites/indus-foods/theme-snapshot.json primary = #0a7ea8 = the draft value, so it matches. Mamas: snapshot primary = #a8404f but the draft uses #EE8088 (--mm-pink, handoff/tokens/colors.css:11), so SGS would paint dark red instead of pink: partial for Mamas. No accent colour control on sgs/form (attr_name like '%accent%' returns none for it); a pink palette slot would not help unless it is primary. Applies only to sgs/form fields."
+ },
+ {
+  "property": "visibility",
+  "draftUses": {
+   "indus": 5,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:194",
+    "element": "mobile drawer accordion panel body",
+    "value": "visibility:{{ item.accVis }}; transition:visibility .55s",
+    "does": "Hides collapsed content from keyboard and screen readers after the close animation ends."
+   },
+   {
+    "draft": "indus",
+    "file": "image-slot.js:373,410",
+    "element": "scaffold",
+    "value": "hidden",
+    "does": "Prototype plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/accordion-item/render.php (outer <details>, state via [open])",
+    "how": "Native <details> already takes closed content out of the tab order."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php (header: <details> accordion rows via sgs_nav_drawer_menu_render_items)",
+    "how": "Drawer menu uses the same <details> rows."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "The only page use is an a11y animation helper that native <details> makes unnecessary. Per-device hiding is covered separately by sgs/*.sgsCollapseVisibility and hideOnMobile/hideOnTablet, not CSS `visibility`."
+ },
+ {
+  "property": "scrollbar-color",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:180",
+    "element": "mobile drawer scroll area (data-drawer-scroll)",
+    "value": "scrollbar-color:rgba(231,215,104,.75) transparent (+ scrollbar-width:thin and a ::-webkit-scrollbar-thumb rule at line 25, radius 8px)",
+    "does": "Slim gold scrollbar thumb on a transparent track."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.wp-block-sgs-nav-drawer::-webkit-scrollbar-thumb (+ @supports not selector(::-webkit-scrollbar) { scrollbar-width: thin; scrollbar-color })",
+    "how": "Thin rounded thumb (radius 999px, padding-box clip, transparent track) in 35% of the drawer text colour via --sgs-nd-scrollbar-ink."
+   },
+   {
+    "kind": "setting",
+    "where": "sgs/google-reviews.scrollbarColour (css_property scrollbar-color) and scrollbarStyle (scrollbar-width thin/standard)",
+    "how": "The only block with a scrollbar colour control."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Shape, thinness and transparent track already match in nav-drawer. Colour differs: SGS tints the drawer text colour at 35%, the draft uses gold rgba(231,215,104,.75). Small but visible; sgs/nav-drawer has no scrollbar colour control (attr_name like '%scroll%' returns only closeOnScrollDistance)."
+ },
+ {
+  "property": "scrollbar-width",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 8
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:44",
+    "element": "horizontally scrolling account nav tab strip",
+    "value": "scrollbar-width:none",
+    "does": "Hides the scrollbar on the tab strip."
+   },
+   {
+    "draft": "mamas",
+    "file": "Help.dc.html:29",
+    "element": "help category chip row",
+    "value": "scrollbar-width:none",
+    "does": "Hides the scrollbar on the chip row (8 uses in total)."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:215",
+    "element": "reviews carousel track",
+    "value": "scrollbar-width:none",
+    "does": "Hides the scrollbar under the reviews strip."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:651",
+    "element": "history timeline swipe strip (mobile)",
+    "value": "scrollbar-width:none",
+    "does": "Hides the scrollbar on the swipe strip."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:180",
+    "element": "mobile drawer scroll area",
+    "value": "scrollbar-width:thin",
+    "does": "Slim scrollbar (see scrollbar-color)."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/account/style.css:130; tabs/style.css:321; gallery/style.css:101; post-grid/style.css:136; trustpilot-reviews/style.css:180",
+    "how": "scrollbar-width: none on tab strips and rails."
+   },
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/assets/css/slider-nav.css::.sgs-slider-nav--pagination-dots / --pagination-none .sgs-slider-nav__rail",
+    "how": "pagination = dots or none hides the rail scrollbar; pagination = scrollbar shows it thin."
+   },
+   {
+    "kind": "setting",
+    "where": "sgs/google-reviews.scrollbarStyle (css_property scrollbar-width, enum thin, standard)",
+    "how": "Thin or standard on the reviews rail."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Covered for the account nav, tabs, gallery, post-grid and slider rails. Not verified: the Help chip row (a generic container, no rule found) and the Indus timeline strip (timeline/style.scss has no scrollbar rule; slider-nav use not confirmed). The draft hides these cosmetically, so a scrollbar would show where no block rule applies."
+ },
+ {
+  "property": "-webkit-text-stroke",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 1
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:636",
+    "element": "timeline year numerals on the pinned horizontal history cards",
+    "value": "color:transparent; -webkit-text-stroke:2px #0A7EA8; transition on -webkit-text-stroke-color",
+    "does": "Large outlined (hollow) year number whose outline colour animates on activation."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:656",
+    "element": "same year numeral in the mobile fallback",
+    "value": "-webkit-text-stroke:1.5px #0A7EA8",
+    "does": "Hollow outlined year."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:24",
+    "element": "twinkling star glyph beside the hero greeting",
+    "value": "-webkit-text-stroke:1px #3A2A22",
+    "does": "Thin dark outline round a yellow glyph."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "grep text-stroke|textStroke over plugins/sgs-blocks src, includes, schemas and theme/sgs-theme",
+    "how": "0 hits. No block_attributes row has css_property -webkit-text-stroke*; fx_effects has no outline-text effect (scramble and split-reveal act on text but do not outline it)."
+   }
+  ],
+  "verdict": "missing",
+  "note": "Genuinely absent. Needs a typography control group on text, heading, counter and timeline: `textStrokeWidth` (px), `textStrokeColour` (colour slot with a hover/active state, since the draft transitions it) and a transparent text-fill option. Indus uses it on a structural element (timeline years), Mamas as a tiny glyph accent."
+ },
+ {
+  "property": "border-radius",
+  "draftUses": {
+   "indus": 196,
+   "mamas": 354
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:36,37 (162 uses)",
+    "element": "pill buttons, chips, badges, nav items",
+    "value": "border-radius:999px",
+    "does": "Fully rounded pill ends."
+   },
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:185 (49 uses)",
+    "element": "order and product card tiles",
+    "value": "border-radius:14px (others 20, 24, 26, 28, 32px)",
+    "does": "Rounded card corners."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:97 (1 use)",
+    "element": "hero cookie illustration",
+    "value": "border-radius:48% 52% 50% 50% / 52% 47% 53% 48%",
+    "does": "Organic blob outline (8-value elliptical radius)."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:32,73 (63 uses)",
+    "element": "icon badges, avatars, step number circles",
+    "value": "border-radius:50%",
+    "does": "Perfect circles."
+   },
+   {
+    "draft": "indus",
+    "file": "EnquiryForm.dc.html:61 (43 uses)",
+    "element": "pill buttons and chips",
+    "value": "border-radius:999px",
+    "does": "Pill ends."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:634 (24 at 22px, 4 at 30px)",
+    "element": "history cards, mega tiles, form fields",
+    "value": "border-radius:22px / 30px / 16px",
+    "does": "Rounded cards; fields at 16px."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "sgs/container.borderRadius, sgs/button.borderRadius, sgs/info-box.borderRadius, sgs/product-card.borderRadius, sgs/form.fieldBorderRadius (field-input), sgs/hero.splitMediaBorderRadius, sgs/nav-drawer.borderRadius, sgs/mega-panel.borderRadius, sgs/option-picker.pillBorderRadius (112 rows over 65 blocks)",
+    "how": "Per-corner object {topLeft, topRight, bottomRight, bottomLeft} emitted as longhands by includes/helpers-box.php::sgs_corner_object_longhand_list; set 999px, 50% or px per corner."
+   }
+  ],
+  "verdict": "setting",
+  "note": "The draft uses only the single-value shorthand except one blob. Single values (px, %, 999px) are covered by borderRadius on every card, button, field and container block. The elliptical `a b c d / e f g h` form (Home cookie) is not expressible: each corner passes through sgs_css_length_value, which takes one length (inferred from the function, not tested). Visible difference: the hand-drawn blob becomes a plain rounded shape; one decorative element, better rebuilt as an SVG or image. Draft uses no per-corner radii."
+ },
+ {
+  "property": "background",
+  "draftUses": {
+   "indus": 274,
+   "mamas": 457
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:36 (142 x #FFFAF0, 59 x #F9CF6E, 40 x #F9D5D3)",
+    "element": "page, card, pill and button fills",
+    "value": "background:#FFFAF0 / #F9CF6E / #F9D5D3",
+    "does": "Flat brand fills."
+   },
+   {
+    "draft": "mamas",
+    "file": "Basket.dc.html:45, Gifts.dc.html, Shop.dc.html",
+    "element": "photo tiles and banners",
+    "value": "background:url(assets/photo-bun-case.jpg) center / cover",
+    "does": "Photo with cover sizing, centred."
+   },
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html and others",
+    "element": "cookie-face and Instagram badge fills",
+    "value": "radial-gradient(circle at 50% 42%, #FCEBBE 0 34%, transparent 35%); radial-gradient(circle at 30% 107%, #FDF497 ...)",
+    "does": "Hard-stop radial dot and brand gradient."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:44",
+    "element": "scroll-progress bar fixed at the top",
+    "value": "linear-gradient(90deg,#EBDD78 0%,...,#0A7EA8 100%)",
+    "does": "Multi-stop gold-to-blue bar scaled by scroll."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:1004",
+    "element": "footer 'Website by' link",
+    "value": "linear-gradient(#D8CA50,#D8CA50) no-repeat left bottom / 0% 1px (hover 100% 1px)",
+    "does": "Underline that sweeps in via background-size."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:25",
+    "element": "drawer scrollbar thumb",
+    "value": "background:rgba(231,215,104,.75)",
+    "does": "Thumb colour."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "sgs/container.backgroundColour (background-color), backgroundColourGradient, backgroundColourHover, backgroundImage (+Tablet/Mobile), backgroundOverlayColour; same families on hero, site-header, site-footer, mega-panel, form (260 background-color rows over 68 blocks; 250 background-image rows over 65)",
+    "how": "Each shorthand splits into a colour, gradient or image setting."
+   },
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/includes/helpers-link-underline.php (linkUnderline = sweep) via sgs/text.linkUnderline",
+    "how": "The footer sweep is a background-size sweep: exactly the 'sweep' option (same technique as the theme .sgs-hover-underline-slide)."
+   },
+   {
+    "kind": "motion",
+    "where": "fx_effects scroll-progress (plugins/sgs-blocks/assets/css/fx-scroll-progress.css); ScrollProgressValues fields source, output, counterFormat",
+    "how": "The progress behaviour; the effect has no colour field, so the bar's gradient comes from the host container's backgroundColourGradient."
+   }
+  ],
+  "verdict": "setting",
+  "note": "`background` is a shorthand and never matches by name; each use maps to backgroundColour*, backgroundColourGradient, backgroundImage or the link-underline sweep. Not verified: the hard-stop radial `#FCEBBE 0 34%, transparent 35%` may not round-trip through the WP gradient picker; the 5-stop Indus bar gradient should."
+ },
+ {
+  "property": "background-clip",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:25",
+    "element": "drawer scrollbar thumb ::-webkit-scrollbar-thumb",
+    "value": "background-clip:padding-box (with a 2px transparent border)",
+    "does": "Makes the thumb look inset inside its transparent border."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.wp-block-sgs-nav-drawer::-webkit-scrollbar-thumb",
+    "how": "background-clip: padding-box; border: 3px solid transparent; border-radius: 999px: the identical technique."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "No `background-clip: text` (gradient text) in either draft (grep background-clip and -webkit-text-fill-color found only this use). SGS blocks discuss text-gradient clipping in comments (before-after/style.css:192, business-info/style.css:17) but no draft needs it."
+ },
+ {
+  "property": "background-position",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 11
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:61,94,121",
+    "element": "order thumbnail tiles (48px)",
+    "value": "background-position:center",
+    "does": "Centres the photo in its tile."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:24,30",
+    "element": "main product image and gallery thumbs",
+    "value": "background-position:center (with background-size {{ imgSize }}, no-repeat)",
+    "does": "Centres the product photo."
+   },
+   {
+    "draft": "indus",
+    "file": "support.js:90",
+    "element": "runtime shimmer",
+    "value": "100% 50% / 0% 50%",
+    "does": "Prototype plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "sgs/container.backgroundPosition (css_property 'background-position,object-position', default 'center center'); also hero, site-header, site-footer, trust-bar, nav-drawer, multi-button",
+    "how": "The default is already centred, so `center` needs no change."
+   },
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/src/blocks/extensions/media-elements.js (object-position, focal point on image blocks)",
+    "how": "The real <img> equivalent for product photos."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Every page use is `center`, the SGS default. The compound css_property name ('background-position,object-position') is why an exact-name match misses it."
+ },
+ {
+  "property": "background-repeat",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 4
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Home.dc.html:127",
+    "element": "moment-card photo",
+    "value": "background-repeat:no-repeat",
+    "does": "Single non-tiled photo."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:24,30",
+    "element": "product image and thumbs",
+    "value": "background-repeat:no-repeat",
+    "does": "Same."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "sgs/container.backgroundRepeat, sgs/hero.backgroundRepeat (enum no-repeat, repeat, repeat-x, repeat-y; default no-repeat)",
+    "how": "Default is already no-repeat."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Matches by default on container and hero. In SGS, product photos are real images (sgs/product-card, buybox), so the property does not arise."
+ },
+ {
+  "property": "background-size",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 11
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "Account.dc.html:61,94,121",
+    "element": "order thumbnails",
+    "value": "background-size:cover",
+    "does": "Fills the tile, cropping."
+   },
+   {
+    "draft": "mamas",
+    "file": "Basket.dc.html:45, Gifts.dc.html, Shop.dc.html",
+    "element": "photo tiles and banners (shorthand `center / cover`)",
+    "value": "url(...) center / cover",
+    "does": "Cover-sized banner image."
+   },
+   {
+    "draft": "mamas",
+    "file": "Product.dc.html:11,24,30",
+    "element": "product image with a per-product size token",
+    "value": "background-size:{{ imgSize }} / {{ bgSize }}",
+    "does": "Per-product cover or contain."
+   },
+   {
+    "draft": "indus",
+    "file": "Indus Foods Website v2.dc.html:1004",
+    "element": "footer link underline sweep",
+    "value": "background-size:100% 1px (from 0% 1px)",
+    "does": "Animated underline."
+   },
+   {
+    "draft": "indus",
+    "file": "support.js:99",
+    "element": "runtime shimmer",
+    "value": "400% 100%",
+    "does": "Prototype plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "sgs/container.backgroundSize (css_property 'background-size,object-fit', enum cover, contain, auto, default cover); same on hero, trust-bar, site-header, site-footer, nav-drawer, multi-button, physics-canvas",
+    "how": "cover is the default."
+   },
+   {
+    "kind": "setting",
+    "where": "sgs/text.linkUnderline = sweep (includes/helpers-link-underline.php)",
+    "how": "Reproduces the 0% to 100% 1px sweep."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "cover and contain are covered by container.backgroundSize (default cover). The enum has no custom sizes (e.g. 400% 100%), but the only such uses are the link sweep (covered by the sweep option) and support.js plumbing."
+ },
+ {
+  "property": "fill",
+  "draftUses": {
+   "indus": 61,
+   "mamas": 32
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteHeader.dc.html",
+    "element": "account and basket icons in the header (inline svg 24x24)",
+    "value": "fill:none (style attribute, with stroke:currentColor)",
+    "does": "Line icon: no fill, drawn by its stroke in the text colour."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteFooter.dc.html",
+    "element": "WhatsApp and mail icons in the footer social row (svg 20x20)",
+    "value": "fill:none or fill:currentColor with stroke:none on the solid variants",
+    "does": "Outline or solid glyph in the surrounding text colour."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "LinkedIn, Facebook, Instagram social icons (svg 17-22px, lines 40, 265, 978)",
+    "value": "fill=\"#FFFFFF\" on the <svg>",
+    "does": "Solid white glyph on a coloured round button; hover changes the button only."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "Google 'G' mark, four <path> elements (lines 40, 265, 978)",
+    "value": "fill=\"#EA4335\" / \"#4285F4\" / \"#FBBC05\" / \"#34A853\"",
+    "does": "Google's four-colour brand mark."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "JS icon objects for sector and support icons (React.createElement svg, lines 1914, 1990, 1995)",
+    "value": "fill: 'none' with stroke: 'currentColor'",
+    "does": "Line icons for onion, clove, samosa, support and so on."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/indus-logo.js",
+    "element": "animated logo SVG (sunrays, mountain, snow, lines 58 to 62)",
+    "value": "WAAPI option { fill: 'backwards' } (animation fill-mode, not the SVG paint property)",
+    "does": "Holds the first keyframe before the delay ends. Not an SVG fill."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/src/blocks/icon (block.json attributes iconColour, iconColourGradient, iconColourHover)",
+    "how": "Glyph icons are Lucide strings with fill=none stroke=currentColor, so one colour setting recolours them."
+   },
+   {
+    "kind": "setting",
+    "where": "DB block_attributes sgs/icon colourMode (select-from-enum inherit|theme|brand|brand-glyph) and plugins/sgs-blocks/includes/data/brand-registry.json (contains EA4335)",
+    "how": "brand-glyph paints the Google G in its four colours and social glyphs in their brand marks; sgs/social-icons uses the same registry."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/icon/style.css::.sgs-icon--fill .sgs-icon__svg svg (fill: currentColor)",
+    "how": "A solid glyph takes the icon colour, so the solid white social glyph = icon colour set to white."
+   },
+   {
+    "kind": "setting",
+    "where": "DB block_attributes css_property=fill: sgs/star-rating starColour, emptyColour; sgs/google-reviews starEmptyColour; sgs/nav-drawer-menu sublinkMarkerColour",
+    "how": "Star and marker fills have their own colour settings."
+   }
+  ],
+  "verdict": "setting",
+  "note": "Raw counts include JS animation options named fill (fill-mode) and fill:none declarations; the real paint uses are the groups listed. All three paint groups (line icon, solid white glyph, four-colour Google mark) map to sgs/icon with the Lucide glyph or brand glyph plus the colour settings. No fill control is missing."
+ },
+ {
+  "property": "fill-opacity",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "fill-rule",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "clip-rule",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "clip-path",
+  "draftUses": {
+   "indus": 6,
+   "mamas": 2
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "hover 'peek' layer behind a sector card (span data-peek-layer, line 710)",
+    "value": "clip-path:circle(var(--pr,0px) at var(--mx,50%) var(--my,50%)) with transition .4s",
+    "does": "A circle of the alternate image grows out from the pointer position on hover; the JS sets --pr, --mx, --my."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "image and hero-box reveal on scroll (JS, lines 1241 and 1407)",
+    "value": "WAAPI clipPath 'inset(10% 10% 10% 10% round 24px)' to 'inset(0 0 0 0 round 0px)'",
+    "does": "Images and the hero box open out from a rounded inset as they enter view."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/indus-logo.js",
+    "element": "logo road path (P.road.animate, line 61)",
+    "value": "clipPath 'inset(100% 0 0 0)' to 'inset(0 0 0 0)'",
+    "does": "Inside the logo SVG: the road wipes on upward. Travels with the SVG file."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/image-slot.js",
+    "element": "image-slot prototype widget (lines 31, 306, 514, 1053, 1066)",
+    "value": "comments plus this._frame.style.clipPath = mask",
+    "does": "Prototype placeholder component that crops an image to circle, pill or mask. Plumbing only."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Home.dc.html",
+    "element": "'baked...' sticker over the hero photo (line 44)",
+    "value": "clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%) on a pink div with a 2px border",
+    "does": "Cuts a notch into the right edge so the label reads as a ribbon tag."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Product.dc.html",
+    "element": "same ribbon tag on the product image (line 26)",
+    "value": "clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%)",
+    "does": "Same notched tag at product-page size."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "plugins/sgs-blocks/schemas/motion.schema.json clip-path formula inset(var(--sgs-me-clip-t) ...); DB motion_fields clip and clipEdge, entrance panel (css_property --sgs-me-clip)",
+    "how": "A rounded-inset reveal on entrance is the motion model's clip entrance."
+   },
+   {
+    "kind": "setting",
+    "where": "DB block_attributes sgs/hero splitMediaShape (css_property clip-path, enum none|rounded|circle|square)",
+    "how": "Static circle crop of hero split media."
+   },
+   {
+    "kind": "partial",
+    "where": "plugins/sgs-blocks/includes/data/icon-shapes.json (hexagon, diamond, octagon, star, blob) and sgs/label block.json (pill variants only)",
+    "how": "No block offers a notched ribbon polygon on a text label; icon shapes cover icon boxes only."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Per group: (1) scroll inset reveal = motion; (2) pointer-following circular peek = missing (motion schema clip is inset only; grep of motion.schema.json found no circle clip; hover fields are blur, grayscale, rotate, scale, perspective); (3) logo road and image-slot = not-needed (inside an SVG file, and prototype plumbing); (4) mamas notched ribbon tag = missing (a real control would be a Label shape enum such as pill, ribbon-right, ribbon-left that emits a fixed polygon; a free clip-path string would be too open)."
+ },
+ {
+  "property": "stroke",
+  "draftUses": {
+   "indus": 11,
+   "mamas": 27
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteHeader.dc.html",
+    "element": "account and basket icons in the header (lines 36, 38, 55, 57, 101)",
+    "value": "stroke:currentColor (style attribute)",
+    "does": "Icon outlines follow the link colour."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Help.dc.html",
+    "element": "search magnifier icon (line 25)",
+    "value": "stroke:#3A2A22",
+    "does": "Dark brown outline in a fixed colour, not currentColor."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteFooter.dc.html",
+    "element": "WhatsApp and mail icons (lines 20, 66, 67)",
+    "value": "stroke:currentColor or stroke:none",
+    "does": "Outline icons in white on a coloured chip, or a solid glyph with no outline."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "React icon helpers (lines 1914, 1990, 1995, 2053, 2060, 2063)",
+    "value": "stroke: 'currentColor'; one tick stroke: '#FFFFFF'",
+    "does": "Line icons (onion, clove, support, arrows, tick) in text colour."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/image-slot.js",
+    "element": "prototype upload icons (lines 429, 435)",
+    "value": "stroke=\"currentColor\"",
+    "does": "Prototype widget chrome. Plumbing only."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "outlined numerals on process steps (lines 636, 656)",
+    "value": "-webkit-text-stroke:2px #0A7EA8 with color:transparent (related text property, not SVG stroke)",
+    "does": "Big hollow numerals; line 636 fills with colour on hover."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "setting",
+    "where": "DB block_attributes css_property=stroke: sgs/icon iconColourGradient and iconColourHoverGradient (css_element shape), sgs/icon-list, sgs/button, sgs/accordion, sgs/cart, sgs/wishlist-link, sgs/trust-bar; sgs/icon block.json iconColour",
+    "how": "Lucide glyphs are stroke=currentColor, so the icon colour setting sets the outline colour; Help's fixed #3A2A22 is iconColour set to that hex."
+   },
+   {
+    "kind": "missing",
+    "where": "DB block_attributes WHERE css_property LIKE '%text-stroke%' returned no rows; grep text-stroke across plugins/sgs-blocks/src, plugins/sgs-blocks/includes and theme/sgs-theme returned no files",
+    "how": "No hollow-text (text outline) control exists."
+   }
+  ],
+  "verdict": "setting",
+  "note": "SVG stroke colour = setting (sgs/icon colour). The adjacent -webkit-text-stroke outline numerals (Indus lines 636 and 656; mamas Home.dc.html line 24, 1px #3A2A22 on a twinkle star) are genuinely missing: a text control 'Text outline: width + colour' with a transparent fill would be needed. It is not an SVG property but is the only stroke use SGS cannot reproduce."
+ },
+ {
+  "property": "stroke-dasharray",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0). Indus uses stroke-dashoffset (see that entry) on its animated SVG upload. SGS outline shapes already emit stroke-dasharray for dashed borders (plugins/sgs-blocks/src/blocks/icon/style.css)."
+ },
+ {
+  "property": "stroke-dashoffset",
+  "draftUses": {
+   "indus": 3,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "animated landscape SVG: gold path, glow and highlight (JS lines 1447, 1453)",
+    "value": "WAAPI strokeDashoffset 1 to 0, 1600 ms, staggered 120 ms",
+    "does": "Draws a golden road line on over 1.6 s on first view; reduced-motion sets 0 at once."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "DB fx_effects effect=draw (tier G, owned_properties inner 'the SVG stroke'); motion_fields effect=draw: asset, direction, duration, easing, from, to, startElement, endElement, startViewport, endViewport",
+    "how": "SGS has a Draw effect that animates an uploaded SVG's strokes; it is the equivalent of the draft's dashoffset animation."
+   }
+  ],
+  "verdict": "motion",
+  "note": "The SVG itself (paths with ids path5, goldpath_glow, goldpath_highlight) is an uploaded file; the animation is the Draw effect. Not checked: that the Draw effect finds the stroke by these ids when migrating."
+ },
+ {
+  "property": "stroke-miterlimit",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "stroke-linecap",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 5
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteHeader.dc.html",
+    "element": "account and basket icons (lines 36, 38, 55, 57, 101)",
+    "value": "stroke-linecap:round",
+    "does": "Round line ends on icon strokes."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "React icon helpers (strokeLinecap: 'round', lines 1914, 1990, 2053, 2063)",
+    "value": "round",
+    "does": "Rounded ends on line icons."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/image-slot.js",
+    "element": "prototype widget icons (lines 429, 435)",
+    "value": "round",
+    "does": "Plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/includes/lucide-icons.php (every Lucide glyph string carries fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\")",
+    "how": "Every SGS Lucide icon already has round caps; no setting needed."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/before-after/render.php (handle icon), accordion-item/render.php (chevrons), buybox/render.php (cart icon)",
+    "how": "Bespoke inline icons also print stroke-linecap=round."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Mamas footer and contact icons set stroke-linejoin:round only (no linecap); Lucide would give them round caps, a difference of about 1px on open ends such as the speech-bubble tail, barely visible. Counts are the hyphenated CSS form; the camelCase JS form adds 7 in Indus and 1 in mamas."
+ },
+ {
+  "property": "stroke-linejoin",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 10
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteHeader.dc.html",
+    "element": "header icons (lines 36 to 109)",
+    "value": "stroke-linejoin:round",
+    "does": "Round corners where stroke segments meet."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Contact.dc.html",
+    "element": "WhatsApp and mail icons in the contact cards (lines 35, 45)",
+    "value": "stroke-linejoin:round",
+    "does": "Same."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteFooter.dc.html",
+    "element": "footer WhatsApp icon (line 67)",
+    "value": "stroke-linejoin:round",
+    "does": "Same."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "React icon helpers (strokeLinejoin: 'round')",
+    "value": "round",
+    "does": "Same."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/includes/lucide-icons.php (every Lucide glyph string carries fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\")",
+    "how": "Lucide glyphs carry round joins."
+   },
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/src/blocks/icon/style.css (outline-shape svg rule, stroke-linejoin: round)",
+    "how": "Outline shapes round their joins too."
+   }
+  ],
+  "verdict": "block-default",
+  "note": "Every occurrence in both drafts uses round, which is the SGS icon default."
+ },
+ {
+  "property": "stroke-opacity",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "stroke-width",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 17
+  },
+  "occurrences": [
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteHeader.dc.html",
+    "element": "header account and basket icons (24 and 22px)",
+    "value": "stroke-width:1.8",
+    "does": "Slightly lighter line weight than the default."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/SiteHeader.dc.html",
+    "element": "header social chip icons (18px, lines 107 to 109)",
+    "value": "stroke-width:2",
+    "does": "Standard weight."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Checkout.dc.html",
+    "element": "padlock icon (16px, line 22)",
+    "value": "stroke-width:2.2",
+    "does": "Heavier line at small size."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Help.dc.html",
+    "element": "search icon (20px, line 25)",
+    "value": "stroke-width:2.2",
+    "does": "Heavier line."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "React icon helpers (JS strokeWidth 1.6, 1.7, 1.8, 2; lines 1914, 1990, 1995, 2053, 2063)",
+    "value": "1.6 to 2",
+    "does": "Line weight per icon family: sector icons 1.6, arrows 1.7 to 1.8, tick 2."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/TradeApplication.dc.html",
+    "element": "form icon helper (line 266); EnquiryForm.dc.html line 90 uses sw",
+    "value": "strokeWidth: sw || 2.4",
+    "does": "Heavy tick marks in the forms."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/includes/lucide-icons.php (every Lucide glyph string carries fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\")",
+    "how": "Lucide default stroke-width=2 equals the draft's 2 (mamas chips, Indus tick)."
+   },
+   {
+    "kind": "setting",
+    "where": "DB block_attributes sgs/trust-bar iconStrokeWidth (css_property stroke-width, default 1.8; plugins/sgs-blocks/src/blocks/trust-bar/style.css::stroke-width: var(--sgs-trust-badge-icon-stroke-width, 1.8))",
+    "how": "Only the trust bar has a glyph stroke-width control; set it to match."
+   },
+   {
+    "kind": "partial",
+    "where": "plugins/sgs-blocks/src/blocks/icon/style.css (stroke-width: calc(2 * var(--sgs-icon-outline-w, 0px)))",
+    "how": "On sgs/icon that stroke-width belongs to the outline shape (border), not the glyph; there is no glyph weight control."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Values of 2 are exact. 1.8 (mamas header) differs by 0.2px at 24px: barely visible. 1.6 (Indus sector icons) and 2.2 to 2.4 (small padlock, form ticks) differ by 0.4 to 0.6px: visible only side by side. A real control would be one 'Icon line weight' number (1 to 3, step 0.1) on sgs/icon emitting stroke-width on the glyph svg, defaulting to Lucide's 2; trust-bar's iconStrokeWidth is the precedent to reuse."
+ },
+ {
+  "property": "stop-color",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "stop-opacity",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "paint-order",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "vector-effect",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0). SGS's own outline shapes use vector-effect: non-scaling-stroke (plugins/sgs-blocks/src/blocks/icon/style.css), so there is no gap either way."
+ },
+ {
+  "property": "baseline-shift",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0)."
+ },
+ {
+  "property": "mask-image",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "logo and brand marquee wrapper (div onMouseEnter pauseMarquee, line 305, margin-top:22px, overflow:hidden)",
+    "value": "linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent) in both mask-image and -webkit-mask-image",
+    "does": "Fades both ends of the scrolling logo strip to transparent over 5% each side."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "DB motion_fields effect=marquee: edgeFade (boolean), edgeFadeWidth (percentage); plugins/sgs-blocks/assets/css/fx-marquee.css::[data-sgs-fx~=\"marquee\"][data-sgs-fx-marquee-edge-fade=\"true\"] (mask-image: linear-gradient)",
+    "how": "Switch Edge fade on and set edgeFadeWidth to 5; same mask on the lane."
+   },
+   {
+    "kind": "setting",
+    "where": "plugins/sgs-blocks/src/blocks/brand-strip/block.json description ('infinite marquee scroll, fade edges'); style.css defers the edge fade to the shared marquee",
+    "how": "brand-strip is the logo strip block."
+   }
+  ],
+  "verdict": "motion",
+  "note": "Exact equivalent. The -webkit-mask-image count is the vendor twin of the same declaration on the same element (line 305)."
+ },
+ {
+  "property": "-webkit-mask-image",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "same marquee wrapper (line 305)",
+    "value": "linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)",
+    "does": "Vendor twin of mask-image above."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "plugins/sgs-blocks/assets/css/fx-marquee.css (edge fade mask)",
+    "how": "Same as mask-image."
+   }
+  ],
+  "verdict": "motion",
+  "note": "Same element as mask-image; counted once as the pair."
+ },
+ {
+  "property": "mix-blend-mode",
+  "draftUses": {
+   "indus": 0,
+   "mamas": 0
+  },
+  "occurrences": [],
+  "sgs": [],
+  "verdict": "not-needed",
+  "note": "Not found in either draft (grep -o of the hyphenated CSS name and the camelCase JS name across *.dc.html and *.js in both handoff folders returned 0). SGS already has backgroundOverlayBlendMode on seven blocks (DB css_property mix-blend-mode) should a later draft need it."
+ },
+ {
+  "property": "filter",
+  "draftUses": {
+   "indus": 5,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "Google Maps iframe in the contact area (line 992)",
+    "value": "filter:grayscale(.35) contrast(1.05)",
+    "does": "Mutes the map's colours slightly so it sits with the brand palette."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "section headings and hero text entrance (JS lines 1240, 1403)",
+    "value": "WAAPI filter blur(6px) or blur(8px) to blur(0) with opacity and translateY",
+    "does": "Headings sharpen into focus as they scroll in."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "floating photo bubbles in the hero (JS line 1177)",
+    "value": "filter:blur(1.2px) on about half of the far-depth bubbles",
+    "does": "Fakes depth of field on decorative round photos."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "dimmed backdrop behind the open drawer (line 162)",
+    "value": "backdrop-filter:blur(2px)",
+    "does": "Softens the page behind the menu drawer (related property, backdrop-filter)."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/image-slot.js",
+    "element": "prototype widget chips (lines 364, 386)",
+    "value": "backdrop-filter:blur(6px)",
+    "does": "Plumbing."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "DB motion_fields blur (entrance, css_property --sgs-me-blur); motion.schema.json formula filter: blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(...) brightness(...)",
+    "how": "Heading blur-in = the entrance panel's Blur field."
+   },
+   {
+    "kind": "motion",
+    "where": "DB motion_fields hover: blur (--sgs-mh-blur), grayscale (--sgs-mh-gray), restGrayscale (--sgs-gray-rest)",
+    "how": "Grayscale and blur exist as hover-pair motion fields."
+   },
+   {
+    "kind": "setting",
+    "where": "DB block_attributes css_property=backdrop-filter: sgs/modal scrimBlur (css_element backdrop), sgs/nav-drawer scrimBlur (scrim)",
+    "how": "The drawer backdrop blur 2px = nav-drawer scrimBlur set to 2."
+   },
+   {
+    "kind": "setting",
+    "where": "DB block_attributes css_property=filter: grayscaleHover (card-grid, gallery, info-box, team-member) and sgsColourTreatment (card-grid, gallery, team-member)",
+    "how": "Image-level filters only; sgsColourTreatment offers only 'Force white' (plugins/sgs-blocks/src/blocks/extensions/image-controls.js::COLOUR_TREATMENT_OPTIONS)."
+   },
+   {
+    "kind": "missing",
+    "where": "ls plugins/sgs-blocks/src/blocks: no map or embed block; DB block_attributes block_slug LIKE '%map%' returned no rows",
+    "how": "A static filter on an embedded map is not producible."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Raw grep 'filter' counts (26 Indus, 37 mamas) are almost all Array.filter() calls and a 'filter' state key in JS, not CSS. Real CSS filter: Indus 5 (above), mamas 0. Groups: heading blur-in = motion; drawer backdrop blur = setting; hero bubble blur(1.2px) = not-needed (generated decoration in the JS prototype; sgs/physics-canvas or sgs/decorative-image is the real equivalent); map iframe grayscale(.35) contrast(1.05) = missing (a Map/Embed block or a 'Colour filter' on embeds with grayscale % and contrast %; restGrayscale can hold a static grayscale on a wrapping container but contrast cannot be set)."
+ },
+ {
+  "property": "transform-box",
+  "draftUses": {
+   "indus": 1,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/indus-logo.js",
+    "element": "logo SVG groups sunrays_spin and sunrays_expand (line 43)",
+    "value": "style.transformBox='fill-box'; transformOrigin='50% 50%'",
+    "does": "Makes the sun rays rotate and grow about their own centre. Inside the logo animation."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "DB fx_effects effect=draw; motion_fields hover and entrance rotate, scale",
+    "how": "Block-level rotate and scale pivot on the element centre; the logo's internal groups are inside the uploaded SVG."
+   }
+  ],
+  "verdict": "not-needed",
+  "note": "Only the camelCase JS form occurs (hyphenated CSS form: 0 in both drafts). It is plumbing inside the logo SVG animation, not a CSS property of a page element."
+ },
+ {
+  "property": "perspective",
+  "draftUses": {
+   "indus": 2,
+   "mamas": 0
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "home sector card grid parent (line 320, display:grid; children carry data-tilt)",
+    "value": "perspective:1100px",
+    "does": "Gives the pointer tilt on each sector card its 3D depth."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "sectors page card grid parent (line 516; children are <a data-tilt>)",
+    "value": "perspective:1100px",
+    "does": "Same on the Sectors page."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "motion",
+    "where": "DB motion_fields perspective (entrance and hover panels, css_property --sgs-persp-self) and perspectiveOn (hover); motion.schema.json formula transform: perspective(var(--sgs-persp-self)) rotateX(... --sgs-tilt-x) rotateY(... --sgs-tilt-y)",
+    "how": "Per-element or parent perspective, with pointer tilt (--sgs-tilt-x and --sgs-tilt-y)."
+   },
+   {
+    "kind": "motion",
+    "where": "plugins/sgs-blocks/schemas/motion.schema.json rules 'perspective-parent' and 'one-perspective'",
+    "how": "Perspective on a parent works only for a block placed directly inside another SGS block, as the draft's grid parent is."
+   }
+  ],
+  "verdict": "motion",
+  "note": "Set hover tilt with perspectiveOn = parent and 1100 on the card grid. Not checked: the perspective field's maximum."
+ },
+ {
+  "property": "transform-origin",
+  "draftUses": {
+   "indus": 5,
+   "mamas": 7
+  },
+  "occurrences": [
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "fixed 3px page-scroll progress bar at the top (line 44)",
+    "value": "transform-origin:0 50%; transform:scaleX(0)",
+    "does": "Bar grows from the left as the page scrolls."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "process-step connector lines (lines 362, 413) and pinned-section progress bar (line 629)",
+    "value": "transform-origin:0 50%; scaleX draw-in",
+    "does": "Horizontal lines draw from left to right when they enter view."
+   },
+   {
+    "draft": "indus",
+    "file": "sites/indus-foods/handoff/Indus Foods Website v2.dc.html",
+    "element": "vertical timeline line (line 676)",
+    "value": "transform-origin:50% 0 with scaleY draw-in",
+    "does": "Line draws top to bottom."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Home.dc.html",
+    "element": "handwritten greeting eyebrow (line 24)",
+    "value": "transform:rotate(-2deg); transform-origin:left",
+    "does": "Tilts a script tagline 2 degrees about its left edge."
+   },
+   {
+    "draft": "mamas",
+    "file": "sites/mamas-munches-redesign/handoff/Contact.dc.html",
+    "element": "eyebrow 'pop the kettle on' (line 23); same on Account, Gifts, Shop, SignIn and SiteFooter",
+    "value": "rotate(-2deg); transform-origin:left",
+    "does": "Same tilted script eyebrow on every page."
+   }
+  ],
+  "sgs": [
+   {
+    "kind": "block-default",
+    "where": "plugins/sgs-blocks/assets/css/fx-scroll-progress.css::[data-sgs-fx~=\"scroll-progress\"] (transform-origin: 0 50%; bar-y 50% 0; RTL 100% 50%)",
+    "how": "The scroll progress bar already grows from the left with scaleX."
+   },
+   {
+    "kind": "motion",
+    "where": "DB motion_fields hover restRotate (--sgs-rot-rest) and rotate on entrance and hover; sgs/label and sgs/heading are in motion_targets",
+    "how": "A static -2deg tilt = Rest rotate -2 on the Label. Origin is not settable: motion.schema.json has no transformOrigin (originX and originY belong to motion-path only)."
+   },
+   {
+    "kind": "partial",
+    "where": "plugins/sgs-blocks/src/blocks/timeline/style.scss (--sgs-timeline-fill-mask); DB motion_fields entrance scaleX, scaleY, clip, clipEdge",
+    "how": "A line that draws in: use sgs/timeline fill, or an entrance clip with clipEdge from the left; an entrance scale grows from the centre."
+   }
+  ],
+  "verdict": "partial",
+  "note": "Per group: (1) progress bar = block-default (exact); (2) line draw-ins = partial (clip entrance from an edge or the timeline block gives the same look; scaleX about a centre origin would grow from the middle, visibly different); (3) eyebrow tilt = partial: Rest rotate gives the angle but pivots at the centre, so on a 300px line the far end shifts by about 5px more than the draft, hardly visible. A real control (Origin: left, centre, right) is needed only if exactness matters."
+ }
+]

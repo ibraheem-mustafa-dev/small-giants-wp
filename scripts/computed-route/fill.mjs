@@ -23,6 +23,7 @@ import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originM
 import { readDraft } from './lib/fill-read.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
+import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
 import { motionDb } from './lib/motion-db.mjs';
 import { loadMotionSchema } from './lib/motion-schema.mjs';
@@ -63,12 +64,13 @@ function animationInventory( buildDir, draftIndex, log ) {
 	const file = path.join( buildDir, 'intake', 'intake.json' );
 	if ( ! fs.existsSync( file ) ) {
 		log( `no ${ path.relative( REPO, file ) }: motion is not written` );
-		return { records: [], rootComponent: null };
+		return { records: [], rootComponent: null, draftDefects: [] };
 	}
-	const inv = JSON.parse( fs.readFileSync( file, 'utf8' ) ).inventory?.animations || {};
+	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	const inv = intake.inventory?.animations || {};
 	const drafts = inv.drafts || [];
 	const entry = drafts.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || drafts[ 0 ];
-	return { records: inv.records || [], rootComponent: entry?.dc ?? null };
+	return { records: inv.records || [], rootComponent: entry?.dc ?? null, draftDefects: intake.draftDefects || [] };
 }
 
 // Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
@@ -138,10 +140,13 @@ export async function fillSurface( o ) {
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
 		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, ...animationInventory( buildDir, o.draftIndex, log ), sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot } );
+		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), schema: loadMotionSchema(), rawSnapshot } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		result.notes.push( ...motion.notes.map( ( x ) => `${ x.node } ${ x.block }${ x.slot ? ` (${ x.slot })` : '' }: ${ x.text }` ) );
+		// FR-48-8: every written style value against what the draft's code declares, at each read width.
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => 'motion' !== w.how ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent } );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;

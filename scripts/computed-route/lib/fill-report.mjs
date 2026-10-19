@@ -2,6 +2,9 @@
 // framework work for the surface, known before the first build; the handover list is Solve's shape (§3.3).
 import { handoverCounts, HANDOVER_OWNERS } from './fill-handover.mjs';
 
+// The confirm record's verdicts (lib/fill-confirm.mjs, FR-48-36).
+const VERDICTS = [ 'confirmed', 'render-wins', 'draft-defect', 'open' ];
+
 const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringify( v ) : v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' ).slice( 0, 200 );
 const table = ( head, rows ) => ( rows.length ? [ `| ${ head.join( ' | ' ) } |`, `|${ head.map( () => '---' ).join( '|' ) }|`, ...rows.map( ( r ) => `| ${ r.map( cell ).join( ' | ' ) } |` ), '' ] : [ 'None.', '' ] );
 
@@ -15,8 +18,8 @@ export function fillReport( r ) {
 	const counts = handoverCounts( r.handover );
 	const json = {
 		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets,
-		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, unread: ( r.unread || [] ).length },
-		writes: r.writes, unmapped: unmappedList( r.unmapped ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, unread: r.unread || [],
+		counts: { writes: r.writes.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, unread: ( r.unread || [] ).length, confirm: ( r.confirm || [] ).length },
+		writes: r.writes, unmapped: unmappedList( r.unmapped ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, unread: r.unread || [], confirm: r.confirm || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
@@ -28,13 +31,17 @@ export function fillReport( r ) {
 		`| Fluid sizes found | ${ r.fluid.length } (${ r.fluid.filter( ( f ) => 'clamp' === f.written ).length } written as clamp()) |`,
 		`| Breakpoint steps logged for a human | ${ r.steps.length } |`,
 		`| Held by the divergence ledger | ${ r.held.length } |`,
-		`| Not read (settings no read reached and no decision judged) | ${ ( r.unread || [] ).length } |`, '',
+		`| Not read (settings no read reached and no decision judged) | ${ ( r.unread || [] ).length } |`,
+		`| Confirm records (declared against rendered, FR-48-8) | ${ ( r.confirm || [] ).length } (${ VERDICTS.map( ( v ) => `${ v } ${ ( r.confirm || [] ).filter( ( c ) => c.verdict === v ).length }` ).join( ', ' ) }) |`, '',
 		'## UNMAPPED', '',
 		'Each row is a draft value no block setting can hold (or that the draft paints and the block cannot), with the reason the resolver gave.', '',
 		...table( [ 'Property', 'Value', 'Node', 'Block', 'Element', 'Reason' ], r.unmapped.map( ( u ) => [ u.property, u.value, u.node, u.block, u.slot ?? '', u.reason ] ) ),
 		'## Not read', '',
 		'Settings the block\'s calibration or the framework database knows that no read reached and no decision judged on a measured node: a draftSlots finder the skeleton does not give, or a calibration reading that does not exist. Nothing here was written.', '',
 		...table( [ 'Node', 'Block', 'Kind', 'Element', 'Settings', 'Reason' ], ( r.unread || [] ).map( ( u ) => [ u.node, u.block, u.kind, u.slot, u.settings.join( ', ' ), u.reason ] ) ),
+		'## Confirm records: the render overrides the code, or the code never paints', '',
+		'Every written value keeps a confirm record in fill-report.json (`confirm`). These are the ones whose declared value and rendered draft value disagree: `render-wins` writes the rendered value; `draft-defect` is a declaration intake lists as never painting (FR-48-34), for Bean. The check fills in the rendered-live value.', '',
+		...table( [ 'Node', 'Block', 'Property', 'Width', 'Declared', 'Rendered', 'Tolerance', 'Verdict' ], ( r.confirm || [] ).filter( ( c ) => 'render-wins' === c.verdict || 'draft-defect' === c.verdict ).map( ( c ) => [ c.node, c.block, c.property, c.width, c.declared, c.renderedDraft, c.tolerance, c.verdict ] ) ),
 		'## Handover', '',
 		...table( [ 'Owner', 'Kind', 'Node', 'Element', 'Evidence', 'Reason' ], r.handover.map( ( h ) => [ h.owner, h.kind, h.node, h.slot, h.evidence, h.reason ] ) ),
 		'## Settings written', '',
