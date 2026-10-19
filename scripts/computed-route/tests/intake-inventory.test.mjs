@@ -185,11 +185,11 @@ test( 'MUST FAIL (FR-48-29): with no parent passing size, sm is no state and siz
 	assert.deepEqual( build( c ).surfaces.records.find( ( r ) => 'Card' === r.name ).states.map( ( s ) => s.name ), [ 'default' ] );
 } );
 
-test( 'readers: the committed registry reads every motion, trigger and hook construct of the fixture through readInventory and the census passes', async () => {
+test( 'readers: the committed registry reads every motion, trigger, hook, condition and style-rule construct of the fixture through readInventory and the census passes', async () => {
 	const res = await runCensus( { census, registry: loadRegistry() } );
 	assert.deepEqual( res.problems, [] );
 	const read = res.rows.filter( ( r ) => 'lib/intake-inventory.mjs#readInventory' === r.reader );
-	assert.deepEqual( [ ...new Set( read.map( ( r ) => r.kind ) ) ].sort(), [ 'data-hook', 'handler', 'keyframes', 'observer', 'ref', 'timer', 'transition', 'waapi' ] );
+	assert.deepEqual( [ ...new Set( read.map( ( r ) => r.kind ) ) ].sort(), [ 'data-hook', 'handler', 'keyframes', 'observer', 'ref', 'sc-if', 'style-hover', 'timer', 'transition', 'waapi' ] );
 	for ( const r of read ) {
 		assert.ok( readInventory( r, { rows: census.rows, sources: census.sources } ).recordIds.length, r.id );
 	}

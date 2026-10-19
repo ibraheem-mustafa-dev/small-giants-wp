@@ -101,13 +101,14 @@ test( 'POSITIVE: the unchanged fixture with a full registry of fixture readers p
 	assert.ok( res.rows.every( ( r ) => 'lib/fixture-readers.mjs#readAny' === r.reader ) );
 } );
 
-test( 'the committed registry validates, and the fixture census passes with it: every reader kind is read, every other kind is a gap', async () => {
+test( 'the committed registry validates, and the fixture census passes with it: every reader kind is read by its own reader, every other kind is a gap', async () => {
 	const reg = loadRegistry();
-	const readerKinds = Object.keys( reg ).filter( ( k ) => ! reg[ k ].gap );
-	assert.deepEqual( readerKinds.sort(), [ 'data-hook', 'handler', 'keyframes', 'observer', 'ref', 'timer', 'transition', 'waapi' ] );
+	const gapKinds = Object.keys( reg ).filter( ( k ) => reg[ k ].gap );
+	assert.deepEqual( gapKinds, [ 'helmet-font' ], 'font capture is the snapshot extractor\'s' );
 	const res = await runCensus( { census, registry: reg } );
 	assert.equal( res.pass, true, res.problems.join( '\n' ) );
-	assert.ok( res.rows.every( ( r ) => ( readerKinds.includes( r.kind ) ? 'lib/intake-inventory.mjs#readInventory' === r.reader && ! r.gap : r.gap && ! r.reader ) ) );
+	assert.ok( res.rows.every( ( r ) => ( reg[ r.kind ].gap ? r.gap && ! r.reader : `${ reg[ r.kind ].module }#${ reg[ r.kind ].fn }` === r.reader && ! r.gap ) ) );
+	assert.ok( res.rows.some( ( r ) => 'lib/intake-construct-readers.mjs#readBinding' === r.reader ) );
 } );
 
 test( 'MUST FAIL (control 1): a registry missing one entry fails and names the unread kind', async () => {

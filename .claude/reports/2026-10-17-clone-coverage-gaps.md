@@ -1,14 +1,14 @@
-# Clone coverage gap list: 1811 capabilities neither covered nor excluded
+# Clone coverage gap list: 1803 capabilities neither covered nor excluded
 
 | Wave | Gaps |
 |---|---|
 | content, media and icons | 798 |
-| draft reading | 352 |
+| draft reading | 342 |
 | shop, forms and data | 179 |
 | modes and values with no CSS property | 175 |
 | behaviour recognisers | 126 |
 | site and surfaces | 106 |
-| states | 69 |
+| states | 71 |
 | motion model additions | 6 |
 
 ## block-setting (86)
@@ -1878,22 +1878,14 @@
 - `aria-attr:aria-valuenow`: aria-valuenow (1); has nothing; wave content, media and icons
 - `aria-attr:aria-valuetext`: aria-valuetext (1); has nothing; wave content, media and icons
 
-## construct (16)
+## construct (8)
 
-- `construct:binding`: runtime construct binding (1); has nothing; wave draft reading
 - `construct:data-hook`: runtime construct data-hook (1); has recognise; wave behaviour recognisers
-- `construct:dc-import`: runtime construct dc-import (1); has nothing; wave draft reading
-- `construct:getter`: runtime construct getter (1); has nothing; wave draft reading
 - `construct:handler`: runtime construct handler (1); has recognise; wave behaviour recognisers
 - `construct:helmet-font`: runtime construct helmet-font (1); has nothing; wave site and surfaces
-- `construct:helmet-script`: runtime construct helmet-script (1); has nothing; wave draft reading
-- `construct:link`: runtime construct link (1); has nothing; wave draft reading
 - `construct:observer`: runtime construct observer (1); has recognise; wave behaviour recognisers
 - `construct:ref`: runtime construct ref (1); has recognise; wave behaviour recognisers
-- `construct:renderVals-key`: runtime construct renderVals-key (1); has nothing; wave draft reading
-- `construct:sc-for`: runtime construct sc-for (1); has nothing; wave draft reading
-- `construct:sc-if`: runtime construct sc-if (1); has nothing; wave draft reading
-- `construct:style-hover`: runtime construct style-hover (1); has nothing; wave draft reading
-- `construct:template-element`: runtime construct template-element (1); has nothing; wave draft reading
+- `construct:sc-if`: runtime construct sc-if (1); has recognise; wave states
+- `construct:style-hover`: runtime construct style-hover (1); has recognise; wave states
 - `construct:timer`: runtime construct timer (1); has recognise; wave behaviour recognisers
 

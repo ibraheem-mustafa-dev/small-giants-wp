@@ -1967,11 +1967,10 @@
 			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
 		"construct:binding": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:binding",
+			"write": "scripts/computed-route/fill.mjs#fillSurface",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "a {{ }} binding: routed by what it fills (readBinding): text and styles reach Fill from the render, links its link decisions; a handler, ref, loop list or form attribute is read as its own capability"
 		},
 		"construct:data-hook": {
 			"recognise": "construct:data-hook",
@@ -1981,18 +1980,16 @@
 			"note": "read by the construct registry's reader; no writer or check yet"
 		},
 		"construct:dc-import": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:dc-import",
+			"write": "scripts/computed-route/lib/skeleton-propose.mjs#proposeSkeleton",
+			"check": "scripts/computed-route/pairs.mjs#runPairing",
+			"note": "an import host: the component it stamps read from the export (readImport); elements inside it carry the host in their draft identity, so they are proposed and paired like the page's own"
 		},
 		"construct:getter": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:getter",
+			"write": "scripts/computed-route/fill.mjs#fillSurface",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "a logic getter: read through its component's own reads and the template expressions that name it (readGetter; one nothing reads is reported as dead code)"
 		},
 		"construct:handler": {
 			"recognise": "construct:handler",
@@ -2009,11 +2006,10 @@
 			"note": "no construct reader yet (construct registry gap)"
 		},
 		"construct:helmet-script": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:helmet-script",
+			"write": "scripts/computed-route/lib/fill-motion.mjs#motionWrites",
+			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
+			"note": "a head script: read through the constructs the census finds in it (readHelmetScript), each written under its own kind (its animations by the motion writer); the custom elements it defines are html:custom-element"
 		},
 		"construct:keyframes": {
 			"recognise": "construct:keyframes",
@@ -2022,11 +2018,10 @@
 			"note": "CSS animations: entrances as entrance.base (keyframes when there are more than two stops), endless ones as effects"
 		},
 		"construct:link": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:link",
+			"write": "scripts/computed-route/lib/fill-presence.mjs#linkDecisions",
+			"check": "scripts/computed-route/lib/solve-rows.mjs#resolveContent",
+			"note": "a link by its address (readLink): anchors, contact links, bound and external addresses reach the link decisions; head links to a font host are the fonts (construct:helmet-font)"
 		},
 		"construct:observer": {
 			"recognise": "construct:observer",
@@ -2043,39 +2038,36 @@
 			"note": "read by the construct registry's reader; no writer or check yet"
 		},
 		"construct:renderVals-key": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:renderVals-key",
+			"write": "scripts/computed-route/fill.mjs#fillSurface",
+			"check": "scripts/computed-route/lib/triage.mjs#triage",
+			"note": "a renderVals key: read through the template expressions that use it (readRenderKey; an unused key is reported as dead code), its values reaching Fill through those bindings"
 		},
 		"construct:sc-for": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:sc-for",
+			"write": "scripts/computed-route/lib/skeleton-propose.mjs#proposeSkeleton",
+			"check": "scripts/computed-route/pairs.mjs#runPairing",
+			"note": "a loop: its list and item name read (readLoop); the skeleton inventory carries each stamped item's loop membership, so repeated items are proposed and paired as one repeat"
 		},
 		"construct:sc-if": {
-			"recognise": null,
+			"recognise": "construct:sc-if",
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"wave": "states",
+			"note": "a condition: read by the inventory as the state that shows its branch (lib/intake-inventory.mjs::readInventory); which state the built block shows it in is the states wave (FR-48-81)"
 		},
 		"construct:style-hover": {
-			"recognise": null,
+			"recognise": "construct:style-hover",
 			"write": null,
 			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"wave": "states",
+			"note": "a style-* pseudo rule: read by the inventory as a hover or focus record; its motion is written on hover.state (lib/fill-motion.mjs::motionWrites), its colours and other values wait for the states wave (FR-48-81)"
 		},
 		"construct:template-element": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "draft reading",
-			"note": "no construct reader yet (construct registry gap)"
+			"recognise": "construct:template-element",
+			"write": "scripts/computed-route/lib/skeleton-propose.mjs#proposeSkeleton",
+			"check": "scripts/computed-route/pairs.mjs#runPairing",
+			"note": "a stamped template element: read by draft identity (lib/intake-construct-readers.mjs::readTemplateElement names it a block, its children's membership or part of the document); the skeleton inventory reads it on the render and proposes its block, pairing checks it"
 		},
 		"construct:timer": {
 			"recognise": "construct:timer",

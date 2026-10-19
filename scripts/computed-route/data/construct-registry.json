@@ -1,12 +1,12 @@
 {
-	"template-element": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
-	"sc-if": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
-	"sc-for": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
-	"dc-import": { "gap": "reader lands with the skeleton proposal (§3.4, Appendix B step 14)" },
-	"binding": { "gap": "reader lands with Fill's declared values (FR-48-8, Appendix B step 20)" },
-	"style-hover": { "gap": "reader lands with Fill's declared values (FR-48-8, Appendix B step 20); an unresolved {{ }} is a draft defect (FR-48-34)" },
-	"getter": { "gap": "reader lands with the routing adapters (FR-48-26, Appendix B step 14)" },
-	"renderVals-key": { "gap": "reader lands with Fill's declared values (FR-48-8, Appendix B step 20)" },
+	"template-element": { "module": "lib/intake-construct-readers.mjs", "fn": "readTemplateElement" },
+	"sc-if": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
+	"sc-for": { "module": "lib/intake-construct-readers.mjs", "fn": "readLoop" },
+	"dc-import": { "module": "lib/intake-construct-readers.mjs", "fn": "readImport" },
+	"binding": { "module": "lib/intake-construct-readers.mjs", "fn": "readBinding" },
+	"style-hover": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
+	"getter": { "module": "lib/intake-construct-readers.mjs", "fn": "readGetter" },
+	"renderVals-key": { "module": "lib/intake-construct-readers.mjs", "fn": "readRenderKey" },
 	"handler": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
 	"timer": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
 	"observer": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
@@ -15,7 +15,7 @@
 	"keyframes": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
 	"ref": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
 	"data-hook": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
-	"helmet-script": { "gap": "reader lands with the prototype-only flags (FR-48-33, Appendix B step 14)" },
+	"helmet-script": { "module": "lib/intake-construct-readers.mjs", "fn": "readHelmetScript" },
 	"helmet-font": { "gap": "font capture is the snapshot extractor's (FR-33-18, Appendix B step 17)" },
-	"link": { "gap": "reader lands with the routing adapters (FR-48-26, Appendix B step 14)" }
+	"link": { "module": "lib/intake-construct-readers.mjs", "fn": "readLink" }
 }
