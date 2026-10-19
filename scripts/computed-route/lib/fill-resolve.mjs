@@ -8,7 +8,7 @@ import { match as ledgerMatch } from './ledger.mjs';
 import { setAttr, refOf, walk } from './tree.mjs';
 import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS } from './fill-read.mjs';
-import { extraProps, usedValueDraft, USED_VALUE } from './fill-declared.mjs';
+import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
 import { INHERITED, CARRIED, defaultPaint, knownPaths, resolveProperty, notPainted } from './fill-prop.mjs';
 import { pageBaseline } from './fill-page.mjs';
@@ -255,10 +255,11 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				continue;
 			}
 			draft = t.perWidth;
-		} else if ( extra.includes( prop ) && USED_VALUE.includes( prop ) ) {
-			// A used-value property beyond Fill's list (a height, an offset, grid tracks): the declared value, never the
-			// laid-out pixels; a width whose code states no plain length is not written.
-			draft = Object.fromEntries( Object.keys( draft ).map( ( w ) => [ w, usedValueDraft( st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ) ] ).filter( ( [ , v ] ) => null !== v ) );
+		} else if ( ! layer && USED_VALUE.includes( prop ) ) {
+			// A used-value property: the declared value, never the laid-out pixels; another declared form is named.
+			const u = usedValueDrafts( draft, ( w ) => st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] );
+			u.notPlain.forEach( ( n ) => unmapped( st, rec, ref, { slot, property: prop, value: n.declared, reason: `not-plain: the code declares ${ n.declared } at ${ n.width }px, which no setting holds as a length (the rendered pixels are a layout result)` } ) );
+			draft = u.draft;
 			if ( ! Object.keys( draft ).length ) {
 				continue;
 			}

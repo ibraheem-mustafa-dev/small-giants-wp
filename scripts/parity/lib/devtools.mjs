@@ -177,14 +177,25 @@ export function cascadeWinner( matched, prop ) {
 	// A presentation attribute (an svg's width="18") is an author declaration below every rule; SVG reads a unitless
 	// length as px.
 	const attrs = ( matched.attributesStyle?.cssProperties || [] ).map( ( p ) => ( /^\d*\.?\d+$/.test( String( p.value ).trim() ) && /width|height|^(x|y|r|rx|ry|cx|cy)$/.test( p.name ) ? { ...p, value: `${ String( p.value ).trim() }px` } : p ) );
-	const decls = [
-		{ cssProperties: attrs },
-		...( matched.matchedCSSRules || [] ).filter( ( m ) => 'user-agent' !== m.rule?.origin ).map( ( m ) => m.rule.style ),
-		...( matched.inlineStyle ? [ matched.inlineStyle ] : [] ),
-	].flatMap( ( s ) => ( s?.cssProperties || [] ).filter( ( p ) => p.name === prop && ! p.disabled && false !== p.parsedOk && '' !== String( p.value ).trim() ) );
-	const important = decls.filter( ( p ) => p.important );
-	const win = ( important.length ? important : decls ).at( -1 );
-	return win ? String( win.value ).replace( /\s*!important\s*$/, '' ).trim() : null;
+	// Each declaration with where it sits: matched rules arrive in normal cascade order (earlier layers, later layers,
+	// unlayered; specificity within each), so a normal declaration's winner is the last one.
+	const sources = [
+		{ style: { cssProperties: attrs }, layer: null, inline: false },
+		...( matched.matchedCSSRules || [] ).filter( ( m ) => 'user-agent' !== m.rule?.origin ).map( ( m ) => ( { style: m.rule.style, layer: ( m.rule.layers || [] ).map( ( l ) => l.text ).join( '.' ) || null, inline: false } ) ),
+		...( matched.inlineStyle ? [ { style: matched.inlineStyle, layer: null, inline: true } ] : [] ),
+	];
+	const decls = sources.flatMap( ( s ) => ( s.style?.cssProperties || [] ).filter( ( p ) => p.name === prop && ! p.disabled && false !== p.parsedOk && '' !== String( p.value ).trim() ).map( ( p ) => ( { p, layer: s.layer, inline: s.inline } ) ) );
+	const important = decls.filter( ( d ) => d.p.important );
+	let win = decls.at( -1 );
+	if ( important.length ) {
+		// Important declarations reverse the layer order (CSS Cascade 5): inline wins, then the earliest layer (the
+		// first layered one in cascade order), then unlayered; within one of those the last declaration wins.
+		const inline = important.filter( ( d ) => d.inline );
+		const firstLayer = important.find( ( d ) => d.layer )?.layer;
+		const pool = inline.length ? inline : ( firstLayer ? important.filter( ( d ) => d.layer === firstLayer ) : important );
+		win = pool.at( -1 );
+	}
+	return win ? String( win.p.value ).replace( /\s*!important\s*$/, '' ).trim() : null;
 }
 
 // Every longhand an author declaration names on the element (presentation attributes, author rules, inline style). A

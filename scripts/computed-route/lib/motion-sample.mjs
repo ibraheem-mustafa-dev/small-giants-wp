@@ -61,7 +61,8 @@ function lerpArg( a, b, p ) {
 	if ( ( x[ 2 ] && x[ 2 ] !== unit ) || ( y[ 2 ] && y[ 2 ] !== unit ) || ( ! x[ 2 ] && 0 !== Number( x[ 1 ] ) && unit ) || ( ! y[ 2 ] && 0 !== Number( y[ 1 ] ) && unit ) ) {
 		return null;
 	}
-	return `${ Number( x[ 1 ] ) + ( ( Number( y[ 1 ] ) - Number( x[ 1 ] ) ) * p ) }${ unit }`;
+	// Six decimals, never exponent form (2e-9px), which the matrix reader does not parse.
+	return `${ Number( ( Number( x[ 1 ] ) + ( ( Number( y[ 1 ] ) - Number( x[ 1 ] ) ) * p ) ).toFixed( 6 ) ) }${ unit }`;
 }
 
 const fnList = ( s ) => [ ...String( s ).matchAll( /([a-zA-Z0-9]+)\(([^)]*)\)/g ) ].map( ( [ , name, inner ] ) => ( { name: name.toLowerCase(), args: inner.split( /\s*,\s*/ ).map( ( x ) => x.trim() ) } ) );
@@ -184,8 +185,11 @@ export function measuredTransform( pose, animates ) {
 }
 
 // The sampled poses of one width against the code's: one line per fraction and channel that differs. A seek is exact,
-// so the tolerances only absorb rounding: 0.03 of opacity, 0.02 on a matrix entry, 1px (or 5% of the travel) on a move.
-// `samples` is the probe's [{ f, pose }]; an entrance the code plays as an animation with nothing to sample is a line.
+// so the tolerances are rounding sized: 0.01 of opacity (the probe reads it to 0.001), 0.005 on a matrix entry (about
+// 0.3 degrees, or half a percent of scale) and 0.5px on a move. `samples` is the probe's [{ f, pose }]; an entrance the
+// code plays as an animation with nothing to sample is a line, and so is a width where no channel could be compared
+// (values the code computes, or transform lists CSS interpolates as matrices), so a skipped comparison never reads as
+// agreement.
 export function sampledPoseDifferences( width, record, samples ) {
 	if ( ! Array.isArray( samples ) ) {
 		return [];
@@ -194,11 +198,15 @@ export function sampledPoseDifferences( width, record, samples ) {
 		return /^(?:waapi|css-animation|css-transition)$/.test( record.mechanism || '' ) ? [ `${ width }: the render ran no animation to sample` ] : [];
 	}
 	const out = [];
+	let compared = 0;
 	for ( const { f, pose } of samples ) {
 		const want = codePoseAt( record, f );
 		const at = `${ width }: at ${ Math.round( f * 100 ) }%`;
-		if ( 'number' === typeof want.opacity && Math.abs( Number( pose.opacity ) - want.opacity ) > 0.03 ) {
-			out.push( `${ at } opacity measured ${ pose.opacity }, the code has ${ Math.round( want.opacity * 1000 ) / 1000 }` );
+		if ( 'number' === typeof want.opacity ) {
+			compared++;
+			if ( Math.abs( Number( pose.opacity ) - want.opacity ) > 0.01 ) {
+				out.push( `${ at } opacity measured ${ pose.opacity }, the code has ${ Math.round( want.opacity * 1000 ) / 1000 }` );
+			}
 		}
 		if ( 'string' !== typeof want.transform ) {
 			continue;
@@ -208,9 +216,13 @@ export function sampledPoseDifferences( width, record, samples ) {
 		if ( ! wm || ! gm ) {
 			continue;
 		}
-		if ( ! sameMatrix( wm, gm, { tol: 0.02, tolPx: Math.max( 1, 0.05 * Math.hypot( wm[ 12 ], wm[ 13 ] ) ) } ) ) {
+		compared++;
+		if ( ! sameMatrix( wm, gm, { tol: 0.005, tolPx: 0.5 } ) ) {
 			out.push( `${ at } transform measured ${ got }, the code has ${ want.transform }` );
 		}
+	}
+	if ( ! compared ) {
+		out.push( `${ width }: the sampled pose is not compared (the code's values are computed at run time or interpolate as matrices)` );
 	}
 	return out;
 }

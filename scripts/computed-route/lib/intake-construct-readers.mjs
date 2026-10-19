@@ -35,7 +35,7 @@ export function readTemplateElement( row ) {
 export function readLoop( row ) {
 	const [ list ] = holes( String( row.detail?.list ?? '' ) );
 	if ( ! list ) {
-		throw new Error( `sc-for at ${ row.draftId } repeats over ${ JSON.stringify( row.detail?.list ?? null ) }, which is not a {{ }} binding` );
+		throw new Error( `sc-for at ${ row.draftId } repeats over ${ JSON.stringify( row.detail?.list ?? null ) }, which is not a {{ }} binding (the runtime reads it as text and refuses it as not an array)` );
 	}
 	return { list, as: row.detail.as || 'item', identity: row.draftId };
 }
@@ -199,6 +199,10 @@ export function readLink( row ) {
 		kind = 'anchor';
 	} else if ( /^(?:tel|mailto|sms):/i.test( href ) ) {
 		kind = 'contact';
+	} else if ( /^javascript:/i.test( href ) ) {
+		kind = 'script';
+	} else if ( /^data:/i.test( href ) ) {
+		kind = 'data';
 	} else if ( /^https?:\/\//i.test( href ) ) {
 		kind = 'external';
 	} else if ( href ) {

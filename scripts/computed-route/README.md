@@ -796,7 +796,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `readDraft(options)` → `{ origin, widths, declared, sweep }`.
 
 ### `lib/fill-declared.mjs`
-- `extraProps(declared, read)` → `{ prop: declared }` the code sets beyond Fill's list (motion timings and CSS-wide keywords left out); `readExtras(page, jobs, extras, resolveSrc)` → their rendered values; `usedValueDraft(declared)` → the plain declared length a used-value property takes, or null; `USED_VALUE`, `CSS_WIDE`.
+- `extraProps(declared, read)` → `{ prop: declared }` the code sets beyond Fill's list (motion timings, CSS-wide keywords and shorthands left out); `readExtras(page, jobs, extras, resolveSrc)` → their rendered values; `missingExtras(result, read, widths)` → the extras declared at some read width but not yet read at another, so readDraft reads them at every width; `isShorthand(prop)` (mdn-data).
+- `usedValueDraft(declared)` → the plain declared length a used-value property takes, or null; `usedValueDrafts(draft, declaredAt)` → `{ draft, notPlain }` (the widths whose code states another form, which Fill names); `USED_VALUE` (height, the offsets, row tracks; width and the column tracks keep their own rules), `CSS_WIDE`.
 
 ### `lib/fill-confirm.mjs`
 - `confirmRecords({ writes, nodes, reads, defects, rootComponent })` → one FR-48-36 record per written value and read width (declared, emitted, rendered draft, rendered live left for the check, D–R, tolerance, verdict).
@@ -868,7 +869,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `elementKey(finder, rootComponent)`, `recordsByElement(records)`, `partForSlot(block, slot, targets)`.
 
 ### `lib/motion-layers.mjs`
-- `asPlayed(record)` → a one-shot record as it plays (a reverse run swaps from and to and mirrors its keyframe offsets).
+- `asPlayed(record)` → a one-shot record as it plays (a reverse run swaps from and to, mirrors its keyframe offsets and its easing; a curve with no mirror is kept as `easingUnmirrored` and named by `entranceLayer`). `mirrorEasing(easing)` → E'(x) = 1 - E(1 - x) as a CSS easing, or null.
 - `classify(record)` → `entrance`, `hover`, `effect` (an endless or repeating animation) or `skip` with the owning wave. `entranceLayer`, `hoverLayer` → layers.
 - `poseDistance`, `matchByPose`, `delaySteps` (a per-item delay's offset and step), `delayOf`. `entranceLayer` writes `values.keyframes` (one entry per distinct offset, offsets in percent, at most 8) when a property carries more than two keyframes, and refuses a record whose stop value the code computes.
 

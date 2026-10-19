@@ -86,5 +86,7 @@ test( 'MUST FAIL: a link is read by what its address is; one with no address is 
 	assert.equal( k( 'mailto:a@b.c' ), 'contact' );
 	assert.equal( k( 'https://wa.me/1', 'noopener' ), 'external' );
 	assert.equal( k( 'about.html' ), 'page' );
+	assert.equal( k( 'javascript:void(0)' ), 'script' );
+	assert.equal( k( 'data:text/plain,x' ), 'data' );
 	assert.throws( () => readLink( row( 'link', { href: '' } ) ), /has no address/ );
 } );

@@ -9,6 +9,31 @@ import { serveDraft } from '../lib/draft.mjs';
 import { sampleEntrances, shapeEntrance } from '../lib/fill-entrance.mjs';
 import { easingAt, lerpTransform, codePoseAt, measuredTransform, sampledPoseDifferences } from '../lib/motion-sample.mjs';
 import { entranceCheck } from '../lib/motion-check.mjs';
+import { mirrorEasing, asPlayed } from '../lib/motion-layers.mjs';
+
+test( 'MUST FAIL: a reverse run is played forwards with its easing mirrored, E\'(x) = 1 - E(1 - x); a curve with no mirror is kept and named', () => {
+	assert.equal( mirrorEasing( 'linear' ), 'linear' );
+	assert.equal( mirrorEasing( 'ease' ), 'cubic-bezier(0.75, 0, 0.75, 0.9)' );
+	assert.equal( mirrorEasing( 'ease-in' ), 'cubic-bezier(0, 0, 0.58, 1)' );
+	assert.equal( mirrorEasing( 'cubic-bezier(.16,.84,.32,1)' ), 'cubic-bezier(0.68, 0, 0.84, 0.16)' );
+	assert.equal( mirrorEasing( 'steps(4, end)' ), 'steps(4, start)' );
+	assert.equal( mirrorEasing( 'steps(3)' ), 'steps(3, start)' );
+	assert.equal( mirrorEasing( 'linear(0, 0.5 20%, 1)' ), null );
+	for ( const x of [ 0.1, 0.3, 0.5, 0.8 ] ) {
+		close( easingAt( mirrorEasing( 'ease' ), x ), 1 - easingAt( 'ease', 1 - x ), 1e-4 );
+	}
+	assert.equal( asPlayed( { direction: 'reverse', easing: 'ease-out', properties: [] } ).easing, 'cubic-bezier(0.42, 0, 1, 1)' );
+	assert.deepEqual( asPlayed( { direction: 'reverse', easing: 'token:easing.x', properties: [] } ).easingUnmirrored, 'token:easing.x' );
+} );
+
+test( 'MUST FAIL: the tolerances are rounding sized, and a width where nothing could be compared says so', () => {
+	const at = ( f, transform ) => ( { f, pose: { opacity: 1, transform, translate: 'none', scale: 'none', rotate: 'none' } } );
+	const scaled = { mechanism: 'waapi', easing: 'linear', properties: [ { property: 'transform', from: 'scale(0.985)', to: 'none' } ] };
+	assert.equal( sampledPoseDifferences( 1440, scaled, [ at( 0, 'none' ) ] ).length, 1, 'a 1.5% scale the render never drew is a difference' );
+	const computed = { mechanism: 'waapi', easing: 'linear', properties: [ { property: 'transform', from: 'translateY(x)', to: 'none', formula: 'translateY(x)' } ] };
+	assert.deepEqual( sampledPoseDifferences( 768, computed, [ at( 0, 'none' ) ] ), [ '768: the sampled pose is not compared (the code\'s values are computed at run time or interpolate as matrices)' ] );
+	assert.equal( lerpTransform( 'translateY(1px)', 'translateY(0px)', 0.999999999 ), 'translatey(0px)', 'never exponent form' );
+} );
 
 const close = ( a, b, tol = 1e-3 ) => assert.ok( Math.abs( a - b ) <= tol, `${ a } is not ${ b }` );
 
@@ -79,10 +104,11 @@ body { margin: 0; }
 @keyframes bob { 0% { transform: translateY(40px); opacity: 0; } 30% { transform: translateY(-40px); opacity: 1; } 100% { transform: none; opacity: 1; } }
 .ca { animation: bob 800ms ease-in-out 100ms both; }
 </style></head><body>
-<div class="box wa"></div><div class="box ca"></div><div class="box tp"></div>
+<div class="box wa"></div><div class="box ca"></div><div class="box tp"></div><div class="box rv"></div>
 <script>
 document.querySelector( '.wa' ).animate( [ { opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'none' } ], { duration: 600, delay: 150, easing: 'cubic-bezier(.16,.84,.32,1)' } );
 document.querySelector( '.tp' ).animate( [ { translate: '0 30px' }, { translate: '0 0' } ], { duration: 500, easing: 'ease-out' } );
+document.querySelector( '.rv' ).animate( [ { opacity: 1 }, { opacity: 0.2 } ], { duration: 600, direction: 'reverse', easing: 'ease' } );
 </script></body></html>`;
 
 const RECORDS = {
@@ -92,6 +118,7 @@ const RECORDS = {
 		{ property: 'opacity', keyframes: [ { offset: 0, value: '0' }, { offset: 0.3, value: '1' }, { offset: 1, value: '1' } ] },
 	] },
 	tp: { mechanism: 'waapi', easing: 'ease-out', properties: [ { property: 'translate', from: '0 30px', to: '0 0' } ] },
+	rv: { mechanism: 'waapi', easing: 'ease', direction: 'reverse', properties: [ { property: 'opacity', from: 1, to: 0.2 } ] },
 };
 
 test( 'MUST FAIL, in a real browser: each finite animation is sought to 0, half and all of its run; the code\'s poses match, and a misread easing or a CSS animation eased as a Web one does not', async () => {

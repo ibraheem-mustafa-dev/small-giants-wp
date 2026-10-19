@@ -31,7 +31,25 @@ export function propertyType( prop, declared, rendered ) {
 	if ( /-(?:duration|delay)$/.test( prop ) ) {
 		return 'time';
 	}
-	return null !== toPx( String( declared ).trim() ) && null !== toPx( String( rendered ).trim() ) ? 'length' : 'keyword';
+	return null !== lengthPx( declared ) && null !== lengthPx( rendered ) ? 'length' : 'keyword';
+}
+
+// A length in px (a unitless 0 is 0), or null.
+const lengthPx = ( v, fontPx = 16 ) => ( '0' === String( v ?? '' ).trim() ? 0 : toPx( String( v ?? '' ).trim(), fontPx ) );
+const colourOf = ( v ) => ( 'transparent' === String( v ).trim().toLowerCase() ? { r: 0, g: 0, b: 0, a: 0 } : parseColour( v ) );
+// A value's top-level parts (split on spaces and commas outside brackets).
+const parts = ( v ) => String( v ).match( /(?:[^\s,(]+|\([^)]*\))+/g ) || [];
+// Two parts agree: colours within ΔE and alpha, lengths within 0.5px, anything else equal ignoring case.
+function samePart( a, b, fontPx ) {
+	const [ ca, cb ] = [ colourOf( a ), colourOf( b ) ];
+	if ( ca && cb ) {
+		return deltaE( ca, cb ) <= COLOUR_DE && Math.abs( ca.a - cb.a ) <= 0.02;
+	}
+	const [ la, lb ] = [ lengthPx( a, fontPx ), lengthPx( b, fontPx ) ];
+	if ( null !== la && null !== lb ) {
+		return Math.abs( la - lb ) <= 0.5;
+	}
+	return a.toLowerCase() === b.toLowerCase();
 }
 
 // D–R for one property at one width: { dr: 'agree' | 'disagree' | 'runtime' | 'no-declared' | 'unreadable', type,
@@ -42,14 +60,17 @@ export function compareDR( prop, declared, rendered, fontPx = 16 ) {
 	}
 	const d = String( declared ).trim().replace( /\s*!important$/, '' );
 	const r = String( rendered ?? '' ).trim();
-	if ( RUNTIME.test( d ) ) {
+	// A value the browser resolves itself: run-time functions and relative units, a CSS-wide keyword (the default),
+	// `currentcolor`, and a keyword the render states as a plain length (`thin`, `medium`, `auto` laid out): its render
+	// is its value.
+	if ( RUNTIME.test( d ) || /^(?:initial|inherit|unset|revert|revert-layer|currentcolor)$/i.test( d ) || ( /^[a-z-]+$/i.test( d ) && null !== lengthPx( r ) ) ) {
 		return { dr: 'runtime', type: null, tolerance: null };
 	}
 	const type = propertyType( prop, d, r );
 	const out = ( ok ) => ( { dr: null === ok ? 'unreadable' : ok ? 'agree' : 'disagree', type, tolerance: TOLERANCE[ type ] } );
 	switch ( type ) {
 		case 'colour': {
-			const [ a, b ] = [ parseColour( d ), parseColour( r ) ];
+			const [ a, b ] = [ colourOf( d ), colourOf( r ) ];
 			return out( a && b ? deltaE( a, b ) <= COLOUR_DE && Math.abs( a.a - b.a ) <= 0.02 : null );
 		}
 		case 'font-family':
@@ -72,9 +93,13 @@ export function compareDR( prop, declared, rendered, fontPx = 16 ) {
 			return out( null !== a && null !== b ? Math.abs( a - b ) <= 10 : null );
 		}
 		case 'length':
-			return out( Math.abs( toPx( d, fontPx ) - toPx( r, fontPx ) ) <= 0.5 );
-		default:
-			return out( d.toLowerCase().replace( /\s+/g, ' ' ) === r.toLowerCase().replace( /\s+/g, ' ' ) );
+			return out( Math.abs( lengthPx( d, fontPx ) - lengthPx( r, fontPx ) ) <= 0.5 );
+		default: {
+			// Part by part; a value the browser serialises in another shape (a shadow with its colour moved first and a
+			// spread added, a radius expanded to four corners) cannot be compared here.
+			const [ a, b ] = [ parts( d ), parts( r ) ];
+			return out( a.length === b.length ? a.every( ( x, i ) => samePart( x, b[ i ], fontPx ) ) : null );
+		}
 	}
 }
 
@@ -120,8 +145,13 @@ export function confirmRecords( { writes, nodes, reads, defects = new Map(), roo
 	const out = [];
 	for ( const w of writes.filter( ( x ) => x.prop && ! x.prop.startsWith( '(' ) ) ) {
 		const slot = String( w.slot ?? '' );
-		const target = nodes[ w.index ]?.targets.find( ( t ) => t.slot === slot );
+		// A painted pseudo layer (`::before`, `::after`) is its element's: rendered from the layer, with no declared read.
+		const layer = /::(?:before|after)$/.exec( slot )?.[ 0 ] ?? null;
+		const base = layer ? slot.slice( 0, -layer.length ) : slot;
+		const target = nodes[ w.index ]?.targets.find( ( t ) => t.slot === base );
+		const record = { node: w.node, block: w.block, attribute: w.attr, property: w.prop, state: 'default', emitted: w.after ?? null, renderedLive: null };
 		if ( ! target ) {
+			out.push( { ...record, draftId: null, width: null, declared: null, renderedDraft: null, dr: 'no-target', tolerance: null, verdict: 'open' } );
 			continue;
 		}
 		const draftId = draftIdOf( target.finder, rootComponent );
@@ -130,10 +160,10 @@ export function confirmRecords( { writes, nodes, reads, defects = new Map(), roo
 			if ( ! snap || snap.missing ) {
 				continue;
 			}
-			const declared = reads.declared?.[ width ]?.[ target.id ]?.[ w.prop ] ?? null;
-			const rendered = snap.styles?.[ w.prop ] ?? null;
+			const declared = layer ? null : reads.declared?.[ width ]?.[ target.id ]?.[ w.prop ] ?? null;
+			const rendered = ( layer ? snap.pseudo?.[ layer ]?.[ w.prop ] : snap.styles?.[ w.prop ] ) ?? null;
 			const c = compareDR( w.prop, declared, rendered, parseFloat( snap.styles?.[ 'font-size' ] ) || 16 );
-			out.push( { draftId, node: w.node, block: w.block, attribute: w.attr, property: w.prop, width, state: 'default', declared, emitted: w.after ?? null, renderedDraft: rendered, renderedLive: null, dr: c.dr, tolerance: c.tolerance, verdict: verdictOf( c.dr, defects.get( draftId )?.has( w.prop ) ) } );
+			out.push( { ...record, draftId, width, declared, renderedDraft: rendered, dr: c.dr, tolerance: c.tolerance, verdict: verdictOf( c.dr, defects.get( draftId )?.has( w.prop ) ) } );
 		}
 	}
 	return out;

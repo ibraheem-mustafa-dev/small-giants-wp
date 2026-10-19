@@ -1969,8 +1969,8 @@
 		"construct:binding": {
 			"recognise": "construct:binding",
 			"write": "scripts/computed-route/fill.mjs#fillSurface",
-			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "a {{ }} binding: routed by what it fills (readBinding): text and styles reach Fill from the render, links its link decisions; a handler, ref, loop list or form attribute is read as its own capability"
+			"check": "scripts/computed-route/lib/intake-defects-binding.mjs#unresolvedBindingDefects",
+			"note": "a {{ }} binding: the route reads what it renders, not the binding. readBinding routes each to the place it fills; Fill writes the text, styles and links it renders (fillSurface); a binding that renders unresolved is a draft defect (unresolvedBindingDefects). A handler, ref or loop list it fills is its own capability (construct:handler and construct:ref wait in behaviour recognisers), and so is a form attribute"
 		},
 		"construct:data-hook": {
 			"recognise": "construct:data-hook",
@@ -1988,8 +1988,8 @@
 		"construct:getter": {
 			"recognise": "construct:getter",
 			"write": "scripts/computed-route/fill.mjs#fillSurface",
-			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "a logic getter: read through its component's own reads and the template expressions that name it (readGetter; one nothing reads is reported as dead code)"
+			"check": "scripts/computed-route/lib/intake-defects-binding.mjs#unresolvedBindingDefects",
+			"note": "a logic getter: read through its component's own reads and the template expressions that name it (readGetter; one nothing reads is reported as unused); its values reach the page through the bindings that use them, as construct:renderVals-key"
 		},
 		"construct:handler": {
 			"recognise": "construct:handler",
@@ -2021,7 +2021,7 @@
 			"recognise": "construct:link",
 			"write": "scripts/computed-route/lib/fill-presence.mjs#linkDecisions",
 			"check": "scripts/computed-route/lib/solve-rows.mjs#resolveContent",
-			"note": "a link by its address (readLink): anchors, contact links, bound and external addresses reach the link decisions; head links to a font host are the fonts (construct:helmet-font)"
+			"note": "a link by its address (readLink): anchors, contact links, bound, external and page addresses reach the link decisions; a head link (a font host or stylesheet) is the document's: stylesheets are read by the CSS readers, fonts are the snapshot's (construct:helmet-font, site and surfaces); javascript: and data: addresses are named as such"
 		},
 		"construct:observer": {
 			"recognise": "construct:observer",
@@ -2040,8 +2040,8 @@
 		"construct:renderVals-key": {
 			"recognise": "construct:renderVals-key",
 			"write": "scripts/computed-route/fill.mjs#fillSurface",
-			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "a renderVals key: read through the template expressions that use it (readRenderKey; an unused key is reported as dead code), its values reaching Fill through those bindings"
+			"check": "scripts/computed-route/lib/intake-defects-binding.mjs#unresolvedBindingDefects",
+			"note": "a renderVals key: read through the template expressions that use it (readRenderKey; one no expression uses is reported as unused dead code); its values reach the page through those bindings, whose rendered results Fill writes and whose unresolved ones are draft defects"
 		},
 		"construct:sc-for": {
 			"recognise": "construct:sc-for",
@@ -11845,10 +11845,10 @@
 			}
 		},
 		"html-attr:style.media": {
-			"recognise": "scripts/computed-route/lib/intake-inventory-css.mjs#cssBlocks",
+			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
 			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
 			"check": "scripts/computed-route/lib/fill-confirm.mjs#confirmRecords",
-			"note": "<style media>: the rules apply under the media query, which the render at 375, 768 and 1440 and Fill's declared read follow"
+			"note": "<style media>: Chrome matches a sheet's rules only where its media applies, so Fill's declared read (readDraft, every width) and the render at 375, 768 and 1440 follow it; no draft uses it yet"
 		},
 		"html-attr:style.type": {
 			"excluded": {
@@ -13555,7 +13555,7 @@
 			"write": null,
 			"check": null,
 			"wave": "site and surfaces",
-			"note": "the document title: the site title and tagline (Mama's redesign: \"Mama's Munches · Handmade lactation cookies\"); nothing reads it yet: Site Info (FR-48-84)"
+			"note": "the document title: a draft states its site name and tagline there (\"Name · tagline\"); nothing reads it yet: Site Info (FR-48-84)"
 		},
 		"html:tr": {
 			"recognise": null,

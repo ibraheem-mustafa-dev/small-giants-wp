@@ -154,7 +154,34 @@ export function asPlayed( record ) {
 		return record;
 	}
 	const properties = ( record.properties || [] ).map( ( p ) => ( { ...p, from: p.to, to: p.from, ...( Array.isArray( p.keyframes ) ? { keyframes: p.keyframes.map( ( k ) => ( { ...k, offset: Math.round( ( 1 - Number( k.offset ) ) * 10000 ) / 10000 } ) ).reverse() } : {} ) } ) );
-	return { ...record, properties, direction: 'normal' };
+	// The easing runs on the reversed progress, so played forwards it is mirrored: E'(x) = 1 - E(1 - x).
+	const easing = mirrorEasing( record.easing );
+	return { ...record, properties, direction: 'normal', ...( null === easing ? { easingUnmirrored: record.easing } : { easing } ) };
+}
+
+const BEZIER_KEYWORDS = { ease: [ 0.25, 0.1, 0.25, 1 ], 'ease-in': [ 0.42, 0, 1, 1 ], 'ease-out': [ 0, 0, 0.58, 1 ], 'ease-in-out': [ 0.42, 0, 0.58, 1 ] };
+const STEP_MIRROR = { 'jump-start': 'jump-end', 'jump-end': 'jump-start', start: 'end', end: 'start', 'jump-none': 'jump-none', 'jump-both': 'jump-both' };
+
+// An easing mirrored in time and output (the curve a reverse run plays, read forwards): linear and the symmetric curves
+// are their own mirror, cubic-bezier(x1, y1, x2, y2) becomes cubic-bezier(1 - x2, 1 - y2, 1 - x1, 1 - y1), steps swap
+// their jump side. null for a curve with no mirror here (linear() stops, a token, a value the code computes).
+export function mirrorEasing( easing ) {
+	const s = String( easing ?? 'linear' ).trim().toLowerCase();
+	if ( 'linear' === s ) {
+		return 'linear';
+	}
+	const steps = /^steps\(\s*(\d+)\s*(?:,\s*([a-z-]+)\s*)?\)$/.exec( s );
+	if ( steps ) {
+		const side = STEP_MIRROR[ steps[ 2 ] || 'end' ];
+		return side ? `steps(${ steps[ 1 ] }, ${ side })` : null;
+	}
+	const m = /^cubic-bezier\(([^)]*)\)$/.exec( s );
+	const v = BEZIER_KEYWORDS[ s ] || ( m ? m[ 1 ].split( ',' ).map( Number ) : null );
+	if ( ! v || 4 !== v.length || ! v.every( Number.isFinite ) ) {
+		return null;
+	}
+	const r = ( n ) => Math.round( n * 10000 ) / 10000;
+	return `cubic-bezier(${ r( 1 - v[ 2 ] ) }, ${ r( 1 - v[ 3 ] ) }, ${ r( 1 - v[ 0 ] ) }, ${ r( 1 - v[ 1 ] ) })`;
 }
 
 // `entrance.base` from one entrance record: { layer, notes } or { unmapped }. `measured` (the sampled entrance at the
@@ -163,7 +190,7 @@ export function entranceLayer( given, mdb, measured = null ) {
 	const record = asPlayed( given );
 	const kf = keyframeStops( record.properties );
 	const pose = poseOf( record.properties );
-	const notes = [];
+	const notes = record.easingUnmirrored ? [ `plays in reverse with ${ record.easingUnmirrored }, which has no forward mirror here, so its curve is written unmirrored` ] : [];
 	const unsupported = kf ? kf.unsupported : pose.unsupported;
 	const other = kf ? kf.other : pose.other;
 	if ( kf?.computed.length ) {

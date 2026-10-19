@@ -11,7 +11,7 @@ import { makeHelpers } from '../../parity/lib/helpers.mjs';
 import { SCOPE_ATTR, scopeFinder, scopeSelector } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
 import { FLUID_WIDTHS, SWEEP_WIDTHS, LENGTH_PROPS } from './fill-values.mjs';
-import { extraProps, readExtras } from './fill-declared.mjs';
+import { extraProps, readExtras, missingExtras } from './fill-declared.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -156,7 +156,10 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				result.declared[ width ] = {};
 				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
 				for ( const j of found ) {
-					result.declared[ width ][ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null ).catch( () => null );
+					result.declared[ width ][ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null ).catch( ( e ) => {
+						log( `declared read failed for ${ j.id } at ${ width }px (its declared values are not judged there): ${ e.message }` );
+						return null;
+					} );
 				}
 				// What the code declares beyond Fill's list, read rendered too (FR-48-8), into the same snapshot.
 				const extras = Object.fromEntries( found.map( ( j ) => [ j.id, extraProps( result.declared[ width ][ j.id ], PROPS ) ] ) );
@@ -165,6 +168,21 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				}
 			}
 			log( `read ${ width }px: ${ Object.values( result.widths[ width ] ).filter( ( s ) => ! s.missing ).length } of ${ jobs.length } targets` );
+			await ctx.close();
+		}
+		// A property the code declares beyond PROPS at one width is read at every read width, so its value at the others
+		// (a default, or another declaration) is known and one width's value is never carried to the rest.
+		const missing = missingExtras( result, PROPS, READ_WIDTHS );
+		if ( Object.keys( missing ).length ) {
+			const { ctx, page } = await openPage( browser, devices, { url, open, width: 1440, origin, external, mirror } );
+			for ( const width of READ_WIDTHS ) {
+				await page.setViewportSize( { width, height: 900 } );
+				await page.waitForTimeout( 80 );
+				const want = Object.fromEntries( Object.entries( missing ).map( ( [ id, by ] ) => [ id, Object.fromEntries( ( by[ width ] || [] ).map( ( p ) => [ p, true ] ) ) ] ) );
+				for ( const [ id, styles ] of Object.entries( await readExtras( page, jobs.filter( ( j ) => result.widths[ width ][ j.id ] && ! result.widths[ width ][ j.id ].missing ), want, RESOLVE ) ) ) {
+					result.widths[ width ][ id ].styles = { ...result.widths[ width ][ id ].styles, ...styles };
+				}
+			}
 			await ctx.close();
 		}
 		if ( sweep ) {
