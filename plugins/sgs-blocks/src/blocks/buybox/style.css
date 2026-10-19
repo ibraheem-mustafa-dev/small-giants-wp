@@ -1182,3 +1182,80 @@
 .sgs-buybox-guided__nav-btn--next:not([aria-disabled='true']):hover {
 	background: color-mix(in srgb, var(--wp--preset--color--primary, #1e1e1e) 85%, #fff 15%);
 }
+
+/* ── Add-to-basket bar (stickyBar) ─────────────────────────────────────────
+   A fixed bar at the bottom of the screen: live price, the chosen options and
+   an Add button. sticky-bar.js adds .is-on while the in-page Add control is
+   scrolled out of view at a device tier that is switched on; until then the
+   bar is off-screen and visibility:hidden, so it is out of the tab order and
+   the accessibility tree. Colours come from the three --sgs-buybox-bar-*
+   properties render.php prints. z-index reads the sticky-bar layer token with
+   a fallback (no theme.json entry). */
+
+.sgs-buybox__bar {
+	position: fixed;
+	inset-inline: 0;
+	bottom: 0;
+	z-index: var(--wp--custom--z-index--sticky-bar, 150);
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+	background: var(--sgs-buybox-bar-bg, var(--wp--preset--color--surface));
+	color: var(--sgs-buybox-bar-text, var(--wp--preset--color--text));
+	border-top: 2px solid var(--sgs-buybox-bar-border, var(--wp--preset--color--border));
+	transform: translateY(110%);
+	visibility: hidden;
+	transition: transform var(--wp--custom--duration--medium, 0.3s) cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s var(--wp--custom--easing--linear, linear) 0.3s; /* sgs-motion: exact */
+}
+
+.sgs-buybox__bar[hidden] {
+	display: none;
+}
+
+.sgs-buybox__bar.is-on {
+	transform: none;
+	visibility: visible;
+	transition-delay: 0s;
+}
+
+.sgs-buybox__bar > div {
+	min-width: 0;
+	flex: 1;
+}
+
+.sgs-buybox__bar-price {
+	display: block;
+	font-weight: 700;
+}
+
+.sgs-buybox__bar-variant {
+	display: block;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.sgs-buybox__bar .buybox__add-to-cart {
+	flex-shrink: 0;
+	min-height: 44px;
+}
+
+/* Leave room under the bar so it never covers the page end or a focused
+   control (WCAG 2.4.11). --sgs-sticky-bar-h is set by sticky-bar.js only while
+   a bar is showing, so these are no-ops otherwise. */
+body {
+	padding-bottom: var(--sgs-sticky-bar-h, 0px);
+}
+
+:root {
+	scroll-padding-bottom: var(--sgs-sticky-bar-h, 0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-buybox__bar,
+	.sgs-buybox__bar.is-on {
+		transition: none;
+	}
+}

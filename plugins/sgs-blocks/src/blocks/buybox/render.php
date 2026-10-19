@@ -647,6 +647,8 @@ if ( null !== $margin_mob_val ) {
 // FR-Wave-B: sticky configurator column (extras.php). Off by default — every
 // existing buybox keeps rendering exactly as before.
 $buybox_sticky          = sgs_buybox_sticky_data( $attributes );
+$buybox_bar             = sgs_buybox_sticky_bar_data( $attributes );
+$buybox_bar_on          = array_sum( $buybox_bar ) > 0;
 $buybox_wrapper_classes = 'sgs-buybox ' . $uid;
 if ( $buybox_sticky['enabled'] ) {
 	$buybox_wrapper_classes .= ' sgs-buybox--sticky-config';
@@ -661,7 +663,12 @@ if ( $buybox_is_guided ) {
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
 // (no 'style' key — the root carries ZERO inline property declarations;
 // every declaration lives in the scoped <style> below).
-$wrapper_attrs = get_block_wrapper_attributes( array( 'class' => $buybox_wrapper_classes ) );
+// The add-to-basket bar's per-device on/off map rides on the root for sticky-bar.js.
+$wrapper_extra = array( 'class' => $buybox_wrapper_classes );
+if ( $buybox_bar_on ) {
+	$wrapper_extra['data-sgs-bar'] = wp_json_encode( $buybox_bar );
+}
+$wrapper_attrs = get_block_wrapper_attributes( $wrapper_extra );
 
 ob_start();
 ?>
@@ -696,6 +703,11 @@ $scoped_css = array_merge(
 	$scoped_css,
 	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky )
 );
+
+// Add-to-basket bar colours (only while the bar prints).
+if ( $buybox_bar_on ) {
+	$scoped_css[] = sgs_buybox_sticky_bar_colour_css( $attributes, $root_sel );
+}
 
 // Price typography (font-family/size/weight) — shared
 // TypographyControls prefix 'price', scoped to the current-price figure only
@@ -1345,6 +1357,19 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	<?php endif; ?>
 
 	</div><?php // end .sgs-buybox__config-col. ?>
+
+	<?php
+	// ── 8h. Add-to-basket bar (stickyBar): a fixed bottom bar that sticky-bar.js
+	// shows once the Add button has scrolled out of view. Printed only when a
+	// device tier turns it on.
+	if ( $buybox_bar_on ) {
+		$buybox_bar_button_classes = 'wp-element-button buybox__add-to-cart';
+		if ( '' !== $add_to_cart_style_class ) {
+			$buybox_bar_button_classes .= ' buybox__add-to-cart--' . $add_to_cart_style_class;
+		}
+		echo sgs_buybox_sticky_bar_html( $manifest, $price_display, $add_to_cart_label, $buybox_bar_button_classes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside sgs_buybox_sticky_bar_html().
+	}
+	?>
 
 	<?php
 	// ── 8-island. Gallery data-island (FR-30-10 Step-10a, all-variation fix).

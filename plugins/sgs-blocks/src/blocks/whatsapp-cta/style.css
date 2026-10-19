@@ -105,7 +105,8 @@
 /* ===== Floating variant ===== */
 .sgs-whatsapp-cta--floating {
 	position: fixed;
-	bottom: 24px;
+	/* Rides above a showing sgs/buybox add-to-basket bar (--sgs-sticky-bar-h is 0 otherwise). */
+	bottom: calc(var(--sgs-sticky-bar-h, 0px) + 24px);
 	right: 24px;
 	z-index: var(--wp--custom--z-index--floating, 200);
 	opacity: 0;

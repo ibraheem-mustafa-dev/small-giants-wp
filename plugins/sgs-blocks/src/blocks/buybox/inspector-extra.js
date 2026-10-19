@@ -1,12 +1,17 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
-import { fillRow, textRow, SgsLengthControl, ResponsiveControl, SgsBorderControl } from '../../components';
+import { fillRow, textRow, SgsLengthControl, ResponsiveControl, ResponsiveOverride, SgsBorderControl } from '../../components';
 import { patchTier } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const THUMB_BORDER_UNITS = [
 	{ value: 'px', label: 'px', default: 1 },
 	{ value: 'rem', label: 'rem', default: 0.0625 },
+];
+
+const STICKY_BAR_OPTIONS = [
+	{ label: __( 'Off', 'sgs-blocks' ), value: 'off' },
+	{ label: __( 'Show once the Add button has scrolled out of view', 'sgs-blocks' ), value: 'after-button' },
 ];
 
 const STICKY_OFFSET_UNITS = [
@@ -30,6 +35,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		stickyEnabled,
 		stackBelow,
 		stickyOffset,
+		stickyBar,
 		rrpMetaKey,
 		rrpSavingFormat,
 		showStockStatus,
@@ -96,6 +102,25 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 						) }
 					/>
 				) }
+				<ResponsiveOverride
+					label={ __( 'Add-to-basket bar', 'sgs-blocks' ) }
+					value={ stickyBar }
+					onChange={ ( obj ) => setAttributes( { stickyBar: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, setOwnValue } ) => (
+						<SelectControl
+							value={ ownValue || effectiveValue || 'off' }
+							options={ STICKY_BAR_OPTIONS }
+							onChange={ ( val ) => setOwnValue( val ) }
+							help={ __(
+								'A fixed bar at the bottom of the screen with the price, the chosen options and an Add button. Usually switched on for phones only.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ResponsiveOverride>
 			</PanelBody>
 
 			<PanelBody
@@ -312,6 +337,27 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
  */
 export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 	return [
+		fillRow( {
+			key: 'sticky-bar-background',
+			label: __( 'Bar background', 'sgs-blocks' ),
+			attrs: { base: 'stickyBarBackground' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'sticky-bar-text',
+			label: __( 'Bar text', 'sgs-blocks' ),
+			attrs: { base: 'stickyBarText' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'sticky-bar-border',
+			label: __( 'Bar border', 'sgs-blocks' ),
+			attrs: { base: 'stickyBarBorderColour' },
+			attributes,
+			setAttributes,
+		} ),
 		fillRow( {
 			key: 'rrp-pill-background',
 			label: __( 'RRP pill background', 'sgs-blocks' ),

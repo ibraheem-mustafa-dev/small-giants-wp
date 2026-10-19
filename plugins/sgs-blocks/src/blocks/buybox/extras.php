@@ -55,6 +55,103 @@ if ( ! function_exists( 'sgs_buybox_sticky_data' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_buybox_sticky_bar_data' ) ) {
+	/**
+	 * Resolve the add-to-basket bar setting into a per-device on/off map.
+	 *
+	 * `stickyBar` is a `{desktop,tablet,mobile}` object whose value is
+	 * 'after-button' or 'off'; a tier left unset follows the next larger one
+	 * (sgs_resolve_on_tiers), so unset everywhere is off everywhere. The keys
+	 * d, t and m are what sticky-bar.js reads from the root's `data-sgs-bar`.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return array{d: int, t: int, m: int} 1 where the bar is on at that device, else 0.
+	 */
+	function sgs_buybox_sticky_bar_data( array $attributes ): array {
+		$on = sgs_resolve_on_tiers( $attributes['stickyBar'] ?? array(), 'after-button', 'off' );
+
+		return array(
+			'd' => (int) in_array( 'desktop', $on, true ),
+			't' => (int) in_array( 'tablet', $on, true ),
+			'm' => (int) in_array( 'mobile', $on, true ),
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_sticky_bar_colour_css' ) ) {
+	/**
+	 * The bar's three colours as custom properties on the block root.
+	 *
+	 * Each is printed only when set, through sgs_colour_value() so a palette
+	 * slug becomes its token and a custom colour passes through; style.css
+	 * reads them with the surface, text and border tokens as the fallbacks.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $root_sel   The block's scoped root selector.
+	 * @return string One CSS rule, or '' when no colour is set.
+	 */
+	function sgs_buybox_sticky_bar_colour_css( array $attributes, string $root_sel ): string {
+		$map   = array(
+			'--sgs-buybox-bar-bg'     => 'stickyBarBackground',
+			'--sgs-buybox-bar-text'   => 'stickyBarText',
+			'--sgs-buybox-bar-border' => 'stickyBarBorderColour',
+		);
+		$decls = array();
+		foreach ( $map as $property => $attribute ) {
+			$value = sgs_colour_value( (string) ( $attributes[ $attribute ] ?? '' ) );
+			if ( '' !== $value ) {
+				$decls[] = $property . ':' . $value;
+			}
+		}
+
+		return array() === $decls ? '' : $root_sel . '{' . implode( ';', $decls ) . ';}';
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_sticky_bar_html' ) ) {
+	/**
+	 * The add-to-basket bar's markup (hidden until sticky-bar.js shows it).
+	 *
+	 * The price is bound to the same `context.priceDisplay` the price row reads;
+	 * the variant line is seeded with the default variation's option labels and
+	 * rebuilt by sticky-bar.js when the shopper picks another option; the whole
+	 * bar follows the in-stock gate the in-page Add form uses. The button
+	 * carries no handler here: sticky-bar.js forwards its click to the in-page
+	 * Add control.
+	 *
+	 * @param array  $manifest        The product manifest (axes, defaultAxes).
+	 * @param string $price_display   The price string the bar starts with.
+	 * @param string $label           The Add button's label.
+	 * @param string $button_classes  The button's classes (the shared add-to-cart classes).
+	 * @return string Escaped HTML.
+	 */
+	function sgs_buybox_sticky_bar_html( array $manifest, string $price_display, string $label, string $button_classes ): string {
+		$parts = array();
+		foreach ( (array) ( $manifest['axes'] ?? array() ) as $axis ) {
+			$taxonomy = (string) ( $axis['taxonomy'] ?? '' );
+			$chosen   = (string) ( $manifest['defaultAxes'][ $taxonomy ] ?? '' );
+			foreach ( (array) ( $axis['terms'] ?? array() ) as $term ) {
+				if ( '' !== $chosen && ( $term['slug'] ?? null ) === $chosen ) {
+					$parts[] = (string) ( $term['label'] ?? '' );
+				}
+			}
+		}
+
+		return sprintf(
+			'<div class="sgs-buybox__bar" data-sgs-bar hidden role="region" aria-label="%1$s" data-wp-bind--hidden="!context.inStock">'
+			. '<div><span class="sgs-buybox__bar-price" data-wp-text="context.priceDisplay">%2$s</span>'
+			. '<span class="sgs-buybox__bar-variant" data-sgs-bar-variant>%3$s</span></div>'
+			. '<button type="button" class="%4$s" data-wp-bind--disabled="context.pending" data-wp-bind--aria-busy="context.pending">'
+			. '<span class="buybox__cart-label">%5$s</span></button></div>',
+			esc_attr__( 'Quick add to basket', 'sgs-blocks' ),
+			esc_html( $price_display ),
+			esc_html( implode( ' / ', array_filter( $parts ) ) ),
+			esc_attr( $button_classes ),
+			esc_html( $label )
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_buybox_stock_status' ) ) {
 	/**
 	 * Resolve the in-stock / low-stock / out-of-stock status for the DEFAULT

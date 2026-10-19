@@ -6285,6 +6285,24 @@
 		},
 		{
 			"slug": "sgs/buybox",
+			"attr": "stickyBar",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_why": "Spec 02 FR-2-3. Per device tier, whether the add-to-basket bar shows once the Add button has scrolled out of view: a visibility behaviour read by sticky-bar.js, no CSS property of its own."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "stickyBarText",
+			"fields": {
+				"role": "color",
+				"css_property": "color",
+				"css_element": "sticky-bar"
+			},
+			"_why": "Spec 02 FR-2-3. The add-to-basket bar's text colour (block.json sticky-bar attrMap css:color), printed as --sgs-buybox-bar-text by extras.php::sgs_buybox_sticky_bar_colour_css. Declared here because the suffix Text would otherwise classify it as text content."
+		},
+		{
+			"slug": "sgs/buybox",
 			"attr": "extrasBeforeCartCount",
 			"fields": {
 				"role": "behaviour"
@@ -6335,6 +6353,22 @@
 				"role": "layout"
 			},
 			"_why": "Container \"Scroll sideways\" (away's 375 tile scroller): emitted by includes/container-scroll-row-css.php, called from SGS_Container_Wrapper::render(), which extract-signatures.py does not scan. scrollSideways is the wrapper element's css:overflow (block.json attrMap); scrollItemWidth is each item's flex-basis in that row."
+		},
+		{
+			"slug": "sgs/container",
+			"attr": "pinBelowHeader",
+			"fields": {
+				"role": "styling"
+			},
+			"_why": "Container \"Stop below the site header\": emitted by includes/container-pin-edge-css.php::sgs_container_pin_below_header_offset, called from container/render.php, which extract-signatures.py does not scan. At a top pin it sets the wrapper's top to --sgs-header-height plus pinGap."
+		},
+		{
+			"slug": "sgs/container",
+			"attr": "pinGap",
+			"fields": {
+				"role": "layout"
+			},
+			"_why": "Container \"Gap below the header\": the length added to --sgs-header-height in the same offset rule (includes/container-pin-edge-css.php::sgs_container_pin_below_header_offset)."
 		},
 		{
 			"slug": "sgs/nav-drawer",

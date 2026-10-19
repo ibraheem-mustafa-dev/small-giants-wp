@@ -165,6 +165,21 @@
 					},
 					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography."
 				},
+				"sticky-bar": {
+					"selector": ".sgs-buybox__bar",
+					"label": "Add-to-basket bar",
+					"order": 20,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"attrMap": {
+						"css:background-color": "stickyBarBackground",
+						"css:color": "stickyBarText",
+						"css:border-color": "stickyBarBorderColour"
+					},
+					"_note": "The fixed bar at the bottom of the screen (render.php, sticky-bar.js) holding the live price, the chosen options and an Add button. The three colours print as --sgs-buybox-bar-bg / -text / -border on the block root; style.css reads them with the surface, text and border tokens as fallbacks. The Add button inside is styled by the add-to-cart element."
+				},
 				"gallery-thumb": {
 					"selector": ".sgs-buybox__gallery-thumb",
 					"label": "Gallery thumbnails",
@@ -859,6 +874,26 @@
 			"type": "string",
 			"default": "",
 			"description": "Extra CSS length (e.g. \"12px\", \"1rem\") between the sticky column and the sticky header, on top of the header's own live height. Empty = flush against the header."
+		},
+		"stickyBar": {
+			"type": "object",
+			"default": {},
+			"description": "Add-to-basket bar, per device tier: 'after-button' shows a fixed bar at the bottom of the screen (price, chosen options, Add button) once the in-page Add button has scrolled out of view; 'off' or unset prints nothing at that tier. A tier left unset follows the next larger one. Unset everywhere prints no bar (sticky-bar.js, render.php)."
+		},
+		"stickyBarBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour of the add-to-basket bar: a palette slug or any CSS colour. Empty = the surface colour token."
+		},
+		"stickyBarText": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the add-to-basket bar (price and options line): a palette slug or any CSS colour. Empty = the text colour token."
+		},
+		"stickyBarBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the add-to-basket bar's top edge line: a palette slug or any CSS colour. Empty = the border colour token."
 		},
 		"stackBelow": {
 			"type": "string",
@@ -2150,6 +2185,7 @@
 	"render": "file:./render.php",
 	"viewScriptModule": [
 		"file:./notify-view.js",
-		"file:./guided.js"
+		"file:./guided.js",
+		"file:./sticky-bar.js"
 	]
 }

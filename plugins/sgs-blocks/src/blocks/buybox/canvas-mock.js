@@ -24,6 +24,7 @@ import {
 	typographyPreviewStyle,
 	typographyPreviewCss,
 	gapVar,
+	resolveResponsiveTier,
 } from '../../utils';
 
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
@@ -46,6 +47,17 @@ const SAMPLE = {
 };
 
 /**
+ * Whether the add-to-basket bar is on at a tier (render.php's sgs_buybox_sticky_bar_data).
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Previewed tier.
+ * @return {boolean} True when the bar is switched on at that tier.
+ */
+export function stickyBarOnAtTier( attributes, tier ) {
+	return 'after-button' === resolveResponsiveTier( attributes.stickyBar || {}, tier ).value;
+}
+
+/**
  * Root style: render.php's fill, text colour, border, corner radius and margin.
  *
  * @param {Object} attributes Block attributes.
@@ -60,6 +72,10 @@ export function buyboxRootStyle( attributes, tier, palette ) {
 	};
 	Object.assign( style, wrapperBorderPreview( attributes, tier, palette ) );
 	Object.assign( style, tierBoxLonghands( attributes.margin, tier, 'margin' ) );
+	if ( stickyBarOnAtTier( attributes, tier ) ) {
+		// The sample bar sits at the bottom of the mock, not the screen.
+		style.position = 'relative';
+	}
 	return style;
 }
 
@@ -296,6 +312,42 @@ function SampleNotifyForm( { attributes } ) {
 }
 
 /**
+ * The add-to-basket bar drawn statically at the bottom of the mock: the same
+ * classes and colour properties render.php prints, but positioned inside the
+ * mock (never fixed to the screen) and shown, with a sample price and options.
+ *
+ * @param {Object} props
+ * @param {Object} props.attributes  Block attributes.
+ * @param {Array}  props.palette     Theme colour palette.
+ * @param {string} props.cartVariant Add-to-cart style modifier class (leading space) or ''.
+ * @return {JSX.Element} The sample bar.
+ */
+function SampleStickyBar( { attributes, palette, cartVariant } ) {
+	const colour = ( value ) => ( value ? resolveColourToken( value, palette ) || value : undefined );
+	const style = {
+		position: 'absolute',
+		insetInline: 0,
+		bottom: 0,
+		transform: 'none',
+		visibility: 'visible',
+		'--sgs-buybox-bar-bg': colour( attributes.stickyBarBackground ),
+		'--sgs-buybox-bar-text': colour( attributes.stickyBarText ),
+		'--sgs-buybox-bar-border': colour( attributes.stickyBarBorderColour ),
+	};
+	return (
+		<div className="sgs-buybox__bar is-on" role="presentation" style={ style }>
+			<div>
+				<span className="sgs-buybox__bar-price">{ SAMPLE.price }</span>
+				<span className="sgs-buybox__bar-variant">{ `${ SAMPLE.colours[ 0 ] } / ${ SAMPLE.sizes[ 1 ] }` }</span>
+			</div>
+			<span className={ `wp-element-button buybox__add-to-cart${ cartVariant }` }>
+				{ attributes.addToCartLabel || __( 'Add to Cart', 'sgs-blocks' ) }
+			</span>
+		</div>
+	);
+}
+
+/**
  * The sample configurator's two columns.
  *
  * @param {Object} props
@@ -406,6 +458,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 				{ false !== attributes.notifyEnabled && <SampleNotifyForm attributes={ attributes } /> }
 				{ extras }
 			</div>
+			{ stickyBarOnAtTier( attributes, tier ) && <SampleStickyBar attributes={ attributes } palette={ palette } cartVariant={ cartVariant } /> }
 		</>
 	);
 }
