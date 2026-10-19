@@ -1,7 +1,7 @@
 {
  "schemaVersion": "1",
  "client": "mamas-munches-redesign",
- "takenOn": "2026-10-18T23:45:01.706Z",
+ "takenOn": "2026-10-19T01:02:50.451Z",
  "manifest": {
   "schema_version": "1.0",
   "files": {
@@ -17206,7 +17206,7 @@
   "animations": {
    "schema_version": "1.0",
    "project": "Mama's Munches ecommerce",
-   "generated": "2026-10-18",
+   "generated": "2026-10-19",
    "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
    "drafts": [
     {
@@ -17316,15 +17316,15 @@
        "to": "scale(1) rotate(0)",
        "keyframes": [
         {
-         "index": 0,
+         "offset": 0,
          "value": "scale(1) rotate(0)"
         },
         {
-         "index": 1,
+         "offset": 0.5,
          "value": "scale(1.08) rotate(-8deg)"
         },
         {
-         "index": 2,
+         "offset": 1,
          "value": "scale(1) rotate(0)"
         }
        ]
@@ -17376,15 +17376,15 @@
        "to": "scale(1) rotate(180deg)",
        "keyframes": [
         {
-         "index": 0,
+         "offset": 0,
          "value": "scale(1) rotate(0)"
         },
         {
-         "index": 1,
+         "offset": 0.5,
          "value": "scale(1.35) rotate(90deg)"
         },
         {
-         "index": 2,
+         "offset": 1,
          "value": "scale(1) rotate(180deg)"
         }
        ]
@@ -17437,15 +17437,15 @@
        "to": "0 0",
        "keyframes": [
         {
-         "index": 0,
+         "offset": 0,
          "value": "0 0"
         },
         {
-         "index": 1,
+         "offset": 0.5,
          "value": "0 -10px"
         },
         {
-         "index": 2,
+         "offset": 1,
          "value": "0 0"
         }
        ]
@@ -17614,15 +17614,15 @@
        "to": "scale(1) rotate(-8deg)",
        "keyframes": [
         {
-         "index": 0,
+         "offset": 0,
          "value": "scale(0) rotate(-40deg)"
         },
         {
-         "index": 1,
+         "offset": 0.5,
          "value": "scale(1.15) rotate(4deg)"
         },
         {
-         "index": 2,
+         "offset": 1,
          "value": "scale(1) rotate(-8deg)"
         }
        ]
@@ -27113,6 +27113,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27159,6 +27164,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27205,6 +27215,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27251,6 +27266,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27297,6 +27317,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27343,6 +27368,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27389,6 +27419,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27435,6 +27470,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27481,6 +27521,11 @@
        "property": "animation-name",
        "from": null,
        "to": "mmMarquee"
+      },
+      {
+       "property": "transform",
+       "from": "translateX(0px)",
+       "to": "translateX(-50%)"
       }
      ],
      "duration_ms": null,
@@ -27899,7 +27944,7 @@
   "surfaces": {
    "schema_version": "1.0",
    "project": "Mama's Munches ecommerce",
-   "generated": "2026-10-18",
+   "generated": "2026-10-19",
    "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
    "records": [
     {
@@ -47801,17 +47846,6 @@
    "why": "construct:helmet-script has no clone path yet (has nothing; wave draft reading)"
   },
   {
-   "rowId": "missing:coverage:construct:keyframes",
-   "draftId": "Home:5",
-   "construct": "construct:keyframes",
-   "from": "coverage",
-   "line": "construct:keyframes seen 8 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 8,
-   "wave": "motion writer (4.0)",
-   "why": "construct:keyframes has no clone path yet (has recognise; wave motion writer (4.0))"
-  },
-  {
    "rowId": "missing:coverage:construct:binding",
    "draftId": "Home:6",
    "construct": "construct:binding",
@@ -47854,17 +47888,6 @@
    "count": 2,
    "wave": "draft reading",
    "why": "construct:dc-import has no clone path yet (has nothing; wave draft reading)"
-  },
-  {
-   "rowId": "missing:coverage:construct:transition",
-   "draftId": "Home:21",
-   "construct": "construct:transition",
-   "from": "coverage",
-   "line": "construct:transition seen 62 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 62,
-   "wave": "motion writer (4.0)",
-   "why": "construct:transition has no clone path yet (has recognise; wave motion writer (4.0))"
   },
   {
    "rowId": "missing:coverage:construct:style-hover",
@@ -47931,17 +47954,6 @@
    "count": 3,
    "wave": "behaviour recognisers",
    "why": "construct:timer has no clone path yet (has recognise; wave behaviour recognisers)"
-  },
-  {
-   "rowId": "missing:coverage:construct:waapi",
-   "draftId": "Home:js:271:180",
-   "construct": "construct:waapi",
-   "from": "coverage",
-   "line": "construct:waapi seen 5 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 5,
-   "wave": "motion writer (4.0)",
-   "why": "construct:waapi has no clone path yet (has recognise; wave motion writer (4.0))"
   },
   {
    "rowId": "missing:coverage:construct:observer",
@@ -48109,17 +48121,6 @@
    "why": "css-group:basic-user-interface: Fill does not read accent-color, appearance, cursor, pointer-events, resize (it reads the group's other 2 the draft uses); wave draft reading"
   },
   {
-   "rowId": "missing:coverage:css-at:keyframes",
-   "draftId": "Home:5",
-   "construct": "css-at:keyframes",
-   "from": "coverage",
-   "line": "css-at:keyframes seen 2 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 2,
-   "wave": "motion writer (4.0)",
-   "why": "css-at:keyframes has no clone path yet (has nothing; wave motion writer (4.0))"
-  },
-  {
    "rowId": "missing:coverage:css-group:transforms",
    "draftId": "Home:5",
    "construct": "css-group:transforms",
@@ -48131,17 +48132,6 @@
    "why": "css-group:transforms: Fill does not read transform-origin (it reads the group's other 1 the draft uses); wave draft reading"
   },
   {
-   "rowId": "missing:coverage:css-function:translatex",
-   "draftId": "Home:5",
-   "construct": "css-function:translatex",
-   "from": "coverage",
-   "line": "css-function:translatex seen 18 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 18,
-   "wave": "motion writer (4.0)",
-   "why": "css-function:translatex has no clone path yet (has nothing; wave motion writer (4.0))"
-  },
-  {
    "rowId": "missing:coverage:css-at:media",
    "draftId": "Home:5",
    "construct": "css-at:media",
@@ -48151,28 +48141,6 @@
    "count": 2,
    "wave": "modes and values with no CSS property",
    "why": "css-at:media has no clone path yet (has nothing; wave modes and values with no CSS property)"
-  },
-  {
-   "rowId": "missing:coverage:css-media-feature:prefers-reduced-motion",
-   "draftId": "Home:5",
-   "construct": "css-media-feature:prefers-reduced-motion",
-   "from": "coverage",
-   "line": "css-media-feature:prefers-reduced-motion seen 2 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 2,
-   "wave": "motion writer (4.0)",
-   "why": "css-media-feature:prefers-reduced-motion has no clone path yet (has nothing; wave motion writer (4.0))"
-  },
-  {
-   "rowId": "missing:coverage:css-group:animations",
-   "draftId": "Home:5",
-   "construct": "css-group:animations",
-   "from": "coverage",
-   "line": "css-group:animations seen 6 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 6,
-   "wave": "motion writer (4.0)",
-   "why": "css-group:animations: Fill does not read animation, animation-play-state; wave motion writer (4.0)"
   },
   {
    "rowId": "missing:coverage:html-attr:global.data",
@@ -48239,28 +48207,6 @@
    "count": 56,
    "wave": "draft reading",
    "why": "css-group:inline: Fill does not read vertical-align (it reads the group's other 1 the draft uses); wave draft reading"
-  },
-  {
-   "rowId": "missing:coverage:css-function:rotate",
-   "draftId": "Home:12",
-   "construct": "css-function:rotate",
-   "from": "coverage",
-   "line": "css-function:rotate seen 36 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 36,
-   "wave": "motion writer (4.0)",
-   "why": "css-function:rotate has no clone path yet (has nothing; wave motion writer (4.0))"
-  },
-  {
-   "rowId": "missing:coverage:css-unit:deg",
-   "draftId": "Home:12",
-   "construct": "css-unit:deg",
-   "from": "coverage",
-   "line": "css-unit:deg seen 54 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 54,
-   "wave": "motion writer (4.0)",
-   "why": "css-unit:deg has no clone path yet (has nothing; wave motion writer (4.0))"
   },
   {
    "rowId": "missing:coverage:css-group:webkit-extensions",
@@ -48351,50 +48297,6 @@
    "why": "css-group:text-decoration: Fill does not read text-decoration (it reads the group's other 3 the draft uses); wave draft reading"
   },
   {
-   "rowId": "missing:coverage:css-group:transitions",
-   "draftId": "Home:21",
-   "construct": "css-group:transitions",
-   "from": "coverage",
-   "line": "css-group:transitions seen 62 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 62,
-   "wave": "motion writer (4.0)",
-   "why": "css-group:transitions: Fill does not read transition; wave motion writer (4.0)"
-  },
-  {
-   "rowId": "missing:coverage:css-unit:s",
-   "draftId": "Home:21",
-   "construct": "css-unit:s",
-   "from": "coverage",
-   "line": "css-unit:s seen 126 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 126,
-   "wave": "motion writer (4.0)",
-   "why": "css-unit:s has no clone path yet (has nothing; wave motion writer (4.0))"
-  },
-  {
-   "rowId": "missing:coverage:css-function:cubic-bezier",
-   "draftId": "Home:21",
-   "construct": "css-function:cubic-bezier",
-   "from": "coverage",
-   "line": "css-function:cubic-bezier seen 40 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 40,
-   "wave": "motion writer (4.0)",
-   "why": "css-function:cubic-bezier has no clone path yet (has nothing; wave motion writer (4.0))"
-  },
-  {
-   "rowId": "missing:coverage:css-function:translate",
-   "draftId": "Home:21",
-   "construct": "css-function:translate",
-   "from": "coverage",
-   "line": "css-function:translate seen 36 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 36,
-   "wave": "motion writer (4.0)",
-   "why": "css-function:translate has no clone path yet (has nothing; wave motion writer (4.0))"
-  },
-  {
    "rowId": "missing:coverage:css-pseudo-class:active",
    "draftId": "Home:21",
    "construct": "css-pseudo-class:active",
@@ -48404,17 +48306,6 @@
    "count": 8,
    "wave": "states",
    "why": "css-pseudo-class:active has no clone path yet (has nothing; wave states)"
-  },
-  {
-   "rowId": "missing:coverage:css-function:translatey",
-   "draftId": "Home:29",
-   "construct": "css-function:translatey",
-   "from": "coverage",
-   "line": "css-function:translatey seen 5 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 5,
-   "wave": "motion writer (4.0)",
-   "why": "css-function:translatey has no clone path yet (has nothing; wave motion writer (4.0))"
   },
   {
    "rowId": "missing:coverage:css-group:masking",
@@ -48591,17 +48482,6 @@
    "count": 1,
    "wave": "states",
    "why": "aria-attr:aria-expanded has no clone path yet (has nothing; wave states)"
-  },
-  {
-   "rowId": "missing:coverage:css-function:scale",
-   "draftId": "Home:js:271:204",
-   "construct": "css-function:scale",
-   "from": "coverage",
-   "line": "css-function:scale seen 7 times in the draft: seen but unsupported",
-   "mainFlow": null,
-   "count": 7,
-   "wave": "motion writer (4.0)",
-   "why": "css-function:scale has no clone path yet (has nothing; wave motion writer (4.0))"
   },
   {
    "rowId": "missing:coverage:css-function:calc",
@@ -112604,14 +112484,6 @@
    "carriedFrom": null
   },
   {
-   "rowId": "missing:coverage:construct:keyframes",
-   "rowType": "missing-feature",
-   "contentHash": "7f439e8b04d27e3bec63db4ed14de6fb98ec3cb9b7ed2ba6b71d267a230d9a32",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
    "rowId": "missing:coverage:construct:binding",
    "rowType": "missing-feature",
    "contentHash": "9259c7b4298fd85af00f63c02c9ed341f3349003f3afa2fa543539f420d48192",
@@ -112639,14 +112511,6 @@
    "rowId": "missing:coverage:construct:dc-import",
    "rowType": "missing-feature",
    "contentHash": "8e2e374a48dcd65108719182e4990d088f152da78e25f822f620ca6339d4ecb6",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:construct:transition",
-   "rowType": "missing-feature",
-   "contentHash": "430e2d8df5bfbcdf1385a77329a7443a977b363c252187df562a5f2976ee7e5b",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -112695,14 +112559,6 @@
    "rowId": "missing:coverage:construct:timer",
    "rowType": "missing-feature",
    "contentHash": "34928206a56e5292d25df75323b3a610eeb47bd74785ee1314921c8eb14485b0",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:construct:waapi",
-   "rowType": "missing-feature",
-   "contentHash": "750996aeac261923e00ffbcf305e820f1517c65432f8ee09eabd8d0b26a8f180",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -112828,14 +112684,6 @@
    "carriedFrom": null
   },
   {
-   "rowId": "missing:coverage:css-at:keyframes",
-   "rowType": "missing-feature",
-   "contentHash": "761833ff93c6b956393d04f99bd5de2ea405776986f44bacbb132fca83f211d5",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
    "rowId": "missing:coverage:css-group:transforms",
    "rowType": "missing-feature",
    "contentHash": "08d8c14c8cc84aeeb597ad2482420f697464877b63f8012ec8d61a30bb8ceb95",
@@ -112844,33 +112692,9 @@
    "carriedFrom": null
   },
   {
-   "rowId": "missing:coverage:css-function:translatex",
-   "rowType": "missing-feature",
-   "contentHash": "b66d1ea8d82f5857174bffbd77246269d1b4cff4d30764e2ced2bec2a9760e2d",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
    "rowId": "missing:coverage:css-at:media",
    "rowType": "missing-feature",
    "contentHash": "31058d5c8033280edccea3ecd263d00053407d22f50894916f69dd7c24ef93d2",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-media-feature:prefers-reduced-motion",
-   "rowType": "missing-feature",
-   "contentHash": "7fc984a9ea9acb82ad26e91efcdfb1258abb66f02d94e14470ad62f107d405d1",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-group:animations",
-   "rowType": "missing-feature",
-   "contentHash": "88e560e5c921dae2493d69fa11ff679db36b497eec1029875fd59d74f744037f",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -112919,22 +112743,6 @@
    "rowId": "missing:coverage:css-group:inline",
    "rowType": "missing-feature",
    "contentHash": "1e8fd8f6d540ab8220a8dffd0136e637bdd0b55a5cccf88f334d29270cb7cf8d",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-function:rotate",
-   "rowType": "missing-feature",
-   "contentHash": "205ee308dc4ec60a8fa0a4bdc2ebdeeb3cb5ac6202bbbd871153ce3841a8c607",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-unit:deg",
-   "rowType": "missing-feature",
-   "contentHash": "be6c4e6af5f56eda1ec3ce1db2987df2835a80f34a9decfa78ee878e50f53bd1",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -113004,49 +112812,9 @@
    "carriedFrom": null
   },
   {
-   "rowId": "missing:coverage:css-group:transitions",
-   "rowType": "missing-feature",
-   "contentHash": "725417cbaac332034ed12080ea00cf72f93b243c76d8a9e6d4afecdf8ae88b59",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-unit:s",
-   "rowType": "missing-feature",
-   "contentHash": "089db7f22460262cf2bbc4f8e346e09fed08ccaa6c0c6a14bbee2a27926f5ddb",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-function:cubic-bezier",
-   "rowType": "missing-feature",
-   "contentHash": "227d23d2ac749e2e4fdeddd14c0d51ad17e634c990a1855b2e0f114b0ca8d462",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-function:translate",
-   "rowType": "missing-feature",
-   "contentHash": "bfd6d1dfe94464d2892b780fded6440da860863537b6ce49cbcb435f13d3d7bc",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
    "rowId": "missing:coverage:css-pseudo-class:active",
    "rowType": "missing-feature",
    "contentHash": "18e93fca3bbcab60fd82a4b3faf268a34cef5479eff04a1acaa6a34f692466b4",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-function:translatey",
-   "rowType": "missing-feature",
-   "contentHash": "2b0323bbf82a4650252cde14f022f81f7d8779322559f584c83f06c2277854f6",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null
@@ -113175,14 +112943,6 @@
    "rowId": "missing:coverage:aria-attr:aria-expanded",
    "rowType": "missing-feature",
    "contentHash": "925e61165684c4e92678afdb73c0858db32d60803cb63cad544bb66ed6e76b1d",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null
-  },
-  {
-   "rowId": "missing:coverage:css-function:scale",
-   "rowType": "missing-feature",
-   "contentHash": "d0209eeb09cbddc29d11e8e639a1ece06d4d389274f763e96d5a9c5f00047be3",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null

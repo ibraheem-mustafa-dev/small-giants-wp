@@ -1,10 +1,10 @@
 # Intake review: mamas-munches-redesign
 
-Taken on 2026-10-18T23:45:01.706Z; manifest 1.0, files hash d5ed630059b071ef.
+Taken on 2026-10-19T01:02:50.451Z; manifest 1.0, files hash d5ed630059b071ef.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1642; 905 need reading, 737 are confident proposals that Accept all covers (skeleton block choices 617, missing features 120).
+Rows: 1627; 905 need reading, 722 are confident proposals that Accept all covers (skeleton block choices 617, missing features 105).
 
 Not defects counted, not listed: breakpoint 4, reached-when-forced 103, render-wins 27.
 
@@ -197,7 +197,6 @@ Accept all: [ ]
 | `missing:coverage:construct:handler` | construct:handler seen 62 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:handler has no clone path yet (has recognise; wave behaviour recognisers) |  |
 | `missing:coverage:construct:helmet-font` | construct:helmet-font seen 2 times in the draft: seen but unsupported | gap:site and surfaces | construct:helmet-font has no clone path yet (has nothing; wave site and surfaces) |  |
 | `missing:coverage:construct:helmet-script` | construct:helmet-script seen 2 times in the draft: seen but unsupported | gap:draft reading | construct:helmet-script has no clone path yet (has nothing; wave draft reading) |  |
-| `missing:coverage:construct:keyframes` | construct:keyframes seen 8 times in the draft: seen but unsupported | gap:motion writer (4.0) | construct:keyframes has no clone path yet (has recognise; wave motion writer (4.0)) |  |
 | `missing:coverage:construct:link` | construct:link seen 60 times in the draft: seen but unsupported | gap:draft reading | construct:link has no clone path yet (has nothing; wave draft reading) |  |
 | `missing:coverage:construct:observer` | construct:observer seen 1 time in the draft: seen but unsupported | gap:behaviour recognisers | construct:observer has no clone path yet (has recognise; wave behaviour recognisers) |  |
 | `missing:coverage:construct:ref` | construct:ref seen 5 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:ref has no clone path yet (has recognise; wave behaviour recognisers) |  |
@@ -207,12 +206,8 @@ Accept all: [ ]
 | `missing:coverage:construct:style-hover` | construct:style-hover seen 74 times in the draft: seen but unsupported | gap:draft reading | construct:style-hover has no clone path yet (has nothing; wave draft reading) |  |
 | `missing:coverage:construct:template-element` | construct:template-element seen 1117 times in the draft: seen but unsupported | gap:draft reading | construct:template-element has no clone path yet (has nothing; wave draft reading) |  |
 | `missing:coverage:construct:timer` | construct:timer seen 3 times in the draft: seen but unsupported | gap:behaviour recognisers | construct:timer has no clone path yet (has recognise; wave behaviour recognisers) |  |
-| `missing:coverage:construct:transition` | construct:transition seen 62 times in the draft: seen but unsupported | gap:motion writer (4.0) | construct:transition has no clone path yet (has recognise; wave motion writer (4.0)) |  |
-| `missing:coverage:construct:waapi` | construct:waapi seen 5 times in the draft: seen but unsupported | gap:motion writer (4.0) | construct:waapi has no clone path yet (has recognise; wave motion writer (4.0)) |  |
-| `missing:coverage:css-at:keyframes` | css-at:keyframes seen 2 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-at:keyframes has no clone path yet (has nothing; wave motion writer (4.0)) |  |
 | `missing:coverage:css-at:media` | css-at:media seen 2 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-at:media has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
 | `missing:coverage:css-function:calc` | css-function:calc seen 2 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:calc has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
-| `missing:coverage:css-function:cubic-bezier` | css-function:cubic-bezier seen 40 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:cubic-bezier has no clone path yet (has nothing; wave motion writer (4.0)) |  |
 | `missing:coverage:css-function:env` | css-function:env seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:env has no clone path yet (has nothing; wave draft reading); seen only when the page ran: the file read missed it |  |
 | `missing:coverage:css-function:linear-gradient` | css-function:linear-gradient seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:linear-gradient has no clone path yet (has nothing; wave draft reading) |  |
 | `missing:coverage:css-function:min` | css-function:min seen 2 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-function:min has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
@@ -221,12 +216,6 @@ Accept all: [ ]
 | `missing:coverage:css-function:radial-gradient` | css-function:radial-gradient seen 5 times in the draft: seen but unsupported | gap:draft reading | css-function:radial-gradient has no clone path yet (has nothing; wave draft reading) |  |
 | `missing:coverage:css-function:repeat` | css-function:repeat seen 6 times in the draft: seen but unsupported | gap:draft reading | css-function:repeat has no clone path yet (has nothing; wave draft reading) |  |
 | `missing:coverage:css-function:repeating-linear-gradient` | css-function:repeating-linear-gradient seen 1 time in the draft: seen but unsupported | gap:draft reading | css-function:repeating-linear-gradient has no clone path yet (has nothing; wave draft reading) |  |
-| `missing:coverage:css-function:rotate` | css-function:rotate seen 36 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:rotate has no clone path yet (has nothing; wave motion writer (4.0)) |  |
-| `missing:coverage:css-function:scale` | css-function:scale seen 7 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:scale has no clone path yet (has nothing; wave motion writer (4.0)) |  |
-| `missing:coverage:css-function:translate` | css-function:translate seen 36 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:translate has no clone path yet (has nothing; wave motion writer (4.0)) |  |
-| `missing:coverage:css-function:translatex` | css-function:translatex seen 18 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:translatex has no clone path yet (has nothing; wave motion writer (4.0)) |  |
-| `missing:coverage:css-function:translatey` | css-function:translatey seen 5 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-function:translatey has no clone path yet (has nothing; wave motion writer (4.0)) |  |
-| `missing:coverage:css-group:animations` | css-group:animations seen 6 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-group:animations: Fill does not read animation, animation-play-state; wave motion writer (4.0) |  |
 | `missing:coverage:css-group:backgrounds-and-borders` | css-group:backgrounds-and-borders seen 446 times in the draft: partly supported | gap:draft reading | css-group:backgrounds-and-borders: Fill does not read background, background-position, background-repeat, background-size, border-radius (it reads the group's other 5 the draft uses); wave draft reading |  |
 | `missing:coverage:css-group:basic-user-interface` | css-group:basic-user-interface seen 34 times in the draft: partly supported | gap:draft reading | css-group:basic-user-interface: Fill does not read accent-color, appearance, cursor, pointer-events, resize (it reads the group's other 2 the draft uses); wave draft reading |  |
 | `missing:coverage:css-group:box-alignment` | css-group:box-alignment seen 271 times in the draft: partly supported | gap:draft reading | css-group:box-alignment: Fill does not read align-self, justify-self (it reads the group's other 3 the draft uses); wave draft reading |  |
@@ -246,17 +235,13 @@ Accept all: [ ]
 | `missing:coverage:css-group:text` | css-group:text seen 50 times in the draft: partly supported | gap:draft reading | css-group:text: Fill does not read text-wrap, white-space, word-break (it reads the group's other 3 the draft uses); wave draft reading |  |
 | `missing:coverage:css-group:text-decoration` | css-group:text-decoration seen 86 times in the draft: partly supported | gap:draft reading | css-group:text-decoration: Fill does not read text-decoration (it reads the group's other 3 the draft uses); wave draft reading |  |
 | `missing:coverage:css-group:transforms` | css-group:transforms seen 86 times in the draft: partly supported | gap:draft reading | css-group:transforms: Fill does not read transform-origin (it reads the group's other 1 the draft uses); wave draft reading |  |
-| `missing:coverage:css-group:transitions` | css-group:transitions seen 62 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-group:transitions: Fill does not read transition; wave motion writer (4.0) |  |
 | `missing:coverage:css-group:webkit-extensions` | css-group:webkit-extensions seen 1 time in the draft: seen but unsupported | gap:draft reading | css-group:webkit-extensions: Fill does not read -webkit-text-stroke; wave draft reading |  |
 | `missing:coverage:css-group:writing-modes` | css-group:writing-modes seen 1 time in the draft: seen but unsupported | gap:draft reading | css-group:writing-modes: Fill does not read direction; wave draft reading |  |
-| `missing:coverage:css-media-feature:prefers-reduced-motion` | css-media-feature:prefers-reduced-motion seen 2 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-media-feature:prefers-reduced-motion has no clone path yet (has nothing; wave motion writer (4.0)) |  |
 | `missing:coverage:css-pseudo-class:active` | css-pseudo-class:active seen 8 times in the draft: seen but unsupported | gap:states | css-pseudo-class:active has no clone path yet (has nothing; wave states) |  |
 | `missing:coverage:css-pseudo-class:focus-visible` | css-pseudo-class:focus-visible seen 1 time in the draft: seen but unsupported | gap:states | css-pseudo-class:focus-visible has no clone path yet (has nothing; wave states) |  |
 | `missing:coverage:css-pseudo-class:hover` | css-pseudo-class:hover seen 67 times in the draft: seen but unsupported | gap:states | css-pseudo-class:hover has no clone path yet (has nothing; wave states) |  |
 | `missing:coverage:css-pseudo-element:placeholder` | css-pseudo-element:placeholder seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:placeholder has no clone path yet (has nothing; wave modes and values with no CSS property); seen only when the page ran: the file read missed it |  |
-| `missing:coverage:css-unit:deg` | css-unit:deg seen 54 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-unit:deg has no clone path yet (has nothing; wave motion writer (4.0)) |  |
 | `missing:coverage:css-unit:fr` | css-unit:fr seen 77 times in the draft: seen but unsupported | gap:draft reading | css-unit:fr has no clone path yet (has nothing; wave draft reading) |  |
-| `missing:coverage:css-unit:s` | css-unit:s seen 126 times in the draft: seen but unsupported | gap:motion writer (4.0) | css-unit:s has no clone path yet (has nothing; wave motion writer (4.0)) |  |
 | `missing:coverage:css-unit:vh` | css-unit:vh seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-unit:vh has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
 | `missing:coverage:css-unit:vw` | css-unit:vw seen 6 times in the draft: seen but unsupported | gap:modes and values with no CSS property | css-unit:vw has no clone path yet (has nothing; wave modes and values with no CSS property) |  |
 | `missing:coverage:html-attr:button.type` | html-attr:button.type seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:button.type has no clone path yet (has nothing; wave shop, forms and data); seen only when the page ran: the file read missed it |  |
