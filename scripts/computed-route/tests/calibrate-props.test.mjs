@@ -18,7 +18,7 @@ const PAINTED_ELSEWHERE = [
 	'pointer-events', 'cursor', 'accent-color', 'scrollbar-width', 'background-clip', 'background-position', 'background-repeat',
 	'background-size', 'stroke-linecap', 'stroke-linejoin', 'fill', 'stroke', 'box-sizing', 'scroll-behavior', 'scroll-margin-top',
 	'scroll-padding-top', 'scroll-padding-right', 'scroll-padding-bottom', 'scroll-padding-left', 'scroll-snap-align',
-	'scroll-snap-type', 'text-decoration-line', 'text-wrap', 'white-space', 'direction', 'border-radius',
+	'scroll-snap-type', 'text-decoration-line', 'text-wrap', 'white-space', 'border-radius',
 ];
 
 test( 'MUST FAIL: calibration reads every property a block default, the theme or a setting under another name paints', () => {
@@ -30,27 +30,28 @@ test( 'MUST FAIL: an inset setting is read on all four sides', () => {
 	assert.deepEqual( longhands( 'inset' ), [ 'top', 'right', 'bottom', 'left' ] );
 } );
 
-test( 'MUST FAIL: white-space and direction are inherited (compared with what the parent shows), the page shows their initial values', () => {
-	assert.ok( INHERITED.includes( 'white-space' ) && INHERITED.includes( 'direction' ) );
-	const recorded = recordDefaults( { 1440: { '': { 'white-space': 'nowrap', direction: 'rtl', cursor: 'pointer' } } } );
-	assert.deepEqual( recorded[ '' ][ 1440 ], { cursor: 'pointer' }, 'an inherited property is never recorded as default paint' );
-	const page = pageBaseline( {}, 'p' );
-	assert.deepEqual( [ page.value( 'white-space', 1440 ), page.value( 'direction', 1440 ) ], [ 'normal', 'ltr' ] );
-} );
-
-test( 'cursor, pointer-events and accent-color are recorded as default paint: a block\'s own stylesheet sets them on its elements', () => {
-	for ( const p of [ 'cursor', 'pointer-events', 'accent-color' ] ) {
+test( 'cursor, pointer-events, accent-color and white-space are recorded as default paint: a block\'s own stylesheet sets them on its elements', () => {
+	for ( const p of [ 'cursor', 'pointer-events', 'accent-color', 'white-space' ] ) {
 		assert.ok( ! INHERITED.includes( p ), `${ p } would compare with the page and miss the block's own value` );
 	}
-	const recorded = recordDefaults( { 1440: { '': { cursor: 'pointer', 'pointer-events': 'none', 'accent-color': 'rgb(10, 126, 168)' } } } );
-	assert.deepEqual( Object.keys( recorded[ '' ][ 1440 ] ).sort(), [ 'accent-color', 'cursor', 'pointer-events' ] );
+	const recorded = recordDefaults( { 1440: { '': { cursor: 'pointer', 'pointer-events': 'none', 'accent-color': 'rgb(10, 126, 168)', 'white-space': 'nowrap', color: 'rgb(0, 0, 0)' } } } );
+	assert.deepEqual( Object.keys( recorded[ '' ][ 1440 ] ).sort(), [ 'accent-color', 'cursor', 'pointer-events', 'white-space' ], 'an inherited property (color) is never recorded' );
 } );
 
+// The Fill path: the baseline of a non-inherited property is the calibrated default (lib/fill-prop.mjs::defaultPaint).
+const db = openDb();
+const judge = ( block, prop, def, value ) => {
+	const cal = { elements: { '': { 1440: { [ prop ]: def }, 768: { [ prop ]: def }, 375: { [ prop ]: def } } }, settings: {} };
+	return resolveProperty( { node: { attributes: {} }, block, prop, draft: { 1440: value, 768: value, 375: value }, baseline: ( slot, w ) => defaultPaint( cal, slot, w, prop ), slots: [ '' ], calibration: cal, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, log: [] } );
+};
+
 test( 'a declared value equal to the block\'s calibrated default is equal, never a row; a different one with no setting is a gap', () => {
-	const db = openDb();
-	const cal = { elements: { '': { 1440: { cursor: 'pointer' }, 768: { cursor: 'pointer' }, 375: { cursor: 'pointer' } } }, settings: {} };
-	const call = ( value ) => resolveProperty( { node: { attributes: {} }, block: 'sgs/button', prop: 'cursor', draft: { 1440: value, 768: value, 375: value }, baseline: ( slot, w ) => defaultPaint( cal, slot, w, 'cursor' ), slots: [ '' ], calibration: cal, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, log: [] } );
-	assert.equal( call( 'pointer' ).status, 'equal' );
-	const other = call( 'grab' );
+	assert.equal( judge( 'sgs/button', 'cursor', 'pointer', 'pointer' ).status, 'equal' );
+	const other = judge( 'sgs/button', 'cursor', 'pointer', 'grab' );
 	assert.deepEqual( [ other.status, other.gap ], [ 'gap', 'no-setting' ] );
+} );
+
+test( 'a tab\'s nowrap default meets a draft nowrap as equal', () => {
+	assert.equal( judge( 'sgs/tabs', 'white-space', 'nowrap', 'nowrap' ).status, 'equal' );
+	assert.equal( pageBaseline( {}, 'p' ).value( 'white-space', 1440 ), undefined, 'the page holds no white-space baseline: it is not inherited here' );
 } );

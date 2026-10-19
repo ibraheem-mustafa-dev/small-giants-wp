@@ -6,7 +6,7 @@
 import { parseColour, toPx, round } from './normalise.mjs';
 
 // The CSS initial values of the inherited properties a theme rarely sets.
-export const INITIAL = { 'font-style': 'normal', 'text-align': 'start', 'text-wrap': 'wrap', 'text-shadow': 'none', 'text-transform': 'none', 'letter-spacing': 'normal', 'white-space': 'normal', direction: 'ltr' };
+export const INITIAL = { 'font-style': 'normal', 'text-align': 'start', 'text-wrap': 'wrap', 'text-shadow': 'none', 'text-transform': 'none', 'letter-spacing': 'normal' };
 
 // A unitless line height (a ratio of the element's own font size) as px at that size; a px value as it is; unknown
 // without a font size or a value.
