@@ -27,6 +27,13 @@ sync_site() {
   done
 
   rsync -a --delete --exclude=node_modules "$REPO/theme/sgs-theme/" "$dir/wp-content/themes/sgs-theme/"
+  # The theme.json its test site runs: the client snapshot a deploy ships there, so default paint measured here
+  # carries that snapshot's paint key (mirror_theme_json.py).
+  local tj
+  tj="$(mktemp)"
+  python3 "$REPO/scripts/local-wp/mirror_theme_json.py" "$site" "$tj"
+  install -m 644 "$tj" "$dir/wp-content/themes/sgs-theme/theme.json"
+  rm -f "$tj"
 
   chown -R www-data:www-data "$dir/wp-content/plugins" "$dir/wp-content/themes"
   sudo -u www-data wp --path="$dir" cache flush

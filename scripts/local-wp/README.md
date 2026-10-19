@@ -34,7 +34,7 @@ wsl -d Ubuntu -u root -- bash -lc 'service mariadb start; service apache2 start'
 wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts/local-wp/sync-build.sh all
 ```
 
-Use `local-eye-care`, `local-sandybrown` or `local-indus` instead of `all` for one site. It runs `rsync --delete` on `plugins/sgs-blocks/` (excluding `node_modules` and, at the plugin root only, `src`, `tests`, `.phpunit.cache`; `vendor/*/src` is copied), any other `plugins/sgs-*` folder already present on the site, and `theme/sgs-theme/`, then runs `wp cache flush`. Build first (`npm run build` in `plugins/sgs-blocks`).
+Use `local-eye-care`, `local-sandybrown` or `local-indus` instead of `all` for one site. It runs `rsync --delete` on `plugins/sgs-blocks/` (excluding `node_modules` and, at the plugin root only, `src`, `tests`, `.phpunit.cache`; `vendor/*/src` is copied), any other `plugins/sgs-*` folder already present on the site, and `theme/sgs-theme/`, replaces the theme's `theme.json` with the one a deploy ships to the test site the mirror copies (`mirror_theme_json.py`: the client snapshot named by that target's `client` in `deploy_common.py`, so default paint measured on the mirror carries that snapshot's paint key), then runs `wp cache flush`. From Git Bash, prefix the `wsl` command with `MSYS_NO_PATHCONV=1` or the `/mnt/c/...` path is rewritten. Build first (`npm run build` in `plugins/sgs-blocks`).
 
 ## Refresh the database and uploads from the test site
 
