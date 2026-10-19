@@ -18,10 +18,12 @@ docscore_grade: A (100%, phase-plan, 2026-10-19)
 **Aggregate cost estimate:** 6 Sonnet builders at about 150k tokens each, 1 Opus builder at about 250k, main thread about 400k.
 
 **Phase success criteria (done when):**
-- [ ] All 12 gaps below are built, each with its MUST FAIL test green and its negative control holding.
-- [ ] `cd plugins/sgs-blocks && npm run build` (PowerShell) passes, then `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` passes every gate and deploys.
+- [x] All 12 gaps below are built, each with its MUST FAIL test green and its negative control holding (2026-10-19, `4853fe370` to `13d04b31f`).
+- [x] `cd plugins/sgs-blocks && npm run build` (PowerShell) passes, then `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` passes every gate and deploys (fast 183/183, full 12/12; sandybrown runs `96106abc1`).
 - [ ] The batched live check (step 9) reads each gap's computed values at 375, 768 and 1440 on the canary and in the editor canvas, with cropped screenshot pairs for the visual ones (5, 7, 8, 13).
-- [ ] Each gap's FR in its owning spec reads `Status: built` with the command that proves it; `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps" table points at the built FRs.
+- [x] Each gap's FR in its owning spec reads `Status: built` with the command that proves it; `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps" table points at the built FRs.
+
+**Progress (2026-10-19):** Steps 0 to 8 and 10 are done. Every builder commit is on `main`; the DB was reseeded from a detached HEAD worktree after each wave (last at `09b02c958`); the deploy's stored-content audit needed four harmless entries for untitled canary draft 5498 (`96106abc1`). Step 9 ran only its smoke part: on the live canary at 375, 768 and 1440 the root `scrollbar-color` resolves from the token, `webkitFontSmoothing` is `antialiased`, `scrollbars.css` loads, there is no horizontal overflow, and the only `style` attributes inside SGS blocks are runtime motion variables and a core list's saved padding. Remaining: Step 9's per-gap Live checks (each Design's "Live" line) on test pages built with `scripts/wp-build-page.js`, the editor canvas for G2, G5, G7, G8, G10, G11 and G13, the Windows Chrome scrollbar arrows (the inner-scroller arrow rule `:where(body *)::-webkit-scrollbar-button` is ignored by Chrome on an element whose `scrollbar-color` is set, so inner scrollers other than the drawer may still show arrows: measure first), Bean's cropped screenshot pairs for G5, G7, G8 and G13; Step 11's `/qc-council` on the build commits; the indus-test deploy and the Indus snapshot push once Bean says go (Step 8). Session rulings that changed designs are in the Designs above (G5's cut tile uses the full library path; G7's highlight colour is the shared swatch row with `disableCustomColors`).
 
 **Entry context (read before starting):**
 - `.claude/reports/2026-10-19-css-equivalence-audit.md` "Real control gaps": what each gap is and which draft uses it.
@@ -37,7 +39,7 @@ docscore_grade: A (100%, phase-plan, 2026-10-19)
 
 ## Pre-conditions
 
-- The 12 FRs exist in their specs with `Status: not built` (Spec 01 FR-1-1, Spec 02 FR-2-1 to FR-2-6, Spec 04 FR-4-1 and FR-4-2, Spec 32 FR-32-23, FR-32-24 and FR-32-26; added 2026-10-19).
+- The 12 FRs exist in their specs (Spec 01 FR-1-1, Spec 02 FR-2-1 to FR-2-6, Spec 04 FR-4-1 and FR-4-2, Spec 32 FR-32-23, FR-32-24 and FR-32-26); each reads `Status: built` with its commit, and states its live check open until Step 9 runs.
 - `plugins/sgs-blocks/vendor/bin/phpunit` and `node_modules` are installed (`cd plugins/sgs-blocks; npm run test:unit` runs).
 - `npm run build` runs from PowerShell (the nvm shim is broken in Git Bash).
 - No other session is mid-deploy to sandybrown or mid-reseed of the framework DB at each wave gate (step 0's messages).

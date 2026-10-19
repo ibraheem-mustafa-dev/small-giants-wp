@@ -114,10 +114,10 @@ Storage: an object attr `{x,y}`, matching this plugin's established box-family o
 >
 > | Job | Part H names | **Canonical (governing)** | Gate |
 > |---|---|---|---|
-> | colour | `ColorPalette` / `ColorGradientControl` | **`DesignTokenPicker`** (contract §1) | rule `24-raw-canonical-component` (`gate`) bans the raw components outright; rule `04-colour-alpha` (`gate`) flags a raw colour picker **only when `enableAlpha` is absent** (`<ColorPalette enableAlpha>` passes rule 04 clean) |
+> | colour | `ColorPalette` / `ColorGradientControl` | **`DesignTokenPicker`** (contract §1) | rule `24-raw-canonical-component` (`gate`) walks every file under `src/` and bans, by import (aliases included) and by tag, `ColorPalette`, `ColorPicker`, `GradientPicker`, `ColorGradientControl`, `PanelColorSettings`, `PanelColorGradientSettings` and their experimental names, the SGS colour-picker and gradient-picker forks outside the helpers' own internals, and `<input type="color">`; rule `04-colour-alpha` (`gate`) flags a raw colour picker **only when `enableAlpha` is absent** (`<ColorPalette enableAlpha>` passes rule 04 clean) |
 > | link / CTA | `LinkControl` | **`LinkPopoverField`** (contract §2; `SgsLinkControl` is not canonical) | rule `24` bans raw `URLInput`/`LinkControl`; rule `08-raw-url-link` matches `<TextControl type="url">` only; rule `27-superseded-link-control` flags any new `<SgsLinkControl>` mount |
 >
-> Governing document: **PART O** (Spec 35), which lists both raw components as **banned lookalikes**. Raw `<ColorPalette>` and `<LinkControl>` are rendered only *inside* the canonical wrappers under `src/components/`, never in a block's `edit.js` (`git grep -n "<ColorPalette\|<LinkControl" -- plugins/sgs-blocks/src/blocks` → 0).
+> Governing document: **PART O** (Spec 35), which lists both raw components as **banned lookalikes**. Raw `<ColorPalette>` and `<LinkControl>` are rendered only *inside* the canonical wrappers under `src/components/`, never in a block's `edit.js` or any other file under `src/` (`node plugins/sgs-blocks/scripts/inspector-scan/run.js --check`, rule 24).
 >
 > Where Part H states a bare `LinkControl`, it names the WP-NATIVE primitive the SGS wrapper wraps, not an instruction to reach for it directly (Part C's "N: LinkControl" annotations, the "Native mechanism" table's `LinkControl` row, this box's comparison table). Conflating "names the native mechanism" with "tells you what to build with" is the defect to avoid.
 >

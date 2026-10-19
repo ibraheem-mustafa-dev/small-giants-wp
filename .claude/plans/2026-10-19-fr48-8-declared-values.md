@@ -41,4 +41,4 @@ spec: .claude/specs/48-CLONING-SYSTEM.md (FR-48-8, FR-48-36, FR-48-85)
 Steps 1 to 3: 1 hour. Step 4: 45 minutes. Step 5: the audits plus Bean's review of the table, then 1 hour of mapping. Step 6: 45 minutes.
 
 ## Open
-- The full recalibration of each client test site waits for the control-gaps build and the gradient seeder fix (coverage plan Order item 2, d1): both change what calibration measures.
+- The full recalibration of each client test site waits for the gradient seeder fix (coverage plan Order item 2, d1) and for the control-gaps build (done 2026-10-19, on sandybrown at 96106abc1) to reach that site (indus-test needs Bean's go): both change what calibration measures. The route session's prompt `.claude/prompts/After control gaps - route calibration and gradient seeder.md` holds the order.
