@@ -28,7 +28,7 @@ _THEME_V3_SUBSET = {
                                     "slug": {"type": "string", "minLength": 1},
                                     "color": {"type": "string", "minLength": 1},
                                     "name": {"type": "string"},
-                                    "_source": {"enum": ["declared", "derived"]},
+                                    "_source": {"enum": ["declared", "derived", "confirmed"]},
                                 },
                             },
                         }

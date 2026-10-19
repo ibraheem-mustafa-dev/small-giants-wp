@@ -8,35 +8,36 @@
           "slug": "primary",
           "color": "#0a7ea8",
           "name": "Primary",
-          "_source": "derived",
-          "confidence": 0.8,
-          "advisory": true,
-          "_baseline_color": "#1F7A7A"
+          "_source": "confirmed"
         },
         {
           "slug": "primary-text",
           "name": "Text on Primary",
-          "color": "#F1F5F9"
+          "color": "#e3eff4",
+          "_source": "confirmed"
         },
         {
           "slug": "primary-dark",
-          "color": "#0F4C4C",
-          "name": "Primary Dark"
+          "color": "#075e80",
+          "name": "Primary Dark",
+          "_source": "confirmed"
         },
         {
           "slug": "accent",
-          "color": "#F59E0B",
-          "name": "Accent"
+          "color": "#d8ca50",
+          "name": "Accent",
+          "_source": "confirmed"
         },
         {
           "slug": "accent-text",
-          "color": "#92400E",
+          "color": "#2c3e50",
           "name": "Text on Accent"
         },
         {
           "slug": "accent-light",
-          "color": "#FEF3C7",
-          "name": "Accent Light"
+          "color": "#e7d768",
+          "name": "Accent Light",
+          "_source": "confirmed"
         },
         {
           "slug": "success",
@@ -70,32 +71,33 @@
         },
         {
           "slug": "whatsapp",
-          "color": "#25D366",
-          "name": "WhatsApp"
+          "color": "#25d366",
+          "name": "WhatsApp",
+          "_source": "confirmed"
         },
         {
           "slug": "surface",
           "color": "#ffffff",
           "name": "Surface",
-          "_source": "derived",
-          "confidence": 0.95,
-          "advisory": true,
-          "_baseline_color": "#FAF9F6"
+          "_source": "confirmed"
         },
         {
           "slug": "surface-alt",
-          "color": "#F1F0EC",
-          "name": "Raised Background"
+          "color": "#f2f5f7",
+          "name": "Raised Background",
+          "_source": "confirmed"
         },
         {
           "slug": "text",
-          "color": "#1A202C",
-          "name": "Text"
+          "color": "#4a5563",
+          "name": "Text",
+          "_source": "confirmed"
         },
         {
           "slug": "text-muted",
-          "color": "#606D80",
-          "name": "Text Muted"
+          "color": "#68727c",
+          "name": "Text Muted",
+          "_source": "confirmed"
         },
         {
           "slug": "text-inverse",
@@ -114,33 +116,50 @@
         },
         {
           "slug": "footer-bg",
-          "color": "#0F172A",
-          "name": "Footer Background"
+          "color": "#2c3e50",
+          "name": "Footer Background",
+          "_source": "confirmed"
         },
         {
           "slug": "heading",
-          "color": "#1A202C",
-          "name": "Heading Text"
+          "color": "#2c3e50",
+          "name": "Heading Text",
+          "_source": "confirmed"
         },
         {
           "slug": "link",
           "color": "#0a7ea8",
-          "name": "Link"
+          "name": "Link",
+          "_source": "confirmed"
         },
         {
           "slug": "link-hover",
-          "color": "#0F4C4C",
-          "name": "Link Hover"
+          "color": "#075e80",
+          "name": "Link Hover",
+          "_source": "confirmed"
         },
         {
           "slug": "section",
-          "color": "#F1F0EC",
-          "name": "Section Background"
+          "color": "#d8ca50",
+          "name": "Section Background",
+          "_source": "confirmed"
         },
         {
           "slug": "section-text",
-          "color": "#1A202C",
+          "color": "#2c3e50",
           "name": "Section Text"
+        },
+        {
+          "slug": "custom-brand-blue-light",
+          "color": "#2eade2",
+          "name": "Brand Blue Light",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-ink",
+          "color": "#1e2a3c",
+          "name": "Ink",
+          "_source": "confirmed"
         }
       ],
       "gradients": [],
@@ -432,11 +451,11 @@
       "focus": {
         "width": "2px",
         "inner": "var(--wp--preset--color--surface)",
-        "ink": "var(--wp--preset--color--text)",
-        "ring": "#815311",
+        "ink": "var(--wp--preset--color--custom-ink)",
+        "ring": "#5b5311",
         "near": "var(--wp--preset--color--accent)",
         "far": "var(--wp--preset--color--accent)",
-        "ringOnDark": "#fdc98c",
+        "ringOnDark": "#e2d45b",
         "nearOnDark": "var(--wp--preset--color--accent)",
         "farOnDark": "var(--wp--preset--color--accent)",
         "signatureA": "var(--wp--preset--color--primary)",
@@ -538,8 +557,6 @@
         "duration": "900ms",
         "easing": "cubic-bezier(0.16, 0.84, 0.32, 1)"
       },
-      "header": {},
-      "footer": {},
       "section": {
         "padding": {
           "mobile": "0",
@@ -559,6 +576,12 @@
         "lg": "22px",
         "xl": "40px",
         "2xl": "48px"
+      },
+      "header": {},
+      "footer": {},
+      "sgs": {
+        "headerPattern": "sgs/framework-header-default",
+        "footerPattern": "sgs/framework-footer-default"
       }
     },
     "appearanceTools": true,
@@ -817,9 +840,9 @@
   "title": "indus-foods (generated by Spec 33 extractor)",
   "description": "Draft-generated global styles — DO NOT hand-edit; regenerate via extract.py.",
   "_sgsExtractor": {
-    "draft_css_sha256": "6dfea0e36d4efdfdfa495554d48f23e6b93ae80eeb3c02e9f35f6b3b149afb1d",
+    "draft_css_sha256": "f6470b252fac730fcc850cffe206db8cf89da679a83b97de02b5a671db3d0b28",
     "extractor_version": "1.0",
-    "draft_source_sha256": "49e652563aef15d0bfd380bdfbbf6973b29e3f245885849e3179a7ab0bd06582",
+    "draft_source_sha256": "65153af30f69b14fccfe149a822f0785bb59780bafb36fb94dc50640f6eeed4f",
     "source_draft": "Indus Foods Website v2.dc.html"
   }
 }

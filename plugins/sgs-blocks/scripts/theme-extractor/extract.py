@@ -47,6 +47,7 @@ def _is_allowed_https_url(url: str, allowed_hosts: set[str]) -> bool:
         return False
     return parsed.scheme == "https" and parsed.hostname in allowed_hosts
 
+import confirmed_palette
 import declared_sources
 import derive as derive_mod
 import font_weights
@@ -359,7 +360,7 @@ def _declared_design(draft_dir, html: str, pass_a_found: bool) -> tuple[dict, di
 
 def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict, trace: list,
                     repo: pathlib.Path, draft_dir: pathlib.Path | None = None,
-                    draft_name: str | None = None) -> dict:
+                    draft_name: str | None = None, confirmed: dict | None = None) -> dict:
     root_tokens = build_draft_root_token_map(css)
     base_rules = parse_base_rules(css)
 
@@ -391,6 +392,11 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         pal = ((settings.get("color", {}) or {}).get("palette", [])) or []  # baseline (from deepcopy)
         trace.append({"kind": "derive-skip", "reason": "Pass A + Pass B recovered nothing usable → "
                       "framework baseline palette kept UNCHANGED (never a guessed theme)"})
+    if confirmed is not None:
+        # FR-33-2: Bean's confirmed role map (intake review) is what the snapshot uses. Applied before
+        # anything resolves a colour to a slug, so presets and references see the confirmed palette.
+        confirmed_palette.apply_confirmed(snap, confirmed, confirmed_palette.framework_slugs(baseline), trace)
+        pal = snap["settings"]["color"]["palette"]
     slug_by_hex = palette_refs.slug_by_hex(pal) if design else {
         e["color"].lower(): e["slug"] for e in pal
         if isinstance(e.get("color"), str) and e["color"].startswith("#")}
@@ -624,6 +630,11 @@ def drop_inherited_heading_colour(snap: dict, trace: list) -> dict:
     return snap
 
 
+# settings.custom keys build_snapshot derives from the draft (button presets, declared radius, accent
+# sets); every other custom key belongs to the client snapshot and survives a merge.
+EXTRACTOR_OWNED_CUSTOM = frozenset({"buttonPresets", "borderRadius", "accentSets"})
+
+
 def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     """ADDITIVELY merge the generated ``snap`` onto an EXISTING client snapshot (FR-33-11 non-destruct).
 
@@ -643,9 +654,19 @@ def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
     for key in ("css", "blocks"):
         if ex_styles.get(key) and not snap.get("styles", {}).get(key):
             snap.setdefault("styles", {})[key] = ex_styles[key]
-    for key in ("sgs", "maxWidth"):
-        if key in ex_custom:
-            snap.setdefault("settings", {}).setdefault("custom", {})[key] = ex_custom[key]
+    # settings.custom: the client's value wins for every key the extractor does not derive (focus
+    # rings calibrated to the client palette, motion, section and gutter tokens, pattern pointers);
+    # the generated value wins for the keys the extractor measures.
+    gen_custom = snap.setdefault("settings", {}).setdefault("custom", {})
+    carried = []
+    for key, value in ex_custom.items():
+        if key in EXTRACTOR_OWNED_CUSTOM or gen_custom.get(key) == value:
+            continue
+        gen_custom[key] = copy.deepcopy(value)
+        carried.append(key)
+    trace.append({"kind": "merge", "what": "settings.custom",
+                  "reason": "client keys the extractor does not derive are carried from the existing snapshot",
+                  "keys_carried": ",".join(sorted(carried)) or "(none)"})
 
     # styles.elements — preserve the client's hand-authored element keys the extractor never derives
     # (e.g. `button.typography.textDecoration`, which exists only in the client snapshot and was
@@ -758,6 +779,9 @@ def main(argv=None) -> int:
     ap.add_argument("--merge-onto", default=None,
                     help="path to an EXISTING client snapshot — additively preserve its extra palette "
                          "slugs + component CSS (non-destructive deploy to an already-cloned site)")
+    ap.add_argument("--intake", default=None,
+                    help="path to the client's intake.json — the palette follows Bean's confirmed "
+                         "palette-role marks (FR-33-2) instead of the extractor's own proposal")
     args = ap.parse_args(argv)
 
     repo = _repo_root(args.repo_root)
@@ -782,14 +806,30 @@ def main(argv=None) -> int:
 
     baseline = json.loads((repo / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 
+    confirmed = None
+    framework = confirmed_palette.framework_slugs(baseline)
+    if args.intake:
+        try:
+            confirmed, unmarked = confirmed_palette.confirmed_map(
+                json.loads(pathlib.Path(args.intake).read_text(encoding="utf-8")), framework)
+        except confirmed_palette.ConfirmError as exc:
+            print(f"HALT (FR-33-2 confirm step): {exc}", file=sys.stderr)
+            return 7
+        if unmarked:
+            print(f"NOTE: {len(unmarked)} intake palette row(s) carry no review mark and get no palette "
+                  f"entry: {', '.join(unmarked)}", file=sys.stderr)
+
     trace: list = []
     snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo, draft_dir=draft.parent,
-                          draft_name=draft.name)
+                          draft_name=draft.name, confirmed=confirmed)
 
     if args.merge_onto:
         existing_path = pathlib.Path(args.merge_onto)
         if existing_path.is_file():
             snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace)
+    if confirmed is not None:
+        # The merge may carry slugs Bean did not confirm; the confirmed map still decides.
+        confirmed_palette.apply_confirmed(snap, confirmed, framework, trace)
 
     drop_inherited_heading_colour(snap, trace)
 
