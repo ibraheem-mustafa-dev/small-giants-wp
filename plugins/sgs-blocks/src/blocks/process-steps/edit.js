@@ -157,6 +157,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconLetterSpacingUnit,
 		iconTextAlign,
 		iconTextWrap,
+		iconTextStrokeWidth,
+		iconTextStrokeColour,
 		iconTextColumns,
 		iconWritingMode,
 		numberFontSize,
@@ -172,6 +174,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		numberLetterSpacingUnit,
 		numberTextAlign,
 		numberTextWrap,
+		numberTextStrokeWidth,
+		numberTextStrokeColour,
 		numberTextColumns,
 		numberWritingMode,
 		descriptionFontSize,
@@ -187,6 +191,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		descriptionLetterSpacingUnit,
 		descriptionTextAlign,
 		descriptionTextWrap,
+		descriptionTextStrokeWidth,
+		descriptionTextStrokeColour,
 		descriptionTextColumns,
 		descriptionWritingMode,
 	} = attributes;
@@ -207,6 +213,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconLetterSpacingUnit,
 		iconTextAlign,
 		iconTextWrap,
+		iconTextStrokeWidth,
+		iconTextStrokeColour,
 		iconTextColumns,
 		iconWritingMode,
 	};
@@ -224,6 +232,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		numberLetterSpacingUnit,
 		numberTextAlign,
 		numberTextWrap,
+		numberTextStrokeWidth,
+		numberTextStrokeColour,
 		numberTextColumns,
 		numberWritingMode,
 	};
@@ -241,6 +251,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		descriptionLetterSpacingUnit,
 		descriptionTextAlign,
 		descriptionTextWrap,
+		descriptionTextStrokeWidth,
+		descriptionTextStrokeColour,
 		descriptionTextColumns,
 		descriptionWritingMode,
 	};

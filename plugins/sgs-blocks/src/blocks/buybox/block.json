@@ -178,7 +178,12 @@
 						"css:color": "stickyBarText",
 						"css:border-color": "stickyBarBorderColour"
 					},
-					"_note": "The fixed bar at the bottom of the screen (render.php, sticky-bar.js) holding the live price, the chosen options and an Add button. The three colours print as --sgs-buybox-bar-bg / -text / -border on the block root; style.css reads them with the surface, text and border tokens as fallbacks. The Add button inside is styled by the add-to-cart element."
+					"_note": "The fixed bar at the bottom of the screen (render.php, sticky-bar.js) holding the live price, the chosen options and an Add button. The three colours print as --sgs-buybox-bar-bg / -text / -border on the block root; style.css reads them with the surface, text and border tokens as fallbacks. The Add button inside is styled by the add-to-cart element.",
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "The bar prints only when a device tier switches stickyBar to after-button; it is off by default, so no default render path holds it."
 				},
 				"gallery-thumb": {
 					"selector": ".sgs-buybox__gallery-thumb",

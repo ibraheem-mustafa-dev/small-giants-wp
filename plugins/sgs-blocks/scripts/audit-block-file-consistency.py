@@ -314,6 +314,14 @@ PREFIXED_HELPER_SUFFIXES = {
         'LineHeight', 'LineHeightUnit', 'LineHeightTablet', 'LineHeightMobile',
         'LetterSpacing', 'LetterSpacingUnit', 'LetterSpacingTablet', 'LetterSpacingMobile',
         'TextAlign', 'TextWrap', 'TextColumns', 'TextIndent', 'WritingMode',
+        'TextStrokeWidth', 'TextStrokeColour', 'TextStrokeColourHover',
+    ],
+    # The link underline family, read through sgs_typography_attr( $prefix, ... ) by
+    # includes/helpers-link-underline.php::sgs_link_underline_css (the same list as
+    # check-dead-controls.js).
+    'sgs_link_underline_css': [
+        'LinkUnderline', 'LinkUnderlineThickness', 'LinkUnderlineColour',
+        'LinkUnderlineColourHover', 'LinkUnderlineOffset',
     ],
     'sgs_button_element_style_css': [
         'ColourBackground', 'ColourText', 'ColourBorder',

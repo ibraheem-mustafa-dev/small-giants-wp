@@ -26,7 +26,6 @@ export function linkUnderlinePreviewCss( selector, { mode = '', thickness = '', 
 		return '';
 	}
 	const link = `${ selector } a`;
-	const hoverSel = `${ link }:hover,${ link }:focus-visible`;
 	if ( 'none' === mode ) {
 		return `${ link }{text-decoration:none;}`;
 	}
@@ -41,9 +40,9 @@ export function linkUnderlinePreviewCss( selector, { mode = '', thickness = '', 
 			`${ ink ? `text-decoration-color:${ ink };` : '' }` +
 			`${ gap ? `text-underline-offset:${ gap };` : '' }}`;
 		if ( 'always' === mode ) {
-			return rest + ( inkHover ? `${ hoverSel }{text-decoration-color:${ inkHover };}` : '' );
+			return rest + ( inkHover ? `${ link }:hover,${ link }:focus-visible{text-decoration-color:${ inkHover };}` : '' );
 		}
-		return rest + `${ hoverSel }{text-decoration-line:underline;${ inkHover ? `text-decoration-color:${ inkHover };` : '' }}`;
+		return rest + `${ link }:hover,${ link }:focus-visible{text-decoration-line:underline;${ inkHover ? `text-decoration-color:${ inkHover };` : '' }}`;
 	}
 	if ( linkGradient ) {
 		return '';
@@ -54,7 +53,7 @@ export function linkUnderlinePreviewCss( selector, { mode = '', thickness = '', 
 		`${ link }{text-decoration:none;background-image:linear-gradient(${ line },${ line });background-repeat:no-repeat;background-origin:content-box;` +
 		`background-position:0 100%;background-size:0 ${ sweep };transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;}` +
 		`${ link }:dir(rtl){background-position:100% 100%;}` +
-		`${ hoverSel }{background-size:100% ${ sweep };${ inkHover ? `background-image:linear-gradient(${ inkHover },${ inkHover });` : '' }}` +
+		`${ link }:hover,${ link }:focus-visible{background-size:100% ${ sweep };${ inkHover ? `background-image:linear-gradient(${ inkHover },${ inkHover });` : '' }}` +
 		`@media (prefers-reduced-motion: reduce){${ link }{transition:none;}}`
 	);
 }

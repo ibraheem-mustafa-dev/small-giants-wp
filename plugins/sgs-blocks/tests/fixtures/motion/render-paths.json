@@ -876,7 +876,8 @@
      {
       "label": "Option one",
       "value": "one",
-      "icon": "star"
+      "icon": "star",
+      "description": "A line under the label."
      },
      {
       "label": "Option two",
@@ -897,7 +898,7 @@
      }
     }
    },
-   "pathsWhy": "render.php prints one label.sgs-form-tile per tiles entry inside the fieldset; the branches read (multiSelect input type, required, helpText, lucide or text icon, image) change only the content inside each tile, never the tile or fieldset classes. With no tiles the fieldset is empty (no part by design)."
+   "pathsWhy": "render.php prints one label.sgs-form-tile per tiles entry inside the fieldset; the branches read (multiSelect input type, required, helpText, lucide or text icon, image) change only the content inside each tile, never the tile or fieldset classes. The first tile carries a description so the description line prints on every path. With no tiles the fieldset is empty (no part by design)."
   },
   "gallery": {
    "base": {

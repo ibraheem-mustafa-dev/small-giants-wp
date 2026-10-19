@@ -643,6 +643,10 @@ Two cold reviewers (Sonnet builder lens, Haiku junior lens, 2026-10-19) read the
 ## Parking lot
 
 - `tests/php/BorderElementParityTest.php` fails 20 cases (11 card-grid, 9 brand-strip) on main since `7c9fe9fa9` (another session moved their transition pair into the hover model; the test still expects `--sgs-transition-duration` / `--sgs-transition-easing` on the wrapper). Not this build's; owned by the motion hover-model work.
+- Inspector-scan rule 31's `resolveSharedRowMechanism` finds a shared row's attribute only from a mount's `colour=` or `value=` prop, so a row inside `TypographyControls` (names built from `prefix`) never resolves; teach it the prefix path, then lower rule 31's `openBacklog` from 4 to 3 (the Outline colour row, solid only).
+- 86 `{prefix}TextStrokeColour` rows (and their width and `TextWrap` siblings) carry no `css_property` because no manifest element claims those prefixes; the same pre-existing gap as their `TextWrap` attributes.
+- `nav-bar-menu`'s `burgerFontSizeUnit`, `burgerFontStyle`, `burgerLineHeight`, `burgerLineHeightUnit` are written by the Burger typography controls but declared nowhere, so WordPress drops them (baselined in `scripts/audit-typography-attr-declarations.js`); owned by the nav-menu typography work.
+- `check-wiring-fingerprint` now reports 70 baselined gaps as fixed (team-member and product-card typography reach the canvas); run `--update-baseline` once no other session has it open.
 
 - The route's writer and detector for every new attribute and the two inline formats (Spec 48; recorded in the coverage plan at step 10).
 - The Indus timeline years' outline colour follows the current card (a Current state), owned by the pinned timeline build.

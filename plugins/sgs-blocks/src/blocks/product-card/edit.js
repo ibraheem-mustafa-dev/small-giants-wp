@@ -1044,6 +1044,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	const boundPreviewCss = isBound
 		? typographyPreviewCss( attributes, 'priceFromLabel', `#block-${ clientId } .price-from-label`, cardTier ) +
 			typographyPreviewCss( attributes, 'rrp', `#block-${ clientId } .sgs-product-card__rrp`, cardTier ) +
+			typographyPreviewCss( attributes, 'valueLadder', `#block-${ clientId } .product-card__value-ladder`, cardTier ) +
+			typographyPreviewCss( attributes, 'valueLadderSaving', `#block-${ clientId } .value-ladder__saving`, cardTier ) +
 			( ladderSavingColour ? `#block-${ clientId } .value-ladder__saving{color:${ ladderSavingColour };}` : '' )
 		: '';
 

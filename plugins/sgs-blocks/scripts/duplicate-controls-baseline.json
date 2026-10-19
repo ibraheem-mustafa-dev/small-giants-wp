@@ -220,6 +220,45 @@
       ],
       "reason": "Verified against render.php/helpers.php: sgs_notice_message_bar_css() paints '.{uid}{color:...}' on the message's OWN scoped wrapper (helpers.php), not on the child sgs/text directly. The message's default-uncoloured sgs/text child has no colour of its own set, so it inherits this parent colour via normal CSS cascade — a real, live effect, not a dead-by-specificity leftover. sgs/text's own colour control still overrides it for one instance via specificity. Same two-jobs pattern already ruled by Bean for sgs/accordion-item: KEEP BOTH.",
       "disposition": "by-design"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/hero",
+      "attr": "textStrokeColour",
+      "severity": "parent-child:heuristic",
+      "keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+      "sources": [
+        "sgs/hero edit.js: parent-level control for \"textStrokeColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "Same case as this block's textColour entry, covered by the SAME Bean ruling of 2026-08-21, which settles the pattern across EVERY parent mounting sgs/text: the parent-level attr is the root-scoped INHERITABLE cascade default for whatever the client nests, and the child's own control overrides it for one instance. The outline colour is written by sgs_typography_css_rule() on the block root selector (-webkit-text-stroke-color is an inherited property), exactly as textColour is. It surfaced when the shared TypographyControls gained showTextStroke (Spec 32 FR-32-23): the name textStrokeColour begins with the role word \"text\" and ends in Colour, so the heuristic matches it; nothing became more duplicated. KEEP BOTH.",
+      "disposition": "by-design"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/info-box",
+      "attr": "textStrokeColour",
+      "severity": "parent-child:heuristic",
+      "keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+      "sources": [
+        "sgs/info-box edit.js: parent-level control for \"textStrokeColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "Same case as this block's textColour entry, covered by the SAME Bean ruling of 2026-08-21, which settles the pattern across EVERY parent mounting sgs/text: the parent-level attr is the root-scoped INHERITABLE cascade default for whatever the client nests, and the child's own control overrides it for one instance. The outline colour is written by sgs_typography_css_rule() on the block root selector (-webkit-text-stroke-color is an inherited property), exactly as textColour is. It surfaced when the shared TypographyControls gained showTextStroke (Spec 32 FR-32-23): the name textStrokeColour begins with the role word \"text\" and ends in Colour, so the heuristic matches it; nothing became more duplicated. KEEP BOTH.",
+      "disposition": "by-design"
+    },
+    {
+      "check": "parent-child-duplicate",
+      "block": "sgs/notice-banner",
+      "attr": "textStrokeColour",
+      "severity": "parent-child:heuristic",
+      "keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
+      "sources": [
+        "sgs/notice-banner edit.js: parent-level control for \"textStrokeColour\"",
+        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
+      ],
+      "reason": "Same case as this block's textColour entry, covered by the SAME Bean ruling of 2026-08-21, which settles the pattern across EVERY parent mounting sgs/text: the parent-level attr is the root-scoped INHERITABLE cascade default for whatever the client nests, and the child's own control overrides it for one instance. The outline colour is written by sgs_typography_css_rule() on the block root selector (-webkit-text-stroke-color is an inherited property), exactly as textColour is. It surfaced when the shared TypographyControls gained showTextStroke (Spec 32 FR-32-23): the name textStrokeColour begins with the role word \"text\" and ends in Colour, so the heuristic matches it; nothing became more duplicated. KEEP BOTH.",
+      "disposition": "by-design"
     }
   ],
   "_meta": {

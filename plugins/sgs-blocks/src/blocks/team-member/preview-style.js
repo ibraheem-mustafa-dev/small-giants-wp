@@ -74,11 +74,19 @@ export function buildWrapperStyle( attributes, tier, palette ) {
  * @return {Object} React style object.
  */
 export function textSurfaceStyle( attributes, prefix, tier ) {
-	const style = typographyPreviewStyle( attributes, prefix, tier );
+	// Each surface names its own prefix, so the typography attributes the inspector writes
+	// for it are the ones the canvas reads.
 	if ( 'name' === prefix ) {
-		Object.assign( style, resolveTextColourPreviewStyle( attributes.nameColour, attributes.nameColourGradient, colourVar ) );
-	} else if ( 'role' === prefix ) {
-		Object.assign( style, resolveTextColourPreviewStyle( attributes.roleColour, attributes.roleColourGradient, colourVar ) );
+		return {
+			...typographyPreviewStyle( attributes, 'name', tier ),
+			...resolveTextColourPreviewStyle( attributes.nameColour, attributes.nameColourGradient, colourVar ),
+		};
 	}
-	return style;
+	if ( 'role' === prefix ) {
+		return {
+			...typographyPreviewStyle( attributes, 'role', tier ),
+			...resolveTextColourPreviewStyle( attributes.roleColour, attributes.roleColourGradient, colourVar ),
+		};
+	}
+	return typographyPreviewStyle( attributes, 'bio', tier );
 }
