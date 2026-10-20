@@ -143,9 +143,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	// or the preview would emit "--sgs-columns-desktop: [object Object]" and
 	// the CSS custom properties would silently fail (same D567 class as gap
 	// above).
-	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
-	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
-	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
+	const columnsDesktop = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'desktop' )?.value ) ) || 3 );
+	const columnsTabletTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'tablet' )?.value ) ) || 2 );
+	const columnsMobileTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'mobile' )?.value ) ) || 1 );
 
 	// Wrapper inline styles — CSS custom properties for layout.
 	const inlineStyles = {

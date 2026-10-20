@@ -26,9 +26,9 @@ $layout_mode = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layou
 // `columns` is a TIER OBJECT (Spec 35 pass 4) — the old columnsDesktop/columnsTablet/
 // columnsMobile flat trio is retired; resolve each tier from the object instead,
 // preserving the exact same fallback defaults (4/2/1) the flat attrs used.
-$columns_desktop = absint( $attributes['columns']['desktop'] ?? 4 );
-$columns_tablet  = absint( $attributes['columns']['tablet'] ?? 2 );
-$columns_mobile  = absint( $attributes['columns']['mobile'] ?? 1 );
+$columns_desktop = max( 1, absint( $attributes['columns']['desktop'] ?? 4 ) );
+$columns_tablet  = max( 1, absint( $attributes['columns']['tablet'] ?? 2 ) );
+$columns_mobile  = max( 1, absint( $attributes['columns']['mobile'] ?? 1 ) );
 $min_item_width  = isset( $attributes['minItemWidth'] ) ? absint( $attributes['minItemWidth'] ) : 240;
 $min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attributes['minItemWidthUnit'], array( 'px', 'em', 'rem' ), true )
 	? $attributes['minItemWidthUnit']

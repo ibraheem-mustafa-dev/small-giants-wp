@@ -141,7 +141,7 @@ foreach ( array(
 	$decls = array();
 	$cols  = $columns_tiers[ $tier ] ?? null;
 	if ( null !== $cols && '' !== $cols && is_numeric( $cols ) ) {
-		$decls[] = '--sgs-wishlist-panel-columns:' . absint( $cols );
+		$decls[] = '--sgs-wishlist-panel-columns:' . max( 1, absint( $cols ) );
 	}
 	$gap_val = $gap_tiers[ $tier ] ?? null;
 	if ( null !== $gap_val && '' !== $gap_val ) {
@@ -165,7 +165,7 @@ $mobile_cols = 1;
 foreach ( array( 'mobile', 'tablet', 'desktop' ) as $tier ) {
 	$cols = $columns_tiers[ $tier ] ?? null;
 	if ( null !== $cols && '' !== $cols && is_numeric( $cols ) ) {
-		$mobile_cols = absint( $cols );
+		$mobile_cols = max( 1, absint( $cols ) );
 		break;
 	}
 }

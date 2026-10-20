@@ -163,9 +163,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// columns is a TIER OBJECT (Spec 35 pass 4) — resolve each tier explicitly,
 	// or the preview would emit "--sgs-columns-desktop: [object Object]" and
 	// the CSS custom properties would silently fail (D567 class).
-	const columnsDesktop = resolveResponsiveTier( columns, 'desktop' )?.value || 3;
-	const columnsTabletTier = resolveResponsiveTier( columns, 'tablet' )?.value || 2;
-	const columnsMobileTier = resolveResponsiveTier( columns, 'mobile' )?.value || 1;
+	const columnsDesktop = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'desktop' )?.value ) ) || 3 );
+	const columnsTabletTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'tablet' )?.value ) ) || 2 );
+	const columnsMobileTier = Math.max( 1, Math.floor( Number( resolveResponsiveTier( columns, 'mobile' )?.value ) ) || 1 );
 
 	// Editor-canvas parity for post-grid's resting card shadow. render.php
 	// composes shape (`shadow`) + colour (`shadowColour`) via

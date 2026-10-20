@@ -346,9 +346,9 @@ $gap_value = sgs_container_gap_value( $gap );
 
 // Build grid CSS custom properties.
 $grid_style_parts = array(
-	'--sgs-card-grid-columns: ' . absint( $columns ),
-	'--sgs-card-grid-columns-mobile: ' . absint( $columns_mobile ),
-	'--sgs-card-grid-columns-tablet: ' . absint( $columns_tablet ),
+	'--sgs-card-grid-columns: ' . max( 1, absint( $columns ) ),
+	'--sgs-card-grid-columns-mobile: ' . max( 1, absint( $columns_mobile ) ),
+	'--sgs-card-grid-columns-tablet: ' . max( 1, absint( $columns_tablet ) ),
 	'--sgs-card-grid-gap: ' . $gap_value,
 	'--sgs-card-grid-aspect: ' . esc_attr( $aspect_ratio ),
 );
