@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: Mega-menu items link to their section page (Spec 36 FR-36-5, FR-36-6)
-status: active
+status: active (units 1 to 10 done 2026-10-20; open: gate G2, Bean's look on a phone)
 created: 2026-10-20
 spec: .claude/specs/36-SGS-NAVIGATION-SYSTEM.md (FR-36-5, FR-36-6); .claude/specs/48-CLONING-SYSTEM.md (FR-48-30, FR-48-55)
 ---
@@ -30,6 +30,11 @@ spec: .claude/specs/36-SGS-NAVIGATION-SYSTEM.md (FR-36-5, FR-36-6); .claude/spec
 3. A panel with no section page behaves as today (bar button-only, drawer whole-row toggle).
 4. On indus-test: the four panels carry their section pages (About Us, Food Service, All Brands, Apply for Trade Account), the drawer binds the header menu, the separate "drawer" menu is gone, and `node scripts/computed-route/site-build.mjs indus-foods --site indus-test` then plans 0 creates and 0 changes.
 5. Gates: route tests, `node scripts/computed-route/lint.mjs`, the deploy's gate tier, `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`.
+
+## Progress
+- Done 2026-10-20, live on indus-test at `075e10c3e`: units 2 to 8 (commits `a36fdf371`, `a7b917892`, `3881cce6f`, `37e9e59c0`, `075e10c3e`, the last the QC council's Escape-on-link fix), unit 9 (backup `~/backups/indus-test-pre-mega-section-20261020.sql`; `site-build.mjs --apply` set the four section pages and rebuilt the drawer 203 on the header menu; menu term 6 deleted; a dry run plans 0; Playwright 106 of 106 at 375, 768, 1024 touch and 1440) and unit 10 (Spec 36 FR-36-5 and FR-36-6, Spec 48 FR-48-30 and FR-48-55, the Indus plan step 18, Eye Care N5.5, LEDGER Front N).
+- Gate G1 passed (`run-mega-section-links-standalone.php` 29 checks, 12 mutations red; route tests 27, 14 mutations red; dead-api 0; render paths OK; inline styling 0). The deploy's full gate tier passed.
+- Open: gate G2, Bean opens https://lavender-dinosaur-183533.hostingersite.com/ on a phone and tries the drawer. Drill-down mode is checked by the runner only (Indus's drawer runs the accordion model).
 
 ## Units
 

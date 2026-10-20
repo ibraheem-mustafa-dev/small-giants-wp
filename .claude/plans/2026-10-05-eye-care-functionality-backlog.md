@@ -33,7 +33,7 @@ CR6 (padding and margin longhands) is done, see `plans/archive/2026-10-07-cr6-bo
 
 | Ref | The feature |
 |---|---|
-| **N5.5** | **Mega menu items you can click through to their page.** The ordinary dropdown renders a link plus a separate open button; mega items render a button only. Give mega items with a page the same link-plus-button pattern (button discreet, still 44px), then add page links to Sunglasses, Lenses and Help (Brands has no Section page set). Framework repair: `.claude/plans/2026-10-20-mega-item-section-links.md` (each panel's Section page setting supplies the link); left here: set those three panels' Section page |
+| **N5.5** | **Mega menu items you can click through to their page.** The ordinary dropdown renders a link plus a separate open button; mega items render a button only. Give mega items with a page the same link-plus-button pattern (button discreet, still 44px), then add page links to Sunglasses, Lenses and Help (Brands has no Section page set). Framework repair built (Spec 36 FR-36-5: each panel's Section page setting supplies the link, live on indus-test 2026-10-20); left here: set those three panels' Section page |
 | **N5** | **Mega panel setting: "width limit applies to panel / content".** Content mode paints the ground edge to edge and centres the content at 1440. Today the panel stops at 1440 and sits left-aligned at wide screens |
 
 ### Motion on Home
