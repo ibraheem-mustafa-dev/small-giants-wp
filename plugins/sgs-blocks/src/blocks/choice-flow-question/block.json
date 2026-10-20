@@ -53,7 +53,8 @@
 					"label": "Option badge",
 					"order": 6,
 					"clusters": [
-						"text"
+						"text",
+						"fill"
 					],
 					"prefix": "optionBadge",
 					"attrMap": {
