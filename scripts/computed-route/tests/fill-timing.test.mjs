@@ -112,3 +112,35 @@ test( 'MUST FAIL: the timing check finds a live page that times a change differe
 	assert.deepEqual( verdicts( timingCheck( { draft: only, live: live( { [ DUR ]: '300ms' }, '300ms' ), pairs } ) ), [ [ 'enter', 'match' ], [ 'leave', 'match' ] ], 'closing reverses opening' );
 	assert.deepEqual( verdicts( timingCheck( { draft: only, live: live( { [ DUR ]: '1s' }, '300ms' ), pairs } ) ), [ [ 'enter', 'match' ], [ 'leave', 'differs' ] ], 'a live close that does not reverse the open' );
 } );
+
+test( 'MUST FAIL: with no resting timing and several states timing entry, one value is written (hover first) and each other state is named', () => {
+	const r = run( 'sgs/team-member', MEMBER, reads( {}, [ look( 'active', DUR, '0.05s' ), look( 'hover', DUR, '0.2s' ) ] ) );
+	assert.deepEqual( summary( r ), [ [ 'transitionDuration', null, 'fill-timing-reverse' ] ] );
+	assert.equal( r.attrs.transitionDuration, '200' );
+	assert.equal( r.unmapped.length, 1 );
+	assert.equal( r.unmapped[ 0 ].state, 'active' );
+	assert.match( r.unmapped[ 0 ].reason, /^timing-enter-differs/ );
+	const agree = run( 'sgs/team-member', MEMBER, reads( {}, [ look( 'hover', DUR, '0.2s' ), look( 'active', DUR, '0.2s' ) ] ) );
+	assert.equal( agree.writes.length, 1 );
+	assert.equal( agree.unmapped.length, 0, 'states agreeing on the timing need no row' );
+} );
+
+test( 'MUST FAIL: a state timing equal to the resting timing is not a timing-enter-differs gap', () => {
+	const same = run( 'sgs/team-member', MEMBER, reads( { [ DUR ]: '0.2s' }, [ look( 'hover', DUR, '0.2s' ) ] ) );
+	assert.equal( same.unmapped.length, 0 );
+	assert.equal( same.attrs.transitionDuration, '200' );
+	const differs = run( 'sgs/team-member', MEMBER, reads( { [ DUR ]: '0.2s' }, [ look( 'hover', DUR, '0.5s' ) ] ) );
+	assert.equal( differs.unmapped.length, 1 );
+	const spelled = run( 'sgs/team-member', MEMBER, reads( { [ DUR ]: '.2s' }, [ look( 'hover', DUR, '200ms' ) ] ) );
+	assert.equal( spelled.unmapped.length, 0, '.2s and 200ms are one timing' );
+	const states = run( 'sgs/team-member', MEMBER, reads( {}, [ look( 'hover', DUR, '0.2s' ), look( 'active', DUR, '200ms' ) ] ) );
+	assert.equal( states.unmapped.length, 0, 'two states timing 0.2s and 200ms agree' );
+} );
+
+test( 'MUST FAIL: the timing check compares a draft look with the live look of the same state that times the same property', () => {
+	const draft = at3( { rest: { d: {} }, states: { looks: { d: [ look( 'hover', EASE, 'ease-in' ), look( 'hover', DUR, '0.3s' ) ] } } } );
+	const liveLooks = [ look( 'hover', EASE, 'ease-in' ), look( 'hover', DUR, '0.3s' ) ];
+	const live = at3( { rest: { l: {} }, states: { looks: { l: liveLooks } } } );
+	const rows = timingCheck( { draft, live, pairs: [ { draft: 'd', live: 'l' } ] } ).filter( ( r ) => 375 === r.width && 'enter' === r.direction );
+	assert.deepEqual( rows.map( ( r ) => [ r.prop, r.verdict ] ), [ [ DUR, 'match' ], [ EASE, 'match' ] ] );
+} );

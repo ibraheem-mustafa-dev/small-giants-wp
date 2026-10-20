@@ -15,6 +15,7 @@ const st = ( name, state_keys, ids ) => ( { name, state_keys, sc_if_tpl_ids: ids
 const intake = () => ( {
 	census: [ `${ H }:12`, `${ H }:49`, `${ H }:51`, `${ H }:63`, `${ H }:66`, `${ H }:107`, `${ H }:256`, `${ T }:80`, `${ T }:83` ].map( sc ),
 	inventory: { surfaces: {
+		unresolved: [ { item: `${ T }:25`, reason: `sc-if ${ T }:25: no type-safe value to force state key step (initial 0, no literal written or compared)` } ],
 		records: [
 			{ id: 'S-33', kind: 'panel', dc: H, states: [ st( 'unforceable', {}, [ '63', '66' ] ) ] },
 			{ id: 'S-34', kind: 'drawer', dc: H, states: [ st( 'mobileOpen=true', { mobileOpen: true }, [ '107' ] ) ] },
@@ -42,7 +43,7 @@ test( 'MUST FAIL: every sc-if of the surface is reached or listed as a gap row n
 	const drawer = row( map, `${ H }:107` );
 	assert.deepEqual( [ drawer.reach, drawer.walkerState, drawer.settingState ], [ 'walker', 'mobile-open', 'open' ], 'a walker state naming the draft state reaches it' );
 	const step = row( map, `${ T }:80` );
-	assert.deepEqual( [ step.reach, step.keys, step.settingState ], [ 'set-state', { step: 1 }, null ], 'no walker state names it: the logic state is set directly' );
+	assert.deepEqual( [ step.reach, step.keys, step.settingState ], [ 'rest', { step: 0 }, undefined ], 'a state of the sc-if at the initial value (step 0) shows its branch at rest: nothing to set' );
 	assert.deepEqual( [ 'route', 'width', 'props', 'content' ], [ `${ H }:51`, `${ H }:12`, `${ H }:256`, `${ H }:49` ].map( ( id ) => row( map, id ).reach ) );
 	assert.deepEqual( map.walkerStates.find( ( w ) => 'mobile-open' === w.walkerState ), { walkerState: 'mobile-open', settingState: 'open', names: [ 'mobileOpen=true' ] } );
 } );
@@ -111,4 +112,25 @@ test( 'the guard matches the hover state apart from the style, and another prope
 	assert.equal( writableGroups( report(), rest, [ { ...named[ 0 ], key: 'cr-ref-h-1||hover|font-size' } ] ).groups.length, 1, 'a hover entry does not name the style group' );
 	assert.equal( writableGroups( report(), rest, [ { ...named[ 0 ], key: 'cr-ref-h-2||style|font-size' } ] ).groups.length, 1 );
 	assert.equal( writableGroups( report(), rest, [ { ...named[ 0 ], key: 'cr-ref-h-1||style|color' } ] ).groups.length, 1 );
+} );
+
+test( 'MUST FAIL: a state that is not the initial value is set directly, a default one is reached at rest, and a key word names a vocabulary token', () => {
+	const only = ( keys, extra = {} ) => {
+		const i = intake();
+		i.inventory.surfaces.records = [ { id: 'S-41', kind: 'form-step', dc: T, states: [ st( 'x', keys, [ '80' ] ) ] } ];
+		i.inventory.surfaces.counts.toggling_sc_ifs.covered_by = { [ `${ T }:80` ]: 'S-41' };
+		Object.assign( i.inventory.surfaces, extra );
+		return stateMap( { surfaces, surface: 'header', intake: i, vocab: [ ...vocab, { state: 'complete', token: '--done' } ], records: null } );
+	};
+	assert.deepEqual( [ 'step' ].map( () => row( only( { step: 1 } ), `${ T }:80` ).reach ), [ 'set-state' ], 'step 1 is not the initial value' );
+	assert.equal( row( only( { done: false } ), `${ T }:80` ).reach, 'set-state', 'a key the inventory states no initial for is not assumed to start false' );
+	const flag = only( { done: false }, { unresolved: [ { item: `${ T }:25`, reason: `sc-if ${ T }:25: no type-safe value to force state key done (initial false, no literal written or compared)` } ] } );
+	assert.equal( row( flag, `${ T }:80` ).reach, 'rest', 'a recorded initial of false rests' );
+	assert.equal( row( only( { done: true } ), `${ T }:80` ).settingState, 'complete', 'the key word done names the token --done' );
+	const known = only( { step: 1 }, { unresolved: [ { item: `${ T }:25`, reason: `sc-if ${ T }:25: no type-safe value to force state key step (initial 1, no literal written or compared)` } ] } );
+	assert.equal( row( known, `${ T }:80` ).reach, 'rest', 'a recorded initial value that equals the state is the resting branch' );
+	assert.equal( vocabStateFor( st( 'a', { link: true }, [] ), [ { state: 'unvisited', kind: 'pseudo-class', token: ':link' } ] ), null, 'a key word is never the stem of a pseudo-class token (:link)' );
+	assert.equal( vocabStateFor( st( 'a', { link: true }, [] ), [ { state: 'unvisited', kind: 'class', token: 'is-link' } ] ), 'unvisited', 'a class token stem still names its state' );
+	assert.equal( vocabStateFor( st( 'a', { sent: true }, [] ), vocab ), null, 'a word no state or token carries names nothing' );
+	assert.equal( vocabStateFor( st( 'a', { done: true } , [] ), [ { state: 'complete', token: ':hover' }, { state: 'complete', token: '--done' } ] ), 'complete' );
 } );

@@ -96,6 +96,8 @@ function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, pseudoPro
 		const anchors = el.matches( 'a[href]' ) ? [ el ] : [ ...el.querySelectorAll( 'a[href]' ) ];
 		const sole = 1 === anchors.length && ( el === anchors[ 0 ] || anchors[ 0 ].textContent.replace( /\s+/g, ' ' ).trim() === snap.words );
 		snap.href = sole ? anchors[ 0 ].getAttribute( 'href' ) : null;
+		snap.role = el.getAttribute( 'role' );
+		snap.className = String( el.getAttribute( 'class' ) || '' );
 		if ( j.own ) {
 			const cs = getComputedStyle( el );
 			for ( const p of props.filter( ( x ) => [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ].includes( x ) ) ) {

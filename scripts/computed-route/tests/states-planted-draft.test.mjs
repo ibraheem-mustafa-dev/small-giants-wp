@@ -68,17 +68,18 @@ const SOURCES = [ { component: 'Page', stamped: { elements: STAMPED } } ];
 const CENSUS = { rows: [ { kind: 'style-hover', draftId: 'Page:3', detail: { pseudo: 'hover', value: 'color:#00c' } }, { kind: 'sc-if', draftId: 'Page:4' } ] };
 const rowsFor = ( coverage ) => coverageMissing( { census: CENSUS, coverage, usage: draftUsage( { sources: SOURCES, known: KNOWN } ).usage } );
 
-// Every state id the planted draft uses. COVERED have a write reference; OPEN are used by the draft but have no writer yet
-// (the draftUsage test below proves the draft uses them; no row is asserted for them).
+// Every state id the planted draft uses; each has a write reference (COVERED here, the token, surface and resting ids below).
 const PSEUDO = [ 'hover', 'checked', 'disabled', 'empty', 'open' ].map( ( n ) => `css-pseudo-class:${ n }` );
 const ARIA = [ 'expanded', 'current', 'selected', 'pressed', 'checked' ].map( ( n ) => `aria-attr:aria-${ n }` );
 const COVERED = [ ...PSEUDO, ...ARIA, 'construct:style-hover' ];
-const OPEN = [ ...[ 'active', 'any-link', 'focus', 'focus-visible', 'focus-within', 'link', 'modal', 'popover-open', 'target', 'visited' ].map( ( n ) => `css-pseudo-class:${ n }` ), 'aria-attr:aria-hidden', 'construct:sc-if' ];
+const TOKEN = [ 'active', 'focus', 'focus-visible', 'focus-within', 'modal', 'popover-open', 'target', 'visited' ].map( ( n ) => `css-pseudo-class:${ n }` );
+const RESTING = [ 'css-pseudo-class:link', 'css-pseudo-class:any-link', 'aria-attr:aria-hidden' ];
+const ALL_IDS = [ ...COVERED, ...TOKEN, ...RESTING, 'construct:sc-if' ];
 
 test( 'the planted draft uses every states capability it is meant to (so the tests below are not vacuous)', () => {
 	const { usage, problems } = draftUsage( { sources: SOURCES, known: KNOWN } );
 	assert.deepEqual( problems, [] );
-	for ( const id of [ ...COVERED, ...OPEN ].filter( ( x ) => ! x.startsWith( 'construct:' ) ) ) {
+	for ( const id of ALL_IDS.filter( ( x ) => ! x.startsWith( 'construct:' ) ) ) {
 		assert.ok( usage.has( id ), `${ id } is read from the draft` );
 	}
 	assert.deepEqual( [ 'construct:style-hover', 'construct:sc-if' ].filter( ( id ) => ! rowsFor( { entries: {} } ).some( ( r ) => r.construct === id ) ), [], 'both constructs are in the census rows' );
@@ -184,15 +185,6 @@ test( 'a keyboard-focus look that paints like hover is held by the hover write; 
 	assert.match( r.unmapped.find( ( u ) => 'focus' === u.state )?.reason || '', /^focus-differs/ );
 } );
 
-test( 'the open look of a popover or dialog panel has no setting that holds it (why :popover-open and :modal stay open)', async () => {
-	const { result } = await readPlanted();
-	assert.ok( ( result.looks[ '#pop' ] || [] ).some( ( l ) => l.states.includes( 'open' ) ), 'the reader enters the popover and reads its look' );
-	assert.ok( ( result.looks[ '#dlg' ] || [] ).some( ( l ) => l.states.includes( 'open' ) ), 'the reader enters the dialog modally and reads its look' );
-	const out = fillPlanted( result, [ [ '#pop', 'sgs/modal' ], [ '#dlg', 'sgs/modal' ] ] );
-	assert.ok( out.unmapped.filter( ( u ) => u.block === 'sgs/modal' ).every( ( u ) => /^no-state-setting/.test( u.reason ) ), 'the panel look is a named gap' );
-	assert.equal( out.writes.filter( ( w ) => 'sgs/modal' === w.block ).length, 0 );
-} );
-
 test( ':empty matches at rest: the resting read holds its look and the resting resolver writes it; a non-empty element holds none', async () => {
 	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
 	await page.setContent( `${ HTML }<div class="slot" id="full">text</div>` );
@@ -221,6 +213,12 @@ test( ':link, :any-link and aria-hidden="true" match at rest: the resting read h
 	assert.equal( nolink.color, 'rgb(0, 0, 0)', 'an element that is no link matches neither' );
 	assert.equal( hidden.color, 'rgb(3, 3, 3)', 'a decorative element carries aria-hidden="true" at rest' );
 	assert.equal( shown.color, 'rgb(0, 0, 0)', 'one without the attribute does not match' );
+	for ( const [ name, value ] of [ [ ':link / :any-link', link.color ], [ 'aria-hidden', hidden.color ] ] ) {
+		const node = { name: 'sgs/button', attributes: {}, innerBlocks: [] };
+		const res = resolveProperty( { node, block: 'sgs/button', prop: 'color', draft: { 375: value, 768: value, 1440: value }, baseline: () => undefined, slots: [ '' ], calibration: calFor( 'sgs/button' ), db, snapshot, log: [], state: null } );
+		assert.equal( res.status, 'written', `${ name }: the resting resolver writes the look` );
+		assert.ok( res.writes.some( ( w ) => 'colourText' === w.attr ), `${ name }: written to the resting colour setting colourText` );
+	}
 } );
 
 // The theme-token and surface writers (lib/fill-state-tokens.mjs, lib/fill-state.mjs): each state the next entries cover is
@@ -304,12 +302,24 @@ test( 'MUST FAIL WITHOUT THE SURFACE RULE: :popover-open, :modal and :target loo
 
 test( 'the token and surface entries name a recogniser, writer and check, and each is load-bearing for the seen-but-unsupported row', () => {
 	const coverage = loadCoverage();
-	const NEW = [ 'active', 'focus', 'focus-visible', 'focus-within', 'modal', 'popover-open', 'target', 'visited' ].map( ( n ) => `css-pseudo-class:${ n }` );
+	const NEW = [ ...TOKEN, ...RESTING ];
 	const raised = new Set( rowsFor( coverage ).map( ( r ) => r.construct ) );
 	for ( const id of NEW ) {
 		const e = coverage.entries[ id ];
 		assert.ok( e.recognise && e.write && e.check, `${ id } names recognise, write and check` );
 		assert.ok( ! raised.has( id ), `${ id } raises no row while covered` );
 		assert.ok( rowsFor( { ...coverage, entries: { ...coverage.entries, [ id ]: { ...e, write: null, wave: 'states' } } } ).some( ( r ) => r.construct === id ), `${ id } raises its row again with its write reference removed` );
+	}
+} );
+
+test( 'MUST FAIL: the sc-if construct raises no row while covered, and raises it again with its write, recognise or check reference removed', () => {
+	const coverage = loadCoverage();
+	const id = 'construct:sc-if';
+	const e = coverage.entries[ id ];
+	assert.ok( e.recognise && e.write && e.check, `${ id } names recognise, write and check` );
+	assert.ok( ! rowsFor( coverage ).some( ( r ) => r.construct === id ), `${ id } raises no row while covered` );
+	for ( const ref of [ 'write', 'recognise', 'check' ] ) {
+		const nulled = { ...coverage, entries: { ...coverage.entries, [ id ]: { ...e, [ ref ]: null, wave: 'states' } } };
+		assert.ok( rowsFor( nulled ).some( ( r ) => r.construct === id ), `${ id } raises its row again with its ${ ref } reference removed` );
 	}
 } );

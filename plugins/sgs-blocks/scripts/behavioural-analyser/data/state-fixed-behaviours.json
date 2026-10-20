@@ -307,6 +307,11 @@
    "reason": "admin media-field preview image: its [hidden] rule is fixed paint (display:none) in the WordPress admin, no setting and no front-end surface"
   },
   {
+   "file": "plugins/sgs-blocks/includes/helpers-button-press.php",
+   "selector": ":active",
+   "reason": "painted from the theme's buttonPresets.{variant}.active-transform/active-shadow tokens (the snapshot), not a block setting; scripts/computed-route/lib/snapshot-tokens.mjs::pressTokens writes them"
+  },
+  {
    "file": "plugins/sgs-blocks/includes/helpers-nav-bar-motion-model.php",
    "selector": ".sgs-nav-bar-menu__panel-motion[data-sgs-motion-state~=\"close\"]",
    "reason": "motion engine state: sgsMotion has no block_attributes row, its close and open field states live in motion_fields (state 'close'); the --sgs-me-* values come from the motion object, not a tagged setting"
@@ -327,6 +332,16 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
+   "file": "plugins/sgs-blocks/includes/sgs-header-ink-helpers.php",
+   "selector": ".is-header-on-dark",
+   "reason": "sgs/site-header inkOnDark/inkOnLight paint under the header tone header-behaviours view.js sets from the section beneath; the vocabulary has no tone state word yet, so they stay untagged (states-wave plan, deferred findings)"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/sgs-header-ink-helpers.php",
+   "selector": ".is-header-on-light",
+   "reason": "sgs/site-header inkOnDark/inkOnLight paint under the header tone header-behaviours view.js sets from the section beneath; the vocabulary has no tone state word yet, so they stay untagged (states-wave plan, deferred findings)"
+  },
+  {
    "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
    "selector": ".sgs-accordion-item[open] .sgs-accordion-item__chevron",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
@@ -344,12 +359,7 @@
   {
    "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
    "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
-   "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates:where(:not([data-sgs-me]))",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+   "reason": "the toggle icon turns by iconRotation's amount whenever the item is open (--sgs-accordion-icon-rotate from accordion-item/render.php); the turn follows the item's real open state, so it is behaviour, not a state setting (Bean, 2026-10-21)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
@@ -419,21 +429,6 @@
   {
    "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
-   "selector": ".wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
-   "selector": ".wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
-   "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -540,6 +535,11 @@
    "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
    "selector": ".sgs-open-status[data-state=\"\"] .sgs-open-status__line",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-open-status[data-state=\"closed\"]",
+   "reason": "opening-hours status from the business's hours (render.php), not an interaction: openStatusOpen* and openStatusClosed* are two variants' own resting settings, so no setting carries a state"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
@@ -853,11 +853,6 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
-   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:hover",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
    "selector": ".sgs-choice-flow--layout-showcase:where(:not([data-sgs-me~=\"state\"]):not(:has([data-sgs-me~=\"state\"]))) .sgs-form-step.is-entering",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -1058,16 +1053,6 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form__progress-bar:focus-visible",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form__progress-bar:hover",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
    "selector": ":where(.sgs-form-field--email:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -1235,6 +1220,21 @@
    "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
    "selector": ".sgs-google-reviews--card-wall-tile .sgs-google-reviews__review:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews__dot.is-active::before",
+   "reason": "the current dot paints the resting star colour (--sgs-gr-star-colour) at a fixed larger scale; no setting holds a current-only value"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ":where( .sgs-google-reviews__arrow:active )",
+   "reason": "Google's own UI colours (--sgs-gr-*), which google-reviews follows instead of the theme (owner ruling)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ":where( .sgs-google-reviews__pause:active )",
+   "reason": "Google's own UI colours (--sgs-gr-*), which google-reviews follows instead of the theme (owner ruling)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
@@ -1413,38 +1413,8 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"line\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(1)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"line\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(3)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"line\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(1)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
    "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(2)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(3)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
@@ -1453,23 +1423,8 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(1)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
    "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(2)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(3)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
-   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1)",
-   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
@@ -1584,16 +1539,6 @@
   {
    "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
    "selector": ".sgs-notice-banner__prev:hover",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
-   "selector": ".sgs-option-picker--ghost .sgs-option-picker__option:focus-within .sgs-option-picker__pill",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
-   "selector": ".sgs-option-picker--ghost .sgs-option-picker__option:hover .sgs-option-picker__pill",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -1904,27 +1849,12 @@
   {
    "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
    "selector": ".sgs-product-search__results [role=\"option\"].is-active",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+   "reason": "setting-driven by the hover setting that publishes this property (product-search/render.php); the keyboard-highlighted option (.is-active) paints the same look as :hover, so the one setting holds both states and its css_state is tagged hover only (untagged-state gap: 'current' not tagged)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
    "selector": ".sgs-product-search__results [role=\"option\"].is-active .sgs-product-search__result-title mark",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
-   "selector": ".sgs-product-search__results [role=\"option\"]:hover",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
-   "selector": ".sgs-product-search__results [role=\"option\"]:hover .sgs-product-search__result-title mark",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
-   "selector": ".sgs-product-search__results:hover",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+   "reason": "setting-driven by the hover setting that publishes this property (product-search/render.php); the keyboard-highlighted option (.is-active) paints the same look as :hover, so the one setting holds both states and its css_state is tagged hover only (untagged-state gap: 'current' not tagged)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
@@ -2493,11 +2423,6 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/utilities.css",
-   "selector": ":where(.sgs-button--link:is(:hover, :focus-visible) .sgs-button__label)",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/utilities.css",
    "selector": ":where(:root:not(.sgs-touch-input)) .has-shadow-lg:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -2835,41 +2760,6 @@
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": "dialog.sgs-shop-filters[open]::backdrop",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
-   "selector": ".sgs-open-status[data-state=\"closed\"]",
-   "reason": "opening-hours status from the business's hours (render.php), not an interaction: openStatusOpen* and openStatusClosed* are two variants' own resting settings, so no setting carries a state"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
-   "selector": ":where( .sgs-google-reviews__arrow:active )",
-   "reason": "Google's own UI colours (--sgs-gr-*), which google-reviews follows instead of the theme (owner ruling)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
-   "selector": ":where( .sgs-google-reviews__pause:active )",
-   "reason": "Google's own UI colours (--sgs-gr-*), which google-reviews follows instead of the theme (owner ruling)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
-   "selector": ".sgs-google-reviews__dot.is-active::before",
-   "reason": "the current dot paints the resting star colour (--sgs-gr-star-colour) at a fixed larger scale; no setting holds a current-only value"
-  },
-  {
-   "file": "plugins/sgs-blocks/includes/helpers-button-press.php",
-   "selector": ":active",
-   "reason": "painted from the theme's buttonPresets.{variant}.active-transform/active-shadow tokens (the snapshot), not a block setting; scripts/computed-route/lib/snapshot-tokens.mjs::pressTokens writes them"
-  },
-  {
-   "file": "plugins/sgs-blocks/includes/sgs-header-ink-helpers.php",
-   "selector": ".is-header-on-dark",
-   "reason": "sgs/site-header inkOnDark/inkOnLight paint under the header tone header-behaviours view.js sets from the section beneath; the vocabulary has no tone state word yet, so they stay untagged (states-wave plan, deferred findings)"
-  },
-  {
-   "file": "plugins/sgs-blocks/includes/sgs-header-ink-helpers.php",
-   "selector": ".is-header-on-light",
-   "reason": "sgs/site-header inkOnDark/inkOnLight paint under the header tone header-behaviours view.js sets from the section beneath; the vocabulary has no tone state word yet, so they stay untagged (states-wave plan, deferred findings)"
   }
  ]
 }

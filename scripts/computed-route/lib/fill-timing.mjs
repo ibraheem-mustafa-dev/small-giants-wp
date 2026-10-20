@@ -16,6 +16,10 @@ import { READ_WIDTHS } from './fill-read.mjs';
 
 export const TIMING_PROPS = [ 'transition-duration', 'transition-timing-function' ];
 
+// The order a single both-ways timing is taken from when several states time entering: hover, focus, then the rest.
+const ENTER_ORDER = [ 'hover', 'focus', 'active', 'open' ];
+const order = ( state ) => ( ENTER_ORDER.includes( state ) ? ENTER_ORDER.indexOf( state ) : ENTER_ORDER.length );
+
 // A comma list split at its top level (a `cubic-bezier( … , … )` keeps its commas).
 const splitList = ( text ) => {
 	const out = [];
@@ -103,6 +107,7 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 		} else if ( res && ! [ 'no-setting', 'unmapped-element' ].includes( res.gap ) ) {
 			gap( prop, null, rest, `${ res.gap }: ${ res.detail || 'the resting timing has no single value this setting holds' }` );
 		}
+		const pending = [];
 		for ( const [ state, props ] of Object.entries( facts.enter ) ) {
 			const enter = props[ prop ];
 			if ( ! enter ) {
@@ -116,19 +121,37 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 			if ( 'written' === own?.status ) {
 				apply( prop, state, own, 'fill-timing' );
 			} else if ( ! rest ) {
-				// Close reverses open: the draft's one timing, on the setting that times both directions.
-				const both = resolve( prop, enter, null );
-				if ( 'written' === both.status ) {
-					apply( prop, null, both, 'fill-timing-reverse' );
-				} else {
-					gap( prop, state, enter, `no-state-setting: no setting times entering ${ state } or both directions of it${ both.gap ? ` (${ both.gap })` : '' }` );
+				// Close reverses open: the draft's one timing, on the setting that times both directions. The setting holds
+				// one value, so the first state of ENTER_ORDER that can write takes it and each other state is named.
+				pending.push( { state, enter, own } );
+			} else if ( ! sameAtWidths( prop, enter, rest ) ) {
+				gap( prop, state, enter, `timing-enter-differs: the draft times entering ${ state } differently from leaving it, and ${ rec.name } has no ${ state } timing setting for ${ target.slot || 'this element' }${ own?.gap ? ` (${ own.gap })` : '' }` );
+			}
+		}
+		pending.sort( ( a, b ) => order( a.state ) - order( b.state ) );
+		let taken = null;
+		for ( const { state, enter } of pending ) {
+			const both = taken ? null : resolve( prop, enter, null );
+			if ( 'written' === both?.status ) {
+				apply( prop, null, both, 'fill-timing-reverse' );
+				taken = { state, enter };
+			} else if ( taken ) {
+				if ( ! sameAtWidths( prop, enter, taken.enter ) ) {
+					gap( prop, state, enter, `timing-enter-differs: the draft times entering ${ state } differently from ${ taken.state }, and the one setting for both directions holds ${ taken.state }'s` );
 				}
 			} else {
-				gap( prop, state, enter, `timing-enter-differs: the draft times entering ${ state } differently from leaving it, and ${ rec.name } has no ${ state } timing setting for ${ target.slot || 'this element' }${ own?.gap ? ` (${ own.gap })` : '' }` );
+				gap( prop, state, enter, `no-state-setting: no setting times entering ${ state } or both directions of it${ both.gap ? ` (${ both.gap })` : '' }` );
 			}
 		}
 	}
 	return out;
+}
+
+// Whether two per-width timings ({ width: value }) are one timing at every width, by sameTiming's canonical reading
+// (`.2s` is `200ms`); a value it cannot read compares as written.
+function sameAtWidths( prop, a, b ) {
+	const widths = Object.keys( a );
+	return widths.length === Object.keys( b ).length && widths.every( ( w ) => w in b && ( sameTiming( prop, a[ w ], b[ w ] ) ?? a[ w ] === b[ w ] ) );
 }
 
 // Whether a live timing is the draft's: times within 10ms, easings by their canonical spelling. null when either cannot
@@ -163,7 +186,7 @@ export function timingCheck( { draft, live, pairs } ) {
 				const looks = ( read.states?.looks?.[ pair.draft ] || [] ).filter( ( l ) => undefined !== l.declared?.[ prop ] );
 				for ( const look of looks ) {
 					const state = look.states.join( '+' );
-					const liveLook = liveLooks.find( ( l ) => l.states.join( '+' ) === state );
+					const liveLook = liveLooks.find( ( l ) => l.states.join( '+' ) === state && undefined !== l.declared?.[ prop ] );
 					add( 'enter', state, look.rendered?.[ prop ] ?? look.declared[ prop ], liveLook?.rendered?.[ prop ] ?? liveRest[ prop ] );
 				}
 				if ( undefined !== restValue ) {

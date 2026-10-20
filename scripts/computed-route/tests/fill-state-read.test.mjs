@@ -159,3 +159,63 @@ test( 'negative control: a state the vocabulary does not name is not read (the r
 	assert.equal( lookOf( result, '.bar', 'open' ), undefined );
 	assert.ok( lookOf( result, '.title', 'hover' ), 'the other states still read' );
 } );
+
+// Reads one planted page with the full vocabulary: { result } for the jobs it names.
+async function readHtml( html, finders, wrapCdp = ( c ) => c, log = () => {} ) {
+	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
+	await page.setContent( html );
+	const cdp = await openDevtools( page );
+	const jobs = finders.map( ( f ) => ( { id: f, finder: f } ) );
+	const rest = {};
+	for ( const j of jobs ) {
+		rest[ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null );
+	}
+	const result = await readStates( { page, cdp: wrapCdp( cdp ), jobs, rows: VOCAB, rest, resolveSrc: RESOLVE, log } );
+	await page.close();
+	return result;
+}
+
+test( 'MUST FAIL: a state look on a pseudo-element is read from the pseudo-element and carries it', async () => {
+	const result = await readHtml( '<style>.x { color: rgb(0, 0, 0) } .x::after { content: "+"; opacity: 0; color: rgb(5, 5, 5) } .x:hover::after { opacity: 1 } .x:hover { color: rgb(9, 9, 9) }</style><a class="x" href="#x">X</a>', [ '.x' ] );
+	const looks = result.looks[ '.x' ] || [];
+	const after = looks.filter( ( l ) => '::after' === l.pseudo );
+	assert.equal( after.length, 1, 'one look on the ::after' );
+	assert.deepEqual( [ after[ 0 ].states, after[ 0 ].declared, after[ 0 ].rendered?.color ], [ [ 'hover' ], { opacity: '1' }, 'rgb(5, 5, 5)' ], 'only the opacity differs from the pseudo-element at rest, and the render of its declared colour is the pseudo-element own' );
+	assert.deepEqual( looks.filter( ( l ) => ! l.pseudo ).map( ( l ) => l.declared ), [ { color: 'rgb(9, 9, 9)' } ], 'the element\'s own hover look is separate' );
+} );
+
+test( 'MUST FAIL: :where() keeps counting nothing, so a code read does not let its argument win the cascade', async () => {
+	const result = await readHtml( '<style>a.p { color: rgb(0, 0, 0) } .b a.p:visited { color: rgb(1, 1, 1) } .c:visited { color: rgb(2, 2, 2) } a.p:where(.b .c):visited { color: rgb(3, 3, 3) }</style><div class="b"><a class="p c" href="#p">P</a></div>', [ 'a.p' ] );
+	const v = ( result.looks[ 'a.p' ] || [] ).find( ( l ) => l.states.includes( 'visited' ) );
+	assert.equal( v?.declared.color, 'rgb(1, 1, 1)', '.b a.p:visited (0,3,1) beats .c:visited (0,2,0) and the :where() rule (0,2,1), which counts nothing for its argument' );
+} );
+
+// A DevTools session that fails every matched-styles read made outside a forced pseudo-class state: the pseudo-element's
+// own resting read.
+const failingRest = ( cdp ) => {
+	let forced = false;
+	return { send: async ( method, params ) => {
+		if ( 'CSS.forcePseudoState' === method ) {
+			forced = params.forcedPseudoClasses.length > 0;
+		}
+		if ( 'CSS.getMatchedStylesForNode' === method && ! forced ) {
+			throw new Error( 'resting read refused' );
+		}
+		return cdp.send( method, params );
+	} };
+};
+
+test( 'MUST FAIL: a failed pseudo-element resting read is logged and the pseudo look skipped, never reported as all-changed', async () => {
+	const logs = [];
+	const html = '<style>.x { color: rgb(0, 0, 0) } .x::after { content: "+"; opacity: 0; color: rgb(5, 5, 5) } .x:hover::after { opacity: 1 } </style><a class="x" href="#x">X</a>';
+	const result = await readHtml( html, [ '.x' ], failingRest, ( m ) => logs.push( m ) );
+	assert.deepEqual( ( result.looks[ '.x' ] || [] ).filter( ( l ) => '::after' === l.pseudo ), [] );
+	assert.ok( logs.some( ( m ) => /resting read failed/.test( m ) ) && logs.some( ( m ) => /skipped/.test( m ) ), 'it is logged' );
+} );
+
+test( 'MUST FAIL: a state look on a pseudo-element no browser reads (::selection) is listed as not readable, never dropped', async () => {
+	const result = await readHtml( '<style>.x { color: rgb(0, 0, 0) } .x:hover::selection { color: rgb(9, 9, 9) } </style><a class="x" href="#x">X</a>', [ '.x' ] );
+	const gap = result.unreached.find( ( u ) => /::selection/.test( u.selector ) );
+	assert.equal( gap?.why, 'pseudo-element not readable' );
+	assert.deepEqual( result.looks[ '.x' ] || [], [] );
+} );

@@ -31,8 +31,9 @@ export const hiddenAtRest = ( reads, id ) => READ_WIDTHS.every( ( w ) => true ==
 
 const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
-// One target's state looks grouped by state and property across the read widths: Map `${state}|${prop}` →
-// { state, prop, perWidth, read ('code' when any width's value was read from the stylesheet) }. A combination of states (hover on the current item) keeps every word, joined by `+`.
+// One target's state looks grouped by state, pseudo-element and property across the read widths: Map
+// `${state}|${pseudo-element or ''}|${prop}` →
+// { state, prop, pseudo, perWidth, read ('code' when any width's value was read from the stylesheet) }. A combination of states (hover on the current item) keeps every word, joined by `+`.
 // reads: readDraft's result; id: the target id.
 export function stateDrafts( reads, id ) {
 	const out = new Map();
@@ -49,8 +50,10 @@ export function stateDrafts( reads, id ) {
 				if ( ! value ) {
 					continue;
 				}
-				const key = `${ state }|${ prop }`;
-				const e = out.get( key ) || { state, prop, perWidth: {}, byCode: {}, read: 'entered' };
+				// A look on a pseudo-element (`::after` under :hover) is that layer's own look, kept apart from the element's.
+				const pseudo = look.pseudo || '';
+				const key = `${ state }|${ pseudo }|${ prop }`;
+				const e = out.get( key ) || { state, prop, pseudo, perWidth: {}, byCode: {}, read: 'entered' };
 				if ( code && undefined !== e.perWidth[ w ] ) {
 					continue;
 				}
@@ -62,6 +65,13 @@ export function stateDrafts( reads, id ) {
 		}
 	}
 	return out;
+}
+
+// The target's resting snapshot (tag, link, role, class): the narrowest read width whose snapshot identifies the element
+// (has a tag), since a target hidden at a narrow width has no tag there; with none identified, the narrowest one.
+export function targetSnap( reads, target ) {
+	const snaps = READ_WIDTHS.map( ( w ) => reads.widths?.[ w ]?.[ target.id ] ).filter( Boolean );
+	return snaps.find( ( x ) => x.tag ) || snaps[ 0 ] || {};
 }
 
 // Why a look has no setting state to go to, or null when `state` is one the DB holds.
@@ -91,6 +101,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 		flat[ i ] = n;
 	} );
 	const sink = createPatch();
+	const snapOf = ( target ) => targetSnap( reads, target );
 	const out = { writes: [], unmapped: [], held: [] };
 	for ( const rec of nodes ) {
 		const cal = rec.targets.length ? calFor( rec.name ) : null;
@@ -112,31 +123,38 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 			const drafts = stateDrafts( reads, target.id );
 			const hidden = SURFACE_BLOCKS.includes( rec.name ) && hiddenAtRest( reads, target.id );
 			const tokenLooks = {};
-			for ( const { state, prop, perWidth, read } of drafts.values() ) {
-				if ( 'focus' === state && same( drafts.get( `hover|${ prop }` )?.perWidth, perWidth ) ) {
+			for ( const { state, prop, pseudo, perWidth, read } of drafts.values() ) {
+				// A pseudo-element look goes to that layer's calibrated path, as the resting writer sends it
+				// (lib/fill-resolve.mjs), and never to a theme token: the site ring and press tokens paint the element.
+				const slot = `${ target.slot }${ pseudo }`;
+				if ( pseudo && ! knownPaths( cal ).map( LOOSE ).includes( LOOSE( slot ) ) ) {
+					out.unmapped.push( { node: ref, block: rec.name, slot, property: prop, state, value: JSON.stringify( perWidth ), reason: `unmapped-element: the draft paints ${ pseudo } under ${ state } on "${ target.slot }" and ${ rec.name } has no calibrated ${ pseudo } there` } );
+					continue;
+				}
+				if ( 'focus' === state && same( drafts.get( `hover|${ pseudo }|${ prop }` )?.perWidth, perWidth ) ) {
 					out.held.push( { node: ref, slot: target.slot, prop, state, reason: 'focus paints with hover: the hover setting writes it' } );
 					continue;
 				}
-				if ( tokenRoute( { state, prop, held, block: rec.name, node } ) ) {
+				if ( ! pseudo && tokenRoute( { state, prop, held, block: rec.name, node, slot: target.slot, tag: snapOf( target ).tag, role: snapOf( target ).role } ) ) {
 					( tokenLooks[ state ] ??= {} )[ prop ] = pickValue( perWidth );
 					continue;
 				}
 				const atRest = 'open' === state && hidden && ! held.has( state );
 				const gap = atRest ? null : stateGap( state, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ target.slot ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state } );
+				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state } );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
-						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: target.slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
+						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
 					}
 				} else if ( 'gap' === res.status ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );
 				}
 			}
 			if ( Object.keys( tokenLooks ).length ) {
-				const snap = reads.widths?.[ READ_WIDTHS[ READ_WIDTHS.length - 1 ] ]?.[ target.id ] || {};
+				const snap = snapOf( target );
 				const from = { node: ref, block: rec.name, slot: target.slot, index: rec.index };
-				out.unmapped.push( ...applyTokenLooks( { looks: tokenLooks, sink, from, target: { tag: snap.tag, href: snap.href }, variant: pressVariant( rec.name, node ), owned: ownedBySetting( cal, target.slot ) } ) );
+				out.unmapped.push( ...applyTokenLooks( { looks: tokenLooks, sink, from, target: { tag: snap.tag, href: snap.href, role: snap.role, className: snap.className, pressRoot: '' === target.slot && null !== pressVariant( rec.name, node ) }, variant: pressVariant( rec.name, node ), owned: ownedBySetting( cal, target.slot ) } ) );
 			}
 		}
 	}

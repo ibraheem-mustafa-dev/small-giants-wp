@@ -172,7 +172,7 @@ const DECORATION_DEFAULTS = { 'text-decoration-style': 'solid', 'text-decoration
 // Whether a draft element is a plain content link the theme styles: an <a> with an href (a link without one is never
 // :link or :visited), not styled as a button (role="button", or a class naming btn or button), and not owned by a
 // block's link setting (`ownedBySetting`, from Fill's resolver: a block attribute already holds that element's link
-// look). Returns { themed, why }. target: { tag, href, role, className, ownedBySetting }.
+// look). Returns { themed, why }. target: { tag, href, role, className, pressRoot, ownedBySetting }.
 export function isThemeLink( target ) {
 	const t = target || {};
 	if ( 'a' !== String( t.tag || '' ).toLowerCase() ) {
@@ -183,6 +183,9 @@ export function isThemeLink( target ) {
 	}
 	if ( 'button' === t.role || /(?:^|[\s_-])(?:btn|button)(?:$|[\s_-])/i.test( t.className || '' ) ) {
 		return { themed: false, why: 'a button-styled link takes the button element and presets, not the link element' };
+	}
+	if ( t.pressRoot ) {
+		return { themed: false, why: 'the root link of a button block takes the button presets, not the link element' };
 	}
 	if ( t.ownedBySetting ) {
 		return { themed: false, why: 'a block setting owns this link look' };

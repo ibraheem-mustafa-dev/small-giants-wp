@@ -9,6 +9,8 @@
 import { declaredValues, settleAnimations } from '../../parity/lib/devtools.mjs';
 import { applyToken, renderedOf } from './fill-state-apply.mjs';
 import { codeLooks } from './fill-state-code.mjs';
+import { pseudoDeclared, pseudoRenderedOf } from './fill-state-pseudo.mjs';
+import { reasonOf } from './fill-state-reason.mjs';
 
 // The reaches the reader can enter in a page; environment states (media emulation) belong to the media-feature
 // entries, and an unreachable one (:visited) is read from its stylesheet rules, never entered.
@@ -91,7 +93,8 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		return sel.includes( '&' ) ? sel.replaceAll( '&', `:is(${ parent })` ) : `:is(${ parent }) ${ sel }`;
 	};
 	// `:is()` and `:where()` list alternatives: `.a:is(:hover, :focus-visible)` is a hover look and a focus look, never
-	// one look needing both, so each argument becomes its own part.
+	// one look needing both, so each argument becomes its own part, wrapped in the function it came from (`:where()`
+	// keeps counting nothing toward the part's specificity).
 	const alternatives = ( sel, budget = 32 ) => {
 		const m = /:(?:is|where)\(/.exec( sel );
 		if ( ! m ) {
@@ -112,11 +115,12 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		const args = [ open, ...cuts.map( ( c ) => c + 1 ) ].map( ( s, j ) => sel.slice( s, j < cuts.length ? cuts[ j ] : close ).trim() );
 		const head = sel.slice( 0, m.index );
 		const tail = sel.slice( close + 1 );
+		const fn = m[ 0 ].slice( 0, -1 );
 		// One argument: keep it, and expand what follows.
 		if ( 1 === args.length ) {
-			return alternatives( tail, budget ).map( ( t ) => `${ head }:is(${ args[ 0 ] })${ t }` );
+			return alternatives( tail, budget ).map( ( t ) => `${ head }${ fn }(${ args[ 0 ] })${ t }` );
 		}
-		return args.slice( 0, budget ).flatMap( ( a ) => alternatives( `${ head }:is(${ a })${ tail }`, budget ) ).slice( 0, budget );
+		return args.slice( 0, budget ).flatMap( ( a ) => alternatives( `${ head }${ fn }(${ a })${ tail }`, budget ) ).slice( 0, budget );
 	};
 	const walk = ( list, parent = null ) => {
 		for ( const rule of list ) {
@@ -195,7 +199,12 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 	// token's host selector. A part that leaves nothing but the universal selector (`[hidden]{display:none}`, a bare
 	// `:disabled`) is a page-wide utility, not a look of any one element, so it is skipped.
 	const analysed = [];
-	for ( const part of new Set( parts ) ) {
+	for ( const full of new Set( parts ) ) {
+		// A trailing pseudo-element (`.card:hover::after`) is cut off before matching: the part names the element that
+		// carries it, and the look is the pseudo-element's own.
+		const pm = /::?(before|after|marker|placeholder)$/.exec( full );
+		const part = pm ? full.slice( 0, pm.index ) : full;
+		const pseudo = pm ? `::${ pm[ 1 ] }` : null;
 		const hits = [];
 		for ( const { i, re } of res ) {
 			re.lastIndex = 0;
@@ -214,7 +223,9 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 			continue;
 		}
 		const hostOf = hits.map( ( h ) => ( insideHas( part, h.at ) ? null : strip( part.slice( 0, compoundEnd( part, h.at ) ), hits.filter( ( x ) => x.at < compoundEnd( part, h.at ) ) ) ) );
-		analysed.push( { part, hits, stripped, hostOf } );
+		// The pseudo-element left in the selector: `matches()` never matches one, so the element is matched without it.
+		const tail = /::[a-z-]+(\([^)]*\))?$/.exec( stripped );
+		analysed.push( { part, full, pseudo, hits, stripped: tail ? stripped.slice( 0, tail.index ) || '*' : stripped, hostOf, unreadable: !! tail } );
 	}
 	const out = {};
 	let n = 0;
@@ -225,7 +236,7 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		if ( ! el ) {
 			continue;
 		}
-		for ( const { part, hits, stripped, hostOf } of analysed ) {
+		for ( const { part, full, pseudo, hits, stripped, hostOf, unreadable } of analysed ) {
 			let matches = false;
 			try {
 				matches = el.matches( stripped );
@@ -233,6 +244,10 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 				continue;
 			}
 			if ( ! matches ) {
+				continue;
+			}
+			if ( unreadable ) { // a trailing pseudo-element no browser reads (`::selection`): reported, never dropped
+				( out[ job.id ] ??= [] ).push( { selector: full, tokens: [], unreadable: 'pseudo-element not readable' } );
 				continue;
 			}
 			const tokens = hits.map( ( h, k ) => {
@@ -247,7 +262,7 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 				}
 				return { i: h.i, text: h.text, host: host ? host.getAttribute( hostAttr ) : null, inHas: null === hostOf[ k ] };
 			} );
-			const entry = { selector: part, tokens };
+			const entry = { selector: full, tokens, ...( pseudo ? { pseudo } : {} ) };
 			if ( hits.some( ( h ) => unreachable.has( h.i ) ) || tokens.some( ( t ) => null === t.host ) ) {
 				const style = getComputedStyle( el );
 				const plain = ( v ) => {
@@ -257,7 +272,7 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 					}
 					return text;
 				};
-				entry.code = ( ruleDecls.get( part ) || [] ).map( ( r ) => ( { order: r.order, d: r.d.map( ( [ p, v, i ] ) => [ p, plain( v ), i ] ) } ) );
+				entry.code = ( ruleDecls.get( full ) || [] ).map( ( r ) => ( { order: r.order, d: r.d.map( ( [ p, v, i ] ) => [ p, plain( v ), i ] ) } ) );
 			}
 			( out[ job.id ] ??= [] ).push( entry );
 		}
@@ -282,24 +297,43 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 	const combos = await page.evaluate( stateCombos, [ jobs, vocab, resolveSrc, HOST_ATTR ] );
 	const byI = new Map( vocab.map( ( r ) => [ r.i, r ] ) );
 	const out = { looks: {}, unreached: [] };
+	const pseudoRests = new Map();
 	try {
 		for ( const job of jobs ) {
 			const blocked = [];
 			for ( const combo of combos[ job.id ] || [] ) {
+				if ( combo.unreadable ) {
+					out.unreached.push( { id: job.id, selector: combo.selector, why: combo.unreadable } );
+					continue;
+				}
 				const tokens = combo.tokens.map( ( t ) => ( { ...t, row: byI.get( t.i ) } ) );
 				if ( tokens.some( ( t ) => 'unreachable' === t.row.reach || null === t.host ) ) {
+					if ( combo.pseudo ) {
+						out.unreached.push( { id: job.id, selector: combo.selector, why: `${ reasonOf( tokens ) }; a state look of a pseudo-element is entered, never read from code` } );
+						continue;
+					}
 					blocked.push( { combo, tokens } );
 					continue;
 				}
-				const look = await readOne( page, cdp, job, tokens, resolveSrc ).catch( ( e ) => {
+				const look = await readOne( page, cdp, job, tokens, resolveSrc, combo.pseudo ).catch( ( e ) => {
 					log( `state read failed for ${ job.id } (${ combo.selector }): ${ e.message }` );
 					return null;
 				} );
-				const declared = declaredDiff( rest?.[ job.id ], look?.declared );
+				// A pseudo-element's look differs from the pseudo-element's own resting values, not the element's.
+				const restKey = `${ job.id }|${ combo.pseudo }`;
+				if ( combo.pseudo && ! pseudoRests.has( restKey ) ) {
+					pseudoRests.set( restKey, ( await readOne( page, cdp, job, [], resolveSrc, combo.pseudo ).catch( ( e ) => log( `pseudo-element resting read failed for ${ job.id } (${ combo.pseudo }): ${ e.message }` ) ) )?.declared ?? null );
+				}
+				if ( combo.pseudo && ! pseudoRests.get( restKey ) ) { // every declared property would read as a change without the resting values
+					log( `state look ${ combo.selector } of ${ job.id } skipped: the ${ combo.pseudo } resting values could not be read` );
+					continue;
+				}
+				const restOf = combo.pseudo ? pseudoRests.get( restKey ) : rest?.[ job.id ];
+				const declared = declaredDiff( restOf, look?.declared );
 				if ( look && Object.keys( declared ).length ) {
 					const states = [ ...new Set( tokens.map( ( t ) => t.row.state ) ) ];
 					out.looks[ job.id ] ??= [];
-					out.looks[ job.id ].push( { states, family: tokens[ 0 ].row.family, selector: combo.selector, tokens: tokens.map( ( t ) => t.text ), declared, rendered: look.rendered, read: 'entered' } );
+					out.looks[ job.id ].push( { states, family: tokens[ 0 ].row.family, selector: combo.selector, tokens: tokens.map( ( t ) => t.text ), declared, rendered: look.rendered, read: 'entered', ...( combo.pseudo ? { pseudo: combo.pseudo } : {} ) } );
 				}
 			}
 			const code = codeLooks( { id: job.id, blocked, rest: rest?.[ job.id ], reasonOf } );
@@ -314,17 +348,8 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 	return out;
 }
 
-// Why the page cannot be put into a combination's state.
-function reasonOf( tokens ) {
-	const t = tokens.find( ( x ) => 'unreachable' === x.row.reach || null === x.host );
-	if ( t.inHas ) {
-		return `${ t.text } inside :has() is a descendant's state, not one on the target or its ancestors`;
-	}
-	return null === t.host ? `${ t.text } has no host on the target or its ancestors (a sibling combinator)` : `${ t.text } is never exposed to scripts`;
-}
-
 // One combination: enter every token's state on its host, read the target, leave in reverse order.
-async function readOne( page, cdp, job, tokens, resolveSrc ) {
+async function readOne( page, cdp, job, tokens, resolveSrc, pseudoName = null ) {
 	const hostSel = ( t ) => `[${ HOST_ATTR }="${ t.host }"]`;
 	const pseudo = tokens.filter( ( t ) => 'force-pseudo' === t.row.reach );
 	const others = tokens.filter( ( t ) => 'force-pseudo' !== t.row.reach );
@@ -334,8 +359,8 @@ async function readOne( page, cdp, job, tokens, resolveSrc ) {
 			saved.push( [ t, await page.evaluate( applyToken, [ hostSel( t ), t.row.reach, t.text, t.row.call, true, null ] ) ] );
 		}
 		const read = async () => {
-			const declared = await declaredValues( cdp, job.finder, resolveSrc, null, { keepDocument: pseudo.length > 0 } );
-			const rendered = declared ? await page.evaluate( renderedOf, [ job.finder, resolveSrc, Object.keys( declared ) ] ) : null;
+			const declared = pseudoName ? await pseudoDeclared( cdp, job.finder, resolveSrc, pseudoName, pseudo.length > 0 ) : await declaredValues( cdp, job.finder, resolveSrc, null, { keepDocument: pseudo.length > 0 } );
+			const rendered = declared ? await page.evaluate( pseudoName ? pseudoRenderedOf : renderedOf, [ job.finder, resolveSrc, Object.keys( declared ), pseudoName ] ) : null;
 			return { declared, rendered };
 		};
 		if ( ! pseudo.length ) {

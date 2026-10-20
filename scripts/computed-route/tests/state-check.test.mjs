@@ -50,3 +50,36 @@ test( 'MUST FAIL: a look read by code on either side is compared by declared val
 	const entered = checkStates( { draft: read( { d: [ look( [ 'hover' ], { color: 'rgb(1, 1, 1)' } ) ] } ), live: read( { l: [ look( [ 'hover' ], { color: 'rgb(1, 1, 1)' } ) ] } ), pairs } );
 	assert.equal( entered[ 0 ].confirmed, true );
 } );
+
+test( 'MUST FAIL: an element with two hover looks (.a:hover and .card:hover .a) is compared look by look, not against the first live look', () => {
+	const own = look( [ 'hover' ], { color: 'rgb(200, 0, 0)' } );
+	const viaCard = look( [ 'hover' ], { 'background-color': 'rgb(0, 0, 200)' } );
+	const rows = checkStates( { draft: read( { d: [ own, viaCard ] } ), live: read( { l: [ own, viaCard ] } ), pairs } );
+	assert.deepEqual( rows.map( ( r ) => [ r.prop, r.verdict, r.liveState ] ), [ [ 'color', 'match', true ], [ 'background-color', 'match', true ] ], 'both draft looks find their live partner' );
+	const swapped = checkStates( { draft: read( { d: [ own, viaCard ] } ), live: read( { l: [ viaCard, own ] } ), pairs } );
+	assert.equal( swapped.filter( ( r ) => 'match' === r.verdict ).length, 2, 'the order the live reader lists them in does not matter' );
+	const wrong = checkStates( { draft: read( { d: [ own, viaCard ] } ), live: read( { l: [ own, look( [ 'hover' ], { 'background-color': 'rgb(9, 9, 9)' } ) ] } ), pairs } );
+	assert.deepEqual( wrong.map( ( r ) => r.verdict ), [ 'match', 'differs' ], 'a second look that really differs is still found' );
+	const two = ( live ) => checkStates( { draft: read( { d: [ look( [ 'hover' ], { color: 'rgb(200, 0, 0)' } ), look( [ 'hover' ], { color: 'rgb(0, 0, 200)' } ) ] } ), live: read( { l: live } ), pairs } );
+	assert.deepEqual( two( [ look( [ 'hover' ], { color: 'rgb(0, 0, 200)' } ) ] ).map( ( r ) => [ r.draftValue, r.verdict ] ), [ [ 'rgb(0, 0, 200)', 'match' ] ], 'the live value agrees with the later draft look' );
+	assert.deepEqual( two( [ look( [ 'hover' ], { color: 'rgb(200, 0, 0)' } ) ] ).map( ( r ) => [ r.draftValue, r.verdict ] ), [ [ 'rgb(200, 0, 0)', 'match' ] ], 'the cascade may pick the earlier look: any agreeing draft value matches' );
+	assert.deepEqual( two( [ look( [ 'hover' ], { color: 'rgb(9, 99, 9)' } ) ] ).map( ( r ) => r.verdict ), [ 'differs' ], 'it differs only when no live value agrees' );
+	assert.deepEqual( two( [ look( [ 'hover' ], { color: 'rgb(9, 99, 9)' } ), look( [ 'hover' ], { color: 'rgb(200, 0, 0)' } ) ] ).map( ( r ) => r.verdict ), [ 'match' ], 'a live look that is not the last still counts' );
+	assert.deepEqual( two( [ look( [ 'hover' ], { color: 'rgb(200, 0, 0)' } ), look( [ 'hover' ], { color: 'rgb(9, 99, 9)' } ) ] ).map( ( r ) => r.verdict ), [ 'match' ], 'a live look that is not the first still counts' );
+} );
+
+test( 'a look on a pseudo-element is its own state: .x:hover::after is never judged against .x:hover', () => {
+	const own = look( [ 'hover' ], { opacity: '1' } );
+	const after = { ...look( [ 'hover' ], { opacity: '0.5' } ), pseudo: '::after' };
+	const rows = checkStates( { draft: read( { d: [ own, after ] } ), live: read( { l: [ own, { ...after, declared: { opacity: '0.9' }, rendered: { opacity: '0.9' } } ] } ), pairs } );
+	assert.deepEqual( rows.map( ( r ) => [ r.state, r.verdict ] ), [ [ 'hover', 'match' ], [ 'hover::after', 'differs' ] ] );
+} );
+
+test( 'MUST FAIL: a logic look keeps its own key, so it never overwrites a CSS look of the same state', () => {
+	const css = look( [ 'open' ], { transform: 'rotate(45deg)' } );
+	const logic = { ...look( [ 'open' ], { transform: 'none' } ), family: 'logic' };
+	const rows = checkStates( { draft: read( { d: [ css, logic ] } ), live: read( { l: [ css, logic ] } ), pairs } );
+	assert.deepEqual( rows.map( ( r ) => [ r.state, r.draftValue, r.verdict ] ), [ [ 'open', 'rotate(45deg)', 'match' ], [ 'open#logic', 'none', 'match' ] ] );
+	const lost = checkStates( { draft: read( { d: [ css, logic ] } ), live: read( { l: [ css ] } ), liveRest: { 1440: { l: { transform: 'none' } } }, pairs } );
+	assert.deepEqual( lost.map( ( r ) => [ r.state, r.verdict ] ), [ [ 'open', 'match' ], [ 'open#logic', 'match' ] ], 'the logic look is judged on its own: the resting value agrees' );
+} );

@@ -13,11 +13,40 @@ export function namesState( walkerState, state ) {
 	return entries.length > 0 && entries.every( ( [ k, v ] ) => false !== v && words( k ).every( ( w ) => have.has( w ) ) && ( 'boolean' === typeof v || null == v || words( v ).every( ( w ) => have.has( w ) ) ) );
 }
 
-// The vocabulary state a draft state's keys stand for (`mobileOpen` is `open`, `active` is `active`), or null. `vocab` is
-// lib/state-vocab.mjs::stateRows().
+// The vocabulary state a draft state's keys stand for (`mobileOpen` is `open`, `active` is `active`, `done` is the token
+// `--done` of `complete`), or null. A key word names a state of the vocabulary first; failing that, it names the state of
+// a class or data-attribute token that is that one word (`--done`, `is-complete`); a pseudo-class (`:link`) is never a key
+// word's stem. `vocab` is lib/state-vocab.mjs::stateRows().
 export function vocabStateFor( state, vocab ) {
 	const names = new Set( ( vocab || [] ).map( ( r ) => r.state ) );
-	return Object.keys( state?.state_keys || {} ).flatMap( words ).find( ( w ) => names.has( w ) ) ?? null;
+	const tokens = new Map();
+	for ( const r of ( vocab || [] ).filter( ( x ) => ! x.kind || [ 'class', 'data-attribute' ].includes( x.kind ) ) ) {
+		const stem = /^(?:::?|--|is-|has-)([a-z]+)$/.exec( String( r.token || '' ) )?.[ 1 ];
+		stem && ! tokens.has( stem ) && tokens.set( stem, r.state );
+	}
+	const keyWords = Object.keys( state?.state_keys || {} ).flatMap( words );
+	return keyWords.find( ( w ) => names.has( w ) ) ?? keyWords.map( ( w ) => tokens.get( w ) ).find( Boolean ) ?? null;
+}
+
+// The component state keys' initial values the intake inventory records (its `unresolved` reasons name "state key K
+// (initial V, ..."): Map "<component>.<key>" -> value text. A key the inventory states no initial for has no known
+// zero is never assumed: a state whose keys the inventory states no initial for is set directly.
+export function initialValues( inv ) {
+	const out = new Map();
+	for ( const u of inv?.unresolved || [] ) {
+		for ( const m of String( u.reason ).matchAll( /(?:sc-if (.+?):\d+: )?no type-safe value (?:to force|for) state key (\w+) \(initial (.+?), no literal/g ) ) {
+			out.set( `${ m[ 1 ] ?? String( u.item ).slice( 0, String( u.item ).lastIndexOf( ':' ) ) }.${ m[ 2 ] }`, m[ 3 ] );
+		}
+	}
+	return out;
+}
+
+// Whether a draft state's keys all hold the component's initial values the inventory records (the draft's resting
+// branch); a key with no recorded initial value is not at its default.
+function atDefaults( component, state, initial ) {
+	const entries = Object.entries( state?.state_keys || {} );
+	const text = ( v ) => ( 'string' === typeof v ? `'${ v }'` : JSON.stringify( v ) );
+	return entries.length > 0 && entries.every( ( [ k, v ] ) => initial.has( `${ component }.${ k }` ) && initial.get( `${ component }.${ k }` ) === text( v ) );
 }
 
 // The draft ids ("<component>:<n>") of one record state's sc-ifs.
@@ -43,8 +72,8 @@ const OTHER_REACH = { route: 'route', breakpoint: 'width', 'prop-variant': 'prop
 // The map for one surface: { surface, walkerStates: [ { walkerState, settingState, names } ], shared: [ { settingState,
 // walkerStates } ], scIf: [ { id, component, record, class, reach, ... } ], gaps }. Each sc-if row is reached by
 // `walker` (a walker state names its draft state; `walkerState` and `settingState` say which), `set-state` (the logic's
-// state keys are set directly, `keys`, entering the vocabulary state `settingState`), or by route, width, props or
-// content; otherwise it is a `gap` row with the reason. `intake` is the intake record (census and inventory.surfaces);
+// state keys are set directly, `keys`, entering the vocabulary state `settingState`), `rest` (a state of the sc-if holds the
+// component's initial values: its branch shows with nothing set), or by route, width, props or content; otherwise it is a `gap` row with the reason. `intake` is the intake record (census and inventory.surfaces);
 // `records` limits the draft records in scope (ids like "S-34"), else the surface's `draftRecords`, else all of them. An
 // sc-if no record covers is always in scope: it is a gap.
 export function stateMap( { surfaces, surface, intake, vocab = [], records = null } ) {
@@ -68,6 +97,7 @@ export function stateMap( { surfaces, surface, intake, vocab = [], records = nul
 	walkerStates.forEach( ( w ) => bySetting.set( w.settingState, [ ...( bySetting.get( w.settingState ) || [] ), w.walkerState ] ) );
 	const shared = [ ...bySetting ].filter( ( [ , ws ] ) => ws.length > 1 ).map( ( [ settingState, ws ] ) => ( { settingState, walkerStates: ws } ) );
 
+	const initial = initialValues( inv );
 	const scIf = [];
 	for ( const r of ( intake?.census || [] ).filter( ( x ) => 'sc-if' === x.kind ) ) {
 		const id = r.draftId;
@@ -86,6 +116,9 @@ export function stateMap( { surfaces, surface, intake, vocab = [], records = nul
 		const named = forceable.flatMap( ( x ) => walkerStates.filter( ( w ) => namesState( w.walkerState, x.state ) ).map( ( w ) => ( { ...w, state: x.state.name } ) ) )[ 0 ];
 		if ( named ) {
 			scIf.push( { id, component, record, class: 'interactive', reach: 'walker', state: named.state, walkerState: named.walkerState, settingState: named.settingState } );
+		} else if ( forceable.some( ( x ) => atDefaults( component, x.state, initial ) ) ) {
+			const s = forceable.find( ( x ) => atDefaults( component, x.state, initial ) ).state;
+			scIf.push( { id, component, record, class: 'interactive', reach: 'rest', state: s.name, keys: s.state_keys } );
 		} else if ( forceable.length ) {
 			const s = forceable[ 0 ].state;
 			scIf.push( { id, component, record, class: 'interactive', reach: 'set-state', state: s.name, keys: s.state_keys, settingState: vocabStateFor( s, vocab ) } );

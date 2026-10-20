@@ -36,7 +36,7 @@ import state_vocabulary  # noqa: E402
 
 SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 LIVE_SCANNER = Path(__file__).resolve().parent / "state-cssom-scan.mjs"
-BASELINE_REASON = "fixed paint, no setting (baseline 2026-10-20)"
+BASELINE_REASON = se.GENERIC_REASON
 
 
 def load_db() -> tuple[list[dict], dict, frozenset[str]]:
@@ -93,7 +93,8 @@ def scan_live(url: str, vocab, slugs, published) -> list[se.Site]:
             block = "sgs/" + m.group(1) if m else se.block_for(sheet, part, slugs)
             vars_ = se.setting_vars(rule["body"], block, published)
             # the per-page stylesheet is written from the page's settings: every rule in it is a setting's output
-            sites.append(se.Site(sheet, part, states, families, block, vars_, bool(vars_) or generated, "live"))
+            pubs = tuple(dict.fromkeys(k for v in vars_ for k in se.publishers(v, published) if k != "*"))
+            sites.append(se.Site(sheet, part, states, families, block, vars_, bool(vars_) or generated, "live", pubs))
     return sites
 
 
@@ -107,6 +108,7 @@ def _sgs_owned(sheet: str, selector: str) -> bool:
 
 def evaluate(sites: list[se.Site], tagged: dict, register: list[dict]) -> list[se.Mapping]:
     by_file, by_selector = se.register_index(register)
+    generic = se.generic_index(register)
     seen: set = set()
     out = []
     for s in sites:
@@ -114,7 +116,7 @@ def evaluate(sites: list[se.Site], tagged: dict, register: list[dict]) -> list[s
         if key in seen:
             continue
         seen.add(key)
-        out.append(se.classify(s, tagged, by_file, by_selector))
+        out.append(se.classify(s, tagged, by_file, by_selector, generic))
     return out
 
 
@@ -147,15 +149,15 @@ def baseline(mappings: list[se.Mapping], register: list[dict]) -> tuple[list[dic
 
 
 def report(mappings: list[se.Mapping], title: str) -> list[se.Mapping]:
-    counts = {"setting": 0, "states-row": 0, "register": 0, "unmapped": 0}
+    counts = {"setting": 0, "behaviour": 0, "states-row": 0, "register": 0, "unmapped": 0}
     for m in mappings:
         counts[m.kind] += 1
     print(f"== {title}: {len(mappings)} state-bearing selectors")
-    print(f"   setting {counts['setting']}  |  states-row {counts['states-row']}  |  register {counts['register']}  |  unmapped {counts['unmapped']}")
+    print(f"   setting {counts['setting']}  |  behaviour {counts['behaviour']}  |  states-row {counts['states-row']}  |  register {counts['register']}  |  unmapped {counts['unmapped']}")
     per_file = se.summarise(mappings)
     for f in sorted(per_file):
         r = per_file[f]
-        print(f"   {f}: setting {r['setting']}, states-row {r['states-row']}, register {r['register']}, unmapped {r['unmapped']}")
+        print(f"   {f}: setting {r['setting']}, behaviour {r['behaviour']}, states-row {r['states-row']}, register {r['register']}, unmapped {r['unmapped']}")
     failing = [m for m in mappings if m.kind == "unmapped"]
     if failing:
         print(f"\nFAILING ({len(failing)}):")
@@ -198,6 +200,19 @@ def self_test() -> int:
         ("a state in a comma list is judged per selector", kinds(run(".a:hover,.b{color:red}", tagged, [])) == ["unmapped"]),
         ("a theme token is not a setting", kinds(run(".sgs-fx__btn:hover{color:var(--wp--preset--color--primary)}", {None: set(), "sgs/fx": set()}, [])) == ["unmapped"]
          and not run(".sgs-fx__btn:hover{color:var(--wp--preset--color--primary)}", {None: set(), "sgs/fx": set()}, [])[0].site.setting_like),
+        ("MUST FAIL: a generic-reason register entry on a rule that uses a published custom property",
+         kinds(run(setting_css, {None: set(), "sgs/fx": set()}, [{"file": f, "selector": ".sgs-fx__btn:hover", "reason": se.GENERIC_REASON}])) == ["unmapped"]),
+        ("MUST FAIL: a generic-reason register entry also fails the same rule read from a live sheet",
+         kinds(evaluate(se.scan_css_text("live:https://x.test/fx.css", setting_css, walker, vocab, slugs, published, origin="live"), {None: set(), "sgs/fx": set()}, [{"file": f, "selector": ".sgs-fx__btn:hover", "reason": se.GENERIC_REASON}])) == ["unmapped"]),
+        ("positive: a live rule with a specific register reason is green", kinds(evaluate(se.scan_css_text("live:https://x.test/fx.css", setting_css, walker, vocab, slugs, published, origin="live"), {None: set(), "sgs/fx": set()}, [{"file": f, "selector": ".sgs-fx__btn:hover", "reason": "set by view.js"}])) == ["register"]),
+        ("MUST FAIL: a quoted sgs- string outside a custom-property helper publishes no property", se.php_names("wp_enqueue_style( 'sgs-fx-hover-colour' ); $x = array( 'sgs-fx-other' => 1 );") == set()
+         and "--sgs-fx-hover-colour~" in se.php_names("$d = sgs_custom_property_gradient_decls( 'sgs-fx-hover-colour', $flat, $g );")),
+        ("MUST FAIL without the rule: a transform-only open rule fed by an untagged published setting is behaviour", kinds(run(".sgs-fx__btn:hover{transform:rotate(var(--sgs-fx-hover-colour))}", {None: set(), "sgs/fx": set()}, [])) == ["behaviour"]),
+        ("a transform rule that also paints a colour stays unmapped", kinds(run(".sgs-fx__btn:hover{transform:rotate(var(--sgs-fx-hover-colour));color:red}", {None: set(), "sgs/fx": set()}, [])) == ["unmapped"]),
+        ("a transform rule fed by a setting tagged with that state maps to the setting", kinds(run(".sgs-fx__btn:hover{transform:rotate(var(--sgs-fx-hover-colour))}", tagged, [])) == ["setting"]),
+        ("positive: the same entry with a specific reason is green", kinds(run(setting_css, {None: set(), "sgs/fx": set()}, [{"file": f, "selector": ".sgs-fx__btn:hover", "reason": "set by view.js"}])) == ["register"]),
+        ("a bare helper name ('sgs-fx-hover-colour') counts as published, with its -hover and -gradient variants", se.is_published("--sgs-fx-hover-colour-gradient", None, {"*": {"--sgs-fx-hover-colour~"}}) and not se.is_published("--sgs-fx-other", None, {"*": {"--sgs-fx-hover-colour~"}})),
+        ("a property published by another block's PHP counts, and that block's tags decide the mapping", kinds(run(setting_css, {None: {"hover"}, "sgs/fx": set(), "sgs/fx-child": {"hover"}}, [], f)) == ["unmapped"] and _cross_block_ok(walker, vocab, slugs)),
         ("baseline records fixed paint but never a setting-like site", _baseline_check(run(fixed_css, tagged, []) + run(setting_css, {None: set(), "sgs/fx": set()}, []))),
     ]
     failed = 0
@@ -206,6 +221,14 @@ def self_test() -> int:
         failed += 0 if ok else 1
     print(f"\n{len(checks) - failed}/{len(checks)} self-test assertions passed.")
     return 1 if failed else 0
+
+
+def _cross_block_ok(walker, vocab, slugs) -> bool:
+    published = {"*": set(), "sgs/fx": set(), "sgs/fx-child": {"--sgs-fx-hover-colour"}}
+    sites = se.scan_css_text("plugins/sgs-blocks/src/blocks/fx/style.css", ".sgs-fx__btn:hover{color:var(--sgs-fx-hover-colour)}", walker, vocab, slugs, published)
+    with_tag = evaluate(sites, {None: {"hover"}, "sgs/fx": set(), "sgs/fx-child": {"hover"}}, [])
+    without = evaluate(sites, {None: {"hover"}, "sgs/fx": {"hover"}, "sgs/fx-child": set()}, [])
+    return [m.kind for m in with_tag] == ["setting"] and [m.kind for m in without] == ["unmapped"]
 
 
 def _baseline_check(mappings: list[se.Mapping]) -> bool:

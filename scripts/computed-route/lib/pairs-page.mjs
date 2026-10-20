@@ -249,31 +249,44 @@ export function handScopes( page, finders, wordEls ) {
 	}, [ finders, resolveFinder.toString(), wordEls ] );
 }
 
+// Runs a page's set-up and returns the page; when the set-up throws, the page is closed first, so a failed state entry
+// leaves no page open.
+async function closeOnError( page, setUp ) {
+	try {
+		await setUp();
+		return page;
+	} catch ( e ) {
+		await page.close().catch( () => {} );
+		throw e;
+	}
+}
+
 // Opens the surface's draft at a width, through its navigation, with every scroll reveal fired.
 export async function openDraft( browser, cfg, width, state = null ) {
 	const page = await browser.newPage( { viewport: { width, height: 900 } } );
-	const RESOLVE = resolveFinder.toString();
-	const h = makeHelpers( page, 'draft', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE, onAction: null } );
-	h.log = [];
-	await page.goto( cfg.draft.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
-	await page.waitForTimeout( 1500 );
-	await waitOutHostCheck( page );
-	if ( cfg.draft.open ) {
-		await cfg.draft.open( h );
-	}
-	await page.evaluate( async () => {
-		for ( let y = 0; y < document.body.scrollHeight; y += 600 ) {
-			window.scrollTo( 0, y );
-			await new Promise( ( r ) => setTimeout( r, 120 ) );
+	return closeOnError( page, async () => {
+		const RESOLVE = resolveFinder.toString();
+		const h = makeHelpers( page, 'draft', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE, onAction: null } );
+		h.log = [];
+		await page.goto( cfg.draft.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
+		await page.waitForTimeout( 1500 );
+		await waitOutHostCheck( page );
+		if ( cfg.draft.open ) {
+			await cfg.draft.open( h );
 		}
-		window.scrollTo( 0, 0 );
+		await page.evaluate( async () => {
+			for ( let y = 0; y < document.body.scrollHeight; y += 600 ) {
+				window.scrollTo( 0, y );
+				await new Promise( ( r ) => setTimeout( r, 120 ) );
+			}
+			window.scrollTo( 0, 0 );
+		} );
+		await page.waitForTimeout( 1500 );
+		if ( state ) {
+			await state.draft( h );
+			await page.waitForTimeout( 700 );
+		}
 	} );
-	await page.waitForTimeout( 1500 );
-	if ( state ) {
-		await state.draft( h );
-		await page.waitForTimeout( 700 );
-	}
-	return page;
 }
 
 // A live page that cannot be opened is a failure, never an empty report (lib/pairs.mjs::assertReachable). Only a
@@ -281,24 +294,25 @@ export async function openDraft( browser, cfg, width, state = null ) {
 export async function openLive( browser, cfg, width, state = null ) {
 	assertReachable( { url: cfg.live?.url, blocks: 1 } );
 	const page = await browser.newPage( { viewport: { width, height: 900 } } );
-	await page.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( ( e ) => {
-		if ( 'TimeoutError' !== e?.name ) {
-			throw new Error( `the live page ${ cfg.live.url } did not open: ${ e.message }` );
+	return closeOnError( page, async () => {
+		await page.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( ( e ) => {
+			if ( 'TimeoutError' !== e?.name ) {
+				throw new Error( `the live page ${ cfg.live.url } did not open: ${ e.message }` );
+			}
+		} );
+		await page.waitForTimeout( 2500 );
+		await waitOutHostCheck( page );
+		const h = makeHelpers( page, 'live', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE: resolveFinder.toString(), onAction: null } );
+		h.log = [];
+		// The live side's own navigation (a pop-up opened from its page), as the walker runs it.
+		if ( cfg.live.open ) {
+			await cfg.live.open( h );
+		}
+		if ( state ) {
+			await state.live( h );
+			await page.waitForTimeout( 700 );
 		}
 	} );
-	await page.waitForTimeout( 2500 );
-	await waitOutHostCheck( page );
-	const h = makeHelpers( page, 'live', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE: resolveFinder.toString(), onAction: null } );
-	h.log = [];
-	// The live side's own navigation (a pop-up opened from its page), as the walker runs it.
-	if ( cfg.live.open ) {
-		await cfg.live.open( h );
-	}
-	if ( state ) {
-		await state.live( h );
-		await page.waitForTimeout( 700 );
-	}
-	return page;
 }
 
 // What the live page shows about being the right page: whether its `live.requires` element exists (null when the

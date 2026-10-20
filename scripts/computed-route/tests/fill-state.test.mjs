@@ -24,6 +24,24 @@ test( 'MUST FAIL WITHOUT THE STATE PASS: a hover look is written to the hover se
 	assert.equal( r.attrs.colourText, undefined, 'the resting colour is untouched' );
 } );
 
+test( 'MUST FAIL: a hover look on ::after is that layer\'s look, never the element\'s; with no calibrated ::after it is an unmapped row', () => {
+	const r = run( [ { ...look( [ 'hover' ], 'rgb(0, 0, 200)' ), pseudo: '::after' } ] );
+	assert.deepEqual( r.writes, [], 'the element\'s hover setting does not take the ::after look' );
+	assert.equal( r.attrs.colourTextHover, undefined );
+	assert.ok( r.unmapped.some( ( u ) => '::after' === u.slot && /unmapped-element/.test( u.reason ) ), 'the layer is named as having no calibrated path' );
+	const both = run( [ look( [ 'hover' ], 'rgb(200, 0, 0)' ), { ...look( [ 'hover' ], 'rgb(0, 0, 200)' ), pseudo: '::after' } ] );
+	assert.deepEqual( both.writes.map( ( w ) => [ w.attr, w.after ] ).length, 1, 'only the element\'s own hover look is written' );
+} );
+
+test( 'a hover look on a calibrated ::after resolves on that layer: with no DB setting painting it there, a gap, never the element\'s hover setting', () => {
+	const layered = { elements: { '': {}, '::after': {} }, settings: cal.settings };
+	const tree = [ { name: 'sgs/button', attributes: { className: 'cr-ref-x-0' }, innerBlocks: [] } ];
+	const r = fillStates( { tree, nodes: [ { index: 0, name: 'sgs/button', targets: [ { id: 't', slot: '' } ] } ], reads: at3( [ { ...look( [ 'hover' ], 'rgb(0, 0, 200)' ), pseudo: '::after' } ] ), calFor: () => layered, db, snapshot } );
+	assert.deepEqual( r.writes, [] );
+	assert.equal( tree[ 0 ].attributes.colourTextHover, undefined, 'the element\'s hover setting is untouched' );
+	assert.ok( r.unmapped.some( ( u ) => /no-setting/.test( u.reason ) && /::after/.test( u.reason ) ), 'the resolver was asked about ::after' );
+} );
+
 test( 'focus that paints like hover is left to the hover setting; a different focus look is a named gap', () => {
 	const like = run( [ look( [ 'hover' ], 'rgb(200, 0, 0)' ), look( [ 'focus' ], 'rgb(200, 0, 0)' ) ] );
 	assert.equal( like.writes.length, 1 );
@@ -48,7 +66,7 @@ test( 'the setting states come from the DB, not a list in code', () => {
 
 test( 'stateDrafts gathers each state and property across the read widths', () => {
 	const d = stateDrafts( at3( [ look( [ 'hover' ], 'rgb(9, 9, 9)' ) ] ), 't' );
-	assert.deepEqual( d.get( 'hover|color' ).perWidth, { 375: 'rgb(9, 9, 9)', 768: 'rgb(9, 9, 9)', 1440: 'rgb(9, 9, 9)' } );
+	assert.deepEqual( d.get( 'hover||color' ).perWidth, { 375: 'rgb(9, 9, 9)', 768: 'rgb(9, 9, 9)', 1440: 'rgb(9, 9, 9)' } );
 } );
 
 test( 'the vocabulary reader names a missing states table instead of returning nothing silently', () => {

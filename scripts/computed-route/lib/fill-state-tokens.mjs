@@ -24,16 +24,34 @@ const PRESS_BLOCKS = { 'sgs/button': ( attrs ) => attrs.inheritStyle || 'primary
 // The preset variant a block's pressed look goes to, or null when the block does not read buttonPresets.
 export const pressVariant = ( block, node ) => PRESS_BLOCKS[ block ]?.( node?.attributes || {} ) ?? null;
 
-// The theme token a state look on this block feeds ('focus', 'press' or 'link'), or null when it goes to a setting. A state
-// the block's own settings hold (held) is never a token.
-export function tokenRoute( { state, prop, held, block, node } ) {
+// The elements that take the site-wide focus ring: links, buttons, summaries and the interactive roles. A form control paints
+// its own focus look.
+const RING_TAGS = [ 'a', 'button', 'summary' ];
+const RING_ROLES = [ 'button', 'tab', 'link', 'menuitem' ];
+const takesRing = ( tag, role ) => RING_TAGS.includes( String( tag || '' ).toLowerCase() ) || RING_ROLES.includes( String( role || '' ).toLowerCase() );
+
+// Whether a focus look on this element feeds the ring: never a form control, always an element that takes the ring or whose
+// look is outline-only. An element the read did not identify (no tag and no role at any read width) feeds nothing: the
+// route is null, a named gap.
+const ringFocus = ( { prop, tag, role } ) => {
+	if ( [ 'input', 'select', 'textarea' ].includes( String( tag || '' ).toLowerCase() ) ) {
+		return false;
+	}
+	return ( !! tag || !! role ) && ( takesRing( tag, role ) || prop.startsWith( 'outline' ) );
+};
+
+// The theme token a state look feeds ('focus', 'press' or 'link'), or null when it goes to a setting. A state the block's own
+// settings hold (held) is never a token. A focus look goes to the ring only from an element that takes it (tag and role are
+// the target's own; a read with neither, or an outline-only look, is the ring's); a press look only from the block's root
+// element (slot ''), since a descendant's pressed look is not the whole button's.
+export function tokenRoute( { state, prop, held, block, node, slot = '', tag = null, role = null } ) {
 	if ( held.has( state ) ) {
 		return null;
 	}
 	if ( 'focus' === state && FOCUS_PROPS.includes( prop ) ) {
-		return 'focus';
+		return ringFocus( { prop, tag, role } ) ? 'focus' : null;
 	}
-	if ( 'active' === state && PRESS_PROPS.includes( prop ) && null !== pressVariant( block, node ) ) {
+	if ( 'active' === state && '' === slot && PRESS_PROPS.includes( prop ) && null !== pressVariant( block, node ) ) {
 		return 'press';
 	}
 	return LINK_STATES.includes( state ) ? 'link' : null;
@@ -58,7 +76,7 @@ export function createPatch() {
 		const name = path.join( '.' );
 		if ( key in at ) {
 			if ( JSON.stringify( at[ key ] ) !== JSON.stringify( value ) ) {
-				conflicts.push( { path: name, kept: at[ key ], dropped: value, from } );
+				conflicts.push( { path: name, kept: at[ key ], dropped: value, from, keptFrom: entries.find( ( e ) => e.path === name ) } );
 			}
 			return;
 		}
@@ -118,4 +136,4 @@ export function applyTokenLooks( { looks, sink, from, target, variant, owned } )
 }
 
 // A conflict as an unmapped row.
-export const conflictRow = ( c ) => ( { node: c.from.node, block: c.from.block, slot: c.from.slot, property: c.path, state: c.from.state, value: JSON.stringify( c.dropped ), reason: `conflict: an earlier target already set ${ c.path } to ${ JSON.stringify( c.kept ) }; the first value is kept` } );
+export const conflictRow = ( c ) => ( { node: c.from.node, block: c.from.block, slot: c.from.slot, property: c.path, state: c.from.state, value: JSON.stringify( c.dropped ), reason: `conflict: ${ c.keptFrom ? `${ c.keptFrom.node } ${ c.keptFrom.slot || 'root' }` : 'an earlier target' } already set ${ c.path } to ${ JSON.stringify( c.kept ) }; ${ c.from.node } ${ c.from.slot || 'root' } wanted ${ JSON.stringify( c.dropped ) }; the first value is kept` } );

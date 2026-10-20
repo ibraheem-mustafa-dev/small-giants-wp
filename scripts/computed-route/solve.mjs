@@ -603,7 +603,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		}
 	}
 	// FR-48-81: every paired element's state looks on the draft against the built page (--no-states skips it).
-	const states = argv.includes( '--no-states' ) ? { json: { off: '--no-states' }, markdown: '## States (FR-48-81)\n\nNot checked: --no-states.' } : await surfaceStateCheck( { cfg: retargetLive( ( await import( pathToFileURL( walker ).href ) ).default, site.liveOrigin ), vocab: statesVocabulary( ctx.db ), headless: ! process.env.SGS_HEADED, log: console.log } );
+	const states = argv.includes( '--no-states' ) ? { json: { off: '--no-states' }, markdown: '## States (FR-48-81)\n\nNot checked: --no-states.' } : await surfaceStateCheck( { cfg: retargetLive( ( await import( pathToFileURL( walker ).href ) ).default, site.liveOrigin ), vocab: statesVocabulary( ctx.db ), surfaces, surface, buildDir, headless: ! process.env.SGS_HEADED, log: console.log } );
 	const wrong = wrongWrites( allWrites, report, s.states );
 	const unmappedState = writableGroups( report, s.states, refused ).unmappedState.length;
 	const handover = handoverOf( classes );

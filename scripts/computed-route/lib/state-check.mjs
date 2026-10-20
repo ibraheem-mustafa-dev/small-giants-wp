@@ -7,7 +7,9 @@
 
 import { compareDR } from './fill-confirm.mjs';
 
-const keyOf = ( look ) => look.states.join( '+' );
+// A state look's key: its states, the pseudo-element it sits on (`hover::after` is not `hover`) and, for a look read
+// by entering a logic state (family 'logic'), `#logic`, so a logic look never merges with a CSS look of the same state.
+const keyOf = ( look ) => `${ look.states.join( '+' ) }${ look.pseudo ?? '' }${ 'logic' === look.family ? '#logic' : '' }`;
 const valueOf = ( look, prop ) => look?.rendered?.[ prop ] ?? look?.declared?.[ prop ];
 const byCode = ( look ) => 'code' === look?.read;
 
@@ -23,20 +25,54 @@ export function checkStates( { draft, live, liveRest = {}, pairs } ) {
 	for ( const [ width, read ] of Object.entries( draft ) ) {
 		for ( const pair of pairs ) {
 			const liveLooks = live[ width ]?.looks?.[ pair.live ] || [];
-			for ( const look of read.looks?.[ pair.draft ] || [] ) {
-				const state = keyOf( look );
-				const liveLook = liveLooks.find( ( l ) => keyOf( l ) === state ) || null;
-				for ( const prop of Object.keys( look.declared ) ) {
-					const draftValue = valueOf( look, prop );
-					const liveValue = valueOf( liveLook, prop ) ?? liveRest[ width ]?.[ pair.live ]?.[ prop ] ?? null;
-					const { dr, tolerance } = null === liveValue ? { dr: 'unreadable', tolerance: null } : compareDR( prop, draftValue, liveValue );
-					const verdict = { agree: 'match', runtime: 'match', disagree: 'differs' }[ dr ] || 'unreadable';
-					rows.push( { draft: pair.draft, live: pair.live, width: Number( width ), state, prop, draftValue, liveValue, liveState: !! liveLook, verdict, tolerance, confirmed: ! ( byCode( look ) || byCode( liveLook ) ) } );
+			const liveByState = mergeByState( liveLooks, true );
+			for ( const [ state, props ] of mergeByState( read.looks?.[ pair.draft ] || [] ) ) {
+				const liveProps = liveByState.get( state );
+				for ( const [ prop, draftHits ] of props ) {
+					const liveHits = liveProps?.get( prop ) || [];
+					const rest = liveRest[ width ]?.[ pair.live ]?.[ prop ] ?? null;
+					const candidates = liveHits.length ? liveHits : [ { look: null, value: rest } ];
+					const { draftHit, liveHit, verdict, tolerance } = judge( prop, draftHits, candidates );
+					const liveValue = liveHit.value ?? null;
+					const liveCode = liveHit.look ? byCode( liveHit.look ) : liveLooks.some( ( l ) => keyOf( l ) === state && byCode( l ) );
+					rows.push( { draft: pair.draft, live: pair.live, width: Number( width ), state, prop, draftValue: draftHit.value, liveValue, liveState: !! liveProps, verdict, tolerance, confirmed: ! ( byCode( draftHit.look ) || liveCode ) } );
 				}
 			}
 		}
 	}
 	return rows;
+}
+
+// The verdict for one property: every look of the state keeps its own value on each side (the cascade, not the reader's
+// order, decides which one shows), and the property matches when the live side agrees with any draft value; it differs
+// only when no live value agrees (and unreadable when no live value could be read at all). Returns the pair judged: the
+// agreeing pair, else the last pair compared.
+function judge( prop, draftHits, liveHits ) {
+	let last = { draftHit: draftHits.at( -1 ), liveHit: liveHits.at( -1 ), verdict: 'unreadable', tolerance: null };
+	for ( const draftHit of draftHits ) {
+		for ( const liveHit of liveHits ) {
+			const { dr, tolerance } = null == liveHit.value ? { dr: 'unreadable', tolerance: null } : compareDR( prop, draftHit.value, liveHit.value );
+			last = { draftHit, liveHit, verdict: { agree: 'match', runtime: 'match', disagree: 'differs' }[ dr ] || 'unreadable', tolerance };
+			if ( 'match' === last.verdict ) {
+				return last;
+			}
+		}
+	}
+	return last;
+}
+
+// One element's looks merged per state, then per property: Map<state key, Map<prop, [{ look, value }]>>, every look's
+// value kept in reader order (the live side also counts a property only its render shows).
+function mergeByState( looks, withRendered = false ) {
+	const out = new Map();
+	for ( const look of looks ) {
+		const props = out.get( keyOf( look ) ) || new Map();
+		for ( const prop of withRendered ? [ ...new Set( [ ...Object.keys( look.declared ), ...Object.keys( look.rendered || {} ) ] ) ] : Object.keys( look.declared ) ) {
+			props.set( prop, [ ...( props.get( prop ) || [] ), { look, value: valueOf( look, prop ) } ] );
+		}
+		out.set( keyOf( look ), props );
+	}
+	return out;
 }
 
 // The rows grouped for a report: { match, differs, unreadable, byState: { state: { match, differs, unreadable } },
