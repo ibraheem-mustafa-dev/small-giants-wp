@@ -558,6 +558,10 @@ if ( 'image' === $media_type ) {
 		}
 		if ( $sizes_value ) {
 			$img_sizes = ' sizes="' . esc_attr( $sizes_value ) . '"';
+			// A cover crop drawn wider than its box keeps the attachment's own sizes hint (helpers-media.php).
+			if ( sgs_media_cover_crop_widens( $attributes, '', 'sgs/media', (int) $resolved_id ) ) {
+				$img_sizes .= ' data-sgs-cover-crop';
+			}
 		}
 	}
 
@@ -1288,6 +1292,9 @@ if ( $naked_mode && '' !== $image_html ) {
 		}
 		if ( $naked_sizes_value ) {
 			$naked_sizes = ' sizes="' . esc_attr( $naked_sizes_value ) . '"';
+			if ( sgs_media_cover_crop_widens( $attributes, '', 'sgs/media', (int) $image_id_attr ) ) {
+				$naked_sizes .= ' data-sgs-cover-crop';
+			}
 		}
 	}
 

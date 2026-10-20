@@ -67,6 +67,10 @@ final class SGS_Blocks {
 		add_action( 'init', array( $this, 'register_inline_formats_style' ) );
 		add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
 
+		// A cover-cropped image drawn wider than its box drops core's sizes="auto" (helpers-media.php).
+		require_once SGS_BLOCKS_PATH . 'includes/helpers-media.php';
+		add_filter( 'wp_content_img_tag', 'sgs_media_drop_auto_sizes', 20 );
+
 		// Tier G motion registry (Spec 38 §4.4) — registers the GSAP
 		// script modules and enqueues them ONLY on pages whose rendered blocks
 		// actually carry an fx effect. A page with no Tier G effect serves zero

@@ -318,3 +318,69 @@ if ( ! function_exists( 'sgs_render_media' ) ) {
 		return $img_tag;
 	}
 }
+
+if ( ! function_exists( 'sgs_media_cover_crop_widens' ) ) {
+	/**
+	 * Whether an image is cover-cropped into a box that draws it wider than the box.
+	 *
+	 * The browser picks a srcset file for the width `sizes` describes, and core's lazy-image `sizes="auto"` describes
+	 * the box width only. A cover-cropped image is drawn at the box HEIGHT times its own width-to-height ratio when
+	 * the image is wider than the box's shape, so a file chosen by box width is too small and the photo looks soft.
+	 * True for a set ratio narrower than the image, and for a fixed-height or fill box (the drawn width follows a
+	 * height the server cannot compare); false for contain or any other fit and for a box that follows the image.
+	 *
+	 * @param array  $attributes    Block attributes.
+	 * @param string $prefix        The media element's attribute prefix ('' for an unprefixed element).
+	 * @param string $block_slug    Block name, e.g. 'sgs/media'.
+	 * @param int    $attachment_id The image's attachment ID.
+	 * @return bool
+	 */
+	function sgs_media_cover_crop_widens( array $attributes, string $prefix, string $block_slug, int $attachment_id ): bool {
+		if ( ! function_exists( 'sgs_media_element_stored_attr' ) || ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
+			return false;
+		}
+		$fit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
+		if ( 'cover' !== ( $attributes[ $fit_key ] ?? 'cover' ) ) {
+			return false;
+		}
+		$sizing_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MediaSizing' );
+		$mode       = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[ $sizing_key ] ?? null, $attributes[ $fit_key ] ?? null, $attributes, $prefix, $block_slug );
+		if ( 'auto' === $mode ) {
+			return false;
+		}
+		if ( 'ratio' !== $mode ) {
+			return true;
+		}
+		$ratio_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'AspectRatio' );
+		$ratio     = sgs_media_atom_box_shape_normalise_ratio( $attributes[ $ratio_key ] ?? null );
+		if ( ! preg_match( '#^([\d.]+) / ([\d.]+)$#', $ratio, $m ) || (float) $m[2] <= 0.0 ) {
+			return true;
+		}
+		$meta   = $attachment_id > 0 ? wp_get_attachment_metadata( $attachment_id ) : array();
+		$width  = (int) ( is_array( $meta ) ? ( $meta['width'] ?? 0 ) : 0 );
+		$height = (int) ( is_array( $meta ) ? ( $meta['height'] ?? 0 ) : 0 );
+		if ( $width <= 0 || $height <= 0 ) {
+			return true;
+		}
+		return ( $width / $height ) > ( (float) $m[1] / (float) $m[2] ) * 1.01;
+	}
+}
+
+if ( ! function_exists( 'sgs_media_drop_auto_sizes' ) ) {
+	/**
+	 * `wp_content_img_tag` filter: take core's `auto` out of `sizes` on an image marked `data-sgs-cover-crop`.
+	 *
+	 * Core adds `auto` to every lazy image before this filter runs (wp-includes/media.php::wp_filter_content_tags).
+	 * Without it the browser reads the attachment's own sizes hint, which picks a file wide enough for the crop.
+	 * Parameters stay untyped: a typed hook callback fatals on an unexpected value.
+	 *
+	 * @param mixed $filtered_image The image tag.
+	 * @return mixed The tag, `auto` removed from a marked image's sizes.
+	 */
+	function sgs_media_drop_auto_sizes( $filtered_image ) {
+		if ( ! is_string( $filtered_image ) || false === strpos( $filtered_image, 'data-sgs-cover-crop' ) ) {
+			return $filtered_image;
+		}
+		return (string) preg_replace( '/\ssizes="auto,\s*/i', ' sizes="', $filtered_image, 1 );
+	}
+}
