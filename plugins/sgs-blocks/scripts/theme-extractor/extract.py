@@ -485,7 +485,7 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         lambda name: _resolve_family_face(name, bundled, links, repo, trace, facts), set(bundled))
     used_fonts.add_token_families(
         snap, draft_dir, trace,
-        lambda name: _resolve_family_face(name, bundled, links, repo, trace, facts), set(bundled))
+        lambda name: _resolve_family_face(name, bundled, links, repo, trace, facts), set(bundled), html)
 
     # BUTTON PRESETS (FR-33-4 open bag) — MERGED onto the framework baseline, never replaced.
     #

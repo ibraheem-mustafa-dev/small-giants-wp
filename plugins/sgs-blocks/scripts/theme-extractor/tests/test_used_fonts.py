@@ -171,7 +171,8 @@ def test_a_token_declared_family_no_entry_names_is_added_and_self_hosted(tmp_pat
         resolved.append(name)
         return [{"fontFamily": name, "src": [f"file:./assets/fonts/{used_fonts.slugify(name)}/x.woff2"]}]
 
-    used_fonts.add_token_families(snap, _draft(tmp_path), trace, resolve, set())
+    code = '<h2 style="font-family:Montserrat,sans-serif">x</h2><span style="font-family:var(--font-mono)">01</span><em style="font-family:Brand Sans">b</em>'
+    used_fonts.add_token_families(snap, _draft(tmp_path), trace, resolve, set(), code)
     fams = {f["slug"]: f for f in snap["settings"]["typography"]["fontFamilies"]}
     assert fams["geist-mono"]["fontFace"][0]["fontFamily"] == "Geist Mono"
     assert fams["geist-mono"]["_source"] == "tokens"
@@ -184,6 +185,21 @@ def test_a_token_declared_family_no_entry_names_is_added_and_self_hosted(tmp_pat
 
 def test_negative_without_a_tokens_file_nothing_is_added(tmp_path):
     snap, trace = _snap(), []
-    used_fonts.add_token_families(snap, tmp_path, trace, lambda n: [{"fontFamily": n}], set())
+    used_fonts.add_token_families(snap, tmp_path, trace, lambda n: [{"fontFamily": n}], set(), "font-family:'Geist Mono'")
     assert len(snap["settings"]["typography"]["fontFamilies"]) == 3
     assert trace == []
+
+
+def test_negative_a_declared_family_the_draft_code_never_uses_is_not_added(tmp_path):
+    snap, trace = _snap(), []
+    used_fonts.add_token_families(snap, _draft(tmp_path), trace, lambda n: [{"fontFamily": n}], set(),
+                                  "<p style=\"font-family:Outfit\">only the body font</p>")
+    assert len(snap["settings"]["typography"]["fontFamilies"]) == 3
+    assert {t["what"] for t in trace if t["kind"] == "skip"} == {"fontFamilies:Montserrat", "fontFamilies:Geist Mono", "fontFamilies:Brand Sans"}
+
+
+def test_code_names_family_by_name_or_by_its_token():
+    assert used_fonts.code_names_family("font-family:'Geist Mono',monospace", "Geist Mono", "--font-mono")
+    assert used_fonts.code_names_family("font-family: var(--font-mono, monospace)", "Geist Mono", "--font-mono")
+    assert not used_fonts.code_names_family("font-family:system-ui,'Geist Mono'", "Geist Mono", "--font-mono")
+    assert not used_fonts.code_names_family("font-family:var(--font-mono-x)", "Geist Mono", "--font-mono")

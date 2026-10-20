@@ -40,6 +40,14 @@ export function siteCredentials( repo, site ) {
 // neither breaks the header nor aborts the run.
 const disposition = ( name ) => `attachment; filename="${ name.replace( /[^\x20-\x7e]|["\\]/g, '_' ) }"; filename*=UTF-8''${ encodeURIComponent( name ) }`;
 
+// The export's own fingerprints: handoff path → sha256 from `sites/<client>/handoff/MANIFEST.json` (empty when the
+// export has none, so every handoff asset is refused). An export asset uploads only when its bytes match its entry.
+export function manifestSums( repo, client ) {
+	const file = path.join( repo, 'sites', client, 'handoff', 'MANIFEST.json' );
+	const files = fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ).files || [] : [];
+	return new Map( files.map( ( f ) => [ f.path, f.sha256 ] ) );
+}
+
 export const readMap = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : { sites: {} } );
 
 // The bytes a URL serves, or null when it does not answer 200.
@@ -63,6 +71,8 @@ async function stillLive( fetchImpl, creds, entry ) {
 // lists what would be uploaded. The map is returned, not written (the caller writes it).
 export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {} } ) {
 	const known = map.sites?.[ site ]?.files || [];
+	const handoffPrefix = `sites/${ client }/handoff/`;
+	const manifest = manifestSums( repo, client );
 	const files = [];
 	const report = { uploaded: [], skipped: [], sanitised: [], wouldUpload: [] };
 	// A failure part-way keeps what did upload: the error carries the map of the files handled so far plus the earlier
@@ -71,6 +81,10 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 		for ( const asset of mediaAssets( repo, client ) ) {
 			const bytes = fs.readFileSync( path.join( repo, asset ) );
 			const sum = sha256( bytes );
+			const shipped = asset.startsWith( handoffPrefix ) ? asset.slice( handoffPrefix.length ) : null;
+			if ( null !== shipped && manifest.get( shipped ) !== sum ) {
+				throw new Error( `${ asset } ${ manifest.has( shipped ) ? 'differs from' : 'is not in' } the export's MANIFEST.json: re-export the draft (the handoff folder is never edited by hand)` );
+			}
 			// A file with the same bytes as one this run already handled shares its attachment (no second upload).
 			const twin = files.find( ( e ) => e.sha256 === sum && e.id );
 			if ( twin ) {
@@ -79,7 +93,9 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 				continue;
 			}
 			const had = known.find( ( e ) => e.sha256 === sum && e.asset === asset ) || known.find( ( e ) => e.sha256 === sum );
-			if ( had && await stillLive( fetchImpl, creds, had ) ) {
+			// Read twice before re-uploading: a dry run on indus-test (2026-10-20) once read three live attachments as
+			// gone and the next two runs read all twenty live, so one failed read never makes a duplicate.
+			if ( had && ( await stillLive( fetchImpl, creds, had ) || await stillLive( fetchImpl, creds, had ) ) ) {
 				files.push( { ...had, asset } );
 				report.skipped.push( asset );
 				continue;

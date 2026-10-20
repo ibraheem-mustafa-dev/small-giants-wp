@@ -238,16 +238,37 @@ def token_families(draft_dir) -> tuple[list, list]:
     return out, imports
 
 
-def add_token_families(snap: dict, draft_dir, trace: list, resolve_face, bundled: set) -> None:
+_FONT_DECL = re.compile(r"font-family\s*:\s*([^;}\"]+)", re.I)
+
+
+def code_names_family(code: str, name: str, var: str) -> bool:
+    """Whether the draft's own code paints with a family: a ``font-family`` declaration (inline style, style
+    rule or the logic's style strings) whose stack names it first, or that reads its token (``var(--font-mono)``)."""
+    for m in _FONT_DECL.finditer(code or ""):
+        value = m.group(1)
+        names = stack_names(value)
+        if (names and names[0].lower() == name.lower()) or re.search(rf"var\(\s*{re.escape(var)}\s*[,)]", value, re.I):
+            return True
+    return False
+
+
+def add_token_families(snap: dict, draft_dir, trace: list, resolve_face, bundled: set, code: str) -> None:
     """Append one ``fontFamilies`` entry per family ``tokens/typography.css`` declares that no entry names
-    yet (role slots are never modified), self-hosted through ``resolve_face(name)``. A declared family that
-    is neither imported from Google Fonts nor bundled by the framework is a gap: no file to self-host."""
+    yet and the draft's ``code`` paints with (``code_names_family``; Spec 48 §11: a token counts only where
+    the draft's code uses it), self-hosted through ``resolve_face(name)``. Role slots are never modified. A
+    declared family that is neither imported from Google Fonts nor bundled by the framework is a gap: no file
+    to self-host."""
     declared, _imports = token_families(draft_dir)
     fams = snap.setdefault("settings", {}).setdefault("typography", {}).setdefault("fontFamilies", [])
     for fam in declared:
         name, key = fam["name"], fam["name"].lower()
         if any(_clean(stack_names(f.get("fontFamily", ""))[0] if f.get("fontFamily") else "").lower() == key
                or _clean(f.get("name", "")).lower() == key for f in fams):
+            continue
+        if not code_names_family(code, name, fam["var"]):
+            trace.append({"kind": "skip", "what": f"fontFamilies:{name}",
+                          "reason": f"declared by tokens/typography.css ({fam['var']}) but no font-family in the "
+                                    "draft's code uses it: not added (Spec 48 §11)"})
             continue
         if not fam["google"] and key not in bundled:
             trace.append({"kind": "gap", "what": f"fontFamilies:{name}",
