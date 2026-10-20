@@ -211,7 +211,7 @@ $link_aria_label = sprintf(
 // that filter never reads. The return value is not needed, because the real
 // logo link is printed either way.
 if ( $link_to_home ) {
-	sgs_stretched_link_handover( $block ?? null, $attributes, home_url( '/' ), $link_aria_label );
+	sgs_stretched_link_handover( $block, $attributes, home_url( '/' ), $link_aria_label );
 }
 
 // The real logo link is ALWAYS printed when the block links home. It is what

@@ -196,6 +196,11 @@ function render_responsive_logo( array $attributes ): string {
 
 	$render_path = SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/responsive-logo/render.php';
 
+	// WordPress hands every render.php $attributes, $content and $block; a render outside a block instance has no
+	// WP_Block, which the stretched-link handover reads as "nothing to hand over".
+	$content = '';
+	$block   = null;
+
 	ob_start();
 	include $render_path; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- test helper.
 	return ob_get_clean();
