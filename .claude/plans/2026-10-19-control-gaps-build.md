@@ -644,7 +644,6 @@ Two cold reviewers (Sonnet builder lens, Haiku junior lens, 2026-10-19) read the
 
 ## Parking lot
 
-- The button press on touch is unverified: neither CDP touch events nor a held tap triggered `:active` in the Playwright harness, on the draft or live. Check on a real phone (`assets/js/touch-input.js`'s window `pointerdown` listener is what WebKit needs).
 - A CSS animation eases each keyframe interval, so the sparkle written as 0/50/100% keyframes with `ease-in-out` pauses at its 90deg peak, where the draft's WAAPI easing runs once across the whole cycle; a `linear` timing with more keyframes sampled from the curve matches it.
 - A button preset has one easing for every property it transitions; Mama's draft eases transform on a spring and shadow and background on `ease` (Spec 32 FR-32-19).
 - The sparkle twinkle on Mama's greeting (draft record A-02) is now writable in the icon's Additional CSS box (`7ee561b4a`); the extractor does not yet write a draft's loop into that box (Spec 48).
