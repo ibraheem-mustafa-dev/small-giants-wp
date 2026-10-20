@@ -12,6 +12,10 @@ the handover only through its mark:
 Intake names hours `hours.<day>` (it renames sync-business-info.py's `opening_hours.<day>` on the way in); Site
 Info stores them as `opening_hours.<mon..sun>` (Sgs_Site_Info::build_sanitisers), so the name is mapped back here.
 
+Two intake keys name WordPress options rather than Site Info keys (the draft's <title> tags give them):
+`site_title` becomes the wp-option entry `blogname`, and `tagline` becomes two entries, Site Info `tagline` and
+the wp-option `blogdescription`. Every entry carries its `owner` (`site-info` or `wp-option`).
+
 Facts Bean gives outside the draft arrive as `--set key=value` entries (ref `--set`).
 """
 from __future__ import annotations
@@ -32,6 +36,16 @@ def site_info_key(intake_key: str) -> str:
         if day in DAY_NAMES:
             return f"opening_hours.{DAY_NAMES[day]}"
     return intake_key
+
+
+def entries_for(intake_key: str, value: str, ref: str, source: str) -> list[dict]:
+    """The handover entries a confirmed intake value yields: usually one Site Info entry, see the module docstring."""
+    if intake_key == "site_title":
+        return [{"owner": "wp-option", "key": "blogname", "address": value, "ref": ref, "source": source}]
+    entries = [{"owner": "site-info", "key": site_info_key(intake_key), "address": value, "ref": ref, "source": source}]
+    if intake_key == "tagline":
+        entries.append({"owner": "wp-option", "key": "blogdescription", "address": value, "ref": ref, "source": source})
+    return entries
 
 
 def _value_for(row: dict, mark: str) -> tuple[str | None, str]:
@@ -69,7 +83,7 @@ def read_intake(path: Path) -> tuple[list[dict], list[dict]]:
         if not isinstance(row, dict) or not isinstance(row.get("key"), str):
             continue
         row_id = str(row.get("rowId", ""))
-        key = site_info_key(row["key"])
+        key = "blogname" if row["key"] == "site_title" else site_info_key(row["key"])
         if row_id not in marks:
             refused.append({"rowId": row_id, "key": key, "reason": "no review entry"})
             continue
@@ -81,7 +95,7 @@ def read_intake(path: Path) -> tuple[list[dict], list[dict]]:
         if value is None:
             refused.append({"rowId": row_id, "key": key, "reason": reason})
             continue
-        entries.append({"key": key, "address": value, "ref": row_id, "source": str(path)})
+        entries += entries_for(row["key"], value, row_id, str(path))
     return entries, refused
 
 
@@ -92,7 +106,7 @@ def parse_sets(items: list[str]) -> list[dict]:
         key, sep, value = item.partition("=")
         if not sep or not key.strip() or not value.strip():
             raise ValueError(f"--set needs key=value, got {item!r}")
-        entries.append({"key": key.strip(), "address": value.strip(), "ref": "--set", "source": "--set"})
+        entries.append({"owner": "site-info", "key": key.strip(), "address": value.strip(), "ref": "--set", "source": "--set"})
     return entries
 
 

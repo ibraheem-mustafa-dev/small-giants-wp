@@ -104,7 +104,7 @@ test( 'POSITIVE: the unchanged fixture with a full registry of fixture readers p
 test( 'the committed registry validates, and the fixture census passes with it: every reader kind is read by its own reader, every other kind is a gap', async () => {
 	const reg = loadRegistry();
 	const gapKinds = Object.keys( reg ).filter( ( k ) => reg[ k ].gap );
-	assert.deepEqual( gapKinds, [ 'helmet-font' ], 'font capture is the snapshot extractor\'s' );
+	assert.deepEqual( gapKinds, [], 'every construct kind has a reader (helmet fonts: lib/intake-construct-readers.mjs::readHelmetFont)' );
 	const res = await runCensus( { census, registry: reg } );
 	assert.equal( res.pass, true, res.problems.join( '\n' ) );
 	assert.ok( res.rows.every( ( r ) => ( reg[ r.kind ].gap ? r.gap && ! r.reader : `${ reg[ r.kind ].module }#${ reg[ r.kind ].fn }` === r.reader && ! r.gap ) ) );

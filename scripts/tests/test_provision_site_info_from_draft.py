@@ -182,8 +182,22 @@ class Table(unittest.TestCase):
 class FakeSite:
     """Stands in for the SSH site: an in-memory option, set() sanitising by stripping spaces."""
 
-    def __init__(self, option, refuse=()):
+    def __init__(self, option, refuse=(), wp_options=None):
         self.option, self.refuse, self.writes = dict(option), set(refuse), []
+        self.wp_options, self.wp_writes = dict(wp_options or {}), []
+
+    def read_wp_options(self, keys):
+        return {k: self.wp_options.get(k, "") for k in keys}
+
+    def write_wp_options(self, values):
+        self.wp_writes.append(dict(values))
+        out = {}
+        for key, value in values.items():
+            ok = key in ("blogname", "blogdescription")
+            if ok:
+                self.wp_options[key] = value
+            out[key] = {"ok": ok, "value": self.wp_options.get(key, "")}
+        return out
 
     def read_option(self):
         return json.loads(json.dumps(self.option))
@@ -332,6 +346,113 @@ class SetInput(unittest.TestCase):
         self.assertIsNotNone(mod.address_problem("opening_hours.mon", "9-5\r\nX"))
         self.assertIsNone(mod.address_problem("copyright", "© 2026 Indus Foods Ltd"))
         self.assertIn("not a Site Info key", mod.address_problem("opening_hours.monday", "9-5"))
+
+
+def opt(key, address, ref="t1"):
+    return {"owner": "wp-option", "kind": "text", "key": key, "address": address, "ref": ref}
+
+
+class WpOptions(unittest.TestCase):
+    """Owner wp-option: blogname and blogdescription, written when they differ from the current option."""
+
+    def setUp(self):
+        self.dir = Path(tempfile.mkdtemp())
+
+    def test_differing_option_is_write(self):
+        rows = mod.plan([opt("blogname", "Eye Care Ward End")], {}, {"blogname": "My WordPress Site"})
+        self.assertEqual((rows[0]["action"], rows[0]["value"], rows[0]["current"]), ("WRITE", "Eye Care Ward End", "My WordPress Site"))
+        self.assertIn("option:blogname", mod.format_table(rows))
+
+    def test_equal_option_is_skip(self):
+        rows = mod.plan([opt("blogname", "Eye Care Ward End")], {}, {"blogname": "Eye Care Ward End"})
+        self.assertEqual((rows[0]["action"], rows[0]["reason"]), ("SKIP", "already set"))
+
+    def test_option_stored_escaped_is_already_set(self):
+        # sanitize_option() stores blogname HTML-escaped, so a rerun compares the confirmed text with the unescaped option.
+        rows = mod.plan([opt("blogname", "Mama's Munches & Co")], {}, {"blogname": "Mama&#039;s Munches &amp; Co"})
+        self.assertEqual((rows[0]["action"], rows[0]["reason"]), ("SKIP", "already set"))
+
+    def test_control_characters_are_skipped(self):
+        rows = mod.plan([opt("blogname", "Eye Care\r\nBcc: x@evil.test")], {}, {"blogname": "My WordPress Site"})
+        self.assertEqual(rows[0]["action"], "SKIP")
+        self.assertIn("control", rows[0]["reason"])
+
+    def test_unknown_option_is_refused(self):
+        rows = mod.plan([opt("siteurl", "https://evil.test")], {}, {})
+        self.assertEqual(rows[0]["action"], "SKIP")
+        self.assertIn("not a WordPress option", rows[0]["reason"])
+
+    def test_empty_long_and_scheme_values_are_skipped(self):
+        for value in ("   ", "x" * 301, "javascript:alert(1)", "https://example.com"):
+            with self.subTest(value=value[:20]):
+                self.assertIsNotNone(mod.wp_option_problem("blogdescription", value))
+
+    def test_two_different_values_conflict(self):
+        rows = mod.plan([opt("blogname", "A", "t1"), opt("blogname", "B", "t2")], {}, {"blogname": "Old"})
+        self.assertTrue(all(r["action"] == "SKIP" and "conflicting addresses" in r["reason"] for r in rows))
+
+    def test_reader_keeps_both_owners_and_carries_the_owner(self):
+        p = Path(tempfile.mkdtemp()) / "handover.json"
+        p.write_text(json.dumps([entry("phone", "tel:0121 729 8233"), opt("blogname", "Eye Care")]), encoding="utf-8")
+        got, ignored = mod.read_entries([p])
+        self.assertEqual([(e["owner"], e["key"]) for e in got], [("site-info", "phone"), ("wp-option", "blogname")])
+        self.assertEqual(ignored, 0)
+
+    def test_apply_backs_up_writes_and_reads_back(self):
+        site = FakeSite({"phone": "0121 729 8233"}, wp_options={"blogname": "My WordPress Site", "blogdescription": "Just another site"})
+        rows = mod.plan([opt("blogname", "Eye Care Ward End"), opt("blogdescription", "Opticians in Birmingham")],
+                        {}, site.wp_options)
+        report = mod.apply_rows(site, "eye-care-test", rows, self.dir, "2026-10-20")
+        backup = self.dir / "2026-10-20" / "eye-care-test" / "wp_options.json"
+        raw = backup.read_bytes()
+        self.assertEqual(json.loads(raw), {"blogname": "My WordPress Site", "blogdescription": "Just another site"})
+        self.assertEqual(report["wp_backup_md5"], hashlib.md5(raw).hexdigest())
+        self.assertEqual(site.wp_options, {"blogname": "Eye Care Ward End", "blogdescription": "Opticians in Birmingham"})
+        self.assertEqual(site.writes, [])
+        self.assertFalse((self.dir / "2026-10-20" / "eye-care-test" / "sgs_site_info.json").exists())
+        self.assertIsNone(report["backup"])
+
+    def test_mixed_apply_does_not_trip_the_site_info_diff_check(self):
+        site = FakeSite({"phone": "0121 729 8233"}, wp_options={"blogname": "My WordPress Site"})
+        rows = mod.plan([entry("tagline", "Opticians in Birmingham"), opt("blogname", "Eye Care")], {}, site.wp_options)
+        report = mod.apply_rows(site, "eye-care-test", rows, self.dir, "2026-10-20")
+        self.assertEqual(site.option["tagline"], "Opticians in Birmingham")
+        self.assertEqual(site.wp_options["blogname"], "Eye Care")
+        self.assertTrue(report["backup"] and report["wp_backup"])
+
+    def test_option_write_mismatch_raises(self):
+        class Refusing(FakeSite):
+            def write_wp_options(self, values):
+                return {k: {"ok": False, "value": ""} for k in values}
+        site = Refusing({}, wp_options={"blogname": "Old"})
+        rows = mod.plan([opt("blogname", "New")], {}, site.wp_options)
+        with self.assertRaises(mod.ApplyError):
+            mod.apply_rows(site, "eye-care-test", rows, self.dir, "2026-10-20")
+
+
+class TaglineAndIntakeOptions(unittest.TestCase):
+    def test_site_info_tagline_already_set_is_skip(self):
+        rows = mod.plan([entry("tagline", "New line")], {"tagline": "Existing line"})
+        self.assertEqual((rows[0]["action"], rows[0]["reason"]), ("SKIP", "already set"))
+
+    def test_site_info_tagline_is_written_when_empty(self):
+        self.assertEqual(mod.plan([entry("tagline", "New line")], {})[0]["action"], "WRITE")
+
+    def test_intake_tagline_yields_site_info_and_option_entries(self):
+        entries, refused = mod.site_info_intake.read_intake(intake_file(
+            [si_row("siteinfo:tagline", "tagline", "Opticians in Birmingham"), si_row("siteinfo:site_title", "site_title", "Eye Care Ward End")],
+            [mark("siteinfo:tagline", "accept"), mark("siteinfo:site_title", "edit:Eye Care")]))
+        self.assertEqual(refused, [])
+        self.assertEqual([(e["owner"], e["key"], e["address"]) for e in entries], [
+            ("site-info", "tagline", "Opticians in Birmingham"),
+            ("wp-option", "blogdescription", "Opticians in Birmingham"),
+            ("wp-option", "blogname", "Eye Care")])
+
+    def test_intake_tagline_unmarked_or_dropped_yields_nothing(self):
+        entries, refused = mod.site_info_intake.read_intake(intake_file(
+            [si_row("a", "tagline", "x"), si_row("b", "site_title", "y")], [mark("b", "drop")]))
+        self.assertEqual(entries, [])
+        self.assertEqual({r["rowId"]: r["key"] for r in refused}, {"a": "tagline", "b": "blogname"})
 
 
 if __name__ == "__main__":

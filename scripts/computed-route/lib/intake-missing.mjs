@@ -23,6 +23,7 @@ import { walkAst } from './intake-census-logic.mjs';
 import { buildModel, codeTarget } from './intake-census-map.mjs';
 import { createRequire } from 'module';
 import { statusOf } from './clone-coverage.mjs';
+import { headMissing } from './intake-head.mjs';
 import { PROPS as FILL_PROPS } from './fill-read.mjs';
 
 const MDN_PROPERTIES = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
@@ -238,12 +239,13 @@ export function coverageMissing( { skeletonRows = [], census = { rows: [] }, cov
 	return rows;
 }
 
-// The missing-features proposal: { rows: [ { rowId, draftId, construct, line, mainFlow, why } ], held }. Rule 3 runs
-// only when `coverage` is passed (the intake stage passes the committed map). Row IDs are unique (a repeat gets `~2`, `~3`).
+// The missing-features proposal: { rows: [ { rowId, draftId, construct, line, mainFlow, why } ], held }. Rule 3 and
+// the head items the route does not clone (lib/intake-head.mjs::headMissing) run only when `coverage` is passed (the
+// intake stage passes the committed map). Row IDs are unique (a repeat gets `~2`, `~3`).
 export function proposeMissingFeatures( { skeletonRows = [], census = { rows: [], sources: [] }, facts = null, registry, coverage = null, usage = null } ) {
 	const c = censusMissing( census, { facts, ...( registry ? { registry } : {} ) } );
 	const seen = new Map();
-	const cov = coverage ? coverageMissing( { skeletonRows, census, coverage, usage } ) : [];
+	const cov = coverage ? [ ...coverageMissing( { skeletonRows, census, coverage, usage } ), ...headMissing( census ) ] : [];
 	const rows = [ ...skeletonMissing( skeletonRows ), ...c.rows, ...cov ].map( ( r ) => {
 		const n = ( seen.get( r.rowId ) || 0 ) + 1;
 		seen.set( r.rowId, n );

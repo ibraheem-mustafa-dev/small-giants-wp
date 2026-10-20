@@ -35,7 +35,8 @@ test( 'MUST FAIL (control 2): a planted draft tag has no coverage entry', () => 
 test( 'MUST FAIL (control 3): a reference to a writer, file or construct reader that does not exist', () => {
 	assert.match( referenceProblem( 'scripts/computed-route/lib/fill-entrance.mjs#noSuchWriter' ), /does not define noSuchWriter/ );
 	assert.match( referenceProblem( 'scripts/computed-route/lib/no-such-file.mjs#x' ), /does not exist/ );
-	assert.match( referenceProblem( 'construct:helmet-font' ), /no reader/ );
+	assert.match( referenceProblem( 'construct:planted-kind', { registry: { 'planted-kind': { gap: 'no reader yet' } } } ), /no reader/ );
+	assert.equal( referenceProblem( 'construct:helmet-font' ), null );
 	assert.equal( referenceProblem( 'construct:sc-for' ), null );
 	assert.match( referenceProblem( 'construct:not-a-kind' ), /no such construct kind/ );
 	assert.equal( referenceProblem( 'scripts/computed-route/lib/fill-motion.mjs#motionWrites' ), null );

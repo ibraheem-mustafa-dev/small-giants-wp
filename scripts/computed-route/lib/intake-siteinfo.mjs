@@ -2,7 +2,8 @@
 // social hosts, wa.me, and `#` links an accessible label names as a social brand), logic links (through
 // lib/intake-routing.mjs::readRouting), logic data objects (label/value pairs, phone/email/address keys, an hours
 // object of per-weekday minute ranges), labelled template text ("Call us", "Email us", "Opening hours", a postcode
-// address) and the print of `sync-business-info.py --draft` (run as a command, never with --push; R-47-1). Every
+// address), the drafts' <title>s (the site title and tagline, titleCandidates) and the print of
+// `sync-business-info.py --draft` (run as a command, never with --push; R-47-1). Every
 // candidate is shape-validated (lib/intake-siteinfo-shape.mjs); one review row per key and normalised value, so two
 // values for one key are two rows, never a silent pick. handoverFor/provisionDryRun feed the confirmed set to
 // `provision-site-info-from-draft.py` without --apply. A failing command or unreadable draft is a gap row (R-48-3).
@@ -13,6 +14,7 @@ import { attrOf, evalStr, keyName, resolveName, snippet } from './intake-ast.mjs
 import { loadExport, readRouting } from './intake-routing.mjs';
 import { brandRegistry } from './brand-registry.mjs';
 import { DAYS, POSTCODE, validate, socialKey, brandByLabel, locator, textRuns, parseHoursText } from './intake-siteinfo-shape.mjs';
+import { readHead } from './intake-head.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 export const SYNC_SCRIPT = path.join( REPO, 'plugins', 'sgs-blocks', 'scripts', 'sync-business-info.py' );
@@ -160,6 +162,39 @@ function templateCandidates( d, loc, add ) {
 	} );
 }
 
+// The site title and tagline the drafts' titles give ([{ key, raw, draftId }]). A title splits on its separator
+// (`·`, `|`, `•`, `–`, `—` or `-` between spaces). With two or more titles, the one part every title holds is the site
+// title, and what follows it in a title that starts with it ("Acme Bakery · Fresh bread daily") is a
+// tagline; no part common to all gives nothing. A single title gives its first part as the site title and the rest as
+// the tagline. Bean confirms or edits each in review.
+const TITLE_SEPARATOR = /\s+[·|•–—-]\s+/;
+export function titleCandidates( titles ) {
+	const split = titles.filter( ( t ) => t.text ).map( ( t ) => ( { ...t, parts: t.text.split( TITLE_SEPARATOR ).map( ( p ) => p.trim() ).filter( Boolean ) } ) );
+	if ( ! split.length ) {
+		return [];
+	}
+	const out = [];
+	if ( 1 === split.length ) {
+		const [ site, ...rest ] = split[ 0 ].parts;
+		out.push( { key: 'site_title', raw: site, draftId: split[ 0 ].draftId } );
+		if ( rest.length ) {
+			out.push( { key: 'tagline', raw: rest.join( ' · ' ), draftId: split[ 0 ].draftId } );
+		}
+		return out;
+	}
+	const common = split[ 0 ].parts.filter( ( p ) => split.every( ( t ) => t.parts.includes( p ) ) );
+	if ( 1 !== common.length ) {
+		return [];
+	}
+	for ( const t of split ) {
+		out.push( { key: 'site_title', raw: common[ 0 ], draftId: t.draftId } );
+		if ( t.parts[ 0 ] === common[ 0 ] && t.parts.length > 1 ) {
+			out.push( { key: 'tagline', raw: t.parts.slice( 1 ).join( ' · ' ), draftId: t.draftId } );
+		}
+	}
+	return out;
+}
+
 // Parses the `sync-business-info.py --draft` print: [{ key, raw }] (opening_hours.<day> becomes hours.<day>).
 export function parseSyncPrint( text ) {
 	return String( text ).split( /\r?\n/ ).map( ( l ) => /^ {2}([a-z_][a-z0-9_.]*)\s+= (.*)$/i.exec( l ) ).filter( Boolean )
@@ -222,6 +257,9 @@ export function proposeSiteInfo( { folder, routing = null, census = null, syncPr
 			parseSyncPrint( printed.stdout || '' ).forEach( ( c ) => add( c.key, c.raw, 'sync-business-info.py --draft (print only)', { draftId: d.file, location: `sync-business-info.py --draft ${ d.file }` } ) );
 		}
 	}
+	if ( census?.sources ) {
+		titleCandidates( readHead( census ).titles ).forEach( ( c ) => add( c.key, c.raw, 'draft <title>', { draftId: c.draftId, location: c.draftId } ) );
+	}
 	return { ...group( cands ), gaps };
 }
 
@@ -257,10 +295,27 @@ function group( cands ) {
 // Sgs_Site_Info_Binding::EDITOR_KEYS, which the registry also names).
 export const provisionKeys = () => brandRegistry().map( ( b ) => b.siteInfoKey ).filter( Boolean );
 
-// The handover entries for the confirmed rows ({ owner: 'site-info', key, address, ref }) and the rows not applied,
-// each with its reason. A row's `mark` (Appendix C) is honoured: `drop` is not applied, `edit:<value>` replaces it.
+// Where provision-site-info-from-draft.py writes an intake key: [{ owner, key }], or null when it writes none. The
+// registry keys go to Site Info as they are; `hours.<day>` to Site Info's `opening_hours.<mon..sun>`; `site_title` to
+// WordPress's site title (`blogname`); `tagline` to Site Info's tagline and WordPress's tagline (`blogdescription`).
+export function handoverTargets( key ) {
+	if ( key.startsWith( 'hours.' ) ) {
+		const day = key.slice( 6 );
+		return DAYS.includes( day ) ? [ { owner: 'site-info', key: `opening_hours.${ day.slice( 0, 3 ) }` } ] : null;
+	}
+	if ( 'site_title' === key ) {
+		return [ { owner: 'wp-option', key: 'blogname' } ];
+	}
+	if ( 'tagline' === key ) {
+		return [ { owner: 'site-info', key: 'tagline' }, { owner: 'wp-option', key: 'blogdescription' } ];
+	}
+	return provisionKeys().includes( key ) ? [ { owner: 'site-info', key } ] : null;
+}
+
+// The handover entries for the confirmed rows ({ owner, key, address, ref }, owner `site-info` or `wp-option`) and the
+// rows not applied, each with its reason. A row's `mark` (Appendix C) is honoured: `drop` is not applied,
+// `edit:<value>` replaces it.
 export function handoverFor( confirmedRows ) {
-	const keys = new Set( provisionKeys() );
 	const entries = [];
 	const notApplied = [];
 	const live = confirmedRows.filter( ( r ) => 'drop' !== r.mark );
@@ -269,16 +324,17 @@ export function handoverFor( confirmedRows ) {
 		const edited = String( r.mark || '' ).startsWith( 'edit:' ) ? r.mark.slice( 5 ) : null;
 		const check = edited === null ? r : { ...r, ...validate( r.key, edited ) };
 		const twins = live.filter( ( x ) => x.key === r.key );
-		const reason = ! keys.has( r.key ) ? `provision-site-info-from-draft.py does not fill ${ r.key }`
+		const targets = handoverTargets( r.key );
+		const reason = ! targets ? `provision-site-info-from-draft.py does not fill ${ r.key }`
 			: ! check.valid ? `failed shape validation: ${ check.reason }`
 				: twins.length > 1 ? `${ twins.length } confirmed values for ${ r.key }; mark all but one drop` : null;
 		if ( reason ) {
 			notApplied.push( { rowId: r.rowId, key: r.key, reason } );
 			continue;
 		}
-		const value = edited ?? ( 'email' === r.key ? r.normalised : r.value );
+		const value = r.key.startsWith( 'hours.' ) ? check.normalised : edited ?? ( 'email' === r.key ? r.normalised : r.value );
 		const address = 'phone' === r.key ? String( value ).replace( /^tel:/i, '' ) : value;
-		entries.push( { owner: 'site-info', key: r.key, address, ref: r.rowId } );
+		targets.forEach( ( t ) => entries.push( { ...t, address, ref: r.rowId } ) );
 	}
 	return { entries, notApplied };
 }

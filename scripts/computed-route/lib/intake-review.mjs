@@ -201,9 +201,10 @@ export function reviewRows( intake ) {
 	unwiredRows( intake ).forEach( ( r ) => add( 'not-a-defect', r, r.draftId, `${ r.censusId ?? r.draftId } ${ text( r.note ) }`, 'not-a-defect', UNWIRED_NOTE ) );
 	( intake.missingFeatures || [] ).forEach( ( r ) => {
 		const block = r.block ?? r.proposedBlock ?? null;
-		// A seen-but-unsupported row (clone coverage) is a tracked gap: Accept all marks it with the coverage map's Phase
-		// 4 wave, or `difference` when Bean excluded the capability (Bean, 2026-10-18); one the map does not hold is read.
-		const tracked = 'coverage' === r.from ? ( r.wave ? `gap:${ r.wave }` : r.excluded ? 'difference' : null ) : null;
+		// A seen-but-unsupported row (clone coverage, or a head item lib/intake-head.mjs does not clone) is a tracked gap:
+		// Accept all marks it with its Phase 4 wave, or `difference` when Bean excluded the capability (Bean, 2026-10-18);
+		// one the map does not hold is read.
+		const tracked = [ 'coverage', 'head' ].includes( r.from ) ? ( r.wave ? `gap:${ r.wave }` : r.excluded ? 'difference' : null ) : null;
 		const acceptAll = tracked ?? ( block && BLOCK.test( block ) ? `map:${ block }` : null );
 		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
 	} );

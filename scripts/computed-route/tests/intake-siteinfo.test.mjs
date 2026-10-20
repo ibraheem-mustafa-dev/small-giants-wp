@@ -9,7 +9,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { proposeSiteInfo, handoverFor, provisionDryRun, parseSyncPrint, linkCandidate } from '../lib/intake-siteinfo.mjs';
+import { proposeSiteInfo, handoverFor, handoverTargets, provisionDryRun, parseSyncPrint, linkCandidate, titleCandidates } from '../lib/intake-siteinfo.mjs';
 import { emailShape, phoneShape, socialKey, validate, parseHoursText } from '../lib/intake-siteinfo-shape.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -98,7 +98,7 @@ test( 'MUST FAIL: the real sync-business-info.py print is one source; a failing 
 	assert.equal( broken.gaps[ 0 ].draftId, 'Site.dc.html' );
 } );
 
-test( 'MUST FAIL: handoverFor keeps the provisioning keys; hours, conflicts, drops and failed edits are not applied', () => {
+test( 'MUST FAIL: handoverFor keeps the provisioning keys and maps hours to opening_hours; conflicts, drops and failed edits are not applied', () => {
 	const pick = [ 'siteinfo:phone#1', 'siteinfo:email', 'siteinfo:socials.instagram', 'siteinfo:address', 'siteinfo:hours.monday' ].map( ( id ) => row( id ) );
 	const { entries, notApplied } = handoverFor( pick );
 	assert.deepEqual( entries, [
@@ -106,8 +106,11 @@ test( 'MUST FAIL: handoverFor keeps the provisioning keys; hours, conflicts, dro
 		{ owner: 'site-info', key: 'email', address: 'info@acme-bakery.co.uk', ref: 'siteinfo:email' },
 		{ owner: 'site-info', key: 'socials.instagram', address: 'https://www.instagram.com/acmebakery', ref: 'siteinfo:socials.instagram' },
 		{ owner: 'site-info', key: 'address', address: '12 Market Street, Birmingham B1 1AA', ref: 'siteinfo:address' },
+		{ owner: 'site-info', key: 'opening_hours.mon', address: '09:00–17:30', ref: 'siteinfo:hours.monday' },
 	] );
-	assert.deepEqual( notApplied, [ { rowId: 'siteinfo:hours.monday', key: 'hours.monday', reason: 'provision-site-info-from-draft.py does not fill hours.monday' } ] );
+	assert.deepEqual( notApplied, [] );
+	assert.equal( handoverTargets( 'hours.mon-fri' ), null, 'only an exact day name maps' );
+	assert.equal( handoverFor( [ { rowId: 'siteinfo:vat', key: 'vat_number', value: 'GB1', valid: true } ] ).notApplied[ 0 ].reason, 'provision-site-info-from-draft.py does not fill vat_number' );
 	const both = handoverFor( [ row( 'siteinfo:phone#1' ), row( 'siteinfo:phone#2' ) ] );
 	assert.equal( both.entries.length, 0 );
 	assert.match( both.notApplied[ 0 ].reason, /2 confirmed values for phone/ );
@@ -152,4 +155,26 @@ test( 'Indus (read-only): phone, email and WhatsApp are proposed; the #/ social 
 	assert.equal( row( 'siteinfo:hours.friday', r ).normalised, '09:30–12:00, 14:30–17:00' );
 	assert.equal( row( 'siteinfo:hours.sunday', r ).normalised, 'closed' );
 	assert.ok( r.rows.some( ( x ) => 'address' === x.key && /B11 1BU/.test( x.normalised ) ) );
+} );
+
+test( 'MUST FAIL: the drafts\' titles propose the site title and a tagline; titles with no common part propose nothing', () => {
+	const mamas = [ 'Shop · Mama\'s Munches', 'Mama\'s Munches · Handmade lactation cookies', 'Help & FAQs · Mama\'s Munches', 'Your basket · Mama\'s Munches' ]
+		.map( ( text, i ) => ( { text, draftId: `P${ i }:1` } ) );
+	const got = titleCandidates( mamas );
+	assert.deepEqual( [ ...new Set( got.filter( ( c ) => 'site_title' === c.key ).map( ( c ) => c.raw ) ) ], [ 'Mama\'s Munches' ] );
+	assert.deepEqual( got.filter( ( c ) => 'tagline' === c.key ), [ { key: 'tagline', raw: 'Handmade lactation cookies', draftId: 'P1:1' } ] );
+	assert.deepEqual( titleCandidates( [ { text: 'Shop · Acme', draftId: 'a' }, { text: 'Basket · Other', draftId: 'b' } ] ), [] );
+	assert.deepEqual( titleCandidates( [ { text: 'Acme · Bakery', draftId: 'a' }, { text: 'Acme · Bakery', draftId: 'b' } ] ), [], 'two parts common to every title name no one site title' );
+	assert.deepEqual( titleCandidates( [ { text: 'Acme Bakery', draftId: 'a' } ] ), [ { key: 'site_title', raw: 'Acme Bakery', draftId: 'a' } ] );
+	assert.deepEqual( titleCandidates( [] ), [] );
+} );
+
+test( 'MUST FAIL: a confirmed site title goes to blogname and a tagline to Site Info and blogdescription', () => {
+	const { entries, notApplied } = handoverFor( [ { rowId: 'siteinfo:site_title', key: 'site_title', value: 'Mama\'s Munches', valid: true }, { rowId: 'siteinfo:tagline', key: 'tagline', value: 'Handmade lactation cookies', valid: true } ] );
+	assert.deepEqual( notApplied, [] );
+	assert.deepEqual( entries, [
+		{ owner: 'wp-option', key: 'blogname', address: 'Mama\'s Munches', ref: 'siteinfo:site_title' },
+		{ owner: 'site-info', key: 'tagline', address: 'Handmade lactation cookies', ref: 'siteinfo:tagline' },
+		{ owner: 'wp-option', key: 'blogdescription', address: 'Handmade lactation cookies', ref: 'siteinfo:tagline' },
+	] );
 } );

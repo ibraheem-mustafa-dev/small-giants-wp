@@ -1,0 +1,41 @@
+---
+doc_type: plan
+plan_id: 2026-10-20-site-surfaces-wave
+governs: Spec 48 FR-48-84 (the draft-used part), FR-48-82 (media upload), FR-48-58, FR-48-59 (intake handover)
+status: in progress
+---
+
+# Site and surfaces wave, draft-used part, and media upload
+
+Coverage plan Order item 3 (`.claude/plans/2026-10-12-clone-coverage-foundation.md`). Unblocks Indus build plan step 18 (FR-48-55, FR-48-58, FR-48-59).
+
+## Goal
+The site-and-surfaces rows in Indus's and Mama's redesign's review are 0 (measured 2026-10-20: Indus 7, Mama's 5), each capability covered in `scripts/computed-route/data/clone-coverage.json` with recognise, write and check references that resolve (`capabilities.mjs --gate` exits 0), and the draft's images reach the site's media library through one map file.
+
+## The wave's draft-used capabilities (measured 2026-10-20)
+What the two drafts actually put in these tags (`grep` over `sites/*/handoff/*.dc.html`):
+
+| Capability | Indus | Mama's | What the draft holds | Where it goes on the site | Exists today |
+|---|---|---|---|---|---|
+| `html:link`, `html-attr:link.href`, `html-attr:link.rel` | 6 | yes | Google Fonts `rel=stylesheet` and `rel=preconnect` links | the snapshot's `settings.typography.fontFamilies` (self-hosted `fontFace`); a preconnect to a font host needs nothing once the faces are local | extractor self-hosts (`theme-extractor/extract.py::_self_host_google_font`); no recogniser or check |
+| `construct:helmet-font` | 3 | 2 | the same font stylesheets, loaded inside the draft's helmet | as above | census records `via` + `href`/`family` (`lib/intake-census-template.mjs`); the registry marks it a gap |
+| `html:meta`, `html-attr:meta.name`, `html-attr:meta.content` | 1 | yes | `charset` and `viewport` only | WordPress prints both itself (`wp-includes/template-canvas.php`); `description` would go to the page excerpt, which `theme/sgs-theme/functions.php::meta_description` prints | nothing reads them |
+| `html:title` | 0 | 10 | `Page · Mama's Munches`; the home title carries the tagline | the site title (`blogname`), the tagline (`blogdescription` and Site Info `tagline`), and each page-map row's title | nothing reads it (`lib/intake-construct-readers.mjs` lists `title` as document plumbing) |
+
+A real defect the check must catch: Indus's draft loads and uses Geist Mono (5 `font-family` uses) and the pushed snapshot has no Geist Mono family.
+
+## Steps
+1. [x] **Head reader** (`scripts/computed-route/lib/intake-head.mjs`, new). Reads every `<link>`, `<meta>` and `<title>` and every helmet-font census row into one head record in `intake.json`: font families and weights per loading link, preconnect hosts, meta name/content pairs, titles per page. It classifies each item as handled or not; an unhandled item (a stylesheet that is not a font host, a preconnect to another host, a `rel` other than stylesheet/preconnect, a meta name other than charset/viewport/description) becomes its own `missing:head:<what>` row, so covering the tag never hides a capability it does not handle (FP-9). `helmet-font` gets its registry reader. MUST FAIL: a planted draft with `<link rel=icon>` and `<meta name=theme-color>` raises both rows; with the classifier made permissive it raises none.
+2. [x] **Font check** (the check; the extractor fix is step 2b) (`lib/head-check.mjs::fontCheck`). Every family the draft loads and uses has a snapshot family with a local `fontFace` (or `google: true`) whose weights cover the used weights. Run on Indus it names Geist Mono. MUST FAIL: the Indus snapshot with Montserrat removed fails; the fixed snapshot passes. Built 2026-10-20: `head-check.mjs indus-foods` names Geist Mono (no family) and Source Sans 3 italic (no face); `head-check.mjs mamas-munches-redesign` passes. **Step 2b, open: extractor fonts** (`plugins/sgs-blocks/scripts/theme-extractor/used_fonts.py::add_rendered_families`, `extract.py::_self_host_google_font`). Proven causes: a family counts only when the measured render paints it, so a family only an unopened surface uses (Indus's Geist Mono: the mega menu, drawer and timeline numbers) is dropped, against R-47-4's code-first rule; and the self-host keeps one upright face per family (`break` after the first block), so a loaded italic never gets a face. Fix: a family the draft loads and its own code names in a `font-family` counts as used; an italic the draft loads gets its own face. Then regenerate the Indus snapshot, diff it (only the font families may change) and push after Bean's go; `head-check.mjs indus-foods` passes.
+3. [x] **Title to site title and tagline.** Intake splits each title on its separator (`·`, `|`, `–`, `—`, `-`), takes the part common to every page as the site name and the home page's other part as the tagline, and proposes `site_title` and `tagline` as Site Info review rows; `provision-site-info-from-draft.py` gains `site_title` (writes `blogname`) and `tagline` (Site Info `tagline` and `blogdescription`), shown before and after in the dry run. MUST FAIL: Mama's ten titles propose "Mama's Munches" and "Handmade lactation cookies"; a set with no common part proposes nothing.
+4. [x] **Meta write and check.** charset and viewport: covered by WordPress, proved by `lib/head-check.mjs::headCheck` reading the live page head (one charset, a viewport with the draft's content, the title is the page then the site name). description: the page-map row's excerpt. MUST FAIL: a page HTML with no viewport fails.
+5. [x] **`handoverFor` hands over every key intake proposes** (`lib/intake-siteinfo.mjs`): `hours.<day>` as `opening_hours.<day>`, `site_title`, `tagline`, beside the contact and social keys. MUST FAIL: a proposal with `hours.mon` hands over `opening_hours.mon`; with the mapping removed it is refused as today.
+6. [x] **Coverage entries.** Move the eight IDs from gap to covered in `clone-coverage.json` with the references above; `capabilities.mjs --gate` exits 0.
+7. [x] **Media upload** (built and tested; the indus-test run waits for Bean's go) (`scripts/computed-route/media-upload.mjs`, new; FR-48-58). Uploads every image under `handoff/assets/` that the draft references, plus the client's own images under `sites/<client>/assets/` (images only), through the WordPress REST media endpoint with the site's application password from `.claude/secrets/<site>.env` (no SSH file copy). Writes `sites/<client>/build/media-map.json`: asset path, `sha256` of the source, attachment ID, `storedSha256` of the file WordPress kept, `stock`. A rerun skips a file whose `sha256` is in the map with a live attachment whose stored file still hashes to `storedSha256`. An SVG the upload sanitiser changed (`plugins/sgs-blocks/includes/svg-upload.php`) is listed with what changed for Bean's review. The identity check (§10 row 3) follows the painted URL to its attachment and the map. MUST FAIL: a rerun against a map whose attachment was deleted uploads that file again; a second clean rerun uploads nothing. Spec 48 FR-48-58 is amended from `wp media import` to the REST upload (no file copy to the server). Proof on indus-test after Bean's go.
+8. [ ] **Re-measure.** `intake.mjs --rerun-skeletons` where it reaches the missing-features rows; else a full run at `INTAKE_POOL=4 INTAKE_PARALLEL_WIDTHS=1` in the background, re-levelled as `f0c33426e`'s message describes. Mama's runs in a scratch copy via `--repo`. Done when both drafts show 0 site-and-surfaces rows.
+
+## Not in this plan
+The wave's 105 capabilities neither draft uses (templates, parts, post types, snapshot keys, view transitions, `prefers-color-scheme`, `light-dark()`, `forced-colors`, page transitions, scroll smoother) stay with coverage plan Phase 4, site and surfaces.
+
+## Verification
+`node --test "scripts/computed-route/tests/*.test.mjs"` and `node scripts/computed-route/lint.mjs` pass; `python -m pytest scripts/tests/test_provision_site_info_from_draft.py`; `capabilities.mjs --gate` exits 0; every reader change run on both drafts before commit; media upload proved on indus-test (after Bean's go) by a first run that uploads every asset, a second that uploads nothing, and the identity check passing.

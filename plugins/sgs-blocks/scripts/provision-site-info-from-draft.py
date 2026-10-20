@@ -8,18 +8,29 @@ SGS\\Blocks\\Sgs_Site_Info). The clone pipeline (scripts/computed-route/fill.mjs
 address the draft shows (a social link, a tel: link, a mailto: link). This script proposes
 those addresses as the site's Site Info values and, with --apply, writes them.
 
+Entries with owner `wp-option` and key `blogname` (site title) or `blogdescription` (tagline) are the
+WordPress options of those names; no other option is ever read or written. The draft's <title> tags give
+both, and intake's `site_title` and `tagline` rows arrive the same way (the tagline also fills Site Info's
+`tagline`).
+
 Handover entries read (extra fields are tolerated):
   { owner: "site-info", kind: "link", key: "socials.instagram", address: "https://...", ref: "..." }
+  { owner: "wp-option", kind: "text", key: "blogname", address: "Eye Care Ward End", ref: "..." }
   and the pipeline's evidence shape:
   { owner: "site-info", node: "...", evidence: { key: "...", draft: "https://...", ref: "..." } }
 The file is a JSON list, or an object holding the list under `handover` or `entries`.
 
 Rules (the dry run prints every decision):
-  - a key that is already non-empty on the site is NEVER overwritten;
+  - a Site Info key that is already non-empty on the site is NEVER overwritten;
+  - a WordPress option differs on purpose (a fresh install already has a blogname): a confirmed value that
+    differs from the current option is WRITE (the dry run shows current and proposed; running --apply is the
+    confirmation) and one equal to the current option is SKIP (already set);
   - a placeholder address is skipped with its reason (example.com/.org/.net hosts, path
     segments such as yourpage or username, "#", empty, a bare social host, a scheme other
     than http(s) for a social link, tel: for a phone, mailto: for an email);
-  - two entries for one key with different addresses are both skipped (conflicting addresses).
+  - two entries for one key (or option) with different addresses are both skipped (conflicting addresses);
+  - a WordPress option value is validated as text: no control characters, not empty, at most 300 characters,
+    no URL, mail or script scheme.
 
 A second input is the confirmed Site Info proposal from intake (FR-48-59): --intake <intake.json> reads
 siteInfo.rows[] with Bean's review marks (accept, edit:<value>, drop; an unmarked row is refused and listed),
@@ -36,7 +47,9 @@ Usage:
 --apply first backs the whole option up to .claude/backups/<today>/<site>/sgs_site_info.json
 (md5 printed), writes each proposed key through Sgs_Site_Info::set() under `wp --user=Claude`
 (values travel base64-encoded on stdin-fed PHP's argument list, never interpolated into PHP),
-then reads the option back and fails loudly when a read-back differs.
+then reads the option back and fails loudly when a read-back differs. WordPress option rows are backed up
+(their current values) to .claude/backups/<today>/<site>/wp_options.json (md5 printed), written with
+sanitize_option() + update_option(), and read back the same way; Site Info is untouched when there are none.
 """
 from __future__ import annotations
 
@@ -44,6 +57,7 @@ import argparse
 import base64
 import datetime
 import hashlib
+import html
 import importlib.util
 import json
 import re
@@ -62,9 +76,9 @@ DEFAULT_BACKUP_ROOT = REPO_ROOT / ".claude" / "backups"
 WP_USER = "Claude"
 
 # Sgs_Site_Info_Binding::EDITOR_KEYS (the contact and social keys a draft can show), plus the text and link keys
-# intake proposes or Bean confirms (Sgs_Site_Info::build_sanitisers): copyright, per-day hours and maps_url.
+# intake proposes or Bean confirms (Sgs_Site_Info::build_sanitisers): copyright, tagline, per-day hours and maps_url.
 OPENING_HOURS_KEYS = tuple(f"opening_hours.{d}" for d in ("mon", "tue", "wed", "thu", "fri", "sat", "sun"))
-TEXT_KEYS = ("copyright", *OPENING_HOURS_KEYS)
+TEXT_KEYS = ("copyright", "tagline", *OPENING_HOURS_KEYS)
 LINK_KEYS = ("maps_url",)
 ALLOWED_KEYS = (
     "phone", "email", "address",
@@ -72,6 +86,10 @@ ALLOWED_KEYS = (
     "socials.linkedin", "socials.youtube", "socials.tiktok", "socials.google",
     *TEXT_KEYS, *LINK_KEYS,
 )
+# The WordPress options this script may read or write (owner `wp-option`): the site title and tagline.
+WP_OPTION_KEYS = ("blogname", "blogdescription")
+SITE_INFO_OWNER = "site-info"
+WP_OPTION_OWNER = "wp-option"
 MAX_URL = 2000
 MAX_TEXT = 300
 PLACEHOLDER_HOSTS = ("example.com", "example.org", "example.net")
@@ -187,8 +205,31 @@ def address_problem(key: str, address: str) -> str | None:
     return _social_problem(key, value)
 
 
+def wp_option_problem(key: str, value: str) -> str | None:
+    """Why a value must not be written to this WordPress option, or None when it is acceptable (validated as text)."""
+    if key not in WP_OPTION_KEYS:
+        return "not a WordPress option this script fills"
+    raw = value if isinstance(value, str) else ""
+    if CONTROL.search(raw):
+        return "control characters (CR/LF) in value"
+    text = raw.strip()
+    if not text:
+        return "empty value"
+    if len(text) > MAX_TEXT:
+        return "value too long"
+    scheme = _scheme(text)
+    if scheme in DANGEROUS_SCHEMES:
+        return f"scheme {scheme} is not text"
+    return None
+
+
+def owner_of(entry: dict) -> str:
+    """The owner of a handover entry: wp-option for a WordPress option, otherwise site-info."""
+    return WP_OPTION_OWNER if entry.get("owner") == WP_OPTION_OWNER else SITE_INFO_OWNER
+
+
 def read_entries(paths: list[Path]) -> tuple[list[dict], int]:
-    """Handover entries owned by site-info that carry a key and an address, plus how many were ignored."""
+    """Handover entries owned by site-info or wp-option that carry a key and an address, plus how many were ignored."""
     kept: list[dict] = []
     ignored = 0
     for path in paths:
@@ -196,7 +237,7 @@ def read_entries(paths: list[Path]) -> tuple[list[dict], int]:
         if isinstance(data, dict):
             data = data.get("handover", data.get("entries", []))
         for item in data if isinstance(data, list) else []:
-            if not isinstance(item, dict) or item.get("owner") != "site-info":
+            if not isinstance(item, dict) or item.get("owner") not in (SITE_INFO_OWNER, WP_OPTION_OWNER):
                 ignored += 1
                 continue
             evidence = item.get("evidence") if isinstance(item.get("evidence"), dict) else {}
@@ -206,42 +247,51 @@ def read_entries(paths: list[Path]) -> tuple[list[dict], int]:
                 ignored += 1
                 continue
             ref = item.get("ref") or evidence.get("ref") or item.get("node") or ""
-            kept.append({"key": key, "address": address, "ref": str(ref), "source": str(path)})
+            kept.append({"owner": item["owner"], "key": key, "address": address, "ref": str(ref), "source": str(path)})
     return kept, ignored
 
 
-def plan(entries: list[dict], current: dict) -> list[dict]:
-    """One row per distinct (key, address): key, current, address, value, action, reason, refs."""
+def plan(entries: list[dict], current: dict, wp_current: dict | None = None) -> list[dict]:
+    """One row per distinct (owner, key, address): owner, key, current, address, value, action, reason, refs.
+
+    `current` holds the Site Info values, `wp_current` the WordPress options' values."""
     rows: list[dict] = []
-    keys = list(dict.fromkeys(e["key"] for e in entries))
-    for key in keys:
-        have = str(current.get(key, "") or "")
+    wp_current = wp_current or {}
+    groups = list(dict.fromkeys((owner_of(e), e["key"]) for e in entries))
+    for owner, key in groups:
+        is_option = owner == WP_OPTION_OWNER
+        have = str((wp_current if is_option else current).get(key, "") or "")
         distinct: dict[str, list[str]] = {}
         for e in entries:
-            if e["key"] == key:
+            if owner_of(e) == owner and e["key"] == key:
                 distinct.setdefault(e["address"].strip(), []).append(e["ref"])
 
         def row(address: str, refs: list[str], action: str, reason: str = "", value: str = "") -> dict:
-            return {"key": key, "current": have, "address": address, "value": value,
+            return {"owner": owner, "key": key, "current": have, "address": address, "value": value,
                     "action": action, "reason": reason, "refs": refs}
 
-        if have.strip():
+        if have.strip() and not is_option:
             rows += [row(a, r, "SKIP", "already set") for a, r in distinct.items()]
             continue
         valid: dict[str, list[tuple[str, list[str]]]] = {}
         for address, refs in distinct.items():
-            problem = address_problem(key, address)
+            problem = wp_option_problem(key, address) if is_option else address_problem(key, address)
             if problem:
                 rows.append(row(address, refs, "SKIP", problem))
             else:
-                valid.setdefault(stored_value(key, address), []).append((address, refs))
+                value = address.strip() if is_option else stored_value(key, address)
+                valid.setdefault(value, []).append((address, refs))
         if len(valid) > 1:
             for value, group in valid.items():
                 rows += [row(a, r, "SKIP", "conflicting addresses", value) for a, r in group]
         elif valid:
             value, group = next(iter(valid.items()))
             refs = [ref for _, rs in group for ref in rs]
-            rows.append(row(group[0][0], refs, "WRITE", "", value))
+            # sanitize_option() stores the site title and tagline HTML-escaped (Mama's -> Mama&#039;s).
+            if is_option and value == html.unescape(have.strip()):
+                rows.append(row(group[0][0], refs, "SKIP", "already set", value))
+            else:
+                rows.append(row(group[0][0], refs, "WRITE", "", value))
     return rows
 
 
@@ -250,10 +300,15 @@ def _clip(text: str, width: int = 48) -> str:
     return text if len(text) <= width else text[: width - 1] + "…"
 
 
+def _label(row: dict) -> str:
+    """The key as the table shows it: a WordPress option is prefixed `option:` to tell it from Site Info."""
+    return f"option:{row['key']}" if row.get("owner") == WP_OPTION_OWNER else row["key"]
+
+
 def format_table(rows: list[dict]) -> str:
-    """key | current value | proposed address | WRITE or SKIP (reason)."""
+    """key | current value | proposed address | WRITE or SKIP (reason); a WordPress option's key reads `option:<name>`."""
     header = ("key", "current value", "proposed address", "result")
-    body = [(r["key"], _clip(r["current"]) or "-", _clip(r["address"]) or "-",
+    body = [(_label(r), _clip(r["current"]) or "-", _clip(r["address"]) or "-",
              "WRITE" if r["action"] == "WRITE" else f"SKIP ({r['reason']})") for r in rows]
     widths = [max(len(line[i]) for line in [header, *body]) for i in range(4)]
     lines = [" | ".join(cell.ljust(widths[i]) for i, cell in enumerate(line)).rstrip() for line in [header, *body]]
@@ -278,20 +333,21 @@ def serialise(option: dict) -> bytes:
     return json.dumps(option, ensure_ascii=False, indent=2).encode("utf-8")
 
 
-def apply_rows(site, name: str, rows: list[dict], backup_root: Path, today: str) -> dict:
-    """Back up, write every WRITE row, read back, and raise ApplyError on any difference."""
-    writes = {r["key"]: r["value"] for r in rows if r["action"] == "WRITE"}
-    if not writes:
-        return {"written": {}, "backup": None, "backup_md5": None, "new_md5": None, "sanitised": {}}
-    before = site.read_option()
-    backup = Path(backup_root) / today / name / "sgs_site_info.json"
-    backup.parent.mkdir(parents=True, exist_ok=True)
-    payload = serialise(before)
-    backup.write_bytes(payload)
-    backup_md5 = hashlib.md5(payload).hexdigest()
-    if hashlib.md5(backup.read_bytes()).hexdigest() != backup_md5:
-        raise ApplyError(f"backup {backup} did not read back identically")
+def _backup(path: Path, data: dict) -> tuple[str, str]:
+    """Write `data` to `path` (UTF-8, LF), check it reads back identically and return (path, md5)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = serialise(data)
+    path.write_bytes(payload)
+    digest = hashlib.md5(payload).hexdigest()
+    if hashlib.md5(path.read_bytes()).hexdigest() != digest:
+        raise ApplyError(f"backup {path} did not read back identically")
+    return str(path), digest
 
+
+def _apply_site_info(site, writes: dict, folder: Path) -> dict:
+    """Back up the Site Info option, write `writes` through Sgs_Site_Info::set(), read back and compare."""
+    before = site.read_option()
+    backup, backup_md5 = _backup(folder / "sgs_site_info.json", before)
     results = site.write_values(writes)
     for key in writes:
         if not results.get(key, {}).get("ok"):
@@ -309,10 +365,46 @@ def apply_rows(site, name: str, rows: list[dict], backup_root: Path, today: str)
         if key not in writes and was.get(key) != now.get(key):
             raise ApplyError(f"{key} changed during the write although it was not a proposed key")
     return {
-        "written": finals, "backup": str(backup), "backup_md5": backup_md5,
+        "written": finals, "backup": backup, "backup_md5": backup_md5,
         "new_md5": hashlib.md5(serialise(after)).hexdigest(),
         "sanitised": {k: finals[k] for k in writes if finals[k] != writes[k]},
     }
+
+
+def _apply_wp_options(site, writes: dict, folder: Path) -> dict:
+    """Back up the current values of the options being written, write them, read back and compare."""
+    before = site.read_wp_options(list(writes))
+    backup, backup_md5 = _backup(folder / "wp_options.json", before)
+    results = site.write_wp_options(writes)
+    for key in writes:
+        if not results.get(key, {}).get("ok"):
+            raise ApplyError(f"the option {key} was not written; backup is at {backup} (md5 {backup_md5})")
+    finals = site.read_wp_options(list(writes))
+    for key in writes:
+        if not str(finals.get(key, "")).strip():
+            raise ApplyError(f"option {key} reads back empty after the write")
+        if finals[key] != results[key]["value"]:
+            raise ApplyError(f"option {key} read-back {finals[key]!r} differs from the value written {results[key]['value']!r}")
+    return {
+        "wp_written": finals, "wp_backup": backup, "wp_backup_md5": backup_md5,
+        "wp_sanitised": {k: finals[k] for k in writes if finals[k] != writes[k]},
+    }
+
+
+def apply_rows(site, name: str, rows: list[dict], backup_root: Path, today: str) -> dict:
+    """Back up, write every WRITE row, read back, and raise ApplyError on any difference.
+
+    Site Info rows and WordPress option rows are written separately; Site Info's path is skipped when there are none."""
+    writes = {r["key"]: r["value"] for r in rows if r["action"] == "WRITE" and r.get("owner") != WP_OPTION_OWNER}
+    wp_writes = {r["key"]: r["value"] for r in rows if r["action"] == "WRITE" and r.get("owner") == WP_OPTION_OWNER}
+    report = {"written": {}, "backup": None, "backup_md5": None, "new_md5": None, "sanitised": {},
+              "wp_written": {}, "wp_backup": None, "wp_backup_md5": None, "wp_sanitised": {}}
+    folder = Path(backup_root) / today / name
+    if writes:
+        report.update(_apply_site_info(site, writes, folder))
+    if wp_writes:
+        report.update(_apply_wp_options(site, wp_writes, folder))
+    return report
 
 
 # --------------------------------------------------------------------------------------
@@ -362,6 +454,41 @@ echo wp_json_encode( (object) $out );
 """
 
 
+READ_WP_OPTIONS_PHP = r"""
+$keys    = json_decode( base64_decode( (string) ( $args[0] ?? '' ), true ), true );
+$allowed = array( 'blogname', 'blogdescription' );
+$out     = array();
+foreach ( (array) $keys as $k ) {
+	$k = (string) $k;
+	if ( ! in_array( $k, $allowed, true ) ) {
+		$out[ $k ] = '';
+		continue;
+	}
+	$v         = get_option( $k, '' );
+	$out[ $k ] = is_scalar( $v ) ? (string) $v : '';
+}
+echo wp_json_encode( (object) $out );
+"""
+
+WRITE_WP_OPTIONS_PHP = r"""
+$items   = json_decode( base64_decode( (string) ( $args[0] ?? '' ), true ), true );
+$allowed = array( 'blogname', 'blogdescription' );
+$out     = array();
+foreach ( (array) $items as $k => $v ) {
+	$k = (string) $k;
+	if ( ! is_string( $v ) || ! in_array( $k, $allowed, true ) ) {
+		$out[ $k ] = array( 'ok' => false, 'value' => '' );
+		continue;
+	}
+	$clean     = sanitize_option( $k, $v );
+	update_option( $k, $clean );
+	$now       = get_option( $k, '' );
+	$out[ $k ] = array( 'ok' => is_string( $now ) && $now === $clean, 'value' => is_scalar( $now ) ? (string) $now : '' );
+}
+echo wp_json_encode( (object) $out );
+"""
+
+
 class Site:
     def __init__(self, target: str):
         targets, ssh_fallback, user_host = load_targets()
@@ -397,6 +524,12 @@ class Site:
 
     def write_values(self, values: dict) -> dict:
         return self.php(WRITE_VALUES_PHP, self._encode(values), user=WP_USER)
+
+    def read_wp_options(self, keys: list[str]) -> dict:
+        return self.php(READ_WP_OPTIONS_PHP, self._encode(keys))
+
+    def write_wp_options(self, values: dict) -> dict:
+        return self.php(WRITE_WP_OPTIONS_PHP, self._encode(values), user=WP_USER)
 
 
 # --------------------------------------------------------------------------------------
@@ -441,9 +574,11 @@ def main() -> int:
         return 0
 
     site = Site(args.site)
-    keys = [k for k in dict.fromkeys(e["key"] for e in entries) if k in ALLOWED_KEYS]
+    keys = [k for k in dict.fromkeys(e["key"] for e in entries if owner_of(e) == SITE_INFO_OWNER) if k in ALLOWED_KEYS]
+    option_keys = [k for k in dict.fromkeys(e["key"] for e in entries if owner_of(e) == WP_OPTION_OWNER) if k in WP_OPTION_KEYS]
     current = site.read_values(keys) if keys else {}
-    rows = plan(entries, current)
+    wp_current = site.read_wp_options(option_keys) if option_keys else {}
+    rows = plan(entries, current, wp_current)
     print(format_table(rows))
     writes = sum(1 for r in rows if r["action"] == "WRITE")
     print(f"\n{writes} to write, {len(rows) - writes} skipped.")
@@ -456,15 +591,22 @@ def main() -> int:
     except ApplyError as error:
         print(f"FAILED: {error}", file=sys.stderr)
         return 1
-    if not report["backup"]:
+    if not report["backup"] and not report["wp_backup"]:
         print("Nothing to write.")
         return 0
-    print(f"backup: {report['backup']} (md5 {report['backup_md5']})")
-    print(f"option md5 after write: {report['new_md5']}")
-    for key, value in report["written"].items():
-        print(f"  {key} = {value}")
-    for key, value in report["sanitised"].items():
-        print(f"  note: set() sanitised {key} to {value!r}")
+    if report["backup"]:
+        print(f"backup: {report['backup']} (md5 {report['backup_md5']})")
+        print(f"option md5 after write: {report['new_md5']}")
+        for key, value in report["written"].items():
+            print(f"  {key} = {value}")
+        for key, value in report["sanitised"].items():
+            print(f"  note: set() sanitised {key} to {value!r}")
+    if report["wp_backup"]:
+        print(f"backup: {report['wp_backup']} (md5 {report['wp_backup_md5']})")
+        for key, value in report["wp_written"].items():
+            print(f"  option {key} = {value}")
+        for key, value in report["wp_sanitised"].items():
+            print(f"  note: sanitize_option() changed {key} to {value!r}")
     return 0
 
 

@@ -16,7 +16,7 @@ import { cssDecls, motionKind } from './intake-census-logic.mjs';
 // Tags and attributes the runtime's template namespace (sc-*) defines; any other sc-* name is an unknown construct.
 export const KNOWN_SC_TAGS = new Set( [ 'sc-if', 'sc-for', 'sc-helmet', 'sc-raw-select', 'sc-raw-table', 'sc-raw-tbody', 'sc-raw-thead', 'sc-raw-tfoot', 'sc-raw-tr', 'sc-raw-td', 'sc-raw-th' ] );
 const CAMEL = 'sc-camel-';
-const FONT_HOSTS = [ 'fonts.googleapis.com', 'fonts.gstatic.com', 'use.typekit.net', 'fonts.bunny.net', 'fonts.adobe.com' ];
+export const FONT_HOSTS = [ 'fonts.googleapis.com', 'fonts.gstatic.com', 'use.typekit.net', 'fonts.bunny.net', 'fonts.adobe.com' ];
 
 // The runtime's cut of a .dc.html text: { template, logic, logicLine, logicColumn } (logicLine/Column: where the logic
 // starts in the file, so syntax-tree locations are file lines). Throws when there is no <x-dc> block.
@@ -55,7 +55,7 @@ export function cutDraft( text ) {
 
 // In-page: the stamped template parsed in a <template>; one record per element in document order:
 // { n, parent (the nearest enclosing element's n, null at the top), tag, attrs: [[name, value]], texts: [string], inFor,
-// inHelmet, svg? (an SVG element's own-case name: HTML parsing lower-cases `tag`), body?, css? } (css: the rules of a <style>,
+// inHelmet, svg? (an SVG element's own-case name: HTML parsing lower-cases `tag`), body? (a <style>, <script> or <title>'s text), css? } (css: the rules of a <style>,
 // parsed by the browser: { type: keyframes|font-face|import|style, name?, selector?, decls?, cssText?, stops? }; a style rule
 // is kept only when it sets a transition or animation property; a keyframes rule carries `stops`: [ { key (the
 // keyText: `from`, `50%`, `0%, 100%`), decls: [[property, value]] } ] in source order).
@@ -120,7 +120,7 @@ function readStamped( [ html, source ] ) {
 					rec.attrs.push( ...restored.get( c ) );
 					rec.restored = restored.get( c ).map( ( [ n ] ) => n );
 				}
-				if ( 'style' === tag || 'script' === tag ) {
+				if ( 'style' === tag || 'script' === tag || 'title' === tag ) {
 					rec.body = c.textContent;
 					rec.css = 'style' === tag ? cssOf( c.textContent ) : undefined;
 				}
@@ -242,7 +242,7 @@ export const holes = ( s ) => [ ...s.matchAll( /\{\{([\s\S]+?)\}\}/g ) ].map( ( 
 // (`sc-raw-table` → `table`): the runtime's own encodings.
 export const decode = ( name ) => ( name.startsWith( CAMEL ) ? name.slice( CAMEL.length ).replace( /-([a-z])/g, ( _, c ) => c.toUpperCase() ) : name );
 export const realTag = ( tag ) => ( tag.startsWith( 'sc-raw-' ) ? tag.slice( 7 ) : 'sc-helmet' === tag ? 'helmet' : tag );
-const isFontUrl = ( u ) => FONT_HOSTS.some( ( h ) => u.includes( `//${ h }/` ) ) || /\.(?:woff2?|ttf|otf|eot)(?:[?#]|$)/i.test( u );
+export const isFontUrl = ( u ) => FONT_HOSTS.some( ( h ) => u.includes( `//${ h }/` ) ) || /\.(?:woff2?|ttf|otf|eot)(?:[?#]|$)/i.test( u );
 
 // Template census rows of one draft (`source` from draftSources). `handlerOf(expression)` returns { method, value }
 // for a template event hole: the class method it wires (or null) and the renderVals value's node type (or null when

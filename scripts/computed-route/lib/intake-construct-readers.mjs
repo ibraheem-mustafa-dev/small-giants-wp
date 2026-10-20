@@ -5,9 +5,11 @@
 // membership (lib/skeleton-inventory.mjs::readInventory); a binding's rendered value reaches the consumer of its target
 // (text and styles through Fill, a link through its link decisions, a handler, ref or form attribute as its own
 // capability); renderVals keys and getters are read through the bindings and code that use them; a helmet script
-// through the constructs the census found in it; a link by what its address is.
+// through the constructs the census found in it; a link by what its address is; a helmet font by the families it loads
+// (the snapshot's self-hosted faces take them, lib/head-check.mjs::fontCheck).
 import { holes } from './intake-census-template.mjs';
 import { parseLogic, walkAst } from './intake-census-logic.mjs';
+import { fontUrlFamilies } from './intake-head.mjs';
 
 // Tags that make up the document rather than the page: the census reads them, the skeleton never proposes a block.
 const DOCUMENT_TAGS = new Set( [ 'helmet', 'html', 'head', 'body', 'base', 'meta', 'title', 'link', 'style', 'script', 'noscript' ] );
@@ -211,4 +213,23 @@ export function readLink( row ) {
 		throw new Error( `link at ${ row.draftId } has no address` );
 	}
 	return { href, kind, ...( rel ? { rel } : {} ) };
+}
+
+// A helmet font load: the families a font stylesheet or @import loads (with their weights), or an @font-face's family.
+// A load whose families cannot be read throws, so the census records it as a gap.
+export function readHelmetFont( row ) {
+	const via = row.detail?.via;
+	if ( '@font-face' === via ) {
+		const family = String( row.detail?.family ?? '' ).replace( /^['"]|['"]$/g, '' ).trim();
+		if ( ! family ) {
+			throw new Error( `@font-face at ${ row.draftId } names no family` );
+		}
+		return { via, families: [ { family, weights: [], italic: false } ], src: row.detail.src ?? null };
+	}
+	const href = String( row.detail?.href ?? '' );
+	const families = fontUrlFamilies( href );
+	if ( ! families.length ) {
+		throw new Error( `font ${ via } at ${ row.draftId } loads ${ JSON.stringify( href ) }, whose families are not read (Google Fonts URLs are)` );
+	}
+	return { via, href, families };
 }

@@ -16,6 +16,6 @@
 	"ref": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
 	"data-hook": { "module": "lib/intake-inventory.mjs", "fn": "readInventory" },
 	"helmet-script": { "module": "lib/intake-construct-readers.mjs", "fn": "readHelmetScript" },
-	"helmet-font": { "gap": "font capture is the snapshot extractor's (FR-33-18, Appendix B step 17)" },
+	"helmet-font": { "module": "lib/intake-construct-readers.mjs", "fn": "readHelmetFont" },
 	"link": { "module": "lib/intake-construct-readers.mjs", "fn": "readLink" }
 }
