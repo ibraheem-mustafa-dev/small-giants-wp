@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9215,
+    "row_count": 9217,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2023,6 +2023,8 @@
     "sgs/choice-flow-question::intro": "text-content",
     "sgs/choice-flow-question::introWidth": "layout",
     "sgs/choice-flow-question::layout": "layout",
+    "sgs/choice-flow-question::optionBadgeColour": "color",
+    "sgs/choice-flow-question::optionBadgeTextColour": "color",
     "sgs/choice-flow-question::optionDescriptionColour": "color",
     "sgs/choice-flow-question::optionDescriptionFontFamily": "typography",
     "sgs/choice-flow-question::optionDescriptionFontSize": "typography",
