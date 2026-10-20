@@ -44,7 +44,11 @@ export const MARKS = {
 		const re = PAGE_FIELDS[ m[ 1 ] ];
 		return re && ! re.test( m[ 2 ] ) ? `"${ m[ 2 ] }" is not a valid ${ m[ 1 ] }` : null;
 	} }, { value: 'drop' } ],
-	'palette-role': [ { value: 'accept' }, { shape: 'role:<slug>', re: /^role:(.+)$/, check: ( m ) => ( SLUG.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a slug` ) }, { value: 'one-off' } ],
+	'palette-role': [ { value: 'accept' }, { shape: 'role:<slug>[,<slug>...]', re: /^role:(.+)$/, check: ( m ) => {
+		// One draft colour can fill several slugs (Spec 48 FR-33-2: role:heading,accent-text,section-text); every part is a slug.
+		const bad = m[ 1 ].split( ',' ).map( ( s ) => s.trim() ).find( ( s ) => ! SLUG.test( s ) );
+		return undefined === bad ? null : `"${ bad }" is not a slug`;
+	} }, { value: 'one-off' } ],
 	'site-info': [ { value: 'accept' }, { shape: 'edit:<value>', re: /^edit:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the edited value is empty' ) }, { value: 'drop' } ],
 	flag: [ { value: 'accept-flagged' }, { value: 'not-flagged' } ],
 	'draft-defect': [ { value: 'accept' }, { value: 'render-wins' } ],

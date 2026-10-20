@@ -395,3 +395,17 @@ test( 'MUST FAIL: a review.md mark --apply-review would refuse, or one on a row 
 	assert.ok( ! wrong.carried.includes( a.rowId ), 'a row listed in another section is not carried' );
 	assert.match( wrong.refused.join( ' ' ), /listed in the .* section, but it is a/ );
 } );
+
+// Spec 48 FR-33-2: one draft colour can fill several slugs (role:heading,accent-text,section-text), each part a slug.
+test( 'MUST FAIL a palette mark may name several slugs, each one a slug, none empty', () => {
+	assert.equal( markProblem( 'palette-role', 'role:heading,accent-text,section-text' ), null );
+	assert.equal( markProblem( 'palette-role', 'role:heading, accent-text' ), null );
+	assert.equal( markProblem( 'palette-role', 'role:heading,Accent Text' ), '"Accent Text" is not a slug' );
+	assert.equal( markProblem( 'palette-role', 'role:heading,' ), '"" is not a slug' );
+	assert.equal( markProblem( 'palette-role', 'role:,heading' ), '"" is not a slug' );
+	const md = mark( renderReview( fixture() ), { accept: ROW_TYPES, rows: { 'palette:ink': 'role:text,accent-text' } } );
+	const r = applyReview( fixture(), md, { today: TODAY } );
+	assert.deepEqual( r.problems, [] );
+	assert.equal( r.intake.review.find( ( x ) => 'palette:ink' === x.rowId ).mark, 'role:text,accent-text' );
+	assert.deepEqual( schemaProblems( loadAjv(), SCHEMA, r.intake ), [] );
+} );

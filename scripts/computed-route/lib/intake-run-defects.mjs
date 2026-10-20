@@ -18,6 +18,9 @@ const numberRows = ( rows ) => {
 };
 const gapKey = ( g ) => `${ g.construct }\u0000${ g.draftId }\u0000${ g.error }`;
 
+// A pass whose side-by-side units disagreed ran everything again one at a time (lib/intake-defects.mjs::unreachedDefects).
+const fellBack = ( r ) => ( r.fellBack ? '; the side-by-side copies disagreed, so it ran again one at a time' : '' );
+
 // o: { folder, entry, harPath, census ({ rows, sources }), visits (census visit spellings, entry first), widths, flags,
 // firstPass (visits in pass A, default 3), log }.
 export async function twoPassDefects( { folder, entry, harPath, census, visits, widths, flags = null, firstPass = 3, log = () => {} } ) {
@@ -32,11 +35,11 @@ export async function twoPassDefects( { folder, entry, harPath, census, visits, 
 	const unreached = census.rows.filter( ( r ) => true === r.unreached );
 	const retried = ( g ) => unreached.filter( ( r ) => r.kind === g.construct && r.draftId === g.draftId && /forcing was incomplete/.test( g.error ) );
 	const only = new Set( [ ...a.rows.map( ( r ) => r.censusId ), ...a.gaps.flatMap( retried ).map( ( r ) => r.id ) ] );
-	log( `  defects pass A: ${ visits.slice( 0, firstPass ).length } visits, ${ a.rows.length } defects and ${ only.size - a.rows.length } incomplete left for pass B (${ ( msA / 1000 ).toFixed( 1 ) }s)` );
+	log( `  defects pass A: ${ visits.slice( 0, firstPass ).length } visits, ${ a.rows.length } defects and ${ only.size - a.rows.length } incomplete left for pass B (${ ( msA / 1000 ).toFixed( 1 ) }s${ fellBack( a ) })` );
 	const t1 = Date.now();
 	const b = await unreachedDefects( { ...base, visits, only } );
 	const msB = Date.now() - t1;
-	log( `  defects pass B: ${ visits.length } visits, ${ only.size } candidates, ${ b.rows.length } defects (${ ( msB / 1000 ).toFixed( 1 ) }s)` );
+	log( `  defects pass B: ${ visits.length } visits, ${ only.size } candidates, ${ b.rows.length } defects (${ ( msB / 1000 ).toFixed( 1 ) }s${ fellBack( b ) })` );
 	const inOnly = ( x ) => only.has( x.censusId );
 	const keptA = a.gaps.filter( ( g ) => ! retried( g ).some( ( r ) => only.has( r.id ) ) );
 	const bind = bindingVerdicts( bound, reads );

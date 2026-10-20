@@ -308,6 +308,8 @@ test( 'MUST FAIL (FR-48-28): visits and widths run side by side give the one-at-
 		assert.equal( one.units, 3, 'the one-at-a-time run: one page group at three widths' );
 		assert.equal( side.units, 6, 'two slices of the four visits at each of three widths' );
 		assert.equal( both.units, 6 );
+		assert.equal( side.fellBack, undefined, 'agreeing copies are merged, not run again one at a time' );
+		assert.equal( both.fellBack, undefined );
 		assert.equal( pick( side ), pick( one ), 'visit slices give the same verdicts' );
 		assert.equal( pick( both ), pick( one ), 'slices and widths together give the same verdicts' );
 	} finally {

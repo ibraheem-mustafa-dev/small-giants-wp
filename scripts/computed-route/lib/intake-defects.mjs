@@ -200,6 +200,7 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 			}
 			out.units = unitList.length;
 		} else {
+			out.fellBack = true;
 			await sequential();
 		}
 	}
