@@ -69,7 +69,7 @@ def test_an_unreadable_readme_still_gets_pass_b_and_the_accent_sets(draft_withou
         assert pal[slug]["color"] == colour and pal[slug]["_source"] == "declared"
         assert "advisory" not in pal[slug]                    # confirmed by the rendered --acc
         assert pal[slug]["_baseline_color"] == base[slug]
-    assert len(pal) == 21                                     # overlay only: nothing appended, none lost
+    assert set(pal) == set(base)                              # overlay only: nothing appended, none lost
 
 
 def test_with_the_readme_present_the_declared_values_win_over_pass_b():

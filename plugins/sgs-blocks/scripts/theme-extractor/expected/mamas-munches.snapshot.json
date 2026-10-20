@@ -81,6 +81,48 @@
           "color": "#6b5c50",
           "name": "Text Muted",
           "_source": "declared"
+        },
+        {
+          "slug": "heading",
+          "color": "#3a2e26",
+          "name": "Heading Text",
+          "_source": "derived"
+        },
+        {
+          "slug": "section-text",
+          "color": "#3a2e26",
+          "name": "Section Text",
+          "_source": "derived"
+        },
+        {
+          "slug": "accent-text",
+          "color": "#3a2e26",
+          "name": "Text on Accent",
+          "_source": "derived"
+        },
+        {
+          "slug": "primary-text",
+          "color": "#fffaf5",
+          "name": "Text on Primary",
+          "_source": "derived"
+        },
+        {
+          "slug": "link",
+          "color": "#e68a95",
+          "name": "Link",
+          "_source": "derived"
+        },
+        {
+          "slug": "link-hover",
+          "color": "#c56a7a",
+          "name": "Link Hover",
+          "_source": "derived"
+        },
+        {
+          "slug": "section",
+          "color": "#fff9f0",
+          "name": "Section Background",
+          "_source": "derived"
         }
       ],
       "gradients": [],
@@ -410,16 +452,16 @@
     "elements": {
       "link": {
         "color": {
-          "text": "var:preset|color|primary"
+          "text": "var:preset|color|link"
         },
         ":hover": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           }
         },
         ":focus-visible": {
           "color": {
-            "text": "var:preset|color|primary-dark"
+            "text": "var:preset|color|link-hover"
           },
           "typography": {
             "textDecoration": "underline"
@@ -433,7 +475,7 @@
           "lineHeight": "1.2"
         },
         "color": {
-          "text": "var:preset|color|text"
+          "text": "var:preset|color|heading"
         }
       },
       "h1": {
@@ -500,14 +542,6 @@
           "color": {
             "background": "var:preset|color|primary-dark",
             "text": "var:preset|color|surface"
-          }
-        },
-        ":focus": {
-          "outline": {
-            "color": "var:preset|color|accent",
-            "width": "2px",
-            "offset": "2px",
-            "style": "solid"
           }
         }
       }

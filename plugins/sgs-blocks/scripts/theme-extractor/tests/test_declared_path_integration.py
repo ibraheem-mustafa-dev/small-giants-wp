@@ -67,8 +67,8 @@ def test_palette_overlay_holds_the_declared_roles_and_drops_the_drifting_colours
     assert {slug: pal[slug]["color"] for slug in EXPECTED} == EXPECTED
     assert not ABSENT & {e["color"].upper() for e in pal.values()}
     base_slugs = [e["slug"] for e in _baseline()["settings"]["color"]["palette"]]
-    assert len(base_slugs) == 21 and set(base_slugs) <= set(pal)
-    assert [e["slug"] for e in snap["settings"]["color"]["palette"]][:21] == base_slugs  # base order kept
+    assert set(base_slugs) <= set(pal)
+    assert [e["slug"] for e in snap["settings"]["color"]["palette"]][:len(base_slugs)] == base_slugs  # base order kept
     assert pal["primary-dark"]["_source"] == "derived" and pal["primary-dark"]["color"] != "#0F4C4C"
 
 

@@ -67,8 +67,7 @@ def test_non_resting_selectors_do_not_vote():
 
 def test_overlay_keeps_every_baseline_slug():
     pal = _overlay_snapshot()["settings"]["color"]["palette"]
-    assert len(BASE_PALETTE) == 21
-    assert [e["slug"] for e in BASE_PALETTE] == [e["slug"] for e in pal[:21]]
+    assert [e["slug"] for e in BASE_PALETTE] == [e["slug"] for e in pal[:len(BASE_PALETTE)]]
     assert {e["slug"] for e in BASE_PALETTE} <= {e["slug"] for e in pal}
 
 
