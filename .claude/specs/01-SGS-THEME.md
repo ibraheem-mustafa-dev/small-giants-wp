@@ -61,7 +61,7 @@ Directory-level map of `theme/sgs-theme/` (the files themselves: `git ls-files t
 
 There are no WP style variations: per-client palette and typography overrides live at `sites/<client>/theme-snapshot.json` and are pushed to each live site's `theme.json` via `push-theme-snapshot.py`. The framework `theme.json` is the SGS default only. Requires **WordPress 7.0+** for native pseudo-element support in `styles.elements.button` and the AI Connectors API.
 
-The authoritative token set is `theme/sgs-theme/theme.json` (read it; never cache a copy here). Shape rules that hold: `version` 3; `defaultPalette`, `defaultGradients` and `defaultFontSizes` false; `color.custom`, `customGradient`, `customDuotone` and `spacing.customSpacingSize` true so controls accept raw values; the numeric spacing slug ladder `10` to `80`; per-client values come from `sites/<client>/theme-snapshot.json`.
+The authoritative token set is `theme/sgs-theme/theme.json` (read it; never cache a copy here). Shape rules that hold: `version` 3; `defaultPalette`, `defaultGradients`, `defaultDuotone` and `defaultFontSizes` false (the first three are enforced in every snapshot by `check-snapshot-palette-roster.py`); `color.custom`, `customGradient`, `customDuotone` and `spacing.customSpacingSize` true so controls accept raw values; the numeric spacing slug ladder `10` to `80`; per-client values come from `sites/<client>/theme-snapshot.json`.
 
 ### Type scale
 
