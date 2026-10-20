@@ -8,10 +8,7 @@
           "slug": "primary",
           "color": "#a8404f",
           "name": "Primary",
-          "_source": "derived",
-          "confidence": 0.8,
-          "advisory": true,
-          "_baseline_color": "#1F7A7A"
+          "_source": "confirmed"
         },
         {
           "slug": "primary-text",
@@ -77,10 +74,7 @@
           "slug": "surface",
           "color": "#fbf3dc",
           "name": "Surface",
-          "_source": "derived",
-          "confidence": 0.95,
-          "advisory": true,
-          "_baseline_color": "#FAF9F6"
+          "_source": "confirmed"
         },
         {
           "slug": "surface-alt",
@@ -91,10 +85,7 @@
           "slug": "text",
           "color": "#3a2a22",
           "name": "Text",
-          "_source": "derived",
-          "confidence": 0.95,
-          "advisory": true,
-          "_baseline_color": "#1A202C"
+          "_source": "confirmed"
         },
         {
           "slug": "text-muted",
