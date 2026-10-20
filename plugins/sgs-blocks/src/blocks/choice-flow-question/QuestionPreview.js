@@ -81,3 +81,30 @@ export function OptionDescriptionPreview( { description, colour } ) {
 		</span>
 	);
 }
+
+/**
+ * One option's badge tag, in the class render.php prints, cut at the same 20 characters, painted with the block's
+ * badge fill and text colours (the stylesheet's own paint shows for an empty colour).
+ *
+ * @param {Object} props
+ * @param {string} props.badge      The option's badge text.
+ * @param {string} props.fill       The `optionBadgeColour` value.
+ * @param {string} props.textColour The `optionBadgeTextColour` value.
+ * @return {JSX.Element|null} The span, or null for a blank badge.
+ */
+export function OptionBadgePreview( { badge, fill, textColour } ) {
+	const [ palette ] = useSettings( 'color.palette' );
+	if ( ! badge ) {
+		return null;
+	}
+	const fillPaint = textPaintPreview( fill, '', palette );
+	const style = { ...textPaintPreview( textColour, '', palette ), position: 'static', marginLeft: '8px' };
+	if ( fillPaint.color ) {
+		style.backgroundColor = fillPaint.color;
+	}
+	return (
+		<span className="sgs-choice-flow-question__option-badge" style={ style }>
+			{ Array.from( badge ).slice( 0, 20 ).join( '' ) }
+		</span>
+	);
+}

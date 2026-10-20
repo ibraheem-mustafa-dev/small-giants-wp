@@ -1,6 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import QuestionPreview, { OptionDescriptionPreview, OptionDescriptionStyle } from './QuestionPreview';
+import QuestionPreview, { OptionBadgePreview, OptionDescriptionPreview, OptionDescriptionStyle } from './QuestionPreview';
 import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
@@ -385,6 +385,11 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							<OptionDescriptionPreview
 								description={ option.description }
 								colour={ attributes.optionDescriptionColour }
+							/>
+							<OptionBadgePreview
+								badge={ option.badge }
+								fill={ attributes.optionBadgeColour }
+								textColour={ attributes.optionBadgeTextColour }
 							/>
 						</li>
 					) ) }
