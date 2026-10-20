@@ -1,11 +1,24 @@
 // The checks for the draft's head (Spec 48 FR-48-84), on what lib/intake-head.mjs::readHead read:
-// - fontCheck: every family the draft loads has a family in the client's theme snapshot that serves it from the site
+// - fontCheck: every family the draft loads (its design system's tokens/typography.css when the export has one, read
+//   by tokenFonts, else its head's font loads) has a family in the client's theme snapshot that serves it from the site
 //   (a self-hosted `fontFace` covering each loaded weight and style, or `google: true`, which
 //   includes/class-google-fonts-self-host.php downloads to the server);
 // - headCheck: the live page's head holds what the draft's head asks for: one charset, the draft's viewport, a title
 //   naming the site, and a description when the draft gives one.
 
+import { fontUrlFamilies } from './intake-head.mjs';
+
 const norm = ( s ) => String( s ?? '' ).replace( /^['"]|['"]$/g, '' ).trim().toLowerCase();
+
+// The font loads a design system's tokens/typography.css declares, in readHead's `fonts` shape: each Google Fonts
+// @import with its families and weights (an address runs to its closing quote or ")", so the ";" between weights
+// never cuts it). The design system's own declaration outranks the head's links, which can carry extras.
+export function tokenFonts( css, file = 'tokens/typography.css' ) {
+	return [ ...String( css ).matchAll( /@import\s+(?:url\(\s*(?:(['"])(.*?)\1|([^)\s]+))\s*\)|(['"])(.*?)\4)/gi ) ]
+		.map( ( m ) => m[ 2 ] || m[ 3 ] || m[ 5 ] )
+		.map( ( href ) => ( { via: '@import', href, families: fontUrlFamilies( href ), draftId: file } ) )
+		.filter( ( f ) => f.families.length );
+}
 const firstFamily = ( stack ) => norm( String( stack ?? '' ).split( ',' )[ 0 ] );
 
 // The families the draft loads, merged by name: [ { family, weights, italic, draftIds } ].

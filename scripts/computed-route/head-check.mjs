@@ -1,5 +1,6 @@
 // The draft head check (Spec 48 FR-48-84): reads every entry draft's head through the census and checks it against
-// the client's theme snapshot (fonts) and, given a page address, the live page's head.
+// the client's theme snapshot (fonts: the families tokens/typography.css declares when the export has one, else the
+// head's font loads) and, given a page address, the live page's head.
 //   node head-check.mjs <client> [--repo <root>] [--url <page address> [--site-title <confirmed title>]]
 // Prints each problem; exits 1 when there is one.
 import fs from 'fs';
@@ -8,7 +9,7 @@ import { fileURLToPath } from 'url';
 import { staticCensus } from './lib/intake-census.mjs';
 import { loadExport } from './lib/intake-routing.mjs';
 import { readHead } from './lib/intake-head.mjs';
-import { fontCheck, headCheck, loadedFamilies } from './lib/head-check.mjs';
+import { fontCheck, headCheck, loadedFamilies, tokenFonts } from './lib/head-check.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -37,8 +38,13 @@ for ( const entry of loadExport( folder ).entries ) {
 console.log( `fonts loaded: ${ loadedFamilies( head ).map( ( f ) => `${ f.family } ${ f.weights.join( '/' ) }${ f.italic ? ' italic' : '' }` ).join( '; ' ) || 'none' }` );
 console.log( `titles: ${ head.titles.map( ( t ) => t.text ).join( ' | ' ) || 'none' }` );
 const problems = [];
+const tokensFile = path.join( folder, 'tokens', 'typography.css' );
+const declared = fs.existsSync( tokensFile ) ? { ...head, fonts: tokenFonts( fs.readFileSync( tokensFile, 'utf8' ) ) } : head;
+if ( declared !== head ) {
+	console.log( `fonts declared by tokens/typography.css: ${ loadedFamilies( declared ).map( ( f ) => `${ f.family } ${ f.weights.join( '/' ) }${ f.italic ? ' italic' : '' }` ).join( '; ' ) }` );
+}
 if ( fs.existsSync( snapshotFile ) ) {
-	problems.push( ...fontCheck( head, JSON.parse( fs.readFileSync( snapshotFile, 'utf8' ) ) ) );
+	problems.push( ...fontCheck( declared, JSON.parse( fs.readFileSync( snapshotFile, 'utf8' ) ) ) );
 } else {
 	problems.push( `no theme snapshot at ${ snapshotFile }` );
 }

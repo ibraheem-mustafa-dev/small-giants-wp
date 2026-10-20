@@ -130,3 +130,60 @@ def test_no_census_is_a_logged_gap_not_a_silent_pass():
 def test_non_https_or_lookalike_host_is_not_google():
     evil = "https://fonts.googleapis.com.evil.example/css2?family=Roboto"
     assert used_fonts.loaded_families([evil], "") == {}
+
+
+# The design system's tokens/typography.css: a family its --*font* properties declare is added even when the
+# measured render never paints it (Indus's Geist Mono paints only in the mega menu, drawer and timeline numbers).
+TOKENS = ('@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Outfit:wght@400'
+          '&family=Geist+Mono:wght@400;500&display=swap");\n'
+          ':root{--font-heading:"Montserrat",sans-serif;--font-body:Outfit,sans-serif;--font-mono:"Geist Mono",monospace;'
+          '--font-brand:"Brand Sans",serif;--font-size-body:16px;--font-alias:var(--font-body)}')
+
+
+def _draft(tmp_path, css=TOKENS):
+    (tmp_path / "tokens").mkdir()
+    (tmp_path / "tokens" / "typography.css").write_text(css, encoding="utf-8")
+    return tmp_path
+
+
+def test_import_urls_keep_a_css2_address_whole():
+    css = ('@import url(https://fonts.googleapis.com/css2?family=A:wght@400;500&family=B);'
+           '@import url("https://x.test/a;b.css"); @import "y.css"; @import url( \'z.css\' );')
+    assert used_fonts.import_urls(css) == [
+        "https://fonts.googleapis.com/css2?family=A:wght@400;500&family=B", "https://x.test/a;b.css", "y.css", "z.css"]
+    assert set(used_fonts.loaded_families([], css)) == {"a", "b"}, "B after the ';' between weights is loaded too"
+
+
+def test_token_families_reads_the_declared_font_roles(tmp_path):
+    fams, imports = used_fonts.token_families(_draft(tmp_path))
+    assert [(f["name"], f["var"], f["google"]) for f in fams] == [
+        ("Montserrat", "--font-heading", True), ("Outfit", "--font-body", True),
+        ("Geist Mono", "--font-mono", True), ("Brand Sans", "--font-brand", False)]
+    assert len(imports) == 1
+    assert used_fonts.token_families(tmp_path / "missing") == ([], [])
+    assert used_fonts.token_families(None) == ([], [])
+
+
+def test_a_token_declared_family_no_entry_names_is_added_and_self_hosted(tmp_path):
+    snap, trace, resolved = _snap(), [], []
+
+    def resolve(name):
+        resolved.append(name)
+        return [{"fontFamily": name, "src": [f"file:./assets/fonts/{used_fonts.slugify(name)}/x.woff2"]}]
+
+    used_fonts.add_token_families(snap, _draft(tmp_path), trace, resolve, set())
+    fams = {f["slug"]: f for f in snap["settings"]["typography"]["fontFamilies"]}
+    assert fams["geist-mono"]["fontFace"][0]["fontFamily"] == "Geist Mono"
+    assert fams["geist-mono"]["_source"] == "tokens"
+    assert fams["montserrat"]["fontFamily"] == "'Montserrat'"
+    assert "outfit" not in fams, "the body slot already names Outfit"
+    assert resolved == ["Montserrat", "Geist Mono"]
+    assert "brand-sans" not in fams and any(t["kind"] == "gap" and t["what"] == "fontFamilies:Brand Sans" for t in trace)
+    assert [f["slug"] for f in snap["settings"]["typography"]["fontFamilies"][:3]] == ["body", "heading", "display"]
+
+
+def test_negative_without_a_tokens_file_nothing_is_added(tmp_path):
+    snap, trace = _snap(), []
+    used_fonts.add_token_families(snap, tmp_path, trace, lambda n: [{"fontFamily": n}], set())
+    assert len(snap["settings"]["typography"]["fontFamilies"]) == 3
+    assert trace == []

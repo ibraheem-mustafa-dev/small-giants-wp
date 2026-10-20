@@ -256,6 +256,24 @@
             "normal"
           ],
           "_source": "rendered"
+        },
+        {
+          "slug": "geist-mono",
+          "name": "Geist Mono",
+          "fontFamily": "'Geist Mono'",
+          "google": true,
+          "_source": "tokens",
+          "fontFace": [
+            {
+              "fontFamily": "Geist Mono",
+              "fontWeight": "100 900",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/geist-mono/geist-mono-variable-latin.woff2"
+              ]
+            }
+          ]
         }
       ],
       "fontSizes": [

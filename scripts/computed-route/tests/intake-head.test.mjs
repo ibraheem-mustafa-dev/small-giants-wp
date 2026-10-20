@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fontUrlFamilies, readHead, headMissing } from '../lib/intake-head.mjs';
-import { fontCheck, headCheck, pageHead } from '../lib/head-check.mjs';
+import { fontCheck, headCheck, pageHead, tokenFonts } from '../lib/head-check.mjs';
 import { readHelmetFont } from '../lib/intake-construct-readers.mjs';
 
 const GOOGLE = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Source+Sans+3:ital,wght@0,400;1,400&display=swap';
@@ -97,4 +97,12 @@ test( 'MUST FAIL: the live head check refuses a page without the draft\'s viewpo
 	const described = census( [ ...DRAFT.sources[ 0 ].stamped.elements, el( 10, 'meta', [ [ 'name', 'description' ], [ 'content', 'Fresh bread daily' ] ] ) ] );
 	assert.match( headCheck( readHead( described ), PAGE ).join( '\n' ), /prints none/ );
 	assert.deepEqual( headCheck( readHead( described ), PAGE.replace( '</head>', '<meta name="description" content="Fresh bread daily"></head>' ) ), [] );
+} );
+
+test( 'MUST FAIL: the design system\'s tokens/typography.css is the font declaration: its families and weights, no italic it does not load', () => {
+	const css = '@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Source+Sans+3:wght@400;500&family=Geist+Mono:wght@400;500&display=swap");\n:root{--font-mono:"Geist Mono",monospace}';
+	const declared = { fonts: tokenFonts( css ) };
+	assert.deepEqual( declared.fonts[ 0 ].families.map( ( f ) => f.family ), [ 'Montserrat', 'Source Sans 3', 'Geist Mono' ], 'the ";" between weights does not cut the address' );
+	assert.deepEqual( fontCheck( declared, SNAPSHOT ), [ 'Geist Mono (loaded at tokens/typography.css) has no font family in the theme snapshot' ] );
+	assert.deepEqual( tokenFonts( '@import url(https://use.typekit.net/x.css); body{}' ), [] );
 } );

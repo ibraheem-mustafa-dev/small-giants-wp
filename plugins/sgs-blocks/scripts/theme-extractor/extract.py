@@ -474,12 +474,17 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     # FONT FAMILIES + font loading (FR-33-14 — every declared family must resolve to a working
     # self-hosted @font-face, whether already bundled in the framework or introduced fresh by
     # this draft)
-    links = presets_mod.font_links(html)
+    # The design system's tokens/typography.css imports count as the draft's font links too.
+    links = presets_mod.font_links(html) + [u for u in used_fonts.token_families(draft_dir)[1]
+                                            if u not in presets_mod.font_links(html)]
     _overlay_font_families(snap, facts, links, trace, repo)
     # FR-33-18 — every family the draft loads AND renders gets its own entry beside the role slots.
     bundled = _bundled_faces_by_family(baseline)
     used_fonts.add_rendered_families(
         snap, facts, links, css, trace,
+        lambda name: _resolve_family_face(name, bundled, links, repo, trace, facts), set(bundled))
+    used_fonts.add_token_families(
+        snap, draft_dir, trace,
         lambda name: _resolve_family_face(name, bundled, links, repo, trace, facts), set(bundled))
 
     # BUTTON PRESETS (FR-33-4 open bag) — MERGED onto the framework baseline, never replaced.

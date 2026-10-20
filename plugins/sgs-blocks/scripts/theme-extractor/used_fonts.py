@@ -14,7 +14,11 @@ Two tests, BOTH required, so the entry list is neither padded nor lossy:
      it is the first LOADED name in that element's stack and no generic family precedes it (a generic
      such as ``sans-serif`` always resolves, so nothing after it can paint).
 
-A family that is loaded but never rendered is NOT added (the negative control in the tests). A family
+A family that is loaded but never rendered is NOT added (the negative control in the tests), unless the
+draft's design system declares it: ``add_token_families`` adds every family the export's
+``tokens/typography.css`` names in a ``--*font*`` custom property (the draft's own font roles, such as
+``--font-mono``), because a family the design system declares may paint only on a surface the measured
+render never opens (a mega menu, a drawer). A family
 that renders but is neither a Google font nor already bundled by the framework is reported as a gap
 and not added: the extractor has no file to self-host, and a name with nothing loading it is the
 exact silent-fallback bug the font-face gate (``extract.py::validate_font_faces``) fails the run
@@ -25,6 +29,7 @@ never fetches or writes anything itself.
 """
 from __future__ import annotations
 
+import pathlib
 import re
 import urllib.parse
 
@@ -40,7 +45,14 @@ _GENERIC = {
 }
 
 _FONT_FACE = re.compile(r"@font-face\s*\{([^}]*)\}", re.I)
-_IMPORT = re.compile(r"""@import\s+(?:url\()?\s*['"]?([^'")\s;]+)""", re.I)
+# An @import address: a quoted one runs to its closing quote and an unquoted url() to its ")", so a CSS2
+# address's ";" between weights (``wght@500;600&family=...``) never cuts it short.
+_IMPORT = re.compile(r"""@import\s+(?:url\(\s*(?:(['"])(?P<q>.*?)\1|(?P<u>[^)\s]+))\s*\)|(['"])(?P<s>.*?)\4)""", re.I)
+
+
+def import_urls(css: str) -> list:
+    """Every @import address in a stylesheet, in order."""
+    return [m.group("q") or m.group("u") or m.group("s") for m in _IMPORT.finditer(css or "")]
 
 
 def _host(url: str) -> str | None:
@@ -85,7 +97,7 @@ def loaded_families(links: list, css: str) -> dict:
     to load: Google CSS links / @imports, and draft @font-face rules (Google when the rule's src is
     on fonts.gstatic.com). Insertion order is the draft's declaration order."""
     out: dict = {}
-    urls = list(links) + [m.group(1) for m in _IMPORT.finditer(css or "")]
+    urls = list(links) + import_urls(css)
     for url in urls:
         if _host(url) in GOOGLE_CSS_HOSTS:
             for name in link_families(url):
@@ -197,3 +209,58 @@ def add_rendered_families(snap: dict, facts: dict, links: list, css: str, trace:
                       "reason": "loaded by the draft and rendered on "
                                 f"{u['count']} element(s) — FR-33-18", "fontFamily": stack,
                       "weights": ",".join(meta["fontWeights"]), "google": info["google"]})
+
+
+_NOT_FAMILY = {"normal", "italic", "oblique", "bold", "bolder", "lighter"}
+_FONT_VAR = re.compile(r"(--[a-z0-9-]*font[a-z0-9-]*)\s*:\s*([^;}]+)", re.I)
+
+
+def token_families(draft_dir) -> tuple[list, list]:
+    """The families the export's ``tokens/typography.css`` declares, and the Google Fonts URLs it imports:
+    ``([{"name", "var", "google"}], [url])``. A family is declared when a ``--*font*`` custom property's
+    stack names it first; it is ``google`` when one of the file's ``@import`` URLs loads it. No file: ``([], [])``."""
+    path = pathlib.Path(draft_dir) / "tokens" / "typography.css" if draft_dir else None
+    if not path or not path.is_file():
+        return [], []
+    css = path.read_text(encoding="utf-8")
+    imports = [u for u in import_urls(css) if _host(u) in GOOGLE_CSS_HOSTS]
+    loaded = {n.lower() for u in imports for n in link_families(u)}
+    out: list = []
+    for var, stack in _FONT_VAR.findall(css):
+        names = stack_names(stack)
+        # A size, weight, style or alias property (--font-size-body: 16px, --font-weight: 600,
+        # --font-alias: var(--font-body)) names no family.
+        if (not names or names[0].lower() in _GENERIC | _NOT_FAMILY or "(" in names[0]
+                or re.match(r"^[\d.]", names[0])):
+            continue
+        if not any(f["name"].lower() == names[0].lower() for f in out):
+            out.append({"name": names[0], "var": var, "google": names[0].lower() in loaded})
+    return out, imports
+
+
+def add_token_families(snap: dict, draft_dir, trace: list, resolve_face, bundled: set) -> None:
+    """Append one ``fontFamilies`` entry per family ``tokens/typography.css`` declares that no entry names
+    yet (role slots are never modified), self-hosted through ``resolve_face(name)``. A declared family that
+    is neither imported from Google Fonts nor bundled by the framework is a gap: no file to self-host."""
+    declared, _imports = token_families(draft_dir)
+    fams = snap.setdefault("settings", {}).setdefault("typography", {}).setdefault("fontFamilies", [])
+    for fam in declared:
+        name, key = fam["name"], fam["name"].lower()
+        if any(_clean(stack_names(f.get("fontFamily", ""))[0] if f.get("fontFamily") else "").lower() == key
+               or _clean(f.get("name", "")).lower() == key for f in fams):
+            continue
+        if not fam["google"] and key not in bundled:
+            trace.append({"kind": "gap", "what": f"fontFamilies:{name}",
+                          "reason": f"declared by tokens/typography.css ({fam['var']}) but neither imported from "
+                                    "Google Fonts nor bundled by the framework: no file to self-host, so not added"})
+            continue
+        slug = slugify(name)
+        if slug in ("body", "heading", "display"):
+            slug = f"{slug}-font"
+        entry = {"slug": slug, "name": name, "fontFamily": f"'{name}'", "google": fam["google"], "_source": "tokens"}
+        face = resolve_face(name)
+        if face:
+            entry["fontFace"] = face
+        fams.append(entry)
+        trace.append({"kind": "font-family", "what": f"fontFamilies:{slug}",
+                      "reason": f"declared by the design system's tokens/typography.css ({fam['var']})"})
