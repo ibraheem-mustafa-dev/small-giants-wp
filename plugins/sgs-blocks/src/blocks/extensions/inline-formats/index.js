@@ -112,9 +112,14 @@ function InlinePhotoEdit( {
 	contentRef,
 } ) {
 	const inSgsBlock = useInSgsBlock();
+	// The photo selection the visitor closed the popover on; selecting a photo anywhere else opens it again.
+	const [ closedAt, setClosedAt ] = useState( null );
 	if ( ! inSgsBlock ) {
 		return null;
 	}
+	const selection = `${ photoId( activeObjectAttributes ) ?? '' }-${
+		value.start
+	}`;
 	return (
 		<MediaUploadCheck>
 			<MediaUpload
@@ -134,9 +139,9 @@ function InlinePhotoEdit( {
 							isActive={ isObjectActive }
 							onClick={ open }
 						/>
-						{ isObjectActive && (
+						{ isObjectActive && closedAt !== selection && (
 							<PhotoPopover
-								key={ `${ photoId( activeObjectAttributes ) ?? '' }-${ value.start }` }
+								key={ selection }
 								value={ value }
 								onChange={ onChange }
 								settings={ inlinePhotoFormat }
@@ -145,6 +150,10 @@ function InlinePhotoEdit( {
 									activeObjectAttributes
 								}
 								onReplace={ open }
+								onClose={ () => {
+									setClosedAt( selection );
+									contentRef.current?.focus();
+								} }
 							/>
 						) }
 					</>

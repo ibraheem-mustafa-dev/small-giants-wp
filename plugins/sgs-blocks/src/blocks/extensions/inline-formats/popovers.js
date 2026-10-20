@@ -232,6 +232,7 @@ export function HighlightPopover( {
  * @param {Object}   props.contentRef             The editable element.
  * @param {Object}   props.activeObjectAttributes The photo's attributes.
  * @param {Function} props.onReplace              Opens the media library to replace the photo.
+ * @param {Function} props.onClose                Closes the popover (Escape, or a click outside it).
  */
 export function PhotoPopover( {
 	value,
@@ -240,6 +241,7 @@ export function PhotoPopover( {
 	contentRef,
 	activeObjectAttributes,
 	onReplace,
+	onClose,
 } ) {
 	const anchor = useAnchor( {
 		editableContentElement: contentRef.current,
@@ -252,6 +254,7 @@ export function PhotoPopover( {
 		<Popover
 			anchor={ anchor }
 			placement="bottom"
+			onClose={ onClose }
 			focusOnMount={ false }
 			className="sgs-inline-format-popover"
 		>

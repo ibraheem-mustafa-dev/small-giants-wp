@@ -46,6 +46,19 @@ jest.mock( '@wordpress/block-editor', () => {
 
 jest.mock( '../../src/components/DesignTokenPicker', () => ( { __esModule: true, default: () => null } ) );
 
+// The shared Popover mock drops its props; this one records them, so a test can press its Escape (onClose).
+const mockPopovers = [];
+jest.mock( '@wordpress/components', () => {
+	const R = require( 'react' );
+	return {
+		...jest.requireActual( './__mocks__/@wordpress/components.js' ),
+		Popover: ( props ) => {
+			mockPopovers.push( props );
+			return R.createElement( 'div', { 'data-testid': 'Popover' }, props.children );
+		},
+	};
+} );
+
 let mockSelectedBlockName = 'sgs/heading';
 jest.mock( '@wordpress/data', () => ( {
 	__esModule: true,
@@ -201,5 +214,41 @@ describe( 'toolbar controls show only in SGS blocks', () => {
 	it( 'the module exports the two settings objects it registers', () => {
 		expect( inlineFormats.highlightFormat ).toBe( settingsOf( 'sgs/highlight' ) );
 		expect( inlineFormats.inlinePhotoFormat ).toBe( settingsOf( 'sgs/inline-photo' ) );
+	} );
+} );
+
+describe( 'the photo popover closes from the keyboard', () => {
+	function renderPhoto( start, focus ) {
+		mockSelectedBlockName = 'sgs/heading';
+		const container = document.createElement( 'div' );
+		document.body.appendChild( container );
+		const root = createRoot( container );
+		const props = ( at ) => ( {
+			value: { text: 'ab￼cd', formats: [], start: at, end: at + 1 },
+			onChange: jest.fn(),
+			isObjectActive: true,
+			activeObjectAttributes: { className: 'sgs-inline-photo wp-image-23', url: 'x.jpg', alt: '' },
+			contentRef: { current: { focus } },
+		} );
+		const draw = ( at ) => act( () => root.render( React.createElement( settingsOf( 'sgs/inline-photo' ).edit, props( at ) ) ) );
+		draw( start );
+		return { container, root, draw };
+	}
+	const open = ( container ) => null !== container.querySelector( '[data-testid="Popover"]' );
+
+	it( 'Escape (onClose) closes it and returns focus to the text; a new photo selection opens it again', () => {
+		const focus = jest.fn();
+		const { container, root, draw } = renderPhoto( 2, focus );
+		expect( open( container ) ).toBe( true );
+		const onClose = mockPopovers[ mockPopovers.length - 1 ].onClose;
+		expect( typeof onClose ).toBe( 'function' );
+		act( () => onClose() );
+		expect( open( container ) ).toBe( false );
+		expect( focus ).toHaveBeenCalled();
+		draw( 2 );
+		expect( open( container ) ).toBe( false );
+		draw( 3 );
+		expect( open( container ) ).toBe( true );
+		act( () => root.unmount() );
 	} );
 } );
