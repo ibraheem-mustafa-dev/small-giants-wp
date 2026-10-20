@@ -65,7 +65,7 @@ def css_vocabulary(db_props: "frozenset[str]", plugin_root: Path, iter_rule_bloc
         except OSError:
             continue
         for _selector, body in iter_rule_blocks(text):
-            declared.update(re.findall(r"(?:^|;)\s*([a-z][a-z-]*[a-z])\s*:", body))
+            declared.update(re.findall(r"(?:^|;)\s*(-?[a-z][a-z-]*[a-z])\s*:", body))
     known = plugin_root / "node_modules" / "known-css-properties" / "data" / "all.json"
     vocab: set[str] = set(db_props)
     if known.is_file():
@@ -78,7 +78,7 @@ def css_vocabulary(db_props: "frozenset[str]", plugin_root: Path, iter_rule_bloc
         vocab |= listed if listed else declared
     else:
         vocab |= declared
-    return frozenset(p for p in vocab if re.fullmatch(r"[a-z][a-z-]*[a-z]", p))
+    return frozenset(p for p in vocab if re.fullmatch(r"-?[a-z][a-z-]*[a-z]", p))
 
 
 def spec_array_props(
@@ -111,7 +111,7 @@ _FRAGMENT_RE = re.compile(
     r"'([^'\\]*(?:\\.[^'\\]*)*)'|\"([^\"\\]*(?:\\.[^\"\\]*)*)\"|\$attributes\['(\w+)'\]|\$(\w+)"
 )
 _MEDIA_COND_RE = re.compile(r"@media\s*\([^)]*\)", re.IGNORECASE)
-_DECL_START_RE = re.compile(r"(?:^|(?<=[{;]))\s*(--[a-z0-9-]+|[a-z][a-z-]*)\s*:")
+_DECL_START_RE = re.compile(r"(?:^|(?<=[{;]))\s*(--[a-z0-9-]+|-?[a-z][a-z-]*)\s*:")
 
 
 def open_declaration_pairs(

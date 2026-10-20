@@ -95,6 +95,17 @@ def test_a_typography_helper_suffixes_come_from_the_helper_body():
     assert elements["attributionFontFamily"] == {"attribution"}
 
 
+def test_a_typography_helper_routes_the_vendor_prefixed_text_outline():
+    php = "$css = sgs_typography_css_rule( $attributes, 'title', '.u .sgs-brand-strip__title' );"
+    attrs = {"titleTextWrap", "titleTextStrokeWidth", "titleTextStrokeColour", "titleTextStrokeColourHover"}
+    props, elements = es._attrs_from_helper_calls(php, attrs, "brand-strip")
+    assert props["titleTextWrap"] == {"text-wrap"}, "positive control: an unprefixed property still routes"
+    assert props["titleTextStrokeWidth"] == {"-webkit-text-stroke-width"}
+    assert props["titleTextStrokeColour"] == {"-webkit-text-stroke-color"}
+    assert props["titleTextStrokeColourHover"] == {"-webkit-text-stroke-color"}
+    assert elements["titleTextStrokeColour"] == {"title"}
+
+
 def test_a_derived_contracts_cover_every_former_hand_entry():
     former = {
         "sgs_button_element_style_css": {
