@@ -19,6 +19,7 @@ import { unreadOf } from './fill-unread.mjs';
 import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
 import { unstyledBaseline, gateFor } from './fill-fixture.mjs';
+import { fillEquivalent } from './fill-equivalents.mjs';
 
 const GAP_PROPS = [ 'row-gap', 'column-gap' ];
 const PSEUDO_LAYERS = [ '::before', '::after' ];
@@ -266,7 +267,7 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid } );
-		if ( 'gap' === res.status ) {
+		if ( 'gap' === res.status && ! ( 'no-setting' === res.gap && ! layer && fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) ) ) {
 			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }` } );
 		} else if ( 'written' === res.status ) {
 			// One gap setting holds both a row and a column gap: a second prop writing it with another value is a conflict.
@@ -393,8 +394,7 @@ export function fillTree( opts ) {
 		}
 		// What this node's calibration knows and nothing read or judged, so no setting is skipped silently.
 		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );
-		const written = new Set( st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ) );
-		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
+		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: new Set( st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ) ) } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 	}
 	return { ...st.out, snaps: st.snaps };
 }

@@ -1,0 +1,26 @@
+{
+	"__doc": "property_equivalents (FR-48-8 step 5, Bean 2026-10-19): a draft property no block setting holds on its own element, painted the same by a setting for another property, on the element itself (hop self) or on its parent (hop parent). Fill tries a row only after the direct and discovered matches fail (scripts/computed-route/lib/fill-equivalents.mjs), and only under its condition: every-child-same (every measured child of that parent asks the same value at that width, so the parent's setting gives each child what it asked) or render-matches (the element renders at the declared value, so the other setting paints the same box). Seeded into the framework DB by plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py; rows this file drops are deleted.",
+	"rows": [
+		{
+			"draft_property": "align-self",
+			"setting_property": "align-items",
+			"hop": "parent",
+			"condition": "every-child-same",
+			"note": "A child's own cross-axis alignment is its parent's Align items when every child of that parent asks the same."
+		},
+		{
+			"draft_property": "justify-self",
+			"setting_property": "justify-items",
+			"hop": "parent",
+			"condition": "every-child-same",
+			"note": "A grid child's own inline alignment is its parent's Justify items when every child of that parent asks the same."
+		},
+		{
+			"draft_property": "height",
+			"setting_property": "min-height",
+			"hop": "self",
+			"condition": "render-matches",
+			"note": "A declared height is the block's minimum height when the element renders at that height: its content fits, so the minimum paints the same box."
+		}
+	]
+}

@@ -207,6 +207,12 @@
       "also_writes_files": false
     },
     {
+      "filename": "2026-10-20-property-equivalents-table.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then CREATE TABLE property_equivalents (draft_property, setting_property, hop, condition, note). Idempotent: skips the table when present. DB is $SGS_FRAMEWORK_DB when set.",
+      "also_writes_files": false
+    },
+    {
       "filename": "2026-10-13-motion-fields-tables.py",
       "classification": "DB-MIGRATION",
       "evidence": "sqlite3.connect(DB) then CREATE TABLE motion_targets, CREATE TABLE motion_fields and CREATE VIEW motion_field_rows, statements read from dbschema/schema.sql. Idempotent: skips an object already present. DB is $SGS_FRAMEWORK_DB when set.",

@@ -158,6 +158,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/fill-read.mjs` | Reads the draft in Chromium through the walker's `collectPair` and `resolveFinder` at 375, 768, 1440 and the fluid widths, plus the 16px sweep; blocks or mirrors requests beyond the draft's origin. |
 | `lib/fill-declared.mjs` | FR-48-8: what the draft's code declares on each target beyond Fill's list, read rendered too, and the declared value a used-value property (height, offsets, grid tracks) takes. |
 | `lib/fill-prop.mjs` | One property of one element: which tiers differ from what the node shows, the slots a setting could paint, `clamp()` where a setting accepts one; every write is the resolver's. |
+| `lib/fill-equivalents.mjs` | FR-48-8 step 5: a draft property no setting holds, written through a setting for another property on the element or its parent (the framework DB's `property_equivalents`), only under each row's condition. |
 | `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: inherited baselines, spacing ownership, presence, words, links, the divergence ledger, UNMAPPED and handover. |
 | `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
@@ -330,6 +331,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
 | `tests/fill-config.test.mjs` | FR-47-4 step 4: a pair for every node with a `draftRef` and none without (MUST FAIL); the generated config passes the walker's own lint. |
 | `tests/fill-resolve.test.mjs` | FR-47-4: whole-tree resolution with fixture reads and calibration over the real database. |
+| `tests/fill-equivalents.test.mjs` | FR-48-8 step 5 (MUST FAIL): a sibling asking another alignment is never written, the parent is written once, a height becomes min-height only when the element renders at it, and end to end through `fillTree`. |
 | `tests/fill-unread.test.mjs` | FR-47-4 step 5: the 2026-10-09 footer's five dropped `sgs/business-info` settings (`addressLink`, `hoursLayout`, `showIcon`, `hoursRowJustify`, `labelColour`) are each listed with a reason on a draftRef-only node (MUST FAIL); a setting the skeleton sets, a slot it names or a setting Fill wrote is never listed; content settings come from the database roles. |
 | `tests/fill-row-lift.test.mjs` | The Site Info row lift: the footer's social links write the row's `childIcon*` once when every copy agrees, the generated icons carry none of those values, and the 40px link box never becomes an 18px glyph's `iconSize`. |
 | `tests/fill-fixture-preconditions.test.mjs` | The footer social row keeps the 1px solid border and the background switch the social-icons fixture paints in calibration (MUST FAIL); a draft with no border writes no border settings; the fixture's preconditions are its styling settings only, and a words-and-level fixture has none. |
@@ -825,6 +827,12 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `defaultPaint(cal, slot, width, prop)` → the calibrated default paint, or undefined.
 - `tiersDiffering(prop, draft, baseline)` → `{ width: value }` for the tiers that differ, carrying wider values down.
 - `resolveProperty(ctx)` → `{ status: 'equal' | 'written' | 'gap', … }`, always through `lib/resolve.mjs::resolve`.
+
+### `lib/fill-equivalents.mjs`
+- `equivalentRows(db, prop)` → the framework DB's `property_equivalents` rows for a draft property (none when the DB predates the table).
+- `everyChildSame(kids, prop, draft, styleOf)` → whether every child was measured and asks the draft's value at each width.
+- `rendersAt(draft, rectOf)` → whether the element renders at the declared px length at every width.
+- `fillEquivalent(st, rec, target, prop, draft, hooks)` → after a `no-setting` gap, the write through a setting for another property on the element (`self`) or its parent (`parent`, once per parent, a later sibling `held`), or null; writes carry `how: 'equivalent:<hop>'`.
 
 ### `lib/fill-resolve.mjs`
 - `valueText(draft)` → a readable value for a per-width map.

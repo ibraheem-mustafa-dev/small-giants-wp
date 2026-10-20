@@ -13,6 +13,7 @@ the source of truth; the DB tables are the runtime query target, FP-1):
                             rostered attrs; only a column, never a whole table)
   html_tag_to_core_block <- atomic-tag-map.json      (bare HTML tag -> SGS block slug; the file
                             is the single source of the key set, so keys it lacks are deleted)
+  property_equivalents   <- property-equivalents.json (rows the file drops are deleted)
   motion_presets         <- motion-presets.json      (validated against the motion schema first; a bad
                             preset aborts with a non-zero exit; rows the file lacks are deleted)
 
@@ -50,6 +51,8 @@ _MODIFIER_SUFFIXES_FILE = _DATA_DIR / "modifier-suffixes.json"
 _SCALAR_MEDIA_ROLES_FILE = _DATA_DIR / "scalar-media-roles.json"
 _SCALAR_MEDIA_ROLE = "scalar-media"
 _ATOMIC_TAG_MAP_FILE = _DATA_DIR / "atomic-tag-map.json"
+_PROPERTY_EQUIVALENTS_FILE = _DATA_DIR / "property-equivalents.json"
+_PROPERTY_EQUIVALENTS_COLUMNS = ("draft_property", "setting_property", "hop", "condition", "note")
 
 
 # table -> (data file, ordered columns)
@@ -406,6 +409,27 @@ def _seed_html_tag_to_core_block(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
+# --- property_equivalents ---
+
+def _seed_property_equivalents(conn: sqlite3.Connection) -> None:
+    """Replace the table's rows with property-equivalents.json's, so a row the file drops is deleted.
+
+    A missing or unreadable file leaves the existing rows untouched.
+    """
+    try:
+        rows = json.loads(_PROPERTY_EQUIVALENTS_FILE.read_text(encoding="utf-8"))["rows"]
+    except (OSError, ValueError, KeyError):
+        return
+    conn.execute("DELETE FROM property_equivalents")
+    cols = ", ".join(_PROPERTY_EQUIVALENTS_COLUMNS)
+    marks = ", ".join("?" for _ in _PROPERTY_EQUIVALENTS_COLUMNS)
+    conn.executemany(
+        f"INSERT INTO property_equivalents ({cols}) VALUES ({marks})",  # noqa: S608 - fixed column names only
+        [tuple(r[c] for c in _PROPERTY_EQUIVALENTS_COLUMNS) for r in rows],
+    )
+    conn.commit()
+
+
 def seed_all(db_path: Path | str | None = None) -> None:
     """Run every seeder against ``db_path`` (default: ``default_db_path()``) over its own connection.
 
@@ -426,6 +450,7 @@ def seed_all(db_path: Path | str | None = None) -> None:
             ("property_suffixes.kind_override", _seed_property_suffixes_kind_override),
             ("scalar-media roles", _seed_scalar_media_roles),
             ("html_tag_to_core_block", _seed_html_tag_to_core_block),
+            ("property_equivalents", _seed_property_equivalents),
             ("motion_presets", seed_motion_presets),
         )
         for label, step in steps:
