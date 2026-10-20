@@ -81,8 +81,16 @@ export async function chainPass( s, { triggers, patches, pending, check, rendere
 			return;
 		}
 		if ( ! await s.changed( slot ) ) {
-			// A timer may still change the state later (a setState inside a setTimeout); it ends here, not in the next attempt.
+			// A timer may still change the state later (a setState inside a setTimeout); it ends here, not in the next attempt,
+			// and what it changed is put back, so the next attempt starts from the same state (a delayed close would otherwise
+			// shut the drawer the next attempt fires inside).
 			await s.drain();
+			if ( await s.changed( slot ) ) {
+				await check();
+				await s.restore( slot );
+				await s.nudge();
+				await check();
+			}
 			return;
 		}
 		await s.nudge();

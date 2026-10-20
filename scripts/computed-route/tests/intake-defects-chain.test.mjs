@@ -161,3 +161,39 @@ test( 'MUST FAIL (FR-48-34): a timer an attempt started runs before the state is
 	await chainPass( s, { ...opts, check, triggers: [ opener, rows ] } );
 	assert.equal( app.reached, true, 'the accordion row was fired with the drawer open' );
 } );
+
+test( 'MUST FAIL (FR-48-34): a timer drained after an attempt that changed nothing has its state put back before the next attempt', async () => {
+	const { s, app, opts } = fakeSession();
+	const timers = [];
+	let now = 0;
+	const run = ( to ) => {
+		for ( const t of timers.filter( ( x ) => x.at <= to ).sort( ( a, b ) => a.at - b.at ) ) {
+			timers.splice( timers.indexOf( t ), 1 );
+			t.fn();
+		}
+		now = to;
+	};
+	s.nudge = async () => run( now + 400 );
+	s.drain = async () => run( Math.max( now, ...timers.map( ( t ) => t.at ) ) );
+	const opener = { component: 'Home', draftId: 'Home:9', copies: 1, fire: async () => ( app.state = { ...app.state, open: true }, true ) };
+	// Row 0 changes no state when fired but closes the drawer 300ms later (a close button's delayed setState). Row 1 is the
+	// accordion row: it can only be fired while the drawer is open.
+	const rows = { component: 'Home', draftId: 'Home:2', copies: 2, fire: async ( i ) => {
+		if ( 0 === i ) {
+			timers.push( { at: now + 300, fn: () => ( app.state = { ...app.state, open: false } ) } );
+			return true;
+		}
+		if ( app.state.open ) {
+			app.reached = true;
+			app.state = { ...app.state, acc: 1 };
+			return true;
+		}
+		return false;
+	} };
+	const check = async () => {
+		app.last = new Set( [ 'Home:1', ...( app.state.open ? [ 'Home:2' ] : [] ) ] );
+	};
+	await check();
+	await chainPass( s, { ...opts, check, triggers: [ opener, rows ] } );
+	assert.equal( app.reached, true, 'the accordion row was fired with the drawer open' );
+} );
