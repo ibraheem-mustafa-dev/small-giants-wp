@@ -2692,49 +2692,32 @@ def _load_colour_terminal_props(conn: sqlite3.Connection) -> frozenset[str]:
     return frozenset(r[0] for r in rows)
 
 
-# The properties a gradient value can be painted through. A gradient is an image, so it never lands in a colour
-# property: a text or link gradient is a background clipped to the glyphs, a border gradient a masked `::before` ring's
-# background (includes/helpers-tokens.php::sgs_border_gradient_css), an SVG icon or shape a `fill`/`stroke` pointing at
-# a <linearGradient> def (includes/helpers-svg-gradient.php), and a native border gradient `border-image`.
-_GRADIENT_PAINTS = frozenset({"background-image", "border-image-source", "mask-image", "fill", "stroke"})
-_GRADIENT_SHORTHAND_LONGHAND = {"border-image": "border-image-source", "-webkit-mask-image": "mask-image"}
-_SVG_PAINT_KEYS = frozenset({"fill", "stroke"})
+# A gradient setting's css_property is the element manifest's gradient key for its paint mechanism, never the bare CSS
+# property: a text gradient (clipped) and a background gradient on one element both paint background-image, a border
+# gradient a masked ::before ring's background, an SVG gradient the fill or stroke beside its flat colour, so only the
+# key keeps their slots apart (db-consistency F6). The keys, what each paints and the base colour property that gives a
+# sibling the manifest does not map its key (tried in file order) live in scripts/data/gradient-paint-keys.json.
+_GRADIENT_KEY_BY_BASE = tuple(
+    (v["base"], k)
+    for k, v in json.loads(
+        (Path(__file__).resolve().parents[1] / "data" / "gradient-paint-keys.json").read_text(encoding="utf-8")
+    )["keys"].items()
+)
 
 
-def _gradient_paint_property(manifest_key: str, emitted: "set[str]") -> str:
-    """The CSS property a manifest `css:<x>-gradient` key paints. The key is element-manifest vocabulary (a cluster
-    member such as `color-gradient`), not a CSS property, so css_property must not carry it: Fill matches a draft's
-    computed property against css_property and would never reach the setting. What the render was seen to paint wins
-    (sgs/separator.lineGradient is declared `border-color-gradient` and renders `border-image`); without that evidence
-    an SVG paint key keeps its own property and every other key paints `background-image`."""
-    seen = sorted({_GRADIENT_SHORTHAND_LONGHAND.get(p, p) for p in emitted} & _GRADIENT_PAINTS)
-    if seen:
-        return ",".join(seen)
-    base = manifest_key[: -len("-gradient")]
-    return base if base in _SVG_PAINT_KEYS else "background-image"
+def _gradient_slot(slug: str, fields: dict) -> tuple:
+    return (slug, *(fields.get(k) or None for k in ("css_property", "css_layer", "css_element", "css_state", "css_tier")))
 
 
-def _route_gradient_rows(entries: "list[dict]", resolved: dict, attrs_by_block: dict, evicted: "set[tuple]") -> dict:
-    """Give every gradient setting a real CSS property, after slot eviction so the raw keys decided the slots.
-
-    1. A `-gradient` manifest key in css_property becomes the property it paints (_gradient_paint_property).
-    2. A gradient setting with no css_property inherits its base colour setting's selector context (`xGradient` beside
-       `x`, `overlayGradientHover` beside `overlayHover`): it paints the same element in the same state and tier, as a
-       gradient. A base with no css_property proves nothing, so that sibling stays open; so does a row eviction removed.
-    """
-    translated = inherited = 0
+def _route_gradient_rows(entries: "list[dict]", attrs_by_block: dict, evicted: "set[tuple]") -> int:
+    """Give a gradient setting with no css_property its base colour setting's context (`xGradient` beside `x`,
+    `overlayGradientHover` beside `overlayHover`): it paints the same element in the same state and tier, through the
+    gradient key of the base's mechanism. Runs after slot eviction. A base with no css_property proves nothing, so that
+    sibling stays open; so does a row eviction removed, and one whose slot another setting already holds. Returns the
+    number inherited."""
+    inherited = 0
     by_key = {(e["slug"], e["attr"]): e for e in entries}
-    for e in entries:
-        stored = e["fields"].get("css_property")
-        if not stored or "-gradient" not in stored:
-            continue
-        emitted = set(resolved.get((e["slug"], e["attr"]), ()))
-        parts = [
-            _gradient_paint_property(p, emitted) if p.endswith("-gradient") else p
-            for p in (s.strip() for s in stored.split(","))
-        ]
-        e["fields"]["css_property"] = ",".join(sorted({q for p in parts for q in p.split(",")}))
-        translated += 1
+    taken = {_gradient_slot(e["slug"], e["fields"]) for e in entries if e["fields"].get("css_property")}
     for slug in sorted(attrs_by_block):
         for attr in sorted(attrs_by_block[slug]):
             if "Gradient" not in attr or (slug, attr) in evicted:
@@ -2743,20 +2726,24 @@ def _route_gradient_rows(entries: "list[dict]", resolved: dict, attrs_by_block: 
             if own and own["fields"].get("css_property"):
                 continue
             base = by_key.get((slug, attr.replace("Gradient", "", 1)))
-            base_prop = (base or {}).get("fields", {}).get("css_property")
-            if not base_prop:
+            listed = {p.strip() for p in str((base or {}).get("fields", {}).get("css_property") or "").split(",")}
+            key = next((k for p, k in _GRADIENT_KEY_BY_BASE if p in listed), None)
+            if not key:
                 continue
-            svg = sorted(set(p.strip() for p in base_prop.split(",")) & _SVG_PAINT_KEYS)
-            fields = {"css_property": ",".join(svg) if svg else "background-image"}
+            fields = {"css_property": key}
             for inherited_field in ("css_layer", "css_element", "css_state", "css_tier"):
                 if base["fields"].get(inherited_field):
                     fields[inherited_field] = base["fields"][inherited_field]
+            slot = _gradient_slot(slug, fields)
+            if slot in taken:
+                continue
+            taken.add(slot)
             if own:
                 own["fields"].update(fields)
             else:
                 entries.append({"slug": slug, "attr": attr, "fields": fields})
             inherited += 1
-    return {"translated": translated, "inherited": inherited}
+    return inherited
 
 
 def _manifest_role_verdict(
@@ -3555,9 +3542,8 @@ def extract_css_property_and_layer() -> dict:
                 entry["fields"].pop("css_property", None)
                 entry["fields"].pop("css_layer", None)
 
-    _gradient_rows = _route_gradient_rows(
-        classification_entries, resolved, attrs_by_block,
-        {(x["slug"], x["attr"]) for x in _slot_eviction_log},
+    _gradient_inherited = _route_gradient_rows(
+        classification_entries, attrs_by_block, {(x["slug"], x["attr"]) for x in _slot_eviction_log},
     )
 
     # Strip the internal bookkeeping key from every entry before it reaches the
@@ -3636,8 +3622,7 @@ def extract_css_property_and_layer() -> dict:
         "slot_precedence_evicted": _slot_evicted,
         "slot_precedence_eviction_log": _slot_eviction_log,
         "role_guard_evicted": _role_guarded,
-        "gradient_keys_translated": _gradient_rows["translated"],
-        "gradient_siblings_inherited": _gradient_rows["inherited"],
+        "gradient_siblings_inherited": _gradient_inherited,
         "resolved": {f"{s}::{a}": sorted(p) for (s, a), p in resolved.items()},
         "unresolved_reasons": {f"{s}::{a}": r for (s, a), r in unresolved_reasons.items()},
         "disagreements": disagreements,
@@ -4020,33 +4005,33 @@ def extract_inspector_control_types() -> dict:
 
 # ── Regression guard (Defect 1, 2026-08-05) ─────────────────────────────────
 
-def _self_test_gradient_rows_paint_real_properties() -> bool:
-    """`--self-test` fixture (MUST FAIL before _route_gradient_rows): every manifest gradient key becomes the property
-    it paints, the render's own evidence beats the key family, and a NULL gradient sibling inherits a routed base's
-    context, but not an unrouted base's nor an evicted row's."""
+def _self_test_gradient_siblings_take_their_base_key() -> bool:
+    """`--self-test` fixture (MUST FAIL before _route_gradient_rows): a NULL gradient sibling takes its routed base's
+    context and the gradient key of the base's mechanism, never a bare CSS property; an unrouted base, an evicted row and
+    a slot another setting holds leave it open, and a manifest key is never rewritten."""
     entries = [
         {"slug": "sgs/f", "attr": "textColourGradient", "fields": {"css_property": "color-gradient", "css_element": "wrapper"}},
-        {"slug": "sgs/f", "attr": "linkHoverGradient", "fields": {"css_property": "background-image,color-gradient"}},
-        {"slug": "sgs/f", "attr": "iconColourGradient", "fields": {"css_property": "stroke-gradient"}},
-        {"slug": "sgs/f", "attr": "lineGradient", "fields": {"css_property": "border-color-gradient"}},
+        {"slug": "sgs/f", "attr": "backgroundColour", "fields": {"css_property": "background-color", "css_element": "wrapper"}},
         {"slug": "sgs/f", "attr": "backgroundColourHover", "fields": {"css_property": "background-color", "css_element": "card", "css_state": "hover"}},
+        {"slug": "sgs/f", "attr": "linkColourHover", "fields": {"css_property": "background-image,color-link", "css_state": "hover"}},
         {"slug": "sgs/f", "attr": "starColour", "fields": {"css_property": "fill", "css_element": "star"}},
+        {"slug": "sgs/f", "attr": "evicted", "fields": {"css_property": "color"}},
+        {"slug": "sgs/f", "attr": "takenColour", "fields": {"css_property": "color", "css_element": "wrapper"}},
+        {"slug": "sgs/f", "attr": "textColour", "fields": {"css_property": "color", "css_element": "title"}},
     ]
-    attrs = {"sgs/f": {e["attr"] for e in entries} | {"backgroundColourHoverGradient", "starColourGradient", "tileColourGradient", "tileColour", "evictedGradient", "evicted"}}
-    entries.append({"slug": "sgs/f", "attr": "evicted", "fields": {"css_property": "color"}})
-    counts = _route_gradient_rows(entries, {("sgs/f", "lineGradient"): {"border-image", "border-bottom-width"}}, attrs, {("sgs/f", "evictedGradient")})
+    attrs = {"sgs/f": {e["attr"] for e in entries} | {"backgroundColourGradient", "backgroundColourHoverGradient", "linkColourHoverGradient", "starColourGradient", "tileColourGradient", "tileColour", "evictedGradient", "takenColourGradient"}}
+    count = _route_gradient_rows(entries, attrs, {("sgs/f", "evictedGradient")})
     got = {e["attr"]: e["fields"] for e in entries}
     expected = {
-        "textColourGradient": {"css_property": "background-image", "css_element": "wrapper"},
-        "linkHoverGradient": {"css_property": "background-image"},
-        "iconColourGradient": {"css_property": "stroke"},
-        "lineGradient": {"css_property": "border-image-source"},
-        "backgroundColourHoverGradient": {"css_property": "background-image", "css_element": "card", "css_state": "hover"},
-        "starColourGradient": {"css_property": "fill", "css_element": "star"},
+        "textColourGradient": {"css_property": "color-gradient", "css_element": "wrapper"},
+        "backgroundColourGradient": {"css_property": "background-color-gradient", "css_element": "wrapper"},
+        "backgroundColourHoverGradient": {"css_property": "background-color-gradient", "css_element": "card", "css_state": "hover"},
+        "linkColourHoverGradient": {"css_property": "color-link-gradient", "css_state": "hover"},
+        "starColourGradient": {"css_property": "fill-gradient", "css_element": "star"},
     }
-    ok = all(got.get(a) == f for a, f in expected.items()) and "tileColourGradient" not in got and "evictedGradient" not in got
-    ok = ok and counts == {"translated": 4, "inherited": 2}
-    print(("PASS" if ok else "FAIL") + " gradient rows paint real properties" + ("" if ok else f": {got} {counts}"))
+    ok = all(got.get(a) == f for a, f in expected.items())
+    ok = ok and not {"tileColourGradient", "evictedGradient", "takenColourGradient"} & got.keys() and count == 4
+    print(("PASS" if ok else "FAIL") + " gradient siblings take their base key" + ("" if ok else f": {got} {count}"))
     return ok
 
 
@@ -4686,7 +4671,7 @@ if __name__ == "__main__":
             _self_test_cross_statement_selector_var_yields_bem_element(),
             _self_test_ancestor_hover_selector_var_does_not_leak_element(),
             _self_test_helper_call_selector_var_yields_bem_element(),
-            _self_test_gradient_rows_paint_real_properties(),
+            _self_test_gradient_siblings_take_their_base_key(),
         ]
         sys.exit(0 if all(results) else 1)
 

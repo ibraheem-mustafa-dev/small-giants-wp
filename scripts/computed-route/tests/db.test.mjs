@@ -49,6 +49,24 @@ test( 'MUST FAIL: anim:duration is reached as animation-duration, and every unma
 	assert.deepEqual( candidates( fixture, 'sgs/card-grid', 'animation-timing-function' ).map( ( r ) => r.attr_name ), [ 'fixtureKeywordEasing' ] );
 } );
 
+// Coverage plan d1: a gradient key names its paint mechanism, and Fill reaches the setting by the property it paints.
+test( 'MUST FAIL (d1, gradient unreachable): a gradient key is a candidate for the property it paints, never for its key', () => {
+	assert.deepEqual( cssPropertiesOf( 'background-color-gradient' ), [ 'background-image' ] );
+	assert.deepEqual( cssPropertiesOf( 'color-gradient' ), [ 'background-image' ] );
+	assert.deepEqual( cssPropertiesOf( 'color-link-gradient' ), [ 'background-image' ] );
+	assert.deepEqual( cssPropertiesOf( 'border-color-gradient' ), [ 'background-image', 'border-image-source' ] );
+	assert.deepEqual( cssPropertiesOf( 'fill-gradient' ), [ 'fill' ] );
+	assert.deepEqual( cssPropertiesOf( 'stroke-gradient' ), [ 'stroke' ] );
+	const fixture = new DatabaseSync( ':memory:' );
+	fixture.exec( 'CREATE TABLE block_attributes (block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role)' );
+	fixture.exec( "INSERT INTO block_attributes (block_slug, attr_name, css_property, source) VALUES ('sgs/f', 'backgroundColourGradient', 'background-color-gradient', 'sgs'), ('sgs/f', 'iconColourGradient', 'stroke-gradient', 'sgs')" );
+	assert.deepEqual( candidates( fixture, 'sgs/f', 'background-image' ).map( ( r ) => r.attr_name ), [ 'backgroundColourGradient' ] );
+	assert.deepEqual( candidates( fixture, 'sgs/f', 'background-color-gradient' ), [] );
+	assert.deepEqual( candidates( fixture, 'sgs/f', 'stroke' ).map( ( r ) => r.attr_name ), [ 'iconColourGradient' ] );
+	// The real framework DB: sgs/container's background gradient is reachable (it was NULL before the seeder fix).
+	assert.ok( candidates( db, 'sgs/container', 'background-image' ).some( ( r ) => 'backgroundColourGradient' === r.attr_name ) );
+} );
+
 test( 'MUST FAIL TO MATCH: grid-template-columns:count keeps its stored string and never matches grid-template-columns', () => {
 	assert.deepEqual( cssPropertiesOf( 'grid-template-columns:count' ), [ 'grid-template-columns:count' ] );
 	assert.equal( modifierOf( 'grid-template-columns:count' ), 'grid-template-columns' );

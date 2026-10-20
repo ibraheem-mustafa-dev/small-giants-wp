@@ -2503,10 +2503,10 @@
 			"slug": "sgs/multi-button",
 			"attr": "childBtnBackgroundGradient",
 			"fields": {
-				"css_property": "background-image",
+				"css_property": "background-color-gradient",
 				"css_element": "child-button"
 			},
-			"_why": "2026-10-20 (coverage plan d1, gradient seeder fix). The gradient sibling of childBtnBackground above, painted through the same cross-block hand-off into sgs/button's stylesheet (render.php's $mb_child_bg_gradient), so the classifier cannot see it either, and its base gains its route only in this layer, after the classifier's sibling pass has run. A gradient paints background-image; same element as the base."
+			"_why": "2026-10-20 (coverage plan d1, gradient seeder fix). The gradient sibling of childBtnBackground above, painted through the same cross-block hand-off into sgs/button's stylesheet (render.php's $mb_child_bg_gradient), so the classifier cannot see it either, and its base gains its route only in this layer, after the classifier's sibling pass has run. Its css_property is the background gradient key (extract-signatures.py::_GRADIENT_KEY_BY_BASE); same element as the base."
 		},
 		{
 			"slug": "sgs/multi-button",
@@ -5682,7 +5682,7 @@
 			"fields": {
 				"role": "colour-gradient",
 				"derived_selector": ".sgs-google-reviews__review",
-				"css_property": "background-image",
+				"css_property": "border-color-gradient",
 				"css_element": "review",
 				"css_layer": "OUTER",
 				"_reason": "2026-09-21 (google-reviews redesign T1). css_property/css_element name the element and property this colour styles; derived_selector lists BOTH the block's own class and the class the draft annotator gives the same element (comma-separated, the established multi-class form) so db_lookup.attrs_for_element_class_property, the selector-keyed second lookup of fold_helpers.route_area_css_to_block_attrs, routes an inline or class declaration on that element here. The seeder's synthetic per-attribute selector (or none) would otherwise stand."
@@ -5794,7 +5794,7 @@
 			"fields": {
 				"role": "colour-gradient",
 				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
-				"css_property": "background-image",
+				"css_property": "color-gradient",
 				"css_element": "see-all",
 				"css_layer": "OUTER",
 				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
@@ -5806,7 +5806,7 @@
 			"fields": {
 				"role": "colour-gradient",
 				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
-				"css_property": "background-image",
+				"css_property": "color-gradient",
 				"css_element": "see-all",
 				"css_layer": "OUTER",
 				"css_state": "hover",
@@ -5819,7 +5819,7 @@
 			"fields": {
 				"role": "colour-gradient",
 				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
-				"css_property": "background-image",
+				"css_property": "border-color-gradient",
 				"css_element": "see-all",
 				"css_layer": "OUTER",
 				"_reason": "2026-09-21 (google-reviews redesign T1). The see-all pill mirrors write-review: same recipe, classes .sgs-google-reviews__see-all (block) and .sgs-google-reviews__see-all-url (annotator, named for the seeAllUrl field)."
@@ -5831,7 +5831,7 @@
 			"fields": {
 				"role": "colour-gradient",
 				"derived_selector": ".sgs-google-reviews__see-all, .sgs-google-reviews__see-all-url",
-				"css_property": "background-image",
+				"css_property": "border-color-gradient",
 				"css_element": "see-all",
 				"css_layer": "OUTER",
 				"css_state": "hover",
@@ -6830,7 +6830,7 @@
 			"slug": "sgs/product-card",
 			"attr": "pickerLabelColourGradient",
 			"fields": {
-				"css_property": "background-image",
+				"css_property": "color-gradient",
 				"derived_selector": ".sgs-option-picker__label",
 				"_why": "Forwarded into render_block('sgs/option-picker') (product-card/render.php $picker_style_attrs and the per-axis attrs); the option-picker's own route for the receiving attribute."
 			}
@@ -6848,7 +6848,7 @@
 			"slug": "sgs/product-card",
 			"attr": "pickerPillTextColourGradient",
 			"fields": {
-				"css_property": "background-image",
+				"css_property": "color-gradient",
 				"css_element": "pill",
 				"_why": "Forwarded into render_block('sgs/option-picker') (product-card/render.php $picker_style_attrs and the per-axis attrs); the option-picker's own route for the receiving attribute."
 			}

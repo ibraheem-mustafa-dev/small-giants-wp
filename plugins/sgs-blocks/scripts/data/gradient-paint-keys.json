@@ -1,0 +1,12 @@
+{
+	"__doc": "The gradient keys a gradient setting's css_property holds (coverage plan d1, 2026-10-20). Each names a paint mechanism, because two gradients on one element must stay apart in the framework DB's slots (db-consistency F6): a text gradient (clipped) and a background gradient both paint background-image, a border gradient a masked ::before ring's background (or border-image on sgs/separator), an SVG gradient the fill or stroke beside its flat colour. `paints`: the CSS properties the computed route reads the key as (scripts/computed-route/lib/db.mjs::GRADIENT_PAINTS). `base`: the base colour setting's property that gives a gradient sibling the manifest does not map this key, tried in file order (a link colour before the plain colour it also lists); behavioural-analyser/extract-signatures.py::_route_gradient_rows. check-colour-attr-css-property.py refuses a gradient css_property that is neither a CSS property nor one of these keys.",
+	"keys": {
+		"color-link-gradient": { "base": "color-link", "paints": [ "background-image" ] },
+		"fill-gradient": { "base": "fill", "paints": [ "fill" ] },
+		"stroke-gradient": { "base": "stroke", "paints": [ "stroke" ] },
+		"border-color-gradient": { "base": "border-color", "paints": [ "background-image", "border-image-source" ] },
+		"background-color-gradient": { "base": "background-color", "paints": [ "background-image" ] },
+		"background-image-gradient": { "base": "background-image", "paints": [ "background-image" ] },
+		"color-gradient": { "base": "color", "paints": [ "background-image" ] }
+	}
+}

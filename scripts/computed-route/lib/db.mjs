@@ -1,6 +1,7 @@
 // Read-only access to the framework database (R-47-2). Opened with node:sqlite in read-only mode, which refuses
 // every write; the route never seeds, migrates or writes it.
 import { DatabaseSync } from 'node:sqlite';
+import { readFileSync } from 'node:fs';
 import os from 'os';
 import path from 'path';
 
@@ -25,6 +26,12 @@ export const PSEUDO_NAMESPACES = [ 'anim', 'fx' ];
 // single CSS property).
 const PSEUDO_LEAVES = { duration: 'animation-duration', easing: 'animation-timing-function', ease: 'animation-timing-function', preset: 'animation-name' };
 
+// A gradient setting's stored css_property names its paint mechanism, because two gradients on one element must stay
+// apart in the framework DB's slots (a text gradient and a background gradient both paint background-image). Each key
+// reads as the CSS properties it paints; the keys live in plugins/sgs-blocks/scripts/data/gradient-paint-keys.json,
+// shared with the seeder and its gate.
+export const GRADIENT_PAINTS = Object.fromEntries( Object.entries( JSON.parse( readFileSync( new URL( '../../../plugins/sgs-blocks/scripts/data/gradient-paint-keys.json', import.meta.url ), 'utf8' ) ).keys ).map( ( [ k, v ] ) => [ k, v.paints ] ) );
+
 // The stored css_property split into its namespace and leaf, or null when it carries no colon.
 const namespaced = ( stored ) => {
 	const m = /^([a-z][a-z0-9-]*):(.+)$/.exec( String( stored ?? '' ).trim() );
@@ -44,10 +51,14 @@ export function isPseudoProperty( stored ) {
 //   "anim:duration"               → [ 'animation-duration' ]        a pseudo-property through the leaf map
 //   "fx:pin"                      → [ ]                             a pseudo leaf that names no property: unmatchable
 //   "grid-template-columns:count" → [ 'grid-template-columns:count' ] a real property with a modifier keeps its string
+//   "color-gradient"              → [ 'background-image' ]          a gradient key through GRADIENT_PAINTS
 export function cssPropertiesOf( stored ) {
 	const s = String( stored ?? '' ).trim();
 	if ( ! s ) {
 		return [];
+	}
+	if ( GRADIENT_PAINTS[ s ] ) {
+		return GRADIENT_PAINTS[ s ];
 	}
 	const n = namespaced( s );
 	if ( ! n || ! PSEUDO_NAMESPACES.includes( n.ns ) ) {

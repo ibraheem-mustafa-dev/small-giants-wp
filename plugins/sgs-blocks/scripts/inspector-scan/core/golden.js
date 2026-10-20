@@ -952,9 +952,9 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	// and DB stage-1 already resolves css_property='color-link' correctly —
 	// this map was the only place still missing the entry, which made rule 31's
 	// survey wrongly REFUSE:no-css_property on an attribute the DB had already
-	// classified. No 'color-link-gradient' sibling exists in the DB yet; add one
-	// here (mapped to 'text', matching 'color-gradient') the day a block needs it.
+	// classified. Its gradient key 'color-link-gradient' is the same text mechanism.
 	'color-link': 'text',
+	'color-link-gradient': 'text',
 	'background-color': 'fill',
 	'background-image': 'fill',
 	'background-color-gradient': 'fill',
@@ -979,6 +979,9 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	'-webkit-text-stroke-color': 'decoration',
 	fill: 'fill',
 	stroke: 'stroke',
+	// An SVG gradient's key (scripts/data/gradient-paint-keys.json): the same mechanism as its flat colour.
+	'fill-gradient': 'fill',
+	'stroke-gradient': 'stroke',
 };
 
 /**

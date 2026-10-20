@@ -75,11 +75,8 @@ test( 'MUST FAIL (rejected, unit shape): a per-device unit companion is written 
 } );
 
 test( 'MUST FAIL (silent drop): gradient, border-gradient, shadow-colour and height properties are read', () => {
-	// A gradient row stores the property it paints (check-colour-attr-css-property.py refuses a manifest key).
-	assert.deepEqual( longhands( 'background-image' ), [ 'background-image' ] );
-	assert.deepEqual( longhands( 'border-image-source' ), [ 'border-image-source' ] );
-	assert.deepEqual( longhands( 'fill' ), [ 'fill' ] );
-	assert.deepEqual( longhands( 'stroke' ), [ 'stroke' ] );
+	assert.deepEqual( longhands( 'color-gradient' ), [ 'background-image' ] );
+	assert.ok( longhands( 'border-color-gradient' ).includes( 'background-image' ) );
 	assert.deepEqual( longhands( 'box-shadow-color' ), [ 'box-shadow' ] );
 	assert.deepEqual( longhands( 'height' ), [ 'height' ] );
 	assert.deepEqual( longhands( 'grid-template-rows' ), [ 'grid-template-rows' ] );

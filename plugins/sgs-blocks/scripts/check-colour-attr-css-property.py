@@ -66,6 +66,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SURVEY_SCRIPT = ROOT / "colour-codemod" / "survey.js"
+GRADIENT_KEYS = ROOT / "data" / "gradient-paint-keys.json"
 MDN_PROPERTIES = ROOT.parent / "node_modules" / "mdn-data" / "css" / "properties.json"
 DEFAULT_DB = pathlib.Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 REFUSED_VERDICT = "REFUSED:no-css_property"
@@ -111,49 +112,63 @@ def _css_properties() -> frozenset[str]:
     return frozenset(json.loads(MDN_PROPERTIES.read_text(encoding="utf-8")))
 
 
+def _gradient_keys() -> dict[str, str]:
+    """{gradient key: base colour property}, in the order the seeder tries them (data/gradient-paint-keys.json)."""
+    return {k: v["base"] for k, v in json.loads(GRADIENT_KEYS.read_text(encoding="utf-8"))["keys"].items()}
+
+
+_SLOT_COLS = ("css_property", "css_layer", "css_element", "css_state", "css_tier")
+
+
 def _gradient_rows() -> list[dict]:
     db = os.environ.get("SGS_FRAMEWORK_DB") or str(DEFAULT_DB)
     conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
     try:
         rows = conn.execute(
-            "SELECT block_slug, attr_name, css_property FROM block_attributes WHERE source IN ('sgs', 'sgs-ext')"
+            f"SELECT block_slug, attr_name, {', '.join(_SLOT_COLS)} FROM block_attributes WHERE source IN ('sgs', 'sgs-ext')"
         ).fetchall()
     finally:
         conn.close()
-    return [{"block_slug": b, "attr_name": a, "css_property": p} for b, a, p in rows]
+    return [dict(zip(("block_slug", "attr_name", *_SLOT_COLS), r)) for r in rows]
 
 
-def _gradient_findings(rows: list[dict], css_props: frozenset[str]) -> tuple[list[str], list[str]]:
-    """Gradient settings (an attribute name holding `Gradient`) against two rules. Refused: a css_property naming
-    something CSS does not have (a manifest key such as `color-gradient`, which Fill can never match against a draft's
-    computed property), or none at all while the base colour setting beside it has one (the seeder gives that sibling
-    the base's context and `background-image`). Open, reported but not refused: no css_property where the base colour
-    setting has none either, so nothing says which element the gradient paints."""
-    prop_of = {(r["block_slug"], r["attr_name"]): (r["css_property"] or "").strip() for r in rows}
+def _gradient_findings(rows: list[dict], css_props: frozenset[str], keys: dict[str, str]) -> tuple[list[str], list[str]]:
+    """Gradient settings (an attribute name holding `Gradient`) against two rules. Refused: a css_property naming neither
+    a CSS property nor a gradient key (Fill reads each key as the properties it paints and could never match anything
+    else), or none at all while the base colour setting beside it is routed and the slot its key would take is free
+    (the seeder gives that sibling the base's context). Open, reported but not refused: no css_property where the base
+    has none either, or where another setting already holds that slot, so nothing says which setting it is."""
+    by = {(r["block_slug"], r["attr_name"]): r for r in rows}
+    slot = lambda b, r: (b, *((r.get(c) or None) for c in _SLOT_COLS))  # noqa: E731
+    taken = {slot(r["block_slug"], r) for r in rows if (r.get("css_property") or "").strip()}
     refused: list[str] = []
     open_rows: list[str] = []
-    for (block, attr), stored in sorted(prop_of.items()):
+    for (block, attr), row in sorted(by.items()):
         if "Gradient" not in attr:
             continue
+        stored = (row.get("css_property") or "").strip()
         if stored:
-            unknown = [p for p in (s.strip() for s in stored.split(",")) if p not in css_props]
+            unknown = [p for p in (s.strip() for s in stored.split(",")) if p not in css_props and p not in keys]
             if unknown:
-                refused.append(f"{block}.{attr}: css_property {stored!r} is not a CSS property ({', '.join(unknown)})")
+                refused.append(f"{block}.{attr}: css_property {stored!r} names no CSS property or gradient key ({', '.join(unknown)})")
             continue
-        base = attr.replace("Gradient", "", 1)
-        if prop_of.get((block, base)):
-            refused.append(f"{block}.{attr}: no css_property, but its base {base} has {prop_of[(block, base)]!r}")
+        base_name = attr.replace("Gradient", "", 1)
+        base = by.get((block, base_name)) or {}
+        listed = {p.strip() for p in (base.get("css_property") or "").split(",")}
+        key = next((k for k, b in keys.items() if b in listed), None)
+        if key and slot(block, {**base, "css_property": key}) not in taken:
+            refused.append(f"{block}.{attr}: no css_property, but its base {base_name} paints {base['css_property']!r} and {key} is free there")
         else:
             open_rows.append(f"{block}.{attr}")
     return refused, open_rows
 
 
 def cmd_check() -> int:
-    refused_gradients, open_gradients = _gradient_findings(_gradient_rows(), _css_properties())
+    refused_gradients, open_gradients = _gradient_findings(_gradient_rows(), _css_properties(), _gradient_keys())
     if open_gradients:
-        print(f"OPEN: {len(open_gradients)} gradient setting(s) with no css_property whose base colour setting has none either.")
+        print(f"OPEN: {len(open_gradients)} gradient setting(s) with no css_property: the base colour setting is unrouted too, or another setting holds the slot.")
     if refused_gradients:
-        print(f"FAIL: {len(refused_gradients)} gradient setting(s) with no real CSS property:")
+        print(f"FAIL: {len(refused_gradients)} gradient setting(s) with no CSS property or gradient key:")
         for line in refused_gradients:
             print(f"  - {line}")
         print("\nFix the seeder (behavioural-analyser/extract-signatures.py::_route_gradient_rows) or the overrides, then reseed.")
@@ -207,23 +222,28 @@ def cmd_self_test() -> int:
             "— a false positive on rows that carry a real css_property elsewhere."
         )
 
-    # MUST FAIL: a manifest key, a comma list holding one, and a NULL sibling of a routed base are each refused; a
-    # real property and a NULL sibling of an unrouted base are not.
-    css_props = frozenset({"background-image", "color", "fill"})
+    # MUST FAIL: a value naming neither a CSS property nor a gradient key, a comma list holding one, and a NULL sibling of a
+    # routed base whose slot is free are each refused; a CSS property, a gradient key, a NULL sibling of an unrouted base
+    # and one whose slot another setting holds are not.
+    css_props = frozenset({"background-image", "background-color", "color", "fill"})
+    keys = {"color-gradient": "color", "background-color-gradient": "background-color"}
     gradient_fixture = [
-        {"block_slug": "sgs/f", "attr_name": "textColourGradient", "css_property": "color-gradient"},
-        {"block_slug": "sgs/f", "attr_name": "linkColourHoverGradient", "css_property": "background-image,color-gradient"},
+        {"block_slug": "sgs/f", "attr_name": "textColourGradient", "css_property": "color-gradient", "css_element": "wrapper"},
+        {"block_slug": "sgs/f", "attr_name": "linkColourHoverGradient", "css_property": "background-image,colour-gradient"},
+        {"block_slug": "sgs/f", "attr_name": "badColourGradient", "css_property": "color-gradients"},
         {"block_slug": "sgs/f", "attr_name": "backgroundColour", "css_property": "background-color"},
         {"block_slug": "sgs/f", "attr_name": "backgroundColourGradient", "css_property": None},
         {"block_slug": "sgs/f", "attr_name": "iconColourGradient", "css_property": "fill"},
         {"block_slug": "sgs/f", "attr_name": "tileColourGradient", "css_property": None},
         {"block_slug": "sgs/f", "attr_name": "tileColour", "css_property": None},
+        {"block_slug": "sgs/f", "attr_name": "titleColour", "css_property": "color", "css_element": "wrapper"},
+        {"block_slug": "sgs/f", "attr_name": "titleColourGradient", "css_property": None},
     ]
-    refused, open_rows = _gradient_findings(gradient_fixture, css_props)
+    refused, open_rows = _gradient_findings(gradient_fixture, css_props, keys)
     refused_attrs = sorted(line.split(":")[0] for line in refused)
-    if refused_attrs != ["sgs/f.backgroundColourGradient", "sgs/f.linkColourHoverGradient", "sgs/f.textColourGradient"]:
+    if refused_attrs != ["sgs/f.backgroundColourGradient", "sgs/f.badColourGradient", "sgs/f.linkColourHoverGradient"]:
         failures.append(f"gradient refusals wrong: {refused_attrs}")
-    if open_rows != ["sgs/f.tileColourGradient"]:
+    if open_rows != ["sgs/f.tileColourGradient", "sgs/f.titleColourGradient"]:
         failures.append(f"gradient open rows wrong: {open_rows}")
 
     if failures:

@@ -2,7 +2,7 @@
 import { createHash } from 'crypto';
 import { DEFAULT_PROPS, HOVER_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
-import { modifierOf } from './db.mjs';
+import { modifierOf, GRADIENT_PAINTS } from './db.mjs';
 
 export const WIDTHS = [ 375, 768, 1440 ];
 export const MARKER_HEX = '#13579b';
@@ -45,9 +45,10 @@ export const READ_KEY = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS
 
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 
-// A css_property that names a paint the browser computes under another property: a shadow colour lives inside
-// box-shadow. A gradient row already stores the property it paints (background-image, border-image-source, fill, stroke).
+// A css_property that names a paint the browser computes under another property: a gradient key reads as the properties
+// it paints (lib/db.mjs::GRADIENT_PAINTS), a shadow colour lives inside box-shadow.
 const ALIASES = {
+	...GRADIENT_PAINTS,
 	'box-shadow-color': [ 'box-shadow' ],
 	'text-shadow-color': [ 'text-shadow' ],
 	flex: [ 'flex-grow', 'flex-basis' ],
