@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty } from './db.mjs';
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
+import { declaredTiers, declaredUnit, declaredLength } from './resolve-declared.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
@@ -440,16 +441,34 @@ export function resolve( input, ctx ) {
 	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape ) ) {
 		return done( radiusWrite( attr, tiers, schema[ attr ] ) );
 	}
+	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
+	// FR-48-36: a tier whose declared and rendered values agree (input.declaredForm) is written with the declared value
+	// in the setting's own form; a unit setting switches to the declared unit when every written tier states it
+	// (lib/resolve-declared.mjs). A declared form the setting cannot hold is formatted as the rendered value is (the two
+	// agree, so a relative length gives the same px), and one the formatter cannot read falls back to the rendered value.
+	const decl = declaredTiers( input.declaredForm, tiers, TIER_OF );
+	const unitTo = unitAttr ? declaredUnit( { prop: short, decl, tiers, unit, attr, current, flat: 'flat_sibling' === row.tier_shape } ) : null;
+	const fmtTier = ( t, raw, def ) => {
+		const d = decl[ t ];
+		if ( undefined === d ) {
+			return fmt( t, raw, def );
+		}
+		const held = declaredLength( { prop: short, declared: d, def, unit: unitAttr ? unitTo ?? unit : undefined, forms, box: isBox } );
+		if ( held ) {
+			return held;
+		}
+		const f = fmt( t, d, def );
+		return f.error ? fmt( t, raw, def ) : f;
+	};
 	const out = {};
 	for ( const [ t, raw ] of Object.entries( tiers ) ) {
 		const def = 'flat_sibling' === row.tier_shape ? schema[ attr + ( 'desktop' === t ? '' : t[ 0 ].toUpperCase() + t.slice( 1 ) ) ] : schema[ attr ];
-		const f = fmt( t, raw, def );
+		const f = fmtTier( t, raw, def );
 		if ( f.error ) {
 			return { gap: 'shape', detail: f.error };
 		}
 		out[ t ] = f.value;
 	}
-	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
 	// Padding and margin boxes print only their set sides (sgs_box_object_longhands), so writing one side leaves the
 	// others to the stylesheet or a wider tier, and nothing is seeded. A border width prints 0 for every unset side
 	// (an unset width must be 0), so the first side written into an empty width box brings the other sides at their
@@ -491,6 +510,9 @@ export function resolve( input, ctx ) {
 			return { gap: 'shape', detail: vals.length > 1 ? `${ attr } holds one value for every width; draft has ${ vals.join( ', ' ) }` : `no draft value for ${ prop }` };
 		}
 		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
+	}
+	if ( null !== unitTo ) {
+		writes.push( { attr: unitAttr, value: unitTo, merge: 'replace' } );
 	}
 	return done( { writes: fluid?.accepted ? applyClamp( writes, fluid.declared, side ) : writes } );
 }

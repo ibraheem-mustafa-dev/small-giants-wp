@@ -20,6 +20,7 @@ import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
 import { unstyledBaseline, gateFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
+import { compareDR } from './fill-confirm.mjs';
 
 const GAP_PROPS = [ 'row-gap', 'column-gap' ];
 const PSEUDO_LAYERS = [ '::before', '::after' ];
@@ -266,7 +267,7 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			}
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
-		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid } );
+		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ) } );
 		if ( 'gap' === res.status && ! ( 'no-setting' === res.gap && ! layer && fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) ) ) {
 			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }` } );
 		} else if ( 'written' === res.status ) {
@@ -291,6 +292,13 @@ function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			st.shown.set( `${ rec.index }|${ prop }`, Object.fromEntries( Object.keys( draft ).map( ( w ) => [ Number( w ), 'gap' === res.status ? base( '', Number( w ) ) : draft[ w ] ] ) ) );
 		}
 	}
+}
+
+// The code's value at each width where it agrees with the value being written (FR-48-36 D–R `agree`): a confirmed row
+// writes it in place of the rendered value. A run-time value (var(), calc(), a percentage) and a disagreement are left out.
+function agreedDeclared( st, target, prop, draft, fontPx ) {
+	return Object.fromEntries( Object.keys( draft ).map( ( w ) => [ w, st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ] )
+		.filter( ( [ w, d ] ) => null != d && 'agree' === compareDR( prop, d, draft[ w ], fontPx[ w ] || 16 ).dr ) );
 }
 
 // The samples of a fluid candidate at the five widths ({ width: value }), or null when any is missing.

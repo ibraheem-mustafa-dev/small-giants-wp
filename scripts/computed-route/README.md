@@ -131,6 +131,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/db.mjs` | Read-only `block_attributes` queries. |
 | `lib/normalise.mjs` | Value parsing and token snapping from `theme-snapshot.json`, with the snap log. |
 | `lib/resolve.mjs` | The one property-to-setting engine. |
+| `lib/resolve-declared.mjs` | FR-48-36: the declared value a confirmed row writes, in the form the setting holds (a unit setting switches unit; a setting with no unit partner holds a relative length only where calibration proved a string form). |
 | `lib/tree.mjs` | Trees: read, write, refs, setting writes, live-site safety. |
 | `lib/cache.mjs` | The calibration cache's two outputs: the library-wide slot map and each site's own default paint; reading, writing, the split of one into the other and the per-output skip rules (a file read under another `READ_KEY` is due on every site). |
 | `split-cache.mjs` | One-off, idempotent migration: moves each pre-split `cache/<block>.json`'s default paint into `cache/<site>/<block>.paint.json` and rewrites the slot map without it, then moves mirror folders' paint into their test site's folder; `--dry-run` prints what it would do. |
@@ -358,6 +359,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `tests/fill-state.test.mjs` | FR-48-81 (MUST FAIL, real framework DB): a hover look writes the hover setting and never the resting one, focus like hover is held, a different focus, a closing look and a combined state are named gaps, the held states come from the DB (negative control without the row), and a missing `states` table is named. |
 | `tests/fill-state-read.test.mjs` | FR-48-81 (MUST FAIL, real browser): token matching, and on one planted page a hover carried by an ancestor, an `aria-expanded` burger, an `is-active` tab, `[open]`, a popover hidden at rest, `:focus-visible`, a whole-compound `[aria-current]` and a negated `:not(.is-active):hover` each read from its host, `:visited` listed, and the page restored; the council's cases (a nested `&:hover`, `:is(:hover, :focus-visible)` as two looks, bare `[hidden]` and `:disabled` resets read as no element's look, hover on an ancestor with focus on the target, a `:has(:checked)` state listed with its reason, a popover open at rest kept open, a lone popover closed again); the negative control drops one vocabulary row and its look. |
 | `tests/fill-declared.test.mjs` | FR-48-8 (MUST FAIL): declared extras, the used-value guard, each tolerance and verdict, draft IDs and the defect index, and end to end a code value its render overrides written as rendered and reported, with properties beyond the list named from their declared values. |
+| `tests/fill-declared-write.test.mjs` | FR-48-36 (MUST FAIL): end to end, a confirmed rem font size, unitless line height and px letter spacing are written as declared with the unit setting switched; a run-time value, a disagreement and an unproven string form keep the rendered value; the unit-switch and string-form rules unit by unit. |
 
 `cache/` (gitignored) holds the calibration: one slot map per block for the whole library (`cache/<block>.json`, recording the `site` that measured it) and one default paint per site and block (`cache/<site>/<block>.paint.json`).
 
@@ -603,9 +605,9 @@ A whole-string token becomes the id as a number (`:text` keeps it a string); a t
 - `selfTest()` → the failed cases (positive, definition, edge, negative control, idempotence, round trip, corpus control). `main(argv)` → the exit code.
 
 ### `lib/provision-refs.mjs`
-- `MENU_NAME`, `MENU_ITEMS`, `MENU_ITEM_ROLE_KEY`: the calibration menu (six top-level items, a two-item submenu, a mega-panel item, the menu-item role a plain `#` link fourth whose Description "SOON" is the menu blocks' badge copy; an existing item's description is set when it differs). `POSTS`: the mega panel and drawer posts. `MEDIA`: each media role's attachment title. `PRODUCT_TITLE`.
+- `MENU_NAME`, `MENU_ITEMS`, `MENU_ITEM_ROLE_KEY`, `CURRENT_ITEM_KEY`: the calibration menu (seven top-level items, a two-item submenu, a mega-panel item, the menu-item role a plain `#` link fourth whose Description "SOON" is the menu blocks' badge copy, and last a post_type item linked to the target's calibration page so the menus render a current-page item there; an existing item's description is set and a stale page link relinked when they differ). `POSTS`: the mega panel and drawer posts. `MEDIA`: each media role's attachment title. `PRODUCT_TITLE`.
 - `statePhp()` → read-only PHP describing what the site holds.
-- `planProvision(state, { refs, kept, files })` → `{ actions, refs, unsupplied, known }`; a role is `'new'`, `'same-as-image'` or its id.
+- `planProvision(state, { refs, kept, files, page })` → `{ actions, refs, unsupplied, known }`; a role is `'new'`, `'same-as-image'` or its id; `page` (the target's `postId`) is required.
 - `applyPhp({ known, media, product })` → PHP that finds or creates every object and prints the ids. `refsFromResult(plan, result)` → the refs to write.
 
 ### `provision-calibration-refs.mjs` (ssh)
@@ -863,6 +865,11 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/fill-confirm.mjs`
 - `confirmRecords({ writes, nodes, reads, defects, rootComponent })` → one FR-48-36 record per written value and read width (declared, emitted, rendered draft, rendered live left for the check, D–R, tolerance, verdict).
 - `compareDR(prop, declared, rendered, fontPx)` → `{ dr, type, tolerance }`; `propertyType`, `TOLERANCE`, `verdictOf(dr, defect)`, `draftIdOf(finder, rootComponent)`, `defectIndex(draftDefects)`.
+
+### `lib/resolve-declared.mjs`
+- `declaredTiers(declaredForm, tiers, tierOf)` → `{ tier: declared }` for the tiers being written.
+- `declaredUnit({ prop, decl, tiers, unit, attr, current, flat })` → the unit a unit setting switches to (every written tier declares it, it differs, no unwritten tier would be reinterpreted; never a per-tier unit object or flat siblings), else null.
+- `declaredLength({ prop, declared, def, unit, forms, box })` → `{ value }` in the setting's form, or null to format as rendered.
 
 ### `lib/fill-prop.mjs`
 - `TIER_WIDTHS`: 1440, 768, 375. `INHERITED`: calibration's inherited list, re-exported rather than copied. `CARRIED`: properties read from a text or layout carrier.

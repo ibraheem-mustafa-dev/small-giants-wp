@@ -81,11 +81,12 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 
 // ctx: { node, block, prop, draft ({ width: value }), baseline( slot, width ), slots (the slot first, then other slots a
 // setting for a carried property could paint), calibration, db, snapshot, log, fontPx, siblings, fluid ({ width: value }
-// at the five fluid widths, or null), state (a setting state, block_attributes.css_state; null for the resting look) }.
+// at the five fluid widths, or null), state (a setting state, block_attributes.css_state; null for the resting look),
+// declared ({ width: value }: the code's value where it agrees with the draft value, written in its place, FR-48-36) }.
 // Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail? }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
-	const { node, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null } = ctx;
+	const { node, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {} } = ctx;
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
 	for ( const slot of slots ) {
@@ -101,7 +102,8 @@ export function resolveProperty( ctx ) {
 		const sink = [];
 		const call = ( perWidth ) => {
 			sink.length = 0;
-			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, siblings }, { db, snapshot, calibration, log: sink } );
+			const declaredForm = Object.fromEntries( Object.keys( perWidth ).filter( ( w ) => undefined !== declared[ w ] ).map( ( w ) => [ w, declared[ w ] ] ) );
+			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, siblings, declaredForm }, { db, snapshot, calibration, log: sink } );
 		};
 		let r = call( included );
 		if ( r.gap ) {
