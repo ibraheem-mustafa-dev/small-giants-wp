@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: Mega-menu items link to their section page (Spec 36 FR-36-5, FR-36-6)
-status: active (units 1 to 10 done 2026-10-20; open: gate G2, Bean's look on a phone)
+status: done (2026-10-20; gate G2 passed: Bean checked the drawer on a phone)
 created: 2026-10-20
 spec: .claude/specs/36-SGS-NAVIGATION-SYSTEM.md (FR-36-5, FR-36-6); .claude/specs/48-CLONING-SYSTEM.md (FR-48-30, FR-48-55)
 ---
@@ -35,13 +35,13 @@ spec: .claude/specs/36-SGS-NAVIGATION-SYSTEM.md (FR-36-5, FR-36-6); .claude/spec
 - Done 2026-10-20, live on indus-test at `075e10c3e`: units 2 to 8 (commits `a36fdf371`, `a7b917892`, `3881cce6f`, `37e9e59c0`, `075e10c3e`, the last the QC council's Escape-on-link fix), unit 9 (backup `~/backups/indus-test-pre-mega-section-20261020.sql`; `site-build.mjs --apply` set the four section pages and rebuilt the drawer 203 on the header menu; menu term 6 deleted; a dry run plans 0; Playwright 106 of 106 at 375, 768, 1024 touch and 1440) and unit 10 (Spec 36 FR-36-5 and FR-36-6, Spec 48 FR-48-30 and FR-48-55, the Indus plan step 18, Eye Care N5.5, LEDGER Front N).
 - Gate G1 passed (`run-mega-section-links-standalone.php` 29 checks, 12 mutations red; route tests 27, 14 mutations red; dead-api 0; render paths OK; inline styling 0). The deploy's full gate tier passed.
 - Bean's correction, same day (`run-mega-section-links-standalone.php`, 28 checks): the drawer's hard-coded "View all" first row and its suppression of the panel footer fallback are removed (`nav-drawer-menu-items.php` and `helpers-mega-render.php` back to their pre-plan code); redeployed to indus-test.
-- Open: gate G2, Bean opens https://lavender-dinosaur-183533.hostingersite.com/ on a phone and tries the drawer. Drill-down mode is checked by the runner only (Indus's drawer runs the accordion model).
+- Gate G2 passed (Bean, 2026-10-20: "That works now"). Drill-down mode is checked by the runner only (Indus's drawer runs the accordion model).
 
 ## Units
 
 | # | Unit | Files | Needs | Time |
 |---|---|---|---|---|
-| 1 | Spec (done 2026-10-20, with the plan) | `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md` FR-36-5 ("Section page": the click target, the bar's split trigger with hover kept) and FR-36-6 ("A parent with its own page": the drawer split row and "View all" first row); their Status lines record the build and the live run | none | 0 |
+| 1 | Spec (done 2026-10-20, with the plan) | `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md` FR-36-5 ("Section page": the click target, the bar's split trigger with hover kept) and FR-36-6 ("A parent with its own page": the drawer split row); their Status lines record the build and the live run | none | 0 |
 | 2 | Panel setting | `plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php` (add `custom-fields` to the CPT's `supports`, or REST drops the meta; register post meta `_sgs_mega_section_page`: integer, single, `show_in_rest`, `auth_callback` = `edit_theme_options`; a `section_url( int $panel_id ): string` helper returning the page's permalink when it is published and `is_post_type_viewable()`, else ''); `plugins/sgs-blocks/src/blocks/extensions/mega-section-page-panel.js` (a `PluginDocumentSettingPanel` on `sgs_mega_menu` with a page picker, modelled on `src/blocks/extensions/cpt-default-panel.js`: published pages only, searchable, an empty choice meaning no section page), imported from `src/blocks/extensions/index.js` | none | 15 min |
 | 3 | Item URL | `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php::classic_items_to_blocks` (a `sgs_mega_menu` item's `url` = the panel's section URL, '' when none; this also stops today's bar footer "View all" pointing at the panel's 404 permalink); the same file's block-menu path (`blocks_from_ref` for a `wp_navigation` post): a link whose `type` is `sgs_mega_menu` gets '' unless it is the section URL, so no block menu prints a dead link; `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` `from_link` checked unchanged (`is_destination_url` on the resolved URL); `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php` `from_link` (a mega item's `has_url` = `SGS_Nav_Menu_Source::is_destination_url( $url )`, since `sgs_nav_drawer_menu_has_real_destination` judges the panel post type, which is never viewable) | 2 | 10 min |
 | 4 | Bar split | `nav-menu-markup.php::sgs_nav_bar_menu_render_items` mega branch: with `has_url`, keep the existing `sgs-nav-bar-menu__mega` root and its context, and borrow only the DROPDOWN branch's link + button pair: an `<a class="sgs-nav-bar-menu__link">` with `data-sgs-nav-path` and the label-roll and magnet-target spans, then a chevron `<button>` that keeps `sgs-nav-bar-menu__mega-trigger` (so `src/blocks/nav-bar-menu/style.css` and `block.json` selectors still style it), `data-sgs-mega-trigger`, `aria-controls` and the screen-reader "Show submenu for %s"; never the dropdown root's `data-sgs-nav-disclosure`. `src/blocks/nav-bar-menu/style.css`: the split's layout and a 44x44 hit area round a ~20px chevron, checked at 768. No JS edit expected: `mega-disclosure.js::focusTrigger` and `panel-motion-state.js` find `[data-sgs-mega-trigger]`, now the chevron; the panel anchors on the root, which now includes the link, so check alignment | 3 | 20 min |
@@ -55,7 +55,7 @@ spec: .claude/specs/36-SGS-NAVIGATION-SYSTEM.md (FR-36-5, FR-36-6); .claude/spec
 
 ## Gates
 - **G1 after 6 (auto):** the new PHP runners pass and each fails with its rule removed; `php -l` clean; `python plugins/sgs-blocks/scripts/check-dead-api-calls.py` 0 findings; `python plugins/sgs-blocks/scripts/check-motion-part-render-paths.py --check` OK.
-- **G2 after 9 (review, open):** done-when 1 to 4 read on the live page; Bean looks at the drawer at 375 on a phone.
+- **G2 after 9 (review, passed 2026-10-20):** done-when 1 to 4 read on the live page; Bean looks at the drawer at 375 on a phone.
 
 ## Risks
 - **Current-page marking.** The bar marks the current page from `data-sgs-nav-path`; a mega link must carry it, or the section page never shows as current.
