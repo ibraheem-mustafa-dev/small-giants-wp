@@ -1,0 +1,163 @@
+[
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G2 outlined text and G11 link underline",
+   "level": "h1"
+  }
+ },
+ {
+  "name": "sgs/text",
+  "attributes": {
+   "text": "2020",
+   "fontSize": {
+    "desktop": 96,
+    "tablet": 72,
+    "mobile": 48
+   },
+   "fontWeight": "800",
+   "textColour": "#3A2A2200",
+   "textStrokeWidth": {
+    "desktop": 2,
+    "tablet": 2,
+    "mobile": 1.5
+   },
+   "textStrokeColour": "#0A7EA8",
+   "textStrokeColourHover": "#D8CA50"
+  }
+ },
+ {
+  "name": "sgs/text",
+  "attributes": {
+   "text": "Hollow",
+   "fontSize": {
+    "desktop": 96,
+    "tablet": 72,
+    "mobile": 48
+   },
+   "fontWeight": "800",
+   "textColour": "#3A2A2200",
+   "textStrokeWidth": {
+    "desktop": 2,
+    "tablet": 2,
+    "mobile": 1.5
+   },
+   "textStrokeColour": "#0A7EA8",
+   "textStrokeColourHover": "#D8CA50"
+  }
+ },
+ {
+  "name": "sgs/text",
+  "attributes": {
+   "text": "Control: solid text with no outline, for a negative comparison."
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G11 icon-list links, underline always",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/icon-list",
+  "attributes": {
+   "items": [
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Always link One",
+     "url": "https://example.com/one"
+    },
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Always link Two",
+     "url": "https://example.com/two"
+    },
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Always link Three",
+     "url": "https://example.com/three"
+    }
+   ],
+   "linkUnderline": "always",
+   "linkUnderlineThickness": "3px",
+   "linkUnderlineColour": "#EE8088",
+   "linkUnderlineColourHover": "#3A2A22",
+   "linkUnderlineOffset": "6px"
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G11 icon-list links, underline shows on hover",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/icon-list",
+  "attributes": {
+   "items": [
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Hover link One",
+     "url": "https://example.com/one"
+    },
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Hover link Two",
+     "url": "https://example.com/two"
+    },
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Hover link Three",
+     "url": "https://example.com/three"
+    }
+   ],
+   "linkUnderline": "hover",
+   "linkUnderlineThickness": "2px",
+   "linkUnderlineColour": "#0A7EA8",
+   "linkUnderlineColourHover": "#D8CA50",
+   "linkUnderlineOffset": "4px"
+  }
+ },
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G11 negative control, no underline colour set",
+   "level": "h2"
+  }
+ },
+ {
+  "name": "sgs/icon-list",
+  "attributes": {
+   "items": [
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Default link One",
+     "url": "https://example.com/one"
+    },
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Default link Two",
+     "url": "https://example.com/two"
+    },
+    {
+     "iconSource": "lucide",
+     "iconName": "check",
+     "text": "Default link Three",
+     "url": "https://example.com/three"
+    }
+   ],
+   "linkUnderline": "always",
+   "linkUnderlineThickness": "2px"
+  }
+ }
+]

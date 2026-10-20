@@ -1,0 +1,150 @@
+[
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G5 label end shapes and G13 floating layers",
+   "level": "h1"
+  }
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "minHeight": {
+    "desktop": "520px",
+    "tablet": "460px",
+    "mobile": "420px"
+   },
+   "backgroundColour": "surface",
+   "padding": {
+    "desktop": {
+     "top": "48px",
+     "right": "48px",
+     "bottom": "48px",
+     "left": "48px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/heading",
+    "attributes": {
+     "content": "Baked with love, every batch",
+     "level": "h2"
+    }
+   },
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "The photo layer floats over this section and holds the arrow tag."
+    }
+   },
+   {
+    "name": "sgs/decorative-image",
+    "attributes": {
+     "imageId": 23,
+     "imageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/05/cookies-stacked.jpeg",
+     "imageAlt": "A stack of cookies",
+     "imageDecorative": false,
+     "widthUnit": "px",
+     "width": {
+      "desktop": 320,
+      "tablet": 260,
+      "mobile": 200
+     },
+     "positionX": {
+      "desktop": 70,
+      "mobile": 60
+     },
+     "positionY": {
+      "desktop": 30,
+      "mobile": 40
+     },
+     "rotation": {
+      "desktop": 8
+     },
+     "zIndex": 2,
+     "overflow": "visible"
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/label",
+      "attributes": {
+       "text": "baked with love",
+       "endShapeRight": "arrow",
+       "endDepth": 45,
+       "borderWidth": {
+        "top": "2px",
+        "right": "2px",
+        "bottom": "2px",
+        "left": "2px"
+       },
+       "borderStyle": "solid",
+       "borderColour": "#3A2A22",
+       "backgroundColour": "#EE8088",
+       "textColour": "#3A2A22",
+       "padding": {
+        "desktop": {
+         "top": "10px",
+         "right": "36px",
+         "bottom": "10px",
+         "left": "18px"
+        }
+       },
+       "sgsMotion": {
+        "v": 1,
+        "elements": {
+         "root": {
+          "hover": {
+           "state": {
+            "values": {
+             "restRotate": -6
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/decorative-image",
+    "attributes": {
+     "widthUnit": "auto",
+     "positionX": {
+      "desktop": 20,
+      "mobile": 25
+     },
+     "positionY": {
+      "desktop": 75,
+      "mobile": 80
+     },
+     "rotation": {
+      "desktop": -4
+     },
+     "zIndex": 3
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/label",
+      "attributes": {
+       "text": "Baked to order",
+       "backgroundColour": "#3A2A22",
+       "textColour": "#FFFAF0",
+       "borderRadius": "999px",
+       "padding": {
+        "desktop": {
+         "top": "10px",
+         "right": "20px",
+         "bottom": "10px",
+         "left": "20px"
+        }
+       }
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,45 @@
+[
+ {
+  "name": "sgs/heading",
+  "attributes": { "content": "G6 buybox add-to-basket bar", "level": "h1" }
+ },
+ {
+  "name": "woocommerce/product-collection",
+  "attributes": {
+   "queryId": 61,
+   "query": {
+    "perPage": 1,
+    "pages": 1,
+    "offset": 0,
+    "postType": "product",
+    "order": "asc",
+    "orderBy": "title",
+    "search": "",
+    "exclude": [],
+    "inherit": false,
+    "taxQuery": {},
+    "isProductCollectionBlock": true,
+    "featured": false,
+    "woocommerceOnSale": false,
+    "woocommerceStockStatus": ["instock", "outofstock", "onbackorder"],
+    "woocommerceAttributes": [],
+    "woocommerceHandPickedProducts": ["3990"]
+   },
+   "collection": "woocommerce/product-collection/hand-picked",
+   "displayLayout": { "type": "list", "columns": 1 }
+  },
+  "innerBlocks": [
+   {
+    "name": "woocommerce/product-template",
+    "attributes": {},
+    "innerBlocks": [
+     { "name": "sgs/buybox", "attributes": { "stickyBar": { "mobile": "after-button" } } }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/text",
+  "attributes": { "text": "Filler so the page scrolls past the Add button. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft." }
+ }
+]

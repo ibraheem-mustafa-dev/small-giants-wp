@@ -1,0 +1,291 @@
+[
+ {
+  "name": "sgs/heading",
+  "attributes": {
+   "content": "G1 pinned column under the sticky header",
+   "level": "h1"
+  }
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "layout": "grid",
+   "columns": {
+    "desktop": 2,
+    "tablet": 1,
+    "mobile": 1
+   },
+   "gap": {
+    "desktop": "32px"
+   },
+   "alignItems": "start",
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "backgroundColour": "surface",
+     "padding": {
+      "desktop": {
+       "top": "24px",
+       "right": "24px",
+       "bottom": "24px",
+       "left": "24px"
+      }
+     },
+     "pinEdge": {
+      "desktop": "top",
+      "tablet": "none",
+      "mobile": "none"
+     },
+     "pinBelowHeader": {
+      "desktop": "on"
+     },
+     "pinGap": {
+      "desktop": "24px"
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Pinned column",
+       "level": "h2"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "This column sticks 24px below the site header at desktop only. At tablet and mobile it must compute position static."
+      }
+     }
+    ]
+   },
+   {
+    "name": "sgs/container",
+    "attributes": {
+     "layout": "stack",
+     "gap": {
+      "desktop": "24px"
+     }
+    },
+    "innerBlocks": [
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 1",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 2",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 3",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 4",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 5",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 6",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 7",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 8",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 9",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 10",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 11",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 12",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 13",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     },
+     {
+      "name": "sgs/heading",
+      "attributes": {
+       "content": "Scroll filler 14",
+       "level": "h3"
+      }
+     },
+     {
+      "name": "sgs/text",
+      "attributes": {
+       "text": "Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall. Every batch is mixed by hand, rested overnight and baked to order, so the dough has time to develop and the edges crisp up while the middle stays soft. This paragraph is here to make the page tall."
+      }
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sgs/container",
+  "attributes": {
+   "minHeight": {
+    "desktop": "600px"
+   },
+   "padding": {
+    "desktop": {
+     "top": "24px",
+     "right": "24px",
+     "bottom": "24px",
+     "left": "24px"
+    }
+   }
+  },
+  "innerBlocks": [
+   {
+    "name": "sgs/text",
+    "attributes": {
+     "text": "Spacer so the grid can scroll to its end."
+    }
+   }
+  ]
+ }
+]
