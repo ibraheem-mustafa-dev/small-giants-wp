@@ -1,0 +1,2875 @@
+{
+ "_note": "Fixed state behaviours: a selector that paints under a state with fixed values and no setting. Each entry carries the file, the selector and the reason. Read by check-state-exhaustiveness.py.",
+ "entries": [
+  {
+   "file": "plugins/sgs-blocks/assets/css/device-toggle.css",
+   "selector": ".sgs-device-cue__dismiss:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/device-toggle.css",
+   "selector": ".sgs-device-toggle .components-toggle-group-control-option-base[aria-checked='false']:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/device-toggle.css",
+   "selector": ".sgs-device-toggle .components-toggle-group-control-option-base[aria-checked='true']",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".entry-content li a:not(.wp-block-button__link):not([class*=\"sgs-\"]):hover::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".entry-content p a:hover::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".sgs-button-fill:hover::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".sgs-cta-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".sgs-cta-button:hover .sgs-icon",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".sgs-cta-button:hover i",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".sgs-cta-button:hover svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".sgs-cta-button:hover::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".sgs-text-link:hover::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".wp-block-button__link:hover .sgs-icon",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".wp-block-button__link:hover i",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".wp-block-button__link:hover svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".wp-block-button__link:hover::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ".wp-block-navigation-item__content:hover::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) a.sgs-field-fallback:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": "a.sgs-field-fallback:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/extensions.css",
+   "selector": "a.sgs-field-fallback:visited",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-cursor-field.css",
+   "selector": "[data-sgs-cursor-field=\"image-reveal\"]:hover::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-cursor-field.css",
+   "selector": "[data-sgs-cursor-field]:hover > .sgs-motion-layer[data-sgs-layer=\"cursor-field-ring\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-curtain.css",
+   "selector": "[data-sgs-fx~=\"curtain\"]:is([data-sgs-motion-state~=\"close\"], [data-sgs-motion-state~=\"close\"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]):not([data-sgs-motion-state~=\"close\"]), [data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]):not([data-sgs-motion-state~=\"close\"]) *) > .sgs-motion-layer[data-sgs-layer=\"curtain\"]::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-curtain.css",
+   "selector": "[data-sgs-fx~=\"curtain\"]:is([data-sgs-motion-state~=\"open\"], [data-sgs-motion-state~=\"open\"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]), [data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]) *) > .sgs-motion-layer[data-sgs-layer=\"curtain\"]::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-generative-background.css",
+   "selector": ".sgs-generative-background__toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-glare.css",
+   "selector": "[data-sgs-fx~=\"glare\"]:hover > .sgs-motion-layer[data-sgs-layer=\"glare\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-lottie.css",
+   "selector": ".sgs-lottie__pause[aria-pressed=\"true\"]::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-ripple.css",
+   "selector": "[data-sgs-fx~=\"ripple\"][data-sgs-mc~=\"::after\"][data-sgs-ripple=\"play\"]::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-sheen.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) [data-sgs-fx~=\"sheen\"]:hover > .sgs-motion-layer[data-sgs-layer=\"sheen\"]::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-sheen.css",
+   "selector": "[data-sgs-fx~=\"sheen\"]:focus-visible > .sgs-motion-layer[data-sgs-layer=\"sheen\"]::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-sheen.css",
+   "selector": "[data-sgs-fx~=\"sheen\"]:has(:focus-visible) > .sgs-motion-layer[data-sgs-layer=\"sheen\"]::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-wave-gradient.css",
+   "selector": ".sgs-wave-gradient__toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/header-behaviours.css",
+   "selector": ".sgs-row-behaviour.is-row-transparent-active.is-row-scrolled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/header-behaviours.css",
+   "selector": ".sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-collapse-mode.is-row-hidden",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/header-behaviours.css",
+   "selector": ".sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-hidden",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-pause.css",
+   "selector": ".sgs-motion-pause[aria-pressed=\"true\"] .sgs-motion-pause__icon--pause",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-pause.css",
+   "selector": ".sgs-motion-pause[aria-pressed=\"true\"] .sgs-motion-pause__icon--play",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-pause.css",
+   "selector": ".sgs-motion-pause[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-thumbnails.css",
+   "selector": ".sgs-motion-thumbs__item.components-button:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-thumbnails.css",
+   "selector": ".sgs-motion-thumbs__item.components-button[aria-checked=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-thumbnails.css",
+   "selector": ".sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked=\"true\"]) .sgs-motion-thumb--entrance.sgs-motion-thumb--fade-out .sgs-motion-thumb__box",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-thumbnails.css",
+   "selector": ".sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked=\"true\"]) .sgs-motion-thumb--entrance:not(.sgs-motion-thumb--still) .sgs-motion-thumb__box",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-thumbnails.css",
+   "selector": ".sgs-motion-thumbs__item:is(:hover, :focus-visible, [aria-checked=\"true\"]) .sgs-motion-thumb--hover:not(.sgs-motion-thumb--still) .sgs-motion-thumb__box",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-triggers.css",
+   "selector": "[data-sgs-me~=\"open\"]:is([data-sgs-motion-state~=\"close\"], [data-sgs-motion-state~=\"close\"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]):not([data-sgs-motion-state~=\"close\"]), [data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]):not([data-sgs-motion-state~=\"close\"]) *)",
+   "reason": "motion engine state: sgsMotion has no block_attributes row, its close and open field states live in motion_fields (state 'close'); the --sgs-me-* values come from the motion object, not a tagged setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-triggers.css",
+   "selector": "[data-sgs-me~=\"open\"]:is([data-sgs-motion-state~=\"open\"], [data-sgs-motion-state~=\"open\"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]), [data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]) *)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion-triggers.css",
+   "selector": "[data-sgs-me~=\"open\"]:not([data-sgs-me-keyframes]):is([data-sgs-motion-state~=\"close\"], [data-sgs-motion-state~=\"close\"] *):not([data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]):not([data-sgs-motion-state~=\"close\"]), [data-sgs-motion-state]:not([data-sgs-motion-state~=\"open\"]):not([data-sgs-motion-state~=\"close\"]) *)",
+   "reason": "motion engine state: sgsMotion has no block_attributes row, its close and open field states live in motion_fields (state 'close'); the --sgs-me-* values come from the motion object, not a tagged setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) [data-sgs-hover-group]:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) [data-sgs-mh=\"self\"]:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) [data-sgs-mitem]:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) [data-sgs-mroot]:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": "[data-sgs-hover-group]:focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": "[data-sgs-mh=\"self\"]:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": "[data-sgs-mitem]:focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": "[data-sgs-mroot]:focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/choice-flow-colour.php",
+   "selector": ".is-complete .sgs-choice-flow__stepper-circle",
+   "reason": "sgs/choice-flow.stepperActiveColour is in no manifest and stays untagged on purpose (allowlisted in scripts/data/state-classification-allowlist.json); the stepper's current and complete colours are one setting with no state row"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/choice-flow-colour.php",
+   "selector": ".is-complete .sgs-choice-flow__stepper-circle,",
+   "reason": "sgs/choice-flow.stepperActiveColour is in no manifest and stays untagged on purpose (allowlisted in scripts/data/state-classification-allowlist.json); the stepper's current and complete colours are one setting with no state row"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/choice-flow-colour.php",
+   "selector": ".is-complete .sgs-choice-flow__stepper-label",
+   "reason": "sgs/choice-flow.stepperActiveColour is in no manifest and stays untagged on purpose (allowlisted in scripts/data/state-classification-allowlist.json); the stepper's current and complete colours are one setting with no state row"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/choice-flow-colour.php",
+   "selector": ".is-current .sgs-choice-flow__stepper-circle,",
+   "reason": "sgs/choice-flow.stepperActiveColour is in no manifest and stays untagged on purpose (allowlisted in scripts/data/state-classification-allowlist.json); the stepper's current and complete colours are one setting with no state row"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/choice-flow-colour.php",
+   "selector": ".is-current .sgs-choice-flow__stepper-label,",
+   "reason": "sgs/choice-flow.stepperActiveColour is in no manifest and stays untagged on purpose (allowlisted in scripts/data/state-classification-allowlist.json); the stepper's current and complete colours are one setting with no state row"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/class-sgs-site-info-admin-logo.php",
+   "selector": ".sgs-site-info-logo__preview",
+   "reason": "admin media-field preview image: its [hidden] rule is fixed paint (display:none) in the WordPress admin, no setting and no front-end surface"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/helpers-nav-bar-motion-model.php",
+   "selector": ".sgs-nav-bar-menu__panel-motion[data-sgs-motion-state~=\"close\"]",
+   "reason": "motion engine state: sgsMotion has no block_attributes row, its close and open field states live in motion_fields (state 'close'); the --sgs-me-* values come from the motion object, not a tagged setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/motion/class-sgs-motion-focus-state.php",
+   "selector": ":focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid))",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/pack-pricing-product-fields.php",
+   "selector": "input[name=\"_sgs_pack_k\"]:checked",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/pack-pricing-product-fields.php",
+   "selector": "input[name=\"_sgs_pack_sizes[]\"]:checked",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item[open] .sgs-accordion-item__chevron",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-close",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open--rotates:where(:not([data-sgs-me]))",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item[open]::details-content",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item__content.is-animating",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/accordion/style.css",
+   "selector": ".sgs-accordion-item__content.is-open",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account__progress-step[aria-current=\"step\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ":where(.sgs-account--desktop-sidebar) .woocommerce-MyAccount-navigation-link.is-active > a",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ":where(.sgs-account--tablet-tabs, .sgs-account--mobile-tabs) .woocommerce-MyAccount-navigation-link.is-active > a",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": "a.sgs-account__quick-card:focus-visible .sgs-account__card-title",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": "a.sgs-account__quick-card:hover .sgs-account__card-title",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/audio/style.css",
+   "selector": ".sgs-audio__toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after__video-toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after__video-toggle[aria-pressed=\"true\"] .wp-block-sgs-before-after__video-toggle-icon--pause",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/before-after/style.css",
+   "selector": ".wp-block-sgs-before-after__video-toggle[aria-pressed=\"true\"] .wp-block-sgs-before-after__video-toggle-icon--play",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--effect-grayscale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-brand-strip__logo",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--effect-sepia .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--hover-lift .sgs-brand-strip__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-brand-strip__logo",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--hover-scale .sgs-brand-strip__item:hover .sgs-media--sgs-brand-strip",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--layout-row .sgs-brand-strip__item:focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/brand-strip/style.css",
+   "selector": ".sgs-brand-strip--layout-row .sgs-brand-strip__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/breadcrumbs/style.css",
+   "selector": ".sgs-breadcrumbs__item a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-attribution .sgs-business-info__link:hover::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-info__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-business-socials__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-open-status[data-state=\"\"] .sgs-open-status__line",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-open-status__line[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-open-status__pill[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".entry-content:has(.sgs-buybox__bar.is-on)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__add-to-cart--hover-lift:hover:not([disabled])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__add-to-cart--outline:hover:not([disabled])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__add-to-cart--primary:hover:not([disabled])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__add-to-cart--secondary:hover:not([disabled])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__add-to-cart:hover:not([disabled])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__add-to-cart[disabled]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__price--pct-off[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__price--regular[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__price-note[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .buybox__stock[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .product-card__thumb[aria-current=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .product-card__thumbs[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox .value-ladder__row[aria-current=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox-guided__meter-btn[aria-disabled='true']",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox-guided__nav-btn--back:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox-guided__nav-btn--next:not([aria-disabled='true']):hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox-guided__nav-btn--next[aria-disabled='true']",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox__bar.is-on",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox__bar[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox__notify-consent-label a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox__notify-email:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+   "selector": ".sgs-buybox__notify[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+   "selector": ".sgs-card-grid.sgs-has-grayscale .sgs-card-grid__item:hover .sgs-card-grid__image",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+   "selector": ".sgs-card-grid.sgs-has-grayscale .sgs-card-grid__item:hover .sgs-card-grid__image-wrap .sgs-media-el",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+   "selector": ".sgs-card-grid.sgs-has-hover-scale:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+   "selector": ".sgs-card-grid__page-btn:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+   "selector": ".sgs-card-grid__page-btn:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/card-grid/style.css",
+   "selector": ".sgs-card-grid__page-btn[aria-current=\"page\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+   "selector": ".sgs-cart__item-add-options:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+   "selector": ".sgs-cart__item-remove:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+   "selector": ".sgs-cart__item-save-for-later:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+   "selector": ".sgs-cart__panel--drawer.is-closing",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+   "selector": ".sgs-cart__panel--drawer[open]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-info-toggle:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-info-toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow-question__option-button:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow-question__option-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow-question__option-photo.is-effect-brighten",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow-question__option-photo.is-effect-deepen",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow-question__option-photo.is-effect-dim",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow-question__option-photo.is-effect-soften",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-question/style.css",
+   "selector": ".sgs-choice-flow-question__option-photo[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-result/style.css",
+   "selector": ".sgs-choice-flow-result__cart-status[data-state=\"error\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-result/style.css",
+   "selector": ".sgs-choice-flow-result__email-status[data-state=\"error\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-result/style.css",
+   "selector": ".sgs-choice-flow-result__email-submit:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow-result/style.css",
+   "selector": ".sgs-choice-flow-result__email-submit:hover:not(:disabled)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow .sgs-form-step[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .is-updated:is(.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-close--text:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__nav-back > [aria-hidden=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-effect[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-brighten .sgs-choice-flow__summary-image",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-deepen .sgs-choice-flow__summary-image",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-dim .sgs-choice-flow__summary-image",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media.is-effect-soften .sgs-choice-flow__summary-image",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow--layout-showcase:where(:not([data-sgs-me~=\"state\"]):not(:has([data-sgs-me~=\"state\"]))) .sgs-form-step.is-entering",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow:where(:not([data-sgs-me~=\"state\"]):not(:has([data-sgs-me~=\"state\"]))) .sgs-form-step.is-entering",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__add-to-basket:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__add-to-basket:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__add-to-basket[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__buy-now:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__buy-now:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__buy-now[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__chrome-close--text:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__chrome-close:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__chrome-close[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__continue:not(.is-muted):hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__continue[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__nav-back[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__skip[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-circle",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-circle",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__summary-image[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+   "selector": ".sgs-choice-flow__summary-toggle[open] > summary::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/collapsible-text/style.css",
+   "selector": ".sgs-collapsible-text__toggle[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/container/style.css",
+   "selector": ":where(.sgs-container:not(.sgs-container--svg-foreground)) > :where(:focus-within)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/filter-search/style.css",
+   "selector": ".sgs-filter-search--editor-preview .sgs-filter-search__input[disabled]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/filter-search/style.css",
+   "selector": ".sgs-filter-search__term-link[aria-pressed=\"true\"] .sgs-filter-search__term-check",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/filter-search/style.css",
+   "selector": ".sgs-filter-search__term-link[aria-pressed=\"true\"] .sgs-filter-search__term-check::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--email:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--number:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--phone:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--textarea:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) .sgs-form-tile__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--tiles-style-border .sgs-form-tile:has(input:checked)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked) .sgs-form-tile__check",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field__input:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form__button:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form__progress-bar:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form__progress-bar:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form-field--email:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form-field--number:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form-field--phone:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form-field--text:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form-field--textarea:has(.sgs-form-field__input:focus)) .sgs-form-field__label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form-field__file-label:hover)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form-tile:hover)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(.sgs-form__button--prev:hover)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery--caption-reveal .sgs-gallery__item:focus-within .sgs-gallery__caption",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery--caption-reveal .sgs-gallery__item:hover .sgs-gallery__caption",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:focus-within .sgs-gallery__caption",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:hover .sgs-gallery__caption",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within .sgs-gallery__img",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery.sgs-has-hover-scale:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__carousel-next:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__carousel-next:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__carousel-prev:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__carousel-prev:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__item:focus-within .sgs-gallery__img-wrap::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__item:hover .sgs-gallery__img-wrap::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__lightbox-close:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__lightbox-next:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__lightbox-prev:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__lightbox[ open ]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ".sgs-gallery__pause:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
+   "selector": ":root:has( body.sgs-gallery-lightbox-open )",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-rating-badge/style.css",
+   "selector": "a.sgs-google-rating-badge__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews--card-boxed .sgs-google-reviews__review:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews--card-bubble .sgs-google-reviews__review:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews--card-elevated .sgs-google-reviews__review:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews--card-flat .sgs-google-reviews__review:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews--card-quote-minimal .sgs-google-reviews__review:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews--card-wall-tile .sgs-google-reviews__review:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ":where( .sgs-google-reviews__review-link:hover, .sgs-google-reviews__review-link:focus-visible )",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": "a.sgs-google-reviews__author:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/icon-list/style.css",
+   "selector": ".sgs-icon-list__item:focus-within .sgs-icon-list__icon",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/icon-list/style.css",
+   "selector": ".sgs-icon-list__item:hover .sgs-icon-list__icon",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/icon-list/style.css",
+   "selector": ":where(.sgs-icon-list__item:focus-within .sgs-icon-list__text)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/icon-list/style.css",
+   "selector": ":where(.sgs-icon-list__item:hover .sgs-icon-list__text)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/icon/style.css",
+   "selector": ".sgs-icon.sgs-icon--outline .sgs-icon__link:focus-visible .sgs-icon__shape",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/icon/style.css",
+   "selector": ".sgs-icon.sgs-icon--outline .sgs-icon__link:hover .sgs-icon__shape",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
+   "selector": ".sgs-info-box.sgs-has-grayscale:hover img",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
+   "selector": ".sgs-info-box:hover .sgs-info-box__icon",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/language-switch/style.css",
+   "selector": ".sgs-language-switch__link[aria-current=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/media/style.css",
+   "selector": ".sgs-video:focus-within .sgs-video__bar",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/media/style.css",
+   "selector": ".sgs-video:hover .sgs-video__bar",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/media/style.css",
+   "selector": ".sgs-video__btn:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/media/style.css",
+   "selector": ".sgs-video__centre:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-icon-list__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/mega-panel/style.css",
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='minimal' ] .sgs-icon-list__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ".sgs-modal__close--glyph:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ".sgs-modal__close[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ".sgs-modal__dialog--fullscreen[open]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ".sgs-modal__dialog[open]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ".sgs-modal__trigger--primary:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ".sgs-modal__trigger--secondary:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ".sgs-modal__trigger--text-link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ":where(.sgs-modal__close:hover)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": ":where(.sgs-modal__close:hover::after)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/modal/style.css",
+   "selector": "body.sgs-modal-scroll-locked",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"line\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(1)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"line\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(3)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"line\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(1)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(2)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(3)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(1)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(2)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-bar:nth-child(3)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(1)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon--two-bar .sgs-nav-bar-menu__burger-bar:nth-child(2)",
+   "reason": "burger morph pose: reads the resting icon-size and bar-weight settings (--sgs-nbm-icon-h, --sgs-nbm-bar-h) to compute the open pose; the open pose has no setting of its own"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__burger[data-sgs-nav-burger-morph=\"x-rotate\"][aria-expanded=\"true\"] .sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__link:focus:not(:focus-visible)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__link[aria-disabled=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css",
+   "selector": ".sgs-nav-bar-menu__sublink[aria-disabled=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css",
+   "selector": ".sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion .sgs-nav-drawer-menu__submenu.is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css",
+   "selector": ".sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced].sgs-nav-drawer-menu__bar--drill-active > .sgs-nav-drawer-menu__item:not(:has(.sgs-nav-drawer-menu__accordion[open]))",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css",
+   "selector": ".sgs-nav-drawer-menu__link:focus-visible .sgs-nav-drawer-menu__ornament-glyph",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css",
+   "selector": ".sgs-nav-drawer-menu__link:focus:not(:focus-visible)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css",
+   "selector": ".sgs-nav-drawer-menu__link:hover .sgs-nav-drawer-menu__ornament-glyph",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/nav-drawer/style.css",
+   "selector": ".wp-block-sgs-nav-drawer[open]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner--announcement.is-dismissed",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner--transition-slide-left.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message.is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner--transition-slide-up.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message.is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner.is-enhanced .sgs-notice-banner__messages > .sgs-notice-message.is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__close:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__close:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__next:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__next:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__pause:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__pause:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__prev:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/notice-banner/style.css",
+   "selector": ".sgs-notice-banner__prev:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
+   "selector": ".sgs-option-picker--ghost .sgs-option-picker__option:focus-within .sgs-option-picker__pill",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
+   "selector": ".sgs-option-picker--ghost .sgs-option-picker__option:hover .sgs-option-picker__pill",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
+   "selector": ".sgs-option-picker:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
+   "selector": ".sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill .sgs-option-picker__sub-label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__carousel-next:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__carousel-next:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__carousel-next:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__carousel-prev:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__carousel-prev:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__carousel-prev:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__dot[aria-selected=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__filter:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__filter:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__filter:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__filter[aria-pressed=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__load-more:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__load-more:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__load-more:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__page-btn:disabled",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__page-btn:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__page-btn:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__page-btn[aria-current=\"page\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__pause:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__pause:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__readmore:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__readmore:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__title a:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/post-grid/style.css",
+   "selector": ".sgs-post-grid__title a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-input:checked + .sgs-pricing-table__toggle-label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__billing-toggle--style-text .sgs-pricing-table__toggle-input:checked + .sgs-pricing-table__toggle-label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__cta--accent:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__cta--outline:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__cta--primary:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__cta--secondary:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__price[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__savings-badge[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__toggle--style-button .sgs-pricing-table__toggle-input:checked + .sgs-pricing-table__toggle-label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ".sgs-pricing-table__toggle--style-text .sgs-pricing-table__toggle-input:checked + .sgs-pricing-table__toggle-label",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/pricing-table/style.css",
+   "selector": ":where( .sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label:hover, .sgs-pricing-table__toggle--style-button .sgs-pricing-table__toggle-label:hover )",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card .product-card__add-to-cart:hover .product-card__cart-icon",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card--live .price-note--per-unit[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card--live .product-card__discount-label[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card--live .product-card__thumb:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card--live .product-card__thumb[aria-current=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card--live [hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card:not( .product-card--live ):focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card:not( .product-card--live ):focus-within",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".product-card:not( .product-card--live ):hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".sgs-product-card__swatch--button[aria-pressed=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".sgs-product-card__wishlist:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".sgs-product-card__wishlist[aria-pressed=\"true\"] svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+   "selector": ".value-ladder__row[aria-current=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-faq/style.css",
+   "selector": ".sgs-product-faq-item[open] .sgs-product-faq-item__chevron",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-faq/style.css",
+   "selector": ".sgs-product-faq-item[open] > .sgs-product-faq-item__answer",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-faq/style.css",
+   "selector": ".sgs-product-faq-item[open] > .sgs-product-faq-item__question",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-faq/style.css",
+   "selector": ".sgs-product-faq-item__question:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-faq/style.css",
+   "selector": ".sgs-product-faq-item__question:hover .sgs-product-faq-item__chevron",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search--icon summary.sgs-product-search__icon-toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__dialog .sgs-product-search__close:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__dialog--cmdk.is-closing",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__dialog--cmdk[open]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__results [role=\"option\"].is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__results [role=\"option\"].is-active .sgs-product-search__result-title mark",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__results [role=\"option\"]:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__results [role=\"option\"]:hover .sgs-product-search__result-title mark",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__results:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/product-search/style.css",
+   "selector": ".sgs-product-search__submit:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/site-header/style.css",
+   "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/site-header/style.css",
+   "selector": "header.sgs-site-header.wp-block-sgs-site-header[data-sgs-drawer-grown] > .sgs-container__overlay",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/store-selector/style.css",
+   "selector": ".sgs-store-selector__list[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/store-selector/style.css",
+   "selector": ":where(.sgs-store-selector__item a[aria-current=\"true\"])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
+   "selector": ".sgs-toc details[open] > summary.sgs-toc__title::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
+   "selector": ".sgs-toc__link--active:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
+   "selector": ".sgs-toc__link--active:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
+   "selector": ".sgs-toc__link:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
+   "selector": ".sgs-toc__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+   "selector": ".sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__tab[aria-selected=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+   "selector": ".sgs-tabs--style-underline .sgs-tabs__nav[style*=\"--sgs-indicator-left\"] .sgs-tabs__tab[aria-selected=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+   "selector": ".sgs-tabs--style-underline .sgs-tabs__tab:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+   "selector": ".sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav[style*=\"--sgs-indicator-top\"] .sgs-tabs__tab[aria-selected=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+   "selector": ".sgs-tabs__panel[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/tabs/style.css",
+   "selector": ":is( .sgs-container--has-bg-image, .sgs-container--has-bg-video ) .sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__tab[aria-selected=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay.is-overlay-active .sgs-team-member__overlay",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay.is-overlay-active .sgs-team-member__overlay-bio",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay-bio",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:hover .sgs-team-member__overlay",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:hover .sgs-team-member__overlay-bio",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-team-member.sgs-has-grayscale:hover .sgs-team-member__photo img",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-team-member__social-link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+   "selector": ".sgs-testimonial-slider__arrow:active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+   "selector": ".sgs-testimonial-slider__arrow:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+   "selector": ".sgs-testimonial-slider__dot--active:hover::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+   "selector": ".sgs-testimonial-slider__dot:hover::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+   "selector": ".sgs-testimonial-slider__pause:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/testimonial-slider/style.css",
+   "selector": ".sgs-testimonial-slider__track.is-dragging",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+   "selector": ".sgs-trust-bar--icon-bare .sgs-trust-bar__badge[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+   "selector": ".sgs-trust-bar--icon-circle .sgs-trust-bar__badge[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+   "selector": ".sgs-trust-bar--image-badge .sgs-trust-bar__badge[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+   "selector": ".sgs-trust-bar--text-only .sgs-trust-bar__badge:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trust-bar/style.css",
+   "selector": ".sgs-trust-bar--text-only .sgs-trust-bar__badge[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__arrow:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__arrow:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__card:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__count-link:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__count-link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__dot.is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__dot:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__header:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__pause:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/trustpilot-reviews/style.css",
+   "selector": ".sgs-trustpilot-reviews__pause:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css",
+   "selector": ".sgs-whatsapp-cta__btn:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/whatsapp-cta/style.css",
+   "selector": ":where(.sgs-whatsapp-cta__btn:hover)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/wishlist-panel/style.css",
+   "selector": ".sgs-wishlist-panel [hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
+   "selector": ".wp-block-button__link:active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks-critical.css",
+   "selector": ".wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".has-footer-bg-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".has-primary-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".has-primary-dark-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".service-card:hover img",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-credit-link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-credit-link:hover::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-header-cta .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-link-list__items a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-link-list__nav .wp-block-navigation-item__content:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-link-list__socials .wp-block-social-link a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-top-bar-mobile-cta .sgs-business-info-wrap:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-top-bar-mobile-cta .wp-block-button__link:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".sgs-top-bar-mobile-cta .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-button.is-style-ghost .wp-block-button__link:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-button.is-style-ghost .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-button.is-style-outline .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-button.is-style-sgs-accent .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-button.is-style-sgs-primary .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-button.is-style-sgs-secondary .wp-block-button__link:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-column > .wp-block-group.has-background:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-column > .wp-block-group.has-background:hover .wp-block-image img",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-image:not(.brand-logo-tile):hover img",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-navigation .has-child:focus-within > .wp-block-navigation__submenu-container",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-navigation .has-child:hover > .wp-block-navigation__submenu-container",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-navigation .wp-block-navigation-item__content:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-query-pagination .page-numbers:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-query-pagination .wp-block-query-pagination-next:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-query-pagination .wp-block-query-pagination-previous:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-facebook:focus svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-facebook:hover svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-instagram:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-instagram:focus svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-instagram:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-instagram:hover svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-linkedin:focus svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ".wp-block-social-links .wp-social-link-linkedin:hover svg",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .wp-block-navigation .has-child .wp-block-navigation__submenu-container:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer .wp-block-list a:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer .wp-block-list a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer .wp-block-paragraph a:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer .wp-block-paragraph a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer li a:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer li a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer p a:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/core-blocks.css",
+   "selector": "footer p a:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/dark-mode.css",
+   "selector": ".sgs-dark-mode-toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/dark-mode.css",
+   "selector": ".sgs-theme-toggle--segmented [role=\"radio\"][aria-checked=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/focus.css",
+   "selector": ".sgs-focus--signature:focus-visible:not(#wpadminbar *)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/focus.css",
+   "selector": ".sgs-focus-source:focus-visible:not(#wpadminbar *)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/focus.css",
+   "selector": "input[type=\"range\"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/focus.css",
+   "selector": "input[type=\"range\"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-moz-range-thumb",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/focus.css",
+   "selector": "input[type=\"range\"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-webkit-slider-thumb",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ".sgs-hover-highlight-fill:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ".sgs-hover-highlight-fill:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ".sgs-hover-underline-fade:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ".sgs-hover-underline-fade:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ":where(.sgs-button--link:is(:hover, :focus-visible) .sgs-button__label)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .has-shadow-lg:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .has-shadow-md:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .has-shadow-sm:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-active-pills .sgs-shop-filters .wp-block-woocommerce-product-filter-clear-button .sgs-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-chosen[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:checked",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-components-checkbox input[type=\"checkbox\"]:checked::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__button[aria-pressed=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__item button.is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__item button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-components-product-filter-chips__item button[aria-pressed=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:checked",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-checkbox-list input[type=\"checkbox\"]:checked::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-chips__item button.is-active",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-chips__item button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-chips__item button[aria-checked=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-chips__item button[aria-pressed=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-clear-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]::-moz-range-thumb:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]::-webkit-slider-thumb:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]:focus::-moz-range-thumb",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-price-slider__range input[type=\"range\"]:focus::-webkit-slider-thumb",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filter-removable-chips__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filters__apply-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters button.wc-block-components-product-filter-chips__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters button.wc-block-components-product-filter-chips__item[aria-checked=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters button.wc-block-product-filter-chips__item:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters button.wc-block-product-filter-chips__item[aria-checked=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters-plain .sgs-shop-filters__group[open]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__apply:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__bool-filter-input:checked + .sgs-shop-filters__bool-filter-switch",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__bool-filter-input:checked + .sgs-shop-filters__bool-filter-switch::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:not(:focus-visible)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__group[open] > .sgs-shop-filters__group-summary::after",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__segment[aria-pressed=\"true\"]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__sticky-count[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters__sticky-trigger[hidden]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-components-checkout-place-order-button.wc-block-components-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-components-select select:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-components-text-input input:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-components-text-input select:focus",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-mini-cart__footer-cart.wc-block-components-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-mini-cart__footer-cart.wp-element-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-mini-cart__footer-checkout.wc-block-components-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-mini-cart__footer-checkout.wp-element-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wp-block-woocommerce-checkout-actions-block .wp-element-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wp-block-woocommerce-proceed-to-checkout-block .wp-element-button:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":root:has( dialog.sgs-shop-filters:modal )",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) #sgs-shop-filters:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-shop-filters:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-shop-filters__sticky-trigger:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.is-enhanced .sgs-shop-filters__toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.sgs-shop-filters-plain #sgs-shop-filters:hover:not(:modal)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.sgs-shop-filters-plain #sgs-shop-filters:modal",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.sgs-shop-filters-plain .sgs-shop-filters:hover:not(:modal)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.sgs-shop-filters-plain .sgs-shop-filters:modal",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.sgs-shop-filters-plain .sgs-shop-filters:modal .sgs-shop-filters__header",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "body.sgs-shop-filters-plain .sgs-shop-filters:modal .sgs-shop-filters__heading",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "dialog#sgs-shop-filters:modal",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "dialog.sgs-shop-filters:modal .sgs-shop-filters__scroll",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "dialog.sgs-shop-filters:modal .sgs-shop-filters__sheet-footer",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "dialog.sgs-shop-filters[open]",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "dialog.sgs-shop-filters[open]::backdrop",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/business-info/style.css",
+   "selector": ".sgs-open-status[data-state=\"closed\"]",
+   "reason": "opening-hours status from the business's hours (render.php), not an interaction: openStatusOpen* and openStatusClosed* are two variants' own resting settings, so no setting carries a state"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ":where( .sgs-google-reviews__arrow:active )",
+   "reason": "Google's own UI colours (--sgs-gr-*), which google-reviews follows instead of the theme (owner ruling)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ":where( .sgs-google-reviews__pause:active )",
+   "reason": "Google's own UI colours (--sgs-gr-*), which google-reviews follows instead of the theme (owner ruling)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
+   "selector": ".sgs-google-reviews__dot.is-active::before",
+   "reason": "the current dot paints the resting star colour (--sgs-gr-star-colour) at a fixed larger scale; no setting holds a current-only value"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/helpers-button-press.php",
+   "selector": ":active",
+   "reason": "painted from the theme's buttonPresets.{variant}.active-transform/active-shadow tokens (the snapshot), not a block setting; scripts/computed-route/lib/snapshot-tokens.mjs::pressTokens writes them"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/sgs-header-ink-helpers.php",
+   "selector": ".is-header-on-dark",
+   "reason": "sgs/site-header inkOnDark/inkOnLight paint under the header tone header-behaviours view.js sets from the section beneath; the vocabulary has no tone state word yet, so they stay untagged (states-wave plan, deferred findings)"
+  },
+  {
+   "file": "plugins/sgs-blocks/includes/sgs-header-ink-helpers.php",
+   "selector": ".is-header-on-light",
+   "reason": "sgs/site-header inkOnDark/inkOnLight paint under the header tone header-behaviours view.js sets from the section beneath; the vocabulary has no tone state word yet, so they stay untagged (states-wave plan, deferred findings)"
+  }
+ ]
+}

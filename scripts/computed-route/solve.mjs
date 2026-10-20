@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 // Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting
 // write through the resolver, rebuild, and repeat (at most three write rounds), then classify what survives.
-//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3] [--site <calibration target>] [--no-trial]
+//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3] [--site <calibration target>] [--no-trial] [--no-states]
 // Each write round's settings are tried in the open live page before the rebuild (lib/trial-run.mjs); a rejected one
-// is undone and blocked (lib/trial.mjs::applyVerdicts). --no-trial skips the trial.
+// is undone and blocked (lib/trial.mjs::applyVerdicts). --no-trial skips the trial. The state check (lib/state-live.mjs)
+// reads every paired element's state looks on both pages after the last walk; --no-states skips it.
 // Reads only sites/<client>/build/surfaces.json for the surface. Writes the updated tree back to the surface's tree
 // file, and solve-report.md / solve-report.json (plus every round's walker report) to --out.
 import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { openDb } from './lib/db.mjs';
+import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadCalibration } from './lib/cache.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
@@ -24,6 +25,8 @@ import { entranceStart, groupRects } from './lib/entrance.mjs';
 import { retargetLive } from '../parity/lib/helpers.mjs';
 import { candidatesOf, applyVerdicts } from './lib/trial.mjs';
 import { openTrial, draftBoxes } from './lib/trial-run.mjs';
+import { surfaceStateCheck } from './lib/state-live.mjs';
+import { loadReasons, refusalsFor } from './lib/state-map-io.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -219,8 +222,8 @@ export function unpaintedBorder( report, g ) {
 	return { gap: 'not-painted', detail: `the draft has no ${ m[ 1 ] } border (${ measured.map( ( w ) => `${ widths[ w ] } ${ styles[ w ] || '' }`.trim() + '@' + w ).join( ', ' ) }): its ${ g.prop } is currentColor and paints nothing` };
 }
 
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null } ) {
-	const { groups, stateConflict, content } = writableGroups( report, stateMap );
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null, refused = [] } ) {
+	const { groups, stateConflict, content } = writableGroups( report, stateMap, refused );
 	const writes = [];
 	const gaps = {};
 	// Groups whose setting already holds the draft value, so nothing is written: holds[ groupKey ] = [ { ref, block, attr, value } ].
@@ -530,6 +533,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );
+	const refused = refusalsFor( loadReasons(), surface );
 	const blocked = new Map();
 	const trials = new Map();
 	// Try before write (R6): each write round's settings are tried in the open live page before the rebuild, and a
@@ -542,7 +546,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	let trialRun = null;
 	const writeStep = async ( rep, round ) => {
 		const start = structuredClone( tree );
-		const r = writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } );
+		const r = writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states, refused, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } );
 		if ( ! trialOn || ! r.writes.length ) {
 			return r;
 		}
@@ -598,10 +602,12 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			heldRows.forEach( ( row ) => ( row.winningRule = `winning rule not read: ${ String( e.message || e ).slice( 0, 120 ) }` ) );
 		}
 	}
+	// FR-48-81: every paired element's state looks on the draft against the built page (--no-states skips it).
+	const states = argv.includes( '--no-states' ) ? { json: { off: '--no-states' }, markdown: '## States (FR-48-81)\n\nNot checked: --no-states.' } : await surfaceStateCheck( { cfg: retargetLive( ( await import( pathToFileURL( walker ).href ) ).default, site.liveOrigin ), vocab: statesVocabulary( ctx.db ), headless: ! process.env.SGS_HEADED, log: console.log } );
 	const wrong = wrongWrites( allWrites, report, s.states );
-	const unmappedState = writableGroups( report, s.states ).unmappedState.length;
+	const unmappedState = writableGroups( report, s.states, refused ).unmappedState.length;
 	const handover = handoverOf( classes );
 	const trial = { verdicts: trialVerdicts, rejected: trialRejected, ...( trialOn ? {} : { off: '--no-trial' } ) };
-	writeSolveReport( outDir, { trial, handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, wrongSettings: settingRatio( wrong, allWrites ), gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
+	writeSolveReport( outDir, { trial, handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, wrongSettings: settingRatio( wrong, allWrites ), gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, states: states.json, statesMarkdown: states.markdown, before, after: report } );
 	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length } (settings ${ settingRatio( wrong, allWrites ).wrong } of ${ settingRatio( wrong, allWrites ).total }). Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }

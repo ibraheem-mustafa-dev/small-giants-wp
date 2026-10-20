@@ -38,7 +38,7 @@ export function writeSolveReport( outDir, r ) {
 	const content = ( fate ) => r.classes.other.filter( ( x ) => fate === x.contentClass ).length;
 	const issues = issueGroups( r.after, r.classes );
 	const causes = causeGroups( issues );
-	fs.writeFileSync( path.join( outDir, 'solve-report.json' ), JSON.stringify( { ...r, handover, issues, causes: causes.map( ( c ) => ( { class: c.class, key: c.key, label: c.label, issues: c.issues.length } ) ), before: undefined, after: undefined, openBefore: openRows( r.before ).length, openAfter: openRows( r.after ).length, wholePage: page }, null, 1 ) );
+	fs.writeFileSync( path.join( outDir, 'solve-report.json' ), JSON.stringify( { ...r, handover, statesMarkdown: undefined, issues, causes: causes.map( ( c ) => ( { class: c.class, key: c.key, label: c.label, issues: c.issues.length } ) ), before: undefined, after: undefined, openBefore: openRows( r.before ).length, openAfter: openRows( r.after ).length, wholePage: page }, null, 1 ) );
 	const L = [ `# Solve: ${ r.surface }`, '',
 		`Refs added: ${ r.refsAdded }. Write rounds: ${ r.rounds }${ r.roundThreeWrote ? ' (round 3 still wrote: a kill condition)' : '' }. Open rows before: ${ openRows( r.before ).length }, after: ${ openRows( r.after ).length }. Intended (accepted): ${ r.intended }.`, '',
 		`**Whole page (distinct style, hover, box, text, presence and link-coverage issues, any width or state):** ${ page.before } before, ${ page.after } after: ${ page.closed } closed, ${ page.new } new; of those open, ${ page.labelledGap } labelled a gap by Solve (to prove) and ${ page.unexplained } with no label.`, '',
@@ -87,5 +87,8 @@ export function writeSolveReport( outDir, r ) {
 	section( 'Missing setting', r.classes.missing, true );
 	section( 'Unresolved', r.classes.unresolved, true );
 	section( 'Derived box rows', r.classes.derived, false );
+	if ( r.statesMarkdown ) {
+		L.push( r.statesMarkdown, '' );
+	}
 	fs.writeFileSync( path.join( outDir, 'solve-report.md' ), L.join( '\n' ) );
 }

@@ -186,7 +186,8 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		$css[] = $p . '{' . implode( ';', $shadow ) . ';}';
 	}
 
-	// Drawer slide-in motion (duration and easing only; the keyframes are in style.css).
+	// Drawer slide motion (duration and easing only; the keyframes are in style.css). The rule stays on [open], which
+	// the dialog keeps while it closes, so the reversed close in style.css runs on the same timing.
 	if ( $is_drawer ) {
 		$motion = array();
 		if ( is_numeric( $attributes['panelSlideDuration'] ?? null ) && (float) $attributes['panelSlideDuration'] > 0 ) {

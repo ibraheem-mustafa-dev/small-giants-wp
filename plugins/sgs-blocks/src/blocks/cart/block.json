@@ -254,7 +254,7 @@
 						"css:transition-duration": "panelSlideDuration",
 						"css:transition-timing-function": "panelSlideEasing"
 					},
-					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing are the slide-in transition's duration and curve (panelSlideEasingCustom holds a hand-typed curve).",
+					"_note": "Drawer surface geometry. The dialog carries the block uid class itself because the shared nav store re-parents it to <body> on open, so every panel rule is scoped to `.{uid}.sgs-cart__panel`, never the block wrapper. panelShadowColour pairs with panelShadow through ShadowControl; panelSlideDuration/panelSlideEasing are the drawer slide's duration and curve, emitted as animation-duration/animation-timing-function on the open panel: the slide in plays them forwards and the close plays the same animation reversed (style.css `.sgs-cart__panel--drawer.is-closing`); panelSlideEasingCustom holds a hand-typed curve.",
 					"absentIn": [ "icon-link", "pill-link" ],
 					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
@@ -1283,12 +1283,12 @@
 		"panelSlideDuration": {
 			"type": "number",
 			"default": 0,
-			"description": "Drawer slide-in duration in milliseconds. 0 keeps the 250ms default."
+			"description": "Drawer slide duration in milliseconds: the slide in, and reversed, the slide out. 0 keeps the 250ms default."
 		},
 		"panelSlideEasing": {
 			"type": "string",
 			"default": "",
-			"description": "Drawer slide-in easing, a named easing from the shared motion easing list (includes/helpers-motion-easing.php). Empty keeps ease-out."
+			"description": "Drawer slide easing (the slide out plays it reversed), a named easing from the shared motion easing list (includes/helpers-motion-easing.php). Empty keeps ease-out."
 		},
 		"panelSlideEasingCustom": {
 			"type": "string",

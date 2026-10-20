@@ -707,13 +707,40 @@
     "order": 80
   },
   {
-    "id": "check-hover-state-classification",
-    "cmd": "python scripts/check-hover-state-classification.py --check",
+    "id": "check-state-classification",
+    "cmd": "python scripts/check-state-classification.py --check",
     "tier": "fast",
     "added_D": "D885",
     "added_commit": "c50066bff",
     "budget_ms": 90,
     "order": 81
+  },
+  {
+    "id": "check-state-exhaustiveness",
+    "cmd": "python scripts/behavioural-analyser/check-state-exhaustiveness.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1600,
+    "order": 208
+  },
+  {
+    "id": "check-state-exhaustiveness-selftest",
+    "cmd": "python scripts/behavioural-analyser/check-state-exhaustiveness.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 209
+  },
+  {
+    "id": "check-state-classification-selftest",
+    "cmd": "python scripts/check-state-classification.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 210
   },
   {
     "id": "check-text-stroke-routing",

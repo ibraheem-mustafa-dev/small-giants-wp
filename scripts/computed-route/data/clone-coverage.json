@@ -145,11 +145,11 @@
 			"note": "aria-flowto: an ARIA property (name, description, relationship); SGS blocks render their own"
 		},
 		"aria-attr:aria-grabbed": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": "aria-grabbed: an ARIA state; SGS blocks manage their own"
+			"excluded": {
+				"reason": "a retired ARIA drag-and-drop state no SGS block ever sets, so the look cannot appear on a built page",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"aria-attr:aria-haspopup": {
 			"recognise": null,
@@ -4717,11 +4717,11 @@
 			"note": ":link: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
 		},
 		"css-pseudo-class:local-link": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":local-link: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "no browser paints it, so even the draft never shows the look; nothing to clone",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:modal": {
 			"recognise": null,
@@ -4925,11 +4925,11 @@
 			"note": ":target-current: a structural or matching selector; the draft's selectors are not read as themselves (Fill reads computed values per element)"
 		},
 		"css-pseudo-class:target-within": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "states",
-			"note": ":target-within: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"excluded": {
+				"reason": "no browser paints it, so even the draft never shows the look; nothing to clone",
+				"signedBy": "Bean",
+				"date": "2026-10-20"
+			}
 		},
 		"css-pseudo-class:user-invalid": {
 			"recognise": null,
@@ -4957,7 +4957,7 @@
 			"write": null,
 			"check": null,
 			"wave": "states",
-			"note": ":visited: a state; walker states are built, the generated state map that writes them is not (FR-48-46)"
+			"note": ":visited: read from the draft's own stylesheet rule (a browser hides the state from scripts, so the render cannot confirm it); written through the client's theme.json link styles (styles.elements.link[':visited'], which WordPress supports); the reader and writer are not built"
 		},
 		"css-pseudo-class:volume-locked": {
 			"excluded": {

@@ -1,0 +1,10 @@
+{
+  "_note": "Known exceptions to scripts/check-state-classification.py. Each entry needs a reason. Do not add an entry to silence a real classification gap: declare the state in block.json and reseed.",
+  "entries": [
+    {
+      "block": "sgs/choice-flow",
+      "attribute": "stepperActiveColour",
+      "reason": "In no block.json manifest element, so the classifier has no state declaration to read; it stays untagged (states wave plan, 2026-10-20, step 2 root cause 2)."
+    }
+  ]
+}

@@ -13,6 +13,10 @@ guard (`push-theme-snapshot.py::roster_guard`):
   * when the shifted colour keeps less than `CHROMA_FLOOR` OKLCH chroma the hue is gone, so the ring falls back to a
     neutral that reaches 3:1 (the site's ink on light grounds, its surface or ink on dark grounds);
   * a hand-set value (any key already present and non-empty) is checked and never overwritten;
+  * `settings.custom.focus.source = "draft"` marks the whole object as the client's own draft look (owner decision,
+    2026-10-20: a draft's focus styling wins over the contrast rule). Such an object is never recalibrated, and its
+    ring and ringOnDark are recorded (`draft_ring_notes`) instead of failed on 3:1; inner/ink and the key set are
+    still checked. `offset` and `bloom` are optional shape tokens (`OPTIONAL_KEYS`, read by focus.css) kept as written;
   * the framework file (`theme/sgs-theme/theme.json`) is the generic base, not a client: it keeps the palette-reference
     defaults of plan section 2.3 (`ring` and `ringOnDark` are `var(--wp--preset--color--accent)`), is never shifted, and is
     exempt from the 3:1 ring test (its keys and `inner`/`ink` ratio are still checked). Only client snapshots are derived.
@@ -32,6 +36,10 @@ import snapshot_palette_roster as roster
 SCRIPTS = Path(__file__).resolve().parent
 FOCUS_KEYS = ("width", "inner", "ink", "ring", "near", "far", "ringOnDark", "nearOnDark", "farOnDark",
               "signatureA", "signatureB", "signatureC")
+# Optional keys: not required of a snapshot, kept as written. `offset` is the ring gap (a CSS length), `bloom` the glow
+# strength (0 to 1). `source` marks a draft-sourced look.
+OPTIONAL_KEYS = ("offset", "bloom", "source")
+DRAFT_SOURCE = "draft"
 TEXT_SLUGS = frozenset(("text", "heading", "link", "link-hover", "section-text"))
 # Signal colours are icon, text and badge fills; their `-light` tints are the grounds (alert and notice bands).
 SIGNAL_SLUGS = frozenset(("success", "error", "info", "warning", "whatsapp"))
@@ -217,8 +225,9 @@ def derive_focus(snapshot: dict, framework: bool = False, recalibrate: bool = Fa
     derived.update(signatureA=var("primary"), signatureB=var("accent"), signatureC=var("accent-light"))
 
     out: dict[str, str] = {}
+    draft = existing.get("source") == DRAFT_SOURCE
     for key in FOCUS_KEYS:
-        if recalibrate and not framework and key in ("ring", "ringOnDark"):
+        if recalibrate and not framework and not draft and key in ("ring", "ringOnDark"):
             out[key] = derived[key]
         elif isinstance(existing.get(key), str) and existing[key].strip():
             out[key] = existing[key]
@@ -237,6 +246,28 @@ def focus_of(snapshot: dict) -> dict:
     return focus if isinstance(focus, dict) else {}
 
 
+def draft_sourced(snapshot: dict) -> bool:
+    """True when the snapshot's focus object is marked as the client's draft look (`source` is "draft")."""
+    return focus_of(snapshot).get("source") == DRAFT_SOURCE
+
+
+def draft_ring_notes(snapshot: dict) -> list[str]:
+    """For a draft-sourced focus object, the measured ring ratios (recorded, never failed): one line per ring key that
+    resolves, naming the lowest ratio and its ground. Empty for a snapshot that is not draft-sourced."""
+    if not draft_sourced(snapshot):
+        return []
+    palette = roster.palette_map(snapshot)
+    focus = focus_of(snapshot)
+    gs = grounds(snapshot)
+    notes = []
+    for key, want in (("ring", "light"), ("ringOnDark", "dark")):
+        value = resolve(focus.get(key), palette)
+        low, slug = min_ratio(value, [(s, h) for s, h, t in gs if t == want]) if value else (None, None)
+        if low is not None:
+            notes.append(f"{key} {value} is {low:.2f}:1 on {slug} (draft-sourced, {'under' if low < MIN_CORE else 'at or over'} {MIN_CORE}:1, not failed)")
+    return notes
+
+
 def missing_focus_keys(snapshot: dict) -> list[str]:
     """The FOCUS_KEYS the snapshot lacks (absent, null or blank), in key order."""
     focus = focus_of(snapshot)
@@ -251,7 +282,7 @@ def check_snapshot(snapshot: dict, framework: bool = False) -> list[str]:
     gs = grounds(snapshot)
     absent = set(missing_focus_keys(snapshot))
     for key, want in (("ring", "light"), ("ringOnDark", "dark")):
-        if key in absent or framework:
+        if key in absent or framework or draft_sourced(snapshot):
             continue
         value = resolve(focus[key], palette)
         if value is None:

@@ -146,6 +146,19 @@ export function stateDisagreement( report, g, stateMap ) {
 	return { width: Number( width ), values, detail: `${ g.prop } is read at ${ Object.entries( values ).map( ( [ ws, v ] ) => `${ v } in ${ ws }` ).join( ' and ' ) } at ${ width }px, and every one of those walker states maps to the setting state "${ g.state || 'rest' }": one setting cannot hold both draft values${ clashing.length > 1 ? ` (${ clashing.length } widths disagree)` : '' }` };
 }
 
+// The conflict a reasons entry names for a group, or null. An entry's key is "<ref>|<path>|<kind>|<property>" (kind
+// `hover` for the hover state, else a style); it matches the group on the same node, element path and property, in the
+// hover state or not. Returns { detail } in stateDisagreement's shape.
+export function namedConflict( g, refused ) {
+	for ( const e of refused || [] ) {
+		const p = String( e.key ).split( '|' );
+		if ( p[ 0 ] === g.ref && p.slice( 1, -2 ).join( '|' ) === g.path && p.at( -1 ) === g.prop && ( 'hover' === p.at( -2 ) ) === ( 'hover' === g.state ) ) {
+			return { detail: `state-map-reasons.json names ${ g.prop } on ${ g.pair } as a walker-state conflict the state map cannot express: ${ e.reason }` };
+		}
+	}
+	return null;
+}
+
 // The setting state a group resolves in. A walker state the surface maps to a setting state (an accordion's `open`, a
 // header's `scrolled`) asks for a state setting only for what that state changes: when every draft value the group reads
 // matches the draft's value in the rest walker states at that width, or the element is never read at rest (it shows only
@@ -169,7 +182,9 @@ export function effectiveState( report, g, stateMap ) {
 // Content rows (text, presence, link coverage) measured at rest and attributable to a node are grouped apart, in
 // `content`, one group per node, element, kind and key; ones the walker gives no node for are `contentUnattributed`; ones
 // from a state other than rest stay in `other` (no content setting is bound to a state).
-export function writableGroups( report, stateMap ) {
+// `refused` is the surface's conflict entries from scripts/parity/flows/state-map-reasons.json: a group one of them names
+// (namedConflict) is refused as a stateConflict too, whether or not the draft values disagree in this report.
+export function writableGroups( report, stateMap, refused = [] ) {
 	const groups = new Map();
 	const contentGroups = new Map();
 	const box = [];
@@ -240,7 +255,7 @@ export function writableGroups( report, stateMap ) {
 	const writable = [];
 	const stateConflict = [];
 	for ( const g of groups.values() ) {
-		const conflict = stateDisagreement( report, g, stateMap );
+		const conflict = stateDisagreement( report, g, stateMap ) || namedConflict( g, refused );
 		conflict ? stateConflict.push( { ...g, conflict } ) : writable.push( g );
 	}
 	return { groups: writable, box, unmapped, unmappedState, other, stateConflict, content: [ ...contentGroups.values() ], contentUnattributed };

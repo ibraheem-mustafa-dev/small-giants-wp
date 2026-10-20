@@ -70,7 +70,7 @@ const RADII = [
 
 /**
  * SGS Cart — the mini-cart panel's design: text, sizes, spacing, corners,
- * shadow and the drawer's slide-in. Every value is scoped to the panel by
+ * shadow and the drawer's slide (in, and reversed out). Every value is scoped to the panel by
  * includes/helpers-cart-panel.php::sgs_cart_panel_css().
  *
  * @param {Object}   root0               Props.
@@ -158,8 +158,8 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 				{ hasDrawer && (
 					<>
 						<RangeControl
-							label={ __( 'Slide-in time (ms)', 'sgs-blocks' ) }
-							help={ __( '0 keeps the 250ms default.', 'sgs-blocks' ) }
+							label={ __( 'Slide time (ms)', 'sgs-blocks' ) }
+							help={ __( 'Times the slide in and, reversed, the slide out. 0 keeps the 250ms default.', 'sgs-blocks' ) }
 							value={ attributes.panelSlideDuration ?? 0 }
 							min={ 0 }
 							max={ 3000 }
@@ -170,7 +170,7 @@ export default function PanelDesignControls( { name, attributes, setAttributes, 
 						/>
 						<EasingAtom
 							vocab="nav"
-							label={ __( 'Slide-in speed curve', 'sgs-blocks' ) }
+							label={ __( 'Slide speed curve', 'sgs-blocks' ) }
 							value={ attributes.panelSlideEasing }
 							custom={ attributes.panelSlideEasingCustom }
 							fallback="ease-out"

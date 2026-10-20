@@ -289,8 +289,12 @@
 		animation: sgs-cart-drawer-in var(--wp--custom--duration--fast, 0.25s) var(--wp--custom--easing--ease-out, ease-out);
 	}
 
+	/* The close is the open played backwards on the same duration and curve: [open] stays while the shared nav
+	   store's runClose adds .is-closing, so the open rule (and the instance's panelSlide* rule) still time it. A
+	   name of its own restarts the finished open animation. */
 	.sgs-cart__panel--drawer.is-closing {
-		animation: sgs-cart-drawer-out 0.2s var(--wp--custom--easing--ease-in, ease-in); /* sgs-motion: exact */
+		animation-name: sgs-cart-drawer-close;
+		animation-direction: reverse;
 	}
 }
 
@@ -306,15 +310,15 @@
 	}
 }
 
-@keyframes sgs-cart-drawer-out {
+@keyframes sgs-cart-drawer-close {
 	from {
-		opacity: 1;
-		transform: none;
+		opacity: 0;
+		transform: translateX(100%);
 	}
 
 	to {
-		opacity: 0;
-		transform: translateX(100%);
+		opacity: 1;
+		transform: none;
 	}
 }
 

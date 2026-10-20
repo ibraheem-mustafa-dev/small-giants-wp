@@ -4,7 +4,8 @@
   --fix               print the diff that writes the full settings.custom.focus object (nothing is written)
   --fix --apply       write it to sites/*/theme-snapshot.json and theme/sgs-theme/theme.json
   --recalibrate       with --fix / --survey: recompute `ring` and `ringOnDark` from the current grounds even when set
-  --check             exit 1 on a missing key, a core ring under 3:1 on its grounds, or inner/ink under 9:1
+  --check             exit 1 on a missing key, a core ring under 3:1 on its grounds, or inner/ink under 9:1; a snapshot whose
+                      focus object has `source: "draft"` (the client's own draft look) has its ring ratios recorded, not failed
   --self-test         the rule against built-in cases (no repository file is read)
 
 `--client <folder>` limits any mode to one snapshot (`framework` is theme/sgs-theme/theme.json: the generic base, which
@@ -122,12 +123,15 @@ def cmd_fix(only: list[str] | None, apply: bool, recalibrate: bool = False) -> i
 def cmd_check(only: list[str] | None) -> int:
     failed = 0
     for name, path in targets(only):
-        problems = ft.check_snapshot(json.loads(read(path)), framework=name == FRAMEWORK)
+        snap = json.loads(read(path))
+        problems = ft.check_snapshot(snap, framework=name == FRAMEWORK)
         if problems:
             failed += 1
             print(f"FAIL {name}: " + "; ".join(problems))
         else:
             print(f"ok   {name}")
+        for note in ft.draft_ring_notes(snap):
+            print(f"     {name}: {note}")
     print(f"{failed} of {len(targets(only))} target(s) failing")
     return 1 if failed else 0
 
