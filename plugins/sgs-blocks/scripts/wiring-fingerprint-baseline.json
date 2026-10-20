@@ -4,7 +4,8 @@
   "L3": 183,
   "L5": 17,
   "L2": 6,
-  "L3-tier": 1
+  "L3-tier": 1,
+  "L7": 1
  },
  "gaps": [
   "sgs/account::showLatestOrder::L5",
@@ -12,6 +13,7 @@
   "sgs/brand-strip::transitionDuration::L5",
   "sgs/brand-strip::transitionEasing::L2",
   "sgs/brand-strip::transitionEasing::L5",
+  "sgs/buybox::addToCartStyle::L7",
   "sgs/buybox::extrasBeforeCount::L3",
   "sgs/buybox::pickerBandScale::L3",
   "sgs/card-grid::transitionDuration::L2",
