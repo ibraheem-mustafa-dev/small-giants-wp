@@ -227,3 +227,9 @@ test( 'slotFor reads a transition marker through timingSet: repeated and reorder
 	assert.deepEqual( slotFor( durRow(), m, at( '0.3s' ), at( '0.437s, 0.437s' ) ).slot, '' );
 	assert.equal( slotFor( durRow(), m, at( '0.3s, 0.3s' ), at( '0.3s' ) ).dead, true );
 } );
+
+test( 'MUST FAIL (noMarker: per-device order): a flex order setting gets one whole number per tier', () => {
+	const [ m ] = markersFor( { attr_name: 'order', css_property: 'order', tier_shape: 'tier_object' }, blockSchema( 'sgs/media' ), { palette: [], spacing: [], fontSizes: [] } );
+	assert.deepEqual( m?.attrs, { order: { desktop: 3, tablet: 2, mobile: 1 } } );
+	assert.deepEqual( m?.expect, { 1440: '3', 768: '2', 375: '1' } );
+} );

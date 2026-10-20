@@ -29,7 +29,7 @@ import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, wri
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll } from './lib/calibrate.mjs';
+import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, readAll, missedReason } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 
@@ -219,7 +219,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				return;
 			}
 			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
-			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
+			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
 		} );
 		done++;
 	}
@@ -253,7 +253,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		}
 		const name = inst.row.attr_name;
 		if ( [ 'hover', 'focus', 'class' ].includes( inst.trigger ) && inst.hoverMissed ) {
-			untested.push( `${ name }:${ inst.row.css_state } (the element stays hidden with its panel opened, so the state cannot be triggered)` );
+			untested.push( `${ name }:${ inst.row.css_state } (${ missedReason( inst.hoverWhy ) })` );
 			return;
 		}
 		if ( 'scroll' === inst.trigger && inst.scrollMissed ) {

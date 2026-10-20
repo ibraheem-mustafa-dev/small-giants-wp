@@ -421,3 +421,14 @@ test( 'transition-duration: not over-suppressing, milliseconds and a real zero s
 	assert.equal( timeToMs( 'ease' ), null );
 	assert.equal( timeWrite( 'ease' ).writes, undefined );
 } );
+
+test( 'scrim blur: a measured backdrop-filter blur() writes the length the per-device setting holds; none is no blur', () => {
+	const calibration = cal( { scrimBlur: { slot: '@scrim', property: 'backdrop-filter' } } );
+	const r = resolve( { block: 'sgs/nav-drawer', slot: '@scrim', prop: 'backdrop-filter', perWidth: { 375: 'blur(2px)', 768: 'blur(2px)', 1440: 'blur(2px)' } }, { db, snapshot, calibration } );
+	assert.deepEqual( r.writes, [ { attr: 'scrimBlur', value: { mobile: '2px', tablet: '2px', desktop: '2px' }, merge: 'deep' } ] );
+	const none = resolve( { block: 'sgs/nav-drawer', slot: '@scrim', prop: 'backdrop-filter', perWidth: { 1440: 'none' } }, { db, snapshot, calibration } );
+	assert.deepEqual( none.writes, [ { attr: 'scrimBlur', value: { desktop: '0px' }, merge: 'deep' } ] );
+	// A filter list the setting cannot hold (a second function) is a gap, never written as text.
+	const list = resolve( { block: 'sgs/nav-drawer', slot: '@scrim', prop: 'backdrop-filter', perWidth: { 1440: 'blur(2px) saturate(1.2)' } }, { db, snapshot, calibration } );
+	assert.ok( list.gap, `expected a gap, got ${ JSON.stringify( list ) }` );
+} );

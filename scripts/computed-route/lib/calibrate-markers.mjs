@@ -350,6 +350,18 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 			const count = GRID === prop ? { form: 'count', tracks: Object.fromEntries( WIDTHS.map( ( w ) => [ w, Number( tiers[ WIDTH_TIER[ w ] ] ) ] ) ) } : {};
 			return [ { label: 'tiers-value', attrs: set( tiers ), expect: null, ...count } ];
 		}
+		// A per-device opacity (a scrim's tint strength) and a backdrop blur radius, which helpers-scrim.php paints as
+		// blur(<length>): one value per tier, so a dead tier shows.
+		if ( 'opacity' === prop ) {
+			return [ { label: 'tiers-opacity', attrs: set( { desktop: 0.37, tablet: 0.23, mobile: 0.07 } ), expect: { 1440: '0.37', 768: '0.23', 375: '0.07' } } ];
+		}
+		// A per-device flex order: a different whole number per tier.
+		if ( 'order' === prop ) {
+			return [ { label: 'tiers-order', attrs: set( { desktop: 3, tablet: 2, mobile: 1 } ), expect: { 1440: '3', 768: '2', 375: '1' } } ];
+		}
+		if ( 'backdrop-filter' === prop ) {
+			return [ { label: 'tiers-blur', attrs: set( { desktop: '37px', tablet: '23px', mobile: '7px' } ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `blur(${ TIER_PX[ WIDTH_TIER[ w ] ] }px)` ] ) ) } ];
+		}
 		if ( ! LENGTH.test( prop ) && 'line-height' !== prop ) {
 			return [];
 		}

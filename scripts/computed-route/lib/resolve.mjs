@@ -161,6 +161,16 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		const m = String( raw ).match( /^url\(["']?([^"')]+)["']?\)$/ );
 		return m ? { value: { url: m[ 1 ] } } : { error: `${ raw } is not one image` };
 	}
+	if ( 'backdrop-filter' === prop ) {
+		// A backdrop blur setting holds the radius (helpers-scrim.php paints blur(<length>)): one blur() is its length,
+		// none is no blur; any other filter list is not one radius.
+		const v = String( raw ?? '' ).trim();
+		const m = v.match( /^blur\(\s*([^()\s]+)\s*\)$/ );
+		if ( 'none' === v ) {
+			return { value: '0px' };
+		}
+		return m ? formatValue( { prop: 'width', raw: m[ 1 ], def: { type: 'string' }, fontPx, log, where } ) : { error: `${ raw } is not one blur() radius` };
+	}
 	if ( TIME_PROPS.includes( prop ) ) {
 		// A time setting holds whole milliseconds: seconds convert (0.25s is 250), never a decimal or a unit suffix. A list
 		// repeating one time for every transitioned property ("0.25s, 0.25s") is that time.

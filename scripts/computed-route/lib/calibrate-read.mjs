@@ -58,6 +58,11 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 		const uid = [ ...root.classList ].find( ( c ) => /^sgs-[a-z0-9-]+-[0-9a-f]{8}$/.test( c ) );
 		if ( uid ) {
 			[ ...document.querySelectorAll( `.${ uid }` ) ].filter( ( c ) => ! root.contains( c ) && ! c.contains( root ) ).forEach( ( c, i ) => collect( els, c, i ? `@companion:${ i + 1 }` : '@companion' ) );
+			// The viewport scrim (helpers-scrim.php::sgs_scrim_render) is printed at wp_footer as a child of <body> carrying
+			// `<uid>-scrim`, so it is read keyed @scrim (its tint layer @scrim::before). Its blur, tint and fade compute at
+			// rest; only its own opacity waits for the owner to open.
+			const scrim = document.querySelector( `.${ uid }-scrim` );
+			scrim && ! root.contains( scrim ) && collect( els, scrim, '@scrim' );
 		}
 		out.push( els );
 	}
@@ -104,19 +109,20 @@ export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 
 // Reads every instance at each width; state instances again under their trigger; scroll instances (and every default
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
-// { scrolled: { width: { n: read } }, scrollMissed: [n], hoverMissed: [n] (state instances whose element is hidden
-// even with its panel opened) }. The widths are read in parallel, each in its own page of the logged-in context.
+// { scrolled: { width: { n: read } }, scrollMissed: [n], hoverMissed: [n] (state instances read at no width),
+// hoverWhy: { n: [ '<width>px: <why>' ] } (why each width's read failed: hidden, no instance, or the browser's error) }. The widths are read in parallel, each in its own page of the logged-in context.
 export async function readAll( page, url, instances ) {
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
 	const missedAtAWidth = [];
 	const hoverHit = new Set();
+	const hoverWhy = {};
 	const ctx = page.context();
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy } );
 		} finally {
 			await p.close();
 		}
@@ -126,7 +132,19 @@ export async function readAll( page, url, instances ) {
 	const hoverMissed = missedAtAWidth.filter( ( n ) => ! hoverHit.has( n ) );
 	scrollMissed.sort( ( a, b ) => a - b );
 	hoverMissed.sort( ( a, b ) => a - b );
-	return Object.assign( out, { scrolled, scrollMissed, hoverMissed } );
+	hoverMissed.forEach( ( n ) => hoverWhy[ n ]?.sort( ( a, b ) => parseInt( a, 10 ) - parseInt( b, 10 ) ) );
+	return Object.assign( out, { scrolled, scrollMissed, hoverMissed, hoverWhy: Object.fromEntries( hoverMissed.map( ( n ) => [ n, hoverWhy[ n ] || [] ] ) ) } );
+}
+
+// The untested-state reason for a state instance read at no width, from readAll's hoverWhy lines. Each width names
+// its own failure: the element hidden even with its panel opened, the instance absent, or the browser's own error
+// (an action Playwright could not complete), so a failure is never reported as hidden when it was not.
+export function missedReason( whys = [] ) {
+	const lines = [ ...new Set( whys ) ];
+	if ( lines.length && lines.every( ( l ) => / hidden$/.test( l ) ) ) {
+		return 'the element stays hidden with its panel opened, so the state cannot be triggered';
+	}
+	return lines.length ? `the state could not be triggered: ${ lines.join( '; ' ) }` : 'the state could not be triggered';
 }
 
 // Clicks the marked panel toggle. A toggle hidden at this width (a burger at desktop) cannot take a real click even
@@ -144,7 +162,8 @@ export async function openToggle( page ) {
 const args = ( count, only ) => [ count, CAL_PREFIX, READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
-// it is hidden), or the state's ancestor class added. Returns the read, or null when the element stays hidden.
+// it is hidden), or the state's ancestor class added. Returns { read }, or { read: null, why } when it could not be read:
+// why is 'hidden', 'no instance' or the error the browser raised.
 async function readUnderTrigger( page, instances, n, inst ) {
 	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances.length, n ) ) )[ n ];
 	if ( 'class' === inst.trigger ) {
@@ -152,7 +171,7 @@ async function readUnderTrigger( page, instances, n, inst ) {
 		await page.waitForTimeout( 400 );
 		const read = await one();
 		await page.evaluate( ( [ sel, cls ] ) => document.querySelector( sel )?.parentElement?.classList.remove( cls ), [ `.${ CAL_PREFIX }${ n }`, inst.stateClass ] );
-		return read;
+		return read ? { read } : { read: null, why: 'no instance' };
 	}
 	let mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 	let opened = false;
@@ -163,6 +182,7 @@ async function readUnderTrigger( page, instances, n, inst ) {
 		mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 	}
 	let read = null;
+	let why = mark ? 'hidden' : 'no instance';
 	if ( mark?.visible ) {
 		const loc = page.locator( '[data-cr-target]' ).first();
 		try {
@@ -174,10 +194,13 @@ async function readUnderTrigger( page, instances, n, inst ) {
 			}
 			await page.waitForTimeout( 500 );
 			read = await one();
-		} catch {
+			why = read ? null : 'no instance';
+		} catch ( e ) {
 			// An element Playwright cannot scroll to or reach (it reported visible but sits where no scroll brings it into
-			// view) leaves this instance unread, listed as missed, instead of failing the whole block's run.
+			// view) leaves this instance unread, listed as missed with the browser's own error, instead of failing the
+			// whole block's run.
 			read = null;
+			why = String( e?.message || e ).split( /\r?\n/ )[ 0 ].slice( 0, 200 );
 		}
 		await page.mouse.move( 0, 0 );
 		await page.evaluate( () => document.activeElement?.blur() );
@@ -189,11 +212,11 @@ async function readUnderTrigger( page, instances, n, inst ) {
 	if ( inst.companionClass ) {
 		await page.evaluate( ( cls ) => document.querySelectorAll( `.${ cls }` ).forEach( ( e ) => e.classList.remove( cls ) ), inst.companionClass );
 	}
-	return read;
+	return read ? { read } : { read: null, why };
 }
 
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {} } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
@@ -216,12 +239,13 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		if ( ! [ 'hover', 'focus', 'class' ].includes( inst.trigger ) ) {
 			continue;
 		}
-		const read = await readUnderTrigger( page, instances, n, inst );
+		const { read, why } = await readUnderTrigger( page, instances, n, inst );
 		if ( read ) {
 			out[ w ][ n ] = read;
 			hoverHit.add( n );
-		} else if ( ! hoverMissed.includes( n ) ) {
-			hoverMissed.push( n );
+		} else {
+			( hoverWhy[ n ] ??= [] ).push( `${ w }px: ${ why }` );
+			hoverMissed.includes( n ) || hoverMissed.push( n );
 		}
 	}
 	if ( instances.some( ( i ) => 'scroll' === i.trigger ) ) {

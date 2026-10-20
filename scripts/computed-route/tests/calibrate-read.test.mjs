@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { slotFor, WIDTHS } from '../lib/calibrate.mjs';
-import { readInstancesInPage, openToggle, markTargetInPage } from '../lib/calibrate-read.mjs';
+import { readInstancesInPage, openToggle, markTargetInPage, missedReason } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, CAL_PSEUDO_PROPS, CAL_EXTRA_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 
@@ -119,4 +119,11 @@ test( 'MUST FAIL (site-header background size/attachment read dead): the media l
 	assert.equal( slot.slot, '::before' );
 	assert.equal( slot.property, 'background-size' );
 	assert.deepEqual( slotFor( { attr_name: 'backgroundSize', css_property: 'background-size', tier_shape: null }, { label: 'contain' }, reads( 'cover' ), reads( 'cover' ) ), { dead: true } );
+} );
+
+test( 'a missed state names each width\'s real failure; "stays hidden" only when every width was hidden', () => {
+	assert.equal( missedReason( [ '375px: hidden', '768px: hidden', '1440px: hidden' ] ), 'the element stays hidden with its panel opened, so the state cannot be triggered' );
+	const err = missedReason( [ '375px: locator.hover: Element is outside of the viewport', '768px: hidden' ] );
+	assert.match( err, /^the state could not be triggered: 375px: locator\.hover: Element is outside of the viewport; 768px: hidden$/ );
+	assert.equal( missedReason( [] ), 'the state could not be triggered' );
 } );
