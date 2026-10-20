@@ -14,7 +14,9 @@ the source of truth; the DB tables are the runtime query target, FP-1):
   html_tag_to_core_block <- atomic-tag-map.json      (bare HTML tag -> SGS block slug; the file
                             is the single source of the key set, so keys it lacks are deleted)
   property_equivalents   <- property-equivalents.json (rows the file drops are deleted)
-  motion_presets         <- motion-presets.json      (validated against the motion schema first; a bad
+  states                 <- states.json              (the state vocabulary, in file order; rows the file
+                            drops are deleted)
+  motion_presets        <- motion-presets.json      (validated against the motion schema first; a bad
                             preset aborts with a non-zero exit; rows the file lacks are deleted)
 
 Importing this module touches nothing: no database connection, no file read. ``seed_all(db_path)``
@@ -53,6 +55,8 @@ _SCALAR_MEDIA_ROLE = "scalar-media"
 _ATOMIC_TAG_MAP_FILE = _DATA_DIR / "atomic-tag-map.json"
 _PROPERTY_EQUIVALENTS_FILE = _DATA_DIR / "property-equivalents.json"
 _PROPERTY_EQUIVALENTS_COLUMNS = ("draft_property", "setting_property", "hop", "condition", "note")
+_STATES_FILE = _DATA_DIR / "states.json"
+_STATES_COLUMNS = ("state", "family", "kind", "token", "reach", "call", "note")
 
 
 # table -> (data file, ordered columns)
@@ -430,6 +434,27 @@ def _seed_property_equivalents(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
+# --- states ---
+
+def _seed_states(conn: sqlite3.Connection) -> None:
+    """Replace the table's rows with states.json's, in file order (a reader matches the first row naming a token).
+
+    A missing or unreadable file leaves the existing rows untouched.
+    """
+    try:
+        rows = json.loads(_STATES_FILE.read_text(encoding="utf-8"))["states"]
+    except (OSError, ValueError, KeyError):
+        return
+    conn.execute("DELETE FROM states")
+    cols = ", ".join(_STATES_COLUMNS)
+    marks = ", ".join("?" for _ in _STATES_COLUMNS)
+    conn.executemany(
+        f"INSERT INTO states (id, {cols}) VALUES (?, {marks})",  # noqa: S608 - fixed column names only
+        [(i + 1, *(r.get(c) for c in _STATES_COLUMNS)) for i, r in enumerate(rows)],
+    )
+    conn.commit()
+
+
 def seed_all(db_path: Path | str | None = None) -> None:
     """Run every seeder against ``db_path`` (default: ``default_db_path()``) over its own connection.
 
@@ -451,6 +476,7 @@ def seed_all(db_path: Path | str | None = None) -> None:
             ("scalar-media roles", _seed_scalar_media_roles),
             ("html_tag_to_core_block", _seed_html_tag_to_core_block),
             ("property_equivalents", _seed_property_equivalents),
+            ("states", _seed_states),
             ("motion_presets", seed_motion_presets),
         )
         for label, step in steps:

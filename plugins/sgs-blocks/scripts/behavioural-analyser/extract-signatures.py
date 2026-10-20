@@ -41,6 +41,7 @@ if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
 from block_source_files import edit_source, render_source  # noqa: E402
+import state_vocabulary  # noqa: E402
 
 # ── Shared render files (2026-09-10, colour-resolution root-cause report) ──────
 # A colour attribute genuinely resolved ONLY inside a SHARED include (never
@@ -812,50 +813,27 @@ _GRADIENT_FN_RE = re.compile(r"(?:linear|radial|conic)-gradient\s*\(", re.IGNORE
 # by walking actual RULE BLOCKS (selector + body) so every declaration carries its
 # owning selector, then deriving state from that selector text.
 #
-# State vocabulary is REUSED from the element manifest system (Bean's explicit
-# instruction — no invented state names). Querying every block.json's
-# `supports.sgs.elements.*.states` keys (2026-07-21) found exactly TWO in use across
-# the whole framework: 'hover' and 'current'. Only those two are mapped here.
-# `[aria-selected="true"]` maps to 'current' — NOT CSS `:active` (tabActive* is a
-# documented example of this: the manifest's own tabs.block.json note says
-# tabActiveIndicatorColour "renders as [aria-selected='true']... NOT CSS :active").
-# `:hover` maps to 'hover'. Other pseudo-classes/attribute-selectors that plainly
-# express a state concept but have NO existing manifest word (`:focus`,
-# `:focus-visible`, `:disabled`, `[aria-expanded="true"]`) are DETECTED but left
-# unmapped (None) — recorded in `_UNMAPPED_STATE_SELECTORS` for the Task-2 audit
-# rather than inventing new vocabulary unilaterally.
-_STATE_SELECTOR_PATTERNS: tuple[tuple[str, str], ...] = (
-    (r'aria-selected\s*=\s*["\']true["\']', "current"),
-    (r":hover\b", "hover"),
-)
-_UNMAPPED_STATE_PATTERNS: tuple[str, ...] = (
-    r":focus-visible\b", r":focus\b", r":disabled\b",
-    r'aria-expanded\s*=\s*["\']true["\']', r"\[disabled\]",
-)
-# Populated at runtime by `_derive_state_from_selector` — a set of RAW selector
-# strings that expressed a genuine state concept with no manifest word to map it to.
-# Surfaced in the classifier's summary report (Task 2 audit requirement).
+# The state words and the mechanisms that express them come from the framework state vocabulary
+# (scripts/data/states.json, the source of the DB's `states` table) through state_vocabulary.py: `:hover` and
+# `:focus-visible` (hover and focus), `[aria-current]`, `[aria-selected="true"]`, `.is-active` (current), `[open]`,
+# `[aria-expanded="true"]` (open), `:disabled` (disabled), the header's scroll classes and the rest. A token inside
+# `:not( ... )` says "not in that state" and tags nothing. The families another wave owns (form-field states, effect
+# states, media features) tag nothing here; a selector carrying one is recorded in `_UNMAPPED_STATE_SELECTORS_SEEN`
+# for the classifier's summary report.
 _UNMAPPED_STATE_SELECTORS_SEEN: set[str] = set()
 
 
 def _derive_state_from_selector(selector: str) -> "str | None":
-    """Derive a manifest-vocabulary state name from a CSS selector's own text.
+    """The vocabulary state a CSS selector's own text expresses, or None.
 
     Checked against EVERY comma-separated part of a selector group (e.g.
-    `.a:hover, .b:hover{...}`) — if ANY part expresses a mapped state, that state
-    applies (conservative: a mixed group where parts disagree returns the first
-    match found, since in every occurrence checked in this codebase a selector
-    group shares one consistent state condition, never a mix of different ones).
+    `.a:hover, .b:hover{...}`) — if ANY part expresses a state, that state applies (the first in vocabulary order:
+    in every occurrence checked in this codebase a selector group shares one state condition, never a mix).
     """
-    sel = selector.lower()
-    for pattern, state_name in _STATE_SELECTOR_PATTERNS:
-        if re.search(pattern, sel):
-            return state_name
-    for pattern in _UNMAPPED_STATE_PATTERNS:
-        if re.search(pattern, sel):
-            _UNMAPPED_STATE_SELECTORS_SEEN.add(selector.strip())
-            break
-    return None
+    state, _token = state_vocabulary.derive_state(selector)
+    if state is None and state_vocabulary.untagged_state_token(selector):
+        _UNMAPPED_STATE_SELECTORS_SEEN.add(selector.strip())
+    return state
 
 
 def _iter_rule_blocks(css_src: str) -> "list[tuple[str, str]]":
@@ -938,9 +916,6 @@ def _top_level_vars(value: str) -> set[str]:
 
 
 _BEM_ELEMENT_RE = re.compile(r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)", re.IGNORECASE)
-_BEM_CURRENT_MODIFIER_RE = re.compile(
-    r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)--current\b", re.IGNORECASE
-)
 _BEM_ANY_MODIFIER_RE = re.compile(
     r"sgs-([a-z0-9-]+?)__([a-z0-9-]+)--([a-z0-9-]+)", re.IGNORECASE
 )
@@ -950,7 +925,7 @@ def _bem_modifier_siblings(css_src: str, block_short_slug: str) -> "dict[str, se
     """For THIS block's own BEM elements, return element -> the set of every
     `--modifier` suffix (lowercased) seen anywhere in the stylesheet for that
     element, e.g. breadcrumbs -> {'item': {'current'}}, buybox ->
-    {'price': {'current', 'regular', 'pct-off'}}. Feeds `_bem_current_state`'s
+    {'price': {'current', 'regular', 'pct-off'}}. Feeds `_bem_modifier_state`'s
     state-vs-variant disambiguation (2026-08-15, Class 4 fix-of-the-fix) — see
     that function's docstring for why the sibling set is the signal.
     """
@@ -962,13 +937,15 @@ def _bem_modifier_siblings(css_src: str, block_short_slug: str) -> "dict[str, se
     return out
 
 
-def _bem_current_state(
+def _bem_modifier_state(
     selector: str,
     block_short_slug: str,
     sibling_modifiers: "dict[str, set[str]]",
 ) -> "str | None":
-    """A BEM `--current` modifier expresses the manifest 'current' state — ONLY when `current` is the SOLE modifier
-    this stylesheet ever pairs with that element. Added 2026-08-15 as the fix for
+    """A BEM element modifier the state vocabulary names (`--current`, `--active`, `--open`, `--selected`,
+    `--disabled`, `--hidden` and the rest, state_vocabulary.bem_modifiers()) expresses its state ONLY when every
+    modifier this stylesheet pairs with that element is a state modifier. The rule was first written for `--current`
+    alone (2026-08-15) as the fix for
     the regression the same day's Class 4 fix (bare `--modifier` stripped from
     the captured element) caused: `sgs/breadcrumbs.linkColour` and
     `.currentColour` both derived `css_element='item'` with no state, an
@@ -992,20 +969,14 @@ def _bem_current_state(
     concept on a plain price display.
 
     So the rule is the SIBLING-MODIFIER SET for that element across the whole
-    stylesheet, not the word "current" alone: a lone `current` -> state
-    'current'; `current` plus any other modifier on the same element -> left
-    unmapped (falls through exactly as before this fix — base element only, no
-    state — the correct behaviour for a variant). Universal (FP-9): every
-    block with this shape is classified by the same rule, no per-block carve-out.
+    stylesheet, not the modifier word alone: an element whose modifiers are all
+    state modifiers (`item--current`, or `tab--active` beside `tab--disabled`) ->
+    each modifier's state; any value variant among them (`price--regular`) ->
+    left unmapped (base element only, no state — the correct behaviour for a
+    variant). Universal (FP-9): every block with this shape is classified by the
+    same rule, no per-block carve-out.
     """
-    for m in _BEM_CURRENT_MODIFIER_RE.finditer(selector):
-        if m.group(1).lower() != block_short_slug.lower():
-            continue
-        element = m.group(2).lower()
-        siblings = sibling_modifiers.get(element, set())
-        if siblings <= {"current"}:
-            return "current"
-    return None
+    return state_vocabulary.bem_state(selector, block_short_slug, sibling_modifiers)[0]
 
 
 def _derive_bem_element_from_selector(selector: str, block_short_slug: str) -> "str | None":
@@ -1143,7 +1114,7 @@ def _custom_props_consumed(
     for selector, body in _iter_rule_blocks(css_src):
         state = _derive_state_from_selector(selector)
         if state is None and block_short_slug:
-            state = _bem_current_state(selector, block_short_slug, sibling_modifiers)
+            state = _bem_modifier_state(selector, block_short_slug, sibling_modifiers)
         element = _derive_bem_element_from_selector(selector, block_short_slug) if block_short_slug else None
         for m in _DECL_RE.finditer(body):
             prop = m.group("prop").strip().lower()
