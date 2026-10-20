@@ -33,6 +33,7 @@ const path = require( 'path' );
 const { execFileSync } = require( 'child_process' );
 const { auditCss } = require( './audit.js' );
 
+/** The block stylesheets the build ships: `style.css`, which postbuild copies from `style-index.css` and `run-transform.js` guards (`style-index.css` is the unguarded original; the RTL twin mirrors it). */
 function findStyleCssFiles( baseDir ) {
 	const found = [];
 	if ( ! fs.existsSync( baseDir ) ) {
@@ -41,11 +42,9 @@ function findStyleCssFiles( baseDir ) {
 	for ( const entry of fs.readdirSync( baseDir, { withFileTypes: true } ) ) {
 		const full = path.join( baseDir, entry.name );
 		if ( entry.isDirectory() ) {
-			const candidate = path.join( full, 'style.css' );
-			if ( fs.existsSync( candidate ) ) {
-				found.push( candidate );
-			}
-			found.push( ...findStyleCssFiles( full ).filter( ( f ) => f !== candidate ) );
+			found.push( ...findStyleCssFiles( full ) );
+		} else if ( 'style.css' === entry.name ) {
+			found.push( full );
 		}
 	}
 	return found;
@@ -93,7 +92,7 @@ function runCssCheck( cssDir ) {
 	}
 	const files = findStyleCssFiles( cssDir );
 	if ( 0 === files.length ) {
-		return { ranOk: false, reason: `no style.css files found under ${ cssDir }`, findings: [] };
+		return { ranOk: false, reason: `no style.css files found under ${ cssDir } (run the postbuild steps: copy-built-styles.js, shadow-lift/run.js --build, hover-guard/run-transform.js)`, findings: [] };
 	}
 
 	const findings = [];
@@ -139,11 +138,16 @@ function runPhpCheck( includesDir, blocksDir ) {
 		return { ranOk: false, reason: `no PHP files found under ${ includesDir } or ${ blocksDir }`, findings: [] };
 	}
 
+	// Relative paths from the plugin root keep the JSON report small; the buffer is sized for the full report.
+	const pluginRoot = path.resolve( __dirname, '..', '..' );
+	const relTargets = targets.map( ( t ) => path.relative( pluginRoot, t ).split( path.sep ).join( '/' ) );
 	let stdout;
 	let status;
 	try {
-		stdout = execFileSync( 'php', [ path.join( __dirname, 'php-hover-scan.php' ), ...targets ], {
+		stdout = execFileSync( 'php', [ path.join( __dirname, 'php-hover-scan.php' ), ...relTargets ], {
+			cwd: pluginRoot,
 			encoding: 'utf8',
+			maxBuffer: 256 * 1024 * 1024,
 		} );
 		status = 0;
 	} catch ( err ) {

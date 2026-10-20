@@ -42,9 +42,13 @@
 
 namespace SGS\Blocks;
 
+use function sgs_hover_guarded_rule;
+
 if ( ! \defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+require_once __DIR__ . '/helpers-hover-state.php';
 
 /**
  * Field types this render layer will honour.
@@ -430,7 +434,7 @@ function sgs_apply_fx_cursor_field( string $block_content ): string {
 	$slot_rules = '';
 	if ( null !== $reveal ) {
 		$slot_rules .= array() === $reveal['rest'] ? '' : '.%1$s[data-sgs-cursor-field]::before{' . \implode( ';', $reveal['rest'] ) . '}';
-		$slot_rules .= array() === $reveal['hover'] ? '' : '.%1$s[data-sgs-cursor-field]:hover::before{' . \implode( ';', $reveal['hover'] ) . '}';
+		$slot_rules .= array() === $reveal['hover'] ? '' : sgs_hover_guarded_rule( '.%1$s[data-sgs-cursor-field]:hover::before', \implode( ';', $reveal['hover'] ) );
 	}
 
 	// A per-instance id scopes the rule to THIS block. Derived from the

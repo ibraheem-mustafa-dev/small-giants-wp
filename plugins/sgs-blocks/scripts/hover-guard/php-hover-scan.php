@@ -138,6 +138,9 @@ const SKIPPABLE_TOKEN_TYPES = array( T_WHITESPACE, T_COMMENT, T_DOC_COMMENT );
  *  double-underscore so it can never collide with a real `sgs_*` function name. */
 const GUARD_RECOGNITION_KEY = '__guard_recognition__';
 
+/** Reserved registry key: functions that only BUILD a hover selector list (the caller wraps it in the guard); name => reason. */
+const SELECTOR_BUILDERS_KEY = '__selector_builders__';
+
 /**
  * Load the declared cross-file emitter registry, plus the declared
  * external-guard recognition metadata (layer-1 wrapper function names,
@@ -173,9 +176,18 @@ function load_registry( string $path ): ?array {
 		}
 	}
 
+	$selectorBuilders = array();
+	if ( isset( $decoded[ SELECTOR_BUILDERS_KEY ] ) && is_array( $decoded[ SELECTOR_BUILDERS_KEY ] ) ) {
+		foreach ( $decoded[ SELECTOR_BUILDERS_KEY ] as $builder => $reason ) {
+			if ( is_string( $builder ) && is_string( $reason ) && '' !== trim( $reason ) && 0 !== strpos( $builder, '_' ) ) {
+				$selectorBuilders[ $builder ] = $reason; // a builder with no stated reason is not exempt
+			}
+		}
+	}
+
 	$emitters = array();
 	foreach ( $decoded as $fn_name => $entry ) {
-		if ( GUARD_RECOGNITION_KEY === $fn_name ) {
+		if ( GUARD_RECOGNITION_KEY === $fn_name || SELECTOR_BUILDERS_KEY === $fn_name ) {
 			continue; // consumed above, not an emitter row
 		}
 		if ( 0 === strpos( (string) $fn_name, '_' ) ) {
@@ -194,6 +206,7 @@ function load_registry( string $path ): ?array {
 	return array(
 		'emitters'          => $emitters,
 		'guard_recognition' => $guardRecognition,
+		'selector_builders' => $selectorBuilders,
 	);
 }
 
@@ -696,7 +709,8 @@ function analyze_span( array $tokens, int $spanStart, int $spanEnd, string $name
 	for ( $b = $spanStart; $b <= $spanEnd; $b++ ) {
 		$t = $tokens[ $b ];
 		if ( is_array( $t ) && in_array( $t[0], array( T_CONSTANT_ENCAPSED_STRING, T_ENCAPSED_AND_WHITESPACE, T_STRING ), true ) ) {
-			if ( false !== strpos( $t[1], ':hover' ) ) {
+			// `:not(:hover)` EXCLUDES the hover state; it paints nothing on hover, so it is not a hover rule.
+			if ( false !== strpos( str_replace( ':not(:hover)', '', $t[1] ), ':hover' ) ) {
 				$hasHover = true;
 			}
 		}
@@ -713,7 +727,7 @@ function analyze_span( array $tokens, int $spanStart, int $spanEnd, string $name
 		'calls_guard'       => $callsGuard,
 	);
 
-	if ( $hasHover && ! $callsGuard ) {
+	if ( $hasHover && ! $callsGuard && ! isset( ( $registry['selector_builders'] ?? array() )[ $name ] ) ) {
 		$failures[] = array(
 			'name' => $name,
 			'file' => $path,

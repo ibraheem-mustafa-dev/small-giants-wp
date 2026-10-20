@@ -69,5 +69,9 @@
 		"layer2_selector_constant": "SGS_HOVER_NOT_TOUCH",
 		"_defined_in": "includes/helpers-hover-state.php",
 		"_why": "sgs_hover_media_wrap() is the ONE declared layer-1 wrapper (its own docblock: 'For callers that receive a finished rule string from another helper... and so cannot hand over a selector/declaration pair'). SGS_HOVER_NOT_TOUCH is the ONE declared layer-2 constant. Both are read generically by Job B's external-guard check -- adding a second wrapper function later means appending to layer1_wrapper_functions here, never editing scan logic."
+	},
+	"__selector_builders__": {
+		"_comment": "Functions that only BUILD a list of hover selectors and return it; the caller wraps the finished rule in the guard. name => the reason it is exempt from the within-function check (a row without a reason is ignored).",
+		"sgs_separators_hover_selectors": "Returns selector strings only; its one caller, sgs_separators_swap_hover_css (includes/helpers-separators-hover-css.php), emits the :hover list through sgs_hover_guarded_rule() and the focus list unguarded."
 	}
 }

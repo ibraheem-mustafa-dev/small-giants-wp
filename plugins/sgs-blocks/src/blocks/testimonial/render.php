@@ -385,9 +385,7 @@ if ( '' !== $quote_colour_effective ) {
 // the element that takes focus is a descendant of the card, not the card.
 $quote_colour_hover = (string) ( $attributes['quoteColourHover'] ?? '' );
 if ( '' !== $quote_colour_hover ) {
-	$scoped_css[] = $root_sel . ':hover .sgs-testimonial__quote,'
-		. $root_sel . ':focus-within .sgs-testimonial__quote'
-		. '{color:' . sgs_colour_value( $quote_colour_hover ) . ';}';
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, 'color:' . sgs_colour_value( $quote_colour_hover ), ':focus-within', ' .sgs-testimonial__quote' );
 }
 
 // Two-state link colour (Task 3, 2026-09-07) — the quote field permits
@@ -678,9 +676,7 @@ foreach ( $testimonial_hover_colours as $sgs_hover_pair ) {
 	// so the ancestor state is inserted by swapping $root_sel for its
 	// :hover / :focus-within form rather than re-deriving the descendant class.
 	$sgs_hover_descendant = substr( $sgs_hover_sel, strlen( $root_sel ) );
-	$scoped_css[]         = $root_sel . ':hover' . $sgs_hover_descendant . ','
-		. $root_sel . ':focus-within' . $sgs_hover_descendant
-		. '{color:' . sgs_colour_value( $sgs_hover_val ) . ';}';
+	$scoped_css[]         = sgs_hover_state_rules( $root_sel, 'color:' . sgs_colour_value( $sgs_hover_val ), ':focus-within', $sgs_hover_descendant );
 }
 
 // Root border (width, style, colour, gradient ring, hover paint, radius at
