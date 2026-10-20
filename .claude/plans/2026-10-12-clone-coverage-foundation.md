@@ -71,7 +71,7 @@ This plan and the Indus build plan (`.claude/plans/2026-10-11-spec48-indus-build
 4. States (FR-48-81); with step 4.0, unblocks Indus step 20, the header slice.
 5. Phase 3, then behaviour recognisers (FR-48-80, whose first recogniser is FR-48-77, Indus step 20b) and modes and values with no CSS property (FR-48-79).
 6. The rest of content, media and icons (FR-48-82) and shop, forms and data (FR-48-83); unblocks Indus step 22, forms (FR-48-57).
-7. Indus steps 21, 23, 24 and 25 (trees, check, answer sheet, sign-off). Mama's Munches then needs its own drafts' shop and behaviour gaps closed.
+7. Indus steps 21, 23, 24 and 25 (trees, check, answer sheet, sign-off). Mama's Munches then needs its own drafts' shop and behaviour gaps closed. Its site build also needs Spec 48 FR-48-55's shop parts, which the site-build script refuses today: part 1's `product`, `product_cat` and `shop` rows (the single-product template) and part 6's `woocommerce_shop_page_id`, `_cart_`, `_checkout_` and `_myaccount_page_id` options.
 
 ## Sequencing with Indus
 - The order above is the sequence; the Indus build plan's steps name the wave each needs.
