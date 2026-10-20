@@ -77,8 +77,11 @@
 	   one leaves that effect snapping while the rest ease. The duration and
 	   easing come from the preset class (its hover-transition / hover-easing
 	   tokens), then the site-wide `default` variant, then 0.18s and the site
-	   easing token. One easing serves every property. */
-	transition: background-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), border-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), transform var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), translate var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), box-shadow var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), opacity var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
+	   easing token. The colours read --sgs-btn-transition-easing-colour and
+	   box-shadow reads --sgs-btn-transition-easing-shadow (hover-easing-colour
+	   / hover-easing-shadow), each falling back to the preset's hover-easing,
+	   so a move can ease on a spring while its shadow and colour ease plainly. */
+	transition: background-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), border-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), transform var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), translate var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), box-shadow var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-shadow, var(--wp--custom--button-presets--default--hover-easing-shadow, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), opacity var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	-webkit-appearance: none;
 	appearance: none;
 
@@ -178,6 +181,8 @@
 	--sgs-btn-transform-hover: var(--wp--custom--button-presets--primary--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
 	--sgs-btn-transition-duration: var(--wp--custom--button-presets--primary--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 0.18s));
 	--sgs-btn-transition-easing: var(--wp--custom--button-presets--primary--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
+	--sgs-btn-transition-easing-colour: var(--wp--custom--button-presets--primary--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing)));
+	--sgs-btn-transition-easing-shadow: var(--wp--custom--button-presets--primary--hover-easing-shadow, var(--wp--custom--button-presets--default--hover-easing-shadow, var(--sgs-btn-transition-easing)));
 }
 
 .sgs-button--secondary {
@@ -201,6 +206,8 @@
 	--sgs-btn-transform-hover: var(--wp--custom--button-presets--secondary--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
 	--sgs-btn-transition-duration: var(--wp--custom--button-presets--secondary--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 0.18s));
 	--sgs-btn-transition-easing: var(--wp--custom--button-presets--secondary--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
+	--sgs-btn-transition-easing-colour: var(--wp--custom--button-presets--secondary--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing)));
+	--sgs-btn-transition-easing-shadow: var(--wp--custom--button-presets--secondary--hover-easing-shadow, var(--wp--custom--button-presets--default--hover-easing-shadow, var(--sgs-btn-transition-easing)));
 }
 
 .sgs-button--outline {
@@ -224,6 +231,8 @@
 	--sgs-btn-transform-hover: var(--wp--custom--button-presets--outline--hover-transform, var(--wp--custom--button-presets--default--hover-transform, none));
 	--sgs-btn-transition-duration: var(--wp--custom--button-presets--outline--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 0.18s));
 	--sgs-btn-transition-easing: var(--wp--custom--button-presets--outline--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
+	--sgs-btn-transition-easing-colour: var(--wp--custom--button-presets--outline--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing)));
+	--sgs-btn-transition-easing-shadow: var(--wp--custom--button-presets--outline--hover-easing-shadow, var(--wp--custom--button-presets--default--hover-easing-shadow, var(--sgs-btn-transition-easing)));
 }
 
 /* Link style: plain text, no ground or border, never lifts (it ignores the

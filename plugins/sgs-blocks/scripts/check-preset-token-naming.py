@@ -14,7 +14,8 @@ FR-32-9 says:
     `border`, `hover-background`, `hover-text`, `hover-border` (+ geometry:
     `border-width`, `border-radius`, `padding`, `font-size`, `font-weight`,
     `min-height`; + motion: `hover-transform`, `hover-transition`,
-    `hover-easing`, `active-transform`, `active-shadow`).
+    `hover-easing`, `hover-easing-colour`, `hover-easing-shadow`,
+    `active-transform`, `active-shadow`).
 
     Done when: every component's tokens follow this scheme (lint/grep check
     per component).
@@ -26,7 +27,7 @@ for any key under `settings.custom` ending in `Presets` and asserts:
    `{component}` stem maps to a real block: a block exists if
    `plugins/sgs-blocks/src/blocks/<kebab-of-stem>/block.json` exists.
 2. Variant slugs are semantic — lowercase kebab-case (`^[a-z][a-z0-9-]*$`).
-3. Role keys are in the fixed 17-entry vocabulary (6 colour + 6 geometry + 5 motion).
+3. Role keys are in the fixed 19-entry vocabulary (6 colour + 6 geometry + 7 motion).
 
 Usage
 -----
@@ -58,7 +59,7 @@ _BLOCKS_DIR = _REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 _SITES_DIR = _REPO_ROOT / "sites"
 
 # ---------------------------------------------------------------------------
-# Fixed vocabulary (Spec 32 FR-32-9) — 6 colour + 6 geometry + 5 motion = 17
+# Fixed vocabulary (Spec 32 FR-32-9) — 6 colour + 6 geometry + 7 motion = 19
 # ---------------------------------------------------------------------------
 _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # colour roles
@@ -72,8 +73,11 @@ _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # --sgs-btn-transition-duration / --sgs-btn-transition-easing;
     # includes/helpers-button-press.php prints active-transform and
     # active-shadow as the pressed (:active) look; each falls back to the
-    # `default` variant, the site-wide button motion)
+    # `default` variant, the site-wide button motion; hover-easing-colour and
+    # hover-easing-shadow override hover-easing for the colours and the shadow
+    # as --sgs-btn-transition-easing-colour / --sgs-btn-transition-easing-shadow)
     "hover-transform", "hover-transition", "hover-easing",
+    "hover-easing-colour", "hover-easing-shadow",
     "active-transform", "active-shadow",
 })
 
@@ -209,7 +213,7 @@ def _scan_custom_settings(
                         role=role_key, kind="role",
                         detail=(
                             f"role key '{role_key}' is outside the fixed "
-                            f"17-entry vocabulary (6 colour + 6 geometry + 5 motion)"
+                            f"19-entry vocabulary (6 colour + 6 geometry + 7 motion)"
                         ),
                     ))
 

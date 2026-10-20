@@ -7,9 +7,10 @@
 	gap: var(--wp--preset--spacing--10);
 	text-decoration: none;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	transition-property: all;
-	/* The site-wide button hover timing (buttonPresets.default.hover-transition and hover-easing). */
-	transition-timing-function: var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease));
+	/* The site-wide button hover timing (buttonPresets.default.hover-transition and hover-easing). The colours and the
+	   shadow are listed again after `all` so they take hover-easing-colour and hover-easing-shadow, else hover-easing. */
+	transition-property: all, background-color, color, border-color, box-shadow;
+	transition-timing-function: var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)), var(--wp--custom--button-presets--default--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), var(--wp--custom--button-presets--default--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), var(--wp--custom--button-presets--default--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), var(--wp--custom--button-presets--default--hover-easing-shadow, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	transition-duration: var(--wp--custom--button-presets--default--hover-transition, 0.3s);
 	cursor: pointer;
 }
