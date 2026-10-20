@@ -98,9 +98,11 @@ export function candidates( db, block, prop, state = null ) {
 		( r.css_state || null ) === ( state || null ) );
 }
 
-// The setting states the framework holds (block_attributes.css_state): a state look is written through one of them.
-export function settingStates( db ) {
-	return new Set( db.prepare( 'SELECT DISTINCT css_state FROM block_attributes WHERE css_state IS NOT NULL' ).all().map( ( r ) => r.css_state ) );
+// The setting states the framework holds (block_attributes.css_state), or one block holds when `block` is given: a
+// state look is written through one of them.
+export function settingStates( db, block = null ) {
+	const rows = block ? db.prepare( 'SELECT DISTINCT css_state FROM block_attributes WHERE css_state IS NOT NULL AND block_slug = ?' ).all( block ) : db.prepare( 'SELECT DISTINCT css_state FROM block_attributes WHERE css_state IS NOT NULL' ).all();
+	return new Set( rows.map( ( r ) => r.css_state ) );
 }
 
 // The state vocabulary (the `states` table, seeded from plugins/sgs-blocks/scripts/data/states.json): every mechanism

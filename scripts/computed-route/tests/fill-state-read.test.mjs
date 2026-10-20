@@ -55,7 +55,18 @@ const PAGE = `<!doctype html><html><head><style>
 	.item { outline: 2px solid rgb(0, 0, 0) } .item:focus-visible { outline-color: rgb(0, 128, 0) }
 	.crumb { text-decoration-line: none } .crumbs [aria-current] { text-decoration-line: underline }
 	.tab2 { color: rgb(0, 0, 0) } .tab2:not(.is-active):hover { color: rgb(0, 99, 0) }
+	.nest { .t2 { color: rgb(0, 0, 0) } &:hover .t2 { color: rgb(5, 5, 5) } }
+	.alt .t3 { color: rgb(0, 0, 0) } .alt:is(:hover, :focus-visible) .t3 { color: rgb(6, 6, 6) }
+	[hidden] { display: none !important } :disabled { opacity: 0.5 }
+	.duo .t4 { color: rgb(0, 0, 0) } .duo:hover .t4:focus { color: rgb(7, 7, 7) }
+	.hs .t5 { color: rgb(0, 0, 0) } .hs:has(:checked) .t5 { color: rgb(8, 8, 8) }
+	#pop2 { background-color: rgb(9, 9, 9) } #pop2:popover-open { background-color: rgb(3, 3, 3) }
 </style></head><body>
+	<div class="nest"><span class="t2">Nested</span></div>
+	<a class="alt" href="#a"><span class="t3">Alt</span></a>
+	<div class="duo"><a class="t4" href="#d">Duo</a></div>
+	<div class="hs"><input type="checkbox"><span class="t5">Has</span></div>
+	<div id="pop2" popover>Open at rest</div>
 	<button class="tab2">Other tab</button>
 	<nav class="crumbs"><a class="crumb" href="#c">Crumb</a></nav>
 	<div class="card"><h3 class="title">Title</h3></div>
@@ -67,11 +78,12 @@ const PAGE = `<!doctype html><html><head><style>
 	<div id="pop" popover>Pop</div><button popovertarget="pop">Open</button>
 	<a class="item" href="#x">Item</a>
 </body></html>`;
-const JOBS = [ '.title', '.bar', '.tab', '.sum', '.go', '.plain', '#pop', '.item', '.crumb', '.tab2' ].map( ( f ) => ( { id: f, finder: f } ) );
+const JOBS = [ '.title', '.bar', '.tab', '.sum', '.go', '.plain', '#pop', '.item', '.crumb', '.tab2', '.t2', '.t3', '.t4', '.t5', '#pop2' ].map( ( f ) => ( { id: f, finder: f } ) );
 
 async function readPage( rows ) {
 	const page = await browser.newPage( { viewport: { width: 800, height: 600 } } );
 	await page.setContent( PAGE );
+	await page.evaluate( () => document.getElementById( 'pop2' ).showPopover() );
 	const cdp = await openDevtools( page );
 	const rest = {};
 	for ( const j of JOBS ) {
@@ -81,8 +93,9 @@ async function readPage( rows ) {
 	const result = await readStates( { page, cdp, jobs: JOBS, rows, rest, resolveSrc: RESOLVE } );
 	const afterHtml = await page.evaluate( () => document.body.outerHTML );
 	const popoverClosed = await page.evaluate( () => ! document.getElementById( 'pop' ).matches( ':popover-open' ) );
+	const openAtRestStays = await page.evaluate( () => document.getElementById( 'pop2' ).matches( ':popover-open' ) );
 	await page.close();
-	return { result, same: before === afterHtml && popoverClosed };
+	return { result, same: before === afterHtml && popoverClosed && openAtRestStays };
 }
 const lookOf = ( result, id, state ) => ( result.looks[ id ] || [] ).find( ( l ) => l.states.includes( state ) );
 
@@ -102,6 +115,28 @@ test( 'MUST FAIL WITHOUT THE READER: every state look is read from its host and 
 	assert.deepEqual( [ tab2[ 0 ].states, tab2[ 0 ].declared.color ], [ [ 'hover' ], 'rgb(0, 99, 0)' ], 'the negated is-active is kept in the selector, not entered' );
 	assert.ok( result.unreached.some( ( u ) => '.plain' === u.id && /visited/.test( u.why ) ), ':visited is listed, never guessed' );
 	assert.ok( same, 'every attribute, class, popover and marker is restored' );
+} );
+
+test( 'MUST FAIL (council 2026-10-20): nesting, :is() alternatives, bare resets, two hosts and :has() are each read right', async () => {
+	const { result } = await readPage( VOCAB );
+	assert.equal( lookOf( result, '.t2', 'hover' )?.declared.color, 'rgb(5, 5, 5)', 'a nested &:hover rule resolves against its parent' );
+	const t3 = ( result.looks[ '.t3' ] || [] ).map( ( l ) => l.states.join( '+' ) ).sort();
+	assert.deepEqual( t3, [ 'focus', 'hover' ], ':is(:hover, :focus-visible) is two looks, never one needing both' );
+	assert.ok( ! Object.values( result.looks ).flat().some( ( l ) => l.states.includes( 'hidden' ) || ( l.states.includes( 'disabled' ) && 'opacity' in l.declared ) ), 'a bare [hidden] or :disabled reset is no element\'s look' );
+	assert.deepEqual( lookOf( result, '.t4', 'focus' )?.states, [ 'hover', 'focus' ], 'hover on the ancestor and focus on the target are both entered' );
+	assert.equal( lookOf( result, '.t4', 'focus' )?.declared.color, 'rgb(7, 7, 7)' );
+	assert.ok( result.unreached.some( ( u ) => '.t5' === u.id && /:has\(\)/.test( u.why ) ), 'a state inside :has() is listed with its reason' );
+} );
+
+test( 'a lone popover opened for its read is closed again (nothing else on the page closes it)', async () => {
+	const page = await browser.newPage();
+	await page.setContent( '<style>#solo{color:rgb(0,0,0)} #solo:popover-open{color:rgb(4,4,4)}</style><div id="solo" popover>Solo</div>' );
+	const cdp = await openDevtools( page );
+	const jobs = [ { id: '#solo', finder: '#solo' } ];
+	const result = await readStates( { page, cdp, jobs, rows: VOCAB, rest: { '#solo': await declaredValues( cdp, '#solo', RESOLVE, null ) }, resolveSrc: RESOLVE } );
+	assert.equal( lookOf( result, '#solo', 'open' )?.declared.color, 'rgb(4, 4, 4)' );
+	assert.equal( await page.evaluate( () => document.getElementById( 'solo' ).matches( ':popover-open' ) ), false );
+	await page.close();
 } );
 
 test( 'negative control: a state the vocabulary does not name is not read (the reader is vocabulary-driven)', async () => {

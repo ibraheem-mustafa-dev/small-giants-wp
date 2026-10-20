@@ -20,11 +20,17 @@ export function stateDrafts( reads, id ) {
 	const out = new Map();
 	for ( const w of READ_WIDTHS ) {
 		for ( const look of reads.states?.[ w ]?.looks?.[ id ] || [] ) {
-			const state = look.states.join( '+' );
-			for ( const [ prop, declared ] of Object.entries( look.declared ) ) {
+			const state = [ ...look.states ].sort().join( '+' );
+			// The rendered value is what Fill writes (code first, the render confirms): a property with no render read
+			// (an unresolved var() or currentcolor in its declared text) is not written from its declaration.
+			for ( const prop of Object.keys( look.declared ) ) {
+				const value = look.rendered?.[ prop ];
+				if ( ! value ) {
+					continue;
+				}
 				const key = `${ state }|${ prop }`;
 				const e = out.get( key ) || { state, prop, perWidth: {} };
-				e.perWidth[ w ] = look.rendered?.[ prop ] || declared;
+				e.perWidth[ w ] = value;
 				out.set( key, e );
 			}
 		}
@@ -57,13 +63,14 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 	walk( tree, ( n, i ) => {
 		flat[ i ] = n;
 	} );
-	const held = settingStates( db );
 	const out = { writes: [], unmapped: [], held: [] };
 	for ( const rec of nodes ) {
 		const cal = rec.targets.length ? calFor( rec.name ) : null;
 		if ( ! cal ) {
 			continue;
 		}
+		// The setting states this block holds: a state another block holds is still a gap here.
+		const held = settingStates( db, rec.name );
 		const node = flat[ rec.index ];
 		const ref = refOf( node );
 		for ( const target of rec.targets ) {
@@ -81,7 +88,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
-						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: target.slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ) } );
+						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: target.slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state' } );
 					}
 				} else if ( 'gap' === res.status ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );

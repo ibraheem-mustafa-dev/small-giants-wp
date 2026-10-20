@@ -6,7 +6,8 @@
 // carries it (the host, the target or an ancestor: `.card:hover .title`, `.burger[aria-expanded="true"] .bar`), reads
 // the target's declared values and their render, and restores the page. Code first, the render confirms (R-47-4).
 
-import { declaredValues, forcedPseudo, settleAnimations } from '../../parity/lib/devtools.mjs';
+import { declaredValues, settleAnimations } from '../../parity/lib/devtools.mjs';
+import { applyToken, renderedOf } from './fill-state-apply.mjs';
 
 // The reaches the reader can enter in a page; environment states (media emulation) belong to the media-feature
 // entries, and an unreachable one (:visited) is listed, never guessed.
@@ -74,16 +75,54 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		out.push( sel.slice( start ).trim() );
 		return out;
 	};
-	const walk = ( list ) => {
+	// A nested rule's selector is resolved against its parent's: `&` stands for the parent, and a nested selector with
+	// no `&` is a descendant of it.
+	const nest = ( sel, parent ) => {
+		if ( ! parent ) {
+			return sel;
+		}
+		return sel.includes( '&' ) ? sel.replaceAll( '&', `:is(${ parent })` ) : `:is(${ parent }) ${ sel }`;
+	};
+	// `:is()` and `:where()` list alternatives: `.a:is(:hover, :focus-visible)` is a hover look and a focus look, never
+	// one look needing both, so each argument becomes its own part.
+	const alternatives = ( sel, budget = 32 ) => {
+		const m = /:(?:is|where)\(/.exec( sel );
+		if ( ! m ) {
+			return [ sel ];
+		}
+		const open = m.index + m[ 0 ].length;
+		let depth = 1;
+		let k = open;
+		const cuts = [];
+		for ( ; k < sel.length && depth; k++ ) {
+			const ch = sel[ k ];
+			depth += '([' .includes( ch ) ? 1 : ')]'.includes( ch ) ? -1 : 0;
+			if ( ',' === ch && 1 === depth ) {
+				cuts.push( k );
+			}
+		}
+		const close = k - 1;
+		const args = [ open, ...cuts.map( ( c ) => c + 1 ) ].map( ( s, j ) => sel.slice( s, j < cuts.length ? cuts[ j ] : close ).trim() );
+		const head = sel.slice( 0, m.index );
+		const tail = sel.slice( close + 1 );
+		// One argument: keep it, and expand what follows.
+		if ( 1 === args.length ) {
+			return alternatives( tail, budget ).map( ( t ) => `${ head }:is(${ args[ 0 ] })${ t }` );
+		}
+		return args.slice( 0, budget ).flatMap( ( a ) => alternatives( `${ head }:is(${ a })${ tail }`, budget ) ).slice( 0, budget );
+	};
+	const walk = ( list, parent = null ) => {
 		for ( const rule of list ) {
 			if ( rule.media && ! matchMedia( rule.media.mediaText ).matches ) {
 				continue;
 			}
+			let own = parent;
 			if ( rule.selectorText ) {
-				splitTop( rule.selectorText ).forEach( ( p ) => parts.push( p ) );
+				own = splitTop( rule.selectorText ).map( ( p ) => nest( p, parent ) ).join( ', ' );
+				splitTop( own ).flatMap( ( p ) => alternatives( p ) ).forEach( ( p ) => parts.push( p ) );
 			}
 			if ( rule.cssRules ) {
-				walk( rule.cssRules );
+				walk( rule.cssRules, own );
 			}
 		}
 	};
@@ -112,8 +151,13 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		}
 		return false;
 	};
+	// Where the compound holding position `from` ends: the first combinator outside every bracket, with the depth counted
+	// from the selector's start, so a token inside `:is( … )` ends at its own compound, not at the selector's end.
 	const compoundEnd = ( sel, from ) => {
 		let depth = 0;
+		for ( let k = 0; k < from; k++ ) {
+			depth += '([' .includes( sel[ k ] ) ? 1 : ')]'.includes( sel[ k ] ) ? -1 : 0;
+		}
 		for ( let k = from; k < sel.length; k++ ) {
 			const ch = sel[ k ];
 			depth += '([' .includes( ch ) ? 1 : ')]'.includes( ch ) ? -1 : 0;
@@ -123,7 +167,43 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		}
 		return sel.length;
 	};
-	const unique = [ ...new Set( parts ) ];
+	// A token inside :has( … ) is a state of a descendant the selector only tests for: its host is not on the target's
+	// ancestor chain, so it is listed, never entered on the wrong element.
+	const insideHas = ( sel, at ) => {
+		let depth = 0;
+		for ( let k = at - 1; k >= 0; k-- ) {
+			depth += ')' === sel[ k ] ? 1 : '(' === sel[ k ] ? -1 : 0;
+			if ( depth < 0 && /:has$/.test( sel.slice( 0, k ) ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	// What does not depend on the target, worked out once per part: its tokens, the selector they leave, and each
+	// token's host selector. A part that leaves nothing but the universal selector (`[hidden]{display:none}`, a bare
+	// `:disabled`) is a page-wide utility, not a look of any one element, so it is skipped.
+	const analysed = [];
+	for ( const part of new Set( parts ) ) {
+		const hits = [];
+		for ( const { i, re } of res ) {
+			re.lastIndex = 0;
+			for ( let m; ( m = re.exec( part ) ); ) {
+				// One occurrence counts once: the first row that names it (rows are ordered specific first).
+				if ( ! hits.some( ( h ) => h.at === m.index ) && ! negated( part, m.index ) ) {
+					hits.push( { i, at: m.index, text: m[ 0 ] } );
+				}
+			}
+		}
+		if ( ! hits.length ) {
+			continue;
+		}
+		const stripped = strip( part, hits );
+		if ( ! /[.#[]|(^|[\s>+~(])[a-z]/i.test( stripped.replace( /:is\(\*\)/g, '' ) ) ) {
+			continue;
+		}
+		const hostOf = hits.map( ( h ) => ( insideHas( part, h.at ) ? null : strip( part.slice( 0, compoundEnd( part, h.at ) ), hits.filter( ( x ) => x.at < compoundEnd( part, h.at ) ) ) ) );
+		analysed.push( { part, hits, stripped, hostOf } );
+	}
 	const out = {};
 	let n = 0;
 	for ( const job of jobs ) {
@@ -133,112 +213,32 @@ export function stateCombos( [ jobs, rows, resolveSrc, hostAttr ] ) {
 		if ( ! el ) {
 			continue;
 		}
-		for ( const part of unique ) {
-			const hits = [];
-			for ( const { i, re } of res ) {
-				re.lastIndex = 0;
-				for ( let m; ( m = re.exec( part ) ); ) {
-					// One occurrence counts once: the first row that names it (rows are ordered specific first).
-					if ( ! hits.some( ( h ) => h.at === m.index ) && ! negated( part, m.index ) ) {
-						hits.push( { i, at: m.index, text: m[ 0 ] } );
-					}
-				}
-			}
-			if ( ! hits.length ) {
-				continue;
-			}
+		for ( const { part, hits, stripped, hostOf } of analysed ) {
 			let matches = false;
 			try {
-				matches = el.matches( strip( part, hits ) );
+				matches = el.matches( stripped );
 			} catch {
 				continue;
 			}
 			if ( ! matches ) {
 				continue;
 			}
-			const tokens = hits.map( ( h ) => {
-				const cut = part.slice( 0, compoundEnd( part, h.at ) );
+			const tokens = hits.map( ( h, k ) => {
 				let host = null;
 				try {
-					host = el.closest( strip( cut, hits.filter( ( x ) => x.at < cut.length ) ) );
+					host = null === hostOf[ k ] ? null : el.closest( hostOf[ k ] );
 				} catch {
 					host = null;
 				}
 				if ( host && ! host.hasAttribute( hostAttr ) ) {
 					host.setAttribute( hostAttr, String( ++n ) );
 				}
-				return { i: h.i, text: h.text, host: host ? host.getAttribute( hostAttr ) : null };
+				return { i: h.i, text: h.text, host: host ? host.getAttribute( hostAttr ) : null, inHas: null === hostOf[ k ] };
 			} );
 			( out[ job.id ] ??= [] ).push( { selector: part, tokens } );
 		}
 	}
 	return out;
-}
-
-// In-page: enter (on) or leave (off) one non-pseudo token on its host; returns what to restore.
-function applyToken( [ hostSel, reach, text, call, on, saved ] ) {
-	const host = document.querySelector( hostSel );
-	if ( ! host ) {
-		return null;
-	}
-	if ( 'set-attribute' === reach ) {
-		const m = /^\[\s*([\w-]+)(?:\s*([~|^$*]?=)\s*["']?([^"'\]]*)["']?)?/.exec( text );
-		const name = m[ 1 ];
-		if ( on ) {
-			const before = host.getAttribute( name );
-			const value = undefined === m[ 3 ] ? ( 'aria-current' === name ? 'page' : '' ) : ( '~=' === m[ 2 ] && before ? `${ before } ${ m[ 3 ] }` : m[ 3 ] );
-			host.setAttribute( name, value );
-			return { name, before };
-		}
-		if ( null === saved.before ) {
-			host.removeAttribute( saved.name );
-		} else {
-			host.setAttribute( saved.name, saved.before );
-		}
-		return null;
-	}
-	if ( 'toggle-class' === reach ) {
-		const cls = text.replace( /^\./, '' );
-		if ( on ) {
-			const had = host.classList.contains( cls );
-			host.classList.add( cls );
-			return { cls, had };
-		}
-		if ( ! saved.had ) {
-			host.classList.remove( saved.cls );
-		}
-		return null;
-	}
-	if ( 'call' === reach ) {
-		const leave = { showModal: 'close', showPopover: 'hidePopover' }[ call ];
-		try {
-			host[ on ? call : leave ]();
-		} catch {
-			// A host that cannot enter the state (not a dialog or not a popover) is left as it was.
-		}
-		return {};
-	}
-	if ( 'scroll' === reach ) {
-		if ( on ) {
-			const y = scrollY;
-			scrollTo( 0, Math.max( 600, innerHeight ) );
-			return { y };
-		}
-		scrollTo( 0, saved.y );
-		return null;
-	}
-	return null;
-}
-
-// In-page: the rendered values of `props` on a job's element.
-function renderedOf( [ finder, resolveSrc, props ] ) {
-	// eslint-disable-next-line no-new-func
-	const el = new Function( `return (${ resolveSrc });` )()( finder );
-	if ( ! el ) {
-		return null;
-	}
-	const cs = getComputedStyle( el );
-	return Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
 }
 
 // What changes between two declared reads: { prop: value } for each property the state declares differently.
@@ -261,7 +261,13 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 			for ( const combo of combos[ job.id ] || [] ) {
 				const tokens = combo.tokens.map( ( t ) => ( { ...t, row: byI.get( t.i ) } ) );
 				if ( tokens.some( ( t ) => 'unreachable' === t.row.reach || null === t.host ) ) {
-					out.unreached.push( { id: job.id, selector: combo.selector, why: tokens.some( ( t ) => null === t.host ) ? 'no host element' : `${ tokens.find( ( t ) => 'unreachable' === t.row.reach ).text } is never exposed to scripts` } );
+					const reason = ( t ) => {
+						if ( t.inHas ) {
+							return `${ t.text } inside :has() is a descendant's state, not one on the target or its ancestors`;
+						}
+						return null === t.host ? `${ t.text } has no host on the target or its ancestors (a sibling combinator)` : `${ t.text } is never exposed to scripts`;
+					};
+					out.unreached.push( { id: job.id, selector: combo.selector, why: reason( tokens.find( ( t ) => 'unreachable' === t.row.reach || null === t.host ) ) } );
 					continue;
 				}
 				const look = await readOne( page, cdp, job, tokens, resolveSrc ).catch( ( e ) => {
@@ -301,10 +307,28 @@ async function readOne( page, cdp, job, tokens, resolveSrc ) {
 			await settleAnimations( page, { floor: 30, cap: 3000 } );
 			return await read();
 		}
-		// Pseudo-classes on one host are forced together; a combination with pseudo tokens on two hosts forces the
-		// nearer host's chain, which covers the farther one when it is an ancestor (hover and focus chains).
-		const host = pseudo[ 0 ].host;
-		return await forcedPseudo( cdp, page, hostSel( pseudo[ 0 ] ), resolveSrc, pseudo.filter( ( t ) => t.host === host ).map( ( t ) => t.text.slice( 1 ) ), read );
+		// Every host's own pseudo-classes are forced at once (`.card:hover .title:focus` forces :hover on the card and
+		// :focus on the title), then cleared.
+		const byHost = new Map();
+		pseudo.forEach( ( t ) => byHost.set( t.host, [ ...( byHost.get( t.host ) || [] ), t.text.slice( 1 ) ] ) );
+		const { root } = await cdp.send( 'DOM.getDocument', { depth: 0 } );
+		const nodes = [];
+		for ( const [ host, states ] of byHost ) {
+			const { nodeId } = await cdp.send( 'DOM.querySelector', { nodeId: root.nodeId, selector: `[${ HOST_ATTR }="${ host }"]` } );
+			if ( nodeId ) {
+				nodes.push( nodeId );
+				await cdp.send( 'CSS.forcePseudoState', { nodeId, forcedPseudoClasses: states } );
+			}
+		}
+		try {
+			await settleAnimations( page, { floor: 30, cap: 3000 } );
+			return await read();
+		} finally {
+			for ( const nodeId of nodes ) {
+				await cdp.send( 'CSS.forcePseudoState', { nodeId, forcedPseudoClasses: [] } );
+			}
+			await settleAnimations( page, { floor: 0, cap: 3000 } );
+		}
 	} finally {
 		for ( const [ t, s ] of saved.reverse() ) {
 			if ( s ) {
