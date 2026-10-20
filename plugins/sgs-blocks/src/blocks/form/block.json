@@ -98,9 +98,18 @@
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:width": "contentWidth",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
 					},
-					"_note": "WS-4 composite wrapper — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern)."
+					"_note": "WS-4 composite wrapper — outer wrapper emitted by SGS_Container_Wrapper('layout', render.php:366-382), inheriting sgs/container's full LAYOUT-scope capabilities. color/typography/border are block-private, scoped via render.php:131-198 (mirrors sgs/container's render.php pattern).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
+							}
+						}
+					}
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -161,7 +170,8 @@
 								"css:background-color": "submitBackgroundHover",
 								"css:background-image": "submitBackgroundHoverGradient",
 								"css:color": "submitColourHover",
-								"css:color-gradient": "submitColourHoverGradient"
+								"css:color-gradient": "submitColourHoverGradient",
+								"css:-webkit-text-stroke-color": "submitTextStrokeColourHover"
 							}
 						}
 					},
@@ -233,7 +243,16 @@
 						"css:padding": "fieldPadding",
 						"css:min-height": "fieldMinHeight",
 						"css:font-size": "fieldFontSize",
-						"css:line-height": "fieldLineHeight"
+						"css:line-height": "fieldLineHeight",
+						"css:-webkit-text-stroke-width": "fieldTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "fieldTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "fieldTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"field-placeholder": {
@@ -266,7 +285,18 @@
 						"text"
 					],
 					"prefix": "label",
-					"_note": "Typography only (labelFontSize and the rest of the label* set, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__label). The class is rendered by the child field blocks: as a <label> by includes/forms/field-render-helpers.php::field_label and as a <legend> by form-field-checkbox, form-field-radio and form-field-tiles, so one class-only selector serves both tags."
+					"_note": "Typography only (labelFontSize and the rest of the label* set, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__label). The class is rendered by the child field blocks: as a <label> by includes/forms/field-render-helpers.php::field_label and as a <legend> by form-field-checkbox, form-field-radio and form-field-tiles, so one class-only selector serves both tags.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"submit-actions": {
 					"selector": ".sgs-form__actions",
@@ -301,7 +331,14 @@
 						"css:column-count": "tileIconTextColumns",
 						"css:writing-mode": "tileIconWritingMode"
 					},
-					"_note": "Typography only (tileIcon* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__icon). The class is emitted by the child sgs/form-field-tiles block, which declares no typography attributes of its own; the parent's uid class is an ancestor of every tile, so the scoped rule reaches it."
+					"_note": "Typography only (tileIcon* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__icon). The class is emitted by the child sgs/form-field-tiles block, which declares no typography attributes of its own; the parent's uid class is an ancestor of every tile, so the scoped rule reaches it.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "tileIconTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"tile-label": {
 					"motion": false,
@@ -325,7 +362,14 @@
 						"css:column-count": "tileLabelTextColumns",
 						"css:writing-mode": "tileLabelWritingMode"
 					},
-					"_note": "Typography only (tileLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__label). The class is emitted by the child sgs/form-field-tiles block. The selected-state bold in style.css stays a higher-specificity rule on the 'background' tile style: it is the non-colour selected cue (WCAG 1.4.1), so it outranks tileLabelFontWeight in that one state."
+					"_note": "Typography only (tileLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__label). The class is emitted by the child sgs/form-field-tiles block. The selected-state bold in style.css stays a higher-specificity rule on the 'background' tile style: it is the non-colour selected cue (WCAG 1.4.1), so it outranks tileLabelFontWeight in that one state.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "tileLabelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"consent-text": {
 					"motion": false,
@@ -349,7 +393,14 @@
 						"css:column-count": "consentTextColumns",
 						"css:writing-mode": "consentWritingMode"
 					},
-					"_note": "Typography only (consent* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__consent-text). The class is emitted by the child sgs/form-field-consent block, which declares no typography attributes of its own."
+					"_note": "Typography only (consent* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__consent-text). The class is emitted by the child sgs/form-field-consent block, which declares no typography attributes of its own.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "consentTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"review-term": {
 					"motion": false,
@@ -373,7 +424,14 @@
 						"css:column-count": "reviewTermTextColumns",
 						"css:writing-mode": "reviewTermWritingMode"
 					},
-					"_note": "Typography only (reviewTerm* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__term). The <dt> is created by view.js inside the sgs/form-review list, which sits inside the form wrapper that carries the uid class, so the scoped rule reaches it."
+					"_note": "Typography only (reviewTerm* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__term). The <dt> is created by view.js inside the sgs/form-review list, which sits inside the form wrapper that carries the uid class, so the scoped rule reaches it.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "reviewTermTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"nav-button": {
 					"motion": false,
@@ -397,7 +455,14 @@
 						"css:column-count": "navButtonTextColumns",
 						"css:writing-mode": "navButtonWritingMode"
 					},
-					"_note": "Typography of the multi-step Previous and Next buttons (.sgs-form__button--prev, .sgs-form__button--next). The submit button has its own submit* surface."
+					"_note": "Typography of the multi-step Previous and Next buttons (.sgs-form__button--prev, .sgs-form__button--next). The submit button has its own submit* surface.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "navButtonTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"help-text": {
 					"motion": false,
@@ -421,7 +486,14 @@
 						"css:column-count": "helpTextTextColumns",
 						"css:writing-mode": "helpTextWritingMode"
 					},
-					"_note": "Typography only (helpText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__help and .{uid} .sgs-form-field__file-hint). The help paragraph is emitted by field_label/field_help in field-render-helpers.php and the file size hint by sgs/form-field-file; neither child declares typography attributes."
+					"_note": "Typography only (helpText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__help and .{uid} .sgs-form-field__file-hint). The help paragraph is emitted by field_label/field_help in field-render-helpers.php and the file size hint by sgs/form-field-file; neither child declares typography attributes.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "helpTextTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"error-text": {
 					"motion": false,
@@ -445,7 +517,14 @@
 						"css:column-count": "errorTextTextColumns",
 						"css:writing-mode": "errorTextWritingMode"
 					},
-					"_note": "Typography only (errorText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__error and .{uid} .sgs-form-field__error-message). Both are the inline validation message lines under a field."
+					"_note": "Typography only (errorText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__error and .{uid} .sgs-form-field__error-message). Both are the inline validation message lines under a field.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "errorTextTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"file-status": {
 					"motion": false,
@@ -469,7 +548,14 @@
 						"css:column-count": "fileStatusTextColumns",
 						"css:writing-mode": "fileStatusWritingMode"
 					},
-					"_note": "Typography only (fileStatus* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-file__preview and .{uid} .sgs-form-file__progress). Both are emitted by the child sgs/form-field-file block."
+					"_note": "Typography only (fileStatus* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-file__preview and .{uid} .sgs-form-file__progress). Both are emitted by the child sgs/form-field-file block.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "fileStatusTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"review-heading": {
 					"motion": false,
@@ -493,7 +579,14 @@
 						"css:column-count": "reviewHeadingTextColumns",
 						"css:writing-mode": "reviewHeadingWritingMode"
 					},
-					"_note": "Typography only (reviewHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__heading). The heading is emitted by the child sgs/form-review block, as a heading element whose level the block sets."
+					"_note": "Typography only (reviewHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__heading). The heading is emitted by the child sgs/form-review block, as a heading element whose level the block sets.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "reviewHeadingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"review-detail": {
 					"motion": false,
@@ -517,7 +610,14 @@
 						"css:column-count": "reviewDetailTextColumns",
 						"css:writing-mode": "reviewDetailWritingMode"
 					},
-					"_note": "Typography only (reviewDetail* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__detail). The answer <dd> is built by view.js::populateReview, beside the reviewTerm surface."
+					"_note": "Typography only (reviewDetail* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__detail). The answer <dd> is built by view.js::populateReview, beside the reviewTerm surface.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "reviewDetailTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"step-label": {
 					"selector": ".sgs-form__progress-step-label",
@@ -567,7 +667,14 @@
 						"css:column-count": "fileButtonTextColumns",
 						"css:writing-mode": "fileButtonWritingMode"
 					},
-					"_note": "Typography only (fileButton* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-button). The Choose file cue inside the panel-style upload zone."
+					"_note": "Typography only (fileButton* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-button). The Choose file cue inside the panel-style upload zone.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "fileButtonTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"file-prompt": {
 					"motion": false,
@@ -591,7 +698,14 @@
 						"css:column-count": "filePromptTextColumns",
 						"css:writing-mode": "filePromptWritingMode"
 					},
-					"_note": "Typography only (filePrompt* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-label). The upload zone prompt text."
+					"_note": "Typography only (filePrompt* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-label). The upload zone prompt text.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "filePromptTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"grid-column-heading": {
 					"motion": false,
@@ -615,7 +729,14 @@
 						"css:column-count": "gridColHeadingTextColumns",
 						"css:writing-mode": "gridColHeadingWritingMode"
 					},
-					"_note": "Typography only (gridColHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__column-heading). The micro-label above a field in a table-style grid."
+					"_note": "Typography only (gridColHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__column-heading). The micro-label above a field in a table-style grid.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "gridColHeadingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"grid-row-heading": {
 					"motion": false,
@@ -639,7 +760,14 @@
 						"css:column-count": "gridRowHeadingTextColumns",
 						"css:writing-mode": "gridRowHeadingWritingMode"
 					},
-					"_note": "Typography only (gridRowHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__row-heading). The label in the gutter beside a field in a table-style grid."
+					"_note": "Typography only (gridRowHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__row-heading). The label in the gutter beside a field in a table-style grid.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "gridRowHeadingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"step-number": {
 					"selector": ".sgs-form__progress-step-number",

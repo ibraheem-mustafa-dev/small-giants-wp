@@ -290,7 +290,14 @@
 						"css:column-count": "priceFromLabelTextColumns",
 						"css:writing-mode": "priceFromLabelWritingMode"
 					},
-					"_note": "The \"From\" label owns a full typography surface (priceFromLabel*), painted on .price-from-label by sgs_typography_css_rule( $attributes, 'priceFromLabel', … ). No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually."
+					"_note": "The \"From\" label owns a full typography surface (priceFromLabel*), painted on .price-from-label by sgs_typography_css_rule( $attributes, 'priceFromLabel', … ). No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "priceFromLabelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"tag": {
 					"restingShadow": true,
@@ -550,7 +557,18 @@
 						"text"
 					],
 					"prefix": "valueLadder",
-					"_note": "The comparative per-pack price ladder wrapper (.product-card__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' )."
+					"_note": "The comparative per-pack price ladder wrapper (.product-card__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' ).",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"valueLadderSaving": {
 					"absentIn": ["typed", "live-wc-simple", "live-wc-no-photo", "live-cpt", "readonly-variable"],
@@ -562,7 +580,18 @@
 						"text"
 					],
 					"prefix": "valueLadderSaving",
-					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap."
+					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderSavingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"priceRow": {
 					"selector": ".sgs-product-card__price-row",

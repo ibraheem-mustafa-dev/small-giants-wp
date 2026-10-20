@@ -168,7 +168,9 @@
 						"css:text-transform": "itemTextTransform",
 						"css:opacity": "itemOpacity",
 						"css:transition-duration": "itemMotionDuration",
-						"css:transition-timing-function": "itemMotionEasing"
+						"css:transition-timing-function": "itemMotionEasing",
+						"css:-webkit-text-stroke-width": "itemTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "itemTextStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -182,7 +184,8 @@
 								"css:text-decoration": "itemTextDecorationHover",
 								"css:text-transform": "itemTextTransformHover",
 								"css:opacity": "itemOpacityHover",
-								"css:padding-inline-start": "itemPaddingShiftHover"
+								"css:padding-inline-start": "itemPaddingShiftHover",
+								"css:-webkit-text-stroke-color": "itemTextStrokeColourHover"
 							},
 							"_noBaseByDesignNote": "css:padding-inline-start (itemPaddingShiftHover) has no resting counterpart by design: the value is an ADDITIVE hover-only shift on top of whatever inline-start padding is already in effect at rest (style.css's `padding: 8px 12px`), not an absolute padding of its own — a 'resting shift' control would be redundant with the item's existing padding. Same shape as css:transform (scaleHover) on sgs/icon/sgs/post-grid, Bean-ruled 2026-08-20."
 						},
@@ -372,7 +375,9 @@
 						"css:text-transform": "submenuTextTransform",
 						"css:letter-spacing": "submenuLetterSpacing",
 						"css:text-align": "submenuTextAlign",
-						"css:opacity": "submenuOpacity"
+						"css:opacity": "submenuOpacity",
+						"css:-webkit-text-stroke-width": "submenuTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "submenuTextStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -383,7 +388,8 @@
 								"css:text-decoration": "submenuTextDecorationHover",
 								"css:text-transform": "submenuTextTransformHover",
 								"css:padding-inline-start": "itemPaddingShiftHover",
-								"css:opacity": "submenuOpacityHover"
+								"css:opacity": "submenuOpacityHover",
+								"css:-webkit-text-stroke-color": "submenuTextStrokeColourHover"
 							},
 							"_noBaseByDesignNote": "css:padding-inline-start (itemPaddingShiftHover, M-21) has no resting counterpart by design: an ADDITIVE hover-only shift on top of the resting inline-start padding already in effect (includes/nav-menu-submenu-css.php's hardcoded `padding:0 16px`, no attribute of its own to override). Reused from the `item` element above -- see that element's own note for why the SAME attribute (not a separate submenuPaddingShiftHover) is correct here."
 						},

@@ -71,13 +71,16 @@
 						"css:font-weight": "fontWeight",
 						"css:font-style": "fontStyle",
 						"css:line-height": "lineHeight",
-						"css:text-align": "textAlign"
+						"css:text-align": "textAlign",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
-								"css:color-gradient": "textColourHoverGradient"
+								"css:color-gradient": "textColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					},
@@ -109,7 +112,14 @@
 						"css:column-count": "numberTextColumns",
 						"css:writing-mode": "numberWritingMode"
 					},
-					"_note": "numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member (every other fill member is an honest GAP, this element has no background/border surface). The number* typography family is painted on .sgs-countdown__number by sgs_typography_css_rule( $attributes, 'number', … )."
+					"_note": "numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member (every other fill member is an honest GAP, this element has no background/border surface). The number* typography family is painted on .sgs-countdown__number by sgs_typography_css_rule( $attributes, 'number', … ).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "numberTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"label": {
 					"selector": ".sgs-countdown__label",
@@ -135,6 +145,13 @@
 						"css:-webkit-text-stroke-color": "labelTextStrokeColour",
 						"css:column-count": "labelTextColumns",
 						"css:writing-mode": "labelWritingMode"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
+							}
+						}
 					}
 				},
 				"expired": {
@@ -160,6 +177,13 @@
 						"css:-webkit-text-stroke-color": "expiredTextStrokeColour",
 						"css:column-count": "expiredTextColumns",
 						"css:writing-mode": "expiredWritingMode"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "expiredTextStrokeColourHover"
+							}
+						}
 					}
 				}
 			},

@@ -70,7 +70,9 @@
 						"css:max-width": "maxWidth",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-image": "textColourGradient",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:-webkit-text-stroke-width": "textStrokeWidth",
+						"css:-webkit-text-stroke-color": "textStrokeColour"
 					},
 					"states": {
 						"hover": {
@@ -78,7 +80,8 @@
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:background-color": "backgroundColourHover",
-								"css:background-color-gradient": "backgroundColourHoverGradient"
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
 					},
@@ -108,7 +111,14 @@
 						"css:column-count": "questionTextColumns",
 						"css:writing-mode": "questionWritingMode"
 					},
-					"_note": "Typography only (questionFontSize/questionFontWeight/questionFontStyle/questionLineHeight and the rest of the question family). Painted by render.php on every sgs/product-faq-item summary (.sgs-product-faq-item__question) inside this FAQ instance through a descendant selector on the parent uid class, so one control styles every question uniformly. The child block declares no typography attributes. Question colour follows the wrapper's text colour and the hover/open treatment in style.css."
+					"_note": "Typography only (questionFontSize/questionFontWeight/questionFontStyle/questionLineHeight and the rest of the question family). Painted by render.php on every sgs/product-faq-item summary (.sgs-product-faq-item__question) inside this FAQ instance through a descendant selector on the parent uid class, so one control styles every question uniformly. The child block declares no typography attributes. Question colour follows the wrapper's text colour and the hover/open treatment in style.css.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "questionTextStrokeColourHover"
+							}
+						}
+					}
 				}
 			}
 		}

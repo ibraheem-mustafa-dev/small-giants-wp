@@ -44,9 +44,18 @@
 						"css:font-size": "tileLabelFontSize",
 						"css:font-weight": "tileLabelFontWeight",
 						"css:line-height": "tileLabelLineHeight",
-						"css:color": "tileLabelColour"
+						"css:color": "tileLabelColour",
+						"css:-webkit-text-stroke-width": "tileLabelTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tileLabelTextStrokeColour"
 					},
-					"_note": "Each tile's label text (render.php); typography and colour from the Tile text panel and the tileLabelColour row."
+					"_note": "Each tile's label text (render.php); typography and colour from the Tile text panel and the tileLabelColour row.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "tileLabelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"tile-description": {
 					"selector": ".sgs-form-tile__description",
@@ -60,9 +69,18 @@
 						"css:font-size": "tileDescriptionFontSize",
 						"css:font-weight": "tileDescriptionFontWeight",
 						"css:line-height": "tileDescriptionLineHeight",
-						"css:color": "tileDescriptionColour"
+						"css:color": "tileDescriptionColour",
+						"css:-webkit-text-stroke-width": "tileDescriptionTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "tileDescriptionTextStrokeColour"
 					},
-					"_note": "The optional line under a tile's label (render.php, printed only when the tile has a description)."
+					"_note": "The optional line under a tile's label (render.php, printed only when the tile has a description).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "tileDescriptionTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"wrapper": {
 					"label": "Wrapper",

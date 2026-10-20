@@ -148,7 +148,14 @@
 						"css:column-count": "valueTextColumns",
 						"css:writing-mode": "valueWritingMode"
 					},
-					"_note": "prefix \"\" with every typography member mapped explicitly: css:writing-mode is not a text-cluster member, so prefix scanning would report it as an orphan."
+					"_note": "prefix \"\" with every typography member mapped explicitly: css:writing-mode is not a text-cluster member, so prefix scanning would report it as an orphan.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"caption": {
 					"motion": false,
@@ -176,7 +183,14 @@
 						"css:column-count": "captionTextColumns",
 						"css:writing-mode": "captionWritingMode"
 					},
-					"_note": "prefix \"\" with every typography member mapped explicitly: css:writing-mode is not a text-cluster member, so prefix scanning would report it as an orphan."
+					"_note": "prefix \"\" with every typography member mapped explicitly: css:writing-mode is not a text-cluster member, so prefix scanning would report it as an orphan.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "captionTextStrokeColourHover"
+							}
+						}
+					}
 				}
 			}
 		}

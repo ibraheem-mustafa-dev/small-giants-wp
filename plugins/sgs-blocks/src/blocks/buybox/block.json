@@ -231,7 +231,18 @@
 						"text"
 					],
 					"prefix": "valueLadder",
-					"_note": "The comparative per-pack price ladder wrapper (.buybox__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', $root_sel . ' .buybox__value-ladder' )."
+					"_note": "The comparative per-pack price ladder wrapper (.buybox__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', $root_sel . ' .buybox__value-ladder' ).",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"valueLadderSaving": {
 					"selector": ".buybox__value-ladder__saving",
@@ -241,7 +252,18 @@
 						"text"
 					],
 					"prefix": "valueLadderSaving",
-					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap."
+					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap.",
+					"attrMap": {
+						"css:-webkit-text-stroke-width": "valueLadderSavingTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "valueLadderSavingTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"notifyHeading": {
 					"text": true,
@@ -294,7 +316,14 @@
 						"css:column-count": "notifyLabelTextColumns",
 						"css:writing-mode": "notifyLabelWritingMode"
 					},
-					"_note": "The email field label and the consent checkbox label of the back-in-stock form (.sgs-buybox__notify-label, .sgs-buybox__notify-consent-label): one role, the text that names a form control. No colour attribute exists for this element - an honest gap."
+					"_note": "The email field label and the consent checkbox label of the back-in-stock form (.sgs-buybox__notify-label, .sgs-buybox__notify-consent-label): one role, the text that names a form control. No colour attribute exists for this element - an honest gap.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "notifyLabelTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"notifyInput": {
 					"selector": ".sgs-buybox__notify-email",
@@ -425,7 +454,14 @@
 						"css:column-count": "stockTextColumns",
 						"css:writing-mode": "stockWritingMode"
 					},
-					"_note": "The stock line (.buybox__stock), in both the always-on form and the status-dot form. Its colour comes from the three stock-status colour elements."
+					"_note": "The stock line (.buybox__stock), in both the always-on form and the status-dot form. Its colour comes from the three stock-status colour elements.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "stockTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"guidedMeter": {
 					"selector": ".sgs-buybox-guided__meter",
@@ -453,7 +489,14 @@
 					},
 					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step.",
 					"absentIn": [ "main" ],
-					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided)."
+					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "guidedMeterTextStrokeColourHover"
+							}
+						}
+					}
 				},
 				"guidedGroupTitle": {
 					"text": true,
@@ -482,7 +525,14 @@
 					},
 					"_note": "Guided layout: the heading above each question (.sgs-buybox-guided__group-title).",
 					"absentIn": [ "main" ],
-					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided)."
+					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "guidedGroupTitleTextStrokeColourHover"
+							}
+						}
+					}
 				}
 			},
 			"fx": {
