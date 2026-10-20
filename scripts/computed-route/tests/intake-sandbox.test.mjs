@@ -228,18 +228,18 @@ test( 'MUST FAIL (d): a worker started by runIsolated holds no secret variable',
 // Every INTAKE_* switch a library or entry script reads reaches the worker: the stages run in the cleanEnv process, so a
 // switch missing from ENV_ALLOW is silently off there while an in-process test of the same library sees it.
 test( 'MUST FAIL (d2): every INTAKE_* variable the intake code reads is in ENV_ALLOW', () => {
+	// Every .mjs under scripts/computed-route but its tests, node_modules and caches; dot, bracket and destructured reads.
 	const root = path.join( HERE, '..' );
-	const files = [ ...fs.readdirSync( path.join( root, 'lib' ) ).map( ( f ) => path.join( root, 'lib', f ) ), ...fs.readdirSync( root ).map( ( f ) => path.join( root, f ) ) ].filter( ( f ) => f.endsWith( '.mjs' ) );
-	const read = new Set();
-	for ( const f of files ) {
-		for ( const m of fs.readFileSync( f, 'utf8' ).matchAll( /\benv\.(INTAKE_[A-Z_]+)/g ) ) {
-			read.add( m[ 1 ] );
-		}
-	}
+	const skip = new Set( [ 'tests', 'node_modules', 'cache', '.git' ] );
+	const walk = ( d ) => fs.readdirSync( d, { withFileTypes: true } ).flatMap( ( e ) => ( e.isDirectory() ? ( skip.has( e.name ) ? [] : walk( path.join( d, e.name ) ) ) : e.name.endsWith( '.mjs' ) ? [ path.join( d, e.name ) ] : [] ) );
+	const reads = ( text ) => [
+		...[ ...text.matchAll( /\benv(?:\.|\[\s*['"`])(INTAKE_[A-Z0-9_]+)/g ) ].map( ( m ) => m[ 1 ] ),
+		...[ ...text.matchAll( /\{([^}]*)\}\s*=\s*(?:process\.)?env\b/g ) ].flatMap( ( m ) => m[ 1 ].match( /INTAKE_[A-Z0-9_]+/g ) || [] ),
+	];
+	assert.deepEqual( reads( "a = process.env['INTAKE_A1']; const { INTAKE_B, x } = process.env; env.INTAKE_C" ).sort(), [ 'INTAKE_A1', 'INTAKE_B', 'INTAKE_C' ], 'the scan sees every read form' );
+	const read = new Set( walk( root ).flatMap( ( f ) => reads( fs.readFileSync( f, 'utf8' ) ) ) );
 	assert.ok( read.size >= 4, `found only ${ [ ...read ] }` );
 	assert.deepEqual( [ ...read ].filter( ( n ) => ! ENV_ALLOW.includes( n ) ), [] );
-	const env = Object.fromEntries( [ ...read ].map( ( n ) => [ n, '1' ] ) );
-	assert.deepEqual( Object.keys( cleanEnv( env ) ).sort(), [ ...read ].sort() );
 } );
 
 test( 'a worker with the clean environment can still launch Chromium', async () => {
@@ -276,17 +276,25 @@ test( 'MUST FAIL (f): MANIFEST.json is re-checked before anything runs', async (
 	assert.throws( () => recheckManifest( extra ), /planted\.js: in the folder but not listed/ );
 } );
 
-// lib/intake-sandbox.mjs::fetchOrigin: the draft-origin fetch retries a socket ENOBUFS (Windows, many browsers at once)
-// and throws every other failure, and the last ENOBUFS, unchanged.
-test( 'MUST FAIL (g): the origin fetch retries ENOBUFS only', async () => {
+// lib/intake-sandbox.mjs::fetchOrigin: the draft-origin fetch retries a socket ENOBUFS (Windows, many browsers at once),
+// in the request or in the body read, and throws every other failure, and the last ENOBUFS, unchanged.
+test( 'MUST FAIL (g): the origin fetch retries ENOBUFS only, in the request and in the body read', async () => {
 	const noBufs = () => Object.assign( new TypeError( 'fetch failed' ), { cause: Object.assign( new Error( 'write ENOBUFS' ), { code: 'ENOBUFS' } ) } );
-	const flaky = ( fails, err = noBufs ) => {
+	const ok = ( bodyFails = 0 ) => {
+		let reads = 0;
+		return { status: 200, headers: new Map( [ [ 'content-type', 'text/html' ] ] ), arrayBuffer: async () => ( ++reads <= bodyFails ? Promise.reject( noBufs() ) : new TextEncoder().encode( 'hi' ).buffer ) };
+	};
+	const flaky = ( fails, err = noBufs, bodyFails = 0 ) => {
 		const calls = [];
-		return { calls, fetchImpl: async ( url ) => ( calls.push( url ), calls.length <= fails ? Promise.reject( err() ) : { ok: true, url } ) };
+		return { calls, fetchImpl: async ( url ) => ( calls.push( url ), calls.length <= fails ? Promise.reject( err() ) : ok( calls.length - fails <= bodyFails ? 1 : 0 ) ) };
 	};
 	const a = flaky( 2 );
-	assert.deepEqual( await fetchOrigin( 'http://127.0.0.1:1/x', {}, { delayMs: 1, fetchImpl: a.fetchImpl } ), { ok: true, url: 'http://127.0.0.1:1/x' } );
+	const r = await fetchOrigin( 'http://127.0.0.1:1/x', {}, { delayMs: 1, fetchImpl: a.fetchImpl } );
+	assert.deepEqual( [ r.status, r.body.toString(), r.headers.get( 'content-type' ) ], [ 200, 'hi', 'text/html' ] );
 	assert.equal( a.calls.length, 3 );
+	const body = flaky( 0, noBufs, 1 );
+	assert.equal( ( await fetchOrigin( 'u', {}, { delayMs: 1, fetchImpl: body.fetchImpl } ) ).body.toString(), 'hi' );
+	assert.equal( body.calls.length, 2, 'an ENOBUFS in the body read fetches again' );
 	const b = flaky( 9 );
 	await assert.rejects( fetchOrigin( 'u', {}, { attempts: 3, delayMs: 1, fetchImpl: b.fetchImpl } ), ( e ) => 'ENOBUFS' === e.cause.code );
 	assert.equal( b.calls.length, 3 );

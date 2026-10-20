@@ -46,8 +46,13 @@ export const MARKS = {
 	} }, { value: 'drop' } ],
 	'palette-role': [ { value: 'accept' }, { shape: 'role:<slug>[,<slug>...]', re: /^role:(.+)$/, check: ( m ) => {
 		// One draft colour can fill several slugs (Spec 48 FR-33-2: role:heading,accent-text,section-text); every part is a slug.
-		const bad = m[ 1 ].split( ',' ).map( ( s ) => s.trim() ).find( ( s ) => ! SLUG.test( s ) );
-		return undefined === bad ? null : `"${ bad }" is not a slug`;
+		const parts = m[ 1 ].split( ',' ).map( ( s ) => s.trim() );
+		const bad = parts.find( ( s ) => ! SLUG.test( s ) );
+		if ( undefined !== bad ) {
+			return `"${ bad }" is not a slug`;
+		}
+		const twice = parts.find( ( s, i ) => parts.indexOf( s ) !== i );
+		return undefined === twice ? null : `"${ twice }" is named twice`;
 	} }, { value: 'one-off' } ],
 	'site-info': [ { value: 'accept' }, { shape: 'edit:<value>', re: /^edit:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the edited value is empty' ) }, { value: 'drop' } ],
 	flag: [ { value: 'accept-flagged' }, { value: 'not-flagged' } ],

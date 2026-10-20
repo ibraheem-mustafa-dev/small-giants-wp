@@ -403,6 +403,7 @@ test( 'MUST FAIL a palette mark may name several slugs, each one a slug, none em
 	assert.equal( markProblem( 'palette-role', 'role:heading,Accent Text' ), '"Accent Text" is not a slug' );
 	assert.equal( markProblem( 'palette-role', 'role:heading,' ), '"" is not a slug' );
 	assert.equal( markProblem( 'palette-role', 'role:,heading' ), '"" is not a slug' );
+	assert.equal( markProblem( 'palette-role', 'role:heading,text, heading' ), '"heading" is named twice' );
 	const md = mark( renderReview( fixture() ), { accept: ROW_TYPES, rows: { 'palette:ink': 'role:text,accent-text' } } );
 	const r = applyReview( fixture(), md, { today: TODAY } );
 	assert.deepEqual( r.problems, [] );

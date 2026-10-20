@@ -1137,7 +1137,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/intake-sandbox.mjs`
 - `PINNED_SCRIPTS` (the three unpkg runtime scripts with their SRI hashes), `FONT_HOSTS`, `STOCK_HOSTS`, `DROP_HEADERS` (response headers never replayed). `hostOf(url)` → the hostname or null.
-- `fetchOrigin(url, init, { attempts = 5, delayMs = 100, fetchImpl })` → the draft-origin fetch the route handler fulfils from, retried with a growing delay when the socket fails with `ENOBUFS` (Windows runs out of socket buffer space with many browsers at once); any other failure, and the last `ENOBUFS`, is thrown unchanged.
+- `fetchOrigin(url, init, { attempts = 5, delayMs = 100, fetchImpl })` → `{ status, headers, body }` (body a Buffer), the draft-origin response the route handler fulfils from, retried with a growing delay when the socket fails with `ENOBUFS` in the request or the body read (Windows runs out of socket buffer space with many browsers at once); any other failure, and the last `ENOBUFS`, is thrown unchanged.
 - `classifyUrl(url, { origin, stockHosts })` → `origin`, `inline`, `pinned`, `recordable` or `unlisted`. `replayFilter(stockHosts)` → the RegExp of URLs the HAR serves. `replayPath(client, manifestHash)` → the replay file path.
 - `recheckManifest(folder)` → `{ manifestHash, schemaVersion, files }`; throws naming a version other than "1.0", a size or hash mismatch, a missing or unlisted file, or a wrong `runtime_sha256`.
 - `runtimePins(supportSrc)` → `{ url: sri }` from `support.js`; throws unless they are `PINNED_SCRIPTS`. `startTrapProxy()` → `{ server, attempts, close }`, a local proxy that refuses and logs every connection.

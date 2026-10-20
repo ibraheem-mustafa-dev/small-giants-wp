@@ -25,15 +25,16 @@ export const STOCK_HOSTS = [ 'images.unsplash.com' ];
 // Response headers never replayed or passed on: transport framing and cookies.
 export const DROP_HEADERS = new Set( [ 'content-encoding', 'content-length', 'transfer-encoding', 'connection', 'set-cookie', 'alt-svc' ] );
 
-// The hostname of a URL, or null when it does not parse.
-// Node's fetch of the draft origin, retried when the socket fails with ENOBUFS (Windows runs out of socket buffer space
-// when many browsers and fetches run at once; the same request succeeds a moment later). Any other failure, and the
-// last ENOBUFS after `attempts` tries, is thrown unchanged.
+// Node's fetch of the draft origin with its body read, as { status, headers, body } (body a Buffer), retried when the socket
+// fails with ENOBUFS during the request or the body read (Windows runs out of socket buffer space when many browsers and
+// fetches run at once; the same request succeeds a moment later). Any other failure, and the last ENOBUFS after
+// `attempts` tries, is thrown unchanged.
 const isNoBufs = ( e ) => 'ENOBUFS' === e?.code || 'ENOBUFS' === e?.cause?.code;
 export async function fetchOrigin( url, init, { attempts = 5, delayMs = 100, fetchImpl = fetch } = {} ) {
 	for ( let i = 1; ; i++ ) {
 		try {
-			return await fetchImpl( url, init );
+			const res = await fetchImpl( url, init );
+			return { status: res.status, headers: res.headers, body: Buffer.from( await res.arrayBuffer() ) };
 		} catch ( e ) {
 			if ( ! isNoBufs( e ) || i >= attempts ) {
 				throw e;
@@ -43,6 +44,7 @@ export async function fetchOrigin( url, init, { attempts = 5, delayMs = 100, fet
 	}
 }
 
+// The hostname of a URL, or null when it does not parse.
 export const hostOf = ( url ) => {
 	try {
 		return new URL( url ).hostname;
@@ -308,7 +310,7 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 			// Node fetches it from serveDraft (folder-confined); the browser opens no connection of its own.
 			const range = req.headers().range;
 			const res = await fetchOrigin( url, { redirect: 'manual', headers: range ? { range } : {} } );
-			return route.fulfill( { status: res.status, headers: Object.fromEntries( [ ...res.headers ].filter( ( [ n ] ) => ! DROP_HEADERS.has( n ) ) ), body: Buffer.from( await res.arrayBuffer() ) } );
+			return route.fulfill( { status: res.status, headers: Object.fromEntries( [ ...res.headers ].filter( ( [ n ] ) => ! DROP_HEADERS.has( n ) ) ), body: res.body } );
 		}
 		const body = pinnedBodies[ url.split( '#' )[ 0 ] ];
 		if ( 'pinned' === kind && body && 'discover' === mode ) {
