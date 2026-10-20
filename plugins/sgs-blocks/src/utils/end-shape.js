@@ -22,8 +22,6 @@ export const END_SHAPE_ALLOWED = Object.freeze( [
 ] );
 
 const SIDES = Object.freeze( [ 'left', 'right' ] );
-const TILE_W = 1200;
-const TILE_H = 120;
 
 /**
  * A stored end shape, or '' (Straight) when it is not in the allowed list.
@@ -70,48 +68,6 @@ function libraryPath( shape ) {
 }
 
 /**
- * The library path without its closing segments: the line a stroke follows.
- *
- * @param {string} shape Library key.
- * @return {string} Path data, or '' when the shape is not allowed.
- */
-export function endShapeEdgePath( shape ) {
-	const path = libraryPath( shape );
-	if ( ! path ) {
-		return '';
-	}
-	const segments = [];
-	for ( const item of path.matchAll( /([MLQCZ])([^MLQCZ]*)/g ) ) {
-		const numbers = item[ 2 ].trim().split( /[\s,]+/ ).filter( Boolean ).map( Number );
-		const count = numbers.length;
-		segments.push( {
-			text: item[ 1 ] + item[ 2 ].trim(),
-			cmd: item[ 1 ],
-			x: count >= 2 ? numbers[ count - 2 ] : 0,
-			y: count >= 2 ? numbers[ count - 1 ] : 0,
-		} );
-	}
-	while ( segments.length && 'Z' === segments[ segments.length - 1 ].cmd ) {
-		segments.pop();
-	}
-	while ( segments.length > 1 ) {
-		const last = segments[ segments.length - 1 ];
-		const prev = segments[ segments.length - 2 ];
-		if ( 'L' !== last.cmd ) {
-			break;
-		}
-		const onEdge =
-			( last.x === prev.x && ( 0 === last.x || TILE_W === last.x ) ) ||
-			( last.y === prev.y && ( 0 === last.y || TILE_H === last.y ) );
-		if ( ! onEdge ) {
-			break;
-		}
-		segments.pop();
-	}
-	return segments.map( ( s ) => s.text ).join( ' ' );
-}
-
-/**
  * The matrix that rotates a library tile into a depth-wide, 100-tall end tile.
  *
  * @param {string} side  'left' or 'right'.
@@ -150,24 +106,6 @@ export function endShapeCutSvg( shape, side, depth ) {
 	}
 	const d = endShapeDepth( depth );
 	return `${ svgOpen( d ) }<path fill-rule='evenodd' transform='${ matrix( side, d ) }' d='M0,0H1200V120H0Z ${ path }'/></svg>`;
-}
-
-/**
- * The stroke tile for one end: the edge line at twice the outline width.
- *
- * @param {string} shape    Library key.
- * @param {string} side     'left' or 'right'.
- * @param {number} depth    Depth, 10 through 150.
- * @param {number} strokePx Outline width in px.
- * @return {string} Raw SVG, or '' when the shape or side is not allowed.
- */
-export function endShapeStrokeSvg( shape, side, depth, strokePx ) {
-	const edge = endShapeEdgePath( shape );
-	if ( ! edge || ! SIDES.includes( side ) ) {
-		return '';
-	}
-	const d = endShapeDepth( depth );
-	return `${ svgOpen( d ) }<path fill='none' stroke='#000' stroke-width='${ num( strokePx * 2 ) }' vector-effect='non-scaling-stroke' transform='${ matrix( side, d ) }' d='${ edge }'/></svg>`;
 }
 
 /**
@@ -232,42 +170,75 @@ export function endShapeMaskDecls( ends ) {
 	);
 }
 
+const ZERO_LENGTH = /^0+(?:\.0+)?[a-z%]*$/i;
+
 /**
- * Declarations for the outline element: the straight sides as a border-wide ring,
- * plus the stroked edge line of each shaped end when the width is in px.
+ * The layer's inset, border and border colour for one set of border declarations.
  *
- * @param {Object}      ends      `left` and `right` as `[ shape, depth ]`.
- * @param {string}      widthCss  The outline width as a CSS length.
- * @param {number|null} strokePx  The width in px, or null when it is another unit.
+ * Each side of the layer is inset outwards by that side's border width, so the layer
+ * covers the box's border box and its own border sits where the box's transparent one is.
+ *
+ * Each shaped side's border is a 1px transparent strip and the fill stops at the padding
+ * box, so no paint meets the layer's edge along the cut (Chrome draws a hairline where
+ * paint meets the edge of a masked element that is rotated).
+ *
+ * @param {Object}   ends        `left` and `right` as `[ shape, depth ]`.
+ * @param {string[]} borderDecls `border-style:…` and `border-width:t r b l`, or none.
+ * @param {string}   paint       The border colour as a background-paint declaration: a flat
+ *                               colour becomes `border-color`, a gradient a `border-image`;
+ *                               '' leaves the border on `currentColor`.
  * @return {string} Declarations ending in a semicolon.
  */
-export function endShapeRingDecls( ends, widthCss, strokePx ) {
-	const images = [];
-	const clips = [];
-	const sizes = [];
-	const positions = [];
-	const composite = [];
-	if ( null !== strokePx && undefined !== strokePx ) {
-		activeEnds( ends ).forEach( ( [ side, shape, depth ] ) => {
-			images.push( svgUrl( endShapeStrokeSvg( shape, side, depth, strokePx ) ) );
-			clips.push( 'border-box' );
-			sizes.push( 'auto 100%' );
-			positions.push( `${ side } center` );
-			composite.push( 'add' );
-		} );
+export function endShapeBorderBoxDecls( ends, borderDecls = [], paint = '' ) {
+	const shaped = activeEnds( ends ).map( ( [ side ] ) => side );
+	let sides = [];
+	borderDecls.forEach( ( decl ) => {
+		if ( decl.startsWith( 'border-width:' ) ) {
+			sides = decl.slice( 'border-width:'.length ).trim().split( /\s+/ ).filter( Boolean );
+		}
+	} );
+	let css = 'inset:0;';
+	if ( sides.length ) {
+		const inset = sides.map( ( side ) => ( ZERO_LENGTH.test( side ) ? '0' : `calc(-1 * ${ side })` ) );
+		css = `inset:${ inset.join( ' ' ) };${ borderDecls.join( ';' ) };`;
+		if ( paint.startsWith( 'background-color:' ) ) {
+			css += `border-color:${ paint.slice( 'background-color:'.length ) };`;
+		} else if ( paint.startsWith( 'background-image:' ) ) {
+			const imageWidths = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) =>
+				shaped.includes( side ) ? '0' : '1'
+			);
+			css += `border-image:${ paint.slice( 'background-image:'.length ) } 1;border-image-width:${ imageWidths.join( ' ' ) };`;
+		}
 	}
-	images.push( 'linear-gradient(#000 0 0)', 'linear-gradient(#000 0 0)' );
-	clips.push( 'content-box', 'border-box' );
-	sizes.push( '100% 100%', '100% 100%' );
-	positions.push( '0 0', '0 0' );
-	composite.push( 'exclude' );
+	if ( shaped.length ) {
+		[ 'right', 'left' ].forEach( ( side ) => {
+			if ( shaped.includes( side ) ) {
+				css += `border-${ side }:1px solid transparent;`;
+			}
+		} );
+		css += 'background-clip:padding-box;';
+	}
+	return css;
+}
+
+/**
+ * Declarations for a shaped box's `::after` layer: the box's border on the layer, then
+ * the cut mask. The caller adds the fill paint.
+ *
+ * @param {Object}   ends        `left` and `right` as `[ shape, depth ]`.
+ * @param {string[]} borderDecls The box's border width declarations.
+ * @param {string}   paint       The border colour as a background-paint declaration, or ''.
+ * @return {string} Declarations ending in a semicolon, or '' when no end is shaped.
+ */
+export function endShapeLayerDecls( ends, borderDecls = [], paint = '' ) {
+	const mask = endShapeMaskDecls( ends );
+	if ( ! mask ) {
+		return '';
+	}
 	return (
-		`padding:${ widthCss };` +
-		`mask-image:${ images.join( ',' ) };` +
-		`mask-clip:${ clips.join( ',' ) };` +
-		`mask-size:${ sizes.join( ',' ) };` +
-		`mask-position:${ positions.join( ',' ) };` +
-		'mask-repeat:no-repeat;' +
-		`mask-composite:${ composite.join( ',' ) };`
+		'content:"";position:absolute;' +
+		endShapeBorderBoxDecls( ends, borderDecls, paint ) +
+		'z-index:-2;box-sizing:border-box;pointer-events:none;border-radius:inherit;' +
+		mask
 	);
 }

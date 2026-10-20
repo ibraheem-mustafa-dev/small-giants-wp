@@ -26,11 +26,7 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { labelDotPreviewCss } from './dot-preview';
 import EndShapePanel from './EndShapePanel';
-import {
-	labelEndShapeEnds,
-	labelEndShapePreviewCss,
-	labelHasEndOutline,
-} from './end-shape-preview';
+import { labelEndShapeEnds, labelEndShapePreviewCss } from './end-shape-preview';
 import { RICH_TEXT_LINK_ONLY } from '../../utils/rich-text-formats';
 
 /**
@@ -127,7 +123,8 @@ function buildStyle( attributes, tier ) {
 		}
 	}
 	// The border, as the shared border panel's twin paints it. With an end shape the
-	// root's border only reserves room for the outline element, so its colour is clear.
+	// root keeps its border widths with a clear colour; the border paints on the cut
+	// `::after` layer (labelEndShapePreviewCss).
 	Object.assign(
 		previewStyle,
 		sgsBorderPreview(
@@ -208,7 +205,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const previewTier = usePreviewTier();
 	const hasEndShape = Object.keys( labelEndShapeEnds( attributes ) ).length > 0;
-	const hasOutline = labelHasEndOutline( attributes );
 	const blockProps = useBlockProps( {
 		className: `sgs-lbl-ed-${ clientId }${ hasEndShape ? ' has-end-shape' : '' }`,
 		style: buildStyle( attributes, previewTier ),
@@ -223,17 +219,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} );
 	// The leading dot: the same `::before` rule render.php prints, scoped to this canvas element.
 	const dotCss = labelDotPreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
-	// The end shapes: the cut fill layer and, with an outline, its edge element (the rules render.php prints).
+	// The end shapes: the cut `::after` layer carrying the fill and the border (the rules render.php prints).
 	const endShapeCss = labelEndShapePreviewCss( `.sgs-lbl-ed-${ clientId }`, attributes );
-	const richText = (
-		<RichText
-			tagName="span"
-			value={ text }
-			onChange={ ( val ) => setAttributes( { text: val } ) }
-			placeholder={ __( 'Label text…', 'sgs-blocks' ) }
-			allowedFormats={ RICH_TEXT_LINK_ONLY }
-		/>
-	);
 
 	return (
 		<>
@@ -465,24 +452,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ linkUnderlineCss && <style>{ linkUnderlineCss }</style> }
 			{ dotCss && <style>{ dotCss }</style> }
 			{ endShapeCss && <style>{ endShapeCss }</style> }
-			{ hasOutline ? (
-				// The outline element is the label's first child, as render.php prints it.
-				<span { ...blockProps }>
-					<span className="sgs-label__edge" aria-hidden="true">
-						<span className="sgs-label__edge-line" />
-					</span>
-					{ richText }
-				</span>
-			) : (
-				<RichText
-					{ ...blockProps }
-					tagName="span"
-					value={ text }
-					onChange={ ( val ) => setAttributes( { text: val } ) }
-					placeholder={ __( 'Label text…', 'sgs-blocks' ) }
-					allowedFormats={ RICH_TEXT_LINK_ONLY }
-				/>
-			) }
+			<RichText
+				{ ...blockProps }
+				tagName="span"
+				value={ text }
+				onChange={ ( val ) => setAttributes( { text: val } ) }
+				placeholder={ __( 'Label text…', 'sgs-blocks' ) }
+				allowedFormats={ RICH_TEXT_LINK_ONLY }
+			/>
 		</>
 	);
 }

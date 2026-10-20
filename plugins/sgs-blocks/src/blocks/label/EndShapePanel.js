@@ -1,6 +1,6 @@
 /**
  * The label's Shape panel: a shape for each end, how deep the cut reaches, and the
- * border (the shared border panel). With an end shape the outline follows the cut.
+ * border (the shared border panel). With an end shape the cut removes the border along it.
  *
  * The menu names are what a client sees; the stored values are shape-divider library
  * keys (includes/helpers-end-shape.php::sgs_end_shape_allowed).
@@ -99,7 +99,7 @@ export default function EndShapePanel( { attributes, setAttributes } ) {
 			/>
 			<p className="components-base-control__help">
 				{ __(
-					'With an end shape, the outline follows the cut and is always solid. Set its width in pixels.',
+					'With an end shape, the cut removes the border along it.',
 					'sgs-blocks'
 				) }
 			</p>

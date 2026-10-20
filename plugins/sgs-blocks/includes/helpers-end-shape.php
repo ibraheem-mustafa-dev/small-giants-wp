@@ -14,11 +14,11 @@
  * is rotated into the tile by `matrix()`: the library's base (y=120) faces the
  * box and its edge line faces outwards.
  *
- * Two tiles per end:
- * - the cut tile, the box minus the painted part, which a `mask-composite:subtract`
- *   layer removes from the fill and from the outline's own mask;
- * - the stroke tile, the edge line stroked at twice the outline width, which the
- *   cut then halves to an even outline that follows the cut.
+ * Each shaped end has one cut tile, the box minus the painted part, which a
+ * `mask-composite:subtract` layer removes from the box's layer. That layer carries
+ * the box's fill and its real CSS border together, so the cut removes the fill and
+ * the border along the cut: the cut sides have no line, and the straight sides keep
+ * a crisp CSS border.
  *
  * `src/utils/end-shape.js` is the editor twin and returns identical strings.
  * `$side` takes `left` or `right` today.
@@ -91,54 +91,6 @@ function sgs_end_shape_library_path( string $shape ): string {
 }
 
 /**
- * The library path without its closing segments: the line a stroke follows.
- *
- * Drops the closing `Z`, then every trailing straight segment whose two ends
- * lie on the same edge of the 1200x120 tile.
- *
- * @param string $shape Library key.
- * @return string Path data, or '' when the shape is not allowed.
- */
-function sgs_end_shape_edge_path( string $shape ): string {
-	$path = sgs_end_shape_library_path( $shape );
-	if ( '' === $path ) {
-		return '';
-	}
-	preg_match_all( '/([MLQCZ])([^MLQCZ]*)/', $path, $found, PREG_SET_ORDER );
-
-	$segments = array();
-	foreach ( $found as $item ) {
-		$numbers = array_map( 'floatval', preg_split( '/[\s,]+/', trim( $item[2] ), -1, PREG_SPLIT_NO_EMPTY ) );
-		$count   = count( $numbers );
-		$segments[] = array(
-			'text' => $item[1] . trim( $item[2] ),
-			'cmd'  => $item[1],
-			'x'    => $count >= 2 ? $numbers[ $count - 2 ] : 0.0,
-			'y'    => $count >= 2 ? $numbers[ $count - 1 ] : 0.0,
-		);
-	}
-
-	while ( array() !== $segments && 'Z' === $segments[ count( $segments ) - 1 ]['cmd'] ) {
-		array_pop( $segments );
-	}
-	while ( count( $segments ) > 1 ) {
-		$last = $segments[ count( $segments ) - 1 ];
-		$prev = $segments[ count( $segments ) - 2 ];
-		if ( 'L' !== $last['cmd'] ) {
-			break;
-		}
-		$on_edge = ( $last['x'] === $prev['x'] && ( 0.0 === $last['x'] || 1200.0 === $last['x'] ) )
-			|| ( $last['y'] === $prev['y'] && ( 0.0 === $last['y'] || 120.0 === $last['y'] ) );
-		if ( ! $on_edge ) {
-			break;
-		}
-		array_pop( $segments );
-	}
-
-	return implode( ' ', array_column( $segments, 'text' ) );
-}
-
-/**
  * The matrix that rotates a library tile into a depth-wide, 100-tall end tile.
  *
  * @param string $side  'left' or 'right'.
@@ -180,27 +132,6 @@ function sgs_end_shape_cut_svg( string $shape, string $side, float $depth ): str
 	$depth = sgs_end_shape_depth( $depth );
 	return sgs_end_shape_svg_open( $depth )
 		. "<path fill-rule='evenodd' transform='" . sgs_end_shape_matrix( $side, $depth ) . "' d='M0,0H1200V120H0Z " . $path . "'/></svg>";
-}
-
-/**
- * The stroke tile for one end: the edge line at twice the outline width.
- *
- * The stroke keeps its pixel width whatever the tile is stretched to.
- *
- * @param string $shape     Library key.
- * @param string $side      'left' or 'right'.
- * @param float  $depth     Depth, 10 through 150.
- * @param float  $stroke_px Outline width in px.
- * @return string Raw SVG, or '' when the shape or side is not allowed.
- */
-function sgs_end_shape_stroke_svg( string $shape, string $side, float $depth, float $stroke_px ): string {
-	$edge = sgs_end_shape_edge_path( $shape );
-	if ( '' === $edge || ! in_array( $side, array( 'left', 'right' ), true ) ) {
-		return '';
-	}
-	$depth = sgs_end_shape_depth( $depth );
-	return sgs_end_shape_svg_open( $depth )
-		. "<path fill='none' stroke='#000' stroke-width='" . sgs_end_shape_num( $stroke_px * 2 ) . "' vector-effect='non-scaling-stroke' transform='" . sgs_end_shape_matrix( $side, $depth ) . "' d='" . $edge . "'/></svg>";
 }
 
 /**
@@ -262,45 +193,81 @@ function sgs_end_shape_mask_decls( array $ends ): string {
 }
 
 /**
- * Declarations for the outline element: the straight sides as a border-wide ring,
- * plus the stroked edge line of each shaped end when the width is in px.
+ * The layer's inset, border and border colour for one set of border declarations.
  *
- * The ring is the element's border box minus its content box (padding is the
- * outline width); each stroke tile is added to it. The outline element carries the
- * same cut mask as the fill, which halves the stroke to an even width.
+ * The layer is an absolutely positioned child of the box, whose containing block is
+ * the box's padding box; each side is inset outwards by that side's border width, so
+ * the layer covers the box's border box exactly and its own border sits where the
+ * box's (transparent) border is.
  *
- * @param array<string, array{0: string, 1: float}> $ends      `left` and `right` as `[ shape, depth ]`.
- * @param string                                    $width_css The outline width as a CSS length.
- * @param float|null                                $stroke_px The width in px, or null when it is another unit (the straight sides only).
+ * Each shaped side's border is a 1px transparent strip and the fill stops at the
+ * padding box, so no paint meets the layer's edge along the cut: Chrome draws a
+ * hairline where paint meets the edge of a masked element that is rotated. The cut
+ * removes that side's border anyway, apart from its two corner points.
+ *
+ * @param array<string, array{0: string, 1: float}> $ends         `left` and `right` as `[ shape, depth ]`.
+ * @param string[]                                  $border_decls The width declarations sgs_border_element_decls()
+ *                                                                prints for one tier (`border-style:…`,
+ *                                                                `border-width:t r b l`), or none.
+ * @param string                                    $paint        The border colour as a background-paint
+ *                                                                declaration (`facts.paint`): a flat colour
+ *                                                                becomes `border-color`, a gradient a
+ *                                                                `border-image`; '' leaves the border on
+ *                                                                `currentColor`.
  * @return string Declarations ending in a semicolon.
  */
-function sgs_end_shape_ring_decls( array $ends, string $width_css, ?float $stroke_px ): string {
-	$ends      = sgs_end_shape_active_ends( $ends );
-	$images    = array();
-	$clips     = array();
-	$sizes     = array();
-	$positions = array();
-	$composite = array();
-	if ( null !== $stroke_px ) {
-		foreach ( $ends as $side => $end ) {
-			$images[]    = sgs_end_shape_url( sgs_end_shape_stroke_svg( $end[0], $side, $end[1], $stroke_px ) );
-			$clips[]     = 'border-box';
-			$sizes[]     = 'auto 100%';
-			$positions[] = $side . ' center';
-			$composite[] = 'add';
+function sgs_end_shape_border_box_decls( array $ends, array $border_decls, string $paint ): string {
+	$ends  = sgs_end_shape_active_ends( $ends );
+	$sides = array();
+	foreach ( $border_decls as $decl ) {
+		if ( 0 === strpos( $decl, 'border-width:' ) ) {
+			$sides = preg_split( '/\s+/', trim( substr( $decl, strlen( 'border-width:' ) ) ), -1, PREG_SPLIT_NO_EMPTY );
 		}
 	}
-	$images    = array_merge( $images, array( 'linear-gradient(#000 0 0)', 'linear-gradient(#000 0 0)' ) );
-	$clips     = array_merge( $clips, array( 'content-box', 'border-box' ) );
-	$sizes     = array_merge( $sizes, array( '100% 100%', '100% 100%' ) );
-	$positions = array_merge( $positions, array( '0 0', '0 0' ) );
-	$composite[] = 'exclude';
+	$css = 'inset:0;';
+	if ( array() !== $sides ) {
+		$inset = array();
+		foreach ( $sides as $side ) {
+			$inset[] = 1 === preg_match( '/^0+(?:\.0+)?[a-z%]*$/i', $side ) ? '0' : 'calc(-1 * ' . $side . ')';
+		}
+		$css = 'inset:' . implode( ' ', $inset ) . ';' . implode( ';', $border_decls ) . ';';
+		if ( 0 === strpos( $paint, 'background-color:' ) ) {
+			$css .= 'border-color:' . substr( $paint, strlen( 'background-color:' ) ) . ';';
+		} elseif ( 0 === strpos( $paint, 'background-image:' ) ) {
+			$image_widths = array();
+			foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+				$image_widths[] = isset( $ends[ $side ] ) ? '0' : '1';
+			}
+			$css .= 'border-image:' . substr( $paint, strlen( 'background-image:' ) ) . ' 1;border-image-width:' . implode( ' ', $image_widths ) . ';';
+		}
+	}
+	if ( array() !== $ends ) {
+		foreach ( array( 'right', 'left' ) as $side ) {
+			if ( isset( $ends[ $side ] ) ) {
+				$css .= 'border-' . $side . ':1px solid transparent;';
+			}
+		}
+		$css .= 'background-clip:padding-box;';
+	}
+	return $css;
+}
 
-	return 'padding:' . $width_css . ';'
-		. 'mask-image:' . implode( ',', $images ) . ';'
-		. 'mask-clip:' . implode( ',', $clips ) . ';'
-		. 'mask-size:' . implode( ',', $sizes ) . ';'
-		. 'mask-position:' . implode( ',', $positions ) . ';'
-		. 'mask-repeat:no-repeat;'
-		. 'mask-composite:' . implode( ',', $composite ) . ';';
+/**
+ * Declarations for a shaped box's `::after` layer: the box's border on the layer,
+ * then the cut mask. The caller adds the fill paint.
+ *
+ * @param array<string, array{0: string, 1: float}> $ends         `left` and `right` as `[ shape, depth ]`.
+ * @param string[]                                  $border_decls The box's desktop border width declarations.
+ * @param string                                    $paint        The border colour as a background-paint declaration, or ''.
+ * @return string Declarations ending in a semicolon, or '' when no end is shaped.
+ */
+function sgs_end_shape_layer_decls( array $ends, array $border_decls, string $paint ): string {
+	$mask = sgs_end_shape_mask_decls( $ends );
+	if ( '' === $mask ) {
+		return '';
+	}
+	return 'content:"";position:absolute;'
+		. sgs_end_shape_border_box_decls( $ends, $border_decls, $paint )
+		. 'z-index:-2;box-sizing:border-box;pointer-events:none;border-radius:inherit;'
+		. $mask;
 }

@@ -5,9 +5,10 @@
  * element's own class and printed in an editor `<style>`, since a mask on a
  * pseudo-element cannot take an inline style.
  *
- * The fill is the `::after` layer cut by a mask; the outline is the first-child
- * `.sgs-label__edge` element (`labelHasEndOutline()` says when the canvas renders it).
- * The strings come from `src/utils/end-shape.js`, the twin of includes/helpers-end-shape.php.
+ * The fill and the real border are both painted on the `::after` layer, which the cut
+ * mask removes along the cut; the root keeps its border widths with a transparent colour
+ * (edit.js). The strings come from `src/utils/end-shape.js`, the twin of
+ * includes/helpers-end-shape.php.
  *
  * Every value reaching a rule is checked to be a plain length, preset variable, colour or
  * gradient, so a stored value cannot carry CSS out of the declaration.
@@ -16,18 +17,12 @@
  */
 import { colourVar, gapVar, isCssGradient } from '../../utils';
 import { resolveBorderStyle } from '../../utils/border-style';
-import {
-	endShapeDepth,
-	endShapeMaskDecls,
-	endShapeNormalise,
-	endShapeRingDecls,
-} from '../../utils/end-shape';
+import { endShapeDepth, endShapeLayerDecls, endShapeNormalise } from '../../utils/end-shape';
 
 const SAFE_LENGTH = /^-?(?:\d+|\d*\.\d+)(?:[a-z]+|%)?$/i;
 const SAFE_PRESET = /^var\(--wp--preset--spacing--[a-z0-9-]+\)$/i;
-const ZERO_LENGTH = /^0+(?:\.0+)?[a-z%]*$/i;
-const PX_LENGTH = /^(\d+(?:\.\d+)?)px$/;
 const UNSAFE_CHARS = /[{};<>]/;
+const SIDE_KEYS = [ 'top', 'right', 'bottom', 'left' ];
 
 /**
  * The shaped ends of a label as `{ left: [ shape, depth ], right: [ shape, depth ] }`.
@@ -50,63 +45,48 @@ export function labelEndShapeEnds( attributes = {} ) {
 }
 
 /**
- * The top border width as a safe CSS length, or ''.
+ * One border side as a safe CSS length, or ''.
  *
- * @param {Object} attributes Block attributes.
- * @return {string} Length, or '' when none is set.
+ * @param {*} value Stored side value.
+ * @return {string} Length, or '' when unset or unsafe.
  */
-function borderTopWidth( attributes ) {
-	const box = attributes.borderWidth && 'object' === typeof attributes.borderWidth ? attributes.borderWidth : {};
-	const raw = 'string' === typeof box.top || 'number' === typeof box.top ? String( box.top ).trim() : '';
+function sideWidth( value ) {
+	const raw = 'string' === typeof value || 'number' === typeof value ? String( value ).trim() : '';
 	const length = raw ? gapVar( raw ) : '';
 	return SAFE_LENGTH.test( length ) || SAFE_PRESET.test( length ) ? length : '';
 }
 
 /**
- * Whether the label has an end shape and an outline to draw: a width above zero and a style other than none.
+ * The border width declarations render.php's assembler prints (sgs_border_box_decls):
+ * none when no side has a width or the style is none; unset sides print 0.
  *
  * @param {Object} attributes Block attributes.
- * @return {boolean} True when the canvas renders the outline element.
+ * @return {string[]} `border-style:…` and `border-width:t r b l`, or none.
  */
-export function labelHasEndOutline( attributes = {} ) {
-	const width = borderTopWidth( attributes );
-	return (
-		Object.keys( labelEndShapeEnds( attributes ) ).length > 0 &&
-		'' !== width &&
-		! ZERO_LENGTH.test( width ) &&
-		'none' !== resolveBorderStyle( attributes.borderStyle )
-	);
+function borderDecls( attributes ) {
+	const box = attributes.borderWidth && 'object' === typeof attributes.borderWidth ? attributes.borderWidth : {};
+	const sides = SIDE_KEYS.map( ( key ) => sideWidth( box[ key ] ) );
+	const style = resolveBorderStyle( attributes.borderStyle );
+	if ( ! sides.some( Boolean ) || 'none' === style ) {
+		return [];
+	}
+	return [ `border-style:${ style }`, `border-width:${ sides.map( ( side ) => side || '0' ).join( ' ' ) }` ];
 }
 
 /**
- * The fill's paint declaration: a gradient wins over the flat colour; neither leaves the
- * variant's stylesheet fill in charge.
+ * A colour and gradient pair as a background-paint declaration: a gradient wins over the
+ * flat colour; neither gives ''.
  *
- * @param {Object} attributes Block attributes.
+ * @param {string} colour   Flat colour (slug or CSS colour).
+ * @param {string} gradient Gradient.
  * @return {string} One declaration, without a trailing semicolon, or ''.
  */
-function fillPaint( attributes ) {
-	const gradient = attributes.backgroundColourGradient;
+function paintDecl( colour, gradient ) {
 	if ( isCssGradient( gradient ) && ! UNSAFE_CHARS.test( gradient ) ) {
 		return `background-image:${ gradient.trim() }`;
 	}
-	const flat = colourVar( attributes.backgroundColour );
+	const flat = colourVar( colour );
 	return flat && ! UNSAFE_CHARS.test( flat ) ? `background-color:${ flat }` : '';
-}
-
-/**
- * The outline's paint declaration; the border colour follows the text colour when unset.
- *
- * @param {Object} attributes Block attributes.
- * @return {string} One declaration, without a trailing semicolon.
- */
-function outlinePaint( attributes ) {
-	const gradient = attributes.borderColourGradient;
-	if ( isCssGradient( gradient ) && ! UNSAFE_CHARS.test( gradient ) ) {
-		return `background-image:${ gradient.trim() }`;
-	}
-	const flat = colourVar( attributes.borderColour );
-	return flat && ! UNSAFE_CHARS.test( flat ) ? `background-color:${ flat }` : 'background-color:currentColor';
 }
 
 /**
@@ -123,21 +103,14 @@ export function labelEndShapePreviewCss( selector, attributes = {} ) {
 	}
 	// The canvas element carries the block class too, so these rules outrank the stylesheet's variant fill.
 	const sel = `${ selector }.wp-block-sgs-label`;
-	const width = borderTopWidth( attributes );
-	const hasWidth = '' !== width && ! ZERO_LENGTH.test( width );
-	const inset = hasWidth ? `calc(-1 * ${ width })` : '0';
-	const paint = fillPaint( attributes );
-	const rules = [
-		`${ sel }{background-color:transparent;position:relative;isolation:isolate;}`,
-		`${ sel }::after{content:"";position:absolute;inset:${ inset };z-index:-2;border-radius:inherit;pointer-events:none;${ paint ? paint + ';' : '' }${ endShapeMaskDecls( ends ) }}`,
-	];
-	if ( labelHasEndOutline( attributes ) ) {
-		const px = PX_LENGTH.exec( width );
-		const stroke = px ? parseFloat( px[ 1 ] ) : null;
-		rules.push(
-			`${ sel } .sgs-label__edge{position:absolute;inset:${ inset };z-index:-1;pointer-events:none;border-radius:inherit;${ endShapeMaskDecls( ends ) }}`,
-			`${ sel } .sgs-label__edge-line{position:absolute;inset:0;border-radius:inherit;${ outlinePaint( attributes ) };${ endShapeRingDecls( ends, width, stroke ) }}`
-		);
-	}
-	return rules.join( '' );
+	const fill = paintDecl( attributes.backgroundColour, attributes.backgroundColourGradient );
+	const layer = endShapeLayerDecls(
+		ends,
+		borderDecls( attributes ),
+		paintDecl( attributes.borderColour, attributes.borderColourGradient )
+	);
+	return (
+		`${ sel }{background-color:transparent;position:relative;isolation:isolate;}` +
+		`${ sel }::after{${ layer }${ fill ? fill + ';' : '' }}`
+	);
 }

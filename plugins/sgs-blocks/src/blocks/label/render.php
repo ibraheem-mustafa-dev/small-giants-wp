@@ -329,10 +329,11 @@ if ( ! empty( $attributes['dot'] ) ) {
 
 // --- Border and end shapes. ---
 // No end shape: an ordinary border on the root through the shared border assembler.
-// With an end shape the root's border only reserves the outline's room (its colour is
-// transparent); the fill is the `::after` layer cut by a mask, and the outline is a
-// first-child element carrying the same cut, painted as a ring plus the stroked edge of
-// each shaped end. The label itself is never masked, so its text, dot and focus ring stay.
+// With an end shape the root keeps its border widths for layout with a transparent
+// colour, and the `::after` layer, inset outwards by each side's width so it covers the
+// root's border box, carries the fill and the real border together; the cut mask on that
+// layer removes both along the cut. The label itself is never masked, so its text, dot
+// and focus ring stay.
 $border_parts = sgs_border_element_decls(
 	$attributes,
 	'',
@@ -347,13 +348,6 @@ $border_parts = sgs_border_element_decls(
 		'radius'          => false,
 	)
 );
-
-// The outline reads the assembler's resolved facts: the top width, the style keyword and the colour paint.
-$border_style_keyword = $border_parts['facts']['style'];
-$border_top           = $border_parts['facts']['width_top'];
-$border_has_width     = ( '' !== $border_top && 1 !== preg_match( '/^0+(?:\.0+)?[a-z%]*$/i', $border_top ) );
-$border_stroke_px     = ( $border_has_width && 1 === preg_match( '/^(\d+(?:\.\d+)?)px$/', $border_top, $stroke_match ) ) ? (float) $stroke_match[1] : null;
-$has_outline          = $has_end_shape && $border_has_width && 'none' !== $border_style_keyword;
 
 $border_base = $border_parts['base'];
 if ( $has_end_shape ) {
@@ -379,14 +373,19 @@ foreach ( $border_parts['rules'] as $border_rule ) {
 	$scoped_css[] = $border_rule;
 }
 
+// The shaped layer: the root's border (width and style from the assembler, colour from its
+// resolved paint) and the cut. The tablet and mobile widths move the layer with the root.
 if ( $has_end_shape ) {
-	$edge_inset   = $border_has_width ? "calc(-1 * {$border_top})" : '0';
-	$scoped_css[] = "{$root_sel}::after{inset:{$edge_inset};z-index:-2;" . sgs_end_shape_mask_decls( $end_ends ) . '}';
-}
-if ( $has_outline ) {
-	$outline_paint = '' !== $border_parts['facts']['paint'] ? $border_parts['facts']['paint'] : 'background-color:currentColor';
-	$scoped_css[]  = "{$root_sel} .sgs-label__edge{position:absolute;inset:calc(-1 * {$border_top});z-index:-1;pointer-events:none;border-radius:inherit;" . sgs_end_shape_mask_decls( $end_ends ) . '}';
-	$scoped_css[]  = "{$root_sel} .sgs-label__edge-line{position:absolute;inset:0;border-radius:inherit;{$outline_paint};" . sgs_end_shape_ring_decls( $end_ends, $border_top, $border_stroke_px ) . '}';
+	$scoped_css[]  = "{$root_sel}::after{" . sgs_end_shape_layer_decls( $end_ends, $border_parts['base'], $border_parts['facts']['paint'] ) . '}';
+	$layer_queries = array(
+		'tablet' => 1023,
+		'mobile' => 767,
+	);
+	foreach ( $layer_queries as $layer_tier => $layer_max ) {
+		if ( array() !== $border_parts[ $layer_tier ] ) {
+			$scoped_css[] = "@media(max-width:{$layer_max}px){{$root_sel}::after{" . sgs_end_shape_border_box_decls( $end_ends, $border_parts[ $layer_tier ], '' ) . '}}';
+		}
+	}
 }
 
 // --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
@@ -461,12 +460,9 @@ if ( $scoped_css ) :
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <?php
-// The outline element is the first child, decorative only.
-$edge_markup = $has_outline ? '<span class="sgs-label__edge" aria-hidden="true"><span class="sgs-label__edge-line"></span></span>' : '';
 printf(
-	'<%1$s %2$s>%3$s%4$s</%1$s>',
+	'<%1$s %2$s>%3$s</%1$s>',
 	tag_escape( $tag_name ),
 	$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	$edge_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static markup.
 	sgs_rich_text_kses( $text )
 );

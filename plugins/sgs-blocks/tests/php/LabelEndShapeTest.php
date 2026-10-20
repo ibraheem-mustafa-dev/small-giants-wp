@@ -20,7 +20,7 @@ require_once __DIR__ . '/BlockHarnessRenderTrait.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-end-shape.php';
 
 /**
- * Label end shapes: allowed list, edge paths, mask and ring declarations, render output.
+ * Label end shapes: allowed list, cut tiles, mask and layer declarations, render output.
  */
 final class LabelEndShapeTest extends TestCase {
 
@@ -29,32 +29,14 @@ final class LabelEndShapeTest extends TestCase {
 	/** Parity: the allowed end shapes, in menu order. */
 	private const ALLOWED = 'arrow,triangle,slant,curve,wave-smooth,zigzag';
 
-	/** Parity: arrow edge path. */
-	private const EDGE_ARROW = 'M0,0 L600,120 L1200,0';
-
-	/** Parity: triangle edge path. */
-	private const EDGE_TRIANGLE = 'M0,120 L600,0 L1200,120';
-
-	/** Parity: slant edge path. */
-	private const EDGE_SLANT = 'M0,120 L1200,0';
-
-	/** Parity: curve edge path. */
-	private const EDGE_CURVE = 'M0,120 Q600,0 1200,120';
-
-	/** Parity: wave-smooth edge path. */
-	private const EDGE_WAVE_SMOOTH = 'M0,60 Q300,120 600,60 Q900,0 1200,60';
-
-	/** Parity: zigzag edge path. */
-	private const EDGE_ZIGZAG = 'M0,60 L100,20 L200,60 L300,20 L400,60 L500,20 L600,60 L700,20 L800,60 L900,20 L1000,60 L1100,20 L1200,60';
-
 	/** Parity: the right-arrow cut tile (depth 45) as it sits in the stylesheet. */
 	private const CUT_ARROW_RIGHT_45 = "<svg xmlns='http://www.w3.org/2000/svg' width='45' height='100' viewBox='0 0 45 100' preserveAspectRatio='none'><path fill-rule='evenodd' transform='matrix(0 0.0833 -0.375 0 45 0)' d='M0,0H1200V120H0Z M0,0 L600,120 L1200,0 L1200,120 L0,120 Z'/></svg>";
 
 	/** Parity: the right-arrow mask declarations (depth 45). */
 	private const MASK_ARROW_RIGHT_45 = 'mask-image:linear-gradient(#000 0 0),url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'45\' height=\'100\' viewBox=\'0 0 45 100\' preserveAspectRatio=\'none\'%3E%3Cpath fill-rule=\'evenodd\' transform=\'matrix(0 0.0833 -0.375 0 45 0)\' d=\'M0,0H1200V120H0Z M0,0 L600,120 L1200,0 L1200,120 L0,120 Z\'/%3E%3C/svg%3E");mask-position:0 0,right center;mask-size:100% 100%,auto 100%;mask-repeat:no-repeat;mask-composite:subtract;';
 
-	/** Parity: the right-arrow stroke tile (depth 45, 2px outline). */
-	private const STROKE_ARROW_RIGHT_45 = "<svg xmlns='http://www.w3.org/2000/svg' width='45' height='100' viewBox='0 0 45 100' preserveAspectRatio='none'><path fill='none' stroke='#000' stroke-width='4' vector-effect='non-scaling-stroke' transform='matrix(0 0.0833 -0.375 0 45 0)' d='M0,0 L600,120 L1200,0'/></svg>";
+	/** Parity: the shaped layer for the draft tag: the 2px solid #3A2A22 border, the right side's paint-free strip and the right-arrow cut (depth 45). */
+	private const LAYER_ARROW_RIGHT_DRAFT = 'content:"";position:absolute;inset:calc(-1 * 2px) calc(-1 * 2px) calc(-1 * 2px) calc(-1 * 2px);border-style:solid;border-width:2px 2px 2px 2px;border-color:#3A2A22;border-right:1px solid transparent;background-clip:padding-box;z-index:-2;box-sizing:border-box;pointer-events:none;border-radius:inherit;mask-image:linear-gradient(#000 0 0),url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'45\' height=\'100\' viewBox=\'0 0 45 100\' preserveAspectRatio=\'none\'%3E%3Cpath fill-rule=\'evenodd\' transform=\'matrix(0 0.0833 -0.375 0 45 0)\' d=\'M0,0H1200V120H0Z M0,0 L600,120 L1200,0 L1200,120 L0,120 Z\'/%3E%3C/svg%3E");mask-position:0 0,right center;mask-size:100% 100%,auto 100%;mask-repeat:no-repeat;mask-composite:subtract;';
 
 	/** The draft's tag: right V notch, 2px dark outline, pink fill. */
 	private function tag_attributes( array $overrides = array() ): array {
@@ -79,16 +61,6 @@ final class LabelEndShapeTest extends TestCase {
 
 	public function test_allowed_shapes_are_the_menu_list(): void {
 		$this->assertSame( self::ALLOWED, implode( ',', sgs_end_shape_allowed() ) );
-	}
-
-	public function test_edge_paths_drop_the_segments_on_the_tile_edge(): void {
-		$this->assertSame( self::EDGE_ARROW, sgs_end_shape_edge_path( 'arrow' ) );
-		$this->assertSame( self::EDGE_TRIANGLE, sgs_end_shape_edge_path( 'triangle' ) );
-		$this->assertSame( self::EDGE_SLANT, sgs_end_shape_edge_path( 'slant' ) );
-		$this->assertSame( self::EDGE_CURVE, sgs_end_shape_edge_path( 'curve' ) );
-		$this->assertSame( self::EDGE_WAVE_SMOOTH, sgs_end_shape_edge_path( 'wave-smooth' ) );
-		$this->assertSame( self::EDGE_ZIGZAG, sgs_end_shape_edge_path( 'zigzag' ) );
-		$this->assertSame( '', sgs_end_shape_edge_path( 'cloud' ) );
 	}
 
 	public function test_cut_tile_for_the_right_arrow_matches_the_parity_literal(): void {
@@ -124,40 +96,92 @@ final class LabelEndShapeTest extends TestCase {
 		$this->assertSame( '', sgs_end_shape_mask_decls( array( 'left' => array( '', 45.0 ) ) ) );
 	}
 
-	public function test_ring_declarations_stroke_the_edge_and_keep_the_straight_sides(): void {
-		$css = sgs_end_shape_ring_decls( array( 'right' => array( 'arrow', 45.0 ) ), '2px', 2.0 );
-		$this->assertStringContainsString( 'padding:2px;', $css );
-		$this->assertStringContainsString( 'mask-clip:border-box,content-box,border-box;', $css );
-		$this->assertStringContainsString( 'mask-composite:add,exclude;', $css );
-		$this->assertStringContainsString( $this->encoded( self::STROKE_ARROW_RIGHT_45 ), $css );
+	public function test_layer_declarations_for_the_draft_tag_match_the_parity_literal(): void {
+		$this->assertSame(
+			self::LAYER_ARROW_RIGHT_DRAFT,
+			sgs_end_shape_layer_decls(
+				array( 'right' => array( 'arrow', 45.0 ) ),
+				array( 'border-style:solid', 'border-width:2px 2px 2px 2px' ),
+				'background-color:#3A2A22'
+			)
+		);
 	}
 
-	public function test_ring_without_a_pixel_width_draws_the_straight_sides_only(): void {
-		$css = sgs_end_shape_ring_decls( array( 'right' => array( 'arrow', 45.0 ) ), '0.125rem', null );
-		$this->assertStringNotContainsString( 'stroke-width', $css );
-		$this->assertStringContainsString( 'mask-composite:exclude;', $css );
+	public function test_border_box_declarations_inset_per_side_and_map_the_paint(): void {
+		$right = array( 'right' => array( 'arrow', 45.0 ) );
+		$this->assertSame(
+			'inset:calc(-1 * 2px) 0 0 calc(-1 * 4px);border-style:solid;border-width:2px 0 0 4px;border-image:linear-gradient(90deg,#f00,#00f) 1;border-image-width:1 0 1 1;border-right:1px solid transparent;background-clip:padding-box;',
+			sgs_end_shape_border_box_decls( $right, array( 'border-style:solid', 'border-width:2px 0 0 4px' ), 'background-image:linear-gradient(90deg,#f00,#00f)' )
+		);
+		$this->assertSame(
+			'inset:calc(-1 * 2px) calc(-1 * 2px) calc(-1 * 2px) calc(-1 * 2px);border-style:dashed;border-width:2px 2px 2px 2px;border-right:1px solid transparent;background-clip:padding-box;',
+			sgs_end_shape_border_box_decls( $right, array( 'border-style:dashed', 'border-width:2px 2px 2px 2px' ), '' )
+		);
+		$this->assertSame( 'inset:0;border-right:1px solid transparent;background-clip:padding-box;', sgs_end_shape_border_box_decls( $right, array(), 'background-color:#3A2A22' ) );
+		$this->assertSame( 'inset:0;', sgs_end_shape_border_box_decls( array(), array(), 'background-color:#3A2A22' ) );
 	}
 
-	public function test_draft_tag_cuts_the_fill_and_outlines_the_cut(): void {
+	public function test_both_ends_leave_a_paint_free_strip_on_each_shaped_side(): void {
+		$css = sgs_end_shape_border_box_decls(
+			array(
+				'left'  => array( 'triangle', 30.0 ),
+				'right' => array( 'arrow', 45.0 ),
+			),
+			array( 'border-style:solid', 'border-width:2px 2px 2px 2px' ),
+			'background-image:linear-gradient(90deg,#f00,#00f)'
+		);
+		$this->assertStringContainsString( 'border-image-width:1 0 1 0;border-right:1px solid transparent;border-left:1px solid transparent;background-clip:padding-box;', $css );
+	}
+
+	public function test_draft_tag_paints_fill_and_border_on_the_cut_layer(): void {
 		$out = $this->render_block( 'sgs/label', $this->tag_attributes() );
 
 		$this->assertStringContainsString( 'has-end-shape', $out['html'] );
-		$this->assertStringContainsString(
-			'<span class="sgs-label__edge" aria-hidden="true"><span class="sgs-label__edge-line"></span></span>',
-			$out['html']
-		);
+		$this->assertStringNotContainsString( 'sgs-label__edge', $out['html'] );
 		$this->assertStringNotContainsString( 'style="', $out['html'] );
 
-		$this->assertStringContainsString( 'mask-composite:subtract', $out['css'] );
-		$this->assertStringContainsString( 'matrix(0 0.0833 -0.375 0 45 0)', $out['css'] );
-		$this->assertStringContainsString( "fill-rule='evenodd'", $out['css'] );
-		$this->assertStringContainsString( "stroke-width='4'", $out['css'] );
-		$this->assertStringContainsString( "vector-effect='non-scaling-stroke'", $out['css'] );
-		$this->assertStringContainsString( 'M0,0 L600,120 L1200,0', $out['css'] );
-		$this->assertStringContainsString( 'border-color:transparent', $out['css'] );
-		$this->assertStringContainsString( '.sgs-label__edge-line', $out['css'] );
-		$this->assertStringContainsString( 'background-color:#3A2A22', $out['css'] );
-		$this->assertStringContainsString( 'background-color:#EE8088', $out['css'] );
+		$this->assertStringContainsString( '::after{' . self::LAYER_ARROW_RIGHT_DRAFT . '}', $out['css'] );
+		$this->assertMatchesRegularExpression( '/::after\{[^}]*border-width:2px 2px 2px 2px;border-color:#3A2A22;[^}]*mask-composite:subtract;\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/::after\{[^}]*background-color:#EE8088;\}/', $out['css'] );
+		// The root keeps its border widths for layout and paints none of it.
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-label\{[^}]*border-width:2px 2px 2px 2px;border-color:transparent;\}/', $out['css'] );
+		$this->assertStringNotContainsString( '#3A2A22', preg_replace( '/::after\{[^}]*\}/', '', $out['css'] ) );
+		$this->assertStringNotContainsString( 'stroke', $out['css'] );
+		$this->assertStringNotContainsString( 'sgs-label__edge', $out['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/padding(?:-(?:top|right|bottom|left|inline|block)[a-z-]*)?:/', $out['css'] );
+	}
+
+	public function test_per_side_widths_inset_each_side_of_the_layer(): void {
+		$box = array(
+			'top'  => '2px',
+			'left' => '4px',
+		);
+		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'borderWidth' => $box ) ) );
+
+		$this->assertStringContainsString( '::after{content:"";position:absolute;inset:calc(-1 * 2px) 0 0 calc(-1 * 4px);border-style:solid;border-width:2px 0 0 4px;border-color:#3A2A22;', $out['css'] );
+	}
+
+	public function test_a_tablet_width_moves_the_layer_with_the_root(): void {
+		$tiers = array(
+			'desktop' => array( 'top' => '2px', 'right' => '2px', 'bottom' => '2px', 'left' => '2px' ),
+			'tablet'  => array( 'top' => '3px', 'right' => '3px', 'bottom' => '3px', 'left' => '3px' ),
+		);
+		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'borderWidth' => $tiers ) ) );
+
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{[^{]*::after\{inset:calc\(-1 \* 3px\) calc\(-1 \* 3px\) calc\(-1 \* 3px\) calc\(-1 \* 3px\);border-style:solid;border-width:3px 3px 3px 3px;border-right:1px solid transparent;background-clip:padding-box;\}\}/', $out['css'] );
+	}
+
+	public function test_a_gradient_border_with_a_shape_is_a_border_image_on_the_layer(): void {
+		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'borderColourGradient' => 'linear-gradient(90deg,#ff0000,#0000ff)' ) ) );
+
+		$this->assertMatchesRegularExpression( '/::after\{[^}]*border-image:linear-gradient\(90deg,#ff0000,#0000ff\) 1;[^}]*mask-composite:subtract;\}/', $out['css'] );
+		$this->assertStringNotContainsString( 'mask-composite:exclude', $out['css'] );
+	}
+
+	public function test_a_dashed_border_stays_dashed_on_the_layer(): void {
+		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'borderStyle' => 'dashed' ) ) );
+
+		$this->assertMatchesRegularExpression( '/::after\{[^}]*border-style:dashed;border-width:2px 2px 2px 2px;border-color:#3A2A22;/', $out['css'] );
 	}
 
 	public function test_a_shaped_label_with_no_fill_hugs_its_text(): void {
@@ -166,30 +190,24 @@ final class LabelEndShapeTest extends TestCase {
 		$this->assertStringNotContainsString( 'display:block', $out['css'] );
 	}
 
-	public function test_edge_is_the_first_child_of_the_label(): void {
-		$out = $this->render_block( 'sgs/label', $this->tag_attributes() );
-		$this->assertMatchesRegularExpression( '/<span[^>]*wp-block-sgs-label[^>]*><span class="sgs-label__edge"/', $out['html'] );
-		$this->assertStringContainsString( 'baked with love', $out['html'] );
-	}
-
 	public function test_both_ends_straight_is_an_ordinary_border(): void {
 		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'endShapeRight' => '', 'endShapeLeft' => '' ) ) );
 
 		$this->assertStringNotContainsString( 'mask-image', $out['css'] );
 		$this->assertStringNotContainsString( 'sgs-label__edge', $out['html'] );
 		$this->assertStringNotContainsString( 'has-end-shape', $out['html'] );
-		$this->assertStringContainsString( 'border-width:2px', $out['css'] );
-		$this->assertStringContainsString( 'border-color:#3A2A22', $out['css'] );
+		$this->assertStringNotContainsString( 'inset:calc', $out['css'] );
+		$this->assertMatchesRegularExpression( '/\.wp-block-sgs-label\{border-style:solid;border-width:2px 2px 2px 2px;border-color:#3A2A22;\}/', $out['css'] );
 	}
 
-	public function test_style_none_draws_no_outline(): void {
+	public function test_style_none_draws_no_border_on_the_layer(): void {
 		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'borderStyle' => 'none' ) ) );
 
-		$this->assertStringNotContainsString( 'sgs-label__edge', $out['html'] );
-		$this->assertStringContainsString( 'mask-composite:subtract', $out['css'] );
+		$this->assertMatchesRegularExpression( '/::after\{content:"";position:absolute;inset:0;border-right:1px solid transparent;background-clip:padding-box;z-index:-2;[^}]*mask-composite:subtract;\}/', $out['css'] );
+		$this->assertStringNotContainsString( '#3A2A22', $out['css'] );
 	}
 
-	public function test_a_width_in_rem_draws_no_stroke(): void {
+	public function test_a_width_in_rem_insets_by_the_same_length(): void {
 		$box = array(
 			'top'    => '0.125rem',
 			'right'  => '0.125rem',
@@ -198,8 +216,7 @@ final class LabelEndShapeTest extends TestCase {
 		);
 		$out = $this->render_block( 'sgs/label', $this->tag_attributes( array( 'borderWidth' => $box ) ) );
 
-		$this->assertStringNotContainsString( 'stroke-width', $out['css'] );
-		$this->assertStringContainsString( 'sgs-label__edge', $out['html'] );
+		$this->assertStringContainsString( 'inset:calc(-1 * 0.125rem) calc(-1 * 0.125rem) calc(-1 * 0.125rem) calc(-1 * 0.125rem);border-style:solid;border-width:0.125rem 0.125rem 0.125rem 0.125rem;border-color:#3A2A22;', $out['css'] );
 	}
 
 	public function test_a_shape_outside_the_list_is_straight(): void {
@@ -207,7 +224,6 @@ final class LabelEndShapeTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'has-end-shape', $out['html'] );
 		$this->assertStringNotContainsString( 'mask-image', $out['css'] );
-		$this->assertStringNotContainsString( 'sgs-label__edge', $out['html'] );
 	}
 
 	public function test_depth_is_clamped_to_ten_through_one_hundred_fifty(): void {
@@ -228,15 +244,5 @@ final class LabelEndShapeTest extends TestCase {
 		$this->assertStringContainsString( 'linear-gradient(90deg,#ff0000,#0000ff)', $out['css'] );
 		$this->assertStringContainsString( 'has-end-shape', $out['html'] );
 		$this->assertStringNotContainsString( 'background:none', $out['css'] );
-	}
-
-	/**
-	 * The stylesheet form of an SVG literal, as the helper encodes it for a url() value.
-	 *
-	 * @param string $svg Raw SVG.
-	 * @return string Encoded form.
-	 */
-	private function encoded( string $svg ): string {
-		return str_replace( array( '%', '<', '>', '#', '"' ), array( '%25', '%3C', '%3E', '%23', '%22' ), $svg );
 	}
 }

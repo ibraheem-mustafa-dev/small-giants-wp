@@ -45,10 +45,10 @@
  *   helpers-value-ladder.php        — sgs_saving_display, sgs_value_ladder
  *                                     (also requires helpers-configurator-pricing.php)
  *
- *   helpers-end-shape.php           — sgs_end_shape_allowed, sgs_end_shape_edge_path,
- *                                     sgs_end_shape_cut_svg, sgs_end_shape_mask_decls,
- *                                     sgs_end_shape_ring_decls (label end shapes cut
- *                                     from the shape-divider library)
+ *   helpers-end-shape.php           — sgs_end_shape_allowed, sgs_end_shape_cut_svg,
+ *                                     sgs_end_shape_mask_decls, sgs_end_shape_layer_decls,
+ *                                     sgs_end_shape_border_box_decls (label end shapes
+ *                                     cut from the shape-divider library)
  *
  *   helpers-inline-formats.php      — sgs_rich_text_kses, sgs_inline_format_palette_css,
  *                                     sgs_inline_formats_enqueue,
