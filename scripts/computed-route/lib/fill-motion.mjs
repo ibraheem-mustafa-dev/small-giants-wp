@@ -270,9 +270,16 @@ function writeNode( n, doc, pending, { flat, ref, schema, out } ) {
 function writeLoopCss( n, items, { flat, ref, out } ) {
 	const node = flat[ n.index ];
 	const had = ( a ) => node.attributes?.[ a ] || '';
-	const css = [ had( 'sgsCustomCss' ), ...items.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
-	const note = [ had( 'sgsCustomCssNote' ), ...items.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
-	const values = { sgsCustomCss: css, sgsCustomCssId: had( 'sgsCustomCssId' ) || `loop-${ String( items[ 0 ].record.id ).toLowerCase() }`, sgsCustomCssNote: note };
+	// A loop the box already holds (a re-run over a written tree) is not added again.
+	const fresh = items.filter( ( i ) => ! had( 'sgsCustomCss' ).includes( i.css ) );
+	if ( ! fresh.length ) {
+		return;
+	}
+	const css = [ had( 'sgsCustomCss' ), ...fresh.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
+	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
+	// The scope key includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
+	const id = `loop${ String( fresh[ 0 ].record.id ).toLowerCase().replace( /[^a-z0-9]/g, '' ) }`.slice( 0, 16 );
+	const values = { sgsCustomCss: css, sgsCustomCssId: had( 'sgsCustomCssId' ) || id, sgsCustomCssNote: note };
 	for ( const [ attr, value ] of Object.entries( values ) ) {
 		const { before, after } = setAttr( node, { attr, value } );
 		out.writes.push( { node: ref, block: n.name, slot: '', prop: `loop css ${ items.map( ( i ) => i.record.id ).join( ', ' ) }`, attr, before, after, widths: [], how: 'motion-css' } );

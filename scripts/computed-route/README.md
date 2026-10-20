@@ -903,7 +903,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/motion-loop-css.mjs`
 - `loopKeyframesCss(record, name)` → `{ css, stops, error }` or `{ unmapped }`; `loopName(record)` (`sgs-loop-<record id>`), `isLoopRecord(record)` (an endless loop with literal keyframes); `bezierOf(easing)` (`[]` for linear, `null` for a curve no cubic-bezier states), `easedProgress(bezier, t)`.
-- `lib/fill-motion.mjs::elementEffects` returns such a loop as `css` when `chooseEffect` reports it unmapped; `motionWrites` writes it to `sgsCustomCss`, `sgsCustomCssId` (`loop-<record id>`) and `sgsCustomCssNote` of the block root, and reports it unmapped on a declared part.
+- `lib/fill-motion.mjs::elementEffects` returns such a loop as `css` when `chooseEffect` reports it unmapped; `motionWrites` writes it to `sgsCustomCss`, `sgsCustomCssId` (`loop` plus the record id's letters and digits, at most 16, the key `includes/custom-css.php::sgs_custom_css_uid` accepts) and `sgsCustomCssNote` of the block root, adding nothing the box already holds, refuses a hex colour loop, and reports it unmapped on a declared part.
 
 ### `lib/motion-loops.mjs`
 - `loopEffect(record, measuredByWidth, { mdb })`, `chooseEffect(loop, narrow, { mdb })` → `{ effect, values, devices, trigger, notes }` or `{ unmapped }`; `LOOP_BUILDERS`: marquee, ambient-float, svg-loop, ken-burns.

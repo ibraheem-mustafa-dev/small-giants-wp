@@ -223,20 +223,20 @@ describe( 'the photo popover closes from the keyboard', () => {
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
 		const root = createRoot( container );
-		const props = ( at ) => ( {
+		const props = ( at, active = true ) => ( {
 			value: { text: 'ab￼cd', formats: [], start: at, end: at + 1 },
 			onChange: jest.fn(),
-			isObjectActive: true,
+			isObjectActive: active,
 			activeObjectAttributes: { className: 'sgs-inline-photo wp-image-23', url: 'x.jpg', alt: '' },
 			contentRef: { current: { focus } },
 		} );
-		const draw = ( at ) => act( () => root.render( React.createElement( settingsOf( 'sgs/inline-photo' ).edit, props( at ) ) ) );
+		const draw = ( at, active ) => act( () => root.render( React.createElement( settingsOf( 'sgs/inline-photo' ).edit, props( at, active ) ) ) );
 		draw( start );
 		return { container, root, draw };
 	}
 	const open = ( container ) => null !== container.querySelector( '[data-testid="Popover"]' );
 
-	it( 'Escape (onClose) closes it and returns focus to the text; a new photo selection opens it again', () => {
+	it( 'Escape (onClose) closes it and returns focus to the text; another photo, or leaving and coming back to the same one, opens it again', () => {
 		const focus = jest.fn();
 		const { container, root, draw } = renderPhoto( 2, focus );
 		expect( open( container ) ).toBe( true );
@@ -247,6 +247,10 @@ describe( 'the photo popover closes from the keyboard', () => {
 		expect( focus ).toHaveBeenCalled();
 		draw( 2 );
 		expect( open( container ) ).toBe( false );
+		draw( 3 );
+		expect( open( container ) ).toBe( true );
+		act( () => mockPopovers[ mockPopovers.length - 1 ].onClose() );
+		draw( 3, false );
 		draw( 3 );
 		expect( open( container ) ).toBe( true );
 		act( () => root.unmount() );

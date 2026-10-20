@@ -63,7 +63,7 @@ test( 'MUST FAIL: a linear loop keeps the draft\'s own keyframes, with its delay
 test( 'MUST FAIL: a loop no effect draws is written to the block\'s sgsCustomCss, with a scope id and a note naming the record', () => {
 	const { flat, out } = run( [ FIX.twinkle ] );
 	assert.equal( flat[ 0 ].attributes.sgsCustomCss, EXPECTED );
-	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, 'loop-a-02' );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, 'loopa02' );
 	assert.match( flat[ 0 ].attributes.sgsCustomCssNote, /A-02/ );
 	assert.deepEqual( out.writes.map( ( w ) => [ w.attr, w.how ] ), [ [ 'sgsCustomCss', 'motion-css' ], [ 'sgsCustomCssId', 'motion-css' ], [ 'sgsCustomCssNote', 'motion-css' ] ], JSON.stringify( out.unmapped ) );
 	assert.equal( flat[ 0 ].attributes.sgsMotion, undefined, 'no sgsMotion layer for a loop the CSS box holds' );
@@ -81,7 +81,7 @@ test( 'MUST FAIL: two loops on one block share one box and one id, each keyframe
 	const css = flat[ 0 ].attributes.sgsCustomCss;
 	assert.ok( css.startsWith( EXPECTED ) );
 	assert.match( css, /@keyframes sgs-loop-b-07/ );
-	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, 'loop-a-02' );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCssId, 'loopa02' );
 } );
 
 test( 'MUST FAIL: a loop on a declared part is reported, never written to the block\'s box (the box styles the block, not the part)', () => {
@@ -95,4 +95,27 @@ test( 'a loop whose values are not literal is never written to the box (control)
 	assert.ok( loopKeyframesCss( random, 'x' ).unmapped );
 	assert.ok( loopKeyframesCss( { ...FIX.twinkle, easing: 'steps(4)' }, 'x' ).unmapped );
 	assert.ok( loopKeyframesCss( { ...FIX.twinkle, duration_ms: 'dur' }, 'x' ).unmapped );
+} );
+
+test( 'MUST FAIL: the scope id is one includes/custom-css.php::sgs_custom_css_uid accepts (4 to 16 lowercase letters and digits)', () => {
+	const { flat } = run( [ FIX.twinkle ] );
+	assert.match( flat[ 0 ].attributes.sgsCustomCssId, /^[a-z0-9]{4,16}$/ );
+} );
+
+test( 'MUST FAIL: a second run over a tree that already holds the loop writes nothing new (no duplicate keyframes or note)', () => {
+	const first = run( [ FIX.twinkle ] );
+	const nodes = [ { index: 0, name: 'sgs/icon', targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] } ];
+	const flat = [ { name: 'sgs/icon', attributes: { ...first.flat[ 0 ].attributes }, ref: 'r0' } ];
+	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ FIX.twinkle ], loops: { '0:': { 1440: SHOWN, 768: SHOWN, 375: SHOWN } }, mdb, schema, rawSnapshot: SNAPSHOT, offers: { qualifying: {}, elementsOf: () => null } } );
+	assert.equal( flat[ 0 ].attributes.sgsCustomCss, EXPECTED );
+	assert.equal( ( flat[ 0 ].attributes.sgsCustomCssNote.match( /Loop A-02/g ) || [] ).length, 1 );
+	assert.deepEqual( out.writes.filter( ( w ) => 'motion-css' === w.how ), [] );
+} );
+
+test( 'MUST FAIL: a hex colour loop is reported unmapped, never interpolated digit by digit; translate3d keeps its 3d', () => {
+	const pulse = { ...FIX.twinkle, properties: [ { property: 'background-color', keyframes: [ { 'background-color': '#ff5500' }, { 'background-color': '#00aa11' } ] } ] };
+	assert.ok( loopKeyframesCss( pulse, 'x' ).unmapped );
+	const slide = { ...FIX.twinkle, easing: 'linear', properties: [ { property: 'transform', keyframes: [ { transform: 'translate3d(0px, 0px, 0px)' }, { transform: 'translate3d(10px, 0px, 0px)' } ] } ] };
+	const css = loopKeyframesCss( slide, 'x' ).css;
+	assert.match( css, /translate3d\(10px, 0px, 0px\)/ );
 } );

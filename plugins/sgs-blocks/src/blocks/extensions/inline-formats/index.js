@@ -114,6 +114,12 @@ function InlinePhotoEdit( {
 	const inSgsBlock = useInSgsBlock();
 	// The photo selection the visitor closed the popover on; selecting a photo anywhere else opens it again.
 	const [ closedAt, setClosedAt ] = useState( null );
+	// Leaving the photo forgets the dismissal, so coming back to the same photo opens its popover again.
+	useEffect( () => {
+		if ( ! isObjectActive ) {
+			setClosedAt( null );
+		}
+	}, [ isObjectActive ] );
 	if ( ! inSgsBlock ) {
 		return null;
 	}

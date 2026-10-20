@@ -45,9 +45,11 @@ export function easedProgress( bezier, t ) {
 }
 
 // A CSS value split into its literal skeleton and its numbers: `scale(1.35) rotate(90deg)` is
-// { shape: 'scale(#) rotate(#deg)', nums: [1.35, 90], units: ['', 'deg'] }. A unitless 0 inside rotate() or skew()
-// is read as 0deg, so `rotate(0)` and `rotate(180deg)` interpolate.
-const NUM = /(-?\d*\.?\d+(?:e-?\d+)?)([a-z%]*)/gi;
+// { shape: 'scale(·) rotate(·deg)', nums: [1.35, 90], units: ['', 'deg'] }, each number's slot a control character so no
+// literal character of the value is taken for one. A number inside a name (the 3 of translate3d) stays literal. A
+// unitless 0 inside rotate() or skew() is read as 0deg, so `rotate(0)` and `rotate(180deg)` interpolate.
+const NUM = /(?<![a-z\d.])(-?\d*\.?\d+(?:e-?\d+)?)([a-z%]*)/gi;
+const SLOT = '\u0001';
 function templateOf( value ) {
 	const text = String( value ).trim().replace( /\b(rotate[XYZ]?|skew[XY]?)\(\s*0\s*\)/gi, '$1(0deg)' );
 	const nums = [];
@@ -55,7 +57,7 @@ function templateOf( value ) {
 	const shape = text.replace( NUM, ( _, n, u ) => {
 		nums.push( Number( n ) );
 		units.push( u );
-		return '#';
+		return SLOT;
 	} );
 	return { shape: shape + '|' + units.join( ',' ), nums, units, text: shape };
 }
@@ -106,7 +108,7 @@ function valueAt( frames, p ) {
 const fixed = ( n, dp ) => String( Number( n.toFixed( dp ) ) );
 const textOf = ( tpl, nums ) => {
 	let j = 0;
-	return tpl.text.replace( /#/g, () => {
+	return tpl.text.replace( new RegExp( SLOT, 'g' ), () => {
 		const unit = tpl.units[ j ];
 		const n = fixed( nums[ j ], precision( unit ) );
 		j += 1;
@@ -148,6 +150,9 @@ export function loopKeyframesCss( record, name ) {
 	const bezier = bezierOf( record.easing );
 	if ( ! bezier ) {
 		return { unmapped: `its ${ record.easing } easing is a curve no cubic-bezier states` };
+	}
+	if ( frames.some( ( f ) => Object.values( f.props ).some( ( v ) => /#[0-9a-f]{3,8}\b/i.test( v ) ) ) ) {
+		return { unmapped: 'its keyframes hold a hex colour, whose digits cannot be interpolated one number at a time' };
 	}
 	const names = Object.keys( frames[ 0 ].props );
 	const tracks = [];
