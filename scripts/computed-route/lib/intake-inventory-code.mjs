@@ -448,7 +448,8 @@ function constantReturn( p, node ) {
 		if ( ! isFn( a ) ) {
 			continue;
 		}
-		const body = a.body?.body ?? [];
+		// Statements only from a block body: an arrow's expression body (a curried arrow's inner function) holds none.
+		const body = 'BlockStatement' === a.body?.type ? a.body.body : [];
 		const idx = body.findIndex( ( s ) => s.start <= node.start && node.end <= s.end );
 		for ( const s of body.slice( 0, idx < 0 ? 0 : idx ) ) {
 			if ( 'IfStatement' !== s.type || ! ( 'ReturnStatement' === s.consequent.type || s.consequent.body?.some?.( ( x ) => 'ReturnStatement' === x.type ) ) ) {

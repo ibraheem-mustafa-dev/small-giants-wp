@@ -378,3 +378,15 @@ onScroll = () => { this._head.style.boxShadow = window.scrollY > 8 ? '0 1px 2px 
 	assert.equal( behaviour( '0.5s !important' ), 'unchanged' );
 	assert.equal( behaviour( '0.01ms !important' ), 'final-state', 'the control: the real override' );
 } );
+
+// A draft's curried arrow handler (`pick = ( i ) => ( e ) => { … }`): the outer arrow's body is the inner function, not
+// a block, so the constant-early-return check must read statements only from a block body. Before the fix every
+// construct of such a draft threw `body.findIndex is not a function`.
+test( 'MUST FAIL (QC): a write inside a curried arrow is read without throwing and stays called', () => {
+	const m = codeModel( { sources: [ { component: 'App', file: 'App.dc.html', via: 'entry', logic: `class Component extends DCComponent {
+componentDidMount() { this._el.addEventListener( 'click', this.pick( 1 ) ); }
+pick = ( i ) => ( e ) => { this._dot.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 500 } ); };
+}`, logicLine: 1, logicColumn: 0, scripts: [], stamped: { elements: [] } } ], rows: [] } );
+	const call = m.progs.get( 'App' ).nodes.find( ( n ) => 'CallExpression' === n.type && 'animate' === n.callee?.property?.name );
+	assert.notEqual( triggerOf( m, 'App', call ).called, false );
+} );
