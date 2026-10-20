@@ -10,7 +10,14 @@
  *  - A selector that does not name the block is made a descendant of it (`.uid.uid h2`).
  *  - A declaration outside any rule applies to the block itself.
  *  - `@media`, `@supports`, `@container` and `@layer` blocks are walked and their rules scoped the same way.
- *  - Every other at-rule (`@import`, `@font-face`, `@keyframes`, `@charset`, `@namespace`, `@page`, …) is refused,
+ *  - `@keyframes <name>` is kept, at the top level or inside a walked block, renamed `<name>-<token>` where the
+ *    token is the scope's first class (`.sgs-c-1a2b.sgs-c-1a2b` gives `sparkle-sgs-c-1a2b`), so two blocks'
+ *    animations never collide. Every `animation` / `animation-name` in the same input that names a kept
+ *    keyframes (a whole token, in any comma-separated item) is rewritten to the renamed one; a name the input
+ *    does not define is left as written (a theme or global animation). Keyframe selectors may only be
+ *    percentages, `from` or `to`; a quoted or reserved name, any other keyframe selector, a declaration outside
+ *    a keyframe, a nested rule or a script-capable value refuses the whole `@keyframes` block.
+ *  - Every other at-rule (`@import`, `@font-face`, `@-webkit-keyframes`, `@charset`, `@namespace`, `@page`, …) is refused,
  *    as is a rule nested inside a rule body, a rule whose body could run script (`expression(`, `javascript:`,
  *    `behavior:`, `-moz-binding`), and any input containing markup (`<`), which closes the `</style>` breakout.
  *  - Unbalanced braces, an unterminated string or an unterminated comment refuse the whole input.
@@ -39,6 +46,15 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 
 		/** A declaration body matching this could run script in some engine; the rule is refused. */
 		const UNSAFE_BODY = '/expression\s*\(|javascript\s*:|vbscript\s*:|behavior\s*:|-moz-binding/i';
+
+		/** Names a `@keyframes` may not take (CSS-wide keywords and `none`), compared lower-cased. */
+		const RESERVED_KEYFRAMES_NAMES = array( 'none', 'initial', 'inherit', 'unset', 'revert', 'revert-layer', 'default' );
+
+		/** A keyframes name: an unquoted CSS identifier. */
+		const KEYFRAMES_NAME = '/^(?:--|-?[A-Za-z_])[A-Za-z0-9_-]*$/';
+
+		/** One keyframe selector: a percentage, `from` or `to`. */
+		const KEYFRAME_SELECTOR = '/^(?:from|to|(?:\d+(?:\.\d+)?|\.\d+)%)$/i';
 
 		/** Whitespace as CSS defines it; the JS copy uses the same class so both trim identically. */
 		const WS = " \t\n\r\f";
@@ -72,9 +88,22 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 				);
 			}
 
-			$refused = array();
+			// Pass one finds the keyframes names the input defines, so pass two can rename every reference
+			// to them, including one written before its @keyframes.
+			$suffix  = self::scope_token( $scope );
+			$defined = array();
+			$ignored = array();
 			$pos     = 0;
-			$out     = self::parse_block( $clean, $pos, false, $scope, $refused );
+			$out     = self::parse_block( $clean, $pos, false, $scope, $ignored, $suffix, array(), $defined );
+			if ( null !== $out ) {
+				$renames = array();
+				foreach ( array_keys( $defined ) as $name ) {
+					$renames[ (string) $name ] = $name . '-' . $suffix;
+				}
+				$refused = array();
+				$pos     = 0;
+				$out     = self::parse_block( $clean, $pos, false, $scope, $refused, $suffix, $renames, $defined );
+			}
 			if ( null === $out ) {
 				return array(
 					'css'     => '',
@@ -213,9 +242,12 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 		 * @param bool     $in_block True inside an at-rule block (a `}` ends the run).
 		 * @param string   $scope    The instance selector.
 		 * @param string[] $refused  Reasons for refused parts, appended to.
+		 * @param string   $suffix   Token appended to every kept keyframes name.
+		 * @param string[] $renames  Keyframes name => renamed name, applied to animation declarations.
+		 * @param bool[]   $defined  Keyframes names kept, set as name => true.
 		 * @return string|null Scoped CSS, or null when the input is malformed.
 		 */
-		private static function parse_block( string $css, int &$pos, bool $in_block, string $scope, array &$refused ): ?string {
+		private static function parse_block( string $css, int &$pos, bool $in_block, string $scope, array &$refused, string $suffix, array $renames, array &$defined ): ?string {
 			$out   = '';
 			$decls = array();
 
@@ -267,12 +299,24 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 					$name = self::at_name( $prelude );
 					if ( in_array( $name, self::NESTING_AT_RULES, true ) ) {
 						$condition = self::squash( substr( $prelude, strlen( $name ) + 1 ) );
-						$inner     = self::parse_block( $css, $pos, true, $scope, $refused );
+						$inner     = self::parse_block( $css, $pos, true, $scope, $refused, $suffix, $renames, $defined );
 						if ( null === $inner ) {
 							return null;
 						}
 						if ( '' !== $inner ) {
 							$out .= '@' . $name . ( '' !== $condition ? ' ' . $condition : '' ) . '{' . $inner . '}';
+						}
+						continue;
+					}
+					if ( 'keyframes' === $name ) {
+						$raw = self::read_body( $css, $pos );
+						if ( null === $raw ) {
+							return null;
+						}
+						$kept = self::keyframes( $prelude, $raw[0], $suffix, $renames, $refused );
+						if ( null !== $kept ) {
+							$defined[ $kept[0] ] = true;
+							$out                .= $kept[1];
 						}
 						continue;
 					}
@@ -305,7 +349,7 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 				if ( '' === $declarations ) {
 					continue;
 				}
-				$out .= self::scope_selector_list( $prelude, $scope ) . '{' . self::trim_semicolon( $declarations ) . '}';
+				$out .= self::scope_selector_list( $prelude, $scope ) . '{' . self::rename_animations( self::trim_semicolon( $declarations ), $renames ) . '}';
 			}
 
 			if ( $decls ) {
@@ -313,11 +357,134 @@ if ( ! class_exists( __NAMESPACE__ . '\\Custom_Css_Scoper' ) ) {
 				if ( preg_match( self::UNSAFE_BODY, $joined ) ) {
 					$refused[] = 'unsafe value: declarations on the block';
 				} elseif ( '' !== $joined ) {
-					$out = $scope . '{' . $joined . '}' . $out;
+					$out = $scope . '{' . self::rename_animations( $joined, $renames ) . '}' . $out;
 				}
 			}
 
 			return $out;
+		}
+
+		/**
+		 * Check and rename one `@keyframes` block.
+		 *
+		 * @param string   $prelude The `@keyframes <name>` prelude.
+		 * @param string   $body    The block's body, between its braces.
+		 * @param string   $suffix  Token appended to the name.
+		 * @param string[] $renames Keyframes name => renamed name, applied to the keyframes' declarations.
+		 * @param string[] $refused Reasons for refused parts, appended to.
+		 * @return array{0: string, 1: string}|null [name as written, renamed CSS], or null when refused or empty.
+		 */
+		private static function keyframes( string $prelude, string $body, string $suffix, array $renames, array &$refused ): ?array {
+			$name = self::squash( substr( $prelude, strlen( 'keyframes' ) + 1 ) );
+			if ( ! preg_match( self::KEYFRAMES_NAME, $name ) || in_array( strtolower( $name ), self::RESERVED_KEYFRAMES_NAMES, true ) ) {
+				$refused[] = 'keyframes name: ' . $name;
+				return null;
+			}
+			$label  = '@keyframes ' . $name;
+			$frames = '';
+			$pos    = 0;
+			while ( true ) {
+				$read = self::read_until_stop( $body, $pos );
+				if ( null === $read ) {
+					$refused[] = 'stray declaration: ' . $label;
+					return null;
+				}
+				list( $text, $stop ) = $read;
+				$selector_list       = self::squash( $text );
+				if ( '' === $stop ) {
+					if ( '' !== $selector_list ) {
+						$refused[] = 'stray declaration: ' . $label;
+						return null;
+					}
+					break;
+				}
+				if ( '{' !== $stop ) {
+					$refused[] = 'stray declaration: ' . $label;
+					return null;
+				}
+				++$pos;
+				$frame = self::read_body( $body, $pos );
+				if ( null === $frame ) {
+					$refused[] = 'stray declaration: ' . $label;
+					return null;
+				}
+				if ( $frame[1] ) {
+					$refused[] = 'nested rule: ' . $label;
+					return null;
+				}
+				$selectors = array();
+				foreach ( self::split_top_level( $selector_list, ',' ) as $selector ) {
+					$selector = self::squash( $selector );
+					if ( ! preg_match( self::KEYFRAME_SELECTOR, $selector ) ) {
+						$refused[] = 'keyframe selector: ' . ( '' !== $selector ? $selector : $selector_list );
+						return null;
+					}
+					$selectors[] = $selector;
+				}
+				$declarations = self::squash( $frame[0] );
+				if ( preg_match( self::UNSAFE_BODY, $declarations ) ) {
+					$refused[] = 'unsafe value: ' . $label;
+					return null;
+				}
+				$declarations = self::trim_semicolon( $declarations );
+				if ( '' === $declarations ) {
+					continue;
+				}
+				$frames .= implode( ',', $selectors ) . '{' . self::rename_animations( $declarations, $renames ) . '}';
+			}
+			if ( '' === $frames ) {
+				return null;
+			}
+			return array( $name, '@keyframes ' . $name . '-' . $suffix . '{' . $frames . '}' );
+		}
+
+		/**
+		 * Rewrite keyframes names in `animation` and `animation-name` declarations.
+		 *
+		 * A token is replaced only when it is a whole space-separated token at bracket depth 0 that equals a
+		 * renamed name; everything else, including the separators, is kept as written.
+		 *
+		 * @param string   $declarations Declaration list.
+		 * @param string[] $renames      Keyframes name => renamed name.
+		 * @return string
+		 */
+		private static function rename_animations( string $declarations, array $renames ): string {
+			if ( ! $renames ) {
+				return $declarations;
+			}
+			$parts = self::split_top_level( $declarations, ';' );
+			foreach ( $parts as $i => $part ) {
+				$colon = self::find_outside_strings( $part, ':' );
+				if ( false === $colon ) {
+					continue;
+				}
+				$property = strtolower( self::squash( substr( $part, 0, $colon ) ) );
+				if ( 'animation' !== $property && 'animation-name' !== $property ) {
+					continue;
+				}
+				$items = self::split_top_level( substr( $part, $colon + 1 ), ',' );
+				foreach ( $items as $j => $item ) {
+					$tokens = self::split_top_level( $item, ' ' );
+					foreach ( $tokens as $k => $token ) {
+						if ( isset( $renames[ $token ] ) ) {
+							$tokens[ $k ] = $renames[ $token ];
+						}
+					}
+					$items[ $j ] = implode( ' ', $tokens );
+				}
+				$parts[ $i ] = substr( $part, 0, $colon + 1 ) . implode( ',', $items );
+			}
+			return implode( ';', $parts );
+		}
+
+		/**
+		 * The token a kept keyframes name is suffixed with: the scope's first class, or `scoped`.
+		 *
+		 * @param string $scope The instance selector.
+		 * @return string
+		 */
+		private static function scope_token( string $scope ): string {
+			return preg_match( '/^\.(-?[A-Za-z_][A-Za-z0-9_-]*)/', $scope, $m ) ? $m[1] : 'scoped';
 		}
 
 		/**

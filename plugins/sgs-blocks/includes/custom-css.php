@@ -5,7 +5,8 @@
  * A block's `sgsCustomCss` is parsed and scoped to the block instance by
  * `Custom_Css_Scoper` (includes/class-custom-css-scoper.php): every rule, including rules inside
  * `@media`, `@supports` and `@container`, is confined to the instance, and anything that cannot be
- * confined is refused, never emitted against the whole page. The scoped rules render as a `<style>`
+ * confined is refused, never emitted against the whole page. A `@keyframes` is renamed for the
+ * instance and the input's own `animation` references follow it. The scoped rules render as a `<style>`
  * appended after the block, which the CSS collector lifts into the head
  * (class-sgs-css-registry.php::sgs_lift_block_css) for SGS and core blocks alike.
  *

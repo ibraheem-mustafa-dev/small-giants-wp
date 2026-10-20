@@ -3,8 +3,11 @@
  *
  * Parses a block's `sgsCustomCss` and confines every rule to the block instance: `&selector` (or the
  * CSS-nesting `&`) becomes the scope, any other selector becomes a descendant of it, a bare declaration
- * applies to the block, and `@media` / `@supports` / `@container` / `@layer` are walked. Every other
- * at-rule, a nested rule, a script-capable value and any `<` are refused; malformed input refuses all.
+ * applies to the block, and `@media` / `@supports` / `@container` / `@layer` are walked. `@keyframes <name>`
+ * is kept as `<name>-<token>` (the token is the scope's first class) and every `animation` / `animation-name`
+ * in the same input naming it is rewritten to match; an undefined name is left alone, and a bad name,
+ * keyframe selector or value refuses the whole `@keyframes`. Every other at-rule (`@-webkit-keyframes`
+ * included), a nested rule, a script-capable value and any `<` are refused; malformed input refuses all.
  *
  * Both copies run `tests/shared/custom-css-scope-cases.json`, so the canvas and the page scope a rule
  * identically. Change the two together.
@@ -13,6 +16,17 @@
 const NESTING_AT_RULES = [ 'media', 'supports', 'container', 'layer' ];
 const UNSAFE_BODY =
 	/expression\s*\(|javascript\s*:|vbscript\s*:|behavior\s*:|-moz-binding/i;
+const RESERVED_KEYFRAMES_NAMES = [
+	'none',
+	'initial',
+	'inherit',
+	'unset',
+	'revert',
+	'revert-layer',
+	'default',
+];
+const KEYFRAMES_NAME = /^(?:--|-?[A-Za-z_])[A-Za-z0-9_-]*$/;
+const KEYFRAME_SELECTOR = /^(?:from|to|(?:\d+(?:\.\d+)?|\.\d+)%)$/i;
 
 /**
  * Trim CSS whitespace (the PHP copy's `trim( $s, " \t\n\r\f" )`).
@@ -206,6 +220,17 @@ function splitTopLevel( text, sep ) {
  * @return {boolean} Found.
  */
 function hasOutsideStrings( text, needle ) {
+	return findOutsideStrings( text, needle ) !== -1;
+}
+
+/**
+ * Position of the needle outside quoted strings, or -1.
+ *
+ * @param {string} text   Haystack.
+ * @param {string} needle Needle.
+ * @return {number} Position.
+ */
+function findOutsideStrings( text, needle ) {
 	let quote = '';
 	for ( let i = 0; i < text.length; i++ ) {
 		const c = text[ i ];
@@ -222,10 +247,10 @@ function hasOutsideStrings( text, needle ) {
 			continue;
 		}
 		if ( text.startsWith( needle, i ) ) {
-			return true;
+			return i;
 		}
 	}
-	return false;
+	return -1;
 }
 
 /**
@@ -277,6 +302,134 @@ function atName( prelude ) {
 }
 
 /**
+ * Rewrite keyframes names in `animation` and `animation-name` declarations: a whole space-separated
+ * token at bracket depth 0 equal to a renamed name is replaced; everything else is kept as written.
+ *
+ * @param {string}              declarations Declaration list.
+ * @param {Map<string, string>} renames      Keyframes name => renamed name.
+ * @return {string} Declarations.
+ */
+function renameAnimations( declarations, renames ) {
+	if ( ! renames.size ) {
+		return declarations;
+	}
+	return splitTopLevel( declarations, ';' )
+		.map( ( part ) => {
+			const colon = findOutsideStrings( part, ':' );
+			if ( colon === -1 ) {
+				return part;
+			}
+			const property = squash( part.slice( 0, colon ) ).toLowerCase();
+			if ( property !== 'animation' && property !== 'animation-name' ) {
+				return part;
+			}
+			const items = splitTopLevel( part.slice( colon + 1 ), ',' ).map(
+				( item ) =>
+					splitTopLevel( item, ' ' )
+						.map( ( token ) =>
+							renames.has( token ) ? renames.get( token ) : token
+						)
+						.join( ' ' )
+			);
+			return part.slice( 0, colon + 1 ) + items.join( ',' );
+		} )
+		.join( ';' );
+}
+
+/**
+ * Check and rename one `@keyframes` block.
+ *
+ * @param {string}              prelude The `@keyframes <name>` prelude.
+ * @param {string}              body    The block's body, between its braces.
+ * @param {string}              suffix  Token appended to the name.
+ * @param {Map<string, string>} renames Keyframes name => renamed name.
+ * @param {string[]}            refused Reasons, appended to.
+ * @return {Array|null} [name as written, renamed CSS], or null when refused or empty.
+ */
+function keyframes( prelude, body, suffix, renames, refused ) {
+	const name = squash( prelude.slice( 'keyframes'.length + 1 ) );
+	if (
+		! KEYFRAMES_NAME.test( name ) ||
+		RESERVED_KEYFRAMES_NAMES.includes( name.toLowerCase() )
+	) {
+		refused.push( `keyframes name: ${ name }` );
+		return null;
+	}
+	const label = `@keyframes ${ name }`;
+	const state = { pos: 0 };
+	let frames = '';
+	while ( true ) {
+		const read = readUntilStop( body, state );
+		if ( read === null ) {
+			refused.push( `stray declaration: ${ label }` );
+			return null;
+		}
+		const [ text, stop ] = read;
+		const selectorList = squash( text );
+		if ( stop === '' ) {
+			if ( selectorList ) {
+				refused.push( `stray declaration: ${ label }` );
+				return null;
+			}
+			break;
+		}
+		if ( stop !== '{' ) {
+			refused.push( `stray declaration: ${ label }` );
+			return null;
+		}
+		state.pos++;
+		const frame = readBody( body, state );
+		if ( frame === null ) {
+			refused.push( `stray declaration: ${ label }` );
+			return null;
+		}
+		if ( frame[ 1 ] ) {
+			refused.push( `nested rule: ${ label }` );
+			return null;
+		}
+		const selectors = [];
+		for ( const raw of splitTopLevel( selectorList, ',' ) ) {
+			const selector = squash( raw );
+			if ( ! KEYFRAME_SELECTOR.test( selector ) ) {
+				refused.push(
+					`keyframe selector: ${ selector || selectorList }`
+				);
+				return null;
+			}
+			selectors.push( selector );
+		}
+		const squashed = squash( frame[ 0 ] );
+		if ( UNSAFE_BODY.test( squashed ) ) {
+			refused.push( `unsafe value: ${ label }` );
+			return null;
+		}
+		const declarations = trimSemicolon( squashed );
+		if ( ! declarations ) {
+			continue;
+		}
+		frames += `${ selectors.join( ',' ) }{${ renameAnimations(
+			declarations,
+			renames
+		) }}`;
+	}
+	if ( ! frames ) {
+		return null;
+	}
+	return [ name, `@keyframes ${ name }-${ suffix }{${ frames }}` ];
+}
+
+/**
+ * The token a kept keyframes name is suffixed with: the scope's first class, or `scoped`.
+ *
+ * @param {string} scope Instance selector.
+ * @return {string} Token.
+ */
+function scopeToken( scope ) {
+	const m = scope.match( /^\.(-?[A-Za-z_][A-Za-z0-9_-]*)/ );
+	return m ? m[ 1 ] : 'scoped';
+}
+
+/**
  * Scope each selector in a comma list.
  *
  * @param {string} selectors Selector list.
@@ -303,14 +456,26 @@ function scopeSelectorList( selectors, scope ) {
 /**
  * Parse a run of statements, emitting scoped CSS.
  *
- * @param {string}        css     CSS without comments.
- * @param {{pos: number}} state   Read position.
- * @param {boolean}       inBlock True inside an at-rule block.
- * @param {string}        scope   Instance selector.
- * @param {string[]}      refused Reasons, appended to.
+ * @param {string}              css     CSS without comments.
+ * @param {{pos: number}}       state   Read position.
+ * @param {boolean}             inBlock True inside an at-rule block.
+ * @param {string}              scope   Instance selector.
+ * @param {string[]}            refused Reasons, appended to.
+ * @param {string}              suffix  Token appended to every kept keyframes name.
+ * @param {Map<string, string>} renames Keyframes name => renamed name.
+ * @param {Set<string>}         defined Keyframes names kept, added to.
  * @return {string|null} Scoped CSS, or null when malformed.
  */
-function parseBlock( css, state, inBlock, scope, refused ) {
+function parseBlock(
+	css,
+	state,
+	inBlock,
+	scope,
+	refused,
+	suffix,
+	renames,
+	defined
+) {
 	let out = '';
 	const decls = [];
 
@@ -361,7 +526,16 @@ function parseBlock( css, state, inBlock, scope, refused ) {
 			const name = atName( prelude );
 			if ( NESTING_AT_RULES.includes( name ) ) {
 				const condition = squash( prelude.slice( name.length + 1 ) );
-				const inner = parseBlock( css, state, true, scope, refused );
+				const inner = parseBlock(
+					css,
+					state,
+					true,
+					scope,
+					refused,
+					suffix,
+					renames,
+					defined
+				);
 				if ( inner === null ) {
 					return null;
 				}
@@ -369,6 +543,24 @@ function parseBlock( css, state, inBlock, scope, refused ) {
 					out += `@${ name }${
 						condition ? ' ' + condition : ''
 					}{${ inner }}`;
+				}
+				continue;
+			}
+			if ( name === 'keyframes' ) {
+				const raw = readBody( css, state );
+				if ( raw === null ) {
+					return null;
+				}
+				const kept = keyframes(
+					prelude,
+					raw[ 0 ],
+					suffix,
+					renames,
+					refused
+				);
+				if ( kept !== null ) {
+					defined.add( kept[ 0 ] );
+					out += kept[ 1 ];
 				}
 				continue;
 			}
@@ -400,8 +592,9 @@ function parseBlock( css, state, inBlock, scope, refused ) {
 		if ( ! declarations ) {
 			continue;
 		}
-		out += `${ scopeSelectorList( prelude, scope ) }{${ trimSemicolon(
-			declarations
+		out += `${ scopeSelectorList( prelude, scope ) }{${ renameAnimations(
+			trimSemicolon( declarations ),
+			renames
 		) }}`;
 	}
 
@@ -410,7 +603,10 @@ function parseBlock( css, state, inBlock, scope, refused ) {
 		if ( UNSAFE_BODY.test( joined ) ) {
 			refused.push( 'unsafe value: declarations on the block' );
 		} else if ( joined ) {
-			out = `${ scope }{${ joined }}${ out }`;
+			out = `${ scope }{${ renameAnimations(
+				joined,
+				renames
+			) }}${ out }`;
 		}
 	}
 	return out;
@@ -435,8 +631,37 @@ export function scopeCustomCss( css, scope ) {
 	if ( clean === null ) {
 		return { css: '', refused: [ 'syntax: an unterminated comment' ] };
 	}
-	const refused = [];
-	const out = parseBlock( clean, { pos: 0 }, false, scope, refused );
+	// Pass one finds the keyframes names the input defines, so pass two can rename every reference to
+	// them, including one written before its @keyframes.
+	const suffix = scopeToken( scope );
+	const defined = new Set();
+	let refused = [];
+	let out = parseBlock(
+		clean,
+		{ pos: 0 },
+		false,
+		scope,
+		[],
+		suffix,
+		new Map(),
+		defined
+	);
+	if ( out !== null ) {
+		const renames = new Map(
+			[ ...defined ].map( ( name ) => [ name, `${ name }-${ suffix }` ] )
+		);
+		refused = [];
+		out = parseBlock(
+			clean,
+			{ pos: 0 },
+			false,
+			scope,
+			refused,
+			suffix,
+			renames,
+			new Set()
+		);
+	}
 	if ( out === null ) {
 		return {
 			css: '',

@@ -4,7 +4,8 @@
  *
  * Every rule is confined to the block instance by the shared scoper (`src/utils/custom-css-scope.js`,
  * twin of `includes/class-custom-css-scoper.php`): `&selector` is the block, any other selector is a
- * descendant of it, and `@media` / `@supports` / `@container` rules are scoped the same way. What cannot be
+ * descendant of it, and `@media` / `@supports` / `@container` rules are scoped the same way. A `@keyframes`
+ * is renamed to this instance's own name and the field's `animation` references follow it. What cannot be
  * confined is refused and listed under the field, on the canvas exactly as on the page.
  *
  * `sgsCustomCssId` is the block instance's stable key: the page's scope class is `sgs-c-{id}`, so it
@@ -125,7 +126,7 @@ const withCustomCssControl = createHigherOrderComponent( ( BlockEdit ) => {
 						<TextareaControl
 							label={ __( 'Custom CSS', 'sgs-blocks' ) }
 							help={ __(
-								'CSS rules applied to this block only. Use &selector for the block itself; any other selector styles elements inside it.',
+								'CSS rules applied to this block only. Use &selector for the block itself; any other selector styles elements inside it. A @keyframes animation written here is renamed for this block, so it never clashes with another; wrap the animation rule in @media (prefers-reduced-motion: no-preference).',
 								'sgs-blocks'
 							) }
 							value={ sgsCustomCss || '' }

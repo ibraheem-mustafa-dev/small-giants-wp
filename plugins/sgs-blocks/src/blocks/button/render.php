@@ -40,6 +40,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-source.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-inner-kses.php';
 
 // ---------------------------------------------------------------------------
@@ -473,6 +474,13 @@ if ( $hover_rules ) {
 // Icon hover colour.
 if ( $icon_col_hov ) {
 	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", 'color:' . sgs_colour_value( $icon_col_hov ), ':focus-visible', ' .sgs-button__icon' );
+}
+
+// Pressed look (helpers-button-press.php): the style's `active-transform` / `active-shadow` preset tokens, printed
+// only when a preset sets them, after the hover rules and out-ranking them.
+$press_rule = sgs_button_press_rule( $uid, $inherit_style );
+if ( '' !== $press_rule ) {
+	$scoped_css_parts[] = $press_rule;
 }
 
 // Typography — base + tablet + mobile on the SAME selector (Pattern A),

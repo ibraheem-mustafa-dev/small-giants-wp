@@ -504,7 +504,11 @@
           "hover-background": "#f9cf6e",
           "hover-text": "#ffffff",
           "hover-border": "var(--wp--preset--color--text)",
-          "hover-transform": "matrix(1, 0, 0, 1, -3, -3)"
+          "hover-transform": "matrix(1, 0, 0, 1, -3, -3)",
+          "hover-transition": "0.2s",
+          "hover-easing": "cubic-bezier(.3,1.6,.5,1)",
+          "active-transform": "matrix(1, 0, 0, 1, 3, 3)",
+          "active-shadow": "0 0 0 var(--wp--preset--color--text)"
         },
         "secondary": {
           "background": "#f9cf6e",
@@ -519,7 +523,11 @@
           "hover-background": "#fffaf0",
           "hover-text": "#ffffff",
           "hover-border": "var(--wp--preset--color--primary)",
-          "hover-transform": "matrix(1, 0, 0, 1, -3, -3)"
+          "hover-transform": "matrix(1, 0, 0, 1, -3, -3)",
+          "hover-transition": "0.2s",
+          "hover-easing": "cubic-bezier(.3,1.6,.5,1)",
+          "active-transform": "matrix(1, 0, 0, 1, 3, 3)",
+          "active-shadow": "0 0 0 var(--wp--preset--color--text)"
         },
         "outline": {
           "background": "transparent",

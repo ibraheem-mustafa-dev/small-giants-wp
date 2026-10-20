@@ -20,6 +20,13 @@
  * ships no JavaScript still gets correct hover behaviour on phones and
  * pure-touch tablets. This file only adds the hybrid case.
  *
+ * SECOND JOB: TAP PRESS STATES ON iOS. WebKit applies `:active` on a tap only
+ * when the document has a touch-related listener, and `pointerdown` is one
+ * (WebKit `EventNames.json`, category TouchRelated). This window listener is
+ * that listener for every page, so a pressed look (sgs/button's
+ * `active-transform` / `active-shadow`, includes/helpers-button-press.php)
+ * shows on a tap without a listener of its own.
+ *
  * Deliberately NOT a module and deliberately dependency-free: it must run on
  * any page carrying a hover rule, and importing motion-utils.js would pull the
  * motion layer onto pages that use none of it.
